@@ -11,7 +11,7 @@ PORT=9001
 
 # Run the FastAPI app with reload enabled
 run:
-	$(UVICORN) $(APP_MODULE) --reload --host $(HOST) --port $(PORT) --reload
+	$(UVICORN) $(APP_MODULE) --host $(HOST) --port $(PORT) --workers 4
 
 # Remove __pycache__ and pyc files
 clean:
@@ -23,7 +23,7 @@ freeze:
 	uv pip freeze > requirements.txt
 
 start:
-	pm2 start uvicorn --name "fastapi-app" -- server_py.Fastapi_main:app --host 0.0.0.0 --port 9001 --reload
+	pm2 start uvicorn --name "fastapi-app" -- server_py.Fastapi_main:app --host 0.0.0.0 --port 9001 --workers 4
 
 pm2-stop:
 	pm2 stop fastapi-app

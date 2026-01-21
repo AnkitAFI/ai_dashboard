@@ -1953,3 +1953,2577 @@ LINE 5:             product_original_price, product_original_price_n...
 2025-11-04 13:01:43,613 - INFO - [ANALYTICS] Avg Sales: 156,939,024
 2025-11-04 13:01:43,613 - INFO - [COMPLETE] 456 products collected
 2025-11-04 13:01:43,614 - INFO - [DB] Disconnected
+2025-11-11 17:36:22,859 - WARNING - python-dotenv could not parse statement starting at line 6
+2025-11-11 17:36:22,860 - INFO - [CONFIG] ✓ Loaded
+2025-11-11 17:36:22,860 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-11 17:36:22,860 - INFO - [START] Collection starting
+2025-11-11 17:36:22,860 - INFO - [DB] Connecting (1/3)...
+2025-11-11 17:36:22,867 - INFO - [DB] ✓ Connected
+2025-11-11 17:36:22,875 - INFO - [DB] ✓ Tables ready
+2025-11-11 17:36:22,875 - INFO - [MODE] Using DATABASE
+2025-11-11 17:36:22,875 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-11 17:36:22,875 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-11 17:36:22,875 - INFO - [PAGE] 1/5...
+2025-11-11 17:36:22,875 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-11 17:36:23,735 - ERROR - [RapidAPI] HTTP 403: Forbidden
+2025-11-11 17:36:23,736 - ERROR - [RapidAPI] Response: {"message":"You are not subscribed to this API."}
+2025-11-11 17:36:23,736 - INFO - [RESULT] 0 products saved
+2025-11-11 17:36:26,737 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-11 17:36:26,737 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-11 17:36:26,737 - INFO - [PAGE] 1/5...
+2025-11-11 17:36:26,737 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-11 17:36:27,577 - ERROR - [RapidAPI] HTTP 403: Forbidden
+2025-11-11 17:36:27,577 - ERROR - [RapidAPI] Response: {"message":"You are not subscribed to this API."}
+2025-11-11 17:36:27,578 - INFO - [RESULT] 0 products saved
+2025-11-11 17:36:30,439 - INFO - 
+[STOP] Interrupted
+2025-11-11 17:36:30,439 - INFO - [DB] Disconnected
+2025-11-11 17:38:27,176 - WARNING - python-dotenv could not parse statement starting at line 6
+2025-11-11 17:38:27,176 - INFO - [CONFIG] ✓ Loaded
+2025-11-11 17:38:27,176 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-11 17:38:27,177 - INFO - [START] Collection starting
+2025-11-11 17:38:27,177 - INFO - [DB] Connecting (1/3)...
+2025-11-11 17:38:27,183 - INFO - [DB] ✓ Connected
+2025-11-11 17:38:27,188 - INFO - [DB] ✓ Tables ready
+2025-11-11 17:38:27,188 - INFO - [MODE] Using DATABASE
+2025-11-11 17:38:27,188 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-11 17:38:27,188 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-11 17:38:27,188 - INFO - [PAGE] 1/5...
+2025-11-11 17:38:27,188 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-11 17:38:28,031 - ERROR - [RapidAPI] HTTP 403: Forbidden
+2025-11-11 17:38:28,031 - ERROR - [RapidAPI] Response: {"message":"You are not subscribed to this API."}
+2025-11-11 17:38:28,032 - INFO - [RESULT] 0 products saved
+2025-11-11 17:38:30,666 - INFO - 
+[STOP] Interrupted
+2025-11-11 17:38:30,666 - INFO - [DB] Disconnected
+2025-11-11 17:58:38,963 - INFO - [CONFIG] ✓ Loaded
+2025-11-11 17:58:38,963 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-11 17:58:38,963 - INFO - [START] Collection starting
+2025-11-11 17:58:38,963 - INFO - [DB] Connecting (1/3)...
+2025-11-11 17:58:38,970 - INFO - [DB] ✓ Connected
+2025-11-11 17:58:38,974 - INFO - [DB] ✓ Tables ready
+2025-11-11 17:58:38,975 - INFO - [MODE] Using DATABASE
+2025-11-11 17:58:38,975 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-11 17:58:38,975 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-11 17:58:38,975 - INFO - [PAGE] 1/5...
+2025-11-11 17:58:38,975 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-11 17:58:39,972 - ERROR - [RapidAPI] HTTP 403: Forbidden
+2025-11-11 17:58:39,972 - ERROR - [RapidAPI] Response: {"message":"You are not subscribed to this API."}
+2025-11-11 17:58:39,972 - INFO - [RESULT] 0 products saved
+2025-11-11 17:58:42,973 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-11 17:58:42,973 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-11 17:58:42,973 - INFO - [PAGE] 1/5...
+2025-11-11 17:58:42,973 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-11 17:58:43,839 - ERROR - [RapidAPI] HTTP 403: Forbidden
+2025-11-11 17:58:45,836 - INFO - 
+[STOP] Interrupted
+2025-11-11 17:58:45,837 - INFO - [DB] Disconnected
+2025-11-11 18:02:50,392 - INFO - [CONFIG] ✓ Loaded
+2025-11-11 18:02:50,392 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-11 18:02:50,393 - INFO - [START] Collection starting
+2025-11-11 18:02:50,393 - INFO - [DB] Connecting (1/3)...
+2025-11-11 18:02:50,399 - INFO - [DB] ✓ Connected
+2025-11-11 18:02:50,404 - INFO - [DB] ✓ Tables ready
+2025-11-11 18:02:50,404 - INFO - [MODE] Using DATABASE
+2025-11-11 18:02:50,404 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-11 18:02:50,404 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-11 18:02:50,404 - INFO - [PAGE] 1/3...
+2025-11-11 18:02:50,404 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-11 18:02:51,360 - ERROR - [RapidAPI] HTTP 403: Forbidden
+2025-11-11 18:02:51,360 - ERROR - [RapidAPI] Response: {"message":"You are not subscribed to this API."}
+2025-11-11 18:02:51,361 - INFO - [RESULT] 0 products saved
+2025-11-11 18:02:52,697 - INFO - 
+[STOP] Interrupted
+2025-11-11 18:02:52,697 - INFO - [DB] Disconnected
+2025-11-11 18:05:19,596 - INFO - [CONFIG] ✓ Loaded
+2025-11-11 18:05:19,596 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-11 18:05:19,596 - INFO - [START] Collection starting
+2025-11-11 18:05:19,596 - INFO - [DB] Connecting (1/3)...
+2025-11-11 18:05:19,603 - INFO - [DB] ✓ Connected
+2025-11-11 18:05:19,608 - INFO - [DB] ✓ Tables ready
+2025-11-11 18:05:19,608 - INFO - [MODE] Using DATABASE
+2025-11-11 18:05:19,608 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-11 18:05:19,608 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-11 18:05:19,608 - INFO - [PAGE] 1/3...
+2025-11-11 18:05:19,608 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-11 18:05:23,022 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 76078)
+2025-11-11 18:05:23,040 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-11 18:05:23,040 - INFO - [SAVED] ✓ 24 products
+2025-11-11 18:05:25,040 - INFO - [PAGE] 2/3...
+2025-11-11 18:05:25,040 - INFO - [RapidAPI] Fetching products: category=1350380031, page=2, country=IN
+2025-11-11 18:05:27,623 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73565)
+2025-11-11 18:05:27,630 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-11 18:05:27,630 - INFO - [SAVED] ✓ 24 products
+2025-11-11 18:05:29,630 - INFO - [PAGE] 3/3...
+2025-11-11 18:05:29,631 - INFO - [RapidAPI] Fetching products: category=1350380031, page=3, country=IN
+2025-11-11 18:05:32,283 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 76078)
+2025-11-11 18:05:32,290 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-11 18:05:32,290 - INFO - [SAVED] ✓ 24 products
+2025-11-11 18:05:32,291 - INFO - [RESULT] 72 products saved
+2025-11-11 18:05:35,291 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-11 18:05:35,291 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-11 18:05:35,291 - INFO - [PAGE] 1/3...
+2025-11-11 18:05:35,291 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-11 18:05:37,811 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69493)
+2025-11-11 18:05:37,817 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-11 18:05:37,817 - INFO - [SAVED] ✓ 24 products
+2025-11-11 18:05:39,817 - INFO - [PAGE] 2/3...
+2025-11-11 18:05:39,818 - INFO - [RapidAPI] Fetching products: category=976419031, page=2, country=IN
+2025-11-11 18:05:42,433 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69493)
+2025-11-11 18:05:42,439 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-11 18:05:42,439 - INFO - [SAVED] ✓ 24 products
+2025-11-11 18:05:44,439 - INFO - [PAGE] 3/3...
+2025-11-11 18:05:44,440 - INFO - [RapidAPI] Fetching products: category=976419031, page=3, country=IN
+2025-11-11 18:05:47,108 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69493)
+2025-11-11 18:05:47,115 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-11 18:05:47,115 - INFO - [SAVED] ✓ 24 products
+2025-11-11 18:05:47,115 - INFO - [RESULT] 72 products saved
+2025-11-11 18:05:50,115 - INFO - 
+[PROGRESS] Category 3/6
+2025-11-11 18:05:50,115 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-11-11 18:05:50,115 - INFO - [PAGE] 1/3...
+2025-11-11 18:05:50,115 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-11-11 18:05:52,850 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73474)
+2025-11-11 18:05:52,856 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-11 18:05:52,857 - INFO - [SAVED] ✓ 24 products
+2025-11-11 18:05:54,857 - INFO - [PAGE] 2/3...
+2025-11-11 18:05:54,857 - INFO - [RapidAPI] Fetching products: category=976392031, page=2, country=IN
+2025-11-11 18:05:57,404 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73474)
+2025-11-11 18:05:57,411 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-11 18:05:57,411 - INFO - [SAVED] ✓ 24 products
+2025-11-11 18:05:59,411 - INFO - [PAGE] 3/3...
+2025-11-11 18:05:59,411 - INFO - [RapidAPI] Fetching products: category=976392031, page=3, country=IN
+2025-11-11 18:06:02,436 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73474)
+2025-11-11 18:06:02,442 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-11 18:06:02,442 - INFO - [SAVED] ✓ 24 products
+2025-11-11 18:06:02,442 - INFO - [RESULT] 72 products saved
+2025-11-11 18:06:05,443 - INFO - 
+[PROGRESS] Category 4/6
+2025-11-11 18:06:05,443 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-11-11 18:06:05,443 - INFO - [PAGE] 1/3...
+2025-11-11 18:06:05,443 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-11-11 18:06:06,717 - INFO - 
+[STOP] Interrupted
+2025-11-11 18:06:06,718 - INFO - [DB] Disconnected
+2025-11-12 15:41:17,764 - INFO - [CONFIG] ✓ Loaded
+2025-11-12 15:41:17,764 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-12 15:41:17,765 - INFO - [START] Collection starting
+2025-11-12 15:41:17,765 - INFO - [DB] Connecting (1/3)...
+2025-11-12 15:41:17,774 - INFO - [DB] ✓ Connected
+2025-11-12 15:41:17,780 - INFO - [DB] ✓ Tables ready
+2025-11-12 15:41:17,780 - INFO - [MODE] Using DATABASE
+2025-11-12 15:41:17,781 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-12 15:41:17,781 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-12 15:41:17,781 - INFO - [PAGE] 1/3...
+2025-11-12 15:41:17,781 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-12 15:41:21,263 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70303)
+2025-11-12 15:41:21,276 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 15:41:21,276 - INFO - [SAVED] ✓ 24 products
+2025-11-12 15:41:23,276 - INFO - [PAGE] 2/3...
+2025-11-12 15:41:23,276 - INFO - [RapidAPI] Fetching products: category=1350380031, page=2, country=IN
+2025-11-12 15:41:25,888 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69713)
+2025-11-12 15:41:25,897 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 15:41:25,897 - INFO - [SAVED] ✓ 24 products
+2025-11-12 15:41:27,897 - INFO - [PAGE] 3/3...
+2025-11-12 15:41:27,897 - INFO - [RapidAPI] Fetching products: category=1350380031, page=3, country=IN
+2025-11-12 15:41:29,231 - INFO - 
+[STOP] Interrupted
+2025-11-12 15:41:29,232 - INFO - [DB] Disconnected
+2025-11-12 16:09:45,281 - INFO - [CONFIG] ✓ Loaded
+2025-11-12 16:09:45,281 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-12 16:09:45,281 - INFO - [START] Collection starting
+2025-11-12 16:09:45,281 - INFO - [DB] Connecting (1/3)...
+2025-11-12 16:09:45,290 - INFO - [DB] ✓ Connected
+2025-11-12 16:09:45,294 - INFO - [DB] ✓ Tables ready
+2025-11-12 16:09:45,294 - INFO - [MODE] Using DATABASE
+2025-11-12 16:09:45,294 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-12 16:09:45,294 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-12 16:09:45,294 - INFO - [PAGE] 1/3...
+2025-11-12 16:09:45,294 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-12 16:09:48,779 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 71543)
+2025-11-12 16:09:48,787 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:09:48,787 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:09:50,788 - INFO - [PAGE] 2/3...
+2025-11-12 16:09:50,788 - INFO - [RapidAPI] Fetching products: category=1350380031, page=2, country=IN
+2025-11-12 16:09:53,396 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 71543)
+2025-11-12 16:09:53,402 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:09:53,403 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:09:55,403 - INFO - [PAGE] 3/3...
+2025-11-12 16:09:55,403 - INFO - [RapidAPI] Fetching products: category=1350380031, page=3, country=IN
+2025-11-12 16:09:57,997 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 71543)
+2025-11-12 16:09:58,004 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:09:58,004 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:09:58,004 - INFO - [RESULT] 72 products saved
+2025-11-12 16:10:01,004 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-12 16:10:01,004 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-12 16:10:01,004 - INFO - [PAGE] 1/3...
+2025-11-12 16:10:01,004 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-12 16:10:03,486 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69809)
+2025-11-12 16:10:03,493 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:10:03,493 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:10:05,493 - INFO - [PAGE] 2/3...
+2025-11-12 16:10:05,493 - INFO - [RapidAPI] Fetching products: category=976419031, page=2, country=IN
+2025-11-12 16:10:07,944 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69809)
+2025-11-12 16:10:07,951 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:10:07,951 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:10:09,951 - INFO - [PAGE] 3/3...
+2025-11-12 16:10:09,951 - INFO - [RapidAPI] Fetching products: category=976419031, page=3, country=IN
+2025-11-12 16:10:12,688 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69809)
+2025-11-12 16:10:12,697 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:10:12,697 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:10:12,697 - INFO - [RESULT] 72 products saved
+2025-11-12 16:10:15,697 - INFO - 
+[PROGRESS] Category 3/6
+2025-11-12 16:10:15,697 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-11-12 16:10:15,697 - INFO - [PAGE] 1/3...
+2025-11-12 16:10:15,697 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-11-12 16:10:18,904 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 74830)
+2025-11-12 16:10:18,911 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:10:18,911 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:10:20,911 - INFO - [PAGE] 2/3...
+2025-11-12 16:10:20,911 - INFO - [RapidAPI] Fetching products: category=976392031, page=2, country=IN
+2025-11-12 16:10:23,476 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 74830)
+2025-11-12 16:10:23,482 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:10:23,482 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:10:25,483 - INFO - [PAGE] 3/3...
+2025-11-12 16:10:25,483 - INFO - [RapidAPI] Fetching products: category=976392031, page=3, country=IN
+2025-11-12 16:10:27,859 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 74830)
+2025-11-12 16:10:27,867 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:10:27,867 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:10:27,867 - INFO - [RESULT] 72 products saved
+2025-11-12 16:10:30,868 - INFO - 
+[PROGRESS] Category 4/6
+2025-11-12 16:10:30,868 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-11-12 16:10:30,868 - INFO - [PAGE] 1/3...
+2025-11-12 16:10:30,868 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-11-12 16:10:33,345 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70470)
+2025-11-12 16:10:33,352 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:10:33,352 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:10:35,352 - INFO - [PAGE] 2/3...
+2025-11-12 16:10:35,352 - INFO - [RapidAPI] Fetching products: category=1389401031, page=2, country=IN
+2025-11-12 16:10:37,954 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70470)
+2025-11-12 16:10:37,960 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:10:37,960 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:10:39,961 - INFO - [PAGE] 3/3...
+2025-11-12 16:10:39,961 - INFO - [RapidAPI] Fetching products: category=1389401031, page=3, country=IN
+2025-11-12 16:10:42,611 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70227)
+2025-11-12 16:10:42,617 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:10:42,617 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:10:42,617 - INFO - [RESULT] 72 products saved
+2025-11-12 16:10:45,617 - INFO - 
+[PROGRESS] Category 5/6
+2025-11-12 16:10:45,617 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-11-12 16:10:45,617 - INFO - [PAGE] 1/3...
+2025-11-12 16:10:45,618 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-11-12 16:10:48,193 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 39195)
+2025-11-12 16:10:48,202 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-11-12 16:10:48,202 - INFO - [SAVED] ✓ 48 products
+2025-11-12 16:10:50,202 - INFO - [PAGE] 2/3...
+2025-11-12 16:10:50,202 - INFO - [RapidAPI] Fetching products: category=1350387031, page=2, country=IN
+2025-11-12 16:10:57,069 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 39195)
+2025-11-12 16:10:57,077 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-11-12 16:10:57,078 - INFO - [SAVED] ✓ 48 products
+2025-11-12 16:10:59,078 - INFO - [PAGE] 3/3...
+2025-11-12 16:10:59,078 - INFO - [RapidAPI] Fetching products: category=1350387031, page=3, country=IN
+2025-11-12 16:11:01,945 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 38037)
+2025-11-12 16:11:01,953 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-11-12 16:11:01,953 - INFO - [SAVED] ✓ 48 products
+2025-11-12 16:11:01,953 - INFO - [RESULT] 144 products saved
+2025-11-12 16:11:02,476 - INFO - 
+[STOP] Interrupted
+2025-11-12 16:11:02,476 - INFO - [DB] Disconnected
+2025-11-12 16:20:00,603 - INFO - [CONFIG] ✓ Loaded
+2025-11-12 16:20:00,603 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-12 16:20:00,603 - INFO - [START] Collection starting
+2025-11-12 16:20:00,603 - INFO - [DB] Connecting (1/3)...
+2025-11-12 16:20:00,611 - INFO - [DB] ✓ Connected
+2025-11-12 16:20:00,616 - INFO - [DB] ✓ Tables ready
+2025-11-12 16:20:00,616 - INFO - [MODE] Using DATABASE
+2025-11-12 16:20:00,616 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-12 16:20:00,616 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-12 16:20:00,616 - INFO - [PAGE] 1/3...
+2025-11-12 16:20:00,616 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-12 16:20:03,416 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 77822)
+2025-11-12 16:20:03,424 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:20:03,424 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:20:05,424 - INFO - [PAGE] 2/3...
+2025-11-12 16:20:05,425 - INFO - [RapidAPI] Fetching products: category=1350380031, page=2, country=IN
+2025-11-12 16:20:07,952 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70328)
+2025-11-12 16:20:07,959 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:20:07,960 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:20:09,960 - INFO - [PAGE] 3/3...
+2025-11-12 16:20:09,960 - INFO - [RapidAPI] Fetching products: category=1350380031, page=3, country=IN
+2025-11-12 16:20:12,844 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70328)
+2025-11-12 16:20:12,851 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:20:12,851 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:20:12,851 - INFO - [RESULT] 72 products saved
+2025-11-12 16:20:15,851 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-12 16:20:15,851 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-12 16:20:15,851 - INFO - [PAGE] 1/3...
+2025-11-12 16:20:15,851 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-12 16:20:18,530 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69400)
+2025-11-12 16:20:18,537 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:20:18,537 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:20:20,538 - INFO - [PAGE] 2/3...
+2025-11-12 16:20:20,538 - INFO - [RapidAPI] Fetching products: category=976419031, page=2, country=IN
+2025-11-12 16:20:23,245 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69400)
+2025-11-12 16:20:23,252 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:20:23,252 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:20:25,252 - INFO - [PAGE] 3/3...
+2025-11-12 16:20:25,252 - INFO - [RapidAPI] Fetching products: category=976419031, page=3, country=IN
+2025-11-12 16:20:27,912 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69400)
+2025-11-12 16:20:27,919 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:20:27,920 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:20:27,920 - INFO - [RESULT] 72 products saved
+2025-11-12 16:20:30,920 - INFO - 
+[PROGRESS] Category 3/6
+2025-11-12 16:20:30,920 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-11-12 16:20:30,920 - INFO - [PAGE] 1/3...
+2025-11-12 16:20:30,920 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-11-12 16:20:33,630 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72429)
+2025-11-12 16:20:33,637 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:20:33,637 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:20:35,637 - INFO - [PAGE] 2/3...
+2025-11-12 16:20:35,637 - INFO - [RapidAPI] Fetching products: category=976392031, page=2, country=IN
+2025-11-12 16:20:38,216 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72429)
+2025-11-12 16:20:38,222 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:20:38,222 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:20:40,222 - INFO - [PAGE] 3/3...
+2025-11-12 16:20:40,222 - INFO - [RapidAPI] Fetching products: category=976392031, page=3, country=IN
+2025-11-12 16:20:42,796 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72429)
+2025-11-12 16:20:42,802 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:20:42,802 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:20:42,802 - INFO - [RESULT] 72 products saved
+2025-11-12 16:20:45,803 - INFO - 
+[PROGRESS] Category 4/6
+2025-11-12 16:20:45,803 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-11-12 16:20:45,803 - INFO - [PAGE] 1/3...
+2025-11-12 16:20:45,803 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-11-12 16:20:49,369 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 66682)
+2025-11-12 16:20:49,375 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:20:49,375 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:20:51,376 - INFO - [PAGE] 2/3...
+2025-11-12 16:20:51,376 - INFO - [RapidAPI] Fetching products: category=1389401031, page=2, country=IN
+2025-11-12 16:20:54,070 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 66682)
+2025-11-12 16:20:54,076 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:20:54,077 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:20:56,077 - INFO - [PAGE] 3/3...
+2025-11-12 16:20:56,077 - INFO - [RapidAPI] Fetching products: category=1389401031, page=3, country=IN
+2025-11-12 16:20:59,098 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 66682)
+2025-11-12 16:20:59,103 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:20:59,103 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:20:59,103 - INFO - [RESULT] 72 products saved
+2025-11-12 16:21:02,104 - INFO - 
+[PROGRESS] Category 5/6
+2025-11-12 16:21:02,104 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-11-12 16:21:02,104 - INFO - [PAGE] 1/3...
+2025-11-12 16:21:02,104 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-11-12 16:21:07,134 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 41660)
+2025-11-12 16:21:07,143 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-11-12 16:21:07,143 - INFO - [SAVED] ✓ 48 products
+2025-11-12 16:21:09,143 - INFO - [PAGE] 2/3...
+2025-11-12 16:21:09,143 - INFO - [RapidAPI] Fetching products: category=1350387031, page=2, country=IN
+2025-11-12 16:21:11,691 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 41660)
+2025-11-12 16:21:11,703 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-11-12 16:21:11,703 - INFO - [SAVED] ✓ 48 products
+2025-11-12 16:21:13,703 - INFO - [PAGE] 3/3...
+2025-11-12 16:21:13,703 - INFO - [RapidAPI] Fetching products: category=1350387031, page=3, country=IN
+2025-11-12 16:21:16,245 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 38433)
+2025-11-12 16:21:16,254 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-11-12 16:21:16,254 - INFO - [SAVED] ✓ 48 products
+2025-11-12 16:21:16,254 - INFO - [RESULT] 144 products saved
+2025-11-12 16:21:19,254 - INFO - 
+[PROGRESS] Category 6/6
+2025-11-12 16:21:19,254 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-11-12 16:21:19,254 - INFO - [PAGE] 1/3...
+2025-11-12 16:21:19,254 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-11-12 16:21:21,687 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73160)
+2025-11-12 16:21:21,694 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:21:21,694 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:21:23,695 - INFO - [PAGE] 2/3...
+2025-11-12 16:21:23,695 - INFO - [RapidAPI] Fetching products: category=1350384031, page=2, country=IN
+2025-11-12 16:21:26,607 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73160)
+2025-11-12 16:21:26,613 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:21:26,614 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:21:28,614 - INFO - [PAGE] 3/3...
+2025-11-12 16:21:28,614 - INFO - [RapidAPI] Fetching products: category=1350384031, page=3, country=IN
+2025-11-12 16:21:31,072 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73160)
+2025-11-12 16:21:31,080 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:21:31,080 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:21:31,080 - INFO - [RESULT] 72 products saved
+2025-11-12 16:21:31,083 - INFO - 
+[STATS] Products: 1225, ASINs: 1125
+2025-11-12 16:21:31,083 - INFO - [ANALYTICS] Avg Price: ₹1581.58
+2025-11-12 16:21:31,083 - INFO - [ANALYTICS] Avg Sales: 159,816,695
+2025-11-12 16:21:31,083 - INFO - [COMPLETE] 504 products collected
+2025-11-12 16:21:31,083 - INFO - [DB] Disconnected
+2025-11-12 16:31:51,068 - INFO - [CONFIG] ✓ Loaded
+2025-11-12 16:31:51,068 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-12 16:31:51,068 - INFO - [START] Collection starting
+2025-11-12 16:31:51,068 - INFO - [DB] Connecting (1/3)...
+2025-11-12 16:31:51,077 - INFO - [DB] ✓ Connected
+2025-11-12 16:31:51,081 - INFO - [DB] ✓ Tables ready
+2025-11-12 16:31:51,081 - INFO - [MODE] Using DATABASE
+2025-11-12 16:31:51,081 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-12 16:31:51,081 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-12 16:31:51,081 - INFO - [PAGE] 1/3...
+2025-11-12 16:31:51,081 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-12 16:31:53,825 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69545)
+2025-11-12 16:31:53,833 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:31:53,833 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:31:55,833 - INFO - [PAGE] 2/3...
+2025-11-12 16:31:55,833 - INFO - [RapidAPI] Fetching products: category=1350380031, page=2, country=IN
+2025-11-12 16:31:58,188 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69545)
+2025-11-12 16:31:58,195 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:31:58,195 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:32:00,195 - INFO - [PAGE] 3/3...
+2025-11-12 16:32:00,195 - INFO - [RapidAPI] Fetching products: category=1350380031, page=3, country=IN
+2025-11-12 16:32:02,998 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69207)
+2025-11-12 16:32:03,005 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:32:03,005 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:32:03,005 - INFO - [RESULT] 72 products saved
+2025-11-12 16:32:06,005 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-12 16:32:06,005 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-12 16:32:06,005 - INFO - [PAGE] 1/3...
+2025-11-12 16:32:06,005 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-12 16:32:08,678 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 68323)
+2025-11-12 16:32:08,685 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:32:08,685 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:32:10,686 - INFO - [PAGE] 2/3...
+2025-11-12 16:32:10,686 - INFO - [RapidAPI] Fetching products: category=976419031, page=2, country=IN
+2025-11-12 16:32:13,169 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 67861)
+2025-11-12 16:32:13,176 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:32:13,176 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:32:15,176 - INFO - [PAGE] 3/3...
+2025-11-12 16:32:15,176 - INFO - [RapidAPI] Fetching products: category=976419031, page=3, country=IN
+2025-11-12 16:32:17,756 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72766)
+2025-11-12 16:32:17,763 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:32:17,764 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:32:17,764 - INFO - [RESULT] 72 products saved
+2025-11-12 16:32:20,764 - INFO - 
+[PROGRESS] Category 3/6
+2025-11-12 16:32:20,764 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-11-12 16:32:20,764 - INFO - [PAGE] 1/3...
+2025-11-12 16:32:20,764 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-11-12 16:32:23,597 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 71135)
+2025-11-12 16:32:23,603 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:32:23,603 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:32:25,604 - INFO - [PAGE] 2/3...
+2025-11-12 16:32:25,604 - INFO - [RapidAPI] Fetching products: category=976392031, page=2, country=IN
+2025-11-12 16:32:28,121 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73726)
+2025-11-12 16:32:28,128 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:32:28,128 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:32:30,129 - INFO - [PAGE] 3/3...
+2025-11-12 16:32:30,129 - INFO - [RapidAPI] Fetching products: category=976392031, page=3, country=IN
+2025-11-12 16:32:32,648 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 71135)
+2025-11-12 16:32:32,655 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:32:32,655 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:32:32,655 - INFO - [RESULT] 72 products saved
+2025-11-12 16:32:35,655 - INFO - 
+[PROGRESS] Category 4/6
+2025-11-12 16:32:35,655 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-11-12 16:32:35,655 - INFO - [PAGE] 1/3...
+2025-11-12 16:32:35,655 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-11-12 16:32:38,021 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 65899)
+2025-11-12 16:32:38,028 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:32:38,028 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:32:40,028 - INFO - [PAGE] 2/3...
+2025-11-12 16:32:40,028 - INFO - [RapidAPI] Fetching products: category=1389401031, page=2, country=IN
+2025-11-12 16:32:42,383 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 65899)
+2025-11-12 16:32:42,390 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:32:42,390 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:32:44,390 - INFO - [PAGE] 3/3...
+2025-11-12 16:32:44,390 - INFO - [RapidAPI] Fetching products: category=1389401031, page=3, country=IN
+2025-11-12 16:32:47,033 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 65899)
+2025-11-12 16:32:47,040 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:32:47,040 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:32:47,040 - INFO - [RESULT] 72 products saved
+2025-11-12 16:32:50,040 - INFO - 
+[PROGRESS] Category 5/6
+2025-11-12 16:32:50,040 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-11-12 16:32:50,040 - INFO - [PAGE] 1/3...
+2025-11-12 16:32:50,040 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-11-12 16:32:52,508 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 39426)
+2025-11-12 16:32:52,519 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-11-12 16:32:52,519 - INFO - [SAVED] ✓ 48 products
+2025-11-12 16:32:54,519 - INFO - [PAGE] 2/3...
+2025-11-12 16:32:54,520 - INFO - [RapidAPI] Fetching products: category=1350387031, page=2, country=IN
+2025-11-12 16:32:57,111 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 39426)
+2025-11-12 16:32:57,120 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-11-12 16:32:57,120 - INFO - [SAVED] ✓ 48 products
+2025-11-12 16:32:59,121 - INFO - [PAGE] 3/3...
+2025-11-12 16:32:59,121 - INFO - [RapidAPI] Fetching products: category=1350387031, page=3, country=IN
+2025-11-12 16:33:01,581 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 46197)
+2025-11-12 16:33:01,590 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-11-12 16:33:01,590 - INFO - [SAVED] ✓ 48 products
+2025-11-12 16:33:01,590 - INFO - [RESULT] 144 products saved
+2025-11-12 16:33:04,590 - INFO - 
+[PROGRESS] Category 6/6
+2025-11-12 16:33:04,590 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-11-12 16:33:04,590 - INFO - [PAGE] 1/3...
+2025-11-12 16:33:04,590 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-11-12 16:33:07,102 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73282)
+2025-11-12 16:33:07,109 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:33:07,109 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:33:09,109 - INFO - [PAGE] 2/3...
+2025-11-12 16:33:09,110 - INFO - [RapidAPI] Fetching products: category=1350384031, page=2, country=IN
+2025-11-12 16:33:11,530 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 74060)
+2025-11-12 16:33:11,536 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:33:11,536 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:33:13,536 - INFO - [PAGE] 3/3...
+2025-11-12 16:33:13,537 - INFO - [RapidAPI] Fetching products: category=1350384031, page=3, country=IN
+2025-11-12 16:33:16,039 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73282)
+2025-11-12 16:33:16,045 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-11-12 16:33:16,045 - INFO - [SAVED] ✓ 24 products
+2025-11-12 16:33:16,045 - INFO - [RESULT] 72 products saved
+2025-11-12 16:33:16,049 - INFO - 
+[STATS] Products: 1227, ASINs: 1127
+2025-11-12 16:33:16,049 - INFO - [ANALYTICS] Avg Price: ₹1585.29
+2025-11-12 16:33:16,049 - INFO - [ANALYTICS] Avg Sales: 159,975,945
+2025-11-12 16:33:16,049 - INFO - [COMPLETE] 504 products collected
+2025-11-12 16:33:16,049 - INFO - [DB] Disconnected
+2025-11-13 15:55:02,042 - INFO - [CONFIG] ✓ Loaded
+2025-11-13 15:55:02,043 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-13 15:55:02,043 - INFO - [START] Collection starting
+2025-11-13 15:55:02,043 - INFO - [DB] Connecting (1/3)...
+2025-11-13 15:55:02,065 - INFO - [DB] ✓ Connected
+2025-11-13 15:55:02,069 - INFO - [DB] ✓ Tables ready
+2025-11-13 15:55:02,069 - INFO - [MODE] Using DATABASE
+2025-11-13 15:55:02,069 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-13 15:55:02,069 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-13 15:55:02,069 - INFO - [PAGE] 1/3...
+2025-11-13 15:55:02,069 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-13 15:55:02,471 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-13 15:55:02,471 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-13 15:55:02,472 - INFO - [RESULT] 0 products saved
+2025-11-13 15:55:05,472 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-13 15:55:05,472 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-13 15:55:05,472 - INFO - [PAGE] 1/3...
+2025-11-13 15:55:05,472 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-13 15:55:05,832 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-13 15:55:05,832 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-13 15:55:05,833 - INFO - [RESULT] 0 products saved
+2025-11-13 15:55:08,833 - INFO - 
+[PROGRESS] Category 3/6
+2025-11-13 15:55:08,833 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-11-13 15:55:08,833 - INFO - [PAGE] 1/3...
+2025-11-13 15:55:08,833 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-11-13 15:55:09,161 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-13 15:55:09,161 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-13 15:55:09,162 - INFO - [RESULT] 0 products saved
+2025-11-13 15:55:12,162 - INFO - 
+[PROGRESS] Category 4/6
+2025-11-13 15:55:12,163 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-11-13 15:55:12,163 - INFO - [PAGE] 1/3...
+2025-11-13 15:55:12,163 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-11-13 15:55:12,475 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-13 15:55:12,475 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-13 15:55:12,476 - INFO - [RESULT] 0 products saved
+2025-11-13 15:55:15,476 - INFO - 
+[PROGRESS] Category 5/6
+2025-11-13 15:55:15,476 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-11-13 15:55:15,476 - INFO - [PAGE] 1/3...
+2025-11-13 15:55:15,476 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-11-13 15:55:15,792 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-13 15:55:15,792 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-13 15:55:15,793 - INFO - [RESULT] 0 products saved
+2025-11-13 15:55:18,793 - INFO - 
+[PROGRESS] Category 6/6
+2025-11-13 15:55:18,793 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-11-13 15:55:18,793 - INFO - [PAGE] 1/3...
+2025-11-13 15:55:18,793 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-11-13 15:55:19,164 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-13 15:55:19,164 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-13 15:55:19,164 - INFO - [RESULT] 0 products saved
+2025-11-13 15:55:19,168 - INFO - 
+[STATS] Products: 1227, ASINs: 1127
+2025-11-13 15:55:19,168 - INFO - [ANALYTICS] Avg Price: ₹1585.29
+2025-11-13 15:55:19,168 - INFO - [ANALYTICS] Avg Sales: 159,975,945
+2025-11-13 15:55:19,169 - INFO - [COMPLETE] 0 products collected
+2025-11-13 15:55:19,169 - INFO - [DB] Disconnected
+2025-11-14 15:55:01,287 - INFO - [CONFIG] ✓ Loaded
+2025-11-14 15:55:01,287 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-14 15:55:01,288 - INFO - [START] Collection starting
+2025-11-14 15:55:01,288 - INFO - [DB] Connecting (1/3)...
+2025-11-14 15:55:01,296 - INFO - [DB] ✓ Connected
+2025-11-14 15:55:01,301 - INFO - [DB] ✓ Tables ready
+2025-11-14 15:55:01,301 - INFO - [MODE] Using DATABASE
+2025-11-14 15:55:01,301 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-14 15:55:01,301 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-14 15:55:01,301 - INFO - [PAGE] 1/3...
+2025-11-14 15:55:01,301 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-14 15:55:01,711 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-14 15:55:01,711 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-14 15:55:01,711 - INFO - [RESULT] 0 products saved
+2025-11-14 15:55:04,712 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-14 15:55:04,712 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-14 15:55:04,712 - INFO - [PAGE] 1/3...
+2025-11-14 15:55:04,712 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-14 15:55:05,069 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-14 15:55:05,069 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-14 15:55:05,070 - INFO - [RESULT] 0 products saved
+2025-11-14 15:55:08,070 - INFO - 
+[PROGRESS] Category 3/6
+2025-11-14 15:55:08,070 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-11-14 15:55:08,070 - INFO - [PAGE] 1/3...
+2025-11-14 15:55:08,070 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-11-14 15:55:08,421 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-14 15:55:08,421 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-14 15:55:08,422 - INFO - [RESULT] 0 products saved
+2025-11-14 15:55:11,423 - INFO - 
+[PROGRESS] Category 4/6
+2025-11-14 15:55:11,423 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-11-14 15:55:11,423 - INFO - [PAGE] 1/3...
+2025-11-14 15:55:11,423 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-11-14 15:55:11,841 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-14 15:55:11,841 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-14 15:55:11,842 - INFO - [RESULT] 0 products saved
+2025-11-14 15:55:14,842 - INFO - 
+[PROGRESS] Category 5/6
+2025-11-14 15:55:14,843 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-11-14 15:55:14,843 - INFO - [PAGE] 1/3...
+2025-11-14 15:55:14,843 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-11-14 15:55:15,186 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-14 15:55:15,186 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-14 15:55:15,187 - INFO - [RESULT] 0 products saved
+2025-11-14 15:55:18,187 - INFO - 
+[PROGRESS] Category 6/6
+2025-11-14 15:55:18,187 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-11-14 15:55:18,188 - INFO - [PAGE] 1/3...
+2025-11-14 15:55:18,188 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-11-14 15:55:18,549 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-14 15:55:18,549 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-14 15:55:18,549 - INFO - [RESULT] 0 products saved
+2025-11-14 15:55:18,553 - INFO - 
+[STATS] Products: 1227, ASINs: 1127
+2025-11-14 15:55:18,553 - INFO - [ANALYTICS] Avg Price: ₹1585.29
+2025-11-14 15:55:18,553 - INFO - [ANALYTICS] Avg Sales: 159,975,945
+2025-11-14 15:55:18,553 - INFO - [COMPLETE] 0 products collected
+2025-11-14 15:55:18,554 - INFO - [DB] Disconnected
+2025-11-15 15:55:01,677 - INFO - [CONFIG] ✓ Loaded
+2025-11-15 15:55:01,677 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-15 15:55:01,677 - INFO - [START] Collection starting
+2025-11-15 15:55:01,677 - INFO - [DB] Connecting (1/3)...
+2025-11-15 15:55:01,699 - INFO - [DB] ✓ Connected
+2025-11-15 15:55:01,711 - INFO - [DB] ✓ Tables ready
+2025-11-15 15:55:01,711 - INFO - [MODE] Using DATABASE
+2025-11-15 15:55:01,711 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-15 15:55:01,711 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-15 15:55:01,711 - INFO - [PAGE] 1/3...
+2025-11-15 15:55:01,711 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-15 15:55:02,866 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-15 15:55:02,866 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-15 15:55:02,867 - INFO - [RESULT] 0 products saved
+2025-11-15 15:55:05,867 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-15 15:55:05,867 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-15 15:55:05,867 - INFO - [PAGE] 1/3...
+2025-11-15 15:55:05,867 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-15 15:55:06,196 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-15 15:55:06,196 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-15 15:55:06,196 - INFO - [RESULT] 0 products saved
+2025-11-15 15:55:09,197 - INFO - 
+[PROGRESS] Category 3/6
+2025-11-15 15:55:09,197 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-11-15 15:55:09,197 - INFO - [PAGE] 1/3...
+2025-11-15 15:55:09,197 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-11-15 15:55:09,574 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-15 15:55:09,574 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-15 15:55:09,575 - INFO - [RESULT] 0 products saved
+2025-11-15 15:55:12,575 - INFO - 
+[PROGRESS] Category 4/6
+2025-11-15 15:55:12,575 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-11-15 15:55:12,575 - INFO - [PAGE] 1/3...
+2025-11-15 15:55:12,575 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-11-15 15:55:12,926 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-15 15:55:12,926 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-15 15:55:12,926 - INFO - [RESULT] 0 products saved
+2025-11-15 15:55:15,927 - INFO - 
+[PROGRESS] Category 5/6
+2025-11-15 15:55:15,927 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-11-15 15:55:15,927 - INFO - [PAGE] 1/3...
+2025-11-15 15:55:15,927 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-11-15 15:55:16,261 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-15 15:55:16,261 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-15 15:55:16,262 - INFO - [RESULT] 0 products saved
+2025-11-15 15:55:19,262 - INFO - 
+[PROGRESS] Category 6/6
+2025-11-15 15:55:19,262 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-11-15 15:55:19,262 - INFO - [PAGE] 1/3...
+2025-11-15 15:55:19,262 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-11-15 15:55:19,604 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-15 15:55:19,604 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-15 15:55:19,604 - INFO - [RESULT] 0 products saved
+2025-11-15 15:55:19,608 - INFO - 
+[STATS] Products: 1227, ASINs: 1127
+2025-11-15 15:55:19,608 - INFO - [ANALYTICS] Avg Price: ₹1585.29
+2025-11-15 15:55:19,608 - INFO - [ANALYTICS] Avg Sales: 159,975,945
+2025-11-15 15:55:19,608 - INFO - [COMPLETE] 0 products collected
+2025-11-15 15:55:19,608 - INFO - [DB] Disconnected
+2025-11-17 15:55:01,502 - INFO - [CONFIG] ✓ Loaded
+2025-11-17 15:55:01,502 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-17 15:55:01,502 - INFO - [START] Collection starting
+2025-11-17 15:55:01,502 - INFO - [DB] Connecting (1/3)...
+2025-11-17 15:55:01,525 - INFO - [DB] ✓ Connected
+2025-11-17 15:55:01,533 - INFO - [DB] ✓ Tables ready
+2025-11-17 15:55:01,533 - INFO - [MODE] Using DATABASE
+2025-11-17 15:55:01,533 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-17 15:55:01,533 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-17 15:55:01,533 - INFO - [PAGE] 1/3...
+2025-11-17 15:55:01,533 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-17 15:55:01,943 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-17 15:55:01,943 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-17 15:55:01,944 - INFO - [RESULT] 0 products saved
+2025-11-17 15:55:04,945 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-17 15:55:04,945 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-17 15:55:04,945 - INFO - [PAGE] 1/3...
+2025-11-17 15:55:04,945 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-17 15:55:05,337 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-17 15:55:05,337 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-17 15:55:05,338 - INFO - [RESULT] 0 products saved
+2025-11-17 15:55:08,338 - INFO - 
+[PROGRESS] Category 3/6
+2025-11-17 15:55:08,339 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-11-17 15:55:08,339 - INFO - [PAGE] 1/3...
+2025-11-17 15:55:08,339 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-11-17 15:55:08,662 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-17 15:55:08,662 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-17 15:55:08,662 - INFO - [RESULT] 0 products saved
+2025-11-17 15:55:11,663 - INFO - 
+[PROGRESS] Category 4/6
+2025-11-17 15:55:11,663 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-11-17 15:55:11,663 - INFO - [PAGE] 1/3...
+2025-11-17 15:55:11,663 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-11-17 15:55:11,986 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-17 15:55:11,986 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-17 15:55:11,986 - INFO - [RESULT] 0 products saved
+2025-11-17 15:55:14,987 - INFO - 
+[PROGRESS] Category 5/6
+2025-11-17 15:55:14,987 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-11-17 15:55:14,987 - INFO - [PAGE] 1/3...
+2025-11-17 15:55:14,987 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-11-17 15:55:15,291 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-17 15:55:15,291 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-17 15:55:15,292 - INFO - [RESULT] 0 products saved
+2025-11-17 15:55:18,292 - INFO - 
+[PROGRESS] Category 6/6
+2025-11-17 15:55:18,293 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-11-17 15:55:18,293 - INFO - [PAGE] 1/3...
+2025-11-17 15:55:18,293 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-11-17 15:55:18,613 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-17 15:55:18,613 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-17 15:55:18,614 - INFO - [RESULT] 0 products saved
+2025-11-17 15:55:18,618 - INFO - 
+[STATS] Products: 1227, ASINs: 1127
+2025-11-17 15:55:18,618 - INFO - [ANALYTICS] Avg Price: ₹1585.29
+2025-11-17 15:55:18,618 - INFO - [ANALYTICS] Avg Sales: 159,975,945
+2025-11-17 15:55:18,618 - INFO - [COMPLETE] 0 products collected
+2025-11-17 15:55:18,618 - INFO - [DB] Disconnected
+2025-11-18 15:55:01,714 - INFO - [CONFIG] ✓ Loaded
+2025-11-18 15:55:01,714 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-18 15:55:01,714 - INFO - [START] Collection starting
+2025-11-18 15:55:01,714 - INFO - [DB] Connecting (1/3)...
+2025-11-18 15:55:01,723 - INFO - [DB] ✓ Connected
+2025-11-18 15:55:01,727 - INFO - [DB] ✓ Tables ready
+2025-11-18 15:55:01,727 - INFO - [MODE] Using DATABASE
+2025-11-18 15:55:01,728 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-18 15:55:01,728 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-18 15:55:01,728 - INFO - [PAGE] 1/3...
+2025-11-18 15:55:01,728 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-18 15:55:02,146 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-18 15:55:02,146 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-18 15:55:02,147 - INFO - [RESULT] 0 products saved
+2025-11-18 15:55:05,147 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-18 15:55:05,147 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-18 15:55:05,147 - INFO - [PAGE] 1/3...
+2025-11-18 15:55:05,147 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-18 15:55:05,503 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-18 15:55:05,503 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-18 15:55:05,504 - INFO - [RESULT] 0 products saved
+2025-11-18 15:55:08,504 - INFO - 
+[PROGRESS] Category 3/6
+2025-11-18 15:55:08,504 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-11-18 15:55:08,504 - INFO - [PAGE] 1/3...
+2025-11-18 15:55:08,504 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-11-18 15:55:08,858 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-18 15:55:08,858 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-18 15:55:08,858 - INFO - [RESULT] 0 products saved
+2025-11-18 15:55:11,859 - INFO - 
+[PROGRESS] Category 4/6
+2025-11-18 15:55:11,859 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-11-18 15:55:11,859 - INFO - [PAGE] 1/3...
+2025-11-18 15:55:11,859 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-11-18 15:55:12,262 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-18 15:55:12,262 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-18 15:55:12,263 - INFO - [RESULT] 0 products saved
+2025-11-18 15:55:15,263 - INFO - 
+[PROGRESS] Category 5/6
+2025-11-18 15:55:15,264 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-11-18 15:55:15,264 - INFO - [PAGE] 1/3...
+2025-11-18 15:55:15,264 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-11-18 15:55:15,721 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-18 15:55:15,721 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-18 15:55:15,721 - INFO - [RESULT] 0 products saved
+2025-11-18 15:55:18,722 - INFO - 
+[PROGRESS] Category 6/6
+2025-11-18 15:55:18,722 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-11-18 15:55:18,722 - INFO - [PAGE] 1/3...
+2025-11-18 15:55:18,722 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-11-18 15:55:19,064 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-18 15:55:19,064 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-18 15:55:19,065 - INFO - [RESULT] 0 products saved
+2025-11-18 15:55:19,069 - INFO - 
+[STATS] Products: 1227, ASINs: 1127
+2025-11-18 15:55:19,069 - INFO - [ANALYTICS] Avg Price: ₹1585.29
+2025-11-18 15:55:19,069 - INFO - [ANALYTICS] Avg Sales: 159,975,945
+2025-11-18 15:55:19,069 - INFO - [COMPLETE] 0 products collected
+2025-11-18 15:55:19,069 - INFO - [DB] Disconnected
+2025-11-19 15:55:01,176 - INFO - [CONFIG] ✓ Loaded
+2025-11-19 15:55:01,177 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-19 15:55:01,177 - INFO - [START] Collection starting
+2025-11-19 15:55:01,177 - INFO - [DB] Connecting (1/3)...
+2025-11-19 15:55:01,186 - INFO - [DB] ✓ Connected
+2025-11-19 15:55:01,191 - INFO - [DB] ✓ Tables ready
+2025-11-19 15:55:01,191 - INFO - [MODE] Using DATABASE
+2025-11-19 15:55:01,191 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-19 15:55:01,191 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-19 15:55:01,191 - INFO - [PAGE] 1/3...
+2025-11-19 15:55:01,191 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-19 15:55:01,586 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-19 15:55:01,586 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-19 15:55:01,586 - INFO - [RESULT] 0 products saved
+2025-11-19 15:55:04,587 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-19 15:55:04,587 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-19 15:55:04,587 - INFO - [PAGE] 1/3...
+2025-11-19 15:55:04,587 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-19 15:55:04,914 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-19 15:55:04,914 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-19 15:55:04,914 - INFO - [RESULT] 0 products saved
+2025-11-19 15:55:07,915 - INFO - 
+[PROGRESS] Category 3/6
+2025-11-19 15:55:07,915 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-11-19 15:55:07,915 - INFO - [PAGE] 1/3...
+2025-11-19 15:55:07,915 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-11-19 15:55:08,306 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-19 15:55:08,306 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-19 15:55:08,307 - INFO - [RESULT] 0 products saved
+2025-11-19 15:55:11,307 - INFO - 
+[PROGRESS] Category 4/6
+2025-11-19 15:55:11,307 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-11-19 15:55:11,307 - INFO - [PAGE] 1/3...
+2025-11-19 15:55:11,307 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-11-19 15:55:11,645 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-19 15:55:11,645 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-19 15:55:11,646 - INFO - [RESULT] 0 products saved
+2025-11-19 15:55:14,646 - INFO - 
+[PROGRESS] Category 5/6
+2025-11-19 15:55:14,646 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-11-19 15:55:14,646 - INFO - [PAGE] 1/3...
+2025-11-19 15:55:14,647 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-11-19 15:55:14,970 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-19 15:55:14,970 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-19 15:55:14,971 - INFO - [RESULT] 0 products saved
+2025-11-19 15:55:17,971 - INFO - 
+[PROGRESS] Category 6/6
+2025-11-19 15:55:17,972 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-11-19 15:55:17,972 - INFO - [PAGE] 1/3...
+2025-11-19 15:55:17,972 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-11-19 15:55:18,302 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-19 15:55:18,303 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-19 15:55:18,303 - INFO - [RESULT] 0 products saved
+2025-11-19 15:55:18,308 - INFO - 
+[STATS] Products: 1227, ASINs: 1127
+2025-11-19 15:55:18,308 - INFO - [ANALYTICS] Avg Price: ₹1585.29
+2025-11-19 15:55:18,308 - INFO - [ANALYTICS] Avg Sales: 159,975,945
+2025-11-19 15:55:18,308 - INFO - [COMPLETE] 0 products collected
+2025-11-19 15:55:18,308 - INFO - [DB] Disconnected
+2025-11-28 15:55:01,848 - INFO - [CONFIG] ✓ Loaded
+2025-11-28 15:55:01,849 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-28 15:55:01,849 - INFO - [START] Collection starting
+2025-11-28 15:55:01,849 - INFO - [DB] Connecting (1/3)...
+2025-11-28 15:55:01,870 - INFO - [DB] ✓ Connected
+2025-11-28 15:55:01,879 - INFO - [DB] ✓ Tables ready
+2025-11-28 15:55:01,879 - INFO - [MODE] Using DATABASE
+2025-11-28 15:55:01,879 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-28 15:55:01,879 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-28 15:55:01,879 - INFO - [PAGE] 1/3...
+2025-11-28 15:55:01,879 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-28 15:55:03,095 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-28 15:55:03,095 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-28 15:55:03,095 - INFO - [RESULT] 0 products saved
+2025-11-28 15:55:06,096 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-28 15:55:06,096 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-28 15:55:06,096 - INFO - [PAGE] 1/3...
+2025-11-28 15:55:06,096 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-28 15:55:06,470 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-28 15:55:06,470 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-28 15:55:06,471 - INFO - [RESULT] 0 products saved
+2025-11-28 15:55:09,471 - INFO - 
+[PROGRESS] Category 3/6
+2025-11-28 15:55:09,471 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-11-28 15:55:09,471 - INFO - [PAGE] 1/3...
+2025-11-28 15:55:09,471 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-11-28 15:55:09,850 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-28 15:55:09,851 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-28 15:55:09,851 - INFO - [RESULT] 0 products saved
+2025-11-28 15:55:12,851 - INFO - 
+[PROGRESS] Category 4/6
+2025-11-28 15:55:12,851 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-11-28 15:55:12,852 - INFO - [PAGE] 1/3...
+2025-11-28 15:55:12,852 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-11-28 15:55:13,276 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-28 15:55:13,276 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-28 15:55:13,277 - INFO - [RESULT] 0 products saved
+2025-11-28 15:55:16,277 - INFO - 
+[PROGRESS] Category 5/6
+2025-11-28 15:55:16,277 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-11-28 15:55:16,277 - INFO - [PAGE] 1/3...
+2025-11-28 15:55:16,277 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-11-28 15:55:16,646 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-28 15:55:16,646 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-28 15:55:16,646 - INFO - [RESULT] 0 products saved
+2025-11-28 15:55:19,647 - INFO - 
+[PROGRESS] Category 6/6
+2025-11-28 15:55:19,647 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-11-28 15:55:19,647 - INFO - [PAGE] 1/3...
+2025-11-28 15:55:19,647 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-11-28 15:55:20,002 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-28 15:55:20,002 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-28 15:55:20,002 - INFO - [RESULT] 0 products saved
+2025-11-28 15:55:20,007 - INFO - 
+[STATS] Products: 1227, ASINs: 1127
+2025-11-28 15:55:20,007 - INFO - [ANALYTICS] Avg Price: ₹1585.29
+2025-11-28 15:55:20,007 - INFO - [ANALYTICS] Avg Sales: 159,975,945
+2025-11-28 15:55:20,007 - INFO - [COMPLETE] 0 products collected
+2025-11-28 15:55:20,007 - INFO - [DB] Disconnected
+2025-11-29 15:55:01,126 - INFO - [CONFIG] ✓ Loaded
+2025-11-29 15:55:01,127 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-29 15:55:01,127 - INFO - [START] Collection starting
+2025-11-29 15:55:01,127 - INFO - [DB] Connecting (1/3)...
+2025-11-29 15:55:01,136 - INFO - [DB] ✓ Connected
+2025-11-29 15:55:01,140 - INFO - [DB] ✓ Tables ready
+2025-11-29 15:55:01,140 - INFO - [MODE] Using DATABASE
+2025-11-29 15:55:01,140 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-29 15:55:01,140 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-29 15:55:01,140 - INFO - [PAGE] 1/3...
+2025-11-29 15:55:01,140 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-29 15:55:02,309 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-29 15:55:02,309 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-29 15:55:02,309 - INFO - [RESULT] 0 products saved
+2025-11-29 15:55:05,310 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-29 15:55:05,310 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-29 15:55:05,310 - INFO - [PAGE] 1/3...
+2025-11-29 15:55:05,310 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-29 15:55:05,617 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-29 15:55:05,617 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-29 15:55:05,618 - INFO - [RESULT] 0 products saved
+2025-11-29 15:55:08,618 - INFO - 
+[PROGRESS] Category 3/6
+2025-11-29 15:55:08,618 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-11-29 15:55:08,618 - INFO - [PAGE] 1/3...
+2025-11-29 15:55:08,618 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-11-29 15:55:08,977 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-29 15:55:08,977 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-29 15:55:08,977 - INFO - [RESULT] 0 products saved
+2025-11-29 15:55:11,977 - INFO - 
+[PROGRESS] Category 4/6
+2025-11-29 15:55:11,978 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-11-29 15:55:11,978 - INFO - [PAGE] 1/3...
+2025-11-29 15:55:11,978 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-11-29 15:55:12,336 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-29 15:55:12,336 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-29 15:55:12,336 - INFO - [RESULT] 0 products saved
+2025-11-29 15:55:15,337 - INFO - 
+[PROGRESS] Category 5/6
+2025-11-29 15:55:15,337 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-11-29 15:55:15,337 - INFO - [PAGE] 1/3...
+2025-11-29 15:55:15,337 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-11-29 15:55:15,703 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-29 15:55:15,703 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-29 15:55:15,704 - INFO - [RESULT] 0 products saved
+2025-11-29 15:55:18,704 - INFO - 
+[PROGRESS] Category 6/6
+2025-11-29 15:55:18,704 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-11-29 15:55:18,704 - INFO - [PAGE] 1/3...
+2025-11-29 15:55:18,704 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-11-29 15:55:19,024 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-29 15:55:19,024 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-29 15:55:19,024 - INFO - [RESULT] 0 products saved
+2025-11-29 15:55:19,028 - INFO - 
+[STATS] Products: 1227, ASINs: 1127
+2025-11-29 15:55:19,028 - INFO - [ANALYTICS] Avg Price: ₹1585.29
+2025-11-29 15:55:19,028 - INFO - [ANALYTICS] Avg Sales: 159,975,945
+2025-11-29 15:55:19,029 - INFO - [COMPLETE] 0 products collected
+2025-11-29 15:55:19,029 - INFO - [DB] Disconnected
+2025-11-30 15:55:01,133 - INFO - [CONFIG] ✓ Loaded
+2025-11-30 15:55:01,133 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-11-30 15:55:01,133 - INFO - [START] Collection starting
+2025-11-30 15:55:01,133 - INFO - [DB] Connecting (1/3)...
+2025-11-30 15:55:01,142 - INFO - [DB] ✓ Connected
+2025-11-30 15:55:01,146 - INFO - [DB] ✓ Tables ready
+2025-11-30 15:55:01,146 - INFO - [MODE] Using DATABASE
+2025-11-30 15:55:01,146 - INFO - 
+[PROGRESS] Category 1/6
+2025-11-30 15:55:01,146 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-11-30 15:55:01,146 - INFO - [PAGE] 1/3...
+2025-11-30 15:55:01,146 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-11-30 15:55:01,617 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-30 15:55:01,617 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-30 15:55:01,618 - INFO - [RESULT] 0 products saved
+2025-11-30 15:55:04,618 - INFO - 
+[PROGRESS] Category 2/6
+2025-11-30 15:55:04,618 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-11-30 15:55:04,618 - INFO - [PAGE] 1/3...
+2025-11-30 15:55:04,618 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-11-30 15:55:04,928 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-30 15:55:04,929 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-30 15:55:04,929 - INFO - [RESULT] 0 products saved
+2025-11-30 15:55:07,929 - INFO - 
+[PROGRESS] Category 3/6
+2025-11-30 15:55:07,929 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-11-30 15:55:07,929 - INFO - [PAGE] 1/3...
+2025-11-30 15:55:07,929 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-11-30 15:55:08,248 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-30 15:55:08,248 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-30 15:55:08,248 - INFO - [RESULT] 0 products saved
+2025-11-30 15:55:11,249 - INFO - 
+[PROGRESS] Category 4/6
+2025-11-30 15:55:11,249 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-11-30 15:55:11,249 - INFO - [PAGE] 1/3...
+2025-11-30 15:55:11,249 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-11-30 15:55:11,567 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-30 15:55:11,567 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-30 15:55:11,568 - INFO - [RESULT] 0 products saved
+2025-11-30 15:55:14,568 - INFO - 
+[PROGRESS] Category 5/6
+2025-11-30 15:55:14,568 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-11-30 15:55:14,568 - INFO - [PAGE] 1/3...
+2025-11-30 15:55:14,568 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-11-30 15:55:14,947 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-30 15:55:14,947 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-30 15:55:14,947 - INFO - [RESULT] 0 products saved
+2025-11-30 15:55:17,948 - INFO - 
+[PROGRESS] Category 6/6
+2025-11-30 15:55:17,948 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-11-30 15:55:17,948 - INFO - [PAGE] 1/3...
+2025-11-30 15:55:17,948 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-11-30 15:55:18,280 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-11-30 15:55:18,280 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-11-30 15:55:18,281 - INFO - [RESULT] 0 products saved
+2025-11-30 15:55:18,284 - INFO - 
+[STATS] Products: 1227, ASINs: 1127
+2025-11-30 15:55:18,285 - INFO - [ANALYTICS] Avg Price: ₹1585.29
+2025-11-30 15:55:18,285 - INFO - [ANALYTICS] Avg Sales: 159,975,945
+2025-11-30 15:55:18,285 - INFO - [COMPLETE] 0 products collected
+2025-11-30 15:55:18,285 - INFO - [DB] Disconnected
+2025-12-01 15:55:01,998 - INFO - [CONFIG] ✓ Loaded
+2025-12-01 15:55:01,998 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-12-01 15:55:01,999 - INFO - [START] Collection starting
+2025-12-01 15:55:01,999 - INFO - [DB] Connecting (1/3)...
+2025-12-01 15:55:02,021 - INFO - [DB] ✓ Connected
+2025-12-01 15:55:02,030 - INFO - [DB] ✓ Tables ready
+2025-12-01 15:55:02,030 - INFO - [MODE] Using DATABASE
+2025-12-01 15:55:02,030 - INFO - 
+[PROGRESS] Category 1/6
+2025-12-01 15:55:02,030 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-12-01 15:55:02,030 - INFO - [PAGE] 1/3...
+2025-12-01 15:55:02,030 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-12-01 15:55:02,499 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-01 15:55:02,499 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-01 15:55:02,500 - INFO - [RESULT] 0 products saved
+2025-12-01 15:55:05,500 - INFO - 
+[PROGRESS] Category 2/6
+2025-12-01 15:55:05,500 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-12-01 15:55:05,500 - INFO - [PAGE] 1/3...
+2025-12-01 15:55:05,500 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-12-01 15:55:05,821 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-01 15:55:05,821 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-01 15:55:05,822 - INFO - [RESULT] 0 products saved
+2025-12-01 15:55:08,822 - INFO - 
+[PROGRESS] Category 3/6
+2025-12-01 15:55:08,822 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-12-01 15:55:08,822 - INFO - [PAGE] 1/3...
+2025-12-01 15:55:08,822 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-12-01 15:55:09,181 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-01 15:55:09,181 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-01 15:55:09,182 - INFO - [RESULT] 0 products saved
+2025-12-01 15:55:12,182 - INFO - 
+[PROGRESS] Category 4/6
+2025-12-01 15:55:12,182 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-12-01 15:55:12,182 - INFO - [PAGE] 1/3...
+2025-12-01 15:55:12,182 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-12-01 15:55:12,491 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-01 15:55:12,491 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-01 15:55:12,492 - INFO - [RESULT] 0 products saved
+2025-12-01 15:55:15,492 - INFO - 
+[PROGRESS] Category 5/6
+2025-12-01 15:55:15,492 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-12-01 15:55:15,492 - INFO - [PAGE] 1/3...
+2025-12-01 15:55:15,492 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-12-01 15:55:15,830 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-01 15:55:15,830 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-01 15:55:15,830 - INFO - [RESULT] 0 products saved
+2025-12-01 15:55:18,831 - INFO - 
+[PROGRESS] Category 6/6
+2025-12-01 15:55:18,831 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-12-01 15:55:18,831 - INFO - [PAGE] 1/3...
+2025-12-01 15:55:18,831 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-12-01 15:55:19,139 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-01 15:55:19,139 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-01 15:55:19,140 - INFO - [RESULT] 0 products saved
+2025-12-01 15:55:19,144 - INFO - 
+[STATS] Products: 1227, ASINs: 1127
+2025-12-01 15:55:19,144 - INFO - [ANALYTICS] Avg Price: ₹1585.29
+2025-12-01 15:55:19,144 - INFO - [ANALYTICS] Avg Sales: 159,975,945
+2025-12-01 15:55:19,144 - INFO - [COMPLETE] 0 products collected
+2025-12-01 15:55:19,144 - INFO - [DB] Disconnected
+2025-12-02 15:55:01,254 - INFO - [CONFIG] ✓ Loaded
+2025-12-02 15:55:01,254 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-12-02 15:55:01,254 - INFO - [START] Collection starting
+2025-12-02 15:55:01,254 - INFO - [DB] Connecting (1/3)...
+2025-12-02 15:55:01,263 - INFO - [DB] ✓ Connected
+2025-12-02 15:55:01,267 - INFO - [DB] ✓ Tables ready
+2025-12-02 15:55:01,267 - INFO - [MODE] Using DATABASE
+2025-12-02 15:55:01,267 - INFO - 
+[PROGRESS] Category 1/6
+2025-12-02 15:55:01,267 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-12-02 15:55:01,267 - INFO - [PAGE] 1/3...
+2025-12-02 15:55:01,267 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-12-02 15:55:01,713 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-02 15:55:01,713 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-02 15:55:01,713 - INFO - [RESULT] 0 products saved
+2025-12-02 15:55:04,713 - INFO - 
+[PROGRESS] Category 2/6
+2025-12-02 15:55:04,714 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-12-02 15:55:04,714 - INFO - [PAGE] 1/3...
+2025-12-02 15:55:04,714 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-12-02 15:55:05,153 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-02 15:55:05,153 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-02 15:55:05,154 - INFO - [RESULT] 0 products saved
+2025-12-02 15:55:08,154 - INFO - 
+[PROGRESS] Category 3/6
+2025-12-02 15:55:08,154 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-12-02 15:55:08,154 - INFO - [PAGE] 1/3...
+2025-12-02 15:55:08,155 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-12-02 15:55:08,532 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-02 15:55:08,532 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-02 15:55:08,533 - INFO - [RESULT] 0 products saved
+2025-12-02 15:55:11,534 - INFO - 
+[PROGRESS] Category 4/6
+2025-12-02 15:55:11,534 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-12-02 15:55:11,534 - INFO - [PAGE] 1/3...
+2025-12-02 15:55:11,534 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-12-02 15:55:11,876 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-02 15:55:11,877 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-02 15:55:11,878 - INFO - [RESULT] 0 products saved
+2025-12-02 15:55:14,878 - INFO - 
+[PROGRESS] Category 5/6
+2025-12-02 15:55:14,878 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-12-02 15:55:14,878 - INFO - [PAGE] 1/3...
+2025-12-02 15:55:14,878 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-12-02 15:55:15,317 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-02 15:55:15,317 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-02 15:55:15,318 - INFO - [RESULT] 0 products saved
+2025-12-02 15:55:18,319 - INFO - 
+[PROGRESS] Category 6/6
+2025-12-02 15:55:18,319 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-12-02 15:55:18,319 - INFO - [PAGE] 1/3...
+2025-12-02 15:55:18,319 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-12-02 15:55:18,692 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-02 15:55:18,692 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-02 15:55:18,693 - INFO - [RESULT] 0 products saved
+2025-12-02 15:55:18,699 - INFO - 
+[STATS] Products: 1227, ASINs: 1127
+2025-12-02 15:55:18,699 - INFO - [ANALYTICS] Avg Price: ₹1585.29
+2025-12-02 15:55:18,699 - INFO - [ANALYTICS] Avg Sales: 159,975,945
+2025-12-02 15:55:18,699 - INFO - [COMPLETE] 0 products collected
+2025-12-02 15:55:18,699 - INFO - [DB] Disconnected
+2025-12-03 15:55:01,797 - INFO - [CONFIG] ✓ Loaded
+2025-12-03 15:55:01,797 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-12-03 15:55:01,797 - INFO - [START] Collection starting
+2025-12-03 15:55:01,797 - INFO - [DB] Connecting (1/3)...
+2025-12-03 15:55:01,806 - INFO - [DB] ✓ Connected
+2025-12-03 15:55:01,810 - INFO - [DB] ✓ Tables ready
+2025-12-03 15:55:01,810 - INFO - [MODE] Using DATABASE
+2025-12-03 15:55:01,810 - INFO - 
+[PROGRESS] Category 1/6
+2025-12-03 15:55:01,810 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-12-03 15:55:01,810 - INFO - [PAGE] 1/3...
+2025-12-03 15:55:01,811 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-12-03 15:55:02,341 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-03 15:55:02,341 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-03 15:55:02,342 - INFO - [RESULT] 0 products saved
+2025-12-03 15:55:05,342 - INFO - 
+[PROGRESS] Category 2/6
+2025-12-03 15:55:05,342 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-12-03 15:55:05,342 - INFO - [PAGE] 1/3...
+2025-12-03 15:55:05,342 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-12-03 15:55:05,765 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-03 15:55:05,765 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-03 15:55:05,766 - INFO - [RESULT] 0 products saved
+2025-12-03 15:55:08,766 - INFO - 
+[PROGRESS] Category 3/6
+2025-12-03 15:55:08,766 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-12-03 15:55:08,766 - INFO - [PAGE] 1/3...
+2025-12-03 15:55:08,766 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-12-03 15:55:09,077 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-03 15:55:09,077 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-03 15:55:09,077 - INFO - [RESULT] 0 products saved
+2025-12-03 15:55:12,078 - INFO - 
+[PROGRESS] Category 4/6
+2025-12-03 15:55:12,078 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-12-03 15:55:12,078 - INFO - [PAGE] 1/3...
+2025-12-03 15:55:12,078 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-12-03 15:55:12,395 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-03 15:55:12,395 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-03 15:55:12,396 - INFO - [RESULT] 0 products saved
+2025-12-03 15:55:15,396 - INFO - 
+[PROGRESS] Category 5/6
+2025-12-03 15:55:15,396 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-12-03 15:55:15,396 - INFO - [PAGE] 1/3...
+2025-12-03 15:55:15,396 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-12-03 15:55:15,715 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-03 15:55:15,715 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-03 15:55:15,715 - INFO - [RESULT] 0 products saved
+2025-12-03 15:55:18,716 - INFO - 
+[PROGRESS] Category 6/6
+2025-12-03 15:55:18,716 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-12-03 15:55:18,716 - INFO - [PAGE] 1/3...
+2025-12-03 15:55:18,716 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-12-03 15:55:19,073 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-03 15:55:19,073 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-03 15:55:19,073 - INFO - [RESULT] 0 products saved
+2025-12-03 15:55:19,077 - INFO - 
+[STATS] Products: 1227, ASINs: 1127
+2025-12-03 15:55:19,077 - INFO - [ANALYTICS] Avg Price: ₹1585.29
+2025-12-03 15:55:19,077 - INFO - [ANALYTICS] Avg Sales: 159,975,945
+2025-12-03 15:55:19,077 - INFO - [COMPLETE] 0 products collected
+2025-12-03 15:55:19,078 - INFO - [DB] Disconnected
+2025-12-04 15:55:01,178 - INFO - [CONFIG] ✓ Loaded
+2025-12-04 15:55:01,178 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-12-04 15:55:01,178 - INFO - [START] Collection starting
+2025-12-04 15:55:01,178 - INFO - [DB] Connecting (1/3)...
+2025-12-04 15:55:01,187 - INFO - [DB] ✓ Connected
+2025-12-04 15:55:01,191 - INFO - [DB] ✓ Tables ready
+2025-12-04 15:55:01,191 - INFO - [MODE] Using DATABASE
+2025-12-04 15:55:01,191 - INFO - 
+[PROGRESS] Category 1/6
+2025-12-04 15:55:01,192 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-12-04 15:55:01,192 - INFO - [PAGE] 1/3...
+2025-12-04 15:55:01,192 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-12-04 15:55:06,930 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72350)
+2025-12-04 15:55:06,947 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:55:06,948 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:55:08,948 - INFO - [PAGE] 2/3...
+2025-12-04 15:55:08,948 - INFO - [RapidAPI] Fetching products: category=1350380031, page=2, country=IN
+2025-12-04 15:55:12,122 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72350)
+2025-12-04 15:55:12,129 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:55:12,129 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:55:14,129 - INFO - [PAGE] 3/3...
+2025-12-04 15:55:14,129 - INFO - [RapidAPI] Fetching products: category=1350380031, page=3, country=IN
+2025-12-04 15:55:17,205 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72350)
+2025-12-04 15:55:17,212 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:55:17,213 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:55:17,213 - INFO - [RESULT] 72 products saved
+2025-12-04 15:55:20,213 - INFO - 
+[PROGRESS] Category 2/6
+2025-12-04 15:55:20,213 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-12-04 15:55:20,213 - INFO - [PAGE] 1/3...
+2025-12-04 15:55:20,213 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-12-04 15:55:23,182 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 76161)
+2025-12-04 15:55:23,191 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:55:23,191 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:55:25,191 - INFO - [PAGE] 2/3...
+2025-12-04 15:55:25,192 - INFO - [RapidAPI] Fetching products: category=976419031, page=2, country=IN
+2025-12-04 15:55:28,176 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 75441)
+2025-12-04 15:55:28,183 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:55:28,183 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:55:30,184 - INFO - [PAGE] 3/3...
+2025-12-04 15:55:30,184 - INFO - [RapidAPI] Fetching products: category=976419031, page=3, country=IN
+2025-12-04 15:55:33,078 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 75441)
+2025-12-04 15:55:33,085 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:55:33,085 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:55:33,085 - INFO - [RESULT] 72 products saved
+2025-12-04 15:55:36,085 - INFO - 
+[PROGRESS] Category 3/6
+2025-12-04 15:55:36,085 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-12-04 15:55:36,085 - INFO - [PAGE] 1/3...
+2025-12-04 15:55:36,085 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-12-04 15:55:39,312 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73876)
+2025-12-04 15:55:39,319 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:55:39,319 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:55:41,319 - INFO - [PAGE] 2/3...
+2025-12-04 15:55:41,320 - INFO - [RapidAPI] Fetching products: category=976392031, page=2, country=IN
+2025-12-04 15:55:44,203 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73876)
+2025-12-04 15:55:44,210 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:55:44,210 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:55:46,210 - INFO - [PAGE] 3/3...
+2025-12-04 15:55:46,210 - INFO - [RapidAPI] Fetching products: category=976392031, page=3, country=IN
+2025-12-04 15:55:49,461 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73876)
+2025-12-04 15:55:49,468 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:55:49,468 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:55:49,468 - INFO - [RESULT] 72 products saved
+2025-12-04 15:55:52,468 - INFO - 
+[PROGRESS] Category 4/6
+2025-12-04 15:55:52,468 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-12-04 15:55:52,468 - INFO - [PAGE] 1/3...
+2025-12-04 15:55:52,468 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-12-04 15:55:55,344 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72350)
+2025-12-04 15:55:55,354 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:55:55,354 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:55:57,354 - INFO - [PAGE] 2/3...
+2025-12-04 15:55:57,354 - INFO - [RapidAPI] Fetching products: category=1389401031, page=2, country=IN
+2025-12-04 15:56:00,316 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72350)
+2025-12-04 15:56:00,322 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:56:00,322 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:56:02,323 - INFO - [PAGE] 3/3...
+2025-12-04 15:56:02,323 - INFO - [RapidAPI] Fetching products: category=1389401031, page=3, country=IN
+2025-12-04 15:56:05,960 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72350)
+2025-12-04 15:56:05,966 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:56:05,966 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:56:05,966 - INFO - [RESULT] 72 products saved
+2025-12-04 15:56:08,967 - INFO - 
+[PROGRESS] Category 5/6
+2025-12-04 15:56:08,967 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-12-04 15:56:08,967 - INFO - [PAGE] 1/3...
+2025-12-04 15:56:08,967 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-12-04 15:56:12,798 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 46976)
+2025-12-04 15:56:12,807 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-04 15:56:12,807 - INFO - [SAVED] ✓ 48 products
+2025-12-04 15:56:14,808 - INFO - [PAGE] 2/3...
+2025-12-04 15:56:14,808 - INFO - [RapidAPI] Fetching products: category=1350387031, page=2, country=IN
+2025-12-04 15:56:18,243 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 46976)
+2025-12-04 15:56:18,252 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-04 15:56:18,252 - INFO - [SAVED] ✓ 48 products
+2025-12-04 15:56:20,252 - INFO - [PAGE] 3/3...
+2025-12-04 15:56:20,253 - INFO - [RapidAPI] Fetching products: category=1350387031, page=3, country=IN
+2025-12-04 15:56:23,768 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 43671)
+2025-12-04 15:56:23,776 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-04 15:56:23,777 - INFO - [SAVED] ✓ 48 products
+2025-12-04 15:56:23,777 - INFO - [RESULT] 144 products saved
+2025-12-04 15:56:26,777 - INFO - 
+[PROGRESS] Category 6/6
+2025-12-04 15:56:26,777 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-12-04 15:56:26,777 - INFO - [PAGE] 1/3...
+2025-12-04 15:56:26,777 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-12-04 15:56:29,912 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 76742)
+2025-12-04 15:56:29,918 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:56:29,918 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:56:31,919 - INFO - [PAGE] 2/3...
+2025-12-04 15:56:31,919 - INFO - [RapidAPI] Fetching products: category=1350384031, page=2, country=IN
+2025-12-04 15:56:34,927 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 76742)
+2025-12-04 15:56:34,934 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:56:34,934 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:56:36,934 - INFO - [PAGE] 3/3...
+2025-12-04 15:56:36,934 - INFO - [RapidAPI] Fetching products: category=1350384031, page=3, country=IN
+2025-12-04 15:56:40,275 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 76742)
+2025-12-04 15:56:40,281 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-04 15:56:40,281 - INFO - [SAVED] ✓ 24 products
+2025-12-04 15:56:40,281 - INFO - [RESULT] 72 products saved
+2025-12-04 15:56:40,285 - INFO - 
+[STATS] Products: 1346, ASINs: 1230
+2025-12-04 15:56:40,285 - INFO - [ANALYTICS] Avg Price: ₹2119.01
+2025-12-04 15:56:40,285 - INFO - [ANALYTICS] Avg Sales: 166,062,352
+2025-12-04 15:56:40,285 - INFO - [COMPLETE] 504 products collected
+2025-12-04 15:56:40,285 - INFO - [DB] Disconnected
+2025-12-05 15:55:01,134 - INFO - [CONFIG] ✓ Loaded
+2025-12-05 15:55:01,135 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-12-05 15:55:01,135 - INFO - [START] Collection starting
+2025-12-05 15:55:01,135 - INFO - [DB] Connecting (1/3)...
+2025-12-05 15:55:01,156 - INFO - [DB] ✓ Connected
+2025-12-05 15:55:01,166 - INFO - [DB] ✓ Tables ready
+2025-12-05 15:55:01,166 - INFO - [MODE] Using DATABASE
+2025-12-05 15:55:01,166 - INFO - 
+[PROGRESS] Category 1/6
+2025-12-05 15:55:01,167 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-12-05 15:55:01,167 - INFO - [PAGE] 1/3...
+2025-12-05 15:55:01,167 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-12-05 15:55:04,793 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 76423)
+2025-12-05 15:55:04,807 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:55:04,807 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:55:06,807 - INFO - [PAGE] 2/3...
+2025-12-05 15:55:06,808 - INFO - [RapidAPI] Fetching products: category=1350380031, page=2, country=IN
+2025-12-05 15:55:10,155 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 76423)
+2025-12-05 15:55:10,161 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:55:10,161 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:55:12,161 - INFO - [PAGE] 3/3...
+2025-12-05 15:55:12,161 - INFO - [RapidAPI] Fetching products: category=1350380031, page=3, country=IN
+2025-12-05 15:55:15,340 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 76423)
+2025-12-05 15:55:15,347 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:55:15,347 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:55:15,347 - INFO - [RESULT] 72 products saved
+2025-12-05 15:55:18,347 - INFO - 
+[PROGRESS] Category 2/6
+2025-12-05 15:55:18,347 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-12-05 15:55:18,347 - INFO - [PAGE] 1/3...
+2025-12-05 15:55:18,347 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-12-05 15:55:21,469 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72488)
+2025-12-05 15:55:21,476 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:55:21,476 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:55:23,477 - INFO - [PAGE] 2/3...
+2025-12-05 15:55:23,477 - INFO - [RapidAPI] Fetching products: category=976419031, page=2, country=IN
+2025-12-05 15:55:26,657 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72488)
+2025-12-05 15:55:26,664 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:55:26,664 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:55:28,664 - INFO - [PAGE] 3/3...
+2025-12-05 15:55:28,664 - INFO - [RapidAPI] Fetching products: category=976419031, page=3, country=IN
+2025-12-05 15:55:32,076 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72488)
+2025-12-05 15:55:32,083 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:55:32,083 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:55:32,083 - INFO - [RESULT] 72 products saved
+2025-12-05 15:55:35,083 - INFO - 
+[PROGRESS] Category 3/6
+2025-12-05 15:55:35,083 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-12-05 15:55:35,083 - INFO - [PAGE] 1/3...
+2025-12-05 15:55:35,083 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-12-05 15:55:38,426 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73444)
+2025-12-05 15:55:38,434 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:55:38,435 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:55:40,435 - INFO - [PAGE] 2/3...
+2025-12-05 15:55:40,435 - INFO - [RapidAPI] Fetching products: category=976392031, page=2, country=IN
+2025-12-05 15:55:43,660 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73444)
+2025-12-05 15:55:43,666 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:55:43,666 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:55:45,667 - INFO - [PAGE] 3/3...
+2025-12-05 15:55:45,667 - INFO - [RapidAPI] Fetching products: category=976392031, page=3, country=IN
+2025-12-05 15:55:49,496 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73444)
+2025-12-05 15:55:49,503 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:55:49,503 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:55:49,503 - INFO - [RESULT] 72 products saved
+2025-12-05 15:55:52,504 - INFO - 
+[PROGRESS] Category 4/6
+2025-12-05 15:55:52,504 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-12-05 15:55:52,504 - INFO - [PAGE] 1/3...
+2025-12-05 15:55:52,504 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-12-05 15:55:55,341 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70358)
+2025-12-05 15:55:55,350 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:55:55,350 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:55:57,351 - INFO - [PAGE] 2/3...
+2025-12-05 15:55:57,351 - INFO - [RapidAPI] Fetching products: category=1389401031, page=2, country=IN
+2025-12-05 15:56:00,430 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70358)
+2025-12-05 15:56:00,436 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:56:00,436 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:56:02,436 - INFO - [PAGE] 3/3...
+2025-12-05 15:56:02,436 - INFO - [RapidAPI] Fetching products: category=1389401031, page=3, country=IN
+2025-12-05 15:56:05,880 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70358)
+2025-12-05 15:56:05,886 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:56:05,886 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:56:05,886 - INFO - [RESULT] 72 products saved
+2025-12-05 15:56:08,886 - INFO - 
+[PROGRESS] Category 5/6
+2025-12-05 15:56:08,886 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-12-05 15:56:08,886 - INFO - [PAGE] 1/3...
+2025-12-05 15:56:08,886 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-12-05 15:56:12,910 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 41252)
+2025-12-05 15:56:12,918 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-05 15:56:12,918 - INFO - [SAVED] ✓ 48 products
+2025-12-05 15:56:14,919 - INFO - [PAGE] 2/3...
+2025-12-05 15:56:14,919 - INFO - [RapidAPI] Fetching products: category=1350387031, page=2, country=IN
+2025-12-05 15:56:18,334 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 41252)
+2025-12-05 15:56:18,342 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-05 15:56:18,342 - INFO - [SAVED] ✓ 48 products
+2025-12-05 15:56:20,343 - INFO - [PAGE] 3/3...
+2025-12-05 15:56:20,343 - INFO - [RapidAPI] Fetching products: category=1350387031, page=3, country=IN
+2025-12-05 15:56:23,868 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 47784)
+2025-12-05 15:56:23,877 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-05 15:56:23,877 - INFO - [SAVED] ✓ 48 products
+2025-12-05 15:56:23,877 - INFO - [RESULT] 144 products saved
+2025-12-05 15:56:26,877 - INFO - 
+[PROGRESS] Category 6/6
+2025-12-05 15:56:26,877 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-12-05 15:56:26,877 - INFO - [PAGE] 1/3...
+2025-12-05 15:56:26,877 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-12-05 15:56:29,668 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 77578)
+2025-12-05 15:56:29,675 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:56:29,675 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:56:31,675 - INFO - [PAGE] 2/3...
+2025-12-05 15:56:31,675 - INFO - [RapidAPI] Fetching products: category=1350384031, page=2, country=IN
+2025-12-05 15:56:35,232 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 76816)
+2025-12-05 15:56:35,238 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:56:35,238 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:56:37,238 - INFO - [PAGE] 3/3...
+2025-12-05 15:56:37,238 - INFO - [RapidAPI] Fetching products: category=1350384031, page=3, country=IN
+2025-12-05 15:56:40,540 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 77578)
+2025-12-05 15:56:40,546 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-05 15:56:40,546 - INFO - [SAVED] ✓ 24 products
+2025-12-05 15:56:40,546 - INFO - [RESULT] 72 products saved
+2025-12-05 15:56:40,550 - INFO - 
+[STATS] Products: 1379, ASINs: 1263
+2025-12-05 15:56:40,550 - INFO - [ANALYTICS] Avg Price: ₹2132.02
+2025-12-05 15:56:40,550 - INFO - [ANALYTICS] Avg Sales: 166,732,972
+2025-12-05 15:56:40,550 - INFO - [COMPLETE] 504 products collected
+2025-12-05 15:56:40,550 - INFO - [DB] Disconnected
+2025-12-06 15:55:01,647 - INFO - [CONFIG] ✓ Loaded
+2025-12-06 15:55:01,647 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-12-06 15:55:01,647 - INFO - [START] Collection starting
+2025-12-06 15:55:01,647 - INFO - [DB] Connecting (1/3)...
+2025-12-06 15:55:01,655 - INFO - [DB] ✓ Connected
+2025-12-06 15:55:01,660 - INFO - [DB] ✓ Tables ready
+2025-12-06 15:55:01,660 - INFO - [MODE] Using DATABASE
+2025-12-06 15:55:01,660 - INFO - 
+[PROGRESS] Category 1/6
+2025-12-06 15:55:01,660 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-12-06 15:55:01,660 - INFO - [PAGE] 1/3...
+2025-12-06 15:55:01,660 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-12-06 15:55:05,770 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 77481)
+2025-12-06 15:55:05,777 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:55:05,777 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:55:07,778 - INFO - [PAGE] 2/3...
+2025-12-06 15:55:07,778 - INFO - [RapidAPI] Fetching products: category=1350380031, page=2, country=IN
+2025-12-06 15:55:10,845 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 77481)
+2025-12-06 15:55:10,851 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:55:10,852 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:55:12,852 - INFO - [PAGE] 3/3...
+2025-12-06 15:55:12,852 - INFO - [RapidAPI] Fetching products: category=1350380031, page=3, country=IN
+2025-12-06 15:55:16,119 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 77481)
+2025-12-06 15:55:16,126 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:55:16,126 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:55:16,126 - INFO - [RESULT] 72 products saved
+2025-12-06 15:55:19,126 - INFO - 
+[PROGRESS] Category 2/6
+2025-12-06 15:55:19,126 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-12-06 15:55:19,126 - INFO - [PAGE] 1/3...
+2025-12-06 15:55:19,126 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-12-06 15:55:23,211 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 68827)
+2025-12-06 15:55:23,218 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:55:23,218 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:55:25,218 - INFO - [PAGE] 2/3...
+2025-12-06 15:55:25,218 - INFO - [RapidAPI] Fetching products: category=976419031, page=2, country=IN
+2025-12-06 15:55:28,267 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 68827)
+2025-12-06 15:55:28,273 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:55:28,273 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:55:30,273 - INFO - [PAGE] 3/3...
+2025-12-06 15:55:30,274 - INFO - [RapidAPI] Fetching products: category=976419031, page=3, country=IN
+2025-12-06 15:55:33,180 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 68827)
+2025-12-06 15:55:33,186 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:55:33,187 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:55:33,187 - INFO - [RESULT] 72 products saved
+2025-12-06 15:55:36,187 - INFO - 
+[PROGRESS] Category 3/6
+2025-12-06 15:55:36,187 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-12-06 15:55:36,187 - INFO - [PAGE] 1/3...
+2025-12-06 15:55:36,187 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-12-06 15:55:39,250 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70583)
+2025-12-06 15:55:39,257 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:55:39,257 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:55:41,257 - INFO - [PAGE] 2/3...
+2025-12-06 15:55:41,257 - INFO - [RapidAPI] Fetching products: category=976392031, page=2, country=IN
+2025-12-06 15:55:44,490 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70583)
+2025-12-06 15:55:44,497 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:55:44,497 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:55:46,497 - INFO - [PAGE] 3/3...
+2025-12-06 15:55:46,497 - INFO - [RapidAPI] Fetching products: category=976392031, page=3, country=IN
+2025-12-06 15:55:49,624 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70583)
+2025-12-06 15:55:49,631 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:55:49,631 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:55:49,631 - INFO - [RESULT] 72 products saved
+2025-12-06 15:55:52,631 - INFO - 
+[PROGRESS] Category 4/6
+2025-12-06 15:55:52,631 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-12-06 15:55:52,631 - INFO - [PAGE] 1/3...
+2025-12-06 15:55:52,631 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-12-06 15:55:55,545 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 65780)
+2025-12-06 15:55:55,551 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:55:55,551 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:55:57,551 - INFO - [PAGE] 2/3...
+2025-12-06 15:55:57,551 - INFO - [RapidAPI] Fetching products: category=1389401031, page=2, country=IN
+2025-12-06 15:56:00,839 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 66983)
+2025-12-06 15:56:00,844 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:56:00,845 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:56:02,845 - INFO - [PAGE] 3/3...
+2025-12-06 15:56:02,845 - INFO - [RapidAPI] Fetching products: category=1389401031, page=3, country=IN
+2025-12-06 15:56:05,938 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 65780)
+2025-12-06 15:56:05,943 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:56:05,943 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:56:05,943 - INFO - [RESULT] 72 products saved
+2025-12-06 15:56:08,943 - INFO - 
+[PROGRESS] Category 5/6
+2025-12-06 15:56:08,943 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-12-06 15:56:08,944 - INFO - [PAGE] 1/3...
+2025-12-06 15:56:08,944 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-12-06 15:56:12,325 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 44139)
+2025-12-06 15:56:12,334 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-06 15:56:12,334 - INFO - [SAVED] ✓ 48 products
+2025-12-06 15:56:14,334 - INFO - [PAGE] 2/3...
+2025-12-06 15:56:14,334 - INFO - [RapidAPI] Fetching products: category=1350387031, page=2, country=IN
+2025-12-06 15:56:17,755 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 44139)
+2025-12-06 15:56:17,763 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-06 15:56:17,763 - INFO - [SAVED] ✓ 48 products
+2025-12-06 15:56:19,763 - INFO - [PAGE] 3/3...
+2025-12-06 15:56:19,763 - INFO - [RapidAPI] Fetching products: category=1350387031, page=3, country=IN
+2025-12-06 15:56:23,187 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 46082)
+2025-12-06 15:56:23,197 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-06 15:56:23,197 - INFO - [SAVED] ✓ 48 products
+2025-12-06 15:56:23,197 - INFO - [RESULT] 144 products saved
+2025-12-06 15:56:26,197 - INFO - 
+[PROGRESS] Category 6/6
+2025-12-06 15:56:26,197 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-12-06 15:56:26,197 - INFO - [PAGE] 1/3...
+2025-12-06 15:56:26,197 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-12-06 15:56:29,782 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73481)
+2025-12-06 15:56:29,789 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:56:29,789 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:56:31,789 - INFO - [PAGE] 2/3...
+2025-12-06 15:56:31,789 - INFO - [RapidAPI] Fetching products: category=1350384031, page=2, country=IN
+2025-12-06 15:56:35,401 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73481)
+2025-12-06 15:56:35,407 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:56:35,407 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:56:37,407 - INFO - [PAGE] 3/3...
+2025-12-06 15:56:37,407 - INFO - [RapidAPI] Fetching products: category=1350384031, page=3, country=IN
+2025-12-06 15:56:40,542 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73481)
+2025-12-06 15:56:40,548 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-06 15:56:40,548 - INFO - [SAVED] ✓ 24 products
+2025-12-06 15:56:40,548 - INFO - [RESULT] 72 products saved
+2025-12-06 15:56:40,551 - INFO - 
+[STATS] Products: 1393, ASINs: 1276
+2025-12-06 15:56:40,551 - INFO - [ANALYTICS] Avg Price: ₹2147.52
+2025-12-06 15:56:40,551 - INFO - [ANALYTICS] Avg Sales: 168,207,055
+2025-12-06 15:56:40,551 - INFO - [COMPLETE] 504 products collected
+2025-12-06 15:56:40,552 - INFO - [DB] Disconnected
+2025-12-07 15:55:01,646 - INFO - [CONFIG] ✓ Loaded
+2025-12-07 15:55:01,646 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-12-07 15:55:01,646 - INFO - [START] Collection starting
+2025-12-07 15:55:01,646 - INFO - [DB] Connecting (1/3)...
+2025-12-07 15:55:01,655 - INFO - [DB] ✓ Connected
+2025-12-07 15:55:01,659 - INFO - [DB] ✓ Tables ready
+2025-12-07 15:55:01,660 - INFO - [MODE] Using DATABASE
+2025-12-07 15:55:01,660 - INFO - 
+[PROGRESS] Category 1/6
+2025-12-07 15:55:01,660 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-12-07 15:55:01,660 - INFO - [PAGE] 1/3...
+2025-12-07 15:55:01,660 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-12-07 15:55:05,733 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70597)
+2025-12-07 15:55:05,740 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:55:05,740 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:55:07,740 - INFO - [PAGE] 2/3...
+2025-12-07 15:55:07,740 - INFO - [RapidAPI] Fetching products: category=1350380031, page=2, country=IN
+2025-12-07 15:55:11,339 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70597)
+2025-12-07 15:55:11,345 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:55:11,345 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:55:13,345 - INFO - [PAGE] 3/3...
+2025-12-07 15:55:13,345 - INFO - [RapidAPI] Fetching products: category=1350380031, page=3, country=IN
+2025-12-07 15:55:17,034 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70597)
+2025-12-07 15:55:17,041 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:55:17,041 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:55:17,041 - INFO - [RESULT] 72 products saved
+2025-12-07 15:55:20,041 - INFO - 
+[PROGRESS] Category 2/6
+2025-12-07 15:55:20,041 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-12-07 15:55:20,041 - INFO - [PAGE] 1/3...
+2025-12-07 15:55:20,041 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-12-07 15:55:23,376 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73255)
+2025-12-07 15:55:23,383 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:55:23,383 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:55:25,383 - INFO - [PAGE] 2/3...
+2025-12-07 15:55:25,383 - INFO - [RapidAPI] Fetching products: category=976419031, page=2, country=IN
+2025-12-07 15:55:28,303 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73255)
+2025-12-07 15:55:28,309 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:55:28,309 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:55:30,310 - INFO - [PAGE] 3/3...
+2025-12-07 15:55:30,310 - INFO - [RapidAPI] Fetching products: category=976419031, page=3, country=IN
+2025-12-07 15:55:33,282 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73212)
+2025-12-07 15:55:33,289 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:55:33,289 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:55:33,289 - INFO - [RESULT] 72 products saved
+2025-12-07 15:55:36,289 - INFO - 
+[PROGRESS] Category 3/6
+2025-12-07 15:55:36,289 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-12-07 15:55:36,289 - INFO - [PAGE] 1/3...
+2025-12-07 15:55:36,289 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-12-07 15:55:39,408 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70766)
+2025-12-07 15:55:39,414 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:55:39,414 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:55:41,415 - INFO - [PAGE] 2/3...
+2025-12-07 15:55:41,415 - INFO - [RapidAPI] Fetching products: category=976392031, page=2, country=IN
+2025-12-07 15:55:44,439 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70766)
+2025-12-07 15:55:44,445 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:55:44,445 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:55:46,446 - INFO - [PAGE] 3/3...
+2025-12-07 15:55:46,446 - INFO - [RapidAPI] Fetching products: category=976392031, page=3, country=IN
+2025-12-07 15:55:49,671 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70766)
+2025-12-07 15:55:49,678 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:55:49,678 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:55:49,678 - INFO - [RESULT] 72 products saved
+2025-12-07 15:55:52,678 - INFO - 
+[PROGRESS] Category 4/6
+2025-12-07 15:55:52,679 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-12-07 15:55:52,679 - INFO - [PAGE] 1/3...
+2025-12-07 15:55:52,679 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-12-07 15:55:55,755 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72617)
+2025-12-07 15:55:55,761 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:55:55,761 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:55:57,762 - INFO - [PAGE] 2/3...
+2025-12-07 15:55:57,762 - INFO - [RapidAPI] Fetching products: category=1389401031, page=2, country=IN
+2025-12-07 15:56:00,686 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72617)
+2025-12-07 15:56:00,693 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:56:00,693 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:56:02,693 - INFO - [PAGE] 3/3...
+2025-12-07 15:56:02,693 - INFO - [RapidAPI] Fetching products: category=1389401031, page=3, country=IN
+2025-12-07 15:56:05,671 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72617)
+2025-12-07 15:56:05,677 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:56:05,677 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:56:05,677 - INFO - [RESULT] 72 products saved
+2025-12-07 15:56:08,677 - INFO - 
+[PROGRESS] Category 5/6
+2025-12-07 15:56:08,677 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-12-07 15:56:08,677 - INFO - [PAGE] 1/3...
+2025-12-07 15:56:08,677 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-12-07 15:56:13,029 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 45005)
+2025-12-07 15:56:13,037 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-07 15:56:13,037 - INFO - [SAVED] ✓ 48 products
+2025-12-07 15:56:15,038 - INFO - [PAGE] 2/3...
+2025-12-07 15:56:15,038 - INFO - [RapidAPI] Fetching products: category=1350387031, page=2, country=IN
+2025-12-07 15:56:18,971 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 45005)
+2025-12-07 15:56:18,980 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-07 15:56:18,980 - INFO - [SAVED] ✓ 48 products
+2025-12-07 15:56:20,980 - INFO - [PAGE] 3/3...
+2025-12-07 15:56:20,980 - INFO - [RapidAPI] Fetching products: category=1350387031, page=3, country=IN
+2025-12-07 15:56:24,257 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 42945)
+2025-12-07 15:56:24,266 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-07 15:56:24,266 - INFO - [SAVED] ✓ 48 products
+2025-12-07 15:56:24,266 - INFO - [RESULT] 144 products saved
+2025-12-07 15:56:27,266 - INFO - 
+[PROGRESS] Category 6/6
+2025-12-07 15:56:27,266 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-12-07 15:56:27,266 - INFO - [PAGE] 1/3...
+2025-12-07 15:56:27,266 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-12-07 15:56:30,974 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 77229)
+2025-12-07 15:56:30,983 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:56:30,983 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:56:32,983 - INFO - [PAGE] 2/3...
+2025-12-07 15:56:32,983 - INFO - [RapidAPI] Fetching products: category=1350384031, page=2, country=IN
+2025-12-07 15:56:36,178 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 77229)
+2025-12-07 15:56:36,184 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:56:36,184 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:56:38,184 - INFO - [PAGE] 3/3...
+2025-12-07 15:56:38,184 - INFO - [RapidAPI] Fetching products: category=1350384031, page=3, country=IN
+2025-12-07 15:56:41,278 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 77229)
+2025-12-07 15:56:41,283 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-07 15:56:41,283 - INFO - [SAVED] ✓ 24 products
+2025-12-07 15:56:41,283 - INFO - [RESULT] 72 products saved
+2025-12-07 15:56:41,287 - INFO - 
+[STATS] Products: 1410, ASINs: 1290
+2025-12-07 15:56:41,287 - INFO - [ANALYTICS] Avg Price: ₹2155.07
+2025-12-07 15:56:41,287 - INFO - [ANALYTICS] Avg Sales: 168,412,698
+2025-12-07 15:56:41,287 - INFO - [COMPLETE] 504 products collected
+2025-12-07 15:56:41,287 - INFO - [DB] Disconnected
+2025-12-08 15:55:01,420 - INFO - [CONFIG] ✓ Loaded
+2025-12-08 15:55:01,421 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-12-08 15:55:01,421 - INFO - [START] Collection starting
+2025-12-08 15:55:01,421 - INFO - [DB] Connecting (1/3)...
+2025-12-08 15:55:01,443 - INFO - [DB] ✓ Connected
+2025-12-08 15:55:01,451 - INFO - [DB] ✓ Tables ready
+2025-12-08 15:55:01,451 - INFO - [MODE] Using DATABASE
+2025-12-08 15:55:01,451 - INFO - 
+[PROGRESS] Category 1/6
+2025-12-08 15:55:01,451 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-12-08 15:55:01,451 - INFO - [PAGE] 1/3...
+2025-12-08 15:55:01,451 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-12-08 15:55:04,503 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69545)
+2025-12-08 15:55:04,515 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:55:04,516 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:55:06,516 - INFO - [PAGE] 2/3...
+2025-12-08 15:55:06,516 - INFO - [RapidAPI] Fetching products: category=1350380031, page=2, country=IN
+2025-12-08 15:55:09,392 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69545)
+2025-12-08 15:55:09,399 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:55:09,399 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:55:11,399 - INFO - [PAGE] 3/3...
+2025-12-08 15:55:11,399 - INFO - [RapidAPI] Fetching products: category=1350380031, page=3, country=IN
+2025-12-08 15:55:14,260 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69545)
+2025-12-08 15:55:14,267 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:55:14,267 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:55:14,267 - INFO - [RESULT] 72 products saved
+2025-12-08 15:55:17,267 - INFO - 
+[PROGRESS] Category 2/6
+2025-12-08 15:55:17,268 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-12-08 15:55:17,268 - INFO - [PAGE] 1/3...
+2025-12-08 15:55:17,268 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-12-08 15:55:20,004 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72777)
+2025-12-08 15:55:20,012 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:55:20,012 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:55:22,013 - INFO - [PAGE] 2/3...
+2025-12-08 15:55:22,013 - INFO - [RapidAPI] Fetching products: category=976419031, page=2, country=IN
+2025-12-08 15:55:24,944 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 76510)
+2025-12-08 15:55:24,951 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:55:24,951 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:55:26,951 - INFO - [PAGE] 3/3...
+2025-12-08 15:55:26,951 - INFO - [RapidAPI] Fetching products: category=976419031, page=3, country=IN
+2025-12-08 15:55:29,613 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 76510)
+2025-12-08 15:55:29,619 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:55:29,620 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:55:29,620 - INFO - [RESULT] 72 products saved
+2025-12-08 15:55:32,620 - INFO - 
+[PROGRESS] Category 3/6
+2025-12-08 15:55:32,620 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-12-08 15:55:32,620 - INFO - [PAGE] 1/3...
+2025-12-08 15:55:32,620 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-12-08 15:55:35,683 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69171)
+2025-12-08 15:55:35,691 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:55:35,691 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:55:37,691 - INFO - [PAGE] 2/3...
+2025-12-08 15:55:37,691 - INFO - [RapidAPI] Fetching products: category=976392031, page=2, country=IN
+2025-12-08 15:55:40,368 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69171)
+2025-12-08 15:55:40,374 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:55:40,374 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:55:42,375 - INFO - [PAGE] 3/3...
+2025-12-08 15:55:42,375 - INFO - [RapidAPI] Fetching products: category=976392031, page=3, country=IN
+2025-12-08 15:55:45,128 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 69171)
+2025-12-08 15:55:45,134 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:55:45,134 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:55:45,134 - INFO - [RESULT] 72 products saved
+2025-12-08 15:55:48,134 - INFO - 
+[PROGRESS] Category 4/6
+2025-12-08 15:55:48,134 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-12-08 15:55:48,134 - INFO - [PAGE] 1/3...
+2025-12-08 15:55:48,134 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-12-08 15:55:50,861 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70761)
+2025-12-08 15:55:50,873 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:55:50,873 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:55:52,873 - INFO - [PAGE] 2/3...
+2025-12-08 15:55:52,873 - INFO - [RapidAPI] Fetching products: category=1389401031, page=2, country=IN
+2025-12-08 15:55:55,582 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70761)
+2025-12-08 15:55:55,588 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:55:55,588 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:55:57,588 - INFO - [PAGE] 3/3...
+2025-12-08 15:55:57,588 - INFO - [RapidAPI] Fetching products: category=1389401031, page=3, country=IN
+2025-12-08 15:56:00,627 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 70761)
+2025-12-08 15:56:00,633 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:56:00,633 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:56:00,633 - INFO - [RESULT] 72 products saved
+2025-12-08 15:56:03,633 - INFO - 
+[PROGRESS] Category 5/6
+2025-12-08 15:56:03,633 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-12-08 15:56:03,633 - INFO - [PAGE] 1/3...
+2025-12-08 15:56:03,633 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-12-08 15:56:06,975 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 47176)
+2025-12-08 15:56:06,983 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-08 15:56:06,983 - INFO - [SAVED] ✓ 48 products
+2025-12-08 15:56:08,984 - INFO - [PAGE] 2/3...
+2025-12-08 15:56:08,984 - INFO - [RapidAPI] Fetching products: category=1350387031, page=2, country=IN
+2025-12-08 15:56:11,979 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 47176)
+2025-12-08 15:56:11,988 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-08 15:56:11,988 - INFO - [SAVED] ✓ 48 products
+2025-12-08 15:56:13,988 - INFO - [PAGE] 3/3...
+2025-12-08 15:56:13,988 - INFO - [RapidAPI] Fetching products: category=1350387031, page=3, country=IN
+2025-12-08 15:56:16,777 - INFO - [RapidAPI] ✓ Success: 48 products (total available: 43280)
+2025-12-08 15:56:16,785 - INFO - [DB] ✓ Saved 48 products with analytics
+2025-12-08 15:56:16,785 - INFO - [SAVED] ✓ 48 products
+2025-12-08 15:56:16,785 - INFO - [RESULT] 144 products saved
+2025-12-08 15:56:19,785 - INFO - 
+[PROGRESS] Category 6/6
+2025-12-08 15:56:19,785 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-12-08 15:56:19,785 - INFO - [PAGE] 1/3...
+2025-12-08 15:56:19,785 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-12-08 15:56:22,469 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 74494)
+2025-12-08 15:56:22,476 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:56:22,476 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:56:24,476 - INFO - [PAGE] 2/3...
+2025-12-08 15:56:24,476 - INFO - [RapidAPI] Fetching products: category=1350384031, page=2, country=IN
+2025-12-08 15:56:27,470 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 74770)
+2025-12-08 15:56:27,479 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:56:27,479 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:56:29,479 - INFO - [PAGE] 3/3...
+2025-12-08 15:56:29,479 - INFO - [RapidAPI] Fetching products: category=1350384031, page=3, country=IN
+2025-12-08 15:56:32,383 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 74494)
+2025-12-08 15:56:32,390 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-08 15:56:32,390 - INFO - [SAVED] ✓ 24 products
+2025-12-08 15:56:32,390 - INFO - [RESULT] 72 products saved
+2025-12-08 15:56:32,393 - INFO - 
+[STATS] Products: 1422, ASINs: 1302
+2025-12-08 15:56:32,393 - INFO - [ANALYTICS] Avg Price: ₹2152.16
+2025-12-08 15:56:32,393 - INFO - [ANALYTICS] Avg Sales: 169,863,261
+2025-12-08 15:56:32,393 - INFO - [COMPLETE] 504 products collected
+2025-12-08 15:56:32,393 - INFO - [DB] Disconnected
+2025-12-10 15:55:01,968 - INFO - [CONFIG] ✓ Loaded
+2025-12-10 15:55:01,969 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-12-10 15:55:01,969 - INFO - [START] Collection starting
+2025-12-10 15:55:01,969 - INFO - [DB] Connecting (1/3)...
+2025-12-10 15:55:01,989 - INFO - [DB] ✓ Connected
+2025-12-10 15:55:01,997 - INFO - [DB] ✓ Tables ready
+2025-12-10 15:55:01,998 - INFO - [MODE] Using DATABASE
+2025-12-10 15:55:01,998 - INFO - 
+[PROGRESS] Category 1/6
+2025-12-10 15:55:01,998 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-12-10 15:55:01,998 - INFO - [PAGE] 1/3...
+2025-12-10 15:55:01,998 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-12-10 15:55:05,035 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72862)
+2025-12-10 15:55:05,046 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-10 15:55:05,046 - INFO - [SAVED] ✓ 24 products
+2025-12-10 15:55:07,046 - INFO - [PAGE] 2/3...
+2025-12-10 15:55:07,047 - INFO - [RapidAPI] Fetching products: category=1350380031, page=2, country=IN
+2025-12-10 15:55:10,025 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73421)
+2025-12-10 15:55:10,032 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-10 15:55:10,032 - INFO - [SAVED] ✓ 24 products
+2025-12-10 15:55:12,033 - INFO - [PAGE] 3/3...
+2025-12-10 15:55:12,033 - INFO - [RapidAPI] Fetching products: category=1350380031, page=3, country=IN
+2025-12-10 15:55:14,914 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72862)
+2025-12-10 15:55:14,920 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-10 15:55:14,920 - INFO - [SAVED] ✓ 24 products
+2025-12-10 15:55:14,920 - INFO - [RESULT] 72 products saved
+2025-12-10 15:55:17,920 - INFO - 
+[PROGRESS] Category 2/6
+2025-12-10 15:55:17,920 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-12-10 15:55:17,920 - INFO - [PAGE] 1/3...
+2025-12-10 15:55:17,920 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-12-10 15:55:20,651 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73220)
+2025-12-10 15:55:20,660 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-10 15:55:20,660 - INFO - [SAVED] ✓ 24 products
+2025-12-10 15:55:22,660 - INFO - [PAGE] 2/3...
+2025-12-10 15:55:22,660 - INFO - [RapidAPI] Fetching products: category=976419031, page=2, country=IN
+2025-12-10 15:55:25,446 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73220)
+2025-12-10 15:55:25,452 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-10 15:55:25,452 - INFO - [SAVED] ✓ 24 products
+2025-12-10 15:55:27,453 - INFO - [PAGE] 3/3...
+2025-12-10 15:55:27,453 - INFO - [RapidAPI] Fetching products: category=976419031, page=3, country=IN
+2025-12-10 15:55:30,051 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 73379)
+2025-12-10 15:55:30,057 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-10 15:55:30,057 - INFO - [SAVED] ✓ 24 products
+2025-12-10 15:55:30,057 - INFO - [RESULT] 72 products saved
+2025-12-10 15:55:33,058 - INFO - 
+[PROGRESS] Category 3/6
+2025-12-10 15:55:33,058 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-12-10 15:55:33,058 - INFO - [PAGE] 1/3...
+2025-12-10 15:55:33,058 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-12-10 15:55:36,120 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 71756)
+2025-12-10 15:55:36,129 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-10 15:55:36,129 - INFO - [SAVED] ✓ 24 products
+2025-12-10 15:55:38,129 - INFO - [PAGE] 2/3...
+2025-12-10 15:55:38,129 - INFO - [RapidAPI] Fetching products: category=976392031, page=2, country=IN
+2025-12-10 15:55:41,256 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 71589)
+2025-12-10 15:55:41,262 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-10 15:55:41,262 - INFO - [SAVED] ✓ 24 products
+2025-12-10 15:55:43,263 - INFO - [PAGE] 3/3...
+2025-12-10 15:55:43,263 - INFO - [RapidAPI] Fetching products: category=976392031, page=3, country=IN
+2025-12-10 15:55:46,557 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 71756)
+2025-12-10 15:55:46,563 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-10 15:55:46,564 - INFO - [SAVED] ✓ 24 products
+2025-12-10 15:55:46,564 - INFO - [RESULT] 72 products saved
+2025-12-10 15:55:49,564 - INFO - 
+[PROGRESS] Category 4/6
+2025-12-10 15:55:49,564 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-12-10 15:55:49,564 - INFO - [PAGE] 1/3...
+2025-12-10 15:55:49,564 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-12-10 15:55:52,620 - INFO - [RapidAPI] ✓ Success: 24 products (total available: 72486)
+2025-12-10 15:55:52,629 - INFO - [DB] ✓ Saved 24 products with analytics
+2025-12-10 15:55:52,629 - INFO - [SAVED] ✓ 24 products
+2025-12-10 15:55:54,630 - INFO - [PAGE] 2/3...
+2025-12-10 15:55:54,630 - INFO - [RapidAPI] Fetching products: category=1389401031, page=2, country=IN
+2025-12-10 15:55:55,004 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-10 15:55:55,004 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-10 15:55:55,004 - INFO - [RESULT] 24 products saved
+2025-12-10 15:55:58,005 - INFO - 
+[PROGRESS] Category 5/6
+2025-12-10 15:55:58,005 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-12-10 15:55:58,005 - INFO - [PAGE] 1/3...
+2025-12-10 15:55:58,005 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-12-10 15:55:58,370 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-10 15:55:58,370 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-10 15:55:58,370 - INFO - [RESULT] 0 products saved
+2025-12-10 15:56:01,370 - INFO - 
+[PROGRESS] Category 6/6
+2025-12-10 15:56:01,371 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-12-10 15:56:01,371 - INFO - [PAGE] 1/3...
+2025-12-10 15:56:01,371 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-12-10 15:56:01,691 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-10 15:56:01,691 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-10 15:56:01,691 - INFO - [RESULT] 0 products saved
+2025-12-10 15:56:01,695 - INFO - 
+[STATS] Products: 1443, ASINs: 1321
+2025-12-10 15:56:01,695 - INFO - [ANALYTICS] Avg Price: ₹2157.95
+2025-12-10 15:56:01,695 - INFO - [ANALYTICS] Avg Sales: 170,031,970
+2025-12-10 15:56:01,695 - INFO - [COMPLETE] 240 products collected
+2025-12-10 15:56:01,696 - INFO - [DB] Disconnected
+2025-12-11 15:55:01,369 - INFO - [CONFIG] ✓ Loaded
+2025-12-11 15:55:01,370 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-12-11 15:55:01,370 - INFO - [START] Collection starting
+2025-12-11 15:55:01,370 - INFO - [DB] Connecting (1/3)...
+2025-12-11 15:55:01,390 - INFO - [DB] ✓ Connected
+2025-12-11 15:55:01,396 - INFO - [DB] ✓ Tables ready
+2025-12-11 15:55:01,396 - INFO - [MODE] Using DATABASE
+2025-12-11 15:55:01,396 - INFO - 
+[PROGRESS] Category 1/6
+2025-12-11 15:55:01,396 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-12-11 15:55:01,396 - INFO - [PAGE] 1/3...
+2025-12-11 15:55:01,396 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-12-11 15:55:01,757 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-11 15:55:01,757 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-11 15:55:01,758 - INFO - [RESULT] 0 products saved
+2025-12-11 15:55:04,758 - INFO - 
+[PROGRESS] Category 2/6
+2025-12-11 15:55:04,758 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-12-11 15:55:04,758 - INFO - [PAGE] 1/3...
+2025-12-11 15:55:04,758 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-12-11 15:55:05,179 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-11 15:55:05,179 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-11 15:55:05,179 - INFO - [RESULT] 0 products saved
+2025-12-11 15:55:08,180 - INFO - 
+[PROGRESS] Category 3/6
+2025-12-11 15:55:08,180 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-12-11 15:55:08,180 - INFO - [PAGE] 1/3...
+2025-12-11 15:55:08,180 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-12-11 15:55:08,536 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-11 15:55:08,536 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-11 15:55:08,537 - INFO - [RESULT] 0 products saved
+2025-12-11 15:55:11,537 - INFO - 
+[PROGRESS] Category 4/6
+2025-12-11 15:55:11,537 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-12-11 15:55:11,537 - INFO - [PAGE] 1/3...
+2025-12-11 15:55:11,537 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-12-11 15:55:11,849 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-11 15:55:11,849 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-11 15:55:11,849 - INFO - [RESULT] 0 products saved
+2025-12-11 15:55:14,850 - INFO - 
+[PROGRESS] Category 5/6
+2025-12-11 15:55:14,850 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-12-11 15:55:14,850 - INFO - [PAGE] 1/3...
+2025-12-11 15:55:14,850 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-12-11 15:55:15,160 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-11 15:55:15,160 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-11 15:55:15,161 - INFO - [RESULT] 0 products saved
+2025-12-11 15:55:18,161 - INFO - 
+[PROGRESS] Category 6/6
+2025-12-11 15:55:18,161 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-12-11 15:55:18,161 - INFO - [PAGE] 1/3...
+2025-12-11 15:55:18,161 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-12-11 15:55:18,480 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-11 15:55:18,481 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-11 15:55:18,481 - INFO - [RESULT] 0 products saved
+2025-12-11 15:55:18,485 - INFO - 
+[STATS] Products: 1443, ASINs: 1321
+2025-12-11 15:55:18,486 - INFO - [ANALYTICS] Avg Price: ₹2157.95
+2025-12-11 15:55:18,486 - INFO - [ANALYTICS] Avg Sales: 170,031,970
+2025-12-11 15:55:18,486 - INFO - [COMPLETE] 0 products collected
+2025-12-11 15:55:18,486 - INFO - [DB] Disconnected
+2025-12-12 15:55:01,599 - INFO - [CONFIG] ✓ Loaded
+2025-12-12 15:55:01,600 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-12-12 15:55:01,600 - INFO - [START] Collection starting
+2025-12-12 15:55:01,600 - INFO - [DB] Connecting (1/3)...
+2025-12-12 15:55:01,624 - INFO - [DB] ✓ Connected
+2025-12-12 15:55:01,628 - INFO - [DB] ✓ Tables ready
+2025-12-12 15:55:01,628 - INFO - [MODE] Using DATABASE
+2025-12-12 15:55:01,628 - INFO - 
+[PROGRESS] Category 1/6
+2025-12-12 15:55:01,628 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-12-12 15:55:01,628 - INFO - [PAGE] 1/3...
+2025-12-12 15:55:01,628 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-12-12 15:55:02,850 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-12 15:55:02,850 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-12 15:55:02,850 - INFO - [RESULT] 0 products saved
+2025-12-12 15:55:05,851 - INFO - 
+[PROGRESS] Category 2/6
+2025-12-12 15:55:05,851 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-12-12 15:55:05,851 - INFO - [PAGE] 1/3...
+2025-12-12 15:55:05,851 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-12-12 15:55:06,604 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-12 15:55:06,604 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-12 15:55:06,604 - INFO - [RESULT] 0 products saved
+2025-12-12 15:55:09,605 - INFO - 
+[PROGRESS] Category 3/6
+2025-12-12 15:55:09,605 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-12-12 15:55:09,605 - INFO - [PAGE] 1/3...
+2025-12-12 15:55:09,605 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-12-12 15:55:10,002 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-12 15:55:10,002 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-12 15:55:10,003 - INFO - [RESULT] 0 products saved
+2025-12-12 15:55:13,003 - INFO - 
+[PROGRESS] Category 4/6
+2025-12-12 15:55:13,003 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-12-12 15:55:13,003 - INFO - [PAGE] 1/3...
+2025-12-12 15:55:13,003 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-12-12 15:55:13,403 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-12 15:55:13,403 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-12 15:55:13,404 - INFO - [RESULT] 0 products saved
+2025-12-12 15:55:16,404 - INFO - 
+[PROGRESS] Category 5/6
+2025-12-12 15:55:16,404 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-12-12 15:55:16,404 - INFO - [PAGE] 1/3...
+2025-12-12 15:55:16,404 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-12-12 15:55:16,733 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-12 15:55:16,733 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-12 15:55:16,733 - INFO - [RESULT] 0 products saved
+2025-12-12 15:55:19,733 - INFO - 
+[PROGRESS] Category 6/6
+2025-12-12 15:55:19,733 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-12-12 15:55:19,734 - INFO - [PAGE] 1/3...
+2025-12-12 15:55:19,734 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-12-12 15:55:20,074 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-12 15:55:20,074 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-12 15:55:20,074 - INFO - [RESULT] 0 products saved
+2025-12-12 15:55:20,079 - INFO - 
+[STATS] Products: 1443, ASINs: 1321
+2025-12-12 15:55:20,079 - INFO - [ANALYTICS] Avg Price: ₹2157.95
+2025-12-12 15:55:20,079 - INFO - [ANALYTICS] Avg Sales: 170,031,970
+2025-12-12 15:55:20,079 - INFO - [COMPLETE] 0 products collected
+2025-12-12 15:55:20,079 - INFO - [DB] Disconnected
+2025-12-13 15:55:01,175 - INFO - [CONFIG] ✓ Loaded
+2025-12-13 15:55:01,175 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-12-13 15:55:01,175 - INFO - [START] Collection starting
+2025-12-13 15:55:01,175 - INFO - [DB] Connecting (1/3)...
+2025-12-13 15:55:01,184 - INFO - [DB] ✓ Connected
+2025-12-13 15:55:01,188 - INFO - [DB] ✓ Tables ready
+2025-12-13 15:55:01,189 - INFO - [MODE] Using DATABASE
+2025-12-13 15:55:01,189 - INFO - 
+[PROGRESS] Category 1/6
+2025-12-13 15:55:01,189 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-12-13 15:55:01,189 - INFO - [PAGE] 1/3...
+2025-12-13 15:55:01,189 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-12-13 15:55:01,811 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-13 15:55:01,811 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-13 15:55:01,812 - INFO - [RESULT] 0 products saved
+2025-12-13 15:55:04,812 - INFO - 
+[PROGRESS] Category 2/6
+2025-12-13 15:55:04,812 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-12-13 15:55:04,812 - INFO - [PAGE] 1/3...
+2025-12-13 15:55:04,812 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-12-13 15:55:05,342 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-13 15:55:05,342 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-13 15:55:05,343 - INFO - [RESULT] 0 products saved
+2025-12-13 15:55:08,343 - INFO - 
+[PROGRESS] Category 3/6
+2025-12-13 15:55:08,343 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-12-13 15:55:08,343 - INFO - [PAGE] 1/3...
+2025-12-13 15:55:08,343 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-12-13 15:55:08,757 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-13 15:55:08,758 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-13 15:55:08,758 - INFO - [RESULT] 0 products saved
+2025-12-13 15:55:11,758 - INFO - 
+[PROGRESS] Category 4/6
+2025-12-13 15:55:11,758 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-12-13 15:55:11,759 - INFO - [PAGE] 1/3...
+2025-12-13 15:55:11,759 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-12-13 15:55:12,119 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-13 15:55:12,119 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-13 15:55:12,119 - INFO - [RESULT] 0 products saved
+2025-12-13 15:55:15,120 - INFO - 
+[PROGRESS] Category 5/6
+2025-12-13 15:55:15,120 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-12-13 15:55:15,120 - INFO - [PAGE] 1/3...
+2025-12-13 15:55:15,120 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-12-13 15:55:15,542 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-13 15:55:15,543 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-13 15:55:15,543 - INFO - [RESULT] 0 products saved
+2025-12-13 15:55:18,543 - INFO - 
+[PROGRESS] Category 6/6
+2025-12-13 15:55:18,543 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-12-13 15:55:18,543 - INFO - [PAGE] 1/3...
+2025-12-13 15:55:18,543 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-12-13 15:55:18,954 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-13 15:55:18,954 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-13 15:55:18,954 - INFO - [RESULT] 0 products saved
+2025-12-13 15:55:18,959 - INFO - 
+[STATS] Products: 1443, ASINs: 1321
+2025-12-13 15:55:18,959 - INFO - [ANALYTICS] Avg Price: ₹2157.95
+2025-12-13 15:55:18,959 - INFO - [ANALYTICS] Avg Sales: 170,031,970
+2025-12-13 15:55:18,959 - INFO - [COMPLETE] 0 products collected
+2025-12-13 15:55:18,959 - INFO - [DB] Disconnected
+2025-12-14 15:55:02,061 - INFO - [CONFIG] ✓ Loaded
+2025-12-14 15:55:02,061 - INFO - [RapidAPI] Client initialized for host: real-time-amazon-data.p.rapidapi.com
+2025-12-14 15:55:02,061 - INFO - [START] Collection starting
+2025-12-14 15:55:02,061 - INFO - [DB] Connecting (1/3)...
+2025-12-14 15:55:02,070 - INFO - [DB] ✓ Connected
+2025-12-14 15:55:02,075 - INFO - [DB] ✓ Tables ready
+2025-12-14 15:55:02,075 - INFO - [MODE] Using DATABASE
+2025-12-14 15:55:02,075 - INFO - 
+[PROGRESS] Category 1/6
+2025-12-14 15:55:02,075 - INFO - 
+======================================================================
+[COLLECT] Baby Products
+2025-12-14 15:55:02,075 - INFO - [PAGE] 1/3...
+2025-12-14 15:55:02,075 - INFO - [RapidAPI] Fetching products: category=1350380031, page=1, country=IN
+2025-12-14 15:55:02,442 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-14 15:55:02,442 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-14 15:55:02,443 - INFO - [RESULT] 0 products saved
+2025-12-14 15:55:05,443 - INFO - 
+[PROGRESS] Category 2/6
+2025-12-14 15:55:05,443 - INFO - 
+======================================================================
+[COLLECT] Electronics
+2025-12-14 15:55:05,443 - INFO - [PAGE] 1/3...
+2025-12-14 15:55:05,443 - INFO - [RapidAPI] Fetching products: category=976419031, page=1, country=IN
+2025-12-14 15:55:05,856 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-14 15:55:05,856 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-14 15:55:05,857 - INFO - [RESULT] 0 products saved
+2025-12-14 15:55:08,857 - INFO - 
+[PROGRESS] Category 3/6
+2025-12-14 15:55:08,857 - INFO - 
+======================================================================
+[COLLECT] Computers & Accessories
+2025-12-14 15:55:08,857 - INFO - [PAGE] 1/3...
+2025-12-14 15:55:08,857 - INFO - [RapidAPI] Fetching products: category=976392031, page=1, country=IN
+2025-12-14 15:55:09,207 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-14 15:55:09,207 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-14 15:55:09,207 - INFO - [RESULT] 0 products saved
+2025-12-14 15:55:12,208 - INFO - 
+[PROGRESS] Category 4/6
+2025-12-14 15:55:12,208 - INFO - 
+======================================================================
+[COLLECT] Cell Phones
+2025-12-14 15:55:12,208 - INFO - [PAGE] 1/3...
+2025-12-14 15:55:12,208 - INFO - [RapidAPI] Fetching products: category=1389401031, page=1, country=IN
+2025-12-14 15:55:12,514 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-14 15:55:12,514 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-14 15:55:12,515 - INFO - [RESULT] 0 products saved
+2025-12-14 15:55:15,515 - INFO - 
+[PROGRESS] Category 5/6
+2025-12-14 15:55:15,515 - INFO - 
+======================================================================
+[COLLECT] Toys & Games
+2025-12-14 15:55:15,515 - INFO - [PAGE] 1/3...
+2025-12-14 15:55:15,515 - INFO - [RapidAPI] Fetching products: category=1350387031, page=1, country=IN
+2025-12-14 15:55:15,878 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-14 15:55:15,878 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-14 15:55:15,878 - INFO - [RESULT] 0 products saved
+2025-12-14 15:55:18,879 - INFO - 
+[PROGRESS] Category 6/6
+2025-12-14 15:55:18,879 - INFO - 
+======================================================================
+[COLLECT] Health & Personal Care
+2025-12-14 15:55:18,879 - INFO - [PAGE] 1/3...
+2025-12-14 15:55:18,879 - INFO - [RapidAPI] Fetching products: category=1350384031, page=1, country=IN
+2025-12-14 15:55:19,193 - ERROR - [RapidAPI] HTTP 429: Too Many Requests
+2025-12-14 15:55:19,193 - ERROR - [RapidAPI] Response: {"message":"You have exceeded the MONTHLY quota for Requests on your current plan, BASIC. Upgrade your plan at https:\/\/rapidapi.com\/letscrape-6bRBa3QguO5\/api\/real-time-amazon-data"}
+2025-12-14 15:55:19,194 - INFO - [RESULT] 0 products saved
+2025-12-14 15:55:19,198 - INFO - 
+[STATS] Products: 1443, ASINs: 1321
+2025-12-14 15:55:19,198 - INFO - [ANALYTICS] Avg Price: ₹2157.95
+2025-12-14 15:55:19,198 - INFO - [ANALYTICS] Avg Sales: 170,031,970
+2025-12-14 15:55:19,198 - INFO - [COMPLETE] 0 products collected
+2025-12-14 15:55:19,198 - INFO - [DB] Disconnected

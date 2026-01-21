@@ -14,7 +14,7 @@ interface AISummaryDisplayProps {
 export function AISummaryDisplay({ 
   chartData, 
   chartType, 
-  source = "amazon_reviews" 
+  source = "amazon" 
 }: AISummaryDisplayProps) {
   const { summary, loading } = useAISummary(
     `Analyze this ${chartType} chart and provide 2-3 key actionable insights in brief bullet points (maximum 2 lines total).`,
