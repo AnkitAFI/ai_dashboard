@@ -1,0 +1,161 @@
+# ================================
+# ENVIRONMENT & SECRETS (CRITICAL)
+# ================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+
+# ================================
+# PYTHON
+# ================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+var/
+sdist/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+.installed.cfg
+lib/
+lib64/
+MANIFEST
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+.env/
+pythonenv*
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+nosetests.xml
+coverage.xml
+*.cover
+
+# ML / Data Science
+*.h5
+*.pkl
+*.joblib
+*.npy
+*.npz
+/models/
+/checkpoints/
+
+# Alembic
+alembic/versions/*.pyc
+
+# ================================
+# NODE / FRONTEND
+# ================================
+./client/node_modules
+node_modules/
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+package-lock.json
+yarn.lock
+
+# Vite / Build Output
+dist/
+dist-ssr/
+build/
+.vite/
+*.local
+
+# React Snap
+.cache/
+
+# TypeScript
+*.tsbuildinfo
+
+# ================================
+# DATABASE
+# ================================
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+dump.sql
+*.sql.gz
+/pgdata/
+
+# Drizzle
+drizzle/meta/
+
+# ================================
+# LOGS
+# ================================
+logs/
+*.log
+*.log.*
+log/
+
+# ================================
+# OS FILES
+# ================================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# ================================
+# IDEs & EDITORS
+# ================================
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+.fleet/
+.cursor/
+
+# ================================
+# REPLIT
+# ================================
+.replit
+replit.nix
+.breakpoints
+
+# ================================
+# MISC
+# ================================
+*.tmp
+*.temp
+*.bak
+*.orig
+.turbo/
+.nyc_output/

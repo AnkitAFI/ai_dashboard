@@ -1,0 +1,57 @@
+import hashlib
+import hmac
+import io
+import json
+import os
+from datetime import datetime, timedelta
+from typing import Optional
+
+import razorpay
+import sib_api_v3_sdk
+from fastapi import APIRouter, Depends, HTTPException, Header, Request
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
+from sib_api_v3_sdk.rest import ApiException
+from sqlalchemy.orm import Session
+
+# ── Your existing project imports ─────────────────────────────────────────────
+from .database_config import get_db
+from .dependencies import get_current_user
+from . import models
+
+# ─── Router ───────────────────────────────────────────────────────────────────
+router = APIRouter()
+
+# ─── Environment ──────────────────────────────────────────────────────────────
+RAZORPAY_KEY_ID         = os.getenv("RAZORPAY_KEY_ID")
+RAZORPAY_KEY_SECRET     = os.getenv("RAZORPAY_KEY_SECRET")
+RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET")
+
+BREVO_API_KEY           = os.getenv("BREVO_API_KEY")
+BREVO_SENDER_EMAIL      = os.getenv("BREVO_SENDER_EMAIL", "noreply@insydz.com")
+BREVO_SENDER_NAME       = os.getenv("BREVO_SENDER_NAME",  "Insydz")
+
+APP_NAME                = os.getenv("APP_NAME", "Insydz")
+APP_URL                 = os.getenv("APP_URL",  "https://insydz.com")
+
+# ─── Razorpay client ──────────────────────────────────────────────────────────
+rzp_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+
+# ─── Brevo config — same pattern as your auth.py ─────────────────────────────
+_brevo_config = sib_api_v3_sdk.Configuration()
+_brevo_config.api_key["api-key"] = BREVO_API_KEY
+
+# Plans ordered lowest → highest. Index = rank.
+PLAN_HIERARCHY: list[str] = ["free", "basic", "premium"]
+PLAN_PRICES:    dict[str, int] = {"basic": 10, "premium": 20}
+PLAN_LABELS:    dict[str, str] = {"basic": "Basic", "premium": "Premium", "free": "Free"}
+
+GST_RATE          = 18   # percent
+SUBSCRIPTION_DAYS = 30   # one billing cycle
+GRACE_DAYS        = 3    # free re-subscribe window after expiry
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# SCHEMAS
+# ═════════════════════════════════════════════════════════════════════════════
+

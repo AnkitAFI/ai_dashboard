@@ -1,7 +1,8 @@
-from sqlalchemy import Column, String, Text, Integer, Float, Boolean, JSON, TIMESTAMP, ARRAY, Numeric, DateTime
+from sqlalchemy import Column, String, Text, Integer, Float, Boolean, JSON, TIMESTAMP, ARRAY, Numeric, DateTime, Date, ForeignKey
 from .database_config import Base
 from sqlalchemy.sql import func
 from datetime import datetime
+from sqlalchemy.orm import relationship
 
 
 class AmazonReview(Base):
@@ -195,7 +196,20 @@ class User(Base):
     # ✅ NEW: Product analysis tracking
     analysis_used = Column(Integer, default=0)
     analysis_month = Column(String, nullable=True)
+
+    # SOV Analysis tracking  
+    sov_used = Column(Integer, default=0)
+    sov_month = Column(String)  # YYYY-MM format
    
+    # Keyword tracking
+    keyword_tracker_used = Column(Integer, default=0)
+    keyword_tracker_month = Column(String)   # YYYY-MM format
+
+    subscription_expires_at = Column(DateTime, nullable=True)
+    payment_orders = relationship("PaymentOrder", back_populates="user")
+    scheduled_downgrade_to = Column(String(50), nullable=True)
+
+    is_verified = Column(Boolean, default=False)
     # Optional: Add is_active if you want to enable/disable accounts
     # is_active = Column(Boolean, default=True)
    
@@ -242,3 +256,81 @@ class ProductTrackerAnalysis(Base):
     
     created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())      
+
+
+
+
+class TrackedProduct(Base):
+    __tablename__ = "tracked_products"  # matches your SQL table
+
+    id = Column(Integer, primary_key=True, index=True)
+    seller_id = Column(String, index=True, nullable=False)
+    asin = Column(String, index=True, nullable=False)
+    product_title = Column(String, nullable=False)
+    product_photo = Column(String)
+    country = Column(String, default="IN")
+    user_email = Column(String, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    review_comments = Column(Text, nullable=True)  # JSON array of comment strings
+    review_ratings = Column(Text, nullable=True) 
+
+    # Relationship to keyword history
+    keywords = relationship(
+        "KeywordRankHistory",
+        back_populates="product",
+        cascade="all, delete-orphan"
+    )
+
+
+# ----------------------
+# Keyword Rank History
+# ----------------------
+class KeywordRankHistory(Base):
+    __tablename__ = "keyword_rank_history"  # matches your SQL table
+
+    id = Column(Integer, primary_key=True, index=True)
+    tracked_product_id = Column(Integer, ForeignKey("tracked_products.id", ondelete="CASCADE"))
+    keyword = Column(String, nullable=False)
+    rank = Column(Integer, nullable=True)
+    user_email = Column(String, index=True)
+    checked_at = Column(Date, default=datetime.utcnow)
+
+    # Relationship back to product
+    product = relationship("TrackedProduct", back_populates="keywords")
+
+
+
+class PaymentOrder(Base):
+    __tablename__ = "payment_orders"
+
+    id                  = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id             = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+
+    plan_id             = Column(String(50),  nullable=False)
+    amount              = Column(Integer,     nullable=False)
+    base_amount         = Column(Integer,     nullable=False, default=0)
+    gst_amount          = Column(Integer,     nullable=False, default=0)
+    gst_number          = Column(String(20),  nullable=True)
+    currency            = Column(String(10),  default="INR")
+
+    razorpay_order_id   = Column(String(100), unique=True, index=True, nullable=False)
+    razorpay_payment_id = Column(String(100), nullable=True)
+    razorpay_signature  = Column(String(256), nullable=True)
+    refund_id           = Column(String(100), nullable=True)
+
+    status              = Column(String(20),  default="created", nullable=False)
+    invoice_number      = Column(String(50),  nullable=True)
+
+    billing_full_name   = Column(String(200), nullable=True)
+    billing_email       = Column(String(200), nullable=True)
+    billing_mobile      = Column(String(20),  nullable=True)
+    billing_company     = Column(String(200), nullable=True)
+    billing_address     = Column(Text,        nullable=True)
+
+    created_at          = Column(DateTime, nullable=False)
+    paid_at             = Column(DateTime, nullable=True)
+    expires_at          = Column(DateTime, nullable=True)
+    refunded_at         = Column(DateTime, nullable=True)
+
+    user = relationship("User", back_populates="payment_orders")

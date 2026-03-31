@@ -13,7 +13,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 # Database URL - get directly from environment
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://seller-db:Seller!db@127.0.0.1:5432/db1")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://seller-db:Seller!db@122.176.108.253:5432/db1")
 
 # Remove quotes if present in DATABASE_URL
 if DATABASE_URL.startswith('"') and DATABASE_URL.endswith('"'):
@@ -29,8 +29,8 @@ engine = create_engine(
     pool_recycle=3600,   # Recycle connections after 1 hour
     echo=False,
     connect_args={
-        "connect_timeout": 10,
-        "options": "-c statement_timeout=30000"  # 30 second statement timeout
+        "connect_timeout": 30,
+        "options": "-c statement_timeout=60000"  # 30 second statement timeout
     }
 )
 
@@ -41,19 +41,11 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 def get_db():
-    """Get database session with proper error handling"""
     db = SessionLocal()
     try:
         yield db
-    except Exception as e:
-        logger.error(f"Database session error: {e}")
-        db.rollback()
-        raise
     finally:
-        try:
-            db.close()
-        except Exception as e:
-            logger.error(f"Error closing database session: {e}")
+        db.close()
 
 def auto_fix_schema():
     """Automatically fix missing columns in database"""

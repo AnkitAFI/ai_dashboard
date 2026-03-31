@@ -76,6 +76,7 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "dist/public"),
 
     emptyOutDir: true,
+    target: 'es2019',
 
   },
  
@@ -89,9 +90,7 @@ export default defineConfig({
 
       "127.0.0.1",
 
-      ".ngrok-free.dev",
-
-      "web.insydz.com",     // 👈 added your Cloudflare domain
+      "insydz.com",     // 👈 added your Cloudflare domain
 
     ],
  

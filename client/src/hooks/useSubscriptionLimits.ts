@@ -23,6 +23,8 @@ export interface SubscriptionLimits {
   maxAIChatMessagesPerMonth: number;
 }
 
+export const UNLIMITED = 1000000;
+
 const TIER_LIMITS: Record<string, SubscriptionLimits> = {
   free: {
     productTrackingLimit: 100,
@@ -67,7 +69,7 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     maxAIChatMessagesPerMonth: 20, // 20 AI chat messages per month
   },
   premium: {
-    productTrackingLimit: Infinity,
+    productTrackingLimit: UNLIMITED,
     hasAdvancedAI: true,
     hasRealTimeData: true,
     hasRealTimeAlerts: true,
@@ -79,16 +81,16 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     hasAIChatbot: true,
     hasDedicatedManager: false,
     canExportData: true,
-    maxDashboardWidgets: Infinity,
-    maxSavedReports: Infinity,
+    maxDashboardWidgets: UNLIMITED,
+    maxSavedReports: UNLIMITED,
     maxTopN: 100,
     hasChartAISummaries: true,
-    maxNotifications: Infinity,
-    maxFullAnalysesPerMonth: Infinity, // ✅ Unlimited product analyses
-    maxAIChatMessagesPerMonth: Infinity, // Unlimited AI chat messages
+    maxNotifications: UNLIMITED,
+    maxFullAnalysesPerMonth: UNLIMITED, // ✅ Unlimited product analyses
+    maxAIChatMessagesPerMonth: UNLIMITED, // Unlimited AI chat messages
   },
   enterprise: {
-    productTrackingLimit: Infinity,
+    productTrackingLimit: UNLIMITED,
     hasAdvancedAI: true,
     hasRealTimeData: true,
     hasRealTimeAlerts: true,
@@ -100,13 +102,13 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     hasAIChatbot: true,
     hasDedicatedManager: true,
     canExportData: true,
-    maxDashboardWidgets: Infinity,
-    maxSavedReports: Infinity,
-    maxTopN: Infinity,
+    maxDashboardWidgets: UNLIMITED,
+    maxSavedReports: UNLIMITED,
+    maxTopN: UNLIMITED,
     hasChartAISummaries: true,
-    maxNotifications: Infinity,
-    maxFullAnalysesPerMonth: Infinity, // ✅ Unlimited product analyses
-    maxAIChatMessagesPerMonth: Infinity, // Unlimited AI chat messages
+    maxNotifications: UNLIMITED,
+    maxFullAnalysesPerMonth: UNLIMITED, // ✅ Unlimited product analyses
+    maxAIChatMessagesPerMonth: UNLIMITED, // Unlimited AI chat messages
   },
 };
 
@@ -138,17 +140,17 @@ export function useSubscriptionLimits() {
   ): boolean => {
     switch (limitType) {
       case 'products':
-        return limits.productTrackingLimit !== Infinity && currentCount >= limits.productTrackingLimit;
+        return limits.productTrackingLimit < UNLIMITED && currentCount >= limits.productTrackingLimit;
       case 'widgets':
-        return limits.maxDashboardWidgets !== Infinity && currentCount >= limits.maxDashboardWidgets;
+        return limits.maxDashboardWidgets < UNLIMITED && currentCount >= limits.maxDashboardWidgets;
       case 'reports':
-        return limits.maxSavedReports !== Infinity && currentCount >= limits.maxSavedReports;
+        return limits.maxSavedReports < UNLIMITED && currentCount >= limits.maxSavedReports;
       case 'topN':
-        return limits.maxTopN !== Infinity && currentCount >= limits.maxTopN;
+        return limits.maxTopN < UNLIMITED && currentCount >= limits.maxTopN;
       case 'AIChatMessages':
-        return limits.maxAIChatMessagesPerMonth !== Infinity && currentCount >= limits.maxAIChatMessagesPerMonth;
+        return limits.maxAIChatMessagesPerMonth < UNLIMITED && currentCount >= limits.maxAIChatMessagesPerMonth;
       case 'productAnalyses': // ✅ Added product analyses limit check
-        return limits.maxFullAnalysesPerMonth !== Infinity && currentCount >= limits.maxFullAnalysesPerMonth;
+        return limits.maxFullAnalysesPerMonth < UNLIMITED && currentCount >= limits.maxFullAnalysesPerMonth;
       default:
         return false;
     }
@@ -182,7 +184,7 @@ export function useSubscriptionLimits() {
       default:
         return null;
     }
-    if (limit === Infinity) return null;
+    if (limit >= UNLIMITED) return null;
     return Math.max(0, limit - currentCount);
   };
 

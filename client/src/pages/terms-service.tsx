@@ -118,7 +118,7 @@ export default function TermsOfService() {
 
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 mt-6">4.4 Refunds</h3>
             <p className="text-gray-700 dark:text-gray-300">
-              Refunds are available within 7 days of initial purchase only. No refunds will be provided for partial months, downgrades, or cancellations after the 7-day period. Refund requests must be submitted to billing@insydz.com.
+              All purchases are final. We do not offer refunds for subscription fees, including partial months, downgrades, or cancellations. Please review your plan details carefully before completing your purchase. For billing-related questions, contact billing@insydz.com.
             </p>
 
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3 mt-6">4.5 Cancellation</h3>

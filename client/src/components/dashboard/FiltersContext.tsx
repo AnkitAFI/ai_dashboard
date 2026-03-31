@@ -48,7 +48,7 @@
  
  
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
+import { useSubscriptionLimits, UNLIMITED } from "@/hooks/useSubscriptionLimits";
 
 // ✅ Export Filters interface
 export interface Filters {
@@ -92,7 +92,7 @@ export const FiltersProvider = ({ children }: { children: ReactNode }) => {
         topN: limits.maxTopN
       }));
     }
-  }, [limits.maxTopN, filters.topN]);
+  }, [limits.maxTopN]);
 
   return (
     <FiltersContext.Provider value={{ 

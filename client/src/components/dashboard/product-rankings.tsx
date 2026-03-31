@@ -605,7 +605,7 @@ import { TrendingUp, Lock, Sparkles, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFilters } from "@/components/dashboard/FiltersContext";
 import { useAISummary } from "@/hooks/useAISummary";
-import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
+import { useSubscriptionLimits, UNLIMITED } from "@/hooks/useSubscriptionLimits";
 
 interface TrendingProduct {
   product_title?: string;

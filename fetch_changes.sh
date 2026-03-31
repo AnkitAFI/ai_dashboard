@@ -2,7 +2,7 @@
 
 REPO_DIR="/home/tuxedo/Desktop/Dashboard"
 VENV_ACTIVATE="$REPO_DIR/.venv/bin/activate"
-PORT=9001
+PORT=9002
 BRANCH="main"
 
 cd "$REPO_DIR" || { echo "Cannot cd to $REPO_DIR"; exit 1; }

@@ -1707,7 +1707,7 @@ import {
 import { Bar, Doughnut } from "react-chartjs-2";
 import { useFilters } from "@/components/dashboard/FiltersContext";
 import { useAISummary } from "@/hooks/useAISummary";
-import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
+import { useSubscriptionLimits, UNLIMITED } from "@/hooks/useSubscriptionLimits";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 

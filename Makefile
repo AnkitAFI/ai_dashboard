@@ -5,7 +5,7 @@ PYTHON=python3
 UVICORN=uvicorn
 APP_MODULE=server_py.Fastapi_main:app
 HOST=0.0.0.0
-PORT=9001
+PORT=9002
 
 .PHONY: run clean freeze
 
@@ -23,7 +23,7 @@ freeze:
 	uv pip freeze > requirements.txt
 
 start:
-	pm2 start uvicorn --name "fastapi-app" -- server_py.Fastapi_main:app --host 0.0.0.0 --port 9001 --workers 4
+	pm2 start uvicorn --name "fastapi-app" -- server_py.Fastapi_main:app --host 0.0.0.0 --port 9002 --workers 4
 
 pm2-stop:
 	pm2 stop fastapi-app

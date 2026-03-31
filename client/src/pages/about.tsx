@@ -856,10 +856,36 @@ export default function About() {
                 Have questions about Insydz? We'd love to hear from you and help you succeed in your e-commerce journey.
               </p>
               <div className="space-y-2 text-sm">
-                <p><strong>Email:</strong> contact@insydz.com</p>
-                <p><strong>Support:</strong> support@insydz.com</p>
-                <p><strong>Phone:</strong> +91 (0) 123 456 7890</p>
-              </div>
+  <p>
+    <strong>Email:</strong>{" "}
+    <a 
+      href="mailto:contact@insydz.com" 
+      className="text-blue-600 hover:underline"
+    >
+      contact@insydz.com
+    </a>
+  </p>
+
+  <p>
+    <strong>Support:</strong>{" "}
+    <a 
+      href="mailto:support@insydz.com" 
+      className="text-blue-600 hover:underline"
+    >
+      support@insydz.com
+    </a>
+  </p>
+
+  <p>
+    <strong>Phone:</strong>{" "}
+    <a 
+      href="" 
+      className="text-blue-600 hover:underline"
+    >
+      +91 (0) 123 456 7890
+    </a>
+  </p>
+</div>
             </CardContent>
           </Card>
         </main>

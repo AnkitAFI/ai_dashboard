@@ -122,6 +122,25 @@
   background-color: var(--muted-foreground);
 }
 
+/* ===== Sidebar Scrollbar ===== */   ← ADD THIS BELOW
+.sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #00aaff55 transparent;
+}
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #00aaff55;
+  border-radius: 999px;
+}
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: #0072FF99;
+}
+
 /* ===== Animations ===== */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }

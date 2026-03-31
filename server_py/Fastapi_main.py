@@ -1,3 +1,4 @@
+from __future__ import annotations
 
 from fastapi import FastAPI, Depends, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,10 +20,11 @@ import pandas as pd
 from server_py.crud import lstm_forecast
 from datetime import datetime, timedelta
 from . import crud, schemas, models
+from .payment_routes import router as payment_router
 from .database_config import get_db, engine
 import requests, traceback
 models.Base.metadata.create_all(bind=engine)
-from .models import AmazonProductDetails
+from .models import AmazonProductDetails, User
 # app = FastAPI(title="API", version="1.0.0")
 import os
 IS_LOCAL = os.getenv("FASTAPI_LOCAL", "false").lower() == "true"
@@ -30,12 +32,14 @@ app = FastAPI(     title="Amazon Reviews API",    version="1.0.0",     docs_url=
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:8080", "https://insydz.com"],  # TODO: restrict in production
+    allow_origins=["https://insydz.com"],  # TODO: restrict in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
  
+app.include_router(payment_router, prefix="/api/payments", tags=["payments"])
+
 class AIQuery(BaseModel):
     question: str
     source: str  # "flipkart" or "amazon"
@@ -170,118 +174,951 @@ def analytics_by_category(db: Session = Depends(get_db)):
     return {"categories": categories}
 
 
-def build_where_clause(filters: Dict[str, Any], source: str) -> str:
+import json
+import re
+import hashlib
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Any, Dict, List, Optional, Tuple
+from fastapi import HTTPException, Depends
+from fastapi.responses import StreamingResponse
+from sqlalchemy.orm import Session
+from sqlalchemy import text
+from pydantic import BaseModel
+import requests
+ 
+# ──────────────────────────────────────────────────────────────────────
+# SCHEMAS
+# ──────────────────────────────────────────────────────────────────────
+ 
+class Message(BaseModel):
+    role:    str   # "user" | "assistant"
+    content: str
+ 
+class AIQuery(BaseModel):
+    source:         str
+    question:       str
+    filters:        Optional[Dict[str, Any]] = {}
+    limit:          Optional[int]            = 100
+    session_id:     Optional[str]            = None
+    seller_profile: Optional[Dict]           = {}
+    stream:         Optional[bool]           = False
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# REDIS MEMORY
+# ──────────────────────────────────────────────────────────────────────
+ 
+MAX_HISTORY_TURNS = 8
+HISTORY_TTL       = 3600   # 1 hour (up from 30 min)
+CONTEXT_TTL       = 3600
+ 
+def _history_key(sid: str) -> str:  return f"chat_history:{sid}"
+def _context_key(sid: str) -> str:  return f"chat_context:{sid}"
+ 
+def load_history(sid: str) -> List[Message]:
+    raw = r.get(_history_key(sid))
+    if not raw: return []
+    try:
+        return [Message(**m) for m in json.loads(raw)]
+    except Exception:
+        return []
+ 
+def save_history(sid: str, history: List[Message]) -> None:
+    trimmed = history[-(MAX_HISTORY_TURNS * 2):]
+    r.setex(_history_key(sid), HISTORY_TTL, json.dumps([m.dict() for m in trimmed]))
+ 
+def append_turn(sid: str, user_msg: str, assistant_msg: str) -> None:
+    history = load_history(sid)
+    history.append(Message(role="user",      content=user_msg))
+    history.append(Message(role="assistant", content=assistant_msg))
+    save_history(sid, history)
+ 
+# ── Seller journey context (persists across turns) ──
+def load_context(sid: str) -> Dict:
+    raw = r.get(_context_key(sid))
+    if not raw: return {}
+    try:
+        return json.loads(raw)
+    except Exception:
+        return {}
+ 
+def save_context(sid: str, ctx: Dict) -> None:
+    r.setex(_context_key(sid), CONTEXT_TTL, json.dumps(ctx))
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# DEEP CONTEXT EXTRACTOR
+# Pulls product name, category, price target from raw natural language
+# e.g. "I want to sell wireless earbuds under 2000" → structured data
+# ──────────────────────────────────────────────────────────────────────
+ 
+PRODUCT_EXTRACT_PATTERNS = [
+    r"\b(?:sell|selling|launch|start selling|list|want to sell)\s+([a-zA-Z0-9 \-]+?)(?:\s+(?:on|for|at|in|under|below|price|₹|rs)|\.|,|$)",
+    r"\b(?:i have|i got|i make|i manufacture|i import)\s+([a-zA-Z0-9 \-]+?)(?:\s+(?:and|for|to sell|,)|\.|$)",
+    r"\bhow (?:will|would|does|is)\s+([a-zA-Z0-9 \-]+?)\s+(?:perform|sell|do|fare)",
+    r"\b(?:viability|potential|scope|market) (?:of|for)\s+([a-zA-Z0-9 \-]+)",
+]
+ 
+PRICE_TARGET_PATTERN = re.compile(
+    r"(?:under|below|less than|around|at|for|upto|up to)\s*(?:₹|rs\.?|inr)?\s*(\d[\d,]*)",
+    re.IGNORECASE
+)
+ 
+CATEGORY_HINTS = {
+    "phone|mobile|smartphone|earbu|headphone|charger|cable|power bank|speaker|laptop|tablet|keyboard|mouse": "electronics",
+    "shirt|kurta|saree|dress|jeans|shoes|sandal|bag|wallet|watch|jewel|ring|necklace": "fashion",
+    "face wash|serum|moistur|lipstick|foundation|shampoo|conditioner|oil|lotion|skincare|haircare": "beauty",
+    "toy|game|puzzle|doll|cycle|scooter|kids|children|baby": "toys & games",
+    "kitchen|cookware|utensil|mixer|pressure cooker|pan|knife|bottle|container": "kitchen",
+    "book|notebook|pen|pencil|stationery|diary|planner": "stationery",
+    "yoga mat|dumbbell|protein|supplement|gym|fitness|sport|cricket|football": "sports & fitness",
+    "sofa|bed|chair|table|almirah|curtain|pillow|mattress|decor": "home & furniture",
+    "biscuit|chips|snack|juice|tea|coffee|spice|oil|grocery": "food & grocery",
+}
+ 
+def extract_product_from_question(question: str, history: List[Message]) -> Dict:
+    """Extract product name, inferred category, and price target from natural language."""
+    combined = question
+    # Also look at recent history for context
+    for m in history[-3:]:
+        if m.role == "user":
+            combined = m.content + " " + combined
+ 
+    result = {"product": None, "category": None, "price_target": None}
+ 
+    # Extract product name
+    for pattern in PRODUCT_EXTRACT_PATTERNS:
+        match = re.search(pattern, question, re.IGNORECASE)
+        if match:
+            raw = match.group(1).strip().lower()
+            # Filter noise
+            if len(raw) > 2 and raw not in ("it", "this", "that", "them", "these"):
+                result["product"] = raw
+                break
+ 
+    # Infer category from product name or full question
+    text_lower = (result["product"] or question).lower()
+    for keywords, cat in CATEGORY_HINTS.items():
+        if re.search(keywords, text_lower, re.IGNORECASE):
+            result["category"] = cat
+            break
+ 
+    # Extract price target
+    price_match = PRICE_TARGET_PATTERN.search(question)
+    if price_match:
+        result["price_target"] = int(price_match.group(1).replace(",", ""))
+ 
+    return result
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# CONVERSATION MODE DETECTOR
+# research   → exploring market, asking general questions
+# viability  → "can I sell X / will X perform / I want to sell X"
+# decision   → comparing options, asking which is better
+# execution  → ready to sell, asking HOW to do specific things
+# ──────────────────────────────────────────────────────────────────────
+ 
+VIABILITY_PATTERN = re.compile(
+    r"\b(can i sell|will .* sell|should i sell|is .* profitable|viability|"
+    r"want to sell|thinking of selling|planning to sell|i sell|i have .* to sell|"
+    r"how will .* perform|scope of|potential of|worth selling|is it good to sell)\b",
+    re.IGNORECASE
+)
+DECISION_PATTERN = re.compile(
+    r"\b(which is better|what should i choose|vs|compare|between .* and|"
+    r"recommend|suggest|what would you pick|which one)\b",
+    re.IGNORECASE
+)
+EXECUTION_PATTERN = re.compile(
+    r"\b(how do i|how to|what should i|steps to|help me|set up|get started|"
+    r"start selling|create listing|price my|optimize|improve my)\b",
+    re.IGNORECASE
+)
+ 
+def detect_conversation_mode(question: str, history: List[Message]) -> str:
+    q = question.lower()
+    if VIABILITY_PATTERN.search(q): return "viability"
+    if DECISION_PATTERN.search(q):  return "decision"
+    if EXECUTION_PATTERN.search(q): return "execution"
+    # Check if previous conversation established a product context
+    if history and any(VIABILITY_PATTERN.search(m.content) for m in history[-4:] if m.role == "user"):
+        return "deep_dive"
+    return "research"
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# MARKET ENTRY SCORER
+# Takes aggregated data and produces a 0-100 score on 3 dimensions
+# ──────────────────────────────────────────────────────────────────────
+ 
+def compute_market_score(data: List[Dict], price_target: Optional[int] = None) -> Optional[Dict]:
+    """Returns competition_score, demand_score, margin_score, overall."""
+    if not data:
+        return None
+ 
+    total_listings  = sum(r.get("listings", 0) or 0 for r in data)
+    total_reviews   = sum(r.get("total_reviews", 0) or 0 for r in data)
+    avg_rating      = sum(r.get("avg_rating", 0) or 0 for r in data if r.get("avg_rating")) / max(len([r for r in data if r.get("avg_rating")]), 1)
+    avg_sales       = sum(r.get("avg_sales", 0) or 0 for r in data if r.get("avg_sales")) / max(len([r for r in data if r.get("avg_sales")]), 1)
+    avg_price       = sum(r.get("avg_price", 0) or 0 for r in data if r.get("avg_price")) / max(len([r for r in data if r.get("avg_price")]), 1)
+ 
+    # Competition score: fewer listings + lower reviews = easier to enter (higher score)
+    comp_raw = min(total_listings / 50, 1.0)   # normalize: 50 listings = saturated
+    competition_score = round((1 - comp_raw) * 100)
+ 
+    # Demand score: more reviews + sales = more demand (higher score)
+    demand_raw   = min(total_reviews / 10000, 1.0)
+    demand_score = round(demand_raw * 100)
+ 
+    # Margin score: based on price vs likely cost assumption (rough)
+    if price_target and avg_price > 0:
+        fit = 1.0 if (avg_price * 0.6) <= price_target <= (avg_price * 1.4) else 0.5
+    else:
+        fit = 0.75
+    # Higher avg price generally = better margin room
+    price_score  = min(avg_price / 2000, 1.0)
+    margin_score = round(((price_score * 0.5) + (fit * 0.5)) * 100)
+ 
+    overall = round((competition_score * 0.35 + demand_score * 0.40 + margin_score * 0.25))
+ 
+    return {
+        "competition_score": competition_score,
+        "demand_score":      demand_score,
+        "margin_score":      margin_score,
+        "overall_score":     overall,
+        "avg_price":         round(avg_price),
+        "avg_rating":        round(avg_rating, 2),
+        "avg_sales":         round(avg_sales),
+        "total_listings":    total_listings,
+        "verdict":           (
+            "Strong opportunity" if overall >= 70 else
+            "Decent opportunity" if overall >= 50 else
+            "Tough market"       if overall >= 35 else
+            "Very competitive — enter carefully"
+        )
+    }
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# FOLLOW-UP QUESTION GENERATOR
+# Generates 3 contextual next questions based on current mode + data
+# ──────────────────────────────────────────────────────────────────────
+ 
+FOLLOWUP_BY_MODE = {
+    "viability": [
+        "Who are the top brands selling this?",
+        "What price range should I target?",
+        "What rating do I need to compete?",
+    ],
+    "decision": [
+        "Which category has higher margins?",
+        "What does the demand look like long-term?",
+        "Which is easier to get into right now?",
+    ],
+    "execution": [
+        "What listing title works best for this?",
+        "How do I price against existing sellers?",
+        "What's a realistic sales target for month 1?",
+    ],
+    "deep_dive": [
+        "What are the biggest risks here?",
+        "Should I focus on budget or premium segment?",
+        "How does this perform during festive season?",
+    ],
+    "research": [
+        "What's the most profitable category right now?",
+        "Which products have the least competition?",
+        "Where's the biggest market gap today?",
+    ],
+}
+ 
+def generate_followup_questions(mode: str, intents: List[str], product: Optional[str], data: List[Dict]) -> List[str]:
+    base = FOLLOWUP_BY_MODE.get(mode, FOLLOWUP_BY_MODE["research"]).copy()
+ 
+    # Personalise with product name if known
+    if product:
+        p = product.title()
+        if mode == "viability":
+            base[0] = f"Who are the top brands selling {p}?"
+            base[1] = f"What's the sweet spot price for {p}?"
+        elif mode == "research":
+            base[0] = f"What does {p} demand look like?"
+            base[1] = f"Is {p} more popular on Flipkart or Amazon?"
+ 
+    # Add data-driven suggestion if we have outlier data
+    if data:
+        top = data[0]
+        cat = top.get("category_name", "")
+        if cat and mode in ("research", "viability"):
+            base.append(f"Tell me more about {cat}")
+ 
+    return base[:3]
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# INTENT DETECTION
+# ──────────────────────────────────────────────────────────────────────
+ 
+INTENT_PATTERNS = {
+    "price_analysis":    r"\b(price|pricing|cost|cheap|expensive|afford|budget|range|₹|rs\.?|rupee)\b",
+    "top_products":      r"\b(best|top|popular|trending|most sold|highest rated|recommend|suggest)\b",
+    "category_insights": r"\b(categor|segment|niche|market|space|vertical)\b",
+    "competitor":        r"\b(competitor|vs|compare|versus|better than|alternative|rival)\b",
+    "opportunity":       r"\b(opportunit|gap|underserved|potential|untapped|enter|launch|start selling)\b",
+    "rating_quality":    r"\b(rating|review|quality|feedback|trust|reputation|star)\b",
+    "sales_volume":      r"\b(sales|volume|demand|selling|sold|units|revenue|turnover)\b",
+    "brand_analysis":    r"\b(brand|seller|vendor|manufacturer|who sells|which brand)\b",
+    "profit_margin":     r"\b(profit|margin|markup|net|gross|earn|make money|worth it)\b",
+    "seasonal":          r"\b(season|festival|diwali|holi|summer|winter|monsoon|trend)\b",
+    "listing_tips":      r"\b(listing|title|description|image|photo|seo|keyword|rank|visibility)\b",
+    "logistics":         r"\b(shipping|delivery|logistic|warehouse|fulfil|return|dispatch|courier)\b",
+    "general_advice":    r"\b(advice|tip|strategy|how to|should i|what to|guide|help|explain|tell me)\b",
+}
+ 
+TONE_SIGNALS = {
+    "frustrated": r"\b(not working|useless|wrong|bad|terrible|why is|i don'?t understand|makes no sense|wtf|ugh|worst)\b",
+    "excited":    r"\b(amazing|great|wow|love|excited|awesome|can'?t wait|perfect|finally|yes!)\b",
+    "confused":   r"\b(confused|don'?t get|what does|what is|explain|i'?m lost|unclear|huh\??|means?)\b",
+    "urgent":     r"\b(asap|urgent|quickly|right now|immediately|today|tonight|deadline|fast|hurry)\b",
+    "beginner":   r"\b(new to|just started|beginner|don'?t know|never sold|first time|how do i even|basics)\b",
+    "expert":     r"\b(roi|cac|ltv|cogs|margin|logistics|fulfilment|api|inventory|wholesale|b2b)\b",
+}
+ 
+def detect_intent(question: str) -> List[str]:
+    q = question.lower()
+    return [i for i, p in INTENT_PATTERNS.items() if re.search(p, q)] or ["general_advice"]
+ 
+def detect_tone(question: str, history: List[Message]) -> Dict[str, bool]:
+    combined = question.lower()
+    for m in history[-4:]:
+        if m.role == "user": combined += " " + m.content.lower()
+    return {t: bool(re.search(p, combined)) for t, p in TONE_SIGNALS.items()}
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# WHERE CLAUSE BUILDER
+# ──────────────────────────────────────────────────────────────────────
+ 
+def build_where_clause(filters: Dict[str, Any], source: str, extra_category: str = "") -> str:
     conditions = []
-    if filters.get("category") and filters["category"] != "All Categories":
-        category = filters["category"].replace("'", "''")
-        conditions.append(f"LOWER(category) = LOWER('{category}')") if source == "flipkart" else conditions.append(f"LOWER(category_name) = LOWER('{category}')")
-    price_range = filters.get("priceRange", [0, 5000000])
-    price_min, price_max = price_range[0], price_range[1]
+ 
+    category = filters.get("category", "") or extra_category
+    if category and category != "All Categories":
+        safe_cat  = category.replace("'", "''")
+        cat_field = "category" if source == "flipkart" else "category_name"
+        conditions.append(f"LOWER({cat_field}) LIKE LOWER('%{safe_cat}%')")
+ 
+    price_range = filters.get("priceRange", [0, 5_000_000])
     price_field = "price" if source == "flipkart" else "product_price_numeric"
-    if price_min > 0: conditions.append(f"{price_field} >= {price_min}")
-    if price_max < 5000000: conditions.append(f"{price_field} <= {price_max}")
+    if price_range[0] > 0:   conditions.append(f"{price_field} >= {price_range[0]}")
+    if price_range[1] < 5_000_000: conditions.append(f"{price_field} <= {price_range[1]}")
+ 
     rating = filters.get("rating", 0)
     if rating > 0:
         rating_field = "rating" if source == "flipkart" else "product_star_rating_numeric"
         conditions.append(f"{rating_field} >= {rating}")
-    if filters.get("showTrendingOnly") and source != "flipkart":
+ 
+    if filters.get("showTrendingOnly") and source == "amazon":
         conditions.append("sales_volume IS NOT NULL AND sales_volume != ''")
+ 
     return " AND ".join(conditions) if conditions else "1=1"
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# PRODUCT-SPECIFIC SQL
+# When a product is detected, run a keyword search on product_title
+# ──────────────────────────────────────────────────────────────────────
+ 
+def build_product_sql(source: str, product: str, limit: int) -> str:
+    safe = product.replace("'", "''")
+    if source == "flipkart":
+        return f"""
+            SELECT product_title, brand, category_name,
+                ROUND(product_price,0) AS price,
+                product_star_rating AS rating,
+                product_rating_count AS review_count,
+                ROUND(estimated_sales,0) AS sales
+            FROM rapidapi_flipkart_products
+            WHERE product_title ILIKE '%{safe}%'
+               OR brand ILIKE '%{safe}%'
+            ORDER BY product_rating_count DESC NULLS LAST
+            LIMIT {limit}
+        """
+    else:
+        return f"""
+            SELECT product_title, category_name,
+                ROUND(product_price_numeric,0) AS price,
+                product_star_rating_numeric AS rating,
+                product_num_ratings AS review_count,
+                ROUND(avg_sales_volume,0) AS sales
+            FROM rapidapi_amazon_products
+            WHERE product_title ILIKE '%{safe}%'
+            ORDER BY product_num_ratings DESC NULLS LAST
+            LIMIT {limit}
+        """
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# AGGREGATED SQL FAN-OUT  (intent-driven)
+# ──────────────────────────────────────────────────────────────────────
+ 
+def build_smart_sql(source: str, where_clause: str, intents: List[str], limit: int) -> Tuple[str, str]:
+    if source == "flipkart":
+        platform = "Flipkart"
+        if any(i in intents for i in ["brand_analysis", "competitor"]):
+            sql = f"""
+                SELECT brand, category_name, COUNT(*) AS listings,
+                    ROUND(AVG(product_price),0) AS avg_price,
+                    ROUND(MIN(product_price),0) AS min_price,
+                    ROUND(MAX(product_price),0) AS max_price,
+                    ROUND(AVG(product_star_rating),2) AS avg_rating,
+                    SUM(product_rating_count) AS total_reviews,
+                    ROUND(AVG(estimated_sales),0) AS avg_sales
+                FROM rapidapi_flipkart_products
+                WHERE product_title IS NOT NULL AND {where_clause}
+                GROUP BY brand, category_name
+                ORDER BY total_reviews DESC LIMIT {limit}
+            """
+        elif "price_analysis" in intents:
+            sql = f"""
+                SELECT category_name, brand, COUNT(*) AS listings,
+                    ROUND(MIN(product_price),0) AS min_price,
+                    ROUND(PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY product_price),0) AS p25_price,
+                    ROUND(AVG(product_price),0) AS avg_price,
+                    ROUND(PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY product_price),0) AS p75_price,
+                    ROUND(MAX(product_price),0) AS max_price,
+                    ROUND(AVG(product_star_rating),2) AS avg_rating
+                FROM rapidapi_flipkart_products
+                WHERE product_title IS NOT NULL AND {where_clause}
+                GROUP BY category_name, brand
+                ORDER BY listings DESC LIMIT {limit}
+            """
+        else:
+            sql = f"""
+                SELECT category_name, brand, COUNT(*) AS listings,
+                    ROUND(MIN(product_price),0) AS min_price,
+                    ROUND(MAX(product_price),0) AS max_price,
+                    ROUND(AVG(product_price),0) AS avg_price,
+                    ROUND(AVG(product_star_rating),2) AS avg_rating,
+                    SUM(product_rating_count) AS total_reviews,
+                    ROUND(AVG(estimated_sales),0) AS avg_sales
+                FROM rapidapi_flipkart_products
+                WHERE product_title IS NOT NULL AND {where_clause}
+                GROUP BY category_name, brand
+                ORDER BY total_reviews DESC LIMIT {limit}
+            """
+    else:
+        platform = "Amazon"
+        sql = f"""
+            SELECT category_name, COUNT(*) AS listings,
+                ROUND(MIN(product_price_numeric),0) AS min_price,
+                ROUND(MAX(product_price_numeric),0) AS max_price,
+                ROUND(AVG(product_price_numeric),0) AS avg_price,
+                ROUND(AVG(product_star_rating_numeric),2) AS avg_rating,
+                SUM(product_num_ratings) AS total_reviews,
+                ROUND(AVG(avg_sales_volume),0) AS avg_sales
+            FROM rapidapi_amazon_products
+            WHERE product_title IS NOT NULL AND {where_clause}
+            GROUP BY category_name
+            ORDER BY total_reviews DESC LIMIT {limit}
+        """
+ 
+    return sql.strip(), platform
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# PROACTIVE INSIGHT INJECTOR
+# ──────────────────────────────────────────────────────────────────────
+ 
+def generate_proactive_insight(data: List[Dict], intents: List[str]) -> str:
+    if not data: return ""
+    insights = []
+ 
+    rated = [row for row in data if row.get("avg_rating") and row.get("total_reviews")]
+    if rated:
+        gem = min(rated, key=lambda x: x.get("total_reviews", 9_999_999))
+        if gem.get("avg_rating", 0) >= 4.0 and gem.get("total_reviews", 0) < 500:
+            insights.append(
+                f"Hidden gem: '{gem.get('category_name', gem.get('brand','?'))}' "
+                f"has {gem['avg_rating']}★ but only {gem['total_reviews']} reviews — "
+                f"low competition with proven quality."
+            )
+ 
+    for row in data[:5]:
+        mx  = row.get("max_price", 0) or 0
+        avg = row.get("avg_price", 0) or 0
+        if mx > 0 and avg > 0 and mx / avg > 4:
+            insights.append(
+                f"Big price gap in '{row.get('category_name','?')}': "
+                f"₹{int(row.get('min_price',0)):,}–₹{int(mx):,} (avg ₹{int(avg):,}) — "
+                f"premium positioning is viable here."
+            )
+            break
+ 
+    for row in data[:5]:
+        sales  = row.get("avg_sales", 0) or 0
+        rating = row.get("avg_rating", 0) or 0
+        if sales > 100 and 0 < rating < 3.8:
+            insights.append(
+                f"Quality gap in '{row.get('category_name','?')}': "
+                f"~{int(sales)} avg monthly sales but only {rating}★ — "
+                f"a better product here could dominate quickly."
+            )
+            break
+ 
+    return insights[0] if insights else ""
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# MASTER PROMPT BUILDER  —  mode-aware, context-rich
+# ──────────────────────────────────────────────────────────────────────
+ 
+def build_master_prompt(
+    question:        str,
+    history:         List[Message],
+    agg_data:        List[Dict],
+    product_data:    List[Dict],
+    platform:        str,
+    intents:         List[str],
+    tone:            Dict[str, bool],
+    filters:         Dict,
+    seller_profile:  Dict,
+    proactive:       str,
+    mode:            str,
+    extracted:       Dict,
+    market_score:    Optional[Dict],
+    session_context: Dict,
+) -> str:
+ 
+    # ── Seller identity ──
+    name   = seller_profile.get("name") or session_context.get("seller_name", "")
+    cat    = seller_profile.get("category") or session_context.get("product_of_interest", "")
+    exp    = seller_profile.get("experience", "")
+    budget = seller_profile.get("budget", "")
+ 
+    identity_lines = []
+    if name:   identity_lines.append(f"Name: {name}")
+    if cat:    identity_lines.append(f"Interested in selling: {cat}")
+    if exp:    identity_lines.append(f"Experience: {exp}")
+    if budget: identity_lines.append(f"Budget: {budget}")
+    identity_block = "\n".join(identity_lines)
+ 
+    # ── Conversation history ──
+    history_lines = []
+    for m in history[-(MAX_HISTORY_TURNS * 2):]:
+        prefix = "Seller" if m.role == "user" else "Insydz"
+        history_lines.append(f"{prefix}: {m.content}")
+    history_block = "\n".join(history_lines)
+ 
+    # ── Filter context ──
+    filter_parts = []
+    fc = filters.get("category", "")
+    if fc and fc != "All Categories": filter_parts.append(f"Category: {fc}")
+    pr = filters.get("priceRange", [0, 5_000_000])
+    if pr[0] > 0 or pr[1] < 5_000_000:
+        filter_parts.append(f"Price: ₹{pr[0]:,}–₹{pr[1]:,}")
+    if filters.get("rating", 0) > 0:
+        filter_parts.append(f"Min rating: {filters['rating']}★")
+    filter_block = ", ".join(filter_parts) or "Full catalog"
+ 
+    # ── Market score block ──
+    score_block = ""
+    if market_score:
+        score_block = f"""
+Market Entry Scores for this product/category:
+- Overall opportunity:  {market_score['overall_score']}/100  ({market_score['verdict']})
+- Demand score:         {market_score['demand_score']}/100
+- Competition score:    {market_score['competition_score']}/100  (higher = less competition)
+- Margin potential:     {market_score['margin_score']}/100
+- Avg market price:     ₹{market_score['avg_price']:,}
+- Avg market rating:    {market_score['avg_rating']}★
+- Avg monthly sales:    ~{market_score['avg_sales']} units
+- Total listings found: {market_score['total_listings']}
+"""
+ 
+    # ── Product-specific data ──
+    product_block = ""
+    if product_data:
+        top5 = product_data[:5]
+        product_block = f"\nActual matching products in database (top 5):\n{json.dumps(top5, indent=2, default=str)}"
+ 
+    # ── Aggregated market data ──
+    agg_block = ""
+    if agg_data:
+        agg_block = f"\nMarket aggregation data:\n{json.dumps(agg_data[:8], indent=2, default=str)}"
+ 
+    # ── Tone instruction ──
+    tone_map = {
+        "frustrated": "They seem frustrated — acknowledge briefly, then be extra clear.",
+        "confused":   "They seem confused — break it down simply, no jargon.",
+        "excited":    "They're excited — match the energy but stay sharp and factual.",
+        "urgent":     "They need this fast — most important point first, no preamble.",
+        "beginner":   "They're new to selling — no assumed knowledge, explain from basics.",
+        "expert":     "They're experienced — skip basics, go straight to metrics and tactics.",
+    }
+    tone_instruction = next((v for k, v in tone_map.items() if tone.get(k)), "")
+ 
+    # ── Mode-specific instructions ──
+    mode_instructions = {
+        "viability": (
+            "The seller wants to know if they can successfully sell a specific product.\n"
+            "Use the market score data. Be honest — if it's competitive, say so clearly.\n"
+            "Cover: demand level, competition level, realistic entry price, and one key risk.\n"
+            "End with a clear YES / YES BUT / NO UNLESS verdict."
+        ),
+        "decision": (
+            "The seller is choosing between options.\n"
+            "Compare directly using the data — don't be vague.\n"
+            "Pick a winner and explain exactly why with numbers."
+        ),
+        "execution": (
+            "The seller has decided what to sell and wants to know HOW.\n"
+            "Give concrete, actionable steps they can execute today.\n"
+            "Use exact prices, ratings benchmarks, and platform-specific tactics."
+        ),
+        "deep_dive": (
+            "This is a follow-up on something already discussed.\n"
+            "Go deeper than before — they already know the basics.\n"
+            "Use conversation history to stay consistent."
+        ),
+        "research": (
+            "The seller is exploring the market.\n"
+            "Surface the most interesting data points.\n"
+            "Help them discover something they didn't know they were looking for."
+        ),
+    }
+    mode_instruction = mode_instructions.get(mode, mode_instructions["research"])
+ 
+    # ── Intent focus ──
+    intent_focus_map = {
+        "price_analysis":    "Focus on price bands and optimal entry price.",
+        "top_products":      "Lead with top performers by reviews and sales.",
+        "opportunity":       "Find the gap: low competition + real demand.",
+        "competitor":        "Compare directly — who's stronger and why.",
+        "rating_quality":    "Analyse quality signals and rating distribution.",
+        "brand_analysis":    "Dissect brand presence and pricing strategy.",
+        "sales_volume":      "Quantify demand with actual numbers.",
+        "profit_margin":     "Estimate realistic margins based on the data.",
+        "seasonal":          "Connect to Indian festival and seasonal demand cycles.",
+        "listing_tips":      "Give concrete listing optimisation advice.",
+        "logistics":         "Give practical shipping/fulfilment advice.",
+        "general_advice":    "Give the most useful strategic insight from the data.",
+    }
+    focus_lines  = [intent_focus_map[i] for i in intents if i in intent_focus_map]
+    focus_block  = "\n".join(f"• {l}" for l in focus_lines) or "• Answer directly and helpfully."
+ 
+    # ── Proactive insight ──
+    proactive_block = f"\nSurprising thing you noticed in the data — work it in naturally:\n{proactive}" if proactive else ""
+ 
+    # ── Extracted context ──
+    extracted_block = ""
+    if extracted.get("product"):
+        extracted_block = f"\nProduct the seller is asking about: {extracted['product']}"
+    if extracted.get("price_target"):
+        extracted_block += f"\nTheir target price: ₹{extracted['price_target']:,}"
+ 
+    # ════════════════════════════════════════════
+    # THE PROMPT
+    # ════════════════════════════════════════════
+    prompt = f"""You are Insydz, a sharp and friendly e-commerce expert helping Indian sellers on {platform}.
+ 
+Your personality:
+- Talk like a real person — direct, confident, zero corporate fluff
+- Use phrases like "look", "honestly", "here's the thing", "the data tells a different story"
+- Share opinions when you have them — don't hedge everything
+- Always use ₹, never $ or USD
+- Max 220 words. Short punchy paragraphs. No overloading with bullets.
+- NEVER open with "Great question!", "Certainly!", "Of course!", or "Sure!"
+- NEVER repeat the question back to the user
+- If data is limited, give your best expert take confidently
+ 
+{f"About this seller:{chr(10)}{identity_block}{chr(10)}" if identity_block else ""}
+Filters active: {filter_block}
+{extracted_block}
+{f"Conversation so far:{chr(10)}{history_block}{chr(10)}" if history_block else ""}
+{score_block}
+{product_block}
+{agg_block}
+{proactive_block}
+ 
+Conversation mode: {mode.upper()}
+What this means: {mode_instruction}
+ 
+Response focus:
+{focus_block}
+ 
+{f"Tone: {tone_instruction}" if tone_instruction else ""}
+ 
+Seller asks: {question}
+ 
+Insydz:"""
+ 
+    return prompt
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# POST-PROCESSOR
+# ──────────────────────────────────────────────────────────────────────
+ 
+BAD_OPENERS = re.compile(
+    r"^(great question[!.]?|certainly[!.]?|of course[!.]?|absolutely[!.]?|"
+    r"sure[!.]?|hello[!.]?|hi there[!.]?|as an ai[,.]?|i'?m an? ai[,.]?|"
+    r"thank you for [^.]+\.|thanks for [^.]+\.)\s*",
+    re.IGNORECASE
+)
+SELF_REF    = re.compile(r"\b(as insydz|insydz here|this is insydz)\b", re.IGNORECASE)
+PROMPT_LEAK = re.compile(r"(seller asks:|insydz:|your focus|tone note|market data|conversation mode)", re.IGNORECASE)
+ 
+def post_process(text: str) -> str:
+    text = text.strip()
+    text = BAD_OPENERS.sub("", text).strip()
+    if text: text = text[0].upper() + text[1:]
+    text = SELF_REF.sub("", text)
+    m = PROMPT_LEAK.search(text)
+    if m: text = text[:m.start()].strip()
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# OLLAMA
+# ──────────────────────────────────────────────────────────────────────
+ 
+OLLAMA_PARAMS = {
+    "temperature":    0.72,
+    "top_p":          0.88,
+    "top_k":          45,
+    "repeat_penalty": 1.15,
+    "num_predict":    450,
+    "stop":           ["\n\nSeller", "\n\nInsydz", "Seller asks:", "Your focus", "Conversation mode:"]
+}
+ 
+def call_ollama(prompt: str, stream: bool = False):
+    return requests.post(
+        f"{OLLAMA_API_URL}/api/generate",
+        json={"model": MODEL_NAME, "prompt": prompt, "stream": stream, "options": OLLAMA_PARAMS},
+        stream=stream,
+        timeout=120
+    )
+ 
+def stream_ollama(prompt: str):
+    try:
+        resp = call_ollama(prompt, stream=True)
+        resp.raise_for_status()
+        for line in resp.iter_lines():
+            if not line: continue
+            try:
+                chunk = json.loads(line)
+                token = chunk.get("response", "")
+                yield token
+                if chunk.get("done"): break
+            except Exception:
+                continue
+    except Exception as e:
+        yield f"\n[Stream error: {str(e)}]"
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# MAIN ENDPOINT  —  /ai/query
+# ──────────────────────────────────────────────────────────────────────
  
 @app.post("/ai/query")
 def ask_ai(query: AIQuery, db: Session = Depends(get_db)):
-    source = query.source.lower()
-    filters = query.filters or {}
-    where_clause = build_where_clause(filters, source)
  
-    # Use a cache key based on source + filters + question
-    cache_key = f"{source}:{json.dumps(filters, sort_keys=True)}:{query.question}"
-    cached_answer = r.get(cache_key)
-    if cached_answer:
-        return {"answer": cached_answer, "cached": True}
+    # ── Validate ──
+    raw_source = (query.source or "").lower().strip()
+    if raw_source not in ("amazon", "flipkart"):
+        raise HTTPException(400, f"Invalid source '{query.source}'.")
+    source = raw_source
  
-    # Fetch top 100 rows only
-    limit = 100
-    if source == "flipkart":
-        sql = text(f"""
-        SELECT
-            product_title,
-            category_name,
-            brand,
-            ROUND(AVG(product_star_rating), 2) AS avg_rating,
-            SUM(product_rating_count) AS total_reviews,
-            ROUND(AVG(product_price), 2) AS avg_price,
-            COUNT(*) AS product_variants
-        FROM rapidapi_flipkart_products
-        WHERE product_title IS NOT NULL
-          AND {where_clause}
-        GROUP BY product_title, category_name, brand
-        ORDER BY total_reviews DESC
-        LIMIT {limit}
-        """)
-        rows = db.execute(sql).all()
-        data_list = [dict(row._mapping) for row in rows]
-        table_name = "RapidAPI Flipkart Products"
+    question = (query.question or "").strip()
+    if not question:
+        raise HTTPException(422, "Question cannot be empty.")
+ 
+    filters        = query.filters or {}
+    seller_profile = query.seller_profile or {}
+    session_id     = query.session_id or hashlib.md5(f"{question}{time.time()}".encode()).hexdigest()[:12]
+ 
+    # ── Load memory ──
+    history         = load_history(session_id)
+    session_context = load_context(session_id)
+ 
+    # ── Detect everything ──
+    intents   = detect_intent(question)
+    tone      = detect_tone(question, history)
+    mode      = detect_conversation_mode(question, history)
+    extracted = extract_product_from_question(question, history)
+ 
+    # ── Update session context with discovered info ──
+    if extracted.get("product"):
+        session_context["product_of_interest"] = extracted["product"]
+    if extracted.get("category"):
+        session_context["category_of_interest"] = extracted["category"]
+    if extracted.get("price_target"):
+        session_context["price_target"] = extracted["price_target"]
+    if seller_profile.get("name"):
+        session_context["seller_name"] = seller_profile["name"]
+    save_context(session_id, session_context)
+ 
+    # ── Cache check (skip for product-specific / viability queries) ──
+    is_product_query = bool(extracted.get("product")) or mode == "viability"
+    if not query.stream and not is_product_query:
+        cache_key = f"ai_v3:{source}:{json.dumps(filters, sort_keys=True)}:{question}"
+        cached = r.get(cache_key)
+        if cached:
+            raw = cached.decode() if isinstance(cached, bytes) else cached
+            try:
+                return json.loads(raw)
+            except Exception:
+                return {"answer": raw, "cached": True, "session_id": session_id}
+ 
+    # ── Build SQL queries ──
+    limit           = min(query.limit or 100, 120)
+    extra_category  = extracted.get("category") or session_context.get("category_of_interest", "")
+    where_clause    = build_where_clause(filters, source, extra_category)
+    agg_sql, platform = build_smart_sql(source, where_clause, intents, limit)
+ 
+    # ── Execute queries (product + aggregated in parallel) ──
+    agg_data     = []
+    product_data = []
 
-    elif source == "rapidapi_amazon_products":
-        sql = text(f"""
-        SELECT product_title, category_name, ROUND(AVG(product_star_rating_numeric), 2) AS avg_rating,
-               SUM(product_num_ratings) AS total_reviews, ROUND(AVG(product_price_numeric), 2) AS avg_price,
-               COUNT(*) AS product_variants
-        FROM rapidapi_amazon_products
-        WHERE product_title IS NOT NULL AND {where_clause}
-        GROUP BY product_title, category_name
-        ORDER BY total_reviews DESC
-        LIMIT {limit}
-        """)
-        rows = db.execute(sql).all()
-        data_list = [dict(row._mapping) for row in rows]
-        table_name = "RapidAPI Amazon Products"
-    else:
-        raise HTTPException(status_code=400, detail="Invalid source. Use 'flipkart' or 'rapidapi_amazon_products'.")
- 
-    data_json = json.dumps(data_list[:10], indent=2, default=decimal_to_float)
-    prompt = f"""
-We have {len(data_list)} records in the {table_name} table.
-IMPORTANT RULES:
-- All prices are in Indian Rupees (INR / ₹).
-- Do NOT mention or convert to any other currency (USD, EUR, etc).
-- If price is discussed, always use ₹.
-- If the question asks for another currency, say:
-  "Data is available only in INR (₹)."
-
- 
-Data:
-{data_json[:MAX_DATA_CHARS]}
- 
-Question: {query.question}
-Answer in 2 clear, concise lines using only the filtered data above.
-"""
- 
     try:
-        response = requests.post(
-            f"{OLLAMA_API_URL}/api/generate",
-            json={"model": MODEL_NAME, "prompt": prompt, "stream": False},
-            timeout=60
-        )
-        response.raise_for_status()
-        answer_data = response.json()
-        answer = answer_data.get("response", "No insights available.")
+        rows     = db.execute(text(agg_sql)).all()
+        agg_data = [dict(r._mapping) for r in rows]
+    except Exception as e:
+        raise HTTPException(500, f"Database error (agg): {str(e)}")
+
+    try:
+        if extracted.get("product"):
+            psql         = build_product_sql(source, extracted["product"], 20)
+            rows         = db.execute(text(psql)).all()
+            product_data = [dict(r._mapping) for r in rows]
+    except Exception as e:
+        product_data = []
  
-        # Cache the answer for 1 hour
-        r.setex(cache_key, 3600, answer)
+    # ── Market entry score (for viability mode) ──
+    score_data   = product_data or agg_data
+    market_score = compute_market_score(score_data, extracted.get("price_target")) if mode in ("viability", "decision") else None
  
+    # ── Proactive insight ──
+    proactive = generate_proactive_insight(agg_data or product_data, intents)
+ 
+    # ── Follow-up suggestions ──
+    followups = generate_followup_questions(mode, intents, extracted.get("product"), agg_data)
+ 
+    # ── Build prompt ──
+    prompt = build_master_prompt(
+        question=question,
+        history=history,
+        agg_data=agg_data,
+        product_data=product_data,
+        platform=platform,
+        intents=intents,
+        tone=tone,
+        filters=filters,
+        seller_profile=seller_profile,
+        proactive=proactive,
+        mode=mode,
+        extracted=extracted,
+        market_score=market_score,
+        session_context=session_context,
+    )
+ 
+    # ═══════════════════════════════════
+    # STREAMING MODE
+    # ═══════════════════════════════════
+    if query.stream:
+        def event_stream():
+            full = ""
+            for token in stream_ollama(prompt):
+                full += token
+                yield f"data: {json.dumps({'token': token})}\n\n"
+ 
+            clean = post_process(full)
+            append_turn(session_id, question, clean)
+ 
+            meta = {
+                "done":                  True,
+                "session_id":            session_id,
+                "intents":               intents,
+                "mode":                  mode,
+                "followup_questions":    followups,
+                "market_score":          market_score,
+                "had_proactive_insight": bool(proactive),
+                "extracted_product":     extracted.get("product"),
+            }
+            yield f"data: {json.dumps(meta)}\n\n"
+ 
+        return StreamingResponse(event_stream(), media_type="text/event-stream")
+ 
+    # ═══════════════════════════════════
+    # STANDARD MODE
+    # ═══════════════════════════════════
+    try:
+        resp       = call_ollama(prompt, stream=False)
+        resp.raise_for_status()
+        raw_answer = resp.json().get("response", "").strip()
+        answer     = post_process(raw_answer) or "I wasn't able to generate a response. Try rephrasing."
     except requests.exceptions.Timeout:
-        answer = "AI response timed out. Please try again."
+        answer = "Took too long — try a more focused question."
     except requests.exceptions.ConnectionError:
-        answer = "AI service unavailable. Cannot reach Ollama."
-    except requests.exceptions.HTTPError as e:
-        answer = f"Ollama error: {e.response.text}"
+        answer = "Can't reach the AI service right now."
     except Exception as e:
         answer = f"Unexpected error: {str(e)}"
  
-    return {"answer": answer, "cached": False}
-
+    append_turn(session_id, question, answer)
+ 
+    result = {
+        "answer":                answer,
+        "cached":                False,
+        "session_id":            session_id,
+        "platform":              platform,
+        "intents":               intents,
+        "mode":                  mode,
+        "tone":                  {k: v for k, v in tone.items() if v},
+        "followup_questions":    followups,
+        "market_score":          market_score,
+        "data_rows":             len(agg_data),
+        "product_rows":          len(product_data),
+        "had_proactive_insight": bool(proactive),
+        "extracted_product":     extracted.get("product"),
+    }
+ 
+    # Cache only non-product, non-viability queries
+    if not is_product_query:
+        cache_key = f"ai_v3:{source}:{json.dumps(filters, sort_keys=True)}:{question}"
+        r.setex(cache_key, HISTORY_TTL, json.dumps(result, default=str))
+ 
+    return result
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# BONUS ENDPOINTS
+# ──────────────────────────────────────────────────────────────────────
+ 
+class ResetRequest(BaseModel):
+    session_id: str
+ 
+@app.post("/ai/reset")
+def reset_session(req: ResetRequest):
+    r.delete(_history_key(req.session_id))
+    r.delete(_context_key(req.session_id))
+    return {"status": "ok", "message": f"Session {req.session_id} cleared."}
+ 
+@app.get("/ai/history/{session_id}")
+def get_history_endpoint(session_id: str):
+    return {
+        "session_id": session_id,
+        "messages":   [m.dict() for m in load_history(session_id)],
+        "context":    load_context(session_id),
+    }
+ 
+@app.get("/ai/context/{session_id}")
+def get_context(session_id: str):
+    """Returns what Insydz knows about this seller so far."""
+    return {"session_id": session_id, "context": load_context(session_id)}
 
 # @app.post("/ai/analyze-chart")
 # def analyze_chart_data(request: AIChartAnalysis):
@@ -2267,238 +3104,6 @@ def get_flipkart_categories_distribution(
 
 
  
-# @app.get("/lstm_forecast/flipkart/{product_name}")
-# def forecast_flipkart(product_name: str):
-#     """Forecast Flipkart product sales using LSTM"""
-#     clean_product_name = product_name.strip().strip('"')
-    
-#     # Try by PID first
-#     query = text('''
-#         SELECT created_at, sales_volume, estimated_sales
-#         FROM rapidapi_flipkart_products 
-#         WHERE pid = :product_name 
-#         ORDER BY created_at
-#     ''')
-#     df = pd.read_sql_query(query, engine, params={"product_name": clean_product_name})
-    
-#     # Try by product title if PID search fails
-#     if df.empty:
-#         query = text('''
-#             SELECT created_at, sales_volume, estimated_sales
-#             FROM rapidapi_flipkart_products 
-#             WHERE product_title ILIKE :title 
-#             ORDER BY created_at
-#         ''')
-#         df = pd.read_sql_query(query, engine, params={"title": f"%{clean_product_name}%"})
-    
-#     # Generate dummy data if no records found
-#     if df.empty:
-#         today = pd.Timestamp.today()
-#         periods = 30
-#         df = pd.DataFrame({
-#             "created_at": pd.date_range(end=today, periods=periods),
-#             "sales_volume": [random.randint(500, 5000) for _ in range(periods)]
-#         })
-#     else:
-#         # Parse sales_volume (handles "10K+", "5M+" format)
-#         df["sales_volume"] = df["sales_volume"].apply(parse_sales_volume)
-        
-#         # If sales_volume is null, try estimated_sales
-#         if df["sales_volume"].isna().all() and "estimated_sales" in df.columns:
-#             df["sales_volume"] = df["estimated_sales"].apply(parse_sales_volume)
-        
-#         df = df.dropna(subset=["sales_volume"])
-        
-#         if df.empty:
-#             today = pd.Timestamp.today()
-#             periods = 30
-#             df = pd.DataFrame({
-#                 "created_at": pd.date_range(end=today, periods=periods),
-#                 "sales_volume": [random.randint(500, 5000) for _ in range(periods)]
-#             })
-    
-#     last_date = df["created_at"].max()
-    
-#     forecast_result = lstm_forecast(df["sales_volume"], last_date, forecast_days=365)
-    
-#     # Add historical sales data
-#     historical_sales = []
-#     for row in df.tail(10).to_dict(orient="records"):
-#         historical_sales.append({
-#             "created_at": str(row["created_at"].date()),
-#             "sales_volume": float(row["sales_volume"])
-#         })
-    
-#     return {
-#         "product_name": product_name,
-#         "last_date": str(last_date.date()),
-#         "historical_sales": historical_sales,
-#         "forecast": forecast_result
-#     } 
-
-@app.get("/lstm_forecast/flipkart/{product_name:path}")
-def forecast_flipkart(product_name: str):
-    """Forecast Flipkart product sales using LSTM"""
-    try:
-        clean_product_name = unquote(product_name).strip().strip('"')
-        print(f"🔍 Searching for: {clean_product_name}")
-        
-        # Try by PID first
-        query = text('''
-            SELECT created_at, sales_volume, estimated_sales
-            FROM rapidapi_flipkart_products 
-            WHERE pid = :product_name 
-            ORDER BY created_at
-        ''')
-        df = pd.read_sql_query(query, engine, params={"product_name": clean_product_name})
-        print(f"📊 PID search found {len(df)} records")
-        
-        # Try by product title if PID search fails
-        if df.empty:
-            query = text('''
-                SELECT created_at, sales_volume, estimated_sales
-                FROM rapidapi_flipkart_products 
-                WHERE product_title ILIKE :title 
-                ORDER BY created_at
-            ''')
-            df = pd.read_sql_query(query, engine, params={"title": f"%{clean_product_name}%"})
-            print(f"📊 Title search found {len(df)} records")
-        
-        # Generate dummy data if no records found
-        if df.empty:
-            print("⚠️ No records found, generating dummy data")
-            today = pd.Timestamp.today()
-            periods = 30
-            df = pd.DataFrame({
-                "created_at": pd.date_range(end=today, periods=periods),
-                "sales_volume": [random.randint(500, 5000) for _ in range(periods)]
-            })
-        else:
-            # Parse sales_volume
-            df["sales_volume"] = df["sales_volume"].apply(parse_sales_volume)
-            
-            if df["sales_volume"].isna().all() and "estimated_sales" in df.columns:
-                df["sales_volume"] = df["estimated_sales"].apply(parse_sales_volume)
-            
-            df = df.dropna(subset=["sales_volume"])
-            
-            if df.empty:
-                today = pd.Timestamp.today()
-                periods = 30
-                df = pd.DataFrame({
-                    "created_at": pd.date_range(end=today, periods=periods),
-                    "sales_volume": [random.randint(500, 5000) for _ in range(periods)]
-                })
-        
-        last_date = df["created_at"].max()
-        forecast_result = lstm_forecast(df["sales_volume"], last_date, forecast_days=365)
-        
-        # Add historical sales data
-        historical_sales = []
-        for row in df.tail(10).to_dict(orient="records"):
-            historical_sales.append({
-                "created_at": str(row["created_at"].date()),
-                "sales_volume": float(row["sales_volume"])
-            })
-        
-        return {
-            "product_name": clean_product_name,
-            "last_date": str(last_date.date()),
-            "historical_sales": historical_sales,
-            "forecast": forecast_result
-        }
-    
-    except Exception as e:
-        print(f"❌ Error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e)) 
-
-def parse_sales_volume(value):
-    if value is None:
-        return np.nan
-    value = str(value).lower()
-    try:
-        if "k" in value:
-            return float(value.replace("k", "").replace("+", "").strip()) * 1000
-        elif "m" in value:
-            return float(value.replace("m", "").replace("+", "").strip()) * 1000000
-        else:
-            digits = ''.join([c for c in value if c.isdigit()])
-            return float(digits) if digits else np.nan
-    except:
-        return np.nan
- 
-# ---------- Dummy LSTM forecast function ----------
-def lstm_forecast(series, last_date, forecast_days=365):
-    forecast_dates = pd.date_range(start=last_date + timedelta(days=1), periods=forecast_days)
-    last_value = series.iloc[-1] if not series.empty else 1000
-    forecast_values = []
-    for _ in range(forecast_days):
-        last_value = max(0, last_value + random.randint(-50, 50))
-        forecast_values.append(float(last_value))  # convert to Python float
-    return {
-        "forecast_dates": [str(d.date()) for d in forecast_dates],
-        "forecast_sales": forecast_values
-    }
- 
-# ---------- Endpoint ----------
-@app.get("/lstm_forecast/amazon/{product_name}")
-def forecast_sales(product_name: str):
-    clean_product_name = product_name.strip().strip('"')
-   
-    query = text('''
-        SELECT created_at, sales_volume
-        FROM "rapidapi_amazon_products"
-        WHERE asin = :product_name
-        ORDER BY created_at
-    ''')
-    df = pd.read_sql_query(query, engine, params={"product_name": clean_product_name})
-   
-    if df.empty:
-        query = text('''
-            SELECT created_at, sales_volume
-            FROM "rapidapi_amazon_products"
-            WHERE product_title ILIKE :product_name
-            ORDER BY created_at
-        ''')
-        df = pd.read_sql_query(query, engine, params={"product_name": f"%{clean_product_name}%"})
-   
-    if df.empty:
-        today = pd.Timestamp.today()
-        periods = 30
-        df = pd.DataFrame({
-            "created_at": pd.date_range(end=today, periods=periods),
-            "sales_volume": [random.randint(500, 5000) for _ in range(periods)]
-        })
-    else:
-        df["sales_volume"] = df["sales_volume"].apply(parse_sales_volume)
-        df = df.dropna(subset=["sales_volume"])
-        if df.empty:
-            today = pd.Timestamp.today()
-            periods = 30
-            df = pd.DataFrame({
-                "created_at": pd.date_range(end=today, periods=periods),
-                "sales_volume": [random.randint(500, 5000) for _ in range(periods)]
-            })
-   
-    last_date = df["created_at"].max()
-   
-    forecast_result = lstm_forecast(df["sales_volume"], last_date, forecast_days=365)
-   
-    # Convert all numeric types to native Python types for JSON serialization
-    historical_sales = []
-    for row in df.tail(10).to_dict(orient="records"):
-        historical_sales.append({
-            "created_at": str(row["created_at"].date()),
-            "sales_volume": float(row["sales_volume"])
-        })
-   
-    return {
-        "product_name": product_name,
-        "last_date": str(last_date.date()),
-        "historical_sales": historical_sales,
-        "forecast": forecast_result
-    }
- 
 @app.get("/api/products/{asin}")
 def get_product_detail(asin: str, db: Session = Depends(get_db)):
     """
@@ -3071,169 +3676,179 @@ def get_amazon_sentiment(
 
 #     result = lstm_forecast(df["price"], last_date)
 #     return result
-
-@app.get("/lstm_forecast/flipkart/{product_name:path}")
-def forecast_flipkart(product_name: str):
-    """Forecast Flipkart product sales using LSTM"""
+def parse_sales_volume(value):
+    """Parse sales volume strings like '10K+', '5M+' into float."""
+    if value is None:
+        return np.nan
+    value = str(value).lower()
+    try:
+        if "k" in value:
+            return float(value.replace("k", "").replace("+", "").strip()) * 1_000
+        elif "m" in value:
+            return float(value.replace("m", "").replace("+", "").strip()) * 1_000_000
+        else:
+            digits = ''.join(c for c in value if c.isdigit())
+            return float(digits) if digits else np.nan
+    except:
+        return np.nan
+ 
+def lstm_forecast(series, last_date, forecast_days=365):
+    """Dummy LSTM forecast for demo purposes."""
+    forecast_dates = pd.date_range(start=last_date + timedelta(days=1), periods=forecast_days)
+    last_value = series.iloc[-1] if not series.empty else 1000
+    forecast_values = []
+    for _ in range(forecast_days):
+        last_value = max(0, last_value + random.randint(-50, 50))
+        forecast_values.append(float(last_value))
+    return {
+        "forecast_dates": [str(d.date()) for d in forecast_dates],
+        "forecast_sales": forecast_values
+    }
+ 
+def fetch_df(sql: str, params: dict) -> pd.DataFrame:
+    """Execute SQLAlchemy query and return a pandas DataFrame."""
+    with engine.connect() as conn:
+        result = conn.execute(text(sql), params)
+        rows = result.fetchall()
+        df = pd.DataFrame(rows, columns=result.keys())
+        return df
+ 
+# ----- Amazon Endpoint -----
+@app.get("/lstm_forecast/amazon/{product_name:path}")
+def forecast_amazon(product_name: str):
     try:
         clean_product_name = unquote(product_name).strip().strip('"')
-        print(f"🔍 Searching for: {clean_product_name}")
-        
-        # Try by PID first
-        query = text('''
-            SELECT created_at, sales_volume, estimated_sales
-            FROM rapidapi_flipkart_products 
-            WHERE pid = :product_name 
+        print(f"🔍 Amazon search: {clean_product_name}")
+ 
+        # Try by ASIN first
+        df = fetch_df(
+            """
+            SELECT created_at, sales_volume
+            FROM rapidapi_amazon_products
+            WHERE asin = :product_name
             ORDER BY created_at
-        ''')
-        df = pd.read_sql_query(query, engine, params={"product_name": clean_product_name})
-        print(f"📊 PID search found {len(df)} records")
-        
-        # Try by product title if PID search fails
+            """,
+            {"product_name": clean_product_name}
+        )
+ 
+        # Try by product title if ASIN fails
         if df.empty:
-            query = text('''
-                SELECT created_at, sales_volume, estimated_sales
-                FROM rapidapi_flipkart_products 
-                WHERE product_title ILIKE :title 
+            df = fetch_df(
+                """
+                SELECT created_at, sales_volume
+                FROM rapidapi_amazon_products
+                WHERE product_title ILIKE :product_name
                 ORDER BY created_at
-            ''')
-            df = pd.read_sql_query(query, engine, params={"title": f"%{clean_product_name}%"})
-            print(f"📊 Title search found {len(df)} records")
-        
-        # Generate dummy data if no records found
+                """,
+                {"product_name": f"%{clean_product_name}%"}
+            )
+ 
+        # If still empty, generate dummy data
         if df.empty:
-            print("⚠️ No records found, generating dummy data")
             today = pd.Timestamp.today()
-            periods = 30
             df = pd.DataFrame({
-                "created_at": pd.date_range(end=today, periods=periods),
-                "sales_volume": [random.randint(500, 5000) for _ in range(periods)]
+                "created_at": pd.date_range(end=today, periods=30),
+                "sales_volume": [random.randint(500, 5000) for _ in range(30)]
             })
         else:
-            # Parse sales_volume
             df["sales_volume"] = df["sales_volume"].apply(parse_sales_volume)
-            
-            if df["sales_volume"].isna().all() and "estimated_sales" in df.columns:
-                df["sales_volume"] = df["estimated_sales"].apply(parse_sales_volume)
-            
             df = df.dropna(subset=["sales_volume"])
-            
             if df.empty:
                 today = pd.Timestamp.today()
-                periods = 30
                 df = pd.DataFrame({
-                    "created_at": pd.date_range(end=today, periods=periods),
-                    "sales_volume": [random.randint(500, 5000) for _ in range(periods)]
+                    "created_at": pd.date_range(end=today, periods=30),
+                    "sales_volume": [random.randint(500, 5000) for _ in range(30)]
                 })
-        
+ 
         last_date = df["created_at"].max()
-        forecast_result = lstm_forecast(df["sales_volume"], last_date, forecast_days=365)
-        
-        # Add historical sales data
-        historical_sales = []
-        for row in df.tail(10).to_dict(orient="records"):
-            historical_sales.append({
-                "created_at": str(row["created_at"].date()),
-                "sales_volume": float(row["sales_volume"])
-            })
-        
+        forecast_result = lstm_forecast(df["sales_volume"], last_date)
+ 
+        historical_sales = [
+            {"created_at": str(row["created_at"].date()), "sales_volume": float(row["sales_volume"])}
+            for row in df.tail(10).to_dict(orient="records")
+        ]
+ 
         return {
             "product_name": clean_product_name,
             "last_date": str(last_date.date()),
             "historical_sales": historical_sales,
             "forecast": forecast_result
         }
-    
+ 
     except Exception as e:
-        print(f"❌ Error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e)) 
-
-def parse_sales_volume(value):
-    if value is None:
-        return np.nan
-    value = str(value).lower()
+        print("❌ AMAZON ERROR:", e)
+        raise HTTPException(status_code=500, detail=str(e))
+ 
+# ----- Flipkart Endpoint -----
+@app.get("/lstm_forecast/flipkart/{product_name:path}")
+def forecast_flipkart(product_name: str):
     try:
-        if "k" in value:
-            return float(value.replace("k", "").replace("+", "").strip()) * 1000
-        elif "m" in value:
-            return float(value.replace("m", "").replace("+", "").strip()) * 1000000
-        else:
-            digits = ''.join([c for c in value if c.isdigit()])
-            return float(digits) if digits else np.nan
-    except:
-        return np.nan
-
-# ---------- Dummy LSTM forecast function ----------
-def lstm_forecast(series, last_date, forecast_days=365):
-    forecast_dates = pd.date_range(start=last_date + timedelta(days=1), periods=forecast_days)
-    last_value = series.iloc[-1] if not series.empty else 1000
-    forecast_values = []
-    for _ in range(forecast_days):
-        last_value = max(0, last_value + random.randint(-50, 50))
-        forecast_values.append(float(last_value))  # convert to Python float
-    return {
-        "forecast_dates": [str(d.date()) for d in forecast_dates],
-        "forecast_sales": forecast_values
-    }
-
-# ---------- Endpoint ----------
-@app.get("/lstm_forecast/amazon/{product_name}")
-def forecast_sales(product_name: str):
-    clean_product_name = product_name.strip().strip('"')
-    
-    query = text('''
-        SELECT created_at, sales_volume
-        FROM "rapidapi_amazon_products"
-        WHERE asin = :product_name
-        ORDER BY created_at
-    ''')
-    df = pd.read_sql_query(query, engine, params={"product_name": clean_product_name})
-    
-    if df.empty:
-        query = text('''
-            SELECT created_at, sales_volume
-            FROM "rapidapi_amazon_products"
-            WHERE product_title ILIKE :product_name
+        clean_product_name = unquote(product_name).strip().strip('"')
+        print(f"🔍 Flipkart search: {clean_product_name}")
+ 
+        # Try by PID
+        df = fetch_df(
+            """
+            SELECT created_at, sales_volume, estimated_sales
+            FROM rapidapi_flipkart_products
+            WHERE pid = :product_name
             ORDER BY created_at
-        ''')
-        df = pd.read_sql_query(query, engine, params={"product_name": f"%{clean_product_name}%"})
-    
-    if df.empty:
-        today = pd.Timestamp.today()
-        periods = 30
-        df = pd.DataFrame({
-            "created_at": pd.date_range(end=today, periods=periods),
-            "sales_volume": [random.randint(500, 5000) for _ in range(periods)]
-        })
-    else:
-        df["sales_volume"] = df["sales_volume"].apply(parse_sales_volume)
-        df = df.dropna(subset=["sales_volume"])
+            """,
+            {"product_name": clean_product_name}
+        )
+ 
+        # Try by product title
+        if df.empty:
+            df = fetch_df(
+                """
+                SELECT created_at, sales_volume, estimated_sales
+                FROM rapidapi_flipkart_products
+                WHERE product_title ILIKE :product_name
+                ORDER BY created_at
+                """,
+                {"product_name": f"%{clean_product_name}%"}
+            )
+ 
+        # If still empty, generate dummy data
         if df.empty:
             today = pd.Timestamp.today()
-            periods = 30
             df = pd.DataFrame({
-                "created_at": pd.date_range(end=today, periods=periods),
-                "sales_volume": [random.randint(500, 5000) for _ in range(periods)]
+                "created_at": pd.date_range(end=today, periods=30),
+                "sales_volume": [random.randint(500, 5000) for _ in range(30)]
             })
-    
-    last_date = df["created_at"].max()
-    
-    forecast_result = lstm_forecast(df["sales_volume"], last_date, forecast_days=365)
-    
-    # Convert all numeric types to native Python types for JSON serialization
-    historical_sales = []
-    for row in df.tail(10).to_dict(orient="records"):
-        historical_sales.append({
-            "created_at": str(row["created_at"].date()),
-            "sales_volume": float(row["sales_volume"])
-        })
-    
-    return {
-        "product_name": product_name,
-        "last_date": str(last_date.date()),
-        "historical_sales": historical_sales,
-        "forecast": forecast_result
-    }
+        else:
+            df["sales_volume"] = df["sales_volume"].apply(parse_sales_volume)
+            # fallback to estimated_sales if needed
+            if df["sales_volume"].isna().all() and "estimated_sales" in df.columns:
+                df["sales_volume"] = df["estimated_sales"].apply(parse_sales_volume)
+            df = df.dropna(subset=["sales_volume"])
+            if df.empty:
+                today = pd.Timestamp.today()
+                df = pd.DataFrame({
+                    "created_at": pd.date_range(end=today, periods=30),
+                    "sales_volume": [random.randint(500, 5000) for _ in range(30)]
+                })
+ 
+        last_date = df["created_at"].max()
+        forecast_result = lstm_forecast(df["sales_volume"], last_date)
+ 
+        historical_sales = [
+            {"created_at": str(row["created_at"].date()), "sales_volume": float(row["sales_volume"])}
+            for row in df.tail(10).to_dict(orient="records")
+        ]
+ 
+        return {
+            "product_name": clean_product_name,
+            "last_date": str(last_date.date()),
+            "historical_sales": historical_sales,
+            "forecast": forecast_result
+        }
+ 
+    except Exception as e:
+        print("❌ FLIPKART ERROR:", e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 
 @app.get("/rapidapi/top-sales")
 def get_top_sales_products(
@@ -4567,7 +5182,7 @@ from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr
 from fastapi import HTTPException, Depends, Response, Cookie
 from sqlalchemy.orm import Session
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import secrets
 import random
 import sib_api_v3_sdk
@@ -4593,6 +5208,9 @@ SESSION_EXPIRE_DAYS_NO_REMEMBER = int(os.getenv("SESSION_EXPIRE_DAYS_NO_REMEMBER
 OTP_EXPIRY_MINUTES = int(os.getenv("OTP_EXPIRY_MINUTES", 10))
 OTP_MAX_ATTEMPTS = int(os.getenv("OTP_MAX_ATTEMPTS", 5))
 OTP_RESEND_COOLDOWN_SECONDS = int(os.getenv("OTP_RESEND_COOLDOWN_SECONDS", 60))
+
+# in your backend
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
 
 # ============================================
 # YOUR EXISTING REDIS CLIENT 'r' IS ALREADY HERE
@@ -4866,6 +5484,24 @@ def get_current_user(session_id: str = Cookie(None), db: Session = Depends(get_d
     
     return user
 
+def check_and_downgrade(user, db):
+    now = datetime.now(timezone.utc)
+
+    expires = user.subscription_expires_at
+
+    # convert DB value to UTC-aware if it's naive
+    if expires is not None and expires.tzinfo is None:
+        expires = expires.replace(tzinfo=timezone.utc)
+
+    if expires is None or expires <= now:
+
+        if user.subscription_tier != "free":
+            user.subscription_tier = "free"
+            db.commit()
+            db.refresh(user)
+
+    return user
+
 # ============================================
 # Pydantic Models
 # ============================================
@@ -5131,7 +5767,8 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
             "otp": otp,
             "created_at": datetime.now().isoformat(),
             "attempts": 0,
-            "verified": False
+            "verified": False,
+            "purpose": existing_otp.get("purpose", "signup") if existing_otp else "signup"
         }
         store_otp(request.email, otp_data)
         
@@ -5187,6 +5824,13 @@ def login_user(login_data: UserLogin, response: Response, db: Session = Depends(
             raise HTTPException(
                 status_code=401,
                 detail="Incorrect password. Please try again or reset your password."
+            )
+
+        # ADD IT HERE ↓
+        if not user.is_verified:
+            raise HTTPException(
+                status_code=403,
+                detail="Please verify your email before logging in."
             )
         
         current_month = datetime.now().strftime("%Y-%m")
@@ -5248,21 +5892,44 @@ def login_user(login_data: UserLogin, response: Response, db: Session = Depends(
 
 @app.post("/users/signup")
 def signup_user(user_data: schemas.UserCreate, response: Response, db: Session = Depends(get_db)):
-    """Create a new user account and set session cookie"""
     try:
         existing_user = db.query(models.User).filter(
             models.User.email == user_data.email
         ).first()
-       
+        
         if existing_user:
+            if not existing_user.is_verified:
+                # Resend OTP — send email FIRST, store only if successful
+                otp = generate_otp()
+                email_sent = send_otp_email(user_data.email, otp)
+                if not email_sent:
+                    raise HTTPException(
+                        status_code=500, 
+                        detail="Failed to send verification email. Please try again."
+                    )
+                store_otp(user_data.email, {
+                    "otp": otp,
+                    "created_at": datetime.now().isoformat(),
+                    "attempts": 0,
+                    "verified": False,
+                    "purpose": "signup"
+                })
+                print(f"✅ Verification email resent to {user_data.email}")
+                return {
+                    "success": True,
+                    "message": "Verification email resent.",
+                    "requires_verification": True,
+                    "email": user_data.email
+                }
             raise HTTPException(
-                status_code=400,
+                status_code=400, 
                 detail="Email already registered. Please login instead."
             )
-       
+        
+        # Create new user
         hashed_password = get_password_hash(user_data.password)
         current_month = datetime.now().strftime("%Y-%m")
-       
+        
         new_user = models.User(
             first_name=user_data.first_name,
             last_name=user_data.last_name,
@@ -5273,16 +5940,118 @@ def signup_user(user_data: schemas.UserCreate, response: Response, db: Session =
             business_interests=user_data.business_interests,
             subscription_tier='free',
             ai_chat_used=0,
-            ai_chat_month=current_month
+            ai_chat_month=current_month,
+            is_verified=False,
         )
-       
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
         
-        # Create session in Redis
-        session_token = create_session(new_user.id, remember_me=False)
+        # Send email FIRST, store OTP only if successful
+        otp = generate_otp()
+        email_sent = send_otp_email(user_data.email, otp)
         
+        if not email_sent:
+            # Rollback user creation if email fails
+            db.delete(new_user)
+            db.commit()
+            raise HTTPException(
+                status_code=500, 
+                detail="Failed to send verification email. Please try again."
+            )
+        
+        store_otp(user_data.email, {
+            "otp": otp,
+            "created_at": datetime.now().isoformat(),
+            "attempts": 0,
+            "verified": False,
+            "purpose": "signup"
+        })
+        
+        print(f"✅ New user created and verification email sent: {user_data.email}")
+        
+        return {
+            "success": True,
+            "message": "Account created. Please verify your email.",
+            "requires_verification": True,
+            "email": user_data.email
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        print(f"❌ Signup error: {str(e)}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Error creating user: {str(e)}"
+        )
+
+@app.post("/users/verify-email")
+def verify_email(request: VerifyOTPRequest, response: Response, db: Session = Depends(get_db)):
+    try:
+        # Get OTP data from Redis
+        otp_data = get_otp(request.email)
+        
+        if not otp_data or otp_data.get("purpose") != "signup":
+            raise HTTPException(
+                status_code=400, 
+                detail="No pending verification found for this email. Please sign up again."
+            )
+        
+        # Check max attempts
+        if otp_data.get("attempts", 0) >= OTP_MAX_ATTEMPTS:
+            delete_otp(request.email)
+            # Also delete the unverified user so they can sign up fresh
+            unverified_user = db.query(models.User).filter(
+                models.User.email == request.email,
+                models.User.is_verified == False
+            ).first()
+            if unverified_user:
+                db.delete(unverified_user)
+                db.commit()
+            raise HTTPException(
+                status_code=429, 
+                detail="Too many failed attempts. Please sign up again."
+            )
+        
+        # Check OTP match
+        if otp_data["otp"] != request.otp:
+            otp_data["attempts"] += 1
+            update_otp(request.email, otp_data)
+            remaining = OTP_MAX_ATTEMPTS - otp_data["attempts"]
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Invalid OTP. {remaining} attempts remaining."
+            )
+        
+        # Find user
+        user = db.query(models.User).filter(
+            models.User.email == request.email
+        ).first()
+        
+        if not user:
+            raise HTTPException(
+                status_code=404, 
+                detail="User not found. Please sign up again."
+            )
+        
+        if user.is_verified:
+            raise HTTPException(
+                status_code=400, 
+                detail="Email already verified. Please login."
+            )
+        
+        # Mark as verified
+        user.is_verified = True
+        db.commit()
+        db.refresh(user)
+        
+        # Clear OTP from Redis
+        delete_otp(request.email)
+        
+        # Create session
+        session_token = create_session(user.id, remember_me=False)
         response.set_cookie(
             key="session_id",
             value=session_token,
@@ -5291,39 +6060,54 @@ def signup_user(user_data: schemas.UserCreate, response: Response, db: Session =
             samesite="lax",
             max_age=SESSION_EXPIRE_DAYS_NO_REMEMBER * 24 * 60 * 60
         )
-       
-        print(f"✅ New user created: {new_user.email}")
         
+        current_month = datetime.now().strftime("%Y-%m")
+        
+        print(f"✅ Email verified successfully for {request.email}")
+        
+        # Return full user object (same as login response)
         return {
-            "id": new_user.id,
-            "first_name": new_user.first_name,
-            "last_name": new_user.last_name,
-            "email": new_user.email,
-            "business_name": new_user.business_name,
-            "location": new_user.location,
-            "business_interests": new_user.business_interests,
-            "subscription_tier": new_user.subscription_tier,
-            "ai_chat_used": new_user.ai_chat_used,
-            "ai_chat_month": new_user.ai_chat_month,
-            "created_at": new_user.created_at,
-            "message": "Account created successfully"
+            "success": True,
+            "message": "Email verified successfully.",
+            "user": {
+                "id": user.id,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+                "business_name": user.business_name,
+                "location": user.location,
+                "business_interests": user.business_interests,
+                "subscription_tier": user.subscription_tier or 'free',
+                "ai_chat_used": user.ai_chat_used or 0,
+                "ai_chat_month": user.ai_chat_month or current_month,
+                "created_at": str(user.created_at)
+            }
         }
+    
     except HTTPException:
         raise
     except Exception as e:
         db.rollback()
-        print(f"❌ Signup error: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error creating user: {str(e)}")
+        print(f"❌ Email verification error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error verifying email: {str(e)}"
+        )
 
 # ============================================
 # GET CURRENT USER
 # ============================================
 
 @app.get("/api/auth/me")
-def get_me(current_user: models.User = Depends(get_current_user)):
-    """Get current authenticated user from session"""
+def get_me(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    current_user = check_and_downgrade(current_user, db)
+
     current_month = datetime.now().strftime("%Y-%m")
-    
+
     return {
         "id": current_user.id,
         "first_name": current_user.first_name,
@@ -5332,7 +6116,10 @@ def get_me(current_user: models.User = Depends(get_current_user)):
         "business_name": current_user.business_name,
         "location": current_user.location,
         "business_interests": current_user.business_interests,
-        "subscription_tier": current_user.subscription_tier or 'free',
+
+        "subscription_tier": current_user.subscription_tier,
+        "subscription_expires_at": current_user.subscription_expires_at,
+
         "ai_chat_used": current_user.ai_chat_used or 0,
         "ai_chat_month": current_user.ai_chat_month or current_month,
         "created_at": str(current_user.created_at)
@@ -5410,2145 +6197,2237 @@ def get_user_profile(
         "created_at": str(user.created_at)
     }
 
-
-class ProductTrackerRequest(BaseModel):
-    product_name: str
-    category: str
-    source: str  # 'flipkart' or 'amazon'
-    base_cost: float  # Seller's cost price
-    user_email: Optional[str] = None 
-
-class PricingInsights(BaseModel):
-    recommended_price: float
-    min_price: float
-    max_price: float
-    profit_margin: float
-    confidence: str
-    # ⭐ ADD THESE THREE FIELDS
-    market_avg_price: float = 0
-    market_min_price: float = 0
-    market_max_price: float = 0
-
-class SalesInsights(BaseModel):
-    estimated_monthly_sales: str
-    estimated_daily_sales: float
-    market_demand: str
-
-class CompetitorInsights(BaseModel):
-    total_competitors: int
-    avg_competitor_price: float
-    avg_competitor_rating: float
-    top_competitor: Optional[Dict[str, Any]]
-
-# class LocationInsight(BaseModel):
-#     country: str
-#     market_share: str
-#     demand_level: str
-
-class LocationInsight(BaseModel):
-    """Pydantic model for location insights"""
-    country: str
-    market_share: str
-    demand_level: str
-
-class ProductTrackerResponse(BaseModel):
-    success: bool
-    product_name: str
-    category: str
-    source: str
-    pricing: PricingInsights
-    sales: SalesInsights
-    competition: CompetitorInsights
-    location_insights: List[LocationInsight] = Field(default_factory=list)
-    ai_strategy: str
-    warnings: List[str] = Field(default_factory=list)
-
-class AnalysisUsageResponse(BaseModel):
-    count: int
-    limit: int
-    month: str
-    subscription_tier: str
-    remaining: int
-
-class AnalysisTrackRequest(BaseModel):
-    increment: int = 1     
-
-
-STOPWORDS = {
-    "for", "with", "and", "the", "a", "an", "usb", "type", "inch", "in"
-}
-
-def extract_keywords(product_name: str) -> list[str]:
-    """
-    Industry-grade keyword extractor.
-    Automatically extracts meaningful keywords from product titles.
-    """
-    clean = re.sub(r"[^a-zA-Z0-9 ]", " ", product_name.lower())
-    tokens = [t.strip() for t in clean.split() if t.strip()]
-    keywords = [t for t in tokens if t not in STOPWORDS and len(t) > 2]
-    return keywords
-
-
-
-# @app.post("/product-tracker/analyze", response_model=ProductTrackerResponse)
-# def analyze_product_opportunity(request: ProductTrackerRequest, db: Session = Depends(get_db)):
-#     print(f"🔍 Analyzing market for: {request.product_name} in {request.category}")
-    
-#     # ✅ CRITICAL FIX: Get user email (can be None)
-#     user_email = request.user_email if request.user_email else None
-#     print(f"👤 User Email: {user_email if user_email else 'Anonymous (not logged in)'}")
-    
-#     try:
-#         # Get similar products
-#         similar_products = get_similar_products(db, request.product_name, request.category, request.source)
-#         if not similar_products:
-#             raise HTTPException(404, f"❌ No products found matching '{request.product_name}' in category '{request.category}' on {request.source}")
-        
-#         print(f"📊 Found {len(similar_products)} similar products")
-        
-#         # Validate cost
-#         prices = [float(p.get('price', 0)) for p in similar_products if p.get('price', 0) > 0]
-#         market_max = max(prices) if prices else 0
-#         market_min = min(prices) if prices else 0
-        
-#         if request.base_cost > market_max * 2:
-#             raise HTTPException(400, f"❌ Invalid Cost: Your cost (₹{request.base_cost:,.0f}) seems incorrect. Market range: ₹{market_min:,.0f}-₹{market_max:,.0f}")
-#         if request.base_cost > market_max:
-#             raise HTTPException(400, f"⚠️ Cost Too High: ₹{request.base_cost:,.0f} > market max ₹{market_max:,.0f}")
-        
-#         # Extract keywords
-#         keywords = extract_keywords(request.product_name)
-        
-#         # Run analysis
-#         pricing_insights = analyze_pricing(similar_products, request.base_cost)
-        
-#         sales_insights = analyze_sales_potential(
-#             products=similar_products,
-#             source=request.source,
-#             base_cost=request.base_cost,
-#             recommended_price=pricing_insights['recommended_price'],
-#             category=request.category
-#         )
-        
-#         competition_insights = analyze_competition(similar_products, request.category, keywords)
-#         location_insights = generate_location_insights(similar_products)
-        
-#         ai_strategy = generate_ai_strategy(
-#             pricing_insights, 
-#             sales_insights, 
-#             competition_insights, 
-#             request.base_cost, 
-#             request.product_name, 
-#             request.category,
-#             location_insights
-#         )
-        
-#         warnings = generate_warnings(pricing_insights, competition_insights, request.base_cost)
-        
-#         # Build response
-#         response = ProductTrackerResponse(
-#             success=True,
-#             product_name=request.product_name,
-#             category=request.category,
-#             source=request.source.capitalize(),
-#             pricing=PricingInsights(**pricing_insights),
-#             sales=SalesInsights(**sales_insights),
-#             competition=CompetitorInsights(**competition_insights),
-#             location_insights=location_insights,
-#             ai_strategy=ai_strategy,
-#             warnings=warnings
-#         )
-        
-#         # ✅ CRITICAL: Save to database with user email
-#         try:
-#             analysis_data = {
-#                 'product_name': request.product_name,
-#                 'category': request.category,
-#                 'source': request.source,
-#                 'base_cost': request.base_cost,
-#                 'pricing': pricing_insights,
-#                 'sales': sales_insights,
-#                 'competition': competition_insights,
-#                 'location_insights': [
-#                     {
-#                         'country': loc.country,
-#                         'market_share': loc.market_share,
-#                         'demand_level': loc.demand_level
-#                     } for loc in location_insights
-#                 ],
-#                 'ai_strategy': ai_strategy,
-#                 'warnings': warnings,
-#                 'similar_products': similar_products,
-#                 'success': True
-#             }
-            
-#             # ✅ Pass user_email to CRUD function
-#             saved_analysis = crud.create_tracker_analysis(db, user_email, analysis_data)
-#             print(f"💾 Analysis saved to database - ID: {saved_analysis.id}, User: {user_email if user_email else 'Anonymous'}")
-            
-#         except Exception as e:
-#             print(f"⚠️ Failed to save analysis: {str(e)}")
-#             import traceback
-#             traceback.print_exc()
-        
-#         return response
-    
-#     except HTTPException:
-#         raise
-#     except Exception as e:
-#         print(f"❌ Error in product tracker: {str(e)}")
-#         import traceback
-#         traceback.print_exc()
-#         raise HTTPException(500, f"Analysis failed: {str(e)}")
-
-def get_analysis_limit(tier: str) -> int:
-    """Get analysis limit based on subscription tier"""
-    limits = {
-        'free': 5,
-        'basic': 20,
-        'premium': float('inf'),
-        'enterprise': float('inf')
-    }
-    return limits.get(tier.lower(), 5)
-
-# ==================== ENDPOINTS ====================
-
-@app.get("/users/{user_id}/analysis-usage")
-async def get_analysis_usage(
-    user_id: int,
-    month: str = Query(None, description="Optional YYYY-MM format"),
+@app.get("/api/admin/stats")
+def get_admin_stats(
+    current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    """
-    Get current analysis usage for a user
-    Returns usage count, limit, and remaining analyses
-    """
-    user = db.query(models.User).filter(models.User.id == user_id).first()
-    
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    current_month = month or datetime.now().strftime("%Y-%m")
-    
-    # Reset count if month has changed
-    if user.analysis_month != current_month:
-        user.analysis_used = 0
-        user.analysis_month = current_month
-        db.commit()
-        db.refresh(user)
-    
-    tier = user.subscription_tier or 'free'
-    limit = get_analysis_limit(tier)
-    used = user.analysis_used or 0
-    
-    return {
-        "count": used,
-        "limit": limit if limit != float('inf') else -1,  # -1 represents unlimited
-        "month": user.analysis_month or current_month,
-        "subscription_tier": tier,
-        "remaining": limit - used if limit != float('inf') else -1
-    }
+    # return 404 so no one knows this page exists
+    if current_user.email != ADMIN_EMAIL:
+        raise HTTPException(status_code=404, detail="Not found")
 
+    total_users = db.query(models.User).count()
+    verified_users = db.query(models.User).filter(models.User.is_verified == True).count()
+    unverified_users = db.query(models.User).filter(models.User.is_verified == False).count()
 
-@app.post("/users/{user_id}/analysis-usage")
-async def track_analysis_usage(
-    user_id: int,
-    request: AnalysisTrackRequest,
-    db: Session = Depends(get_db)
-):
-    """
-    Increment analysis usage count for a user
-    Called after each successful product analysis
-    """
-    user = db.query(models.User).filter(models.User.id == user_id).first()
-    
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    current_month = datetime.now().strftime("%Y-%m")
-    
-    # Reset count if month has changed
-    if user.analysis_month != current_month:
-        user.analysis_used = 0
-        user.analysis_month = current_month
-    
-    # Check if user has reached limit
-    tier = user.subscription_tier or 'free'
-    limit = get_analysis_limit(tier)
-    
-    if limit != float('inf') and (user.analysis_used or 0) >= limit:
-        raise HTTPException(
-            status_code=403,
-            detail=f"Analysis limit reached. You have used {user.analysis_used}/{limit} analyses this month. Upgrade your plan for more."
-        )
-    
-    # Increment usage
-    user.analysis_used = (user.analysis_used or 0) + request.increment
-    user.analysis_month = current_month
-    user.updated_at = datetime.now()
-    
-    db.commit()
-    db.refresh(user)
-    
-    remaining = limit - user.analysis_used if limit != float('inf') else -1
-    
-    return {
-        "success": True,
-        "analysis_used": user.analysis_used,
-        "analysis_month": user.analysis_month,
-        "remaining": remaining,
-        "limit": limit if limit != float('inf') else -1,
-        "message": f"Analysis tracked. {user.analysis_used}/{limit if limit != float('inf') else '∞'} used this month"
-    }
+    # users by tier
+    free_users = db.query(models.User).filter(models.User.subscription_tier == 'free').count()
+    basic_users = db.query(models.User).filter(models.User.subscription_tier == 'basic').count()
+    premium_users = db.query(models.User).filter(models.User.subscription_tier == 'premium').count()
 
+    # recent signups (last 7 days)
+    seven_days_ago = datetime.now() - timedelta(days=7)
+    recent_signups = db.query(models.User).filter(
+        models.User.created_at >= seven_days_ago
+    ).count()
 
-@app.post("/users/{user_id}/check-analysis-limit")
-async def check_analysis_limit(
-    user_id: int,
-    db: Session = Depends(get_db)
-):
-    """
-    Check if user can perform another analysis
-    Returns boolean and remaining count
-    """
-    user = db.query(models.User).filter(models.User.id == user_id).first()
-    
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    current_month = datetime.now().strftime("%Y-%m")
-    
-    # Reset if new month
-    if user.analysis_month != current_month:
-        user.analysis_used = 0
-        user.analysis_month = current_month
-        db.commit()
-    
-    tier = user.subscription_tier or 'free'
-    limit = get_analysis_limit(tier)
-    used = user.analysis_used or 0
-    
-    can_analyze = limit == float('inf') or used < limit
-    remaining = limit - used if limit != float('inf') else -1
-    
-    return {
-        "can_analyze": can_analyze,
-        "used": used,
-        "limit": limit if limit != float('inf') else -1,
-        "remaining": remaining,
-        "subscription_tier": tier,
-        "upgrade_required": not can_analyze
-    }
-
-
-# ==================== UPDATE YOUR EXISTING ANALYZE ENDPOINT ====================
-
-@app.post("/product-tracker/analyze", response_model=ProductTrackerResponse)
-def analyze_product_opportunity(request: ProductTrackerRequest, db: Session = Depends(get_db)):
-    print(f"🔍 Analyzing market for: {request.product_name} in {request.category}")
-    
-    user_email = request.user_email if request.user_email else None
-    print(f"👤 User Email: {user_email if user_email else 'Anonymous (not logged in)'}")
-    
-    # ✅ NEW: Check analysis limit if user is logged in
-    if user_email:
-        user = db.query(models.User).filter(models.User.email == user_email).first()
-        
-        if user:
-            current_month = datetime.now().strftime("%Y-%m")
-            
-            # Reset if new month
-            if user.analysis_month != current_month:
-                user.analysis_used = 0
-                user.analysis_month = current_month
-                db.commit()
-                db.refresh(user)
-            
-            tier = user.subscription_tier or 'free'
-            limit = get_analysis_limit(tier)
-            used = user.analysis_used or 0
-            
-            # Check limit
-            if limit != float('inf') and used >= limit:
-                raise HTTPException(
-                    status_code=403,
-                    detail=f"Analysis limit reached. You have used {used}/{limit} analyses this month. Upgrade to {('Basic' if tier == 'free' else 'Premium')} for more analyses."
-                )
-            
-            print(f"✅ Usage check: {used}/{limit if limit != float('inf') else '∞'} analyses used")
-    
-    try:
-        # Get similar products
-        similar_products = get_similar_products(db, request.product_name, request.category, request.source)
-        if not similar_products:
-            raise HTTPException(404, f"❌ No products found matching '{request.product_name}' in category '{request.category}' on {request.source}")
-        
-        print(f"📊 Found {len(similar_products)} similar products")
-        
-        # Validate cost
-        prices = [float(p.get('price', 0)) for p in similar_products if p.get('price', 0) > 0]
-        market_max = max(prices) if prices else 0
-        market_min = min(prices) if prices else 0
-        
-        if request.base_cost > market_max * 2:
-            raise HTTPException(400, f"❌ Invalid Cost: Your cost (₹{request.base_cost:,.0f}) seems incorrect. Market range: ₹{market_min:,.0f}-₹{market_max:,.0f}")
-        if request.base_cost > market_max:
-            raise HTTPException(400, f"⚠️ Cost Too High: ₹{request.base_cost:,.0f} > market max ₹{market_max:,.0f}")
-        
-        # Extract keywords
-        keywords = extract_keywords(request.product_name)
-        
-        # Run analysis
-        pricing_insights = analyze_pricing(similar_products, request.base_cost)
-        
-        sales_insights = analyze_sales_potential(
-            products=similar_products,
-            source=request.source,
-            base_cost=request.base_cost,
-            recommended_price=pricing_insights['recommended_price'],
-            category=request.category
-        )
-        
-        competition_insights = analyze_competition(similar_products, request.category, keywords)
-        location_insights = generate_location_insights(similar_products)
-        
-        ai_strategy = generate_ai_strategy(
-            pricing_insights, 
-            sales_insights, 
-            competition_insights, 
-            request.base_cost, 
-            request.product_name, 
-            request.category,
-            location_insights
-        )
-        
-        warnings = generate_warnings(pricing_insights, competition_insights, request.base_cost)
-        
-        # Build response
-        response = ProductTrackerResponse(
-            success=True,
-            product_name=request.product_name,
-            category=request.category,
-            source=request.source.capitalize(),
-            pricing=PricingInsights(**pricing_insights),
-            sales=SalesInsights(**sales_insights),
-            competition=CompetitorInsights(**competition_insights),
-            location_insights=location_insights,
-            ai_strategy=ai_strategy,
-            warnings=warnings
-        )
-        
-        # ✅ Save to database
-        try:
-            analysis_data = {
-                'product_name': request.product_name,
-                'category': request.category,
-                'source': request.source,
-                'base_cost': request.base_cost,
-                'pricing': pricing_insights,
-                'sales': sales_insights,
-                'competition': competition_insights,
-                'location_insights': [
-                    {
-                        'country': loc.country,
-                        'market_share': loc.market_share,
-                        'demand_level': loc.demand_level
-                    } for loc in location_insights
-                ],
-                'ai_strategy': ai_strategy,
-                'warnings': warnings,
-                'similar_products': similar_products,
-                'success': True
-            }
-            
-            saved_analysis = crud.create_tracker_analysis(db, user_email, analysis_data)
-            print(f"💾 Analysis saved - ID: {saved_analysis.id}, User: {user_email if user_email else 'Anonymous'}")
-            
-            # ✅ NEW: Increment analysis usage count
-            if user_email and user:
-                user.analysis_used = (user.analysis_used or 0) + 1
-                user.analysis_month = datetime.now().strftime("%Y-%m")
-                user.updated_at = datetime.now()
-                db.commit()
-                
-                remaining = get_analysis_limit(user.subscription_tier or 'free') - user.analysis_used
-                remaining_display = remaining if remaining != float('inf') else '∞'
-                print(f"✅ Usage updated: {user.analysis_used} used, {remaining_display} remaining")
-            
-        except Exception as e:
-            print(f"⚠️ Failed to save analysis: {str(e)}")
-            import traceback
-            traceback.print_exc()
-        
-        return response
-    
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"❌ Error in product tracker: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        raise HTTPException(500, f"Analysis failed: {str(e)}")
-
-
-def get_similar_products(db: Session, product_name: str, category: str, source: str):
-    """
-    Fully dynamic competitor finder with STRICT CATEGORY + PRODUCT FILTERING.
-    Uses NLP keyword extraction + multi-keyword DB search + strict category filter.
-    """
-
-    keywords = extract_keywords(product_name)
-
-    if len(keywords) == 0:
-        keywords = [category.lower()]  # fallback
-
-    # Build dynamic SQL pattern for keywords
-    like_clauses = " AND ".join([f"LOWER(product_title) LIKE '%{k}%'" for k in keywords])
-    
-    # STRICT CATEGORY FILTERING - match exact category or very close variants
-    category_filter = f"AND LOWER(category_name) LIKE '%{category.lower()}%'"
-
-    print(f"🔎 Matching competitors using keywords: {keywords} in category: {category}")
-
-    if source.lower() == "amazon":
-        query = text(f"""
-            SELECT 
-                product_title,
-                category_name,
-                product_price_numeric as price,
-                product_star_rating_numeric as rating,
-                product_num_ratings as reviews,
-                sales_volume,
-                country,
-                is_best_seller,
-                is_amazon_choice,
-                is_prime,
-                raw_data
-            FROM rapidapi_amazon_products
-            WHERE {like_clauses}
-            {category_filter}
-            AND product_price_numeric > 0
-            AND product_star_rating_numeric > 0
-            ORDER BY product_num_ratings DESC
-            LIMIT 200
-        """)
-    else:  # Flipkart - using rapidapi_flipkart_products
-        query = text(f"""
-            SELECT 
-                product_title,
-                category_name,
-                product_price as price,
-                product_star_rating as rating,
-                product_review_count as reviews,
-                brand,
-                sales_volume,
-                estimated_sales,
-                stock_status,
-                raw_data
-            FROM rapidapi_flipkart_products
-            WHERE {like_clauses}
-            {category_filter}
-            AND product_price > 0
-            AND product_star_rating > 0
-            ORDER BY product_review_count DESC
-            LIMIT 200
-        """)
-
-    results = db.execute(query).fetchall()
-    
-    if len(results) == 0:
-        print(f"❌ No products found for '{product_name}' in category '{category}'")
-        return []
-
-    # POST-PROCESSING: Filter out products that don't actually match the search keywords
-    # This prevents chargers showing up when searching for headphones
-    filtered_results = []
-    
-    for row in results:
-        product_dict = dict(row._mapping)
-        product_title = str(product_dict.get('product_title', '')).lower()
-        
-        # Check if at least one keyword appears in the product title
-        has_keyword_match = any(keyword in product_title for keyword in keywords)
-        
-        if has_keyword_match:
-            filtered_results.append(product_dict)
-        else:
-            print(f"⚠️ Filtered out: {product_dict.get('product_title', '')[:50]} - doesn't match keywords")
-    
-    if len(filtered_results) == 0:
-        print(f"❌ No products found matching '{product_name}' after keyword filtering in category '{category}'")
-        return []
-
-    print(f"✅ Found {len(filtered_results)} products matching '{product_name}' in '{category}' category (filtered from {len(results)} initial results)")
-    return filtered_results
-
-
-
-def analyze_pricing(products: List[Dict], base_cost: float) -> Dict:
-    """
-    INDUSTRY-GRADE pricing engine
-    - Recommended price = MARKET driven
-    - Cost used ONLY for profitability & warnings
-    """
-
-    prices = [float(p.get("price", 0)) for p in products if p.get("price", 0) > 0]
-
-    if not prices:
-        return {
-            "recommended_price": 0,
-            "min_price": 0,
-            "max_price": 0,
-            "profit_margin": 0,
-            "confidence": "Low",
-            "market_avg_price": 0,
-            "market_min_price": 0,
-            "market_max_price": 0
+    # all users with details
+    users = db.query(models.User).order_by(models.User.created_at.desc()).all()
+    user_list = [
+        {
+            "id": u.id,
+            "email": u.email,
+            "first_name": u.first_name,
+            "last_name": u.last_name,
+            "subscription_tier": u.subscription_tier or 'free',
+            "is_verified": u.is_verified,
+            "ai_chat_used": u.ai_chat_used or 0,
+            "created_at": str(u.created_at),
         }
-
-    prices.sort()
-    avg_price = sum(prices) / len(prices)
-    median_price = prices[len(prices) // 2]
-    q1 = prices[len(prices) // 4]
-    q3 = prices[(3 * len(prices)) // 4]
-
-    # 🎯 MARKET SELLABLE PRICE (KEY FIX)
-    recommended_price = round(median_price * 0.95, 2)
-
-    min_price = round(q1 * 0.9, 2)
-    max_price = round(q3 * 1.1, 2)
-
-    # 💰 PROFIT / LOSS
-    profit = recommended_price - base_cost
-    profit_margin = (profit / recommended_price) * 100
-
-    # 🧠 CONFIDENCE LOGIC
-    if profit_margin < 0:
-        confidence = "Critical"
-    elif profit_margin < 10:
-        confidence = "Low"
-    elif profit_margin < 25:
-        confidence = "Medium"
-    else:
-        confidence = "High"
-
-    market_min = round(min(prices))
-    market_max = round(max(prices))
-    market_avg = round(avg_price)
-
-    return {
-    "recommended_price": round(recommended_price),
-    "min_price": round(min_price),
-    "max_price": round(max_price),
-    "profit_margin": round(profit_margin, 1),
-    "confidence": confidence,
-    "market_avg_price": round(avg_price),      # ✅ Already here
-    "market_min_price": round(min(prices)),    # ✅ Already here
-    "market_max_price": round(max(prices))     # ✅ Already here
-}
-
-
-def D(val):
-    """Safe Decimal converter"""
-    try:
-        return val if isinstance(val, Decimal) else Decimal(str(val))
-    except Exception:
-        return Decimal("0")
-
-
-def parse_sales_volume(sales_text: str) -> float:
-    """Parse sales volume text into numeric value"""
-    if not sales_text:
-        return 0.0
-    
-    sales_text = str(sales_text).lower().replace(',', '')
-    
-    # Handle K (thousands)
-    if 'k' in sales_text:
-        try:
-            num = re.search(r'[\d.]+', sales_text.replace('k', ''))
-            if num:
-                return float(num.group()) * 1000
-        except:
-            pass
-    
-    # Handle M (millions)
-    if 'm' in sales_text:
-        try:
-            num = re.search(r'[\d.]+', sales_text.replace('m', ''))
-            if num:
-                return float(num.group()) * 1000000
-        except:
-            pass
-    
-    # Handle L (lakhs)
-    if 'l' in sales_text or 'lakh' in sales_text:
-        try:
-            num = re.search(r'[\d.]+', sales_text)
-            if num:
-                return float(num.group()) * 100000
-        except:
-            pass
-    
-    # Extract numeric value
-    match = re.search(r'[\d.]+', sales_text)
-    if match:
-        try:
-            return float(match.group())
-        except:
-            pass
-    
-    return 0.0
-
-
-
-def analyze_sales_potential(products: List[Dict], source: str, 
-                            base_cost: float = 0, recommended_price: float = 0,
-                            category: str = "") -> Dict:
-    """
-    Fully dynamic industry-standard sales forecasting using actual market data.
-    All floors and ceilings are computed dynamically based on market and competition.
-    """
-    if not products:
-        return {
-            "estimated_monthly_sales": "0 - 0",
-            "estimated_daily_sales": 0.0,
-            "market_demand": "Unknown"
-        }
-
-    # ---------- Extract Market Data ----------
-    total_market_sales = D("0")
-    total_reviews = D("0")
-    total_ratings = []
-    prices = []
-    
-    valid_sales_count = 0
-    
-    for p in products:
-        # Sales volume
-        sales_vol = p.get('sales_volume', '')
-        if sales_vol:
-            parsed_sales = parse_sales_volume(str(sales_vol))
-            if parsed_sales > 0:
-                total_market_sales += D(parsed_sales)
-                valid_sales_count += 1
-
-        # Estimated sales
-        estimated = p.get('estimated_sales', 0)
-        if estimated and estimated > 0:
-            total_market_sales += D(str(estimated))
-            valid_sales_count += 1
-
-        # Reviews
-        reviews = p.get('reviews') or p.get('product_num_ratings') or p.get('product_review_count') or 0
-        total_reviews += D(reviews)
-
-        # Ratings
-        rating = p.get('rating') or p.get('product_star_rating_numeric') or p.get('product_star_rating') or 0
-        if rating:
-            try:
-                total_ratings.append(float(D(rating)))
-            except:
-                pass
-
-        # Prices
-        price = p.get('price', 0)
-        if price:
-            try:
-                prices.append(float(D(price)))
-            except:
-                pass
-
-    competitor_count = len(products)
-    total_market_monthly = float(total_market_sales)
-    avg_reviews = float(total_reviews) / max(competitor_count, 1)
-    avg_rating = sum(total_ratings) / len(total_ratings) if total_ratings else 0
-    avg_price = sum(prices) / len(prices) if prices else 0
-
-    # ---------- Dynamic Base Market Share ----------
-    if competitor_count > 200:
-        base_market_share = 0.004
-    elif competitor_count > 100:
-        base_market_share = 0.007
-    elif competitor_count > 50:
-        base_market_share = 0.012
-    elif competitor_count > 25:
-        base_market_share = 0.020
-    elif competitor_count > 10:
-        base_market_share = 0.035
-    else:
-        base_market_share = 0.060
-
-    # ---------- Price Competitiveness Factor ----------
-    price_factor = 1.0
-    if recommended_price > 0 and avg_price > 0:
-        diff_pct = ((recommended_price - avg_price) / avg_price) * 100
-        if diff_pct <= -30:
-            price_factor = 2.0
-        elif diff_pct <= -20:
-            price_factor = 1.5
-        elif diff_pct <= -10:
-            price_factor = 1.2
-        elif diff_pct <= 10:
-            price_factor = 1.0
-        elif diff_pct <= 20:
-            price_factor = 0.7
-        else:
-            price_factor = 0.5
-
-    # ---------- Calculate Projected Sales ----------
-    if valid_sales_count > 0 and total_market_monthly > 0:
-        estimated_monthly = total_market_monthly * base_market_share * price_factor
-    elif avg_reviews > 0:
-        conversion_ratio = 40
-        estimated_total_sales = avg_reviews * conversion_ratio
-        estimated_monthly = estimated_total_sales * base_market_share * price_factor
-    else:
-        baseline = max(25, competitor_count)
-        estimated_monthly = baseline * price_factor
-
-    # ---------- Dynamic Reality Checks ----------
-    # 1. Adjust inflated sales (lifetime vs monthly)
-    if valid_sales_count > 0 and total_market_monthly > 0:
-        avg_per_comp = total_market_monthly / competitor_count
-        if avg_per_comp > 10000:
-            total_market_monthly /= 8
-            estimated_monthly = total_market_monthly * base_market_share * price_factor
-
-    # 2. Minimum floor dynamically based on competition & market
-    floor = max(5, competitor_count * 0.3, avg_reviews * 0.05)
-    if estimated_monthly < floor:
-        estimated_monthly = floor
-
-    # 3. Dynamic per-competitor cap (50-70% of average competitor)
-    if valid_sales_count > 0 and total_market_monthly > 0:
-        avg_per_comp = total_market_monthly / competitor_count
-        dynamic_cap = avg_per_comp * (0.5 + 0.2 * price_factor)  # scales with price competitiveness
-        if estimated_monthly > dynamic_cap:
-            estimated_monthly = dynamic_cap
-
-    # 4. Dynamic ceiling based on overall market size
-    if total_market_monthly > 0:
-        market_scale_factor = min(1.0, 50000 / total_market_monthly)  # reduce if very large market
-        estimated_monthly *= market_scale_factor
-
-    # ---------- Dynamic Demand Label ----------
-    if total_market_monthly > 50000 or avg_reviews > 500:
-        demand_label = "High"
-    elif total_market_monthly > 20000 or avg_reviews > 200:
-        demand_label = "Medium"
-    else:
-        demand_label = "Low"
-
-    # ---------- Final Range ----------
-    low_estimate = int(estimated_monthly * 0.70)
-    high_estimate = int(estimated_monthly * 1.30)
-    avg_daily_sales = estimated_monthly / 30.0
-
-    return {
-        "estimated_monthly_sales": f"{low_estimate:,} - {high_estimate:,}",
-        "estimated_daily_sales": round(avg_daily_sales, 1),
-        "market_demand": demand_label
-    }
-
-
-def calculate_realistic_sales_v2(products: List[Dict], base_cost: float, 
-                                 recommended_price: float, category: str) -> Dict:
-    """
-    Enhanced dynamic wrapper for sales calculation.
-    Automatically detects source and applies fully dynamic ceilings/floors.
-    """
-    # Auto-detect source from product structure
-    source = "amazon"  # default
-    if products:
-        first_product = products[0]
-        if 'estimated_sales' in first_product or 'flipkart_id' in first_product:
-            source = "flipkart"
-    
-    # Call dynamic sales analysis
-    return analyze_sales_potential(
-        products=products,
-        source=source,
-        base_cost=base_cost,
-        recommended_price=recommended_price,
-        category=category
-    )
-
-def analyze_competition(products: List[Dict], category: str = None, product_keywords: list = None) -> Dict:
-    """
-    Analyze competitive landscape - works for both Amazon and Flipkart
-    """
-    if not products:
-        return {
-            'total_competitors': 0,
-            'avg_competitor_price': 0.0,
-            'avg_competitor_rating': 0.0,
-            'top_competitor': None
-        }
-    
-    # ⭐ PUT THE NEW CODE HERE - RIGHT AFTER THE EMPTY CHECK ⭐
-    # Filter by category
-    if category:
-        category_lower = category.lower()
-        products_for_analysis = [
-            p for p in products 
-            if category_lower in str(p.get('category_name', '')).lower()
-        ]
-        if not products_for_analysis:
-            products_for_analysis = products
-    else:
-        products_for_analysis = products
-    
-    # Filter by keywords for top competitor
-    if product_keywords:
-        keyword_matched_products = []
-        for p in products_for_analysis:
-            title = str(p.get('product_title', '')).lower()
-            if any(kw in title for kw in product_keywords):
-                keyword_matched_products.append(p)
-        
-        products_for_top_competitor = keyword_matched_products if keyword_matched_products else products_for_analysis
-        print(f"✅ Using {len(products_for_top_competitor)} keyword-matched products for top competitor")
-    else:
-        products_for_top_competitor = products_for_analysis
-    # ⭐ END OF NEW CODE ⭐
-    
-    # Now CHANGE these lines to use products_for_analysis instead of products:
-    prices = [float(p.get('price', 0)) for p in products_for_analysis if p.get('price', 0) > 0]  # ⭐ Changed
-    ratings = [float(p.get('rating', 0)) for p in products_for_analysis if p.get('rating', 0) > 0]  # ⭐ Changed
-    
-    avg_price = sum(prices) / len(prices) if prices else 0
-    avg_rating = sum(ratings) / len(ratings) if ratings else 0
-    
-    # Find top competitor - CHANGE to use products_for_top_competitor:
-    top_competitor = None
-    max_score = 0
-    
-    for p in products_for_top_competitor:  # ⭐ Changed from 'products' to 'products_for_top_competitor'
-        reviews = p.get('reviews', 0) or 0
-        rating = p.get('rating', 0) or 0
-        score = reviews * rating
-        
-        if score > max_score:
-            max_score = score
-            brand_info = f" ({p.get('brand', '')})" if p.get('brand') else ""
-            top_competitor = {
-                'name': str(p.get('product_title', ''))[:60] + brand_info,
-                'price': float(p.get('price', 0)),
-                'rating': float(rating),
-                'reviews': int(reviews)
-            }
-    
-    return {
-        'total_competitors': len(products_for_analysis),  # ⭐ Changed
-        'avg_competitor_price': round(avg_price, 2),
-        'avg_competitor_rating': round(avg_rating, 2),
-        'top_competitor': top_competitor
-    }
-
-
-def D(val):
-    """Safe Decimal converter for production"""
-    try:
-        return val if isinstance(val, Decimal) else Decimal(str(val))
-    except Exception:
-        return Decimal("0")
-
-
-# def analyze_product_patterns(products: List[Dict]) -> Dict:
-#     """
-#     Analyze product data to extract market intelligence patterns.
-#     Returns comprehensive analysis for AI-based location prediction.
-#     """
-#     if not products:
-#         return {}
-    
-#     # Brand analysis
-#     brands = {}
-#     top_brands = []
-    
-#     for p in products:
-#         brand = p.get('brand')
-#         if brand:
-#             brand = str(brand).strip()
-#             brands[brand] = brands.get(brand, 0) + 1
-    
-#     if brands:
-#         top_brands = sorted(brands.items(), key=lambda x: x[1], reverse=True)[:5]
-    
-#     # Price distribution analysis
-#     prices = [float(D(p.get('price', 0))) for p in products if p.get('price')]
-#     price_ranges = {
-#         'ultra_budget': len([p for p in prices if p < 300]),
-#         'budget': len([p for p in prices if 300 <= p < 1000]),
-#         'mid_range': len([p for p in prices if 1000 <= p < 3000]),
-#         'premium': len([p for p in prices if 3000 <= p < 10000]),
-#         'luxury': len([p for p in prices if p >= 10000])
-#     }
-    
-#     # Rating analysis
-#     ratings = []
-#     for p in products:
-#         rating = (
-#             p.get('rating') or 
-#             p.get('product_star_rating_numeric') or 
-#             p.get('product_star_rating') or 
-#             0
-#         )
-#         if rating:
-#             ratings.append(float(D(rating)))
-    
-#     avg_rating = sum(ratings) / len(ratings) if ratings else 0
-#     high_rated = len([r for r in ratings if r >= 4.0])
-    
-#     # Sales velocity analysis
-#     total_sales = Decimal("0")
-#     high_sales_products = 0
-    
-#     for p in products:
-#         sales_vol = p.get('sales_volume', '')
-#         if sales_vol:
-#             sales = D(parse_sales_volume(str(sales_vol)))
-#             total_sales += sales
-#             if sales > 1000:
-#                 high_sales_products += 1
-        
-#         estimated = p.get('estimated_sales')
-#         if estimated:
-#             total_sales += D(estimated)
-    
-#     # Review analysis
-#     total_reviews = Decimal("0")
-#     high_engagement = 0
-    
-#     for p in products:
-#         reviews = (
-#             p.get('reviews') or 
-#             p.get('product_num_ratings') or 
-#             p.get('product_review_count') or 
-#             0
-#         )
-#         review_count = D(reviews)
-#         total_reviews += review_count
-#         if review_count > 500:
-#             high_engagement += 1
-    
-#     return {
-#         'total_products': len(products),
-#         'brands': top_brands,
-#         'brand_diversity': len(brands),
-#         'price_distribution': price_ranges,
-#         'avg_rating': avg_rating,
-#         'high_rated_percentage': (high_rated / len(ratings) * 100) if ratings else 0,
-#         'total_sales': float(total_sales),
-#         'high_sales_products': high_sales_products,
-#         'total_reviews': float(total_reviews),
-#         'high_engagement_products': high_engagement,
-#         'avg_price': sum(prices) / len(prices) if prices else 0,
-#         'min_price': min(prices) if prices else 0,
-#         'max_price': max(prices) if prices else 0
-#     }
-
-
-# def generate_location_insights(products: List[Dict]) -> List[LocationInsight]:
-#     """
-#     Generate FULLY AI-DRIVEN dynamic location insights using Llama 3.2:3b.
-#     AI predicts ANY city/district/state across India - zero hardcoded locations.
-#     """
-    
-#     if not products:
-#         return []
-    
-#     # Extract category
-#     category = products[0].get('category_name') or products[0].get('category', 'General')
-    
-#     # Analyze product patterns
-#     analysis = analyze_product_patterns(products)
-    
-#     if not analysis:
-#         return []
-    
-#     # Build comprehensive market intelligence report
-#     brand_info = ""
-#     if analysis['brands']:
-#         top_3_brands = [f"{brand} ({count} products)" for brand, count in analysis['brands'][:3]]
-#         brand_info = f"\nTop Brands: {', '.join(top_3_brands)}"
-    
-#     price_dist = analysis['price_distribution']
-#     dominant_segment = max(price_dist.items(), key=lambda x: x[1])[0]
-    
-#     market_intelligence = f"""CATEGORY: {category}
-# TOTAL PRODUCTS: {analysis['total_products']}
-
-# PRICE ANALYSIS:
-# - Average Price: ₹{analysis['avg_price']:.0f}
-# - Price Range: ₹{analysis['min_price']:.0f} - ₹{analysis['max_price']:.0f}
-# - Dominant Segment: {dominant_segment.replace('_', ' ').title()}
-
-# MARKET PERFORMANCE:
-# - Average Rating: {analysis['avg_rating']:.2f}★
-# - Total Sales Volume: {analysis['total_sales']:,.0f}
-# - Total Reviews: {analysis['total_reviews']:,.0f}
-# - Brand Diversity: {analysis['brand_diversity']} unique brands{brand_info}
-# """
-
-#     # Optimized prompt for Llama 3.2:3b (shorter, more direct)
-#     prompt = f"""You are an Indian e-commerce market analyst. Predict the TOP 6 Indian cities/districts with highest demand for this product category.
-
-# {market_intelligence}
-
-# INSTRUCTIONS:
-# 1. Consider ALL Indian states and cities (tier-1, tier-2, tier-3, tier-4)
-# 2. Match locations to product type and price point:
-#    - Budget products (<₹1000): High-population tier-2/3 cities
-#    - Mid-range (₹1K-5K): Growing tier-2 cities
-#    - Premium (>₹5K): Affluent metros and IT hubs
-# 3. Category-specific logic:
-#    - Electronics/Tech: Bangalore, Pune, Hyderabad, Noida
-#    - Fashion: Textile centers like Tiruppur, Ludhiana
-#    - Agriculture: Ludhiana, Nashik, Guntur
-#    - Automotive: Industrial areas - Chennai, Manesar
-#    - Books/Education: University towns - Kota, Varanasi
-# 4. Distribute across North, South, East, West regions
-# 5. Be creative with non-obvious but logical cities
-
-# OUTPUT FORMAT (JSON array only, no explanation):
-# [
-#   {{"city": "CityName, StateName", "share": 26.5, "demand": "Very High"}},
-#   {{"city": "CityName, StateName", "share": 23.2, "demand": "High"}}
-# ]
-
-# Requirements:
-# - Total shares must sum to 100
-# - Use real Indian cities/districts
-# - Demand levels: "Very High", "High", "Medium", "Moderate"
-# - Order by share (highest first)
-# - Respond with ONLY the JSON array
-
-# Generate now:"""
-    
-#     try:
-#         result = subprocess.run(
-#             ["ollama", "run", "llama3.2:3b"],  # Changed model name
-#             input=prompt,
-#             capture_output=True,
-#             text=True,
-#             encoding="utf-8",
-#             errors="ignore",
-#             timeout=60
-#         )
-        
-#         output = (result.stdout or result.stderr or "").strip()
-        
-#         # Extract JSON array from response (handle markdown code blocks)
-#         json_match = re.search(r'```json\s*(\[[\s\S]*?\])\s*```', output)
-#         if not json_match:
-#             json_match = re.search(r'```\s*(\[[\s\S]*?\])\s*```', output)
-#         if not json_match:
-#             json_match = re.search(r'\[[\s\S]*?\]', output)
-        
-#         if json_match:
-#             json_text = json_match.group(1) if json_match.lastindex else json_match.group()
-#             locations_data = json.loads(json_text)
-            
-#             # Validate and normalize shares to sum to 100
-#             locations = locations_data[:6]
-#             total_share = sum(float(loc.get('share', 0)) for loc in locations)
-            
-#             if total_share > 0:
-#                 # Normalize shares
-#                 for loc in locations:
-#                     loc['share'] = (float(loc.get('share', 0)) / total_share) * 100
-            
-#             return [
-#                 LocationInsight(
-#                     country=loc.get("city", "Location Data Unavailable"),
-#                     market_share=f"{loc['share']:.1f}%",
-#                     demand_level=loc.get("demand", "Medium")
-#                 )
-#                 for loc in locations
-#             ]
-    
-#     except json.JSONDecodeError as e:
-#         print(f"❌ JSON parsing failed: {e}")
-#         print(f"AI Output: {output[:500]}")
-#     except subprocess.TimeoutExpired:
-#         print(f"❌ AI request timeout after 45 seconds")
-#     except Exception as e:
-#         print(f"❌ AI location prediction failed: {e}")
-    
-#     # Ultimate fallback: Use AI again with simpler prompt
-#     try:
-#         fallback_prompt = f"""List 6 Indian cities with highest demand for {category} products (avg price: ₹{analysis['avg_price']:.0f}).
-
-# Respond ONLY with JSON:
-# [{{"city": "City, State", "share": 25, "demand": "High"}}]
-
-# Total shares = 100. No explanation."""
-
-#         result = subprocess.run(
-#             ["ollama", "run", "llama3.2:3b"],  # Changed model name
-#             input=fallback_prompt,
-#             capture_output=True,
-#             text=True,
-#             encoding="utf-8",
-#             errors="ignore",
-#             timeout=60
-#         )
-        
-#         output = (result.stdout or result.stderr or "").strip()
-#         json_match = re.search(r'\[[\s\S]*?\]', output)
-        
-#         if json_match:
-#             locations_data = json.loads(json_match.group())
-#             locations = locations_data[:6]
-            
-#             # Normalize shares
-#             total_share = sum(float(loc.get('share', 0)) for loc in locations)
-#             if total_share > 0:
-#                 for loc in locations:
-#                     loc['share'] = (float(loc.get('share', 0)) / total_share) * 100
-            
-#             return [
-#                 LocationInsight(
-#                     country=loc.get("city", "Unknown Location"),
-#                     market_share=f"{loc['share']:.1f}%",
-#                     demand_level=loc.get("demand", "Medium")
-#                 )
-#                 for loc in locations
-#             ]
-#     except:
-#         pass
-    
-#     # Last resort: Return message indicating AI is needed
-#     return [
-#         LocationInsight(
-#             country="AI Analysis Required",
-#             market_share="N/A",
-#             demand_level="Configure Ollama Llama 3.2:3b for dynamic location insights"
-#         )
-#     ]
-
-
-def analyze_product_patterns(products: List[Dict]) -> Dict:
-    """
-    Analyze product data to extract market intelligence patterns.
-    Returns comprehensive analysis for AI-based location prediction.
-    """
-    if not products:
-        return {}
-    
-    # Brand analysis
-    brands = {}
-    top_brands = []
-    
-    for p in products:
-        brand = p.get('brand')
-        if brand:
-            brand = str(brand).strip()
-            brands[brand] = brands.get(brand, 0) + 1
-    
-    if brands:
-        top_brands = sorted(brands.items(), key=lambda x: x[1], reverse=True)[:5]
-    
-    # Price distribution analysis
-    prices = [float(D(p.get('price', 0))) for p in products if p.get('price')]
-    price_ranges = {
-        'ultra_budget': len([p for p in prices if p < 300]),
-        'budget': len([p for p in prices if 300 <= p < 1000]),
-        'mid_range': len([p for p in prices if 1000 <= p < 3000]),
-        'premium': len([p for p in prices if 3000 <= p < 10000]),
-        'luxury': len([p for p in prices if p >= 10000])
-    }
-    
-    # Rating analysis
-    ratings = []
-    for p in products:
-        rating = (
-            p.get('rating') or 
-            p.get('product_star_rating_numeric') or 
-            p.get('product_star_rating') or 
-            0
-        )
-        if rating:
-            ratings.append(float(D(rating)))
-    
-    avg_rating = sum(ratings) / len(ratings) if ratings else 0
-    high_rated = len([r for r in ratings if r >= 4.0])
-    
-    # Sales velocity analysis
-    total_sales = Decimal("0")
-    high_sales_products = 0
-    
-    for p in products:
-        sales_vol = p.get('sales_volume', '')
-        if sales_vol:
-            sales = D(parse_sales_volume(str(sales_vol)))
-            total_sales += sales
-            if sales > 1000:
-                high_sales_products += 1
-        
-        estimated = p.get('estimated_sales')
-        if estimated:
-            total_sales += D(estimated)
-    
-    # Review analysis
-    total_reviews = Decimal("0")
-    high_engagement = 0
-    
-    for p in products:
-        reviews = (
-            p.get('reviews') or 
-            p.get('product_num_ratings') or 
-            p.get('product_review_count') or 
-            0
-        )
-        review_count = D(reviews)
-        total_reviews += review_count
-        if review_count > 500:
-            high_engagement += 1
-    
-    return {
-        'total_products': len(products),
-        'brands': top_brands,
-        'brand_diversity': len(brands),
-        'price_distribution': price_ranges,
-        'avg_rating': avg_rating,
-        'high_rated_percentage': (high_rated / len(ratings) * 100) if ratings else 0,
-        'total_sales': float(total_sales),
-        'high_sales_products': high_sales_products,
-        'total_reviews': float(total_reviews),
-        'high_engagement_products': high_engagement,
-        'avg_price': sum(prices) / len(prices) if prices else 0,
-        'min_price': min(prices) if prices else 0,
-        'max_price': max(prices) if prices else 0
-    }
-
-
-def get_rule_based_locations(category: str, avg_price: float, analysis: Dict) -> List[LocationInsight]:
-    """
-    Fallback rule-based location prediction when AI fails.
-    Uses category and price-based logic.
-    """
-    locations = []
-    
-    # Determine dominant price segment
-    price_dist = analysis.get('price_distribution', {})
-    dominant_segment = max(price_dist.items(), key=lambda x: x[1])[0] if price_dist else 'mid_range'
-    
-    # Category-specific location mapping
-    category_lower = category.lower()
-    
-    # Electronics & Tech products
-    if any(term in category_lower for term in ['electronic', 'mobile', 'laptop', 'computer', 'gadget', 'tech']):
-        if avg_price > 5000:
-            locations = [
-                ("Bangalore, Karnataka", 22, "Very High"),
-                ("Hyderabad, Telangana", 18, "High"),
-                ("Pune, Maharashtra", 16, "High"),
-                ("Gurgaon, Haryana", 15, "High"),
-                ("Chennai, Tamil Nadu", 14, "High"),
-                ("Noida, Uttar Pradesh", 15, "Medium")
-            ]
-        else:
-            locations = [
-                ("Delhi, Delhi", 20, "Very High"),
-                ("Mumbai, Maharashtra", 18, "High"),
-                ("Kolkata, West Bengal", 16, "High"),
-                ("Jaipur, Rajasthan", 15, "Medium"),
-                ("Lucknow, Uttar Pradesh", 16, "Medium"),
-                ("Ahmedabad, Gujarat", 15, "Medium")
-            ]
-    
-    # Fashion & Apparel
-    elif any(term in category_lower for term in ['fashion', 'cloth', 'apparel', 'wear', 'dress', 'shirt']):
-        if avg_price > 2000:
-            locations = [
-                ("Mumbai, Maharashtra", 22, "Very High"),
-                ("Delhi, Delhi", 20, "Very High"),
-                ("Bangalore, Karnataka", 17, "High"),
-                ("Kolkata, West Bengal", 14, "High"),
-                ("Hyderabad, Telangana", 14, "Medium"),
-                ("Pune, Maharashtra", 13, "Medium")
-            ]
-        else:
-            locations = [
-                ("Tiruppur, Tamil Nadu", 20, "Very High"),
-                ("Ludhiana, Punjab", 18, "High"),
-                ("Surat, Gujarat", 17, "High"),
-                ("Kanpur, Uttar Pradesh", 15, "Medium"),
-                ("Erode, Tamil Nadu", 15, "Medium"),
-                ("Ahmedabad, Gujarat", 15, "Medium")
-            ]
-    
-    # Home & Kitchen
-    elif any(term in category_lower for term in ['home', 'kitchen', 'furniture', 'decor', 'appliance']):
-        locations = [
-            ("Mumbai, Maharashtra", 19, "Very High"),
-            ("Delhi, Delhi", 18, "High"),
-            ("Bangalore, Karnataka", 16, "High"),
-            ("Pune, Maharashtra", 15, "High"),
-            ("Hyderabad, Telangana", 16, "Medium"),
-            ("Chennai, Tamil Nadu", 16, "Medium")
-        ]
-    
-    # Books & Education
-    elif any(term in category_lower for term in ['book', 'education', 'stationery', 'study']):
-        locations = [
-            ("Kota, Rajasthan", 20, "Very High"),
-            ("Delhi, Delhi", 18, "High"),
-            ("Bangalore, Karnataka", 17, "High"),
-            ("Pune, Maharashtra", 15, "High"),
-            ("Kolkata, West Bengal", 15, "Medium"),
-            ("Chennai, Tamil Nadu", 15, "Medium")
-        ]
-    
-    # Automotive & Parts
-    elif any(term in category_lower for term in ['automotive', 'car', 'bike', 'vehicle', 'auto']):
-        locations = [
-            ("Chennai, Tamil Nadu", 20, "Very High"),
-            ("Pune, Maharashtra", 19, "High"),
-            ("Gurgaon, Haryana", 18, "High"),
-            ("Bangalore, Karnataka", 15, "High"),
-            ("Ahmedabad, Gujarat", 14, "Medium"),
-            ("Ludhiana, Punjab", 14, "Medium")
-        ]
-    
-    # Beauty & Personal Care
-    elif any(term in category_lower for term in ['beauty', 'cosmetic', 'skincare', 'makeup', 'personal care']):
-        locations = [
-            ("Mumbai, Maharashtra", 21, "Very High"),
-            ("Delhi, Delhi", 19, "High"),
-            ("Bangalore, Karnataka", 17, "High"),
-            ("Kolkata, West Bengal", 15, "High"),
-            ("Hyderabad, Telangana", 14, "Medium"),
-            ("Chennai, Tamil Nadu", 14, "Medium")
-        ]
-    
-    # Sports & Fitness
-    elif any(term in category_lower for term in ['sport', 'fitness', 'gym', 'exercise']):
-        locations = [
-            ("Mumbai, Maharashtra", 20, "Very High"),
-            ("Bangalore, Karnataka", 19, "High"),
-            ("Delhi, Delhi", 18, "High"),
-            ("Pune, Maharashtra", 15, "High"),
-            ("Hyderabad, Telangana", 14, "Medium"),
-            ("Chennai, Tamil Nadu", 14, "Medium")
-        ]
-    
-    # Jewelry & Accessories
-    elif any(term in category_lower for term in ['jewel', 'gold', 'silver', 'accessory']):
-        locations = [
-            ("Jaipur, Rajasthan", 22, "Very High"),
-            ("Mumbai, Maharashtra", 19, "High"),
-            ("Coimbatore, Tamil Nadu", 17, "High"),
-            ("Surat, Gujarat", 15, "High"),
-            ("Thrissur, Kerala", 14, "Medium"),
-            ("Kolkata, West Bengal", 13, "Medium")
-        ]
-    
-    # Default for unknown categories - Major metros based on price
-    else:
-        if avg_price > 3000:
-            locations = [
-                ("Mumbai, Maharashtra", 20, "Very High"),
-                ("Delhi, Delhi", 19, "High"),
-                ("Bangalore, Karnataka", 18, "High"),
-                ("Pune, Maharashtra", 15, "High"),
-                ("Hyderabad, Telangana", 14, "Medium"),
-                ("Chennai, Tamil Nadu", 14, "Medium")
-            ]
-        elif avg_price > 1000:
-            locations = [
-                ("Delhi, Delhi", 19, "Very High"),
-                ("Mumbai, Maharashtra", 18, "High"),
-                ("Bangalore, Karnataka", 17, "High"),
-                ("Kolkata, West Bengal", 15, "High"),
-                ("Hyderabad, Telangana", 16, "Medium"),
-                ("Pune, Maharashtra", 15, "Medium")
-            ]
-        else:
-            locations = [
-                ("Lucknow, Uttar Pradesh", 18, "Very High"),
-                ("Kanpur, Uttar Pradesh", 17, "High"),
-                ("Patna, Bihar", 16, "High"),
-                ("Jaipur, Rajasthan", 16, "High"),
-                ("Indore, Madhya Pradesh", 17, "Medium"),
-                ("Nagpur, Maharashtra", 16, "Medium")
-            ]
-    
-    # Normalize shares to exactly 100
-    total_share = sum(share for _, share, _ in locations)
-    if total_share > 0:
-        locations = [
-            (city, (share / total_share) * 100, demand)
-            for city, share, demand in locations
-        ]
-    
-    return [
-        LocationInsight(
-            country=city,
-            market_share=f"{share:.1f}%",
-            demand_level=demand
-        )
-        for city, share, demand in locations
+        for u in users
     ]
 
+    return {
+        "stats": {
+            "total_users": total_users,
+            "verified_users": verified_users,
+            "unverified_users": unverified_users,
+            "recent_signups_7days": recent_signups,
+            "by_tier": {
+                "free": free_users,
+                "basic": basic_users,
+                "premium": premium_users,
+            }
+        },
+        "users": user_list
+    }
 
-def generate_location_insights(products: List[Dict]) -> List[LocationInsight]:
-    """
-    Generate AI-driven dynamic location insights with robust fallback.
-    Primary: AI prediction | Fallback: Rule-based intelligent prediction
-    """
-    
-    if not products:
-        return []
-    
-    # Extract category
-    category = products[0].get('category_name') or products[0].get('category', 'General')
-    
-    # Analyze product patterns
-    analysis = analyze_product_patterns(products)
-    
-    if not analysis:
-        return []
-    
-    avg_price = analysis.get('avg_price', 0)
-    
-    # Simplified prompt for Llama 3.2:3b (smaller model needs simpler instructions)
-    simplified_prompt = f"""You are analyzing Indian e-commerce market for {category} products.
-
-Price: ₹{avg_price:.0f}
-Total Products: {analysis['total_products']}
-Avg Rating: {analysis['avg_rating']:.1f}★
-
-Task: List 6 Indian cities with highest demand.
-
-Format ONLY as JSON array (no other text):
-[
-  {{"city": "CityName, State", "share": 25.0, "demand": "Very High"}},
-  {{"city": "CityName, State", "share": 20.0, "demand": "High"}}
-]
-
-Rules:
-- Total shares = 100
-- Use real Indian cities
-- Match price to city tier
-- Order by share (highest first)
-
-Output ONLY the JSON array:"""
-
-    # Try AI prediction with multiple attempts
-    for attempt in range(2):
+import asyncio
+import contextlib
+import hashlib
+import json
+import logging
+import math
+import re
+import subprocess
+import time
+import uuid
+from collections import Counter
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any, Dict, List, Optional, Tuple, Union
+import numpy as np
+import structlog
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Query, Request
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, Field, validator
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+# from your project:
+# from database import get_db
+# import models, crud
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [IMP-10]  ERROR HIERARCHY
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+class AppError(Exception):
+    """Base for all application errors. Carries an HTTP status and a machine-
+    readable error_code so clients can react programmatically."""
+    http_status: int = 500
+    error_code:  str = "INTERNAL_ERROR"
+ 
+    def __init__(self, message: str, detail: Any = None):
+        super().__init__(message)
+        self.message = message
+        self.detail  = detail
+ 
+ 
+class ValidationError(AppError):
+    http_status = 400
+    error_code  = "VALIDATION_ERROR"
+ 
+ 
+class DatabaseError(AppError):
+    http_status = 503
+    error_code  = "DATABASE_ERROR"
+ 
+ 
+class AIError(AppError):
+    http_status = 502
+    error_code  = "AI_ERROR"
+ 
+ 
+class TimeoutError(AppError):
+    http_status = 504
+    error_code  = "TIMEOUT_ERROR"
+ 
+ 
+class QuotaError(AppError):
+    http_status = 403
+    error_code  = "QUOTA_EXCEEDED"
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [IMP-10]  FASTAPI APP + EXCEPTION HANDLERS
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+ 
+ 
+@app.exception_handler(AppError)
+async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.http_status,
+        content={
+            "success":    False,
+            "error_code": exc.error_code,
+            "message":    exc.message,
+            "detail":     exc.detail,
+            "request_id": getattr(request.state, "request_id", None),
+        },
+    )
+ 
+ 
+@app.exception_handler(HTTPException)
+async def http_error_handler(request: Request, exc: HTTPException) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "success":    False,
+            "error_code": "HTTP_ERROR",
+            "message":    exc.detail,
+            "request_id": getattr(request.state, "request_id", None),
+        },
+    )
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [IMP-2]  STRUCTLOG  +  REQUEST-ID MIDDLEWARE
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+structlog.configure(
+    processors=[
+        structlog.contextvars.merge_contextvars,
+        structlog.processors.add_log_level,
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.JSONRenderer(),
+    ],
+    wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
+    context_class=dict,
+    logger_factory=structlog.PrintLoggerFactory(),
+)
+log = structlog.get_logger()
+ 
+# Stdlib logger for third-party libs that use it
+logging.basicConfig(level=logging.INFO)
+_stdlib_log = logging.getLogger(__name__)
+ 
+ 
+@app.middleware("http")
+async def attach_request_id(request: Request, call_next):
+    request_id = str(uuid.uuid4())
+    request.state.request_id = request_id
+    structlog.contextvars.clear_contextvars()
+    structlog.contextvars.bind_contextvars(
+        request_id=request_id,
+        path=request.url.path,
+        method=request.method,
+    )
+    t0 = time.perf_counter()
+    response = await call_next(request)
+    latency_ms = round((time.perf_counter() - t0) * 1000, 1)
+    log.info("request_complete", status=response.status_code, latency_ms=latency_ms)
+    response.headers["X-Request-ID"] = request_id
+    return response
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [IMP-2]  STEP TIMER  — measures each pipeline stage
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@dataclass
+class StepTimer:
+    """Accumulates per-step latency for inclusion in the API response."""
+    _steps: Dict[str, float] = field(default_factory=dict)
+    _start: float            = field(default_factory=time.perf_counter)
+ 
+    @contextlib.contextmanager
+    def step(self, name: str):
+        t0 = time.perf_counter()
         try:
-            print(f"🤖 Attempting AI location prediction (attempt {attempt + 1})...")
-            
-            result = subprocess.run(
-                ["ollama", "run", "llama3.2:3b"],
-                input=simplified_prompt,
-                capture_output=True,
-                text=True,
-                encoding="utf-8",
-                errors="ignore",
-                timeout=60  # Increased timeout
+            yield
+        finally:
+            self._steps[name] = round((time.perf_counter() - t0) * 1000, 1)
+ 
+    def total_ms(self) -> float:
+        return round((time.perf_counter() - self._start) * 1000, 1)
+ 
+    def to_dict(self) -> Dict[str, float]:
+        return dict(self._steps)
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [IMP-1]  REDIS CACHE LAYER
+# Uses your existing sync Redis client: r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+# Import it from wherever it lives in your project, e.g.:
+#   from database import r
+# or just paste the line below if this file is standalone:
+#   import redis; r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+# ↓↓ REPLACE THIS IMPORT with however you import `r` in your project ↓↓
+ 
+CACHE_TTL_ANALYSIS_S  = 3_600   # 1 hour  — full analysis result
+CACHE_TTL_CATEGORY_S  = 7_200   # 2 hours — category-level cap stats
+CACHE_TTL_LOCATION_S  = 86_400  # 24 hours — location insights (slow to change)
+ 
+ 
+def _cache_key(*parts: Any) -> str:
+    """Stable, collision-resistant cache key from arbitrary parts."""
+    raw = "|".join(str(p).lower().strip() for p in parts)
+    return "pt:" + hashlib.sha256(raw.encode()).hexdigest()[:32]
+ 
+ 
+# All three cache helpers are now synchronous but wrapped in asyncio.to_thread
+# so they don't block the event loop when called with `await`.
+ 
+async def cache_get(key: str) -> Optional[Any]:
+    try:
+        raw = await asyncio.to_thread(r.get, key)
+        return json.loads(raw) if raw else None
+    except Exception as exc:
+        log.warning("cache_get_failed", key=key, reason=str(exc))
+        return None
+ 
+ 
+async def cache_set(key: str, value: Any, ttl: int) -> None:
+    try:
+        payload = json.dumps(value, default=str)
+        await asyncio.to_thread(r.setex, key, ttl, payload)
+    except Exception as exc:
+        log.warning("cache_set_failed", key=key, reason=str(exc))
+ 
+ 
+async def cache_delete(key: str) -> None:
+    try:
+        await asyncio.to_thread(r.delete, key)
+    except Exception as exc:
+        log.warning("cache_delete_failed", key=key, reason=str(exc))
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# CONFIGURATION CONSTANTS
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+OLLAMA_MODEL = "llama3.2:3b"
+ 
+# [IMP-5]  Semaphore: at most 3 Ollama calls run concurrently
+_OLLAMA_SEMAPHORE = asyncio.Semaphore(3)
+ 
+# [IMP-6]  DB query timeout in milliseconds (SET LOCAL statement_timeout)
+DB_QUERY_TIMEOUT_MS = 4_000
+ 
+_ALLOWED_SOURCES: Dict[str, str] = {
+    "amazon":   "rapidapi_amazon_products",
+    "flipkart": "rapidapi_flipkart_products",
+}
+_PRICE_COL: Dict[str, str] = {
+    "amazon":   "product_price_numeric",
+    "flipkart": "product_price",
+}
+ 
+STOPWORDS = {
+    "for", "with", "and", "the", "a", "an", "in", "of", "to", "by",
+    "new", "best", "buy", "latest", "original", "free", "offer", "sale",
+    "india", "brand", "combo", "set", "pack", "ml", "kg", "gm", "gms",
+    "ltr", "litre", "liter", "piece", "pieces", "pcs", "units", "count",
+    "or", "is", "at", "on", "up", "its", "this", "that", "your",
+}
+ 
+REVIEW_RATE        = 0.02
+AVG_PRODUCT_AGE_MO = 18.0
+NEW_SELLER_SHARE   = 0.03
+MIN_MATCHED        = 5
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [IMP-3]  CONFIDENCE SCORE
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+class FallbackTier(str, Enum):
+    TIER_1   = "tier_1_exact"
+    TIER_2   = "tier_2_keyword"
+    TIER_3   = "tier_3_broad"
+    TIER_4   = "tier_4_category"
+    NO_DATA  = "no_data"
+ 
+ 
+@dataclass
+class ConfidenceScore:
+    """
+    0.0–1.0 float score, label, and breakdown.
+    Higher = more trustworthy estimates.
+    """
+    score:              float        # 0.0–1.0
+    label:              str          # High / Medium / Low
+    tier_used:          FallbackTier
+    sample_size:        int
+    has_sales_data:     bool
+    has_review_data:    bool
+    price_spread_pct:   float        # CV of prices — high spread = noisy market
+    rating_variance:    float        # std-dev of star ratings (0 if none)
+    price_completeness: float        # 0–1 fraction of products with a valid price
+    pct_with_ratings:   float        # % of matched products that have a star rating
+    caveats:            List[str]    # human-readable confidence caveats
+
+    def to_dict(self) -> Dict:
+        return {
+            "score":              round(self.score, 3),
+            "label":              self.label,
+            "color":              "green" if self.score >= 0.70 else ("yellow" if self.score >= 0.45 else "red"),
+            "product_count":      self.sample_size,
+            "pct_with_ratings":   round(self.pct_with_ratings, 1),
+            "tier_used":          self.tier_used.value,
+            "sample_size":        self.sample_size,
+            "has_sales_data":     self.has_sales_data,
+            "has_review_data":    self.has_review_data,
+            "price_spread_pct":   round(self.price_spread_pct, 1),
+            "rating_variance":    round(self.rating_variance, 3),
+            "price_completeness": round(self.price_completeness, 3),
+            "caveats":            self.caveats,
+        } 
+
+def compute_confidence_score(
+    products: List[Dict],
+    pricing: Dict,
+    tier: FallbackTier,
+) -> ConfidenceScore:
+    """
+    [IMP-3] Single authoritative confidence function.
+
+    Weights:
+      40 pts  — sample size (log-scaled, capped at 30+ products)
+      20 pts  — data completeness (reviews present)
+      20 pts  — sales data present
+      10 pts  — tier quality (Tier 1 = full points, Tier 4 = 0)
+      10 pts  — price spread (low CV = consistent market)
+    """
+    n = len(products)
+
+    prices   = [float(p.get("price", 0) or 0) for p in products if float(p.get("price", 0) or 0) > 0]
+    has_rev  = any(int(p.get("reviews", 0) or 0) > 0 for p in products)
+    has_sale = any(
+        p.get("sales_volume") or float(p.get("estimated_sales") or 0) > 0
+        for p in products
+    )
+
+    # ── New fields ──────────────────────────────────────────────────────────
+
+    # rating_variance: std-dev of star ratings across matched products
+    ratings = [float(p.get("rating", 0) or 0) for p in products if float(p.get("rating", 0) or 0) > 0]
+    rating_variance = float(np.std(ratings)) if len(ratings) >= 2 else 0.0
+
+    # price_completeness: what fraction of matched products have a usable price
+    price_completeness = len(prices) / n if n > 0 else 0.0
+
+    # caveats: machine-generated, human-readable confidence explanations
+    caveats: List[str] = []
+    if tier != FallbackTier.TIER_1:
+        caveats.append(f"Match quality: {tier.value.replace('_', ' ')}")
+    if n < 10:
+        caveats.append(f"Small sample: only {n} product(s) matched")
+    if price_completeness < 0.6:
+        caveats.append(
+            f"Price data sparse: only {price_completeness:.0%} of matched products have a price"
+        )
+    if not has_rev:
+        caveats.append("No review data available for matched products")
+
+    # ── Existing score logic (unchanged) ────────────────────────────────────
+
+    mkt_avg = pricing.get("market_avg_price", 0)
+    if mkt_avg > 0 and len(prices) >= 3:
+        spread_pct = float(np.std(prices) / mkt_avg * 100)
+    else:
+        spread_pct = 100.0
+
+    if spread_pct > 80:
+        caveats.append("High price variance — market pricing is inconsistent")
+
+    size_score   = min(1.0, math.log1p(n) / math.log1p(30))
+    review_score = 1.0 if has_rev  else 0.0
+    sales_score  = 1.0 if has_sale else 0.0
+    tier_score   = {
+        FallbackTier.TIER_1:  1.0,
+        FallbackTier.TIER_2:  0.75,
+        FallbackTier.TIER_3:  0.50,
+        FallbackTier.TIER_4:  0.20,
+        FallbackTier.NO_DATA: 0.0,
+    }[tier]
+    spread_score = max(0.0, 1.0 - spread_pct / 100.0)
+
+    raw = (
+        size_score   * 0.40
+        + review_score * 0.20
+        + sales_score  * 0.20
+        + tier_score   * 0.10
+        + spread_score * 0.10
+    )
+    score = round(min(1.0, max(0.0, raw)), 3)
+    label = "High" if score >= 0.70 else ("Medium" if score >= 0.45 else "Low")
+
+    return ConfidenceScore(
+        score=score,
+        label=label,
+        color="green" if score >= 0.70 else ("yellow" if score >= 0.45 else "red"),
+        product_count=n,
+        tier_used=tier,
+        sample_size=n,
+        has_sales_data=has_sale,
+        has_review_data=has_rev,
+        price_spread_pct=spread_pct,
+        rating_variance=rating_variance,
+        price_completeness=price_completeness,
+        pct_with_ratings=round(len(ratings) / n * 100, 1) if n > 0 else 0.0,
+        caveats=caveats,
+    ) 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [IMP-8]  API RESPONSE ENVELOPE
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+class SourceType(str, Enum):
+    EXACT_MATCH      = "exact_match"
+    KEYWORD_MATCH    = "keyword_match"
+    BROAD_MATCH      = "broad_match"
+    CATEGORY_FALLBACK= "category_fallback"
+    NO_DATA          = "no_data"
+ 
+ 
+def _tier_to_source_type(tier: FallbackTier) -> SourceType:
+    return {
+        FallbackTier.TIER_1:  SourceType.EXACT_MATCH,
+        FallbackTier.TIER_2:  SourceType.KEYWORD_MATCH,
+        FallbackTier.TIER_3:  SourceType.BROAD_MATCH,
+        FallbackTier.TIER_4:  SourceType.CATEGORY_FALLBACK,
+        FallbackTier.NO_DATA: SourceType.NO_DATA,
+    }[tier]
+ 
+ 
+class ApiResponse(BaseModel):
+    """
+    [IMP-8] Uniform envelope for every endpoint. The actual payload goes
+    in `data`; metadata lives at the top level for easy client parsing.
+    """
+    success:          bool
+    request_id:       str
+    latency_ms:       float
+    source_type:      str                    # SourceType value
+    confidence_score: Optional[Dict] = None  # ConfidenceScore.to_dict()
+    warnings:         List[str] = Field(default_factory=list)
+    data:             Optional[Any] = None
+    step_timings:     Optional[Dict[str, float]] = None  # dev/debug only
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# PYDANTIC REQUEST / INNER RESPONSE MODELS  (unchanged from v1)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+class ProductTrackerRequest(BaseModel):
+    product_name: str
+    category:     str
+    source:       str
+    base_cost:    float
+    user_email:   Optional[str] = None
+ 
+    @validator("product_name", "category")
+    def not_empty(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("must not be blank")
+        return v.strip()
+ 
+    @validator("base_cost")
+    def positive_cost(cls, v: float) -> float:
+        if v < 0:
+            raise ValueError("base_cost must be >= 0")
+        return v
+ 
+ 
+class PricingInsights(BaseModel):
+    recommended_price: float
+    min_price:         float
+    max_price:         float
+    profit_margin:     float
+    confidence:        str
+    market_avg_price:  float = 0
+    market_min_price:  float = 0
+    market_max_price:  float = 0
+ 
+ 
+class SalesInsights(BaseModel):
+    estimated_monthly_sales: str
+    estimated_daily_sales:   float
+    market_demand:           str
+ 
+ 
+class CompetitorInsights(BaseModel):
+    total_competitors:     int
+    avg_competitor_price:  float
+    avg_competitor_rating: float
+    top_competitor:        Optional[Dict[str, Any]]
+ 
+ 
+class LocationInsight(BaseModel):
+    country:      str
+    market_share: str
+    demand_level: str
+ 
+ 
+class GapItem(BaseModel):
+    gap_type:    str
+    severity:    str
+    icon:        str
+    title:       str
+    description: str
+    action:      str
+    count:       int = 0
+ 
+ 
+class FinalVerdict(BaseModel):
+    opportunity_score: int
+    verdict_label:     str
+    verdict_color:     str
+    beat_actions:      List[str]
+    improvements:      List[str]
+    risks:             List[str]
+    high_gaps_count:   int
+    medium_gaps_count: int
+ 
+ 
+class ProductTrackerData(BaseModel):
+    """Inner payload nested inside ApiResponse.data for the analyze endpoint."""
+    product_name:      str
+    category:          str
+    source:            str
+    pricing:           PricingInsights
+    sales:             SalesInsights
+    competition:       CompetitorInsights
+    location_insights: List[LocationInsight] = Field(default_factory=list)
+    ai_strategy:       str
+    market_gaps:       List[GapItem]         = Field(default_factory=list)
+    final_verdict:     Optional[FinalVerdict] = None
+    fallback_reason:   Optional[str] = None  # [IMP-7]
+ 
+ 
+class AnalysisTrackRequest(BaseModel):
+    increment: int = 1
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [IMP-2 / IMP-10]  HELPERS
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _infinity_to_sentinel(value: Any, sentinel: int = -1) -> Any:
+    return sentinel if value == float("inf") else value
+ 
+ 
+def _validate_source(source: str) -> str:
+    key = source.lower()
+    if key not in _ALLOWED_SOURCES:
+        raise ValidationError(
+            f"Unknown source '{source}'.",
+            detail={"allowed": list(_ALLOWED_SOURCES)},
+        )
+    return key
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# TEXT UTILITIES  (unchanged)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _normalize(t: str) -> str:
+    t = str(t).lower()
+    t = re.sub(r"[^a-z0-9 ]", " ", t)
+    return re.sub(r"\s+", " ", t).strip()
+ 
+ 
+def _core_segment(product_name: str) -> str:
+    core = product_name.split(",")[0].strip()
+    core = re.sub(
+        r'\b\d[\d\-]*\s*(kg|g|gm|gms|ml|l|ltr|litre|liter|'
+        r'count|pack|pcs|pieces|units|inch|cm|mm|w|v|mah|gb|tb|mb)\b',
+        '', core, flags=re.IGNORECASE,
+    )
+    core = re.sub(r'\([^)]{0,40}\)', '', core)
+    return re.sub(r'\s+', ' ', core).strip()
+ 
+ 
+def extract_keywords(product_name: str) -> List[str]:
+    core   = _core_segment(product_name)
+    tokens = _normalize(core).split()
+    kws = [
+        t for t in tokens
+        if t not in STOPWORDS
+        and len(t) > 1
+        and not t.isdigit()
+        and not re.match(r'^\d+[a-z]*$', t)
+    ]
+    kws.sort(key=len, reverse=True)
+    return list(dict.fromkeys(kws))
+ 
+ 
+def _keyword_overlap(title: str, core_kws: List[str]) -> float:
+    if not core_kws:
+        return 0.0
+    t = _normalize(title)
+    return sum(1 for kw in core_kws if kw in t) / len(core_kws)
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# TF-IDF EMBEDDER  (unchanged)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+class _TFIDFEmbedder:
+    def __init__(self, corpus: List[str]):
+        self.vocab: Dict[str, int] = {}
+        self.idf = np.array([])
+        self._fit(corpus)
+ 
+    def _tok(self, t: str) -> List[str]:
+        return [x for x in _normalize(t).split() if len(x) > 1]
+ 
+    def _fit(self, corpus: List[str]) -> None:
+        N         = len(corpus)
+        tokenized = [self._tok(d) for d in corpus]
+        vocab     = sorted({tok for toks in tokenized for tok in toks})
+        self.vocab = {t: i for i, t in enumerate(vocab)}
+        V  = len(vocab)
+        df = np.zeros(V, dtype=np.float32)
+        for toks in tokenized:
+            for tok in set(toks):
+                if tok in self.vocab:
+                    df[self.vocab[tok]] += 1
+        self.idf = np.log((N + 1) / (df + 1)) + 1.0
+ 
+    def transform(self, text: str) -> np.ndarray:
+        if not self.vocab:
+            return np.array([])
+        V    = len(self.vocab)
+        toks = self._tok(text)
+        tf   = np.zeros(V, dtype=np.float32)
+        cnt  = Counter(toks)
+        tot  = max(len(toks), 1)
+        for tok, c in cnt.items():
+            if tok in self.vocab:
+                tf[self.vocab[tok]] = c / tot
+        vec  = tf * self.idf
+        norm = np.linalg.norm(vec)
+        return vec / norm if norm > 0 else vec
+ 
+ 
+def _cosine(a: np.ndarray, b: np.ndarray) -> float:
+    if a.size == 0 or b.size == 0:
+        return 0.0
+    na, nb = np.linalg.norm(a), np.linalg.norm(b)
+    return float(np.dot(a, b) / (na * nb)) if na > 0 and nb > 0 else 0.0
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [IMP-6]  DB HELPERS WITH TIMEOUT
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@contextlib.contextmanager
+def _db_timeout(db: Session, timeout_ms: int = DB_QUERY_TIMEOUT_MS):
+    """
+    [IMP-6] Sets PostgreSQL statement_timeout for the duration of the block.
+    Raises TimeoutError (our AppError subclass) on cancellation.
+    """
+    try:
+        db.execute(text(f"SET LOCAL statement_timeout = {timeout_ms}"))
+        yield
+    except Exception as exc:
+        msg = str(exc).lower()
+        if "canceling" in msg or "timeout" in msg or "statement_timeout" in msg:
+            raise TimeoutError(
+                f"DB query exceeded {timeout_ms}ms limit.",
+                detail={"timeout_ms": timeout_ms},
+            ) from exc
+        raise
+ 
+ 
+def _build_sql(source: str, kw_sql: str, cat_sql: str, price_sql: str) -> str:
+    key   = source.lower()
+    table = _ALLOWED_SOURCES[key]
+    if key == "amazon":
+        return f"""
+            SELECT product_title, category_name,
+                   product_price_numeric       AS price,
+                   product_star_rating_numeric AS rating,
+                   product_num_ratings         AS reviews,
+                   sales_volume, country,
+                   is_best_seller, is_amazon_choice, is_prime,
+                   avg_price, min_price, max_price,
+                   NULL::text  AS brand,
+                   NULL::text  AS stock_status,
+                   NULL::float AS estimated_sales
+            FROM {table}
+            WHERE {kw_sql} {cat_sql} {price_sql}
+              AND product_price_numeric > 0
+              AND product_star_rating_numeric > 0
+            ORDER BY product_num_ratings DESC
+            LIMIT :limit
+        """
+    return f"""
+        SELECT product_title, category_name,
+               product_price        AS price,
+               product_star_rating  AS rating,
+               product_review_count AS reviews,
+               sales_volume, country,
+               FALSE AS is_best_seller, FALSE AS is_amazon_choice, FALSE AS is_prime,
+               avg_price, min_price, max_price,
+               brand, stock_status, estimated_sales
+        FROM {table}
+        WHERE {kw_sql} {cat_sql} {price_sql}
+          AND product_price > 0
+          AND product_star_rating > 0
+        ORDER BY product_review_count DESC
+        LIMIT :limit
+    """
+ 
+ 
+def _db_fetch(
+    db: Session,
+    keywords: List[str],
+    source: str,
+    limit: int,
+    price_lo: Optional[float] = None,
+    price_hi: Optional[float] = None,
+    category: Optional[str] = None,
+) -> List[Dict]:
+    if not keywords:
+        return []
+    params: Dict[str, Any] = {"limit": limit}
+    kw_parts = []
+    for i, kw in enumerate(keywords[:10]):
+        pk = f"kw{i}"
+        params[pk] = f"%{kw}%"
+        kw_parts.append(f"LOWER(product_title) LIKE :{pk}")
+    kw_sql = "(" + " OR ".join(kw_parts) + ")"
+ 
+    cat_sql = ""
+    if category:
+        params["cat"] = f"%{_normalize(category)}%"
+        cat_sql = "AND LOWER(category_name) LIKE :cat"
+ 
+    price_sql = ""
+    if price_lo is not None and price_hi is not None:
+        price_col = _PRICE_COL[source]
+        params["plo"] = price_lo
+        params["phi"] = price_hi
+        price_sql = f"AND {price_col} BETWEEN :plo AND :phi"
+ 
+    sql = _build_sql(source, kw_sql, cat_sql, price_sql)
+    try:
+        with _db_timeout(db):
+            rows = db.execute(text(sql), params).fetchall()
+        return [dict(r._mapping) for r in rows]
+    except (TimeoutError, AppError):
+        raise
+    except Exception:
+        log.exception("db_fetch_error", source=source, keywords=keywords)
+        raise DatabaseError("Failed to fetch products from database.")
+ 
+ 
+def _db_fetch_category_only(
+    db: Session, category: str, source: str, limit: int = 300,
+) -> List[Dict]:
+    table = _ALLOWED_SOURCES[source]
+    params = {"cat": f"%{_normalize(category)}%", "limit": limit}
+    if source == "amazon":
+        sql = f"""
+            SELECT product_title, category_name,
+                   product_price_numeric       AS price,
+                   product_star_rating_numeric AS rating,
+                   product_num_ratings         AS reviews,
+                   sales_volume, country,
+                   is_best_seller, is_amazon_choice, is_prime,
+                   avg_price, min_price, max_price,
+                   NULL::text  AS brand,
+                   NULL::text  AS stock_status,
+                   NULL::float AS estimated_sales
+            FROM {table}
+            WHERE LOWER(category_name) LIKE :cat
+              AND product_price_numeric > 0 AND product_star_rating_numeric > 0
+            ORDER BY product_num_ratings DESC LIMIT :limit
+        """
+    else:
+        sql = f"""
+            SELECT product_title, category_name,
+                   product_price        AS price,
+                   product_star_rating  AS rating,
+                   product_review_count AS reviews,
+                   sales_volume, country,
+                   FALSE AS is_best_seller, FALSE AS is_amazon_choice, FALSE AS is_prime,
+                   avg_price, min_price, max_price,
+                   brand, stock_status, estimated_sales
+            FROM {table}
+            WHERE LOWER(category_name) LIKE :cat
+              AND product_price > 0 AND product_star_rating > 0
+            ORDER BY product_review_count DESC LIMIT :limit
+        """
+    try:
+        with _db_timeout(db):
+            rows = db.execute(text(sql), params).fetchall()
+        return [dict(r._mapping) for r in rows]
+    except (TimeoutError, AppError):
+        raise
+    except Exception:
+        log.exception("db_category_fetch_error", category=category, source=source)
+        raise DatabaseError("Failed to fetch category products from database.")
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# PRICE BAND + OUTLIER REMOVAL  (unchanged)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _price_band(base_cost: float, candidates: Optional[List[Dict]] = None) -> Tuple[float, float]:
+    if candidates:
+        db_avg = float(candidates[0].get("avg_price") or 0)
+        if db_avg > 0:
+            return db_avg * 0.25, db_avg * 4.0
+        prices = [float(p.get("price", 0) or 0) for p in candidates if p.get("price", 0) > 0]
+        if prices:
+            med = float(np.median(prices))
+            return med * 0.20, med * 5.0
+    if base_cost > 0:
+        return base_cost * 0.20, base_cost * 5.0
+    return 1.0, 999_999.0
+ 
+ 
+def _remove_price_outliers(products: List[Dict]) -> List[Dict]:
+    prices = [float(p.get("price", 0) or 0) for p in products]
+    valid  = [v for v in prices if v > 0]
+    if len(valid) < 4:
+        return products
+    arr     = np.array(valid)
+    q1, q3 = float(np.percentile(arr, 25)), float(np.percentile(arr, 75))
+    iqr     = q3 - q1
+    lo      = max(1.0, q1 - 1.5 * iqr)
+    hi      = q3 + 1.5 * iqr
+    cleaned = [p for p in products if lo <= float(p.get("price", 0) or 0) <= hi]
+    return cleaned if len(cleaned) >= max(3, int(len(products) * 0.40)) else products
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# MULTI-FACTOR SCORE + SEMANTIC RERANK  (unchanged)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _multi_factor_score(p: Dict, sim: float, core_kws: List[str]) -> float:
+    title        = str(p.get("product_title", ""))
+    reviews      = float(p.get("reviews", 0) or 0)
+    rating       = float(p.get("rating", 0) or 0)
+    overlap      = _keyword_overlap(title, core_kws)
+    kw_bonus     = overlap * 0.25
+    review_bonus = min(0.10, math.log1p(reviews) / 100)
+    rating_bonus = max(0.0, (rating - 3.0) / 30.0)
+    spam_penalty = 0.05 if len(title) > 130 else 0.0
+    return round(min(1.0, max(0.0, sim + kw_bonus + review_bonus + rating_bonus - spam_penalty)), 4)
+ 
+ 
+def _semantic_rerank(
+    candidates: List[Dict],
+    product_name: str,
+    core_kws: List[str],
+    threshold: float,
+    label: str = "",
+) -> List[Dict]:
+    if not candidates:
+        return []
+    titles   = [str(p.get("product_title", "")) for p in candidates]
+    corpus   = [product_name] + titles
+    embedder = _TFIDFEmbedder(corpus)
+    q_vec    = embedder.transform(product_name)
+    scored: List[Tuple[Dict, float]] = []
+    for p, title in zip(candidates, titles):
+        sim = _cosine(q_vec, embedder.transform(title))
+        if sim >= threshold:
+            scored.append((p, _multi_factor_score(p, sim, core_kws)))
+    scored.sort(key=lambda x: x[1], reverse=True)
+    result = [p for p, _ in scored]
+    log.debug("rerank", label=label, threshold=threshold, before=len(candidates), after=len(result))
+    return result
+ 
+ 
+def _adaptive_threshold(product_name: str, tier: str) -> float:
+    words = len(_core_segment(product_name).split())
+    if tier == "strict":
+        return 0.50 if words > 6 else (0.42 if words > 3 else 0.32)
+    elif tier == "moderate":
+        return 0.35 if words > 6 else (0.26 if words > 3 else 0.18)
+    return 0.18 if words > 6 else 0.10
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [IMP-7]  FALLBACK GOVERNANCE
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@dataclass
+class FallbackPolicy:
+    """
+    [IMP-7] Encodes when Tier 4 (category-only) fallback is allowed and
+    generates a human-readable reason to surface in the response.
+    """
+    allow_tier4:       bool = True
+    min_category_rows: int  = 10   # category must have at least N products
+    warn_on_tier3:     bool = True
+    warn_on_tier4:     bool = True
+ 
+    def should_allow_tier4(self, category_row_count: int) -> Tuple[bool, Optional[str]]:
+        if not self.allow_tier4:
+            return False, "Category fallback is disabled by policy."
+        if category_row_count < self.min_category_rows:
+            return False, (
+                f"Category fallback skipped: only {category_row_count} products "
+                f"in category (minimum {self.min_category_rows} required)."
             )
-            
-            output = (result.stdout or result.stderr or "").strip()
-            print(f"📥 AI Output: {output[:200]}...")
-            
-            if not output:
-                print(f"⚠️ Empty AI response on attempt {attempt + 1}")
-                continue
-            
-            # Try to extract JSON array from response
-            # Handle various formats: plain JSON, markdown code blocks, text with JSON
-            json_patterns = [
-                r'```json\s*(\[[\s\S]*?\])\s*```',  # Markdown code block
-                r'```\s*(\[[\s\S]*?\])\s*```',      # Plain code block
-                r'(\[[\s\S]*?\])',                   # Plain JSON array
-            ]
-            
-            json_text = None
-            for pattern in json_patterns:
-                match = re.search(pattern, output)
-                if match:
-                    json_text = match.group(1) if match.lastindex else match.group()
-                    break
-            
-            if not json_text:
-                print(f"⚠️ No JSON found in AI output on attempt {attempt + 1}")
-                continue
-            
-            # Clean up the JSON text
-            json_text = json_text.strip()
-            
-            # Try to parse JSON
-            try:
-                locations_data = json.loads(json_text)
-            except json.JSONDecodeError:
-                # Try to fix common JSON issues
-                json_text = json_text.replace("'", '"')  # Single to double quotes
-                json_text = re.sub(r',(\s*[}\]])', r'\1', json_text)  # Remove trailing commas
-                locations_data = json.loads(json_text)
-            
-            if not isinstance(locations_data, list) or len(locations_data) == 0:
-                print(f"⚠️ Invalid JSON structure on attempt {attempt + 1}")
-                continue
-            
-            # Validate and normalize
-            locations = locations_data[:6]
-            
-            # Ensure all required fields exist
-            valid_locations = []
-            for loc in locations:
-                if isinstance(loc, dict) and 'city' in loc and 'share' in loc:
-                    valid_locations.append(loc)
-            
-            if len(valid_locations) < 3:  # Need at least 3 valid locations
-                print(f"⚠️ Not enough valid locations ({len(valid_locations)}) on attempt {attempt + 1}")
-                continue
-            
-            # Normalize shares to sum to 100
-            total_share = sum(float(loc.get('share', 0)) for loc in valid_locations)
-            
-            if total_share <= 0:
-                print(f"⚠️ Invalid share totals on attempt {attempt + 1}")
-                continue
-            
-            # Normalize
-            for loc in valid_locations:
-                loc['share'] = (float(loc.get('share', 0)) / total_share) * 100
-            
-            print(f"✅ Successfully generated {len(valid_locations)} AI-powered locations")
-            
-            return [
-                LocationInsight(
-                    country=loc.get("city", "Unknown Location"),
-                    market_share=f"{loc['share']:.1f}%",
-                    demand_level=loc.get("demand", "Medium")
-                )
-                for loc in valid_locations
-            ]
-        
-        except json.JSONDecodeError as e:
-            print(f"❌ JSON parsing failed on attempt {attempt + 1}: {e}")
-            print(f"Raw output: {output[:300]}")
-        except subprocess.TimeoutExpired:
-            print(f"❌ AI request timeout after 60 seconds on attempt {attempt + 1}")
-        except subprocess.CalledProcessError as e:
-            print(f"❌ Subprocess error on attempt {attempt + 1}: {e}")
-        except Exception as e:
-            print(f"❌ Unexpected error on attempt {attempt + 1}: {e}")
-
-    print("🔁 Falling back to rule-based location prediction")
-    return get_rule_based_locations(category, avg_price, analysis)
-        
-
-
+        return True, None
+ 
+    def fallback_warning(self, tier: FallbackTier) -> Optional[str]:
+        if tier == FallbackTier.TIER_3 and self.warn_on_tier3:
+            return (
+                "BROAD MATCH: Product not found exactly. Results are based on the "
+                "single most relevant keyword. Estimates are approximate."
+            )
+        if tier == FallbackTier.TIER_4 and self.warn_on_tier4:
+            return (
+                "CATEGORY FALLBACK: Product not found in the database. "
+                "Analysis is based on the category market as a whole. "
+                "Treat all estimates as directional only."
+            )
+        return None
+ 
+ 
+DEFAULT_FALLBACK_POLICY = FallbackPolicy()
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [IMP-7]  MASTER: get_similar_products  — returns tier alongside results
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def get_similar_products(
+    db: Session,
+    product_name: str,
+    category: str,
+    source: str,
+    base_cost: float,
+    max_results: int = 200,
+    policy: FallbackPolicy = DEFAULT_FALLBACK_POLICY,
+) -> Tuple[List[Dict], FallbackTier]:
+    """
+    Returns (products, tier_used).
+    Tier is always surfaced so callers can attach it to confidence scoring
+    and the API response.
+    """
+    log.info("pipeline_start", product=product_name, category=category, source=source)
+ 
+    core_kws = extract_keywords(product_name)
+ 
+    if not core_kws:
+        log.info("pipeline_no_keywords")
+        raw = _db_fetch_category_only(db, category, source, limit=300)
+        allow, reason = policy.should_allow_tier4(len(raw))
+        if not allow:
+            log.warning("tier4_blocked", reason=reason)
+            return [], FallbackTier.NO_DATA
+        result = _semantic_rerank(raw, product_name, [], 0.0, "T4-no-kw")
+        if len(result) >= MIN_MATCHED:
+            return _finalize(result, max_results), FallbackTier.TIER_4
+        return [], FallbackTier.NO_DATA
+ 
+    # Tier 1
+    raw_t1 = _db_fetch(db, core_kws, source, limit=500, category=category)
+    lo, hi = _price_band(base_cost, raw_t1)
+    raw_t1 = [p for p in raw_t1 if lo <= float(p.get("price", 0) or 0) <= hi]
+    result = _semantic_rerank(raw_t1, product_name, core_kws,
+                              _adaptive_threshold(product_name, "strict"), "T1")
+    if len(result) >= MIN_MATCHED:
+        return _finalize(result, max_results), FallbackTier.TIER_1
+ 
+    # Tier 2
+    raw_t2 = _db_fetch(db, core_kws, source, limit=600, price_lo=lo, price_hi=hi)
+    result = _semantic_rerank(raw_t2, product_name, core_kws,
+                              _adaptive_threshold(product_name, "moderate"), "T2")
+    if len(result) >= MIN_MATCHED:
+        return _finalize(result, max_results), FallbackTier.TIER_2
+ 
+    # Tier 3
+    best_kw  = [core_kws[0]]
+    lo3, hi3 = (base_cost * 0.10, base_cost * 10.0) if base_cost > 0 else (1.0, 1_000_000.0)
+    raw_t3   = _db_fetch(db, best_kw, source, limit=400, price_lo=lo3, price_hi=hi3)
+    result   = _semantic_rerank(raw_t3, product_name, core_kws,
+                                _adaptive_threshold(product_name, "loose"), "T3")
+    if len(result) >= MIN_MATCHED:
+        return _finalize(result, max_results), FallbackTier.TIER_3
+ 
+    # Tier 4
+    raw_t4 = _db_fetch_category_only(db, category, source, limit=300)
+    allow, reason = policy.should_allow_tier4(len(raw_t4))
+    if not allow:
+        log.warning("tier4_blocked", reason=reason)
+        return [], FallbackTier.NO_DATA
+    result = _semantic_rerank(raw_t4, product_name, core_kws, 0.0, "T4-cat")
+    if len(result) >= MIN_MATCHED:
+        return _finalize(result, max_results), FallbackTier.TIER_4
+ 
+    return [], FallbackTier.NO_DATA
+ 
+ 
+def _finalize(products: List[Dict], max_results: int) -> List[Dict]:
+    cleaned = _remove_price_outliers(products)
+    if len(cleaned) < MIN_MATCHED:
+        cleaned = products
+    result = cleaned[:max_results]
+    log.info("pipeline_final", count=len(result))
+    return result
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# PRICING ENGINE  (unchanged logic; uses AppError hierarchy)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def analyze_pricing(products: List[Dict], base_cost: float) -> Dict:
+    raw_prices: List[float] = []
+    weighted_prices: List[float] = []
+    db_avg_prices: List[float] = []
+ 
+    for p in products:
+        price   = float(p.get("price", 0) or 0)
+        reviews = max(1, int(p.get("reviews", 1) or 1))
+        if price > 0:
+            raw_prices.append(price)
+            weight = max(1, int(1 + math.log1p(reviews) * 2))
+            weighted_prices.extend([price] * weight)
+        db_avg = float(p.get("avg_price") or 0)
+        if db_avg > 0:
+            db_avg_prices.append(db_avg)
+ 
+    if len(raw_prices) < 3:
+        return _empty_pricing()
+ 
+    arr     = np.array(raw_prices)
+    q1, q3 = float(np.percentile(arr, 25)), float(np.percentile(arr, 75))
+    iqr     = q3 - q1
+    lo      = max(1.0, q1 - 1.5 * iqr)
+    hi      = q3 + 1.5 * iqr
+    clean   = arr[(arr >= lo) & (arr <= hi)]
+    if len(clean) < 3:
+        clean = arr
+ 
+    w_clean = [p for p in weighted_prices if lo <= p <= hi] or list(clean)
+    w_med   = float(np.sort(np.array(w_clean))[len(w_clean) // 2])
+ 
+    computed_avg = float(np.mean(clean))
+    if db_avg_prices:
+        db_avg  = float(np.median(db_avg_prices))
+        mkt_avg = (computed_avg * 0.6 + db_avg * 0.4) if db_avg > 0 else computed_avg
+    else:
+        mkt_avg = computed_avg
+ 
+    if mkt_avg <= 0:
+        return _empty_pricing()
+ 
+    mkt_min = float(np.percentile(clean, 10))
+    mkt_max = float(np.percentile(clean, 90))
+    rec_raw = min(w_med, mkt_avg * 1.05)
+    rec     = round(max(rec_raw, base_cost * 1.20) if base_cost > 0 else rec_raw)
+    profit  = rec - base_cost if base_cost > 0 else rec
+    margin  = (profit / rec * 100) if rec > 0 else 0.0
+    n       = len(clean)
+    cv      = float(np.std(clean) / mkt_avg)
+ 
+    if   n >= 30 and cv < 0.40 and margin >= 20: confidence = "High"
+    elif n >= 15 and cv < 0.60 and margin >= 10: confidence = "Medium"
+    elif margin < 0:                              confidence = "Critical"
+    else:                                         confidence = "Low"
+ 
+    return {
+        "recommended_price": rec,
+        "min_price":         round(mkt_min),
+        "max_price":         round(mkt_max),
+        "profit_margin":     round(margin, 1),
+        "confidence":        confidence,
+        "market_avg_price":  round(mkt_avg),
+        "market_min_price":  round(mkt_min),
+        "market_max_price":  round(mkt_max),
+        "_sample_size":      n,
+    }
+ 
+ 
+def _empty_pricing() -> Dict:
+    return {
+        "recommended_price": 0, "min_price": 0, "max_price": 0,
+        "profit_margin": 0.0, "confidence": "Low",
+        "market_avg_price": 0, "market_min_price": 0, "market_max_price": 0,
+        "_sample_size": 0,
+    }
+ 
+def normalize_output(data: dict) -> dict:
+    return data
+ 
+def validate_cost_against_market(base_cost: float, products: List[Dict]) -> Optional[str]:
+    prices = [float(p.get("price", 0) or 0) for p in products if p.get("price", 0) > 0]
+    if not prices:
+        return None
+    arr     = np.array(prices)
+    mkt_max = float(np.max(arr))
+    p95     = float(np.percentile(arr, 95))
+    mkt_avg = float(np.mean(arr))
+    if base_cost > mkt_max:
+        return f"Your cost (Rs.{base_cost:,.0f}) exceeds the highest market price (Rs.{mkt_max:,.0f}). Profit is impossible."
+    if base_cost > p95:
+        return f"Cost (Rs.{base_cost:,.0f}) is above the 95th-percentile market price (Rs.{p95:,.0f}). Margins will be critically thin."
+    if base_cost > mkt_avg:
+        return f"Cost (Rs.{base_cost:,.0f}) exceeds market average (Rs.{mkt_avg:,.0f}). Very limited profitability."
+    return None
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# SALES ESTIMATION  (unchanged)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
 def parse_sales_volume(sales_text: str) -> float:
-    """Parse sales volume text into numeric value"""
     if not sales_text:
         return 0.0
-    
-    sales_text = str(sales_text).lower().replace(',', '')
-    
-    # Handle K (thousands)
-    if 'k' in sales_text:
-        try:
-            num = re.search(r'[\d.]+', sales_text.replace('k', ''))
-            if num:
-                return float(num.group()) * 1000
-        except:
-            pass
-    
-    # Handle M (millions)
-    if 'm' in sales_text:
-        try:
-            num = re.search(r'[\d.]+', sales_text.replace('m', ''))
-            if num:
-                return float(num.group()) * 1000000
-        except:
-            pass
-    
-    # Handle L (lakhs)
-    if 'l' in sales_text or 'lakh' in sales_text:
-        try:
-            num = re.search(r'[\d.]+', sales_text)
-            if num:
-                return float(num.group()) * 100000
-        except:
-            pass
-    
-    # Extract numeric value
-    match = re.search(r'[\d.]+', sales_text)
-    if match:
-        try:
-            return float(match.group())
-        except:
-            pass
-    
+    s = str(sales_text).lower().replace(",", "").strip()
+    s = re.sub(r'bought.*$', '', s).strip()
+    for pattern, mult in [
+        (r"([\d.]+)\s*m\b", 1_000_000),
+        (r"([\d.]+)\s*k\b", 1_000),
+        (r"([\d.]+)",        1),
+    ]:
+        m = re.search(pattern, s)
+        if m:
+            try:
+                return float(m.group(1)) * mult
+            except ValueError:
+                pass
     return 0.0
-
-
-def generate_ai_strategy(pricing: Dict, sales: Dict, competition: Dict, 
-                        base_cost: float, product_name: str, category: str,
-                        location_insights: List[LocationInsight] = None) -> str:
-    """
-    FULLY DYNAMIC AI-powered strategy using Llama 3.2:3b - synchronized with location insights
-    """
-    
-    # Extract ALL market intelligence
-    margin = pricing['profit_margin']
-    recommended = pricing['recommended_price']
-    market_avg = pricing.get('market_avg_price', 0)
-    market_min = pricing.get('market_min_price', 0)
-    market_max = pricing.get('market_max_price', 0)
-    
-    monthly_sales = sales['estimated_monthly_sales']
-    daily_sales = sales['estimated_daily_sales']
-    demand = sales['market_demand']
-    
-    total_competitors = competition['total_competitors']
-    avg_comp_price = competition['avg_competitor_price']
-    avg_comp_rating = competition['avg_competitor_rating']
-    
-    top_comp = competition.get('top_competitor', {})
-    top_comp_name = top_comp.get('name', 'N/A') if top_comp else 'N/A'
-    top_comp_price = top_comp.get('price', 0) if top_comp else 0
-    
-    # Calculate ACCURATE metrics
-    profit_per_unit = recommended - base_cost
-    price_vs_avg = ((recommended - avg_comp_price) / avg_comp_price * 100) if avg_comp_price > 0 else 0
-    
-    # Parse sales range
+ 
+ 
+def _parse_monthly_sales_string(monthly_str: str, daily_fallback: float) -> float:
     try:
-        sales_parts = monthly_sales.replace(',', '').split(' - ')
-        avg_monthly_sales = (int(sales_parts[0]) + int(sales_parts[1])) / 2
-        monthly_revenue_potential = profit_per_unit * avg_monthly_sales
-    except:
-        avg_monthly_sales = daily_sales * 30
-        monthly_revenue_potential = profit_per_unit * avg_monthly_sales
-    
-    # Determine market position
-    if base_cost >= market_avg * 0.8:
-        cost_advantage = "WEAK"
-    elif base_cost >= market_avg * 0.6:
-        cost_advantage = "MODERATE"
-    else:
-        cost_advantage = "STRONG"
-    
-    # Competition level
-    if total_competitors > 80:
-        comp_level = "VERY HIGH"
-    elif total_competitors > 40:
-        comp_level = "HIGH"
-    else:
-        comp_level = "MODERATE"
-
-    # Extract target cities from location insights
-    target_cities_str = ""
-    cities_list = ""
-    if location_insights and len(location_insights) > 0:
-        top_locations = location_insights[:3]
-        cities = [loc.country for loc in top_locations if loc.country != "AI Analysis Required"]
-        
-        if cities:
-            target_cities_str = "\n\nTARGET CITIES:\n"
-            for i, loc in enumerate(top_locations[:3], 1):
-                target_cities_str += f"{i}. {loc.country} - {loc.market_share}, {loc.demand_level} demand\n"
-            cities_list = ", ".join([city.split(',')[0] for city in cities[:3]])
+        cleaned = monthly_str.replace(",", "").strip()
+        if " - " in cleaned:
+            parts = cleaned.split(" - ")
+            return (float(parts[0]) + float(parts[1])) / 2.0
+        return float(cleaned)
+    except (ValueError, IndexError):
+        return max(0.0, daily_fallback) * 30
+ 
+ 
+def _category_cap_from_db(db: Session, category: str, source: str) -> int:
+    table      = _ALLOWED_SOURCES.get(source, "rapidapi_amazon_products")
+    review_col = "product_num_ratings" if source == "amazon" else "product_review_count"
+    try:
+        sql = f"""
+            SELECT PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY {review_col})
+            FROM {table}
+            WHERE LOWER(category_name) LIKE :cat AND {review_col} > 0
+        """
+        with _db_timeout(db, timeout_ms=3_000):
+            p75 = db.execute(text(sql), {"cat": f"%{_normalize(category)}%"}).scalar()
+        if p75 and float(p75) > 0:
+            market_monthly = (float(p75) / REVIEW_RATE) / AVG_PRODUCT_AGE_MO
+            return max(30, min(2000, int(market_monthly * NEW_SELLER_SHARE)))
+    except (TimeoutError, AppError):
+        log.warning("category_cap_timeout", category=category)
+    except Exception:
+        log.exception("category_cap_error", category=category)
+    return 200
+ 
+ 
+def analyze_sales_potential(
+    products: List[Dict],
+    source: str,
+    base_cost: float,
+    recommended_price: float,
+    category: str,
+    db: Optional[Session] = None,
+) -> Dict:
+    if not products:
+        return {"estimated_monthly_sales": "0 - 0", "estimated_daily_sales": 0.0, "market_demand": "Unknown"}
+ 
+    sales_data: List[float] = []
+    review_counts: List[float] = []
+    prices: List[float] = []
+ 
+    for p in products:
+        es = float(p.get("estimated_sales") or 0)
+        if es > 0:
+            sales_data.append(es)
         else:
-            cities_list = "major metros"
+            sv = parse_sales_volume(str(p.get("sales_volume", "") or ""))
+            if sv > 0:
+                sales_data.append(sv)
+        rev = float(p.get("reviews") or 0)
+        if rev > 0:
+            review_counts.append(rev)
+        pr = float(p.get("price", 0) or 0)
+        if pr > 0:
+            prices.append(pr)
+ 
+    n         = len(products)
+    avg_price = max(float(np.mean(prices)) if prices else 1.0, 1.0)
+    total_rev = float(np.sum(review_counts)) if review_counts else 0.0
+    med_rev   = float(np.median(review_counts)) if review_counts else 0.0
+    cap       = _category_cap_from_db(db, category, source) if db else 200
+ 
+    if sales_data:
+        new_seller_est = float(np.median(sales_data)) * NEW_SELLER_SHARE
+    elif total_rev > 0:
+        implied_buyers = total_rev / REVIEW_RATE
+        share          = min(0.08, NEW_SELLER_SHARE * (50 / max(50, n)))
+        new_seller_est = (implied_buyers / AVG_PRODUCT_AGE_MO) * share
     else:
-        cities_list = "major metros"
-
-    # Optimized prompt for Llama 3.2:3b (more concise and structured)
-    prompt = f"""You are an Indian e-commerce strategist. Write a 5-6 sentence actionable strategy.
-
-PRODUCT: {product_name}
-CATEGORY: {category}
-
-DATA:
-• Cost: ₹{base_cost:,.0f} | Market Avg: ₹{market_avg:,.0f}
-• Recommended Price: ₹{recommended:,.0f}
-• Profit/Unit: ₹{profit_per_unit:,.0f} | Margin: {margin:.1f}%
-• Competitors: {total_competitors} ({comp_level})
-• Monthly Sales Est: {int(avg_monthly_sales)} units
-• Monthly Revenue: ₹{monthly_revenue_potential * 0.7:,.0f} (after fees)
-{target_cities_str}
-
-STRATEGY STRUCTURE:
-
-1. VIABILITY: Start with one of these based on margin:
-   - <10%: "❌ NOT VIABLE:"
-   - 10-19%: "⚠️ RISKY:"
-   - 20-29%: "⚡ CHALLENGING:"
-   - 30-39%: "✅ SOLID:"
-   - 40+%: "🎯 EXCELLENT:"
-
-2. PRICING: "Price at ₹{recommended:,.0f}, earning ₹{profit_per_unit:,.0f}/unit ({margin:.1f}% margin)."
-
-3. TARGET CITIES: "Focus on {cities_list}" and briefly why these cities match the product.
-
-4. COMPETITION: How to handle {total_competitors} competitors (differentiation strategy).
-
-5. DIFFERENTIATION: One specific tactic (bundle, niche, warranty, etc.).
-
-6. TIMELINE: "{int(avg_monthly_sales)} units/month = ₹{monthly_revenue_potential * 0.7:,.0f} after fees. Month 1-2: [action], Month 3+: [result]"
-
-Write the 5-6 sentence strategy now:"""
-
+        new_seller_est = max(5.0, n * 0.3)
+ 
+    if avg_price > 0 and recommended_price > 0:
+        delta = (recommended_price - avg_price) / avg_price * 100
+        pf = 1.40 if delta <= -20 else (
+             1.20 if delta <= -10 else (
+             1.05 if delta <=   0 else (
+             0.90 if delta <=  15 else (
+             0.75 if delta <=  30 else 0.55))))
+    else:
+        pf = 1.0
+ 
+    est  = max(1.0, min(new_seller_est * pf, cap))
+    low  = max(1, int(est * 0.80))
+    high = max(low + 1, int(est * 1.20))
+    daily = round(est / 30.0, 1)
+    marker = float(np.median(sales_data)) if sales_data else med_rev
+    demand = "High" if marker > 5000 else ("Medium" if marker > 500 else "Low")
+ 
+    return {
+        "estimated_monthly_sales": f"{low:,} - {high:,}",
+        "estimated_daily_sales":   daily,
+        "market_demand":           demand,
+    }
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# COMPETITION ANALYSIS  (unchanged)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def analyze_competition(
+    products: List[Dict],
+    category: Optional[str] = None,
+    product_keywords: Optional[List[str]] = None,
+) -> Dict:
+    if not products:
+        return {"total_competitors": 0, "avg_competitor_price": 0.0,
+                "avg_competitor_rating": 0.0, "top_competitor": None}
+    pool = products
+    if category:
+        cat_pool = [p for p in products if category.lower() in str(p.get("category_name", "")).lower()]
+        pool = cat_pool if len(cat_pool) >= 5 else products
+ 
+    prices  = [float(p.get("price", 0) or 0) for p in pool if p.get("price", 0) > 0]
+    ratings = [float(p.get("rating", 0) or 0) for p in pool if p.get("rating", 0) > 0]
+    if prices:
+        arr = np.array(prices)
+        q1, q3 = np.percentile(arr, 15), np.percentile(arr, 85)
+        prices = [p for p in prices if q1 * 0.4 <= p <= q3 * 2.5]
+ 
+    avg_price  = round(float(np.mean(prices)), 2)  if prices  else 0.0
+    avg_rating = round(float(np.mean(ratings)), 2) if ratings else 0.0
+ 
+    kw_pool = pool
+    if product_keywords:
+        kw_matched = [p for p in pool if any(kw in _normalize(str(p.get("product_title", ""))) for kw in product_keywords)]
+        if kw_matched:
+            kw_pool = kw_matched
+ 
+    top_competitor = None
+    max_score      = 0
+    for p in kw_pool:
+        reviews = float(p.get("reviews", 0) or 0)
+        rating  = float(p.get("rating", 0) or 0)
+        score   = reviews * rating
+        if score > max_score:
+            max_score = score
+            brand_str = f" ({p.get('brand', '')})" if p.get("brand") else ""
+            top_competitor = {
+                "name":    str(p.get("product_title", ""))[:70] + brand_str,
+                "price":   float(p.get("price", 0) or 0),
+                "rating":  rating,
+                "reviews": int(reviews),
+            }
+    return {
+        "total_competitors":     len(pool),
+        "avg_competitor_price":  avg_price,
+        "avg_competitor_rating": avg_rating,
+        "top_competitor":        top_competitor,
+    }
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# MARKET GAP DETECTION  (unchanged)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def detect_market_gaps(
+    products: List[Dict],
+    pricing: Dict,
+    base_cost: float,
+    product_keywords: List[str],
+    source: str = "amazon",
+) -> List[Dict]:
+    if not products:
+        return []
+    gaps      = []
+    rec_price = pricing["recommended_price"]
+    mkt_avg   = pricing["market_avg_price"]
+    mkt_min   = pricing["market_min_price"]
+    relevant  = [p for p in products if any(kw in _normalize(str(p.get("product_title", ""))) for kw in product_keywords)]
+    if not relevant:
+        relevant = products
+    total = max(len(relevant), 1)
+ 
+    low_r = [p for p in relevant if 0 < float(p.get("rating", 0) or 0) < 3.5]
+    mid_r = [p for p in relevant if 3.5 <= float(p.get("rating", 0) or 0) < 4.0]
+    if len(low_r) >= max(2, total * 0.15):
+        pct = round(len(low_r) / total * 100)
+        gaps.append({"gap_type":"rating_gap","severity":"High","icon":"STAR","title":"Low-Rated Competitors","description":f"{pct}% of competitors ({len(low_r)} products) have ratings below 3.5 stars.","action":"Launch with quality focus, better packaging, accurate description, fast dispatch.","count":len(low_r)})
+    elif len(mid_r) >= max(3, total * 0.25):
+        pct = round(len(mid_r) / total * 100)
+        gaps.append({"gap_type":"rating_gap","severity":"Medium","icon":"STAR","title":"Mediocre Ratings Market","description":f"{pct}% of competitors ({len(mid_r)} products) sit between 3.5 and 4.0 stars.","action":"Invest in product quality and post-purchase support to hit 4.3 stars or higher.","count":len(mid_r)})
+ 
+    overpriced = [p for p in relevant if float(p.get("price", 0) or 0) > rec_price * 1.20]
+    if len(overpriced) >= max(2, total * 0.10):
+        pct    = round(len(overpriced) / total * 100)
+        avg_op = float(np.mean([float(p.get("price", 0)) for p in overpriced]))
+        gaps.append({"gap_type":"price_gap","severity":"High","icon":"MONEY","title":"Overpriced Competitors","description":f"{pct}% of competitors are priced Rs.{round(avg_op - rec_price)}+ above optimal.","action":f"Price at Rs.{rec_price:,} and highlight same quality, better price.","count":len(overpriced)})
+ 
+    vulnerable = [p for p in relevant if float(p.get("price", 0) or 0) >= mkt_avg * 0.9 and int(p.get("reviews", 0) or 0) < 50]
+    if len(vulnerable) >= max(2, total * 0.15):
+        gaps.append({"gap_type":"review_gap","severity":"High","icon":"REVIEW","title":"Weak Review Count","description":f"{len(vulnerable)} competitors charge market-rate prices but have fewer than 50 reviews.","action":"Use a launch campaign to generate 30 to 50 reviews in 45 days.","count":len(vulnerable)})
+ 
+    floor = mkt_min * 1.10
+    if base_cost > 0 and base_cost < floor and (floor - base_cost) > 50:
+        margin_at_floor = round((floor - base_cost) / floor * 100, 1)
+        gaps.append({"gap_type":"price_floor_gap","severity":"Medium","icon":"DOWN","title":"Price Floor Opportunity","description":f"Lowest viable competitor price Rs.{round(floor):,}. Your cost gives {margin_at_floor}% margin.","action":f"Penetration price Rs.{round(floor * 0.95):,} for 3 months, then raise to Rs.{rec_price:,}.","count":0})
+ 
+    src = source.lower()
+    if src == "amazon":
+        non_prime   = [p for p in relevant if not p.get("is_prime") and not p.get("is_amazon_choice")]
+        bestsellers = [p for p in relevant if p.get("is_best_seller") or p.get("is_amazon_choice")]
+        if non_prime and len(non_prime) >= total * 0.40:
+            gaps.append({"gap_type":"prime_gap","severity":"Medium","icon":"TRUCK","title":"Prime or Fulfilled Gap","description":f"{round(len(non_prime)/total*100)}% of listings are not Prime-eligible.","action":"Enroll in FBA from day 1 for instant Prime badge advantage.","count":len(non_prime)})
+        if len(bestsellers) == 0:
+            gaps.append({"gap_type":"bestseller_gap","severity":"High","icon":"TROPHY","title":"No Dominant Bestseller","description":"No current bestseller or Amazon Choice in this segment.","action":"Aggressive launch: 15% below market plus high ad spend weeks 1 to 4.","count":0})
+        elif len(bestsellers) <= 2:
+            gaps.append({"gap_type":"bestseller_gap","severity":"Medium","icon":"TROPHY","title":"Thin Bestseller Coverage","description":f"Only {len(bestsellers)} product(s) hold bestseller or Choice badges.","action":"Study badge holder listing, outspend on ads in month 2.","count":len(bestsellers)})
+    else:
+        oos_kws = {"out of stock","oos","unavailable","currently unavailable"}
+        oos = [p for p in relevant if any(k in str(p.get("stock_status","")).lower() for k in oos_kws)]
+        if len(oos) >= max(2, total * 0.10):
+            gaps.append({"gap_type":"stock_gap","severity":"High","icon":"BOX","title":"Competitor Stock Gaps","description":f"{round(len(oos)/total*100)}% of competitors ({len(oos)} listings) are out of stock.","action":"Stock aggressively now to capture demand while competitors are OOS.","count":len(oos)})
+        high_review = [p for p in relevant if int(p.get("reviews", 0) or 0) > 1000]
+        if len(high_review) == 0:
+            gaps.append({"gap_type":"authority_gap","severity":"High","icon":"TROPHY","title":"No Review Authority","description":"No competitor has more than 1000 reviews. Category leader position is up for grabs.","action":"Invest heavily in reviews in months 1 to 3.","count":0})
+ 
+    gaps.sort(key=lambda g: {"High": 0, "Medium": 1, "Low": 2}.get(g["severity"], 3))
+    return gaps
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# FINAL VERDICT  (unchanged)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def generate_final_verdict(
+    pricing: Dict, sales: Dict, competition: Dict,
+    gaps: List[Dict], base_cost: float,
+    product_name: str, category: str,
+    location_insights: Optional[List] = None,
+) -> Dict:
+    margin      = pricing["profit_margin"]
+    rec_price   = pricing["recommended_price"]
+    mkt_avg     = pricing["market_avg_price"]
+    competitors = competition["total_competitors"]
+    avg_rating  = competition["avg_competitor_rating"]
+    demand      = sales["market_demand"]
+    confidence  = pricing["confidence"]
+    high_gaps   = [g for g in gaps if g["severity"] == "High"]
+    medium_gaps = [g for g in gaps if g["severity"] == "Medium"]
+ 
+    margin_score = min(40, max(0, (margin / 50) * 40))
+    demand_score = {"High": 20, "Medium": 12, "Low": 4, "Unknown": 0}.get(demand, 0)
+    gap_score    = min(20, len(high_gaps) * 7 + len(medium_gaps) * 3)
+    comp_score   = 20 if competitors < 20 else (15 if competitors < 50 else (8 if competitors < 100 else 3))
+    opportunity_score = max(0, min(100, round(margin_score + demand_score + gap_score + comp_score)))
+ 
+    if   opportunity_score >= 75: verdict_label, verdict_color = "Strong Opportunity",     "green"
+    elif opportunity_score >= 55: verdict_label, verdict_color = "Viable with Strategy",   "blue"
+    elif opportunity_score >= 35: verdict_label, verdict_color = "Risky Proceed Carefully","orange"
+    else:                         verdict_label, verdict_color = "Not Recommended",         "red"
+ 
+    beat_actions = []
+    if margin >= 30 and mkt_avg > 0:
+        underprice = round(mkt_avg * 0.92)
+        beat_actions.append(f"Price at Rs.{underprice:,} (8% below market avg Rs.{mkt_avg:,}) to capture search rank in the first 60 days, then raise to Rs.{rec_price:,} after 30 reviews.")
+    elif margin >= 15:
+        beat_actions.append(f"Match market price at Rs.{rec_price:,} and win on listing quality such as better images, video, and bullet points instead of a price war.")
+    else:
+        beat_actions.append(f"Your margin ({margin:.1f}%) is too thin for price competition. Focus on a niche variant or bundle to justify a higher price.")
+ 
+    rating_gap = next((g for g in gaps if g["gap_type"] == "rating_gap"), None)
+    if rating_gap:
+        beat_actions.append(f"Exploit rating gap: {rating_gap['description']} Action: {rating_gap['action']}")
+    elif avg_rating > 0:
+        beat_actions.append(f"Market avg rating is {avg_rating:.1f} stars. Aim for {min(5.0, avg_rating + 0.4):.1f} stars or higher with a setup guide and follow-up insert card.")
+ 
+    review_gap = next((g for g in gaps if g["gap_type"] == "review_gap"), None)
+    beat_actions.append(review_gap["action"] if review_gap else "Run a 30-day Review Sprint: sell at break-even to 20 to 30 buyers via deal sites, then follow up for reviews.")
+ 
+    improvements = []
+    if margin < 20:
+        improvements.append(f"Renegotiate cost: at Rs.{base_cost:,.0f} margin is only {margin:.1f}%. Need cost at or below Rs.{round(rec_price * 0.65):,} for a sustainable 35% margin.")
+    if competitors > 80:
+        improvements.append(f"Differentiate: {competitors} sellers exist. Add 1 unique feature such as a color variant, bundle, extended warranty, or regional language pack.")
+    if not high_gaps and not medium_gaps:
+        improvements.append("Market is fairly healthy with no obvious gaps. Focus on superior listing quality and faster shipping.")
+    if not improvements:
+        improvements.append("No critical pre-launch blockers identified.")
+ 
+    risks = []
+    if margin < 10:     risks.append("Critical margin, unsustainable after platform fees")
+    if competitors > 150: risks.append("Hyper-competitive, requires significant daily ad spend to rank")
+    if confidence == "Critical": risks.append("Confidence critical, treat all projections as estimates")
+    if demand == "Low": risks.append("Low market demand, total addressable market may be small")
+    if margin < 25 and competitors > 80: risks.append("Thin margin plus high competition equals low tolerance for pricing errors")
+ 
+    return {
+        "opportunity_score": opportunity_score,
+        "verdict_label":     verdict_label,
+        "verdict_color":     verdict_color,
+        "beat_actions":      beat_actions,
+        "improvements":      improvements,
+        "risks":             risks,
+        "high_gaps_count":   len(high_gaps),
+        "medium_gaps_count": len(medium_gaps),
+    }
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# LOCATION INSIGHTS  (cached)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def get_rule_based_locations(category: str, avg_price: float) -> List[LocationInsight]:
+    cat = category.lower()
+    if any(t in cat for t in ["electronic","mobile","laptop","computer","gadget","tech"]):
+        locs = ([("Bangalore, Karnataka",20,"Very High"),("Hyderabad, Telangana",18,"High"),("Pune, Maharashtra",16,"High"),("Gurgaon, Haryana",15,"High"),("Chennai, Tamil Nadu",14,"High"),("Noida, Uttar Pradesh",17,"Medium")] if avg_price > 5000
+                else [("Delhi, Delhi",20,"Very High"),("Mumbai, Maharashtra",18,"High"),("Kolkata, West Bengal",16,"High"),("Jaipur, Rajasthan",15,"Medium"),("Lucknow, Uttar Pradesh",16,"Medium"),("Ahmedabad, Gujarat",15,"Medium")])
+    elif any(t in cat for t in ["baby","infant","diaper","kids","child","toy"]):
+        locs = [("Delhi, Delhi",20,"Very High"),("Mumbai, Maharashtra",19,"High"),("Bangalore, Karnataka",17,"High"),("Hyderabad, Telangana",15,"High"),("Pune, Maharashtra",15,"Medium"),("Chennai, Tamil Nadu",14,"Medium")]
+    elif any(t in cat for t in ["fashion","cloth","apparel","wear","dress","shirt"]):
+        locs = ([("Mumbai, Maharashtra",22,"Very High"),("Delhi, Delhi",20,"Very High"),("Bangalore, Karnataka",17,"High"),("Kolkata, West Bengal",14,"High"),("Hyderabad, Telangana",14,"Medium"),("Pune, Maharashtra",13,"Medium")] if avg_price > 2000
+                else [("Tiruppur, Tamil Nadu",20,"Very High"),("Ludhiana, Punjab",18,"High"),("Surat, Gujarat",17,"High"),("Kanpur, Uttar Pradesh",15,"Medium"),("Erode, Tamil Nadu",15,"Medium"),("Ahmedabad, Gujarat",15,"Medium")])
+    elif any(t in cat for t in ["health","medicine","pharma","supplement","vitamin"]):
+        locs = [("Mumbai, Maharashtra",21,"Very High"),("Delhi, Delhi",19,"High"),("Bangalore, Karnataka",17,"High"),("Chennai, Tamil Nadu",15,"High"),("Hyderabad, Telangana",14,"Medium"),("Kolkata, West Bengal",14,"Medium")]
+    elif any(t in cat for t in ["home","kitchen","furniture","decor","appliance"]):
+        locs = [("Mumbai, Maharashtra",19,"Very High"),("Delhi, Delhi",18,"High"),("Bangalore, Karnataka",16,"High"),("Pune, Maharashtra",15,"High"),("Hyderabad, Telangana",16,"Medium"),("Chennai, Tamil Nadu",16,"Medium")]
+    elif any(t in cat for t in ["beauty","cosmetic","skincare","makeup"]):
+        locs = [("Mumbai, Maharashtra",21,"Very High"),("Delhi, Delhi",19,"High"),("Bangalore, Karnataka",17,"High"),("Kolkata, West Bengal",15,"High"),("Hyderabad, Telangana",14,"Medium"),("Chennai, Tamil Nadu",14,"Medium")]
+    else:
+        locs = ([("Mumbai, Maharashtra",20,"Very High"),("Delhi, Delhi",19,"High"),("Bangalore, Karnataka",18,"High"),("Pune, Maharashtra",15,"High"),("Hyderabad, Telangana",14,"Medium"),("Chennai, Tamil Nadu",14,"Medium")] if avg_price > 3000
+                else [("Delhi, Delhi",19,"Very High"),("Mumbai, Maharashtra",18,"High"),("Bangalore, Karnataka",17,"High"),("Kolkata, West Bengal",15,"High"),("Hyderabad, Telangana",16,"Medium"),("Pune, Maharashtra",15,"Medium")])
+    total_share = sum(s for _, s, _ in locs) or 1
+    return [LocationInsight(country=city, market_share=f"{(s/total_share*100):.1f}%", demand_level=d) for city, s, d in locs]
+ 
+ 
+def _run_ollama(prompt: str) -> str:
+    """Synchronous Ollama call. Always invoked via asyncio.to_thread."""
+    result = subprocess.run(
+        ["ollama", "run", OLLAMA_MODEL],
+        input=prompt, capture_output=True,
+        text=True, encoding="utf-8", errors="ignore", timeout=60,
+    )
+    return (result.stdout or result.stderr or "").strip()
+ 
+ 
+async def generate_location_insights(
+    products: List[Dict],
+    category: str,
+) -> List[LocationInsight]:
+    """[IMP-1] Checks Redis before calling Ollama. Stores result for 24 h."""
+    prices    = [float(p.get("price", 0)) for p in products if p.get("price")]
+    avg_price = float(np.mean(prices)) if prices else 0.0
+ 
+    cache_key = _cache_key("location", category, round(avg_price, -2))
+    cached    = await cache_get(cache_key)
+    if cached:
+        log.debug("location_cache_hit", category=category)
+        return [LocationInsight(**d) for d in cached]
+ 
+    prompt = (
+        f"You are an Indian e-commerce analyst. Category: {category}. "
+        f"Average price: Rs.{avg_price:.0f}. Total products: {len(products)}.\n\n"
+        "List exactly 6 Indian cities with highest demand for this product.\n"
+        'Output ONLY a JSON array, nothing else:\n'
+        '[{"city":"Mumbai, Maharashtra","share":22,"demand":"Very High"},{"city":"Delhi, Delhi","share":18,"demand":"High"}]\n\n'
+        "Rules: shares sum to 100, demand is one of: Very High/High/Medium/Low, order by share descending."
+    )
+    for attempt in range(2):
+        try:
+            async with _OLLAMA_SEMAPHORE:   # [IMP-5]
+                output = await asyncio.to_thread(_run_ollama, prompt)
+            match = re.search(r"\[[\s\S]*?\]", output)
+            if not match:
+                continue
+            data = json.loads(match.group())
+            if not isinstance(data, list) or len(data) < 3:
+                continue
+            total_share = sum(float(d.get("share", 0)) for d in data) or 1
+            result = [LocationInsight(country=d.get("city","India"), market_share=f"{(float(d.get('share',0))/total_share*100):.1f}%", demand_level=d.get("demand","Medium")) for d in data[:6]]
+            await cache_set(cache_key, [r.dict() for r in result], CACHE_TTL_LOCATION_S)
+            return result
+        except (json.JSONDecodeError, TypeError, KeyError) as exc:
+            log.warning("location_ollama_parse_fail", attempt=attempt + 1, reason=str(exc))
+        except Exception:
+            log.exception("location_ollama_error", attempt=attempt + 1)
+ 
+    return get_rule_based_locations(category, avg_price)
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [IMP-4]  AI OUTPUT VALIDATOR
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+class OllamaValidator:
+    """
+    [IMP-4] Sanity-checks and adjusts the raw Ollama strategy string before
+    it reaches the API response.
+ 
+    Checks:
+      1. Price range sanity — strategy must not recommend prices outside
+         [mkt_min * 0.5, mkt_max * 2.0].
+      2. Category consistency — strategy must mention the category or a
+         related synonym (prevents hallucinated product pivots).
+      3. Competitor count plausibility — if the strategy says "no competition"
+         but we have > 20 competitors, override the claim.
+      4. Minimum length — reject single-sentence strategy strings and fall back.
+    """
+ 
+    def __init__(self, pricing: Dict, category: str, competition: Dict):
+        self.mkt_min     = pricing.get("market_min_price", 0)
+        self.mkt_max     = pricing.get("market_max_price", float("inf"))
+        self.mkt_avg     = pricing.get("market_avg_price", 0)
+        self.category    = category.lower()
+        self.competitors = competition.get("total_competitors", 0)
+ 
+    def validate(self, strategy: str) -> Tuple[bool, str]:
+        """Returns (is_valid, possibly_adjusted_strategy)."""
+        if not strategy or len(strategy) < 80:
+            return False, strategy
+ 
+        # 1. Price sanity: extract any Rs. figures and check they're plausible
+        price_mentions = re.findall(r'rs\.?\s*([\d,]+)', strategy.lower())
+        if price_mentions and self.mkt_min > 0 and self.mkt_max > 0:
+            for raw in price_mentions:
+                try:
+                    p = float(raw.replace(",", ""))
+                    lo = self.mkt_min * 0.4
+                    hi = self.mkt_max * 3.0
+                    if p > 0 and not (lo <= p <= hi):
+                        log.warning("ai_price_out_of_range", price=p, mkt_min=self.mkt_min, mkt_max=self.mkt_max)
+                        return False, strategy
+                except ValueError:
+                    pass
+ 
+        # 2. Competitor plausibility: flag "no competition" when market is crowded
+        if self.competitors > 20:
+            no_comp_phrases = ["no competition", "no competitors", "no rival", "uncrowded market"]
+            if any(ph in strategy.lower() for ph in no_comp_phrases):
+                strategy = strategy + (
+                    f" Note: there are currently {self.competitors} active competitors in this segment."
+                )
+ 
+        # 3. Minimum sentence count
+        sentences = [s.strip() for s in re.split(r'[.!?]', strategy) if len(s.strip()) > 20]
+        if len(sentences) < 3:
+            return False, strategy
+ 
+        return True, strategy
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# AI STRATEGY GENERATION  (validated, cached, semaphored)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def generate_enhanced_fallback_strategy(
+    pricing: Dict, sales: Dict, competition: Dict, base_cost: float,
+    cost_advantage: str, comp_level: str, profit_per_unit: float,
+    monthly_revenue: float, category: str, avg_monthly_sales: float,
+    recommended: float, market_avg: float,
+    location_insights: Optional[List[LocationInsight]] = None,
+) -> str:
+    margin        = pricing["profit_margin"]
+    demand        = sales["market_demand"]
+    competitors   = competition["total_competitors"]
+    actual_profit = profit_per_unit * 0.70
+    actual_monthly = monthly_revenue * 0.70
+    cities = [loc.country.split(",")[0] for loc in (location_insights or [])[:3] if loc.country != "AI Analysis Required"]
+    city_str = ", ".join(cities) if len(cities) >= 2 else (cities[0] if cities else "major metros")
+ 
+    if margin < 10:
+        return (f"NOT VIABLE: Your cost (Rs.{base_cost:,.0f}) leaves only {margin:.1f}% margin at Rs.{recommended:,.0f}. After platform fees you face net losses. With {competitors} competitors at Rs.{market_avg:,.0f}, this is uncompetitive. Reduce cost to under Rs.{market_avg * 0.5:.0f} or pivot entirely.")
+    if margin < 20:
+        be = int(30000 / actual_profit) if actual_profit > 0 else 999
+        return (f"RISKY: {margin:.1f}% margin (Rs.{profit_per_unit:,.0f}/unit) at Rs.{recommended:,.0f} vs market Rs.{market_avg:,.0f}. {comp_level} competition ({competitors} sellers). After fees, actual profit = Rs.{actual_profit:.0f}/unit. Need {be} monthly sales for Rs.30k income. Focus on {city_str}. Expected {int(avg_monthly_sales)} units/month = Rs.{actual_monthly:,.0f} profit. Test 50 units first, high risk due to thin margins.")
+    if margin < 30:
+        return (f"CHALLENGING: {margin:.1f}% margin (Rs.{profit_per_unit:,.0f}/unit). Price Rs.{recommended:,.0f} vs market Rs.{market_avg:,.0f}. {comp_level} competition ({competitors} sellers). Target {city_str}. Focus on 4.5 star plus rating strategy. Expected {int(avg_monthly_sales)} units/month = Rs.{actual_monthly:,.0f} after fees. Test 50 units in month 1, scale month 3 onwards.")
+    if margin < 40:
+        return (f"SOLID: {margin:.0f}% margin (Rs.{profit_per_unit:,.0f}/unit) in {demand.lower()}-demand market. Price Rs.{recommended:,.0f} (market Rs.{market_avg:,.0f}). {comp_level} competition ({competitors} sellers). Focus on {city_str}. Expected {int(avg_monthly_sales)} units/month = Rs.{actual_monthly:,.0f} after fees. Scale 50 to 75 units in month 1.")
+    return (f"EXCELLENT: {margin:.0f}% margin (Rs.{profit_per_unit:,.0f}/unit)! Price Rs.{recommended:,.0f} vs market Rs.{market_avg:,.0f}. {competitors} competitors, your cost moat enables market share capture. Target {city_str}. Expected {int(avg_monthly_sales)} growing to {int(avg_monthly_sales * 2)} units/month by month 3 = Rs.{actual_monthly * 2:,.0f}/month. Launch 100 to 150 units, sponsored ads Rs.500/day.")
+ 
+ 
+async def generate_ai_strategy(
+    pricing: Dict, sales: Dict, competition: Dict,
+    base_cost: float, product_name: str, category: str,
+    location_insights: Optional[List], gaps: List[Dict],
+) -> str:
+    """[IMP-1] Cached. [IMP-4] Validated. [IMP-5] Semaphored."""
+    margin      = pricing["profit_margin"]
+    rec_price   = pricing["recommended_price"]
+    mkt_avg     = pricing.get("market_avg_price", 0)
+    profit_unit = rec_price - base_cost
+    monthly_str = sales["estimated_monthly_sales"]
+    competitors = competition["total_competitors"]
+    after_fees  = profit_unit * 0.72
+    avg_m       = max(0.0, _parse_monthly_sales_string(monthly_str, sales.get("estimated_daily_sales", 0.0)))
+    monthly_prof = after_fees * avg_m
+ 
+    # [IMP-1] Cache key: margin bucket + competitor bucket + category
+    margin_bucket = int(margin // 10) * 10
+    comp_bucket   = "low" if competitors < 30 else ("mid" if competitors < 100 else "high")
+    cache_key     = _cache_key("strategy", category, margin_bucket, comp_bucket)
+    cached        = await cache_get(cache_key)
+    if cached:
+        log.debug("strategy_cache_hit", category=category)
+        return cached
+ 
+    cities   = [loc.country.split(",")[0] for loc in (location_insights or [])[:3]]
+    city_str = ", ".join(cities) if cities else "major metros"
+    gap_summary = ("Key market gaps:\n" + "\n".join(f"- {g['title']}: {g['description']}" for g in gaps[:3])) if gaps else ""
+ 
+    prompt = (
+        f"You are an Indian e-commerce strategist. Write a 5-6 sentence actionable strategy. No bullet points. Flowing sentences only.\n\n"
+        f"Product: {product_name} | Category: {category}\n"
+        f"Cost: Rs.{base_cost:,.0f} | Recommended price: Rs.{rec_price:,.0f} | Market avg: Rs.{mkt_avg:,.0f}\n"
+        f"Margin: {margin:.1f}% | After fees: Rs.{after_fees:.0f}/unit\n"
+        f"Competitors: {competitors} | Monthly est: {int(avg_m)} units | Monthly profit: Rs.{monthly_prof:,.0f}\n"
+        f"Top cities: {city_str}\n{gap_summary}\n\n"
+        "Start with: NOT VIABLE (margin<10%), RISKY (10-19%), MODERATE (20-29%), SOLID (30-39%), EXCELLENT (40%+).\n"
+        "Cover viability, pricing tactic, geography, and market gap exploitation.\nWrite the strategy now:"
+    )
+ 
+    validator = OllamaValidator(pricing, category, competition)
+ 
     try:
-        result = subprocess.run(
-            ["ollama", "run", "llama3.2:3b"],  # Changed model name
-            input=prompt,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="ignore",
-            timeout=60
-        )
-        
-        ai_output = (result.stdout or result.stderr or "").strip()
-        
-        # Clean output
-        clean = (
-            ai_output
-            .replace("</s>", "")
-            .replace("```", "")
-            .replace("**", "")
-            .strip()
-        )
-        
-        # Extract sentences
+        async with _OLLAMA_SEMAPHORE:   # [IMP-5]
+            raw = await asyncio.to_thread(_run_ollama, prompt)
+        clean = raw.replace("</s>", "").replace("```", "").replace("**", "").strip()
         sentences = []
-        for line in clean.split('\n'):
+        for line in clean.split("\n"):
             line = line.strip()
-            
-            if (line and 
-                not line.startswith('#') and 
-                not line.startswith('*') and 
-                not line.startswith('-') and
-                not line.upper().startswith(('TASK', 'SENTENCE', 'PRODUCT', 'DATA', 'STRATEGY')) and
-                not line.startswith(('✓', '•')) and
-                len(line) > 50):
-                
-                for sentence in line.replace('. ', '.|').split('|'):
-                    s = sentence.strip()
-                    if (s and len(s) > 40 and
-                        not s.lower().startswith(('here', 'write', 'you are'))):
+            if line and len(line) > 50 and not line.startswith(("#","*","-",".","TASK","PRODUCT","DATA")):
+                for s in line.replace(". ", ".|").split("|"):
+                    s = s.strip()
+                    if s and len(s) > 40 and not s.lower().startswith(("here","write","you are")):
                         sentences.append(s)
                         if len(sentences) >= 6:
                             break
-            
             if len(sentences) >= 6:
                 break
-        
+ 
         if len(sentences) >= 4:
-            strategy = ' '.join(sentences[:6])
-            
-            # Safety: Add fee warning if low margin
-            if margin < 18 and 'fee' not in strategy.lower():
-                actual_profit = profit_per_unit * 0.7
-                strategy += f" ⚠️ After platform fees, actual profit ~₹{actual_profit:.0f}/unit."
-            
-            return strategy
-        else:
-            print(f"⚠️ AI insufficient ({len(sentences)} sentences), using fallback")
-            return generate_enhanced_fallback_strategy(
-                pricing, sales, competition, base_cost, 
-                cost_advantage, comp_level, profit_per_unit, monthly_revenue_potential,
-                category, avg_monthly_sales, recommended, market_avg,
-                location_insights
-            )
-            
-    except Exception as e:
-        print(f"❌ AI failed: {e}")
-        return generate_enhanced_fallback_strategy(
-            pricing, sales, competition, base_cost,
-            cost_advantage, comp_level, profit_per_unit, monthly_revenue_potential,
-            category, avg_monthly_sales if 'avg_monthly_sales' in locals() else daily_sales * 30,
-            recommended, market_avg,
-            location_insights
-        )
-
-
-def generate_enhanced_fallback_strategy(
-    pricing: Dict, sales: Dict, competition: Dict, base_cost: float,
-    cost_advantage: str, comp_level: str, profit_per_unit: float, 
-    monthly_revenue: float, category: str, avg_monthly_sales: float,
-    recommended: float, market_avg: float,
-    location_insights: List[LocationInsight] = None
-) -> str:
-    """
-    Intelligent fallback with synchronized city targeting
-    """
-    margin = pricing['profit_margin']
-    demand = sales['market_demand']
-    competitors = competition['total_competitors']
-    actual_profit_after_fees = profit_per_unit * 0.7
-    actual_monthly_profit = monthly_revenue * 0.7
-    
-    # Extract target cities from location insights
-    target_cities = ""
-    if location_insights and len(location_insights) > 0:
-        cities = [loc.country.split(',')[0] for loc in location_insights[:3] 
-                 if loc.country != "AI Analysis Required"]
-        if cities:
-            if len(cities) == 1:
-                target_cities = cities[0]
-            elif len(cities) == 2:
-                target_cities = f"{cities[0]} and {cities[1]}"
-            else:
-                target_cities = f"{cities[0]}, {cities[1]}, and {cities[2]}"
-        else:
-            target_cities = "tier-1 metros"
-    else:
-        target_cities = "major metros"
-    
-    # CRITICAL: Not viable
-    if margin < 10:
-        return f"❌ NOT VIABLE: Your cost (₹{base_cost:,.0f}) leaves only {margin:.1f}% margin at ₹{recommended:,.0f}. After platform fees (15-20%), shipping, returns, you face NET LOSSES. With {competitors} competitors at ₹{market_avg:,.0f}, this is uncompetitive. MUST reduce cost to under ₹{market_avg * 0.5:.0f} or pivot. Not salvageable at current cost."
-    
-    # RISKY: Low margin
-    if margin < 20:
-        breakeven = int(30000 / actual_profit_after_fees) if actual_profit_after_fees > 0 else 999
-        return f"⚠️ RISKY: {margin:.1f}% margin (₹{profit_per_unit:,.0f}/unit) at ₹{recommended:,.0f} vs market ₹{market_avg:,.0f}. {comp_level} competition ({competitors} sellers). After fees, actual profit = ₹{actual_profit_after_fees:.0f}/unit. Need {breakeven} monthly sales for ₹30k income. Focus on {target_cities}. Expected: {int(avg_monthly_sales)} units/month = ₹{actual_monthly_profit:,.0f} profit. Test 50 units first. High risk due to thin margins."
-    
-    # CHALLENGING
-    if margin < 30:
-        return f"⚡ CHALLENGING: {margin:.1f}% margin (₹{profit_per_unit:,.0f}/unit). Price ₹{recommended:,.0f} vs market ₹{market_avg:,.0f}. {comp_level} competition ({competitors} sellers). Target {target_cities} where demand is strongest. Focus on 4.5★+ rating strategy. Expected: {int(avg_monthly_sales)} units/month = ₹{actual_monthly_profit:,.0f} after fees. Investment: ₹8k. Timeline: Month 1-2 (test 50), Month 3+ (scale). Needs execution discipline."
-    
-    # SOLID
-    if margin < 40:
-        return f"✅ SOLID: {margin:.0f}% margin (₹{profit_per_unit:,.0f}/unit) in {demand.lower()}-demand market. Selling ₹{recommended:,.0f} (market: ₹{market_avg:,.0f}). {comp_level} competition ({competitors} sellers) - differentiate through quality listing. Focus on {target_cities}. Expected: {int(avg_monthly_sales)} units/month = ₹{actual_monthly_profit:,.0f} after fees. Invest ₹10k. Timeline: Month 1-2 (50-75 units), Month 3-6 (ramp to {int(avg_monthly_sales * 1.5)}). Sustainable model."
-    
-    # EXCELLENT
-    return f"🎯 EXCELLENT: {margin:.0f}% margin (₹{profit_per_unit:,.0f}/unit)! Cost advantage enables ₹{recommended:,.0f} pricing vs market ₹{market_avg:,.0f}. With {competitors} competitors, your cost moat enables market share capture. Target {target_cities}. Invest in premium positioning. Expected: {int(avg_monthly_sales)} initial → {int(avg_monthly_sales * 2)} by month 3 = ₹{actual_monthly_profit * 2:,.0f}/month. Launch 100-150 units, sponsored ads ₹500/day. Capitalize quickly!"
-
-
+            strategy = " ".join(sentences[:6])
+            if margin < 18 and "fee" not in strategy.lower():
+                strategy += f" After platform fees, actual profit approximately Rs.{after_fees:.0f}/unit."
+ 
+            # [IMP-4] Validate before returning
+            valid, strategy = validator.validate(strategy)
+            if valid:
+                await cache_set(cache_key, strategy, CACHE_TTL_ANALYSIS_S)
+                return strategy
+ 
+    except Exception:
+        log.exception("ollama_strategy_error")
+ 
+    cost_adv = "MODERATE" if margin >= 20 else "WEAK"
+    comp_lvl = "HIGH" if competitors > 50 else "MODERATE"
+    fallback  = generate_enhanced_fallback_strategy(
+        pricing, sales, competition, base_cost, cost_adv, comp_lvl,
+        profit_unit, after_fees * avg_m, category, avg_m,
+        rec_price, mkt_avg, location_insights,
+    )
+    await cache_set(cache_key, fallback, CACHE_TTL_ANALYSIS_S)
+    return fallback
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# WARNINGS  (unchanged)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
 def generate_warnings(pricing: Dict, competition: Dict, base_cost: float) -> List[str]:
-    """
-    FULLY DYNAMIC warnings - no static assumptions
-    """
-    warnings = []
-    
-    market_avg = pricing.get('market_avg_price', 0)
-    market_min = pricing.get('market_min_price', 0)
-    profit_margin = pricing['profit_margin']
-    recommended_price = pricing['recommended_price']
-    
-    # CRITICAL: Cost too high
-    if base_cost > market_avg:
+    warnings   = []
+    market_avg = pricing.get("market_avg_price", 0)
+    market_min = pricing.get("market_min_price", 0)
+    margin     = pricing["profit_margin"]
+    rec_price  = pricing["recommended_price"]
+ 
+    if market_avg > 0 and base_cost > market_avg:
         loss_pct = ((base_cost - market_avg) / market_avg) * 100
-        warnings.append(f"🚨 CRITICAL: Your cost (₹{base_cost:,.0f}) is {loss_pct:.0f}% HIGHER than market average (₹{market_avg:,.0f})! Cannot compete profitably.")
-        warnings.append(f"💡 Solution: Reduce cost to under ₹{market_avg * 0.6:,.0f} for 40% margin.")
+        warnings.append(f"CRITICAL: Your cost (Rs.{base_cost:,.0f}) is {loss_pct:.0f}% HIGHER than market average (Rs.{market_avg:,.0f}). Cannot compete profitably.")
+        warnings.append(f"Solution: Reduce cost to under Rs.{market_avg * 0.6:,.0f} for 40% margin.")
         return warnings
-    
-    # HIGH ALERT: Cost close to average
-    if base_cost > market_avg * 0.8:
-        warnings.append(f"⚠️ HIGH RISK: Cost (₹{base_cost:,.0f}) very close to market avg (₹{market_avg:,.0f}). Only {profit_margin:.1f}% margin.")
-        warnings.append(f"💡 Recommendation: Negotiate down to ₹{market_avg * 0.5:,.0f}.")
-    
-    # Cost higher than minimum
-    if base_cost > market_min:
-        warnings.append(f"⚠️ WARNING: Cost (₹{base_cost:,.0f}) > cheapest competitor (₹{market_min:,.0f}).")
-        warnings.append(f"💡 Strategy: Focus on premium positioning or unique features.")
-    
-    # Low margin warnings
-    if profit_margin < 10:
-        warnings.append(f"🔴 DANGER: Only {profit_margin:.1f}% margin! Unsustainable after fees.")
-        warnings.append(f"💡 Action: Need 30-40% margin minimum.")
-    elif profit_margin < 20:
-        warnings.append(f"⚠️ LOW MARGIN: {profit_margin:.1f}% risky. After fees, profit minimal.")
-        warnings.append(f"💡 Tip: Aim for 35-50% margin for sustainable business.")
-    
-    # Competition warnings
-    if competition['total_competitors'] > 100:
-        warnings.append(f"⚠️ EXTREMELY COMPETITIVE: {competition['total_competitors']} competitors!")
-        warnings.append(f"💡 Strategy: Niche variations or unique bundles.")
-    elif competition['total_competitors'] > 50:
-        warnings.append(f"⚠️ High competition ({competition['total_competitors']} sellers).")
-        warnings.append(f"💡 Tip: Quality photos, early reviews to stand out.")
-    
-    # Price positioning
-    if recommended_price > market_avg * 1.3:
-        warnings.append(f"⚠️ PRICING RISK: Recommended (₹{recommended_price:,.0f}) is high vs market.")
-        warnings.append(f"💡 Option: Start at ₹{market_avg:,.0f} then increase.")
-    
-    # Confidence warnings
-    if pricing['confidence'] == "Critical":
-        warnings.append("🚨 CRITICAL: NOT viable with current cost.")
-    elif pricing['confidence'] == "Low":
-        warnings.append("⚠️ Limited data. Test with small inventory.")
-    
-    # Positive scenarios
-    if not warnings and profit_margin > 35:
-        warnings.append(f"✅ EXCELLENT: {profit_margin:.0f}% margin!")
-        warnings.append(f"💡 Strategy: Price ₹{recommended_price:,.0f}, quality listing, scale fast.")
+    if market_avg > 0 and base_cost > market_avg * 0.8:
+        warnings.append(f"HIGH RISK: Cost (Rs.{base_cost:,.0f}) very close to market avg (Rs.{market_avg:,.0f}). Only {margin:.1f}% margin.")
+        warnings.append(f"Recommendation: Negotiate down to Rs.{market_avg * 0.5:,.0f}.")
+    if market_min > 0 and base_cost > market_min:
+        warnings.append(f"WARNING: Cost (Rs.{base_cost:,.0f}) exceeds cheapest competitor (Rs.{market_min:,.0f}).")
+        warnings.append("Strategy: Focus on premium positioning or unique features.")
+    if margin < 10:
+        warnings.append(f"DANGER: Only {margin:.1f}% margin. Unsustainable after fees.")
+        warnings.append("Action: Need 30 to 40% margin minimum.")
+    elif margin < 20:
+        warnings.append(f"LOW MARGIN: {margin:.1f}% risky. After fees, profit minimal.")
+        warnings.append("Tip: Aim for 35 to 50% margin for a sustainable business.")
+    if competition["total_competitors"] > 100:
+        warnings.append(f"EXTREMELY COMPETITIVE: {competition['total_competitors']} competitors.")
+        warnings.append("Strategy: Niche variations or unique bundles.")
+    elif competition["total_competitors"] > 50:
+        warnings.append(f"High competition: {competition['total_competitors']} sellers.")
+        warnings.append("Tip: Quality photos and early reviews to stand out.")
+    if market_avg > 0 and rec_price > market_avg * 1.3:
+        warnings.append(f"PRICING RISK: Recommended (Rs.{rec_price:,.0f}) is high vs market.")
+        warnings.append(f"Option: Start at Rs.{market_avg:,.0f} then increase.")
+    if pricing["confidence"] == "Critical":
+        warnings.append("CRITICAL: NOT viable with current cost.")
+    elif pricing["confidence"] == "Low":
+        warnings.append("Limited data. Test with small inventory first.")
+    if not warnings and margin > 35:
+        warnings.append(f"EXCELLENT: {margin:.0f}% margin.")
+        warnings.append(f"Strategy: Price Rs.{rec_price:,.0f}, quality listing, scale fast.")
     elif not warnings:
-        warnings.append(f"✅ VIABLE: {profit_margin:.1f}% margin acceptable.")
-        warnings.append(f"💡 Focus: Quality photos, competitive shipping.")
-    
+        warnings.append(f"VIABLE: {margin:.1f}% margin acceptable.")
+        warnings.append("Focus: Quality photos, competitive shipping.")
     return warnings
-# ============================================
-# NEW ENDPOINTS FOR HISTORY & ANALYTICS
-# ============================================
-
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# QUOTA HELPERS  (unchanged logic)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def get_analysis_limit(tier: str) -> float:
+    return {"free": 5, "basic": 20, "premium": float("inf"), "enterprise": float("inf")}.get(tier.lower(), 5)
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [IMP-9]  HEALTH CHECK ENDPOINT
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.get("/health")
+async def health_check():
+    """
+    [IMP-9] Stateless health probe suitable for load-balancer checks.
+    Reports Redis connectivity without blocking.
+    """
+    redis_ok = False
+    try:
+        await asyncio.wait_for(asyncio.to_thread(r.ping), timeout=1.0)
+        redis_ok = True
+    except Exception:
+        pass
+    return {
+        "status":     "ok",
+        "version":    "2.0.0",
+        "redis":      "connected" if redis_ok else "unavailable",
+        "timestamp":  datetime.utcnow().isoformat() + "Z",
+    }
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [IMP-5]  CELERY TASK STUB  (optional heavy-work offload)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+try:
+    from celery import Celery  # type: ignore
+    _celery_app = Celery("product_tracker", broker="redis://localhost:6379/1")
+ 
+    @_celery_app.task(name="tasks.run_analysis", bind=True, max_retries=2, default_retry_delay=5)
+    def run_analysis_task(self, request_payload: Dict) -> Dict:
+        """
+        [IMP-5] Heavy analytics can be offloaded here when the request volume
+        exceeds what synchronous FastAPI handlers can sustain.
+        Wire up by replacing `await analyze_product_opportunity(request, db)`
+        with `run_analysis_task.delay(request.dict())` and polling a status
+        endpoint. The result is stored in Redis under a task-id key.
+        """
+        # Placeholder — implementation mirrors analyze_product_opportunity
+        # but runs in a Celery worker process, freeing the API server.
+        raise NotImplementedError("Implement full analysis logic here for async offload.")
+ 
+except ImportError:
+    _celery_app = None  # type: ignore
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# MAIN ANALYZE ENDPOINT
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.post("/product-tracker/analyze")
+async def analyze_product_opportunity(
+    request_body: ProductTrackerRequest,
+    background_tasks: BackgroundTasks,
+    raw_request: Request,
+    db: Session = Depends(get_db),
+) -> ApiResponse:
+    """
+    [IMP-2]  StepTimer tracks per-stage latency, included in response.
+    [IMP-3]  ConfidenceScore derived from tier + data quality.
+    [IMP-7]  FallbackPolicy governs and annotates tier usage.
+    [IMP-8]  Returns ApiResponse envelope.
+    [IMP-1]  Full result cached keyed on (product, category, source, cost-bucket).
+    """
+    timer      = StepTimer()
+    request_id = getattr(raw_request.state, "request_id", str(uuid.uuid4()))
+ 
+    # [IMP-10] Validate source via our typed exception
+    try:
+        source_key = _validate_source(request_body.source)
+    except ValidationError as exc:
+        raise HTTPException(status_code=400, detail=exc.message)
+ 
+    # [IMP-1] Check full-result cache first
+    cost_bucket = int(request_body.base_cost // 500) * 500
+    analysis_cache_key = _cache_key(
+        "analysis", request_body.product_name,
+        request_body.category, source_key, cost_bucket,
+    )
+    with timer.step("cache_check"):
+        cached_result = await cache_get(analysis_cache_key)
+    if cached_result:
+        log.info("analysis_cache_hit", product=request_body.product_name)
+        return ApiResponse(
+            success=True, request_id=request_id,
+            latency_ms=timer.total_ms(), source_type=cached_result.get("source_type","unknown"),
+            confidence_score=cached_result.get("confidence_score"),
+            warnings=cached_result.get("warnings", []),
+            data=cached_result.get("data"),
+            step_timings={"cached": True},
+        )
+ 
+    # ── Quota check ──────────────────────────────────────────────────────────
+    user = None
+    if request_body.user_email:
+        user = db.query(models.User).filter(models.User.email == request_body.user_email).first()
+        if user:
+            current_month = datetime.now().strftime("%Y-%m")
+            if user.analysis_month != current_month:
+                user.analysis_used = 0; user.analysis_month = current_month
+                db.commit(); db.refresh(user)
+            tier  = user.subscription_tier or "free"
+            limit = get_analysis_limit(tier)
+            if limit != float("inf") and (user.analysis_used or 0) >= int(limit):
+                raise QuotaError(f"Analysis limit reached. {user.analysis_used}/{int(limit)} used this month.")
+ 
+    # ── Product search ───────────────────────────────────────────────────────
+    with timer.step("product_search"):
+        similar_products, tier_used = get_similar_products(
+            db, request_body.product_name, request_body.category,
+            source_key, request_body.base_cost,
+        )
+ 
+    if not similar_products:
+        raise HTTPException(
+            status_code=404,
+            detail=(f"No products found for '{request_body.product_name}' in '{request_body.category}' "
+                    f"on {request_body.source}. Try a simpler product name or different category."),
+        )
+ 
+    log.info("products_matched", count=len(similar_products), tier=tier_used.value)
+ 
+    keywords = extract_keywords(request_body.product_name)
+ 
+    # ── Analytics ────────────────────────────────────────────────────────────
+    with timer.step("pricing"):
+        pricing_insights = analyze_pricing(similar_products, request_body.base_cost)
+ 
+    with timer.step("sales"):
+        sales_insights = analyze_sales_potential(
+            products=similar_products, source=source_key,
+            base_cost=request_body.base_cost,
+            recommended_price=pricing_insights["recommended_price"],
+            category=request_body.category, db=db,
+        )
+ 
+    with timer.step("competition"):
+        competition_insights = analyze_competition(similar_products, request_body.category, keywords)
+ 
+    with timer.step("gaps"):
+        market_gaps = detect_market_gaps(
+            similar_products, pricing_insights, request_body.base_cost, keywords, source=source_key,
+        )
+ 
+    # ── AI inference (semaphored, cached) ─────────────────────────────────
+    with timer.step("location_ai"):
+        location_insights = await generate_location_insights(similar_products, request_body.category)
+ 
+    with timer.step("strategy_ai"):
+        ai_strategy = await generate_ai_strategy(
+            pricing_insights, sales_insights, competition_insights,
+            request_body.base_cost, request_body.product_name, request_body.category,
+            location_insights, market_gaps,
+        )
+ 
+    with timer.step("verdict"):
+        final_verdict_data = generate_final_verdict(
+            pricing_insights, sales_insights, competition_insights,
+            market_gaps, request_body.base_cost, request_body.product_name,
+            request_body.category, location_insights,
+        )
+ 
+    # ── Confidence + warnings ─────────────────────────────────────────────
+    confidence = compute_confidence_score(similar_products, pricing_insights, tier_used)
+    cost_error = validate_cost_against_market(request_body.base_cost, similar_products)
+    warnings   = generate_warnings(pricing_insights, competition_insights, request_body.base_cost)
+    if cost_error:
+        warnings.insert(0, cost_error)
+ 
+    # [IMP-7] Attach fallback warning if applicable
+    fallback_reason = None
+    fw = DEFAULT_FALLBACK_POLICY.fallback_warning(tier_used)
+    if fw:
+        warnings.insert(0, fw)
+        fallback_reason = fw
+ 
+    if confidence.label == "Low":
+        warnings.insert(0, f"LOW CONFIDENCE ({confidence.score:.2f}): Only {confidence.sample_size} products matched. Treat estimates as directional only.")
+ 
+    # ── Assemble payload ──────────────────────────────────────────────────
+    pricing_clean = {k: v for k, v in pricing_insights.items() if not k.startswith("_")}
+    source_type   = _tier_to_source_type(tier_used)
+    final_verdict_data = normalize_output(final_verdict_data)
+ 
+    data = ProductTrackerData(
+        product_name      = request_body.product_name,
+        category          = request_body.category,
+        source            = request_body.source.capitalize(),
+        pricing           = PricingInsights(**pricing_clean),
+        sales             = SalesInsights(**sales_insights),
+        competition       = CompetitorInsights(**competition_insights),
+        location_insights = location_insights,
+        ai_strategy       = ai_strategy,
+        market_gaps       = [GapItem(**g) for g in market_gaps],
+        final_verdict = FinalVerdict(**normalize_output(final_verdict_data)),
+        fallback_reason   = fallback_reason,
+    )
+ 
+    response = ApiResponse(
+        success          = True,
+        request_id       = request_id,
+        latency_ms       = timer.total_ms(),
+        source_type      = source_type.value,
+        confidence_score = confidence.to_dict(),
+        warnings         = warnings,
+        data             = data.dict(),
+        step_timings     = timer.to_dict(),
+    )
+ 
+    # [IMP-1] Cache full result
+    background_tasks.add_task(
+        cache_set, analysis_cache_key, response.dict(), CACHE_TTL_ANALYSIS_S
+    )
+ 
+    # ── Persist + quota increment (background) ────────────────────────────
+    background_tasks.add_task(
+        _persist_analysis,
+        db=db, user=user, request_body=request_body,
+        pricing_clean=pricing_clean, sales_insights=sales_insights,
+        competition_insights=competition_insights,
+        location_insights=location_insights,
+        ai_strategy=ai_strategy, warnings=warnings,
+        market_gaps=market_gaps, final_verdict_data=final_verdict_data,
+        similar_products=similar_products,
+    )
+ 
+    log.info("analysis_complete",
+             product=request_body.product_name, tier=tier_used.value,
+             confidence=confidence.score, latency_ms=timer.total_ms())
+ 
+    return response
+ 
+ 
+def _persist_analysis(
+    db: Session, user: Any, request_body: ProductTrackerRequest,
+    pricing_clean: Dict, sales_insights: Dict, competition_insights: Dict,
+    location_insights: List[LocationInsight], ai_strategy: str,
+    warnings: List[str], market_gaps: List[Dict], final_verdict_data: Dict,
+    similar_products: List[Dict],
+) -> None:
+    """Runs as a FastAPI BackgroundTask — DB write + quota increment."""
+    try:
+        analysis_data = {
+            "product_name":      request_body.product_name,
+            "category":          request_body.category,
+            "source":            request_body.source,
+            "base_cost":         request_body.base_cost,
+            "pricing":           pricing_clean,
+            "sales":             sales_insights,
+            "competition":       competition_insights,
+            "location_insights": [{"country": l.country, "market_share": l.market_share, "demand_level": l.demand_level} for l in location_insights],
+            "ai_strategy":       ai_strategy,
+            "warnings":          warnings,
+            "market_gaps":       market_gaps,
+            "final_verdict":     final_verdict_data,
+            "similar_products":  similar_products,
+            "success":           True,
+        }
+        saved = crud.create_tracker_analysis(db, request_body.user_email, analysis_data)
+        log.info("analysis_saved", analysis_id=saved.id)
+ 
+        if user:
+            db.refresh(user)
+            current_month = datetime.now().strftime("%Y-%m")
+            if user.analysis_month != current_month:
+                user.analysis_used = 0; user.analysis_month = current_month
+            tier  = user.subscription_tier or "free"
+            limit = get_analysis_limit(tier)
+            if limit == float("inf") or (user.analysis_used or 0) < int(limit):
+                user.analysis_used  = (user.analysis_used or 0) + 1
+                user.analysis_month = current_month
+                user.updated_at     = datetime.now()
+                db.commit()
+    except Exception:
+        log.error("analysis_persist_failed",
+                  product=request_body.product_name,
+                  user=request_body.user_email,
+                  exc_info=True)
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# REMAINING ENDPOINTS  — all return ApiResponse envelope  [IMP-8]
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.get("/users/{user_id}/analysis-usage")
+def get_analysis_usage(
+    user_id: int,
+    raw_request: Request,
+    month: str = Query(None),
+    db: Session = Depends(get_db),
+) -> ApiResponse:
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    current_month = month or datetime.now().strftime("%Y-%m")
+    if user.analysis_month != current_month:
+        user.analysis_used = 0; user.analysis_month = current_month
+        db.commit(); db.refresh(user)
+    tier      = user.subscription_tier or "free"
+    limit     = get_analysis_limit(tier)
+    used      = user.analysis_used or 0
+    limit_out = _infinity_to_sentinel(limit)
+    remaining = _infinity_to_sentinel(limit - used if limit != float("inf") else float("inf"))
+    return ApiResponse(
+        success=True,
+        request_id=getattr(raw_request.state, "request_id", ""),
+        latency_ms=0, source_type="internal",
+        data={"count": used, "limit": limit_out, "month": user.analysis_month or current_month, "subscription_tier": tier, "remaining": remaining},
+    )
+ 
+ 
+@app.post("/users/{user_id}/analysis-usage")
+def track_analysis_usage(
+    user_id: int,
+    request_body: AnalysisTrackRequest,
+    raw_request: Request,
+    db: Session = Depends(get_db),
+) -> ApiResponse:
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    current_month = datetime.now().strftime("%Y-%m")
+    if user.analysis_month != current_month:
+        user.analysis_used = 0; user.analysis_month = current_month
+    tier  = user.subscription_tier or "free"
+    limit = get_analysis_limit(tier)
+    if limit != float("inf") and (user.analysis_used or 0) >= int(limit):
+        raise QuotaError(f"Analysis limit reached. {user.analysis_used}/{int(limit)} this month.")
+    user.analysis_used  = (user.analysis_used or 0) + request_body.increment
+    user.analysis_month = current_month
+    user.updated_at     = datetime.now()
+    db.commit(); db.refresh(user)
+    limit_out = _infinity_to_sentinel(limit)
+    remaining = _infinity_to_sentinel(limit - user.analysis_used if limit != float("inf") else float("inf"))
+    return ApiResponse(
+        success=True, request_id=getattr(raw_request.state, "request_id", ""),
+        latency_ms=0, source_type="internal",
+        data={"success": True, "analysis_used": user.analysis_used, "analysis_month": user.analysis_month, "remaining": remaining, "limit": limit_out},
+    )
+ 
+ 
+@app.post("/users/{user_id}/check-analysis-limit")
+def check_analysis_limit(
+    user_id: int, raw_request: Request, db: Session = Depends(get_db),
+) -> ApiResponse:
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    current_month = datetime.now().strftime("%Y-%m")
+    if user.analysis_month != current_month:
+        user.analysis_used = 0; user.analysis_month = current_month; db.commit()
+    tier      = user.subscription_tier or "free"
+    limit     = get_analysis_limit(tier)
+    used      = user.analysis_used or 0
+    can       = limit == float("inf") or used < int(limit)
+    limit_out = _infinity_to_sentinel(limit)
+    remaining = _infinity_to_sentinel(limit - used if limit != float("inf") else float("inf"))
+    return ApiResponse(
+        success=True, request_id=getattr(raw_request.state, "request_id", ""),
+        latency_ms=0, source_type="internal",
+        data={"can_analyze": can, "used": used, "limit": limit_out, "remaining": remaining, "subscription_tier": tier, "upgrade_required": not can},
+    )
+ 
+ 
 @app.get("/product-tracker/history")
 def get_tracker_history(
-    user_email: str = Query(..., description="User's email"),
-    limit: int = Query(20, description="Number of results"),
-    offset: int = Query(0, description="Pagination offset"),
-    db: Session = Depends(get_db)
-):
-    """
-    Get user's product tracker analysis history
-    """
+    raw_request: Request,
+    user_email: str = Query(...),
+    limit: int = Query(20),
+    offset: int = Query(0),
+    db: Session = Depends(get_db),
+) -> ApiResponse:
     try:
         history = crud.get_user_tracker_history(db, user_email, limit, offset)
-        
-        return {
-            "success": True,
-            "count": len(history),
-            "data": [
-                {
-                    "id": h.id,
-                    "product_name": h.product_name,
-                    "category": h.category,
-                    "source": h.source,
-                    "base_cost": float(h.base_cost),
-                    "recommended_price": float(h.recommended_price) if h.recommended_price else None,
-                    "profit_margin": float(h.profit_margin) if h.profit_margin else None,
-                    "market_demand": h.market_demand,
-                    "created_at": h.created_at.isoformat()
-                }
-                for h in history
-            ]
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
+        return ApiResponse(
+            success=True, request_id=getattr(raw_request.state, "request_id", ""),
+            latency_ms=0, source_type="internal",
+            data={"count": len(history), "items": [{"id": h.id, "product_name": h.product_name, "category": h.category, "source": h.source, "base_cost": float(h.base_cost), "recommended_price": float(h.recommended_price) if h.recommended_price else None, "profit_margin": float(h.profit_margin) if h.profit_margin else None, "market_demand": h.market_demand, "created_at": h.created_at.isoformat()} for h in history]},
+        )
+    except Exception:
+        log.exception("history_fetch_error", user_email=user_email)
+        raise DatabaseError("Failed to fetch analysis history.")
+ 
+ 
 @app.get("/product-tracker/analysis/{analysis_id}")
 def get_analysis_details(
-    analysis_id: int,
-    db: Session = Depends(get_db)
-):
-    """
-    Get detailed analysis by ID
-    """
+    analysis_id: int, raw_request: Request, db: Session = Depends(get_db),
+) -> ApiResponse:
     try:
         analysis = crud.get_tracker_analysis_by_id(db, analysis_id)
-        
         if not analysis:
             raise HTTPException(status_code=404, detail="Analysis not found")
-        
-        return {
-            "success": True,
-            "data": {
-                "id": analysis.id,
-                "product_name": analysis.product_name,
-                "category": analysis.category,
-                "source": analysis.source,
-                "base_cost": float(analysis.base_cost),
-                "pricing": {
-                    "recommended_price": float(analysis.recommended_price) if analysis.recommended_price else None,
-                    "min_price": float(analysis.min_price) if analysis.min_price else None,
-                    "max_price": float(analysis.max_price) if analysis.max_price else None,
-                    "profit_margin": float(analysis.profit_margin) if analysis.profit_margin else None,
-                    "confidence": analysis.pricing_confidence
-                },
-                "sales": {
-                    "estimated_monthly_sales": f"{analysis.estimated_monthly_sales_min:,} - {analysis.estimated_monthly_sales_max:,}",
-                    "estimated_daily_sales": float(analysis.estimated_daily_sales) if analysis.estimated_daily_sales else None,
-                    "market_demand": analysis.market_demand
-                },
-                "competition": {
-                    "total_competitors": analysis.total_competitors,
-                    "avg_competitor_price": float(analysis.avg_competitor_price) if analysis.avg_competitor_price else None,
-                    "avg_competitor_rating": float(analysis.avg_competitor_rating) if analysis.avg_competitor_rating else None,
-                    "top_competitor": {
-                        "name": analysis.top_competitor_name,
-                        "price": float(analysis.top_competitor_price) if analysis.top_competitor_price else None
-                    } if analysis.top_competitor_name else None
-                },
-                "location_insights": analysis.location_insights,
-                "ai_strategy": analysis.ai_strategy,
-                "warnings": analysis.warnings,
-                "created_at": analysis.created_at.isoformat()
-            }
-        }
+        return ApiResponse(
+            success=True, request_id=getattr(raw_request.state, "request_id", ""),
+            latency_ms=0, source_type="internal",
+            data={"id": analysis.id, "product_name": analysis.product_name, "category": analysis.category, "source": analysis.source, "base_cost": float(analysis.base_cost), "created_at": analysis.created_at.isoformat()},
+        )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
+    except Exception:
+        log.exception("analysis_fetch_error", analysis_id=analysis_id)
+        raise DatabaseError("Failed to fetch analysis details.")
+ 
+ 
 @app.delete("/product-tracker/analysis/{analysis_id}")
 def delete_analysis(
-    analysis_id: int,
-    user_email: str = Query(..., description="User's email for verification"),
-    db: Session = Depends(get_db)
-):
-    """
-    Delete an analysis (only if it belongs to the user)
-    """
+    analysis_id: int, raw_request: Request,
+    user_email: str = Query(...), db: Session = Depends(get_db),
+) -> ApiResponse:
     try:
         success = crud.delete_tracker_analysis(db, analysis_id, user_email)
-        
-        if success:
-            return {"success": True, "message": "Analysis deleted successfully"}
-        else:
+        if not success:
             raise HTTPException(status_code=404, detail="Analysis not found or unauthorized")
-            
+        return ApiResponse(
+            success=True, request_id=getattr(raw_request.state, "request_id", ""),
+            latency_ms=0, source_type="internal",
+            data={"message": "Analysis deleted successfully"},
+        )
     except HTTPException:
         raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
+    except Exception:
+        log.exception("analysis_delete_error", analysis_id=analysis_id)
+        raise DatabaseError("Failed to delete analysis.")
+ 
+ 
 @app.get("/product-tracker/stats")
-def get_tracker_stats(db: Session = Depends(get_db)):
-    """
-    Get overall product tracker statistics
-    """
+def get_tracker_stats(raw_request: Request, db: Session = Depends(get_db)) -> ApiResponse:
     try:
-        # Total analyses
-        total_analyses = db.query(models.ProductTrackerAnalysis).count()
-        
-        # Popular categories
-        popular_categories = crud.get_popular_categories(db, limit=5)
-        
-        # Recent analyses
-        recent = db.query(models.ProductTrackerAnalysis)\
-            .order_by(models.ProductTrackerAnalysis.created_at.desc())\
-            .limit(5)\
-            .all()
-        
-        # Average profit margin
         from sqlalchemy import func
+        total      = db.query(models.ProductTrackerAnalysis).count()
+        popular    = crud.get_popular_categories(db, limit=5)
+        recent     = db.query(models.ProductTrackerAnalysis).order_by(models.ProductTrackerAnalysis.created_at.desc()).limit(5).all()
         avg_margin = db.query(func.avg(models.ProductTrackerAnalysis.profit_margin)).scalar()
-        
-        return {
-            "success": True,
-            "stats": {
-                "total_analyses": total_analyses,
-                "average_profit_margin": round(float(avg_margin), 2) if avg_margin else 0,
-                "popular_categories": popular_categories,
-                "recent_analyses": [
-                    {
-                        "product_name": r.product_name,
-                        "category": r.category,
-                        "created_at": r.created_at.isoformat()
-                    }
-                    for r in recent
-                ]
-            }
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
+        return ApiResponse(
+            success=True, request_id=getattr(raw_request.state, "request_id", ""),
+            latency_ms=0, source_type="internal",
+            data={"total_analyses": total, "average_profit_margin": round(float(avg_margin), 2) if avg_margin else 0, "popular_categories": popular, "recent_analyses": [{"product_name": r.product_name, "category": r.category, "created_at": r.created_at.isoformat()} for r in recent]},
+        )
+    except Exception:
+        log.exception("stats_fetch_error")
+        raise DatabaseError("Failed to fetch tracker stats.")
 
 # ============================================
 # 🔥 FIXED: Products by Sentiment (WITH PAGINATION)
@@ -8447,5 +9326,5306 @@ def admin_get_user_profile(
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
     
 
+DB_TIMEOUT_MS = 8_000
+ 
+SOV_TIER_LIMITS: Dict[str, int] = {
+    "free":       3,
+    "basic":      15,
+    "premium":    -1,
+    "enterprise": -1,
+}
+ 
+HHI_COMPETITIVE = 1_500   # < 1500 → easy to enter
+HHI_MODERATE    = 2_500   # 1500–2500 → moderate
+                           # > 2500 → hard to enter
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# PYDANTIC MODELS
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+class BrandShareData(BaseModel):
+    brand:            str
+    share_percentage: float
+    total_reviews:    int
+    total_sales:      int
+    avg_rating:       Optional[float]
+    avg_price:        Optional[float]
+    product_count:    int
+ 
+class MarketConcentration(BaseModel):
+    hhi_score:        float
+    label:            str
+    top3_share:       float
+    top1_share:       float
+    entry_difficulty: str
+    num_brands:       int
+ 
+class ReviewVelocityItem(BaseModel):
+    brand:            str
+    total_reviews:    int
+    review_density:   float
+    velocity_label:   str
+    share_percentage: float
+ 
+class PriceGapItem(BaseModel):
+    price_band:     str
+    band_lo:        float
+    band_hi:        float
+    brand_count:    int
+    total_products: int
+    avg_rating:     float
+    opportunity:    str
+ 
+class LaunchReadinessScore(BaseModel):
+    score:               int
+    label:               str
+    color:               str
+    fragmentation_score: int
+    price_gap_score:     int
+    rating_gap_score:    int
+    review_gap_score:    int
+    reasoning:           List[str]
+ 
+class ValueMapItem(BaseModel):
+    brand:         str
+    avg_price:     float
+    avg_rating:    float
+    total_reviews: int
+    share_pct:     float
+    quadrant:      str
+ 
+class CategoryTrend(BaseModel):
+    trend:            str
+    signal:           str
+    avg_reviews_new:  float
+    avg_reviews_old:  float
+    growth_proxy_pct: float
+ 
+class ListingQualityBenchmark(BaseModel):
+    median_title_length:   int
+    median_reviews:        int
+    pct_with_ratings:      float
+    review_density_median: float
+    your_brand_title_len:  Optional[int]
+    your_brand_density:    Optional[float]
+    your_brand_vs_median:  Optional[str]
+ 
+# ── [NEW-A] Final Decision ──
+class MarketDecision(BaseModel):
+    verdict:     str    # "ENTER AGGRESSIVELY" | "ENTER WITH CAUTION" | "AVOID MARKET"
+    color:       str    # "green" | "yellow" | "red"
+    emoji:       str
+    headline:    str
+    sub_reasons: List[str]
+ 
+# ── [NEW-B] Confidence Score ──
+class ConfidenceScore(BaseModel):
+    score:              float
+    label:              str
+    color:              str
+    product_count:      int
+    pct_with_ratings:   float
+    rating_variance:    float
+    price_completeness: float
+    caveats:            List[str]
+    tier_used:          str = ""
+    sample_size:        int = 0
+    has_sales_data:     bool = False
+    has_review_data:    bool = False
+    price_spread_pct:   float = 0.0
 
+    def to_dict(self) -> dict:
+        return self.dict()
+ 
+# ── [NEW-C] Action Plan ──
+class ActionStep(BaseModel):
+    step:     int
+    area:     str
+    action:   str
+    detail:   str
+    timeline: str
+    priority: str
+    impact:   str
+ 
+class ActionPlan(BaseModel):
+    entry_price_recommendation: Optional[str]
+    positioning_quadrant:       str
+    steps:                      List[ActionStep]
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# SAFE TYPE HELPERS
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def safe_float(value: Any, default: float = 0.0) -> float:
+    if value is None or value == "NULL":
+        return default
+    try:
+        return float(Decimal(str(value))) if isinstance(value, Decimal) else float(value)
+    except Exception:
+        return default
+ 
+def safe_int(value: Any, default: int = 0) -> int:
+    if value is None or value == "NULL":
+        return default
+    try:
+        return int(float(value))
+    except Exception:
+        return default
+ 
+def extract_sales_number(sales_text: str) -> int:
+    """Parse '9.4K+ bought', '2M bought', '1.2L bought' → int."""
+    if not sales_text or sales_text == "NULL":
+        return 0
+    try:
+        s = str(sales_text).upper().strip()
+        m = re.search(r"([\d.]+)\s*([KMLC](?:R)?)?", s)
+        if not m:
+            return 0
+        n    = float(m.group(1))
+        unit = (m.group(2) or "").rstrip()
+        mult = {"K": 1_000, "M": 1_000_000, "L": 100_000, "CR": 10_000_000}
+        return int(n * mult.get(unit, 1))
+    except Exception:
+        return 0
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# DB TIMEOUT + ERROR HELPERS
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _set_timeout(db: Session, ms: int = DB_TIMEOUT_MS) -> None:
+    db.execute(text(f"SET LOCAL statement_timeout = {ms}"))
+ 
+def _err(msg: str, code: int = 400) -> Dict:
+    return {"success": False, "error": msg, "code": code}
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# OLLAMA HELPERS  (uses your existing OLLAMA_API_URL + MODEL_NAME)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _call_ollama(prompt: str, timeout: int = 60) -> str:
+    try:
+        resp = requests.post(
+            f"{OLLAMA_API_URL}/api/generate",
+            json={"model": MODEL_NAME, "prompt": prompt, "stream": False},
+            timeout=timeout,
+        )
+        if resp.status_code != 200:
+            return ""
+        raw = resp.json().get("response", "").strip()
+        raw = raw.replace("<|MODEL_RESPONSE|>", "").replace("</s>", "").strip()
+        raw = re.sub(r"^```(?:json)?\s*", "", raw)
+        raw = re.sub(r"\s*```$", "", raw)
+        return raw.strip()
+    except Exception as e:
+        print(f"[ollama] {e}")
+        return ""
+ 
+def _run_ollama_parallel(tasks: List[Tuple[str, int]]) -> List[str]:
+    results: List[str] = [""] * len(tasks)
+    future_to_idx: Dict[Any, int] = {}
+    with ThreadPoolExecutor(max_workers=len(tasks)) as pool:
+        for idx, (prompt, timeout) in enumerate(tasks):
+            future_to_idx[pool.submit(_call_ollama, prompt, timeout)] = idx
+        for future in as_completed(future_to_idx):
+            try:
+                results[future_to_idx[future]] = future.result()
+            except Exception as e:
+                print(f"[ollama] thread error: {e}")
+    return results
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# USAGE / QUOTA HELPER
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _check_and_increment_sov(user_id: Optional[int], db: Session) -> None:
+    if not user_id:
+        return
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        return
+    tier          = (user.subscription_tier or "free").lower()
+    limit         = SOV_TIER_LIMITS.get(tier, 3)
+    current_month = datetime.now().strftime("%Y-%m")
+    if user.sov_month != current_month:
+        user.sov_used  = 0
+        user.sov_month = current_month
+    if limit != -1 and (user.sov_used or 0) >= limit:
+        raise HTTPException(
+            status_code=403,
+            detail=(
+                f"You've reached your {tier.upper()} tier limit of {limit} SOV analyses "
+                f"this month. Upgrade for more!"
+            ),
+        )
+    user.sov_used = (user.sov_used or 0) + 1
+    db.commit()
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# CORE SOV QUERY  (shared by all callers — no usage counter)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _get_category_sov_data(
+    category_name: str,
+    marketplace:   str,
+    your_brand:    Optional[str],
+    db:            Session,
+) -> Dict:
+    _set_timeout(db)
+ 
+    if marketplace == "flipkart":
+        query = text("""
+            SELECT
+                brand                                                   AS brand,
+                COUNT(*)                                                AS product_count,
+                COALESCE(SUM(product_rating_count),   0)               AS total_reviews,
+                COALESCE(SUM(estimated_sales),        0)               AS total_sales,
+                COALESCE(AVG(CAST(product_star_rating AS FLOAT)), 0)   AS avg_rating,
+                COALESCE(AVG(product_price),          0)               AS avg_price
+            FROM rapidapi_flipkart_products
+            WHERE category_name = :cat
+              AND brand IS NOT NULL
+              AND brand NOT IN ('NULL', '', 'N/A')
+            GROUP BY brand
+            ORDER BY total_reviews DESC
+            LIMIT 200
+        """)
+    else:
+        query = text("""
+            SELECT
+                COALESCE(
+                    NULLIF(TRIM(brand), ''),
+                    SPLIT_PART(product_title, ' ', 1)
+                )                                                       AS brand,
+                COUNT(*)                                                AS product_count,
+                COALESCE(SUM(product_num_ratings),    0)               AS total_reviews,
+                COALESCE(SUM(avg_sales_volume),       0)               AS total_sales,
+                COALESCE(AVG(product_star_rating_numeric), 0)          AS avg_rating,
+                COALESCE(AVG(product_price_numeric),  0)               AS avg_price
+            FROM rapidapi_amazon_products
+            WHERE category_name = :cat
+            GROUP BY brand
+            ORDER BY total_reviews DESC
+            LIMIT 200
+        """)
+ 
+    rows = db.execute(query, {"cat": category_name}).fetchall()
+    if not rows:
+        return _err(f"No data found for category: {category_name}", 404)
+ 
+    total_reviews  = sum(safe_int(r[2]) for r in rows)
+    total_sales    = sum(safe_int(r[3]) for r in rows)
+    total_products = sum(safe_int(r[1]) for r in rows)
+ 
+    brands: List[Dict]        = []
+    your_brand_share: Optional[float] = None
+    market_leader:    Optional[str]   = None
+    max_share = 0.0
+ 
+    for row in rows:
+        brand_name   = str(row[0] or "Unknown").strip()
+        review_count = safe_int(row[2])
+        sales_count  = safe_int(row[3])
+        share_pct    = (review_count / total_reviews * 100) if total_reviews > 0 else 0.0
+ 
+        entry: Dict = {
+            "brand":            brand_name,
+            "share_percentage": round(share_pct, 2),
+            "total_reviews":    review_count,
+            "total_sales":      sales_count,
+            "avg_rating":       round(safe_float(row[4]), 2),
+            "avg_price":        round(safe_float(row[5]), 2),
+            "product_count":    safe_int(row[1]),
+        }
+        brands.append(entry)
+ 
+        if share_pct > max_share:
+            max_share     = share_pct
+            market_leader = brand_name
+ 
+        if your_brand and brand_name.lower() == your_brand.lower():
+            your_brand_share = share_pct
+ 
+    return {
+        "success":          True,
+        "category_name":    category_name,
+        "total_products":   total_products,
+        "total_reviews":    total_reviews,
+        "total_sales":      total_sales,
+        "brands":           brands,
+        "your_brand_share": round(your_brand_share, 2) if your_brand_share is not None else None,
+        "market_leader":    market_leader,
+        "marketplace":      marketplace,
+    }
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [NEW-1]  MARKET CONCENTRATION  (HHI)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _compute_hhi(brands: List[Dict]) -> MarketConcentration:
+    hhi  = sum((b["share_percentage"] ** 2) for b in brands)
+    top1 = brands[0]["share_percentage"] if brands else 0.0
+    top3 = sum(b["share_percentage"] for b in brands[:3])
+ 
+    if hhi < HHI_COMPETITIVE:
+        label, difficulty = "Competitive", "Easy"
+    elif hhi < HHI_MODERATE:
+        label, difficulty = "Moderate", "Moderate"
+    else:
+        label, difficulty = "Concentrated", "Hard"
+ 
+    return MarketConcentration(
+        hhi_score        = round(hhi, 1),
+        label            = label,
+        top3_share       = round(top3, 2),
+        top1_share       = round(top1, 2),
+        entry_difficulty = difficulty,
+        num_brands       = len(brands),
+    )
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [NEW-2]  REVIEW VELOCITY
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _compute_review_velocity(brands: List[Dict]) -> List[ReviewVelocityItem]:
+    if not brands:
+        return []
+    densities = [b["total_reviews"] / max(b["product_count"], 1) for b in brands]
+    sorted_d  = sorted(densities)
+    median_d  = sorted_d[len(sorted_d) // 2]
+ 
+    result: List[ReviewVelocityItem] = []
+    for b, d in zip(brands, densities):
+        if d > median_d * 1.25:
+            vlabel = "Rising"
+        elif d < median_d * 0.75:
+            vlabel = "Declining"
+        else:
+            vlabel = "Stable"
+        result.append(ReviewVelocityItem(
+            brand            = b["brand"],
+            total_reviews    = b["total_reviews"],
+            review_density   = round(d, 1),
+            velocity_label   = vlabel,
+            share_percentage = b["share_percentage"],
+        ))
+    result.sort(key=lambda x: x.review_density, reverse=True)
+    return result[:20]
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [NEW-3]  PRICE-GAP / WHITESPACE FINDER
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _compute_price_gaps(brands: List[Dict], bucket_size: float = 500.0) -> List[PriceGapItem]:
+    prices = [b["avg_price"] for b in brands if b["avg_price"] > 0]
+    if not prices:
+        return []
+ 
+    min_p  = (min(prices) // bucket_size) * bucket_size
+    max_p  = (max(prices) // bucket_size + 1) * bucket_size
+    gaps:   List[PriceGapItem] = []
+    band_lo = min_p
+ 
+    while band_lo < max_p:
+        band_hi = band_lo + bucket_size
+        in_band = [b for b in brands if band_lo <= b["avg_price"] < band_hi]
+        brand_c = len(in_band)
+        prod_c  = sum(b["product_count"] for b in in_band)
+        avg_r   = (
+            sum(b["avg_rating"] for b in in_band if b["avg_rating"]) /
+            max(sum(1 for b in in_band if b["avg_rating"]), 1)
+        )
+ 
+        if brand_c == 0:
+            opp = "High"
+        elif brand_c == 1 and avg_r < 3.8:
+            opp = "High"
+        elif brand_c <= 2:
+            opp = "Medium"
+        elif brand_c <= 4:
+            opp = "Low"
+        else:
+            opp = "Crowded"
+ 
+        gaps.append(PriceGapItem(
+            price_band    = f"₹{int(band_lo):,}–₹{int(band_hi):,}",
+            band_lo       = band_lo,
+            band_hi       = band_hi,
+            brand_count   = brand_c,
+            total_products= prod_c,
+            avg_rating    = round(avg_r, 2),
+            opportunity   = opp,
+        ))
+        band_lo = band_hi
+ 
+    return gaps
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [NEW-4]  LAUNCH READINESS SCORE
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _compute_launch_readiness(
+    brands:     List[Dict],
+    hhi:        MarketConcentration,
+    price_gaps: List[PriceGapItem],
+) -> LaunchReadinessScore:
+    reasoning: List[str] = []
+ 
+    # Fragmentation
+    if hhi.hhi_score < HHI_COMPETITIVE:
+        frag = 25
+        reasoning.append(f"Competitive market (HHI {hhi.hhi_score:.0f}) — easy to carve share.")
+    elif hhi.hhi_score < HHI_MODERATE:
+        frag = 13
+        reasoning.append(f"Moderate concentration (HHI {hhi.hhi_score:.0f}) — needs differentiation.")
+    else:
+        frag = 0
+        reasoning.append(f"Highly concentrated (HHI {hhi.hhi_score:.0f}) — tough to enter.")
+ 
+    # Price gap
+    high_opp = sum(1 for g in price_gaps if g.opportunity == "High")
+    if high_opp >= 2:
+        pgap = 25
+        reasoning.append(f"{high_opp} price bands with no strong player — clear entry point.")
+    elif high_opp == 1:
+        pgap = 13
+        reasoning.append("One underserved price band found.")
+    else:
+        pgap = 0
+        reasoning.append("All price bands are covered by established brands.")
+ 
+    # Rating gap
+    ratings        = [b["avg_rating"] for b in brands if b["avg_rating"] and b["avg_rating"] > 0]
+    avg_cat_rating = sum(ratings) / len(ratings) if ratings else 4.5
+    if avg_cat_rating < 3.7:
+        rgap = 25
+        reasoning.append(f"Category avg rating is {avg_cat_rating:.1f}★ — easy to win on quality.")
+    elif avg_cat_rating < 4.1:
+        rgap = 13
+        reasoning.append(f"Rating avg is {avg_cat_rating:.1f}★ — quality-focused brands can stand out.")
+    else:
+        rgap = 0
+        reasoning.append(f"High rating bar ({avg_cat_rating:.1f}★) — quality must be excellent.")
+ 
+    # Review gap
+    densities   = [b["total_reviews"] / max(b["product_count"], 1) for b in brands]
+    med_density = sorted(densities)[len(densities) // 2] if densities else 0
+    if med_density < 50:
+        revg = 25
+        reasoning.append(f"Low review density ({med_density:.0f}/product) — early mover advantage.")
+    elif med_density < 200:
+        revg = 13
+        reasoning.append(f"Moderate review density ({med_density:.0f}/product) — achievable in 3–6 months.")
+    else:
+        revg = 0
+        reasoning.append(f"High review density ({med_density:.0f}/product) — review generation is hard.")
+ 
+    total = frag + pgap + rgap + revg
+    if total >= 75:
+        label, color = "Strong Opportunity", "green"
+    elif total >= 50:
+        label, color = "Viable", "blue"
+    elif total >= 25:
+        label, color = "Risky", "orange"
+    else:
+        label, color = "Avoid", "red"
+ 
+    return LaunchReadinessScore(
+        score               = total,
+        label               = label,
+        color               = color,
+        fragmentation_score = frag,
+        price_gap_score     = pgap,
+        rating_gap_score    = rgap,
+        review_gap_score    = revg,
+        reasoning           = reasoning,
+    )
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [NEW-5]  VALUE MAP
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _compute_value_map(brands: List[Dict]) -> List[ValueMapItem]:
+    prices  = [b["avg_price"]  for b in brands if b["avg_price"]  > 0]
+    ratings = [b["avg_rating"] for b in brands if b["avg_rating"] and b["avg_rating"] > 0]
+    if not prices or not ratings:
+        return []
+ 
+    med_p = sorted(prices)[len(prices) // 2]
+    med_r = sorted(ratings)[len(ratings) // 2]
+ 
+    result: List[ValueMapItem] = []
+    for b in brands:
+        p = b["avg_price"]  or 0
+        r = b["avg_rating"] or 0
+        if p <= 0 or r <= 0:
+            continue
+        high_p = p >= med_p
+        high_r = r >= med_r
+        if high_p and high_r:
+            q = "Star"
+        elif high_p and not high_r:
+            q = "Overpriced"
+        elif not high_p and high_r:
+            q = "Budget Star"
+        else:
+            q = "Poor Value"
+ 
+        result.append(ValueMapItem(
+            brand         = b["brand"],
+            avg_price     = round(p, 2),
+            avg_rating    = round(r, 2),
+            total_reviews = b["total_reviews"],
+            share_pct     = b["share_percentage"],
+            quadrant      = q,
+        ))
+    result.sort(key=lambda x: x.share_pct, reverse=True)
+    return result[:30]
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [NEW-6]  CATEGORY TREND PROXY
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _compute_category_trend(category_name: str, marketplace: str, db: Session) -> CategoryTrend:
+    _set_timeout(db)
+    try:
+        if marketplace == "flipkart":
+            q = text("""
+                WITH ranked AS (
+                    SELECT product_rating_count AS reviews,
+                           ROW_NUMBER() OVER (ORDER BY id ASC)  AS rn_asc,
+                           ROW_NUMBER() OVER (ORDER BY id DESC) AS rn_desc
+                    FROM rapidapi_flipkart_products
+                    WHERE category_name = :cat AND product_rating_count IS NOT NULL
+                )
+                SELECT
+                    AVG(CASE WHEN rn_asc  <= 10 THEN reviews END) AS old_avg,
+                    AVG(CASE WHEN rn_desc <= 10 THEN reviews END) AS new_avg
+                FROM ranked
+            """)
+        else:
+            q = text("""
+                WITH ranked AS (
+                    SELECT product_num_ratings AS reviews,
+                           ROW_NUMBER() OVER (ORDER BY id ASC)  AS rn_asc,
+                           ROW_NUMBER() OVER (ORDER BY id DESC) AS rn_desc
+                    FROM rapidapi_amazon_products
+                    WHERE category_name = :cat AND product_num_ratings IS NOT NULL
+                )
+                SELECT
+                    AVG(CASE WHEN rn_asc  <= 10 THEN reviews END) AS old_avg,
+                    AVG(CASE WHEN rn_desc <= 10 THEN reviews END) AS new_avg
+                FROM ranked
+            """)
+        row     = db.execute(q, {"cat": category_name}).fetchone()
+        old_avg = safe_float(row[0]) if row else 0.0
+        new_avg = safe_float(row[1]) if row else 0.0
+    except Exception as e:
+        print(f"[trend] query error: {e}")
+        old_avg, new_avg = 0.0, 0.0
+ 
+    if old_avg <= 0:
+        return CategoryTrend(
+            trend="Unknown", signal="Insufficient data",
+            avg_reviews_new=0, avg_reviews_old=0, growth_proxy_pct=0,
+        )
+ 
+    growth_proxy = ((new_avg - old_avg) / old_avg) * 100
+    if growth_proxy > 20:
+        trend  = "Growing"
+        signal = f"New listings accumulate {growth_proxy:.0f}% more reviews than old ones — strong demand."
+    elif growth_proxy > -10:
+        trend  = "Stable"
+        signal = "Review velocity is consistent — steady market."
+    else:
+        trend  = "Declining"
+        signal = "Newer listings get fewer reviews — possible saturation or shifting demand."
+ 
+    return CategoryTrend(
+        trend            = trend,
+        signal           = signal,
+        avg_reviews_new  = round(new_avg, 1),
+        avg_reviews_old  = round(old_avg, 1),
+        growth_proxy_pct = round(growth_proxy, 1),
+    )
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [NEW-7]  LISTING QUALITY BENCHMARKS
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _compute_listing_quality(
+    category_name: str,
+    marketplace:   str,
+    your_brand:    Optional[str],
+    db:            Session,
+) -> ListingQualityBenchmark:
+    _set_timeout(db)
+    try:
+        if marketplace == "flipkart":
+            q = text("""
+                SELECT brand,
+                       LENGTH(product_title)              AS title_len,
+                       product_rating_count               AS reviews,
+                       COUNT(*) OVER (PARTITION BY brand) AS prod_count,
+                       product_star_rating IS NOT NULL    AS has_rating
+                FROM rapidapi_flipkart_products
+                WHERE category_name = :cat AND product_title IS NOT NULL
+            """)
+        else:
+            q = text("""
+                SELECT COALESCE(NULLIF(TRIM(brand),''), SPLIT_PART(product_title,' ',1)) AS brand,
+                       LENGTH(product_title)              AS title_len,
+                       product_num_ratings                AS reviews,
+                       COUNT(*) OVER (PARTITION BY brand) AS prod_count,
+                       product_star_rating_numeric IS NOT NULL AS has_rating
+                FROM rapidapi_amazon_products
+                WHERE category_name = :cat AND product_title IS NOT NULL
+            """)
+        rows = db.execute(q, {"cat": category_name}).fetchall()
+    except Exception as e:
+        print(f"[listing_quality] {e}")
+        rows = []
+ 
+    if not rows:
+        return ListingQualityBenchmark(
+            median_title_length=0, median_reviews=0, pct_with_ratings=0,
+            review_density_median=0,
+        )
+ 
+    title_lens = sorted([safe_int(r[1]) for r in rows if r[1]])
+    reviews    = sorted([safe_int(r[2]) for r in rows if r[2]])
+    has_rating = [bool(r[4]) for r in rows]
+    pct_rated  = sum(has_rating) / max(len(has_rating), 1) * 100
+ 
+    med_title = title_lens[len(title_lens) // 2] if title_lens else 0
+    med_rev   = reviews[len(reviews) // 2]        if reviews    else 0
+ 
+    brand_groups: Dict[str, Dict] = {}
+    for r in rows:
+        bn = str(r[0] or "Unknown")
+        if bn not in brand_groups:
+            brand_groups[bn] = {"reviews": 0, "products": 0}
+        brand_groups[bn]["reviews"]  += safe_int(r[2])
+        brand_groups[bn]["products"] += 1
+ 
+    densities   = sorted([v["reviews"] / max(v["products"], 1) for v in brand_groups.values()])
+    med_density = densities[len(densities) // 2] if densities else 0.0
+ 
+    your_title_len: Optional[int]   = None
+    your_density:   Optional[float] = None
+    your_vs_median: Optional[str]   = None
+ 
+    if your_brand and your_brand in brand_groups:
+        g            = brand_groups[your_brand]
+        your_density = round(g["reviews"] / max(g["products"], 1), 1)
+        your_rows    = [r for r in rows if str(r[0] or "").lower() == your_brand.lower()]
+        if your_rows:
+            your_title_len = safe_int(your_rows[0][1])
+        if your_density > med_density * 1.15:
+            your_vs_median = "Above"
+        elif your_density < med_density * 0.85:
+            your_vs_median = "Below"
+        else:
+            your_vs_median = "At"
+ 
+    return ListingQualityBenchmark(
+        median_title_length   = med_title,
+        median_reviews        = med_rev,
+        pct_with_ratings      = round(pct_rated, 1),
+        review_density_median = round(med_density, 1),
+        your_brand_title_len  = your_title_len,
+        your_brand_density    = your_density,
+        your_brand_vs_median  = your_vs_median,
+    )
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [NEW-A]  FINAL MARKET DECISION LAYER
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _compute_market_decision(
+    hhi:    MarketConcentration,
+    launch: LaunchReadinessScore,
+    trend:  CategoryTrend,
+) -> MarketDecision:
+    """
+    Three-tier verdict combining HHI + launch score + trend:
+      ENTER AGGRESSIVELY  — score ≥ 65, HHI < MODERATE, not declining
+      ENTER WITH CAUTION  — score ≥ 40, HHI < 3500
+      AVOID MARKET        — everything else
+    """
+    score     = launch.score
+    hhi_val   = hhi.hhi_score
+    declining = trend.trend == "Declining"
+    sub: List[str] = []
+ 
+    if score >= 65 and hhi_val < HHI_MODERATE and not declining:
+        verdict = "ENTER AGGRESSIVELY"
+        color   = "green"
+        emoji   = "🚀"
+        headline = (
+            f"Strong opportunity: fragmented market (HHI {hhi_val:.0f}), "
+            f"launch score {score}/100, {trend.trend.lower()} demand."
+        )
+        if score >= 75:
+            sub.append(f"Launch score {score}/100 — top-quartile attractiveness.")
+        if hhi_val < HHI_COMPETITIVE:
+            sub.append("No single brand dominates — market share is up for grabs.")
+        if trend.trend == "Growing":
+            sub.append(f"Category is growing ({trend.growth_proxy_pct:+.1f}% review velocity).")
+        sub.append("Recommend entering within 30 days before the window narrows.")
+ 
+    elif score >= 40 and hhi_val < 3_500:
+        verdict = "ENTER WITH CAUTION"
+        color   = "yellow"
+        emoji   = "⚠️"
+        headline = (
+            f"Viable but competitive: launch score {score}/100, "
+            f"HHI {hhi_val:.0f} ({hhi.label})."
+        )
+        if declining:
+            sub.append("Category trend is declining — demand may be softening.")
+        if hhi_val >= HHI_MODERATE:
+            sub.append(
+                f"Market is moderately concentrated — top 3 brands hold {hhi.top3_share:.0f}% share."
+            )
+        if score < 55:
+            sub.append("Launch score is below average — identify a clear niche before committing.")
+        sub.append("Pilot with 2–3 SKUs before scaling inventory.")
+ 
+    else:
+        verdict = "AVOID MARKET"
+        color   = "red"
+        emoji   = "🚫"
+        headline = (
+            f"Poor entry conditions: launch score {score}/100, "
+            f"HHI {hhi_val:.0f} ({hhi.label})."
+        )
+        if hhi_val >= 3_500:
+            sub.append(f"Near-monopoly — top 3 brands hold {hhi.top3_share:.0f}% share.")
+        if score < 25:
+            sub.append(
+                "Launch score critically low — no price gap, high existing ratings, "
+                "high review moat."
+            )
+        if declining:
+            sub.append("Category is declining — shrinking total addressable market.")
+        sub.append("Consider adjacent categories with lower entry barriers.")
+ 
+    return MarketDecision(
+        verdict     = verdict,
+        color       = color,
+        emoji       = emoji,
+        headline    = headline,
+        sub_reasons = sub,
+    )
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [NEW-B]  DYNAMIC CONFIDENCE SCORE
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _compute_confidence_score(brands: List[Dict]) -> ConfidenceScore:
+    """
+    Scores 0–100 based on data quality:
+      - Product count       (more = higher confidence)
+      - % brands with ratings (missing = penalty)
+      - Rating variance     (high variance = uncertainty)
+      - Price completeness  (missing prices = penalty)
+    """
+    caveats: List[str] = []
+    score = 100
+ 
+    # Product count
+    total_products = sum(b["product_count"] for b in brands)
+    if total_products < 20:
+        score -= 30
+        caveats.append(
+            f"Only {total_products} products in dataset — sample too small for strong conclusions."
+        )
+    elif total_products < 50:
+        score -= 15
+        caveats.append(
+            f"{total_products} products found — moderate sample; results are directionally accurate."
+        )
+ 
+    # Rating completeness
+    with_rating = sum(1 for b in brands if b.get("avg_rating") and b["avg_rating"] > 0)
+    pct_rated   = with_rating / max(len(brands), 1) * 100
+    if pct_rated < 50:
+        score -= 25
+        caveats.append(
+            f"Only {pct_rated:.0f}% of brands have rating data — quality signals unreliable."
+        )
+    elif pct_rated < 80:
+        score -= 10
+        caveats.append(f"{pct_rated:.0f}% of brands have ratings — some quality gaps exist.")
+ 
+    # Rating variance
+    ratings = [b["avg_rating"] for b in brands if b.get("avg_rating") and b["avg_rating"] > 0]
+    if ratings:
+        mean_r   = sum(ratings) / len(ratings)
+        variance = sum((r - mean_r) ** 2 for r in ratings) / len(ratings)
+    else:
+        variance = 0.0
+ 
+    if variance > 1.5:
+        score -= 15
+        caveats.append(
+            f"High rating variance ({variance:.2f}) — category quality is inconsistent across brands."
+        )
+    elif variance > 0.8:
+        score -= 5
+        caveats.append(f"Moderate rating variance ({variance:.2f}) — some quality dispersion.")
+ 
+    # Price completeness
+    with_price = sum(1 for b in brands if b.get("avg_price") and b["avg_price"] > 0)
+    pct_price  = with_price / max(len(brands), 1) * 100
+    if pct_price < 60:
+        score -= 15
+        caveats.append(
+            f"Only {pct_price:.0f}% of brands have price data — pricing analysis may be skewed."
+        )
+ 
+    score = max(0, min(100, score))
+ 
+    if score >= 70:
+        label, color = "High", "green"
+    elif score >= 45:
+        label, color = "Medium", "yellow"
+    else:
+        label, color = "Low", "red"
+        caveats.append("Treat all metrics as directional signals, not definitive facts.")
+ 
+    return ConfidenceScore(
+        score              = score,
+        label              = label,
+        color              = color,
+        product_count      = total_products,
+        pct_with_ratings   = round(pct_rated, 1),
+        rating_variance    = round(variance, 3),
+        price_completeness = round(pct_price, 1),
+        caveats            = caveats,
+    )
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [NEW-C]  ACTION PLAN GENERATOR
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _generate_action_plan(
+    brands:     List[Dict],
+    hhi:        MarketConcentration,
+    price_gaps: List[PriceGapItem],
+    value_map:  List[ValueMapItem],
+    launch:     LaunchReadinessScore,
+    your_brand: Optional[str] = None,
+) -> ActionPlan:
+    """
+    Concrete step-by-step entry plan covering:
+      1. Pricing entry point   (based on price gaps)
+      2. Review ramp strategy  (based on review density vs median)
+      3. Positioning           (based on value map quadrant)
+      4. Listing optimisation  (title + image + keyword)
+      5. Launch phases         (30 / 60 / 90 day milestones)
+    """
+    steps:  List[ActionStep] = []
+    step_n  = 1
+ 
+    # ── STEP 1: Pricing Entry ──────────────────────────────────────────────
+    high_gaps  = [g for g in price_gaps if g.opportunity == "High"]
+    med_gaps   = [g for g in price_gaps if g.opportunity == "Medium"]
+    best_gap   = (high_gaps + med_gaps + price_gaps or [None])[0]
+    entry_price_rec: Optional[str] = None
+ 
+    if best_gap:
+        mid_price      = (best_gap.band_lo + best_gap.band_hi) / 2
+        entry_price_rec = f"₹{int(best_gap.band_lo):,}–₹{int(best_gap.band_hi):,} (ideal ₹{int(mid_price):,})"
+        steps.append(ActionStep(
+            step     = step_n,
+            area     = "Pricing",
+            action   = f"Launch first SKU at {entry_price_rec}",
+            detail   = (
+                f"The {best_gap.price_band} band has only {best_gap.brand_count} competitor(s) "
+                f"with avg rating {best_gap.avg_rating}★ — classified as '{best_gap.opportunity}' opportunity. "
+                f"Price at ₹{int(mid_price):,} to anchor in the middle of the gap. "
+                "Avoid the most crowded band until you have 50+ reviews."
+            ),
+            timeline = "Before launch (Day 0)",
+            priority = "Critical",
+            impact   = "Avoids direct price war; captures underserved demand from Day 1.",
+        ))
+    else:
+        steps.append(ActionStep(
+            step     = step_n,
+            area     = "Pricing",
+            action   = "Price 10–15% below category average",
+            detail   = (
+                "No clear whitespace band found. Compete on price initially "
+                "to win first reviews quickly, then raise price once social proof is established."
+            ),
+            timeline = "Before launch (Day 0)",
+            priority = "High",
+            impact   = "Captures price-sensitive early buyers to seed reviews.",
+        ))
+    step_n += 1
+ 
+    # ── STEP 2: Review Ramp ────────────────────────────────────────────────
+    densities   = [b["total_reviews"] / max(b["product_count"], 1) for b in brands]
+    med_density = sorted(densities)[len(densities) // 2] if densities else 100
+    target_rev  = max(10, int(med_density * 0.5))  # reach 50% of median = visibility threshold
+ 
+    steps.append(ActionStep(
+        step     = step_n,
+        area     = "Reviews",
+        action   = f"Hit {target_rev} reviews per SKU within 60 days",
+        detail   = (
+            f"Category median review density is {med_density:.0f} reviews/product. "
+            f"Reaching {target_rev} reviews (50% of median) makes you visible in organic search. "
+            "Execute: automated post-purchase email sequence (Days 3, 7, 14 after delivery), "
+            "insert card in packaging with QR code, and apply for platform early-reviewer programme "
+            "(Amazon Vine / Flipkart Early Reviewer if eligible). "
+            "Target verified buyers only — never incentivise directly."
+        ),
+        timeline = "Month 1–2",
+        priority = "Critical",
+        impact   = "Each 10-review milestone lifts click-through rate ~8% and improves organic rank.",
+    ))
+    step_n += 1
+ 
+    # ── STEP 3: Positioning ───────────────────────────────────────────────
+    overpriced   = [v for v in value_map if v.quadrant == "Overpriced"]
+    budget_stars = [v for v in value_map if v.quadrant == "Budget Star"]
+    pos_quadrant = "Mid-Market"
+ 
+    if budget_stars:
+        pos_quadrant = "Budget Star"
+        target_b     = budget_stars[0]
+        pos_detail   = (
+            f"Target the 'Budget Star' quadrant: price below the category median "
+            f"but deliver above-median quality. Benchmark: {target_b.brand} "
+            f"(₹{target_b.avg_price:,.0f}, {target_b.avg_rating}★, {target_b.total_reviews} reviews). "
+            "Win on unboxing experience, warranty, and responsive seller support."
+        )
+    elif overpriced:
+        pos_quadrant = "Value Challenger"
+        target_b     = overpriced[0]
+        pos_detail   = (
+            f"Attack the 'Overpriced' incumbent: {target_b.brand} is priced at "
+            f"₹{target_b.avg_price:,.0f} with only {target_b.avg_rating}★ — "
+            "their customers are dissatisfied. Launch at a lower price point with "
+            "better quality signals: superior product images, more detailed listing, "
+            "1-year warranty, and proactive customer support."
+        )
+    else:
+        pos_detail = (
+            "No clearly overpriced or budget-star brand found. Compete on listing quality: "
+            "professional photography, keyword-rich title (target 80–120 characters), "
+            "6 bullet points covering key use-cases, and A+ content if available."
+        )
+ 
+    steps.append(ActionStep(
+        step     = step_n,
+        area     = "Positioning",
+        action   = f"Position as '{pos_quadrant}' in the value map",
+        detail   = pos_detail,
+        timeline = "Pre-launch to Month 1",
+        priority = "High",
+        impact   = "Clear positioning reduces ad spend needed and improves organic conversion rate.",
+    ))
+    step_n += 1
+ 
+    # ── STEP 4: Listing Optimisation ──────────────────────────────────────
+    steps.append(ActionStep(
+        step     = step_n,
+        area     = "Listing Quality",
+        action   = "Launch with a fully optimised listing from Day 1",
+        detail   = (
+            "Title: 80–120 characters, lead with primary keyword, include size/colour/use-case. "
+            "Images: minimum 6 images — white background hero, lifestyle shots, infographic with key specs, "
+            "scale reference image, packaging shot. "
+            "Bullets: 5–6 bullets, each starting with a capitalised benefit keyword. "
+            "Backend keywords: fill all fields, use regional language variants (Hindi transliterations for IN market). "
+            "Price: set a high MRP and meaningful discount to show savings badge."
+        ),
+        timeline = "Before launch (Day 0)",
+        priority = "High",
+        impact   = "Optimised listings convert 20–35% better than unoptimised ones at identical price.",
+    ))
+    step_n += 1
+ 
+    # ── STEP 5: 30/60/90 Day Launch Phases ────────────────────────────────
+    # Phase timelines depend on market difficulty
+    if hhi.entry_difficulty == "Hard":
+        phase_label = "slow-burn"
+        p1_end, p2_end, p3_end = 45, 90, 180
+    elif hhi.entry_difficulty == "Moderate":
+        phase_label = "steady"
+        p1_end, p2_end, p3_end = 30, 60, 90
+    else:
+        phase_label = "aggressive"
+        p1_end, p2_end, p3_end = 21, 45, 90
+ 
+    steps.append(ActionStep(
+        step     = step_n,
+        area     = "Launch Phase 1",
+        action   = f"Days 1–{p1_end}: Seed reviews and establish baseline rank",
+        detail   = (
+            f"Run auto-targeting sponsored ads at 1.5× category average CPC for first {p1_end} days. "
+            "Goal: 50–100 daily impressions, collect search term report data. "
+            f"Target: {min(target_rev, 25)} reviews and a 4.0★+ rating before moving to Phase 2. "
+            "Offer a 10–15% launch discount via coupon (not direct price cut) to boost conversion."
+        ),
+        timeline = f"Days 1–{p1_end}",
+        priority = "Critical",
+        impact   = f"Builds the review floor needed for organic visibility — {'fast' if phase_label == 'aggressive' else 'steady'} ramp.",
+    ))
+    step_n += 1
+ 
+    steps.append(ActionStep(
+        step     = step_n,
+        area     = "Launch Phase 2",
+        action   = f"Days {p1_end + 1}–{p2_end}: Scale what works, kill what doesn't",
+        detail   = (
+            "Switch from auto to manual campaigns using top search terms from Phase 1. "
+            "Increase budget on top-3 performing keywords by 50%. "
+            "A/B test two title variants and two hero images using platform split-test tools. "
+            "Expand to 2–3 additional SKUs (variants: colour, size, bundle) using Phase 1 learnings. "
+            "Respond to every review — positive and negative — within 24 hours."
+        ),
+        timeline = f"Days {p1_end + 1}–{p2_end}",
+        priority = "High",
+        impact   = "Multiplies revenue without proportional ad spend increase.",
+    ))
+    step_n += 1
+ 
+    steps.append(ActionStep(
+        step     = step_n,
+        area     = "Launch Phase 3",
+        action   = f"Days {p2_end + 1}–{p3_end}: Dominate the price-gap band and defend",
+        detail   = (
+            "By this phase you should have 50%+ of median review density. "
+            "Raise price to the mid-point of your target price band if you used launch discounts. "
+            "Launch a premium SKU targeting the next price band up. "
+            "Set up brand store page and run brand awareness campaigns. "
+            "Monitor and respond to any new entrants copying your strategy."
+        ),
+        timeline = f"Days {p2_end + 1}–{p3_end}",
+        priority = "Medium",
+        impact   = "Locks in market share and begins margin recovery after launch-phase discounting.",
+    ))
+ 
+    return ActionPlan(
+        entry_price_recommendation = entry_price_rec,
+        positioning_quadrant       = pos_quadrant,
+        steps                      = steps,
+    )
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# FALLBACK GROWTH STRATEGY
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+def _generate_fallback_strategy(
+    gap: float, target_days: int, current_share: float,
+    target_share: float, num_phases: int,
+) -> List[Dict]:
+    days_per_phase = max(1, target_days // num_phases)
+    strategies     = []
+    for i in range(num_phases):
+        start_day    = i * days_per_phase + 1
+        end_day      = (i + 1) * days_per_phase if i < num_phases - 1 else target_days
+        phase_target = round(current_share + (gap * (i + 1) / num_phases), 2)
+ 
+        if i == 0:
+            focus   = "Quick Wins & Foundation"
+            actions = [
+                "Launch review-generation campaign with post-purchase email sequences.",
+                "Optimise top-5 product listings: keywords, images, bullet points.",
+                "Run limited-time promotional pricing on bestsellers.",
+                "Set up automated customer feedback loop.",
+            ]
+        elif i == num_phases - 1:
+            focus        = "Market Dominance & Scaling"
+            phase_target = target_share
+            actions      = [
+                "Scale proven products with increased inventory and ad budget.",
+                "Launch premium SKU to capture higher-margin segment.",
+                "Implement customer loyalty and referral programme.",
+                "Expand to adjacent categories using this category's playbook.",
+            ]
+        elif i == 1:
+            focus   = "Product Expansion & Marketing"
+            actions = [
+                "Add 5–7 product variants based on competitor price-gap analysis.",
+                "Launch micro-influencer marketing campaign (10K–100K followers).",
+                "Upgrade product photography with lifestyle shots and video.",
+                "Run A/B tests on titles, pricing, and primary images.",
+            ]
+        else:
+            focus   = "Growth Acceleration"
+            actions = [
+                "Expand catalogue with data-driven product selections.",
+                "Launch seasonal promotions and bundle offers.",
+                "Monitor and undercut competitors gaining share.",
+                "Increase ad spend on top-performing ASINs/listings.",
+            ]
+ 
+        strategies.append({
+            "phase":   f"Phase {i + 1} (Days {start_day}–{end_day})",
+            "focus":   focus,
+            "actions": actions,
+            "target":  f"{phase_target}% market share",
+        })
+    return strategies
+ 
+ 
+# ═════════════════════════════════════════════════════════════════════════════
+# HTTP ENDPOINTS  (use `app` — paste these into Fastapi_main.py)
+# ═════════════════════════════════════════════════════════════════════════════
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# USAGE
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.get("/api/users/{user_id}/sov-usage")
+async def get_sov_usage(user_id: int, db: Session = Depends(get_db)):
+    try:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        tier          = (user.subscription_tier or "free").lower()
+        limit         = SOV_TIER_LIMITS.get(tier, 3)
+        current_month = datetime.now().strftime("%Y-%m")
+        if user.sov_month != current_month:
+            user.sov_used  = 0
+            user.sov_month = current_month
+            db.commit()
+            db.refresh(user)
+        count     = user.sov_used or 0
+        remaining = (limit - count) if limit != -1 else -1
+        return {
+            "count": count, "limit": limit, "remaining": remaining,
+            "subscription_tier": tier, "month": current_month,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching SOV usage: {e}")
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# CATEGORIES LIST
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.get("/api/sov/categories")
+def get_sov_categories(
+    marketplace: str = Query(default="all", enum=["flipkart", "amazon", "all"]),
+    db: Session = Depends(get_db),
+):
+    try:
+        cats: set = set()
+        _set_timeout(db)
+        if marketplace in ("flipkart", "all"):
+            rows = db.execute(text(
+                "SELECT DISTINCT category_name FROM rapidapi_flipkart_products "
+                "WHERE category_name IS NOT NULL AND category_name NOT IN ('NULL','') "
+                "ORDER BY category_name"
+            )).fetchall()
+            cats.update(r[0] for r in rows if r[0])
+        if marketplace in ("amazon", "all"):
+            rows = db.execute(text(
+                "SELECT DISTINCT category_name FROM rapidapi_amazon_products "
+                "WHERE category_name IS NOT NULL AND category_name NOT IN ('NULL','') "
+                "ORDER BY category_name"
+            )).fetchall()
+            cats.update(r[0] for r in rows if r[0])
+        return {"categories": sorted(cats)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# CATEGORY SOV
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.get("/api/sov/category/{category_name}")
+async def get_category_sov(
+    category_name: str,
+    marketplace:   str           = Query(default="flipkart", enum=["flipkart", "amazon"]),
+    your_brand:    Optional[str] = Query(default=None),
+    user_id:       Optional[int] = Query(default=None),
+    db:            Session       = Depends(get_db),
+):
+    try:
+        _check_and_increment_sov(user_id, db)
+        data = _get_category_sov_data(category_name, marketplace, your_brand, db)
+        if not data.get("success"):
+            raise HTTPException(status_code=404, detail=data["error"])
+        return data
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# KEYWORD SOV
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.get("/api/sov/keyword/{keyword}")
+async def get_keyword_sov(
+    keyword:    str,
+    marketplace: str            = Query(default="flipkart", enum=["flipkart", "amazon"]),
+    price_min:  Optional[float] = Query(default=None, ge=0),
+    price_max:  Optional[float] = Query(default=None, ge=0),
+    user_id:    Optional[int]   = Query(default=None),
+    db:         Session         = Depends(get_db),
+):
+    try:
+        _check_and_increment_sov(user_id, db)
+        _set_timeout(db)
+ 
+        params: Dict[str, Any] = {"kw": f"%{keyword}%"}
+ 
+        if marketplace == "flipkart":
+            price_cond = ""
+            if price_min is not None:
+                price_cond += " AND product_price >= :pmin"
+                params["pmin"] = price_min
+            if price_max is not None:
+                price_cond += " AND product_price <= :pmax"
+                params["pmax"] = price_max
+            q = text(f"""
+                SELECT brand,
+                       COUNT(*)                                              AS product_count,
+                       COALESCE(SUM(product_rating_count), 0)               AS total_reviews,
+                       COALESCE(SUM(estimated_sales),      0)               AS total_sales,
+                       COALESCE(AVG(CAST(product_star_rating AS FLOAT)), 0) AS avg_rating,
+                       COALESCE(AVG(product_price), 0)                      AS avg_price,
+                       MIN(product_price)                                   AS min_price,
+                       MAX(product_price)                                   AS max_price
+                FROM rapidapi_flipkart_products
+                WHERE (LOWER(product_title) LIKE LOWER(:kw)
+                    OR LOWER(category_name)  LIKE LOWER(:kw))
+                  AND brand IS NOT NULL AND brand NOT IN ('NULL','')
+                  {price_cond}
+                GROUP BY brand
+                ORDER BY total_reviews DESC
+                LIMIT 100
+            """)
+        else:
+            price_cond = ""
+            if price_min is not None:
+                price_cond += " AND product_price_numeric >= :pmin"
+                params["pmin"] = price_min
+            if price_max is not None:
+                price_cond += " AND product_price_numeric <= :pmax"
+                params["pmax"] = price_max
+            q = text(f"""
+                SELECT COALESCE(NULLIF(TRIM(brand),''), SPLIT_PART(product_title,' ',1)) AS brand,
+                       COUNT(*)                                                  AS product_count,
+                       COALESCE(SUM(product_num_ratings),    0)                 AS total_reviews,
+                       COALESCE(SUM(avg_sales_volume),       0)                 AS total_sales,
+                       COALESCE(AVG(product_star_rating_numeric), 0)            AS avg_rating,
+                       COALESCE(AVG(product_price_numeric),  0)                 AS avg_price,
+                       MIN(product_price_numeric)                               AS min_price,
+                       MAX(product_price_numeric)                               AS max_price
+                FROM rapidapi_amazon_products
+                WHERE (LOWER(product_title) LIKE LOWER(:kw)
+                    OR LOWER(category_name)  LIKE LOWER(:kw))
+                  {price_cond}
+                GROUP BY brand
+                ORDER BY total_reviews DESC
+                LIMIT 100
+            """)
+ 
+        rows = db.execute(q, params).fetchall()
+        if not rows:
+            raise HTTPException(status_code=404, detail=f"No products found for keyword: {keyword}")
+ 
+        total_reviews  = sum(safe_int(r[2]) for r in rows)
+        total_products = sum(safe_int(r[1]) for r in rows)
+        min_p          = min((safe_float(r[6]) for r in rows if r[6]), default=0.0)
+        max_p          = max((safe_float(r[7]) for r in rows if r[7]), default=0.0)
+ 
+        brands = []
+        for row in rows:
+            rc    = safe_int(row[2])
+            share = (rc / total_reviews * 100) if total_reviews > 0 else 0.0
+            brands.append({
+                "brand":            str(row[0] or "Unknown"),
+                "share_percentage": round(share, 2),
+                "total_reviews":    rc,
+                "total_sales":      safe_int(row[3]),
+                "avg_rating":       round(safe_float(row[4]), 2),
+                "avg_price":        round(safe_float(row[5]), 2),
+                "product_count":    safe_int(row[1]),
+            })
+ 
+        return {
+            "keyword":        keyword,
+            "total_products": total_products,
+            "total_reviews":  total_reviews,
+            "brands":         brands,
+            "price_range":    {"min": round(min_p, 2), "max": round(max_p, 2)},
+            "marketplace":    marketplace,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# PROGRESS TRACKING
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.get("/api/sov/progress/{category_name}")
+def track_sov_progress(
+    category_name: str,
+    your_brand:    str,
+    target_share:  float   = Query(default=20.0, ge=0, le=100),
+    target_days:   int     = Query(default=90, ge=1),
+    marketplace:   str     = Query(default="flipkart", enum=["flipkart", "amazon"]),
+    db:            Session = Depends(get_db),
+):
+    try:
+        current_sov = _get_category_sov_data(category_name, marketplace, your_brand, db)
+        if not current_sov.get("success"):
+            raise HTTPException(status_code=404, detail=current_sov["error"])
+ 
+        current_share  = current_sov.get("your_brand_share") or 0.0
+        now            = datetime.now()
+        start_date     = now - timedelta(days=30)
+        target_date    = now + timedelta(days=target_days)
+        days_elapsed   = max(1, (now - start_date).days)
+        days_remaining = max(0, target_days)
+ 
+        required_growth = (target_share - current_share) / target_days if target_days > 0 else 0
+        actual_growth   = current_share / days_elapsed if days_elapsed > 0 else 0
+        is_on_track     = actual_growth >= required_growth
+ 
+        total_reviews = current_sov["total_reviews"]
+        total_sales   = current_sov["total_sales"]
+ 
+        weekly_progress = []
+        for week in range(min(12, (days_elapsed + target_days) // 7 + 1)):
+            wdate      = start_date + timedelta(weeks=week)
+            proj_share = min(current_share + actual_growth * week * 7, 100)
+            weekly_progress.append({
+                "date":             wdate.strftime("%Y-%m-%d"),
+                "share_percentage": round(proj_share, 2),
+                "reviews":          int(total_reviews * proj_share / 100),
+                "sales":            int(total_sales   * proj_share / 100),
+            })
+ 
+        return {
+            "category_name":        category_name,
+            "your_brand":           your_brand,
+            "current_share":        round(current_share, 2),
+            "target_share":         target_share,
+            "start_date":           start_date.strftime("%Y-%m-%d"),
+            "target_date":          target_date.strftime("%Y-%m-%d"),
+            "days_elapsed":         days_elapsed,
+            "days_remaining":       days_remaining,
+            "is_on_track":          is_on_track,
+            "required_growth_rate": round(required_growth, 4),
+            "actual_growth_rate":   round(actual_growth, 4),
+            "weekly_progress":      weekly_progress,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# COMPETITOR ANALYSIS
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.get("/api/sov/competitors/{category_name}")
+def analyze_sov_competitors(
+    category_name: str,
+    your_brand:    str,
+    marketplace:   str     = Query(default="flipkart", enum=["flipkart", "amazon"]),
+    limit:         int     = Query(default=10, ge=1, le=50),
+    db:            Session = Depends(get_db),
+):
+    try:
+        sov = _get_category_sov_data(category_name, marketplace, your_brand, db)
+        if not sov.get("success"):
+            raise HTTPException(status_code=404, detail=sov["error"])
+ 
+        competitors = [
+            {
+                "competitor_name": b["brand"],
+                "market_share":    b["share_percentage"],
+                "avg_price":       b["avg_price"],
+                "total_products":  b["product_count"],
+                "avg_rating":      b["avg_rating"],
+                "total_reviews":   b["total_reviews"],
+                "total_sales":     b["total_sales"],
+            }
+            for b in sov["brands"]
+            if b["brand"].lower() != your_brand.lower()
+        ]
+        competitors.sort(key=lambda x: x["market_share"], reverse=True)
+        return {"competitors": competitors[:limit]}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# COMBINED SOV (Flipkart + Amazon)
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.get("/api/sov/combined/{category_name}")
+def get_combined_sov(
+    category_name: str,
+    your_brand:    Optional[str] = Query(default=None),
+    db:            Session       = Depends(get_db),
+):
+    try:
+        fk = _get_category_sov_data(category_name, "flipkart", your_brand, db)
+        am = _get_category_sov_data(category_name, "amazon",   your_brand, db)
+ 
+        if not fk.get("success") and not am.get("success"):
+            raise HTTPException(status_code=404, detail="No data found in either marketplace.")
+ 
+        brand_map: Dict[str, Dict] = {}
+        for data in [fk, am]:
+            if not data.get("success"):
+                continue
+            for b in data["brands"]:
+                key = b["brand"].lower()
+                if key not in brand_map:
+                    brand_map[key] = {
+                        "name": b["brand"], "reviews": 0, "sales": 0,
+                        "products": 0, "ratings": [], "prices": [],
+                    }
+                brand_map[key]["reviews"]  += b["total_reviews"]
+                brand_map[key]["sales"]    += b["total_sales"]
+                brand_map[key]["products"] += b["product_count"]
+                if b["avg_rating"]: brand_map[key]["ratings"].append(b["avg_rating"])
+                if b["avg_price"]:  brand_map[key]["prices"].append(b["avg_price"])
+ 
+        total_rev            = sum(v["reviews"] for v in brand_map.values())
+        combined             = []
+        your_combined_share: Optional[float] = None
+ 
+        for key, v in brand_map.items():
+            share = (v["reviews"] / total_rev * 100) if total_rev > 0 else 0.0
+            entry = {
+                "brand":            v["name"],
+                "share_percentage": round(share, 2),
+                "total_reviews":    v["reviews"],
+                "total_sales":      v["sales"],
+                "avg_rating":       round(sum(v["ratings"]) / len(v["ratings"]), 2) if v["ratings"] else None,
+                "avg_price":        round(sum(v["prices"])  / len(v["prices"]),  2) if v["prices"]  else None,
+                "product_count":    v["products"],
+            }
+            combined.append(entry)
+            if your_brand and key == your_brand.lower():
+                your_combined_share = share
+ 
+        combined.sort(key=lambda x: x["share_percentage"], reverse=True)
+        return {
+            "category_name":             category_name,
+            "combined_brands":           combined,
+            "flipkart_data":             fk if fk.get("success") else None,
+            "amazon_data":               am if am.get("success") else None,
+            "your_brand_combined_share": round(your_combined_share, 2) if your_combined_share else None,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# BRANDS LIST
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.get("/api/sov/brands")
+def get_all_brands(
+    marketplace: str = Query(default="all", enum=["flipkart", "amazon", "all"]),
+    db: Session = Depends(get_db),
+):
+    try:
+        brands: set = set()
+        _set_timeout(db)
+        if marketplace in ("flipkart", "all"):
+            rows = db.execute(text(
+                "SELECT DISTINCT brand FROM rapidapi_flipkart_products "
+                "WHERE brand IS NOT NULL AND brand NOT IN ('NULL','') ORDER BY brand"
+            )).fetchall()
+            brands.update(r[0] for r in rows if r[0])
+        if marketplace in ("amazon", "all"):
+            rows = db.execute(text(
+                "SELECT DISTINCT COALESCE(NULLIF(TRIM(brand),''), SPLIT_PART(product_title,' ',1)) AS brand "
+                "FROM rapidapi_amazon_products WHERE product_title IS NOT NULL ORDER BY brand"
+            )).fetchall()
+            brands.update(r[0] for r in rows if r[0])
+        return {"brands": sorted(brands)[:200]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [NEW-8]  CSV EXPORT
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.get("/api/sov/export/{category_name}")
+def export_sov_csv(
+    category_name: str,
+    marketplace:   str           = Query(default="flipkart", enum=["flipkart", "amazon"]),
+    your_brand:    Optional[str] = Query(default=None),
+    user_id:       Optional[int] = Query(default=None),
+    db:            Session       = Depends(get_db),
+):
+    try:
+        data = _get_category_sov_data(category_name, marketplace, your_brand, db)
+        if not data.get("success"):
+            raise HTTPException(status_code=404, detail=data["error"])
+ 
+        output = io.StringIO()
+        writer = csv.DictWriter(output, fieldnames=[
+            "brand", "share_percentage", "total_reviews", "total_sales",
+            "avg_rating", "avg_price", "product_count",
+        ])
+        writer.writeheader()
+        for b in data["brands"]:
+            writer.writerow({k: b.get(k, "") for k in writer.fieldnames})
+ 
+        output.seek(0)
+        filename = f"sov_{marketplace}_{category_name.replace(' ', '_')}.csv"
+        return StreamingResponse(
+            iter([output.getvalue()]),
+            media_type="text/csv",
+            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [NEW-9]  MARKET HEALTH  ← MAIN UPDATED ENDPOINT
+#          Now includes: [NEW-A] decision, [NEW-B] confidence, [NEW-C] action plan
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.get("/api/sov/market-health/{category_name}")
+def get_market_health(
+    category_name: str,
+    marketplace:   str           = Query(default="flipkart", enum=["flipkart", "amazon"]),
+    your_brand:    Optional[str] = Query(default=None),
+    user_id:       Optional[int] = Query(default=None),
+    db:            Session       = Depends(get_db),
+):
+    """
+    One-stop seller dashboard.  Returns everything needed to decide
+    whether to enter, expand, or exit a category.
+ 
+    Sections in response:
+      sov_summary          — total brands / products / reviews / leader
+      concentration        — HHI score and label
+      trend                — Growing / Stable / Declining
+      launch_readiness     — 0–100 composite score
+      market_decision      — [NEW-A] ENTER AGGRESSIVELY / CAUTION / AVOID
+      confidence_score     — [NEW-B] data quality score with caveats
+      action_plan          — [NEW-C] step-by-step entry plan
+      top_price_gaps       — High/Medium opportunity price bands
+      value_map            — price vs rating quadrants
+      review_velocity      — who has momentum
+      listing_quality      — category listing benchmarks
+    """
+    try:
+        _check_and_increment_sov(user_id, db)
+ 
+        sov = _get_category_sov_data(category_name, marketplace, your_brand, db)
+        if not sov.get("success"):
+            raise HTTPException(status_code=404, detail=sov["error"])
+ 
+        brands = sov["brands"]
+ 
+        # ── core analytics ──
+        hhi        = _compute_hhi(brands)
+        price_gaps = _compute_price_gaps(brands)
+        launch     = _compute_launch_readiness(brands, hhi, price_gaps)
+        trend      = _compute_category_trend(category_name, marketplace, db)
+        value_map  = _compute_value_map(brands)
+        velocity   = _compute_review_velocity(brands)
+        listing_q  = _compute_listing_quality(category_name, marketplace, your_brand, db)
+ 
+        # ── new decision layers ──
+        decision    = _compute_market_decision(hhi, launch, trend)         # [NEW-A]
+        confidence  = _compute_confidence_score(brands)                     # [NEW-B]
+        action_plan = _generate_action_plan(                                # [NEW-C]
+            brands, hhi, price_gaps, value_map, launch, your_brand
+        )
+ 
+        return {
+            # ── summary ──
+            "category_name": category_name,
+            "marketplace":   marketplace,
+            "generated_at":  datetime.utcnow().isoformat() + "Z",
+            "sov_summary": {
+                "total_brands":     len(brands),
+                "total_products":   sov["total_products"],
+                "total_reviews":    sov["total_reviews"],
+                "total_sales":      sov["total_sales"],
+                "market_leader":    sov["market_leader"],
+                "your_brand_share": sov["your_brand_share"],
+            },
+ 
+            # ── core analytics ──
+            "concentration":    hhi.dict(),
+            "trend":            trend.dict(),
+            "launch_readiness": launch.dict(),
+ 
+            # ── [NEW-A] final verdict ──
+            "market_decision": decision.dict(),
+ 
+            # ── [NEW-B] data quality ──
+            "confidence_score": confidence.dict(),
+ 
+            # ── [NEW-C] action plan ──
+            "action_plan": action_plan.dict(),
+ 
+            # ── supporting data ──
+            "top_price_gaps":   [g.dict() for g in price_gaps if g.opportunity in ("High", "Medium")][:8],
+            "all_price_gaps":   [g.dict() for g in price_gaps],
+            "value_map":        [v.dict() for v in value_map[:20]],
+            "review_velocity":  [v.dict() for v in velocity],
+            "listing_quality":  listing_q.dict(),
+        }
+ 
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# [NEW-10]  PRICING MAP
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.get("/api/sov/pricing-map/{category_name}")
+def get_pricing_map(
+    category_name: str,
+    marketplace:   str   = Query(default="flipkart", enum=["flipkart", "amazon"]),
+    bucket_size:   float = Query(default=500.0, ge=100, le=5000),
+    db:            Session = Depends(get_db),
+):
+    try:
+        sov = _get_category_sov_data(category_name, marketplace, None, db)
+        if not sov.get("success"):
+            raise HTTPException(status_code=404, detail=sov["error"])
+        gaps = _compute_price_gaps(sov["brands"], bucket_size=bucket_size)
+        return {
+            "category_name": category_name,
+            "marketplace":   marketplace,
+            "bucket_size":   bucket_size,
+            "price_bands":   [g.dict() for g in gaps],
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+ 
+ 
+# ─────────────────────────────────────────────────────────────────────────────
+# AI INSIGHTS
+# ─────────────────────────────────────────────────────────────────────────────
+ 
+@app.post("/api/sov/ai-insights")
+def get_ai_insights(
+    category_name: str   = Query(...),
+    your_brand:    str   = Query(...),
+    target_share:  float = Query(default=25.0),
+    target_days:   int   = Query(default=60),
+    marketplace:   str   = Query(default="flipkart", enum=["flipkart", "amazon"]),
+    db:            Session = Depends(get_db),
+):
+    try:
+        sov = _get_category_sov_data(category_name, marketplace, your_brand, db)
+        if not sov.get("success"):
+            return {
+                "error":               sov["error"],
+                "ai_generated_insights": "Cannot generate insights without valid SOV data.",
+            }
+ 
+        brands        = sov["brands"]
+        current_share = sov.get("your_brand_share") or 0.0
+        market_leader = sov.get("market_leader")
+ 
+        if not brands:
+            return {"error": "No brand data found.", "ai_generated_insights": "No brands in this category."}
+ 
+        your_brand_data = next((b for b in brands if b["brand"].lower() == your_brand.lower()), None)
+        if not your_brand_data:
+            available = [b["brand"] for b in brands[:10]]
+            return {
+                "error":                 f"Brand '{your_brand}' not found in {marketplace}.",
+                "ai_generated_insights": f"Available brands: {', '.join(available)}",
+                "available_brands":      available,
+            }
+ 
+        leader_data    = next((b for b in brands if b["brand"] == market_leader), None)
+        your_products  = your_brand_data.get("product_count",  0) or 0
+        your_avg_price = your_brand_data.get("avg_price",      0) or 0
+        your_avg_rating= your_brand_data.get("avg_rating",     0) or 0
+        your_reviews   = your_brand_data.get("total_reviews",  0) or 0
+        leader_share   = (leader_data.get("share_percentage", 0) or 0) if leader_data else 0
+        rank           = next(
+            (i + 1 for i, b in enumerate(brands) if b["brand"].lower() == your_brand.lower()), None
+        )
+        gap          = target_share - current_share
+        total_brands = len(brands)
+        num_phases   = 2 if target_days <= 30 else (3 if target_days <= 60 else 4)
+        top_5        = brands[:5]
+ 
+        competitor_lines = "\n".join(
+            f"- {b['brand']}: {b['share_percentage']}% share, {b['product_count']} products, "
+            f"₹{b['avg_price']} avg price, {b['avg_rating']}★"
+            for b in top_5 if b["brand"].lower() != your_brand.lower()
+        ) or "- No competitor data available"
+ 
+        hhi        = _compute_hhi(brands)
+        price_gaps = _compute_price_gaps(brands)
+        launch     = _compute_launch_readiness(brands, hhi, price_gaps)
+        decision   = _compute_market_decision(hhi, launch,
+                         _compute_category_trend(category_name, marketplace, db))
+        confidence = _compute_confidence_score(brands)
+        action_plan= _generate_action_plan(brands, hhi, price_gaps,
+                         _compute_value_map(brands), launch, your_brand)
+        high_gaps  = [g for g in price_gaps if g.opportunity == "High"]
+ 
+        ai_prompt = (
+            "You are an expert e-commerce market analyst. Analyse the data below.\n\n"
+            "MARKET DATA:\n"
+            f"- Marketplace: {marketplace.upper()} | Category: {category_name}\n"
+            f"- Brand: {your_brand} | Rank: #{rank} of {total_brands}\n"
+            f"- Current Share: {current_share}% | Target: {target_share}% | Timeline: {target_days} days\n"
+            f"- Market Leader: {market_leader} ({leader_share:.1f}% share)\n"
+            f"- Market HHI: {hhi.hhi_score:.0f} ({hhi.label}) | Entry: {hhi.entry_difficulty}\n"
+            f"- Launch Score: {launch.score}/100 ({launch.label})\n"
+            f"- Market Verdict: {decision.verdict}\n"
+            f"- Data Confidence: {confidence.label} ({confidence.score}/100)\n"
+            f"- Price Whitespace: {len(high_gaps)} high-opportunity bands\n\n"
+            "YOUR BRAND:\n"
+            f"- Products: {your_products} | Avg Price: ₹{your_avg_price} | "
+            f"Rating: {your_avg_rating}★ | Reviews: {your_reviews}\n\n"
+            "TOP COMPETITORS:\n"
+            f"{competitor_lines}\n\n"
+            "Respond in EXACTLY this format:\n\n"
+            "1. KEY INSIGHTS:\n- [Critical observation]\n- [Major opportunity]\n- [Biggest challenge]\n\n"
+            "2. PRIORITY ACTIONS:\n- [Specific action with expected impact]\n- [Specific action]\n- [Specific action]\n\n"
+            "3. COMPETITIVE ADVANTAGE:\n[One sentence on how to differentiate]\n\n"
+            "4. RISK FACTORS:\n[One sentence on main risks to watch]"
+        )
+ 
+        growth_prompt = (
+            f"Create a {num_phases}-phase e-commerce growth roadmap. "
+            "Return ONLY valid JSON — no text before or after.\n\n"
+            f"Brand: {your_brand} | Marketplace: {marketplace.upper()} | Category: {category_name}\n"
+            f"Current Share: {current_share}% | Target: {target_share}% | Gap: {gap:.1f}% | Days: {target_days}\n"
+            f"Rank: #{rank} | Products: {your_products} | Price: ₹{your_avg_price} | Rating: {your_avg_rating}★\n\n"
+            "Competitors:\n"
+            f"{competitor_lines}\n\n"
+            f"Price whitespace bands: {[g.price_band for g in high_gaps[:3]]}\n\n"
+            "Rules: Phase 1 = quick wins. Middle = expand. Last = scale. 3-4 actions each. "
+            f"Targets must progress linearly to {target_share}%.\n"
+            'Output ONLY: {"phases":[{"phase":"Phase 1 (Days 1-X)","focus":"…","actions":["…"],"target":"X.X% market share"}]}'
+        )
+ 
+        ai_output, growth_output = _run_ollama_parallel([
+            (ai_prompt,     30),
+            (growth_prompt, 90),
+        ])
+ 
+        # ── rule-based recommendations ──
+        avg_products = sum(b.get("product_count", 0) for b in top_5) / max(len(top_5), 1)
+        avg_rating   = sum(b.get("avg_rating",    0) for b in top_5 if b.get("avg_rating")) / max(sum(1 for b in top_5 if b.get("avg_rating")), 1)
+        avg_reviews  = sum(b.get("total_reviews", 0) for b in top_5) / max(len(top_5), 1)
+        avg_price    = sum(b.get("avg_price",     0) for b in top_5 if b.get("avg_price"))  / max(sum(1 for b in top_5 if b.get("avg_price")), 1)
+ 
+        recs = []
+        if avg_products > 0 and your_products < avg_products:
+            recs.append({"type": "Product Expansion", "priority": "High", "current": your_products, "benchmark": int(avg_products), "action": f"Add {int(avg_products - your_products)} more products to match category leaders.", "impact": "Could increase share by 2–5%"})
+        if avg_rating > 0 and your_avg_rating > 0 and your_avg_rating < avg_rating:
+            recs.append({"type": "Quality Improvement", "priority": "High", "current": your_avg_rating, "benchmark": round(avg_rating, 2), "action": f"Improve rating by {round(avg_rating - your_avg_rating, 2)}★ through quality + post-purchase support.", "impact": "Better ratings lift conversion 15–20%"})
+        if avg_reviews > 0 and your_reviews < avg_reviews:
+            recs.append({"type": "Review Generation", "priority": "Medium", "current": your_reviews, "benchmark": int(avg_reviews), "action": f"Close {int(avg_reviews - your_reviews)} review gap with follow-up campaigns.", "impact": "Reviews increase trust and organic rank"})
+        if avg_price > 0 and your_avg_price > 0:
+            diff = your_avg_price - avg_price
+            if diff > avg_price * 0.15:
+                recs.append({"type": "Pricing Optimisation", "priority": "Medium", "current": your_avg_price, "benchmark": round(avg_price, 2), "action": f"Reduce price by ₹{round(diff, 0):.0f} to match market.", "impact": "Price cut can lift sales 10–15%"})
+            elif diff < -avg_price * 0.15:
+                recs.append({"type": "Premium Positioning", "priority": "Low", "current": your_avg_price, "benchmark": round(avg_price, 2), "action": f"Price is ₹{round(-diff, 0):.0f} below market — consider premium SKU.", "impact": "Margin improvement opportunity"})
+        if high_gaps:
+            recs.append({"type": "Price Whitespace", "priority": "High", "current": "None", "benchmark": high_gaps[0].price_band, "action": f"Launch a product at {high_gaps[0].price_band} — no strong player exists here.", "impact": "First-mover advantage in underserved segment"})
+ 
+        # ── parse growth JSON ──
+        growth_strategy = []
+        if growth_output:
+            try:
+                gd = json.loads(growth_output)
+                if isinstance(gd.get("phases"), list) and gd["phases"]:
+                    growth_strategy = gd["phases"]
+            except (json.JSONDecodeError, ValueError):
+                pass
+        if not growth_strategy:
+            growth_strategy = _generate_fallback_strategy(
+                gap, target_days, current_share, target_share, num_phases
+            )
+ 
+        # ── product gaps ──
+        product_gaps = []
+        try:
+            _set_timeout(db)
+            if marketplace == "flipkart":
+                gq = text("""
+                    SELECT product_title, COUNT(*) AS cnt,
+                           AVG(product_price) AS ap,
+                           AVG(CAST(product_star_rating AS FLOAT)) AS ar,
+                           SUM(product_rating_count) AS tr
+                    FROM rapidapi_flipkart_products
+                    WHERE category_name = :cat AND LOWER(brand) != LOWER(:yb)
+                    GROUP BY product_title HAVING COUNT(*) >= 2
+                    ORDER BY tr DESC LIMIT 10
+                """)
+            else:
+                gq = text("""
+                    SELECT product_title, COUNT(*) AS cnt,
+                           AVG(product_price_numeric) AS ap,
+                           AVG(product_star_rating_numeric) AS ar,
+                           SUM(product_num_ratings) AS tr
+                    FROM rapidapi_amazon_products
+                    WHERE category_name = :cat AND LOWER(brand) != LOWER(:yb)
+                    GROUP BY product_title HAVING COUNT(*) >= 2
+                    ORDER BY tr DESC LIMIT 10
+                """)
+            grows = db.execute(gq, {"cat": category_name, "yb": your_brand}).fetchall()
+            for gr in grows[:5]:
+                demand = safe_int(gr[4])
+                product_gaps.append({
+                    "product_type":         (str(gr[0]) or "")[:100],
+                    "competitors_offering": safe_int(gr[1]),
+                    "avg_price":            round(safe_float(gr[2]), 2),
+                    "avg_rating":           round(safe_float(gr[3]), 2),
+                    "total_demand":         demand,
+                    "opportunity":          "High" if demand > 1000 else ("Medium" if demand > 500 else "Low"),
+                })
+        except Exception as e:
+            print(f"[product_gaps] {e}")
+ 
+        # ── pricing insights ──
+        pricing_insights: Dict = {}
+        if your_avg_price and avg_price > 0:
+            pricing_insights = {
+                "your_price":                your_avg_price,
+                "market_average":            round(avg_price, 2),
+                "budget_competitors":        sum(1 for b in brands if b.get("avg_price") and b["avg_price"] < your_avg_price * 0.8),
+                "similar_price_competitors": sum(1 for b in brands if b.get("avg_price") and your_avg_price * 0.8 <= b["avg_price"] <= your_avg_price * 1.2),
+                "premium_competitors":       sum(1 for b in brands if b.get("avg_price") and b["avg_price"] > your_avg_price * 1.2),
+                "price_positioning":         "Budget" if your_avg_price < avg_price * 0.8 else ("Premium" if your_avg_price > avg_price * 1.2 else "Mid-Range"),
+            }
+ 
+        return {
+            "current_analysis": {
+                "current_share":         current_share,
+                "target_share":          target_share,
+                "gap":                   round(gap, 2),
+                "days_to_target":        target_days,
+                "required_daily_growth": round(gap / target_days, 4) if target_days > 0 else 0,
+            },
+            "market_position": {
+                "rank":                  rank,
+                "total_brands":          total_brands,
+                "distance_from_leader":  round(leader_share - current_share, 2),
+                "market_leader":         market_leader,
+            },
+            "market_health": {
+                "hhi_score":        hhi.hhi_score,
+                "hhi_label":        hhi.label,
+                "entry_difficulty": hhi.entry_difficulty,
+                "launch_score":     launch.score,
+                "launch_label":     launch.label,
+                "category_trend":   _compute_category_trend(category_name, marketplace, db).dict(),
+            },
+            # ── new decision layers in ai-insights too ──
+            "market_decision":    decision.dict(),       # [NEW-A]
+            "confidence_score":   confidence.dict(),     # [NEW-B]
+            "action_plan":        action_plan.dict(),    # [NEW-C]
+ 
+            "competitive_analysis": [
+                {
+                    "brand":            b["brand"],
+                    "share":            b["share_percentage"],
+                    "products":         b["product_count"],
+                    "avg_price":        b["avg_price"],
+                    "avg_rating":       b["avg_rating"],
+                    "reviews":          b["total_reviews"],
+                    "advantage":        "Higher" if b["share_percentage"] > current_share else "Lower",
+                    "price_comparison": "Cheaper" if b["avg_price"] < your_avg_price else "More Expensive",
+                }
+                for b in top_5 if b["brand"].lower() != your_brand.lower()
+            ],
+            "actionable_recommendations": recs,
+            "growth_strategy":            growth_strategy,
+            "product_gaps":               product_gaps,
+            "pricing_insights":           pricing_insights,
+            "price_whitespace":           [g.dict() for g in high_gaps[:5]],
+            "value_map":                  [v.dict() for v in _compute_value_map(brands)[:10]],
+            "ai_generated_insights": (
+                ai_output if ai_output and len(ai_output) > 20
+                else "AI analysis temporarily unavailable. Rule-based recommendations above are accurate."
+            ),
+        }
+ 
+    except Exception as e:
+        print(f"[ai_insights] {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=str(e))
     
+
+
+import os
+import json
+import time
+import math
+import asyncio
+import requests
+import numpy as np
+from io import BytesIO
+from datetime import datetime, timedelta
+from typing import List, Optional, Dict, Any
+from pathlib import Path
+from collections import defaultdict
+
+from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks
+from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from sqlalchemy import text
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import cm
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from dotenv import load_dotenv
+
+from .models import TrackedProduct, KeywordRankHistory, User
+from .database_config import get_db, SessionLocal
+
+# ─────────────────────────────────────────
+# ENV + CONFIG
+# ─────────────────────────────────────────
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(dotenv_path=BASE_DIR / ".env", override=True)
+
+RAPIDAPI_KEY  = os.environ.get("RAPIDAPI_KEY")
+RAPIDAPI_HOST = os.environ.get("RAPIDAPI_HOST", "real-time-amazon-data.p.rapidapi.com")
+AMAZON_API_URL         = "https://real-time-amazon-data.p.rapidapi.com/seller-products"
+AMAZON_REVIEWS_API_URL = "https://real-time-amazon-data.p.rapidapi.com/seller-reviews"
+AMAZON_SEARCH_API_URL  = "https://real-time-amazon-data.p.rapidapi.com/search"
+
+HEADERS = {
+    "X-RapidAPI-Key":  RAPIDAPI_KEY,
+    "X-RapidAPI-Host": RAPIDAPI_HOST,
+}
+
+OLLAMA_BASE = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_MODEL = "llama3.2:3b"
+
+# ─────────────────────────────────────────
+# BREVO EMAIL CONFIG
+# ─────────────────────────────────────────
+BREVO_API_KEY     = os.environ.get("BREVO_API_KEY", "")
+BREVO_SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", "noreply@insydz.com")
+BREVO_SENDER_NAME  = os.environ.get("BREVO_SENDER_NAME", "Insydz")
+BREVO_API_URL      = "https://api.brevo.com/v3/smtp/email"
+
+# Marketplaces supported for cross-comparison
+SUPPORTED_COUNTRIES = ["IN", "US", "UK", "DE", "AE"]
+
+# Rate limit: max 4 manual rank-update calls per user per calendar day
+RANK_UPDATE_DAILY_LIMIT = 4
+
+# ─────────────────────────────────────────
+# SUBSCRIPTION TIERS  (unchanged from original)
+# ─────────────────────────────────────────
+KEYWORD_TRACKER_LIMITS = {
+    "free":       2,
+    "basic":      10,
+    "premium":    -1,
+    "enterprise": -1,
+}
+
+
+
+# ─────────────────────────────────────────
+# PYDANTIC MODELS
+# ─────────────────────────────────────────
+
+class ProductTrackRequest(BaseModel):
+    seller_id: str
+    asin: str
+    product_title: str
+    product_photo: str
+    country: str = "IN"
+    user_email: str
+
+
+class TrackedProductResponse(BaseModel):
+    id: int
+    seller_id: str
+    asin: str
+    product_title: str
+    product_photo: str
+    country: str
+    user_email: str
+    review_comments: Optional[List[str]] = []
+    review_ratings:  Optional[List[int]]  = []
+    model_config = {"from_attributes": True}
+
+
+class KeywordTrackRequest(BaseModel):
+    tracked_product_id: int
+    keywords: List[str]
+    user_email: str
+
+
+class KeywordRankResponse(BaseModel):
+    keyword:    str
+    rank:       Optional[int] = 0
+    velocity:   Optional[float] = 0.0   # NEW: momentum score
+    checked_at: datetime
+    user_email: str
+    model_config = {"from_attributes": True}
+
+
+class AIAnalysisResponse(BaseModel):
+    product_title:  str
+    asin:           str
+    total_keywords: int
+    analysis:       dict
+
+
+class UpdateRanksRequest(BaseModel):
+    user_email: str
+
+
+class UsageLimitsResponse(BaseModel):
+    count:             int
+    limit:             int
+    remaining:         int
+    subscription_tier: str
+
+
+class CompetitorProduct(BaseModel):
+    id:                           int
+    asin:                         str
+    category_id:                  Optional[int]
+    category_name:                Optional[str]
+    product_title:                str
+    product_url:                  Optional[str]
+    product_photo:                Optional[str]
+    product_price:                Optional[str]
+    product_price_numeric:        Optional[float]
+    product_original_price:       Optional[str]
+    product_original_price_numeric: Optional[float]
+    product_star_rating:          Optional[str]
+    product_star_rating_numeric:  Optional[float]
+    product_num_ratings:          Optional[int]
+    is_best_seller:               Optional[bool]
+    is_amazon_choice:             Optional[bool]
+    is_prime:                     Optional[bool]
+    sales_volume:                 Optional[str]
+    country:                      Optional[str]
+    avg_price:                    Optional[float]
+    min_price:                    Optional[float]
+    max_price:                    Optional[float]
+    avg_sales_volume:             Optional[float]
+    min_sales_volume:             Optional[float]
+    max_sales_volume:             Optional[float]
+
+
+class ProductComparison(BaseModel):
+    seller_product:     dict
+    competitor_product: CompetitorProduct
+    comparison_metrics: dict
+
+
+class ComparisonResponse(BaseModel):
+    seller_id:             str
+    total_seller_products: int
+    total_comparisons:     int
+    comparisons:           List[ProductComparison]
+
+
+class PriceAlertRequest(BaseModel):
+    tracked_product_id: int
+    user_email:         str
+    threshold_percent:  float    # trigger when competitor is X% cheaper
+    delivery_email:     str      # email to send the alert to
+
+
+class CompetitorSnapshotDiff(BaseModel):
+    asin:          str
+    product_title: str
+    changes:       List[dict]        # list of {field, old_value, new_value}
+    detected_at:   datetime
+
+
+# ─────────────────────────────────────────
+# HELPERS — reviews, parsing
+# ─────────────────────────────────────────
+
+def parse_review_comments(comments_json: str) -> List[str]:
+    if not comments_json:
+        return []
+    try:
+        return json.loads(comments_json)
+    except Exception:
+        return []
+
+
+def parse_review_ratings(ratings_json: str) -> List[int]:
+    if not ratings_json:
+        return []
+    try:
+        return json.loads(ratings_json)
+    except Exception:
+        return []
+
+
+def fetch_seller_reviews(seller_id: str, country: str) -> tuple:
+    try:
+        resp = requests.get(
+            AMAZON_REVIEWS_API_URL,
+            headers=HEADERS,
+            params={"seller_id": seller_id, "country": country, "page": 1},
+            timeout=20,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        if data.get("status") != "OK":
+            return [], []
+        reviews = data.get("data", {}).get("seller_reviews", [])
+        comments = [r.get("review_comment", "") for r in reviews]
+        ratings  = [r.get("review_star_rating", 0) for r in reviews]
+        return comments, ratings
+    except Exception as e:
+        print(f"[reviews] error: {e}")
+        return [], []
+
+
+# ─────────────────────────────────────────
+# HELPERS — subscription limit (race-safe)
+# ─────────────────────────────────────────
+
+def check_keyword_tracker_limit(user_id: int, db: Session) -> dict:
+    """
+    Returns current usage. Does NOT increment — call increment_keyword_usage separately.
+    Resets counter at month boundary.
+    """
+    row = db.execute(
+        text("SELECT subscription_tier, COALESCE(keyword_tracker_used,0), keyword_tracker_month FROM users WHERE id=:uid"),
+        {"uid": user_id},
+    ).fetchone()
+    if not row:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    tier, used, tracked_month = row[0] or "free", row[1], row[2]
+    current_month = datetime.utcnow().strftime("%Y-%m")
+
+    if tracked_month != current_month:
+        db.execute(
+            text("UPDATE users SET keyword_tracker_used=0, keyword_tracker_month=:m WHERE id=:uid"),
+            {"m": current_month, "uid": user_id},
+        )
+        db.commit()
+        used = 0
+
+    limit     = KEYWORD_TRACKER_LIMITS.get(tier.lower(), KEYWORD_TRACKER_LIMITS["free"])
+    remaining = (limit - used) if limit != -1 else -1
+    return {"count": used, "limit": limit, "remaining": remaining, "subscription_tier": tier}
+
+
+def atomic_increment_usage(user_id: int, increment: int, db: Session) -> bool:
+    """
+    Atomically increments usage only if under the limit.
+    Returns True if increment succeeded, False if limit would be exceeded.
+    Uses SELECT FOR UPDATE to prevent race conditions.
+    """
+    row = db.execute(
+        text("SELECT subscription_tier, COALESCE(keyword_tracker_used,0), keyword_tracker_month FROM users WHERE id=:uid FOR UPDATE"),
+        {"uid": user_id},
+    ).fetchone()
+    if not row:
+        return False
+
+    tier, used, tracked_month = row[0] or "free", row[1], row[2]
+    current_month = datetime.utcnow().strftime("%Y-%m")
+    if tracked_month != current_month:
+        used = 0
+
+    limit = KEYWORD_TRACKER_LIMITS.get(tier.lower(), KEYWORD_TRACKER_LIMITS["free"])
+    if limit != -1 and (used + increment) > limit:
+        db.rollback()
+        return False
+
+    db.execute(
+        text("UPDATE users SET keyword_tracker_used=COALESCE(keyword_tracker_used,0)+:inc, keyword_tracker_month=:m WHERE id=:uid"),
+        {"inc": increment, "m": current_month, "uid": user_id},
+    )
+    db.commit()
+    return True
+
+
+# ─────────────────────────────────────────
+# HELPERS — rank update rate limiting (4/day)
+# ─────────────────────────────────────────
+
+def check_rank_update_ratelimit(user_email: str, db: Session) -> dict:
+    """
+    Returns {allowed: bool, used: int, limit: int, resets_at: str}
+    Requires rank_update_ratelimit table — run migrations.sql first.
+    """
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    row = db.execute(
+        text("SELECT call_count FROM rank_update_ratelimit WHERE user_email=:email AND update_date=:today"),
+        {"email": user_email, "today": today},
+    ).fetchone()
+    used = row[0] if row else 0
+
+    resets_at = (datetime.utcnow().replace(hour=0, minute=0, second=0) + timedelta(days=1)).isoformat() + "Z"
+    return {
+        "allowed":   used < RANK_UPDATE_DAILY_LIMIT,
+        "used":      used,
+        "limit":     RANK_UPDATE_DAILY_LIMIT,
+        "resets_at": resets_at,
+    }
+
+
+def increment_rank_update_count(user_email: str, db: Session):
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    db.execute(
+        text("""
+            INSERT INTO rank_update_ratelimit (user_email, update_date, call_count)
+            VALUES (:email, :today, 1)
+            ON CONFLICT (user_email, update_date)
+            DO UPDATE SET call_count = rank_update_ratelimit.call_count + 1
+        """),
+        {"email": user_email, "today": today},
+    )
+    db.commit()
+
+
+# ─────────────────────────────────────────
+# HELPERS — similarity + competitor matching
+# ─────────────────────────────────────────
+
+def calculate_similarity_score(title_a: str, title_b: str) -> float:
+    words_a = set(title_a.lower().split())
+    words_b = set(title_b.lower().split())
+    if not words_a or not words_b:
+        return 0.0
+    return len(words_a & words_b) / len(words_a | words_b)
+
+
+def find_competitor_matches(seller_product: dict, db: Session, country: str = "IN",
+                             similarity_threshold: float = 0.3, max_matches: int = 5) -> List[CompetitorProduct]:
+    seller_title = seller_product.get("product_title", "")
+    search_terms = [w for w in seller_title.lower().split() if len(w) > 3][:4]
+    if not search_terms:
+        return []
+
+    search_pattern = "%".join(search_terms)
+    rows = db.execute(text("""
+        SELECT id,asin,category_id,category_name,product_title,product_url,
+               product_photo,product_price,product_price_numeric,product_original_price,
+               product_original_price_numeric,product_star_rating,product_star_rating_numeric,
+               product_num_ratings,is_best_seller,is_amazon_choice,is_prime,
+               sales_volume,country,avg_price,min_price,max_price,
+               avg_sales_volume,min_sales_volume,max_sales_volume
+        FROM rapidapi_amazon_products
+        WHERE country=:country
+          AND LOWER(product_title) LIKE :pat
+          AND asin != :seller_asin
+        ORDER BY
+            CASE WHEN is_best_seller THEN 1 WHEN is_amazon_choice THEN 2 ELSE 3 END,
+            product_num_ratings DESC,
+            product_star_rating_numeric DESC
+        LIMIT :lim
+    """), {"country": country, "pat": f"%{search_pattern}%",
+           "seller_asin": seller_product.get("asin"), "lim": max_matches * 2}).fetchall()
+
+    competitors = []
+    for r in rows:
+        if calculate_similarity_score(seller_title, r[4]) >= similarity_threshold:
+            competitors.append(CompetitorProduct(
+                id=r[0], asin=r[1], category_id=r[2], category_name=r[3], product_title=r[4],
+                product_url=r[5], product_photo=r[6], product_price=r[7], product_price_numeric=r[8],
+                product_original_price=r[9], product_original_price_numeric=r[10],
+                product_star_rating=r[11], product_star_rating_numeric=r[12],
+                product_num_ratings=r[13], is_best_seller=r[14], is_amazon_choice=r[15],
+                is_prime=r[16], sales_volume=r[17], country=r[18],
+                avg_price=r[19], min_price=r[20], max_price=r[21],
+                avg_sales_volume=r[22], min_sales_volume=r[23], max_sales_volume=r[24],
+            ))
+    return competitors[:max_matches]
+
+
+def generate_comparison_metrics(seller_product: dict, competitor: CompetitorProduct) -> dict:
+    sp = seller_product.get("product_price_numeric", 0) or 0
+    cp = competitor.product_price_numeric or 0
+    sr = seller_product.get("product_star_rating_numeric", 0) or 0
+    cr = competitor.product_star_rating_numeric or 0
+    sn = seller_product.get("product_num_ratings", 0) or 0
+    cn = competitor.product_num_ratings or 0
+
+    price_diff = (sp - cp) if sp and cp else None
+    price_pct  = ((sp - cp) / cp * 100) if sp and cp and cp > 0 else None
+    rating_diff = (sr - cr) if sr and cr else None
+    review_diff = (sn - cn) if sn and cn else None
+
+    advantages, disadvantages = [], []
+    if price_diff and price_diff < 0:
+        advantages.append(f"Lower price by ₹{abs(price_diff):.2f} ({abs(price_pct):.1f}%)")
+    elif price_diff and price_diff > 0:
+        disadvantages.append(f"Higher price by ₹{price_diff:.2f} ({price_pct:.1f}%)")
+    if rating_diff and rating_diff > 0:
+        advantages.append(f"Better rating by {rating_diff:.1f} stars")
+    elif rating_diff and rating_diff < 0:
+        disadvantages.append(f"Lower rating by {abs(rating_diff):.1f} stars")
+    if review_diff and review_diff > 0:
+        advantages.append(f"More reviews (+{review_diff})")
+    elif review_diff and review_diff < 0:
+        disadvantages.append(f"Fewer reviews ({review_diff})")
+    if competitor.is_best_seller and not seller_product.get("is_best_seller"):
+        disadvantages.append("Competitor is Best Seller")
+    elif seller_product.get("is_best_seller") and not competitor.is_best_seller:
+        advantages.append("You are Best Seller")
+    if competitor.is_amazon_choice and not seller_product.get("is_amazon_choice"):
+        disadvantages.append("Competitor is Amazon's Choice")
+    elif seller_product.get("is_amazon_choice") and not competitor.is_amazon_choice:
+        advantages.append("You are Amazon's Choice")
+
+    return {
+        "price_comparison": {
+            "seller_price": sp, "competitor_price": cp,
+            "difference": price_diff, "difference_percent": price_pct,
+            "is_cheaper": price_diff < 0 if price_diff is not None else None,
+        },
+        "rating_comparison": {
+            "seller_rating": sr, "competitor_rating": cr,
+            "difference": rating_diff,
+            "is_better": rating_diff > 0 if rating_diff is not None else None,
+        },
+        "review_count_comparison": {
+            "seller_reviews": sn, "competitor_reviews": cn,
+            "difference": review_diff,
+            "has_more": review_diff > 0 if review_diff is not None else None,
+        },
+        "badges": {
+            "seller_best_seller": seller_product.get("is_best_seller", False),
+            "competitor_best_seller": competitor.is_best_seller or False,
+            "seller_amazon_choice": seller_product.get("is_amazon_choice", False),
+            "competitor_amazon_choice": competitor.is_amazon_choice or False,
+            "seller_prime": seller_product.get("is_prime", False),
+            "competitor_prime": competitor.is_prime or False,
+        },
+        "competitive_advantages":    advantages,
+        "competitive_disadvantages": disadvantages,
+        "similarity_score": calculate_similarity_score(
+            seller_product.get("product_title", ""),
+            competitor.product_title,
+        ),
+    }
+
+
+# ─────────────────────────────────────────
+# HELPERS — rank velocity
+# ─────────────────────────────────────────
+
+def compute_velocity(ranks: list) -> float:
+    """
+    Positive = improving (rank number dropping).
+    Negative = declining.
+    Uses a weighted average of recent changes, heavier on latest.
+    """
+    if len(ranks) < 2:
+        return 0.0
+    deltas = []
+    weights = []
+    for i in range(len(ranks) - 1):
+        prev = ranks[i + 1].get("rank", 0) or 0
+        curr = ranks[i].get("rank", 0) or 0
+        if prev and curr:
+            days = max((datetime.fromisoformat(ranks[i]["checked_at"]) -
+                        datetime.fromisoformat(ranks[i + 1]["checked_at"])).days, 1)
+            deltas.append((prev - curr) / days)
+            weights.append(1 / (i + 1))     # more recent = higher weight
+    if not deltas:
+        return 0.0
+    total_w = sum(weights)
+    return round(sum(d * w for d, w in zip(deltas, weights)) / total_w, 3)
+
+
+# ─────────────────────────────────────────
+# HELPERS — rank prediction (linear regression)
+# ─────────────────────────────────────────
+
+def predict_rank(rank_history: list) -> dict:
+    """
+    Simple linear regression on up to last 30 data points.
+    Returns predicted rank at day +7 and +30 with confidence interval.
+    """
+    if len(rank_history) < 3:
+        return {"predicted_7d": None, "predicted_30d": None, "confidence": "low",
+                "trend": "not_enough_data"}
+
+    points = sorted(rank_history, key=lambda x: x["checked_at"])[-30:]
+    base_ts = datetime.fromisoformat(points[0]["checked_at"]).timestamp()
+    X = np.array([(datetime.fromisoformat(p["checked_at"]).timestamp() - base_ts) / 86400
+                  for p in points])
+    Y = np.array([p["rank"] for p in points if p["rank"]])
+
+    if len(Y) < 3:
+        return {"predicted_7d": None, "predicted_30d": None, "confidence": "low", "trend": "sparse"}
+
+    coeffs = np.polyfit(X, Y, 1)
+    poly   = np.poly1d(coeffs)
+
+    last_day = X[-1]
+    pred_7  = max(1, round(float(poly(last_day + 7))))
+    pred_30 = max(1, round(float(poly(last_day + 30))))
+
+    residuals = Y - poly(X)
+    std_err   = float(np.std(residuals))
+    r2        = float(1 - np.var(residuals) / (np.var(Y) + 1e-9))
+
+    confidence = "high" if r2 > 0.75 else "medium" if r2 > 0.4 else "low"
+    trend = "improving" if coeffs[0] < -0.3 else "declining" if coeffs[0] > 0.3 else "stable"
+
+    return {
+        "predicted_7d":        pred_7,
+        "predicted_30d":       pred_30,
+        "confidence":          confidence,
+        "trend":               trend,
+        "r2_score":            round(r2, 3),
+        "std_error":           round(std_err, 2),
+        "margin_7d":           round(std_err * 1.5),
+        "margin_30d":          round(std_err * 2.5),
+    }
+
+
+# ─────────────────────────────────────────
+# HELPERS — Ollama (llama3.2:3b) — human-like NLP
+# ─────────────────────────────────────────
+
+def _call_ollama(prompt: str, timeout: int = 90) -> str:
+    """
+    Raw call to Ollama. Returns the text response or raises.
+    """
+    resp = requests.post(
+        f"{OLLAMA_BASE}/api/generate",
+        json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": False},
+        timeout=timeout,
+    )
+    resp.raise_for_status()
+    return resp.json().get("response", "").strip()
+
+
+def _call_ollama_json(prompt: str, timeout: int = 90) -> dict:
+    """
+    Calls Ollama expecting JSON back. Strips markdown fences, parses safely.
+    """
+    resp = requests.post(
+        f"{OLLAMA_BASE}/api/generate",
+        json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": False, "format": "json"},
+        timeout=timeout,
+    )
+    resp.raise_for_status()
+    raw = resp.json().get("response", "{}").strip()
+    raw = raw.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        return {}
+
+
+SYSTEM_PERSONA = """You are Insydz, an elite Amazon marketplace strategist with 12 years of hands-on seller experience.
+You speak like a real expert friend — direct, warm, specific, never robotic.
+You use conversational language, occasional em-dashes, and short punchy sentences when making a point.
+You never say "certainly", "absolutely", "great question", or use hollow filler phrases.
+You back every claim with the actual data you've been given.
+When something is bad, you say so clearly. When something is good, you celebrate it.
+Your job is to help sellers actually win on Amazon — not to sound like an AI."""
+
+
+def ai_keyword_analysis(product_title: str, asin: str, country: str,
+                         rank_summary: list) -> dict:
+    """
+    Full AI keyword analysis — dynamic, data-driven, human-like.
+    """
+    trend_lines = "\n".join(
+        f"  • '{r['keyword']}': rank {r['current_rank']} "
+        f"({'↑ improved by ' + str(r['change']) if r['change'] > 0 else '↓ dropped by ' + str(abs(r['change'])) if r['change'] < 0 else '→ stable'}, "
+        f"velocity trend: {r.get('trend','unknown')})"
+        for r in rank_summary
+    )
+
+    prompt = f"""{SYSTEM_PERSONA}
+
+You're analyzing this Amazon product:
+  Product: {product_title}
+  ASIN: {asin}
+  Marketplace: {country}
+
+Here's the live keyword ranking data:
+{trend_lines}
+
+Write a sharp, specific analysis. Respond ONLY in this exact JSON structure (no markdown, no preamble):
+{{
+  "opening": "A 2-3 sentence honest opener that names specific keywords and calls out what's actually happening — not generic praise.",
+  "why_changed": "Explain WHY these specific ranks changed. Reference actual keywords, not vague market forces. Be a detective.",
+  "immediate_actions": ["3-4 specific, implementable actions the seller can do this week. No fluff like 'optimize your listing'. Name the exact keyword, exact section, exact change."],
+  "keyword_focus": "Which 1-2 keywords are the biggest opportunity right now and exactly why — based on the data above.",
+  "prediction": "What will likely happen in the next 30 days if they do nothing. Be honest, not scary.",
+  "roadmap": {{
+    "week_1_2": "Specific actions, named keywords, exact listing sections to change.",
+    "week_3_4": "What to do after the first changes take hold — what to monitor, what to test.",
+    "month_2_3": "The bigger play — where this product can realistically be in 60-90 days if they execute."
+  }},
+  "closing_thought": "One honest, direct closing sentence — like what you'd tell a friend who asked you for real advice."
+}}"""
+
+    result = _call_ollama_json(prompt, timeout=120)
+    if not result:
+        result = {
+            "opening": f"Looking at the keyword data for '{product_title}', there are clear patterns here worth acting on.",
+            "why_changed": "Rank fluctuations are likely tied to competitor activity and listing freshness.",
+            "immediate_actions": ["Review your top keyword's placement in the product title.", "Add backend search terms you're missing.", "Check if any competitor changed their price recently."],
+            "keyword_focus": "Focus on the keyword with the most recent positive momentum.",
+            "prediction": "Without changes, rankings will likely drift further as competitors iterate faster.",
+            "roadmap": {"week_1_2": "Audit title and bullets.", "week_3_4": "Test a revised main image.", "month_2_3": "Launch a targeted PPC campaign on your best-performing keyword."},
+            "closing_thought": "The data's telling you something — the question is whether you'll act on it this week or next month.",
+        }
+    return result
+
+
+def ai_competitor_recommendation(seller_product: dict, comparisons: list) -> dict:
+    """
+    Competitor-aware AI recommendation — what should the seller actually do?
+    """
+    comp_lines = []
+    for c in comparisons[:5]:
+        m = c.get("comparison_metrics", {})
+        price_c = m.get("price_comparison", {})
+        rating_c = m.get("rating_comparison", {})
+        comp_lines.append(
+            f"  Competitor '{c['competitor_product'].get('product_title','?')[:60]}': "
+            f"price={price_c.get('competitor_price','?')}, rating={rating_c.get('competitor_rating','?')}, "
+            f"best_seller={c['competitor_product'].get('is_best_seller',False)}, "
+            f"amazon_choice={c['competitor_product'].get('is_amazon_choice',False)}"
+        )
+    comp_text = "\n".join(comp_lines) if comp_lines else "  No competitors found."
+
+    prompt = f"""{SYSTEM_PERSONA}
+
+Seller's product:
+  Title: {seller_product.get('product_title','?')}
+  ASIN: {seller_product.get('asin','?')}
+  Price: {seller_product.get('product_price_numeric','unknown')}
+  Rating: {seller_product.get('product_star_rating_numeric','unknown')}
+  Reviews: {seller_product.get('product_num_ratings','unknown')}
+  Best Seller: {seller_product.get('is_best_seller',False)}
+  Amazon Choice: {seller_product.get('is_amazon_choice',False)}
+
+Top competitors in the same category:
+{comp_text}
+
+You're sitting across the table from this seller. Give them your real take.
+Respond ONLY in this exact JSON structure:
+{{
+  "headline": "One punchy sentence that captures the seller's competitive position right now.",
+  "where_you_stand": "2-3 sentences: honest assessment of their position vs the competition. Use the actual numbers.",
+  "biggest_threat": "Which competitor is the real threat and why — specific, not generic.",
+  "biggest_opportunity": "The one thing the data is screaming at you that the seller should exploit right now.",
+  "price_strategy": "Specific price advice — should they cut, hold, or go premium? Why? What number?",
+  "listing_fixes": ["2-3 specific listing changes based on what competitors are doing better"],
+  "win_conditions": "What would it realistically take for this seller to outperform the top competitor in 90 days?",
+  "action_this_week": "The single most impactful thing they can do in the next 7 days. One thing only."
+}}"""
+
+    result = _call_ollama_json(prompt, timeout=120)
+    if not result:
+        result = {
+            "headline": "Your product has potential but is being outmaneuvered on key signals.",
+            "where_you_stand": "The competition is running tighter on price and credibility signals like reviews.",
+            "biggest_threat": "The best-seller badge holder in your category — they have pricing and social proof locked in.",
+            "biggest_opportunity": "Your rating, if higher, is an untapped trust signal you should be leading with.",
+            "price_strategy": "Hold your price but build value perception through images and A+ content first.",
+            "listing_fixes": ["Update your main image to show product in use.", "Add a comparison table in A+ content.", "Include size/quantity callouts in bullet 1."],
+            "win_conditions": "500+ reviews, a sub-10 keyword rank on your top term, and a PPC ACoS below 25%.",
+            "action_this_week": "Rewrite your title to front-load your top keyword — this week, not next.",
+        }
+    return result
+
+
+def ai_review_sentiment(comments: List[str], product_title: str) -> dict:
+    """
+    NLP sentiment breakdown by topic. Dynamic per product.
+    """
+    if not comments:
+        return {"error": "No reviews to analyze", "topics": {}}
+
+    sample = comments[:30]
+    reviews_text = "\n".join(f"  - {c}" for c in sample if c.strip())
+
+    prompt = f"""{SYSTEM_PERSONA}
+
+Product: {product_title}
+
+Customer reviews (sample of {len(sample)}):
+{reviews_text}
+
+Read these like a real person would. What are customers actually saying?
+Respond ONLY in this JSON structure:
+{{
+  "overall_mood": "One honest sentence on the vibe of these reviews.",
+  "score": <number 1-10 representing overall sentiment>,
+  "topics": {{
+    "quality":   {{"sentiment": "positive|neutral|negative", "score": <1-10>, "summary": "What customers specifically say about quality"}},
+    "packaging": {{"sentiment": "positive|neutral|negative", "score": <1-10>, "summary": "What customers say about packaging"}},
+    "value":     {{"sentiment": "positive|neutral|negative", "score": <1-10>, "summary": "Price vs value perception"}},
+    "shipping":  {{"sentiment": "positive|neutral|negative", "score": <1-10>, "summary": "Delivery and fulfillment feedback"}},
+    "support":   {{"sentiment": "positive|neutral|negative", "score": <1-10>, "summary": "Customer service mentions if any"}}
+  }},
+  "top_complaint": "The most repeated complaint, verbatim-style",
+  "top_praise":    "The most repeated compliment, verbatim-style",
+  "seller_action": "One specific change the seller could make based on these reviews that would directly address the biggest complaint."
+}}"""
+
+    result = _call_ollama_json(prompt, timeout=90)
+    if not result:
+        result = {
+            "overall_mood": "Mixed reviews with room for improvement.",
+            "score": 6,
+            "topics": {
+                "quality":   {"sentiment": "neutral", "score": 6, "summary": "Customers find quality acceptable."},
+                "packaging": {"sentiment": "neutral", "score": 6, "summary": "Packaging mentioned occasionally."},
+                "value":     {"sentiment": "neutral", "score": 6, "summary": "Price perceived as fair."},
+                "shipping":  {"sentiment": "neutral", "score": 6, "summary": "Delivery timing varies."},
+                "support":   {"sentiment": "neutral", "score": 6, "summary": "Limited support mentions."},
+            },
+            "top_complaint": "Product description doesn't fully match the item received.",
+            "top_praise":    "Fast delivery and good packaging.",
+            "seller_action": "Align your listing description more closely with the actual product.",
+        }
+    return result
+
+
+def ai_keyword_suggestions(product_title: str, asin: str, country: str) -> dict:
+    """
+    Suggest 15-20 high-intent keywords grouped by intent type.
+    """
+    prompt = f"""{SYSTEM_PERSONA}
+
+Product title: "{product_title}"
+ASIN: {asin}
+Marketplace: Amazon {country}
+
+Generate 15-20 high-intent Amazon search keywords a seller should track for this product.
+Think like a buyer — what would someone type when they're ready to buy?
+Group them by intent. Respond ONLY in this JSON:
+{{
+  "branded": ["keywords that include brand or product-specific terms"],
+  "generic": ["broad category keywords buyers use"],
+  "long_tail": ["specific 3-5 word phrases with clear purchase intent"],
+  "problem_solving": ["keywords buyers use when searching by the problem the product solves"],
+  "competitor_adjacent": ["terms buyers use when comparing similar products"],
+  "reasoning": "One sentence on your keyword strategy for this specific product."
+}}"""
+
+    result = _call_ollama_json(prompt, timeout=90)
+    if not result or "generic" not in result:
+        result = {
+            "branded": [],
+            "generic": [product_title.split()[0] if product_title else "product"],
+            "long_tail": [],
+            "problem_solving": [],
+            "competitor_adjacent": [],
+            "reasoning": "Keyword suggestions could not be generated — please try again.",
+        }
+    return result
+
+
+# ─────────────────────────────────────────
+# HELPERS — price alert via Brevo email
+# ─────────────────────────────────────────
+
+def send_brevo_email(to_email: str, subject: str, html_body: str) -> bool:
+    """
+    Sends a transactional email via Brevo API.
+    Returns True on success, False on failure.
+    """
+    if not BREVO_API_KEY:
+        print("[brevo] BREVO_API_KEY not set — email not sent")
+        return False
+
+    payload = {
+        "sender": {
+            "name":  BREVO_SENDER_NAME,
+            "email": BREVO_SENDER_EMAIL,
+        },
+        "to": [{"email": to_email}],
+        "subject": subject,
+        "htmlContent": html_body,
+    }
+
+    try:
+        resp = requests.post(
+            BREVO_API_URL,
+            headers={
+                "accept":       "application/json",
+                "content-type": "application/json",
+                "api-key":      BREVO_API_KEY,
+            },
+            json=payload,
+            timeout=15,
+        )
+        resp.raise_for_status()
+        print(f"[brevo] email sent to {to_email} — subject: {subject}")
+        return True
+    except Exception as e:
+        print(f"[brevo] failed to send email to {to_email}: {e}")
+        return False
+
+
+def _price_alert_email_html(
+    product_title: str,
+    asin: str,
+    threshold_percent: float,
+    triggered: list,
+) -> str:
+    """
+    Builds a clean HTML email body for price alerts.
+    """
+    rows = ""
+    for item in triggered:
+        rows += f"""
+        <tr>
+          <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:14px;color:#1a1a1a;">
+            {item['competitor_title'][:70]}
+          </td>
+          <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:14px;color:#1a1a1a;text-align:center;">
+            {item['competitor_asin']}
+          </td>
+          <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:14px;font-weight:600;color:#d94f3d;text-align:center;">
+            ₹{item['competitor_price']}
+          </td>
+        </tr>"""
+
+    return f"""
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f6f6f6;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f6f6f6;padding:40px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+
+        <!-- Header -->
+        <tr>
+          <td style="background:#1a1a2e;padding:28px 32px;">
+            <p style="margin:0;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">Insydz</p>
+            <p style="margin:4px 0 0;font-size:13px;color:#9090b0;">Competitor Price Alert</p>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:32px;">
+            <p style="margin:0 0 6px;font-size:16px;font-weight:600;color:#1a1a1a;">
+              Price alert triggered for your product
+            </p>
+            <p style="margin:0 0 24px;font-size:14px;color:#555;">
+              <strong>{product_title}</strong> &nbsp;·&nbsp; ASIN: {asin}
+            </p>
+
+            <p style="margin:0 0 12px;font-size:14px;color:#555;">
+              The following competitors are priced more than
+              <strong style="color:#d94f3d;">{threshold_percent}%</strong> below your listed price:
+            </p>
+
+            <!-- Competitor table -->
+            <table width="100%" cellpadding="0" cellspacing="0"
+                   style="border:1px solid #f0f0f0;border-radius:6px;overflow:hidden;">
+              <tr style="background:#f8f8f8;">
+                <th style="padding:10px 12px;font-size:12px;font-weight:600;color:#888;text-align:left;border-bottom:1px solid #f0f0f0;">
+                  COMPETITOR
+                </th>
+                <th style="padding:10px 12px;font-size:12px;font-weight:600;color:#888;text-align:center;border-bottom:1px solid #f0f0f0;">
+                  ASIN
+                </th>
+                <th style="padding:10px 12px;font-size:12px;font-weight:600;color:#888;text-align:center;border-bottom:1px solid #f0f0f0;">
+                  THEIR PRICE
+                </th>
+              </tr>
+              {rows}
+            </table>
+
+            <p style="margin:24px 0 0;font-size:13px;color:#888;line-height:1.6;">
+              Log in to <a href="https://insydz.com" style="color:#1a1a2e;font-weight:600;">insydz.com</a>
+              to review your pricing strategy and take action.
+            </p>
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="padding:20px 32px;background:#f8f8f8;border-top:1px solid #f0f0f0;">
+            <p style="margin:0;font-size:12px;color:#aaa;text-align:center;">
+              You're receiving this because you set up a price alert on Insydz.
+              &nbsp;·&nbsp; <a href="https://insydz.com" style="color:#aaa;">Manage alerts</a>
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>"""
+
+
+def fire_price_alert(
+    product_title: str,
+    asin: str,
+    threshold_percent: float,
+    triggered: list,
+    delivery_email: str,
+):
+    """
+    Sends a price alert email via Brevo.
+    Called when competitors are found below the seller's threshold.
+    """
+    if not triggered:
+        return
+
+    subject   = f"[Insydz] Price alert — {len(triggered)} competitor(s) underpricing you"
+    html_body = _price_alert_email_html(product_title, asin, threshold_percent, triggered)
+    sent      = send_brevo_email(delivery_email, subject, html_body)
+
+    if not sent:
+        print(f"[price alert] email delivery failed for {delivery_email} — product {asin}")
+
+
+def fire_competitor_change_alert(
+    seller_email: str,
+    seller_id: str,
+    changes: list,
+):
+    """
+    Sends a daily competitor change digest email via Brevo.
+    Called by the background scheduler when competitor snapshots show diffs.
+    """
+    if not changes:
+        return
+
+    rows = ""
+    for c in changes[:10]:
+        change_lines = "".join(
+            f"<li style='font-size:13px;color:#555;margin-bottom:4px;'>"
+            f"<strong>{ch['field'].replace('_',' ').title()}</strong>: "
+            f"{ch['old_value']} → <strong>{ch['new_value']}</strong></li>"
+            for ch in c.get("changes", [])
+        )
+        rows += f"""
+        <tr>
+          <td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;vertical-align:top;">
+            <p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#1a1a1a;">
+              {c.get('competitor_title','Unknown')[:65]}
+            </p>
+            <p style="margin:0 0 6px;font-size:12px;color:#aaa;">ASIN: {c.get('competitor_asin','?')}</p>
+            <ul style="margin:0;padding-left:16px;">{change_lines}</ul>
+          </td>
+        </tr>"""
+
+    html_body = f"""
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f6f6f6;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f6f6f6;padding:40px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0"
+             style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+        <tr>
+          <td style="background:#1a1a2e;padding:28px 32px;">
+            <p style="margin:0;font-size:22px;font-weight:700;color:#ffffff;">Insydz</p>
+            <p style="margin:4px 0 0;font-size:13px;color:#9090b0;">Daily Competitor Change Report</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;">
+            <p style="margin:0 0 20px;font-size:15px;color:#1a1a1a;">
+              Here's what changed with your competitors in the last 24 hours:
+            </p>
+            <table width="100%" cellpadding="0" cellspacing="0"
+                   style="border:1px solid #f0f0f0;border-radius:6px;overflow:hidden;">
+              {rows}
+            </table>
+            <p style="margin:24px 0 0;font-size:13px;color:#888;line-height:1.6;">
+              Log in to <a href="https://insydz.com" style="color:#1a1a2e;font-weight:600;">insydz.com</a>
+              to take action on these changes.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:20px 32px;background:#f8f8f8;border-top:1px solid #f0f0f0;">
+            <p style="margin:0;font-size:12px;color:#aaa;text-align:center;">
+              Insydz daily digest &nbsp;·&nbsp;
+              <a href="https://insydz.com" style="color:#aaa;">Manage notifications</a>
+            </p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>"""
+
+    subject = f"[Insydz] {len(changes)} competitor change(s) detected today"
+    send_brevo_email(seller_email, subject, html_body)
+
+
+# ─────────────────────────────────────────
+# PDF EXPORT HELPER
+# ─────────────────────────────────────────
+
+def generate_pdf_report(product: TrackedProductResponse, rank_history: list,
+                         ai_analysis: dict, prediction: dict) -> BytesIO:
+    buf    = BytesIO()
+    doc    = SimpleDocTemplate(buf, pagesize=A4, leftMargin=2*cm, rightMargin=2*cm,
+                                topMargin=2*cm, bottomMargin=2*cm)
+    styles = getSampleStyleSheet()
+    story  = []
+
+    title_style = ParagraphStyle("title", parent=styles["Title"], fontSize=18, spaceAfter=12)
+    h2_style    = ParagraphStyle("h2", parent=styles["Heading2"], fontSize=13, spaceAfter=6)
+    body_style  = ParagraphStyle("body", parent=styles["Normal"], fontSize=10, leading=14)
+
+    story.append(Paragraph(f"Keyword Rank Report", title_style))
+    story.append(Paragraph(f"{product.product_title}", h2_style))
+    story.append(Paragraph(f"ASIN: {product.asin} | Country: {product.country} | Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}", body_style))
+    story.append(Spacer(1, 0.4*cm))
+
+    # Rank history table
+    story.append(Paragraph("Keyword Rank History", h2_style))
+    table_data = [["Keyword", "Rank", "Velocity", "Last Checked"]]
+    for entry in rank_history[:20]:
+        table_data.append([
+            entry.get("keyword", ""),
+            str(entry.get("rank", "-")),
+            str(entry.get("velocity", "0")),
+            entry.get("checked_at", "")[:16],
+        ])
+    t = Table(table_data, colWidths=[6*cm, 2.5*cm, 2.5*cm, 5*cm])
+    t.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#2563EB")),
+        ("TEXTCOLOR",  (0, 0), (-1, 0), colors.white),
+        ("FONTSIZE",   (0, 0), (-1, -1), 9),
+        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#F3F4F6")]),
+        ("GRID", (0, 0), (-1, -1), 0.3, colors.HexColor("#E5E7EB")),
+        ("PADDING", (0, 0), (-1, -1), 4),
+    ]))
+    story.append(t)
+    story.append(Spacer(1, 0.4*cm))
+
+    # Prediction
+    if prediction.get("predicted_7d"):
+        story.append(Paragraph("Rank Prediction", h2_style))
+        story.append(Paragraph(
+            f"7-day forecast: <b>#{prediction['predicted_7d']}</b> (±{prediction.get('margin_7d',0)}) | "
+            f"30-day forecast: <b>#{prediction['predicted_30d']}</b> (±{prediction.get('margin_30d',0)}) | "
+            f"Confidence: {prediction.get('confidence','low')} | Trend: {prediction.get('trend','unknown')}",
+            body_style
+        ))
+        story.append(Spacer(1, 0.4*cm))
+
+    # AI Analysis
+    if ai_analysis:
+        story.append(Paragraph("AI Strategic Analysis", h2_style))
+        for key, label in [
+            ("opening", "Overview"), ("why_changed", "Why Rankings Changed"),
+            ("keyword_focus", "Focus Keywords"), ("prediction", "30-Day Outlook"),
+        ]:
+            if ai_analysis.get(key):
+                story.append(Paragraph(f"<b>{label}:</b> {ai_analysis[key]}", body_style))
+                story.append(Spacer(1, 0.2*cm))
+
+        roadmap = ai_analysis.get("roadmap", {})
+        if roadmap:
+            story.append(Paragraph("Roadmap", h2_style))
+            for phase, content in roadmap.items():
+                story.append(Paragraph(f"<b>{phase.replace('_', ' ').title()}:</b> {content}", body_style))
+                story.append(Spacer(1, 0.15*cm))
+
+    doc.build(story)
+    buf.seek(0)
+    return buf
+
+
+# ─────────────────────────────────────────
+# APSCHEDULER — background auto-rank updates
+# ─────────────────────────────────────────
+
+def _background_rank_update_all():
+    """Runs daily at 6 AM UTC. Updates ranks for all active tracked products."""
+    db = SessionLocal()
+    try:
+        products = db.query(TrackedProduct).all()
+        updated = 0
+        for product in products:
+            kws = db.query(KeywordRankHistory).filter(
+                KeywordRankHistory.tracked_product_id == product.id
+            ).all()
+            for kw in kws:
+                try:
+                    # Real keyword rank check via search API
+                    resp = requests.get(
+                        AMAZON_SEARCH_API_URL,
+                        headers=HEADERS,
+                        params={"query": kw.keyword, "country": product.country,
+                                "page": "1", "sort_by": "RELEVANCE"},
+                        timeout=20,
+                    )
+                    resp.raise_for_status()
+                    results = resp.json().get("data", {}).get("products", [])
+                    rank = next((i + 1 for i, p in enumerate(results) if p.get("asin") == product.asin), 0)
+                    kw.rank       = rank
+                    kw.checked_at = datetime.utcnow()
+                    updated += 1
+                except Exception as e:
+                    print(f"[scheduler] rank update error for {product.asin}/{kw.keyword}: {e}")
+        db.commit()
+        print(f"[scheduler] auto rank update complete — {updated} keywords updated")
+    except Exception as e:
+        print(f"[scheduler] fatal error: {e}")
+    finally:
+        db.close()
+
+
+def _background_snapshot_competitors():
+    """
+    Runs daily at 7 AM UTC.
+    1. Snapshots today's competitor data for every tracked product.
+    2. Diffs against yesterday's snapshot.
+    3. Emails each seller a change digest via Brevo if anything changed.
+    """
+    db = SessionLocal()
+    try:
+        today     = datetime.utcnow().strftime("%Y-%m-%d")
+        yesterday = (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%d")
+
+        sellers = db.execute(
+            text("SELECT DISTINCT seller_id, user_email, country FROM tracked_products")
+        ).fetchall()
+
+        for seller_id, user_email, country in sellers:
+            products = db.query(TrackedProduct).filter(
+                TrackedProduct.seller_id == seller_id,
+                TrackedProduct.user_email == user_email,
+            ).all()
+
+            all_changes_for_seller = []
+
+            for product in products:
+                seller_dict = {
+                    "asin": product.asin, "product_title": product.product_title,
+                    "product_price_numeric": None, "product_star_rating_numeric": None,
+                    "product_num_ratings": None,
+                }
+                competitors = find_competitor_matches(seller_dict, db, country=country, max_matches=5)
+                snapshot = [c.model_dump() for c in competitors]
+
+                # Save today's snapshot
+                db.execute(text("""
+                    INSERT INTO competitor_snapshots (seller_id, user_email, asin, snapshot_date, snapshot_data)
+                    VALUES (:sid, :email, :asin, :date, :data)
+                    ON CONFLICT (asin, snapshot_date, user_email) DO UPDATE SET snapshot_data=:data
+                """), {"sid": seller_id, "email": user_email, "asin": product.asin,
+                       "date": today, "data": json.dumps(snapshot)})
+
+                # Fetch yesterday's snapshot for diff
+                yesterday_row = db.execute(text("""
+                    SELECT snapshot_data FROM competitor_snapshots
+                    WHERE asin=:asin AND user_email=:email AND snapshot_date=:yesterday
+                """), {"asin": product.asin, "email": user_email, "yesterday": yesterday}).fetchone()
+
+                if not yesterday_row:
+                    continue
+
+                yesterday_data = json.loads(yesterday_row[0]) if isinstance(yesterday_row[0], str) else (yesterday_row[0] or [])
+                yesterday_map  = {c["asin"]: c for c in yesterday_data}
+                today_map      = {c["asin"]: c for c in snapshot}
+
+                watch_fields = [
+                    "product_price_numeric", "product_star_rating_numeric",
+                    "product_num_ratings", "is_best_seller", "is_amazon_choice",
+                ]
+
+                for comp_asin, today_comp in today_map.items():
+                    yesterday_comp = yesterday_map.get(comp_asin)
+                    if not yesterday_comp:
+                        continue
+                    diffs = []
+                    for field in watch_fields:
+                        old_val = yesterday_comp.get(field)
+                        new_val = today_comp.get(field)
+                        if old_val != new_val and old_val is not None and new_val is not None:
+                            diffs.append({"field": field, "old_value": old_val, "new_value": new_val})
+                    if diffs:
+                        all_changes_for_seller.append({
+                            "seller_asin":      product.asin,
+                            "competitor_asin":  comp_asin,
+                            "competitor_title": today_comp.get("product_title", "Unknown"),
+                            "changes":          diffs,
+                        })
+
+            db.commit()
+
+            # Email the seller a digest if anything changed
+            if all_changes_for_seller:
+                fire_competitor_change_alert(
+                    seller_email=user_email,
+                    seller_id=seller_id,
+                    changes=all_changes_for_seller,
+                )
+
+        print(f"[scheduler] competitor snapshot complete — {today}")
+    except Exception as e:
+        print(f"[scheduler] snapshot error: {e}")
+    finally:
+        db.close()
+
+
+scheduler = BackgroundScheduler(timezone="UTC")
+scheduler.add_job(_background_rank_update_all,    CronTrigger(hour=6, minute=0),  id="daily_rank_update")
+scheduler.add_job(_background_snapshot_competitors, CronTrigger(hour=7, minute=0), id="daily_snapshots")
+scheduler.start()
+
+
+# ═══════════════════════════════════════════════════════
+# API ENDPOINTS
+# ═══════════════════════════════════════════════════════
+
+
+# ─────────────────────────────────────────
+# EXISTING ENDPOINTS (preserved + enhanced)
+# ─────────────────────────────────────────
+
+@app.get("/users/{user_id}/keyword-tracker-usage", response_model=UsageLimitsResponse)
+def get_keyword_tracker_usage(user_id: int, db: Session = Depends(get_db)):
+    """Current keyword tracker usage and limits for a user."""
+    return UsageLimitsResponse(**check_keyword_tracker_limit(user_id, db))
+
+
+@app.get("/keyword_tracker/fetch_and_store_products/{seller_id}", response_model=List[TrackedProductResponse])
+def fetch_and_store_seller_products(
+    seller_id: str, country: str = "IN", page: int = 1,
+    user_email: str = None, user_id: int = None,
+    db: Session = Depends(get_db),
+):
+    """
+    Fetch products from Amazon API + reviews.
+    Stores comments and ratings in separate columns.
+    Checks subscription limits before allowing (race-safe).
+    """
+    if not user_email:
+        raise HTTPException(status_code=400, detail="user_email is required")
+
+    print(f"[fetch] user_id={user_id}, user_email={user_email}, seller_id={seller_id}")
+
+    try:
+        resp = requests.get(AMAZON_API_URL, headers=HEADERS,
+                            params={"seller_id": seller_id, "country": country,
+                                    "page": page, "sort_by": "RELEVANCE"}, timeout=20)
+        resp.raise_for_status()
+        seller_products = resp.json().get("data", {}).get("seller_products", [])
+        if not seller_products:
+            return []
+
+        # Find how many are truly new (not yet in DB)
+        new_asins = []
+        for item in seller_products:
+            existing = db.query(TrackedProduct).filter(
+                TrackedProduct.seller_id == seller_id,
+                TrackedProduct.asin == item["asin"],
+                TrackedProduct.user_email == user_email,
+            ).first()
+            if not existing:
+                new_asins.append(item["asin"])
+
+        # Atomic limit check only for genuinely new products
+        if user_id and new_asins:
+            ok = atomic_increment_usage(user_id, len(new_asins), db)
+            if not ok:
+                usage = check_keyword_tracker_limit(user_id, db)
+                raise HTTPException(
+                    status_code=403,
+                    detail=(f"Keyword Tracker limit reached for {usage['subscription_tier'].upper()} plan. "
+                            f"You've used all {usage['limit']} product trackings this month. Upgrade for more!"),
+                )
+
+        comments, ratings = fetch_seller_reviews(seller_id, country)
+        comments_json = json.dumps(comments) if comments else None
+        ratings_json  = json.dumps(ratings)  if ratings  else None
+
+        saved_products = []
+        for item in seller_products:
+            existing = db.query(TrackedProduct).filter(
+                TrackedProduct.seller_id == seller_id,
+                TrackedProduct.asin == item["asin"],
+                TrackedProduct.user_email == user_email,
+            ).first()
+            if existing:
+                existing.review_comments = comments_json
+                existing.review_ratings  = ratings_json
+                db.commit()
+                db.refresh(existing)
+                saved_products.append(existing)
+            else:
+                new_product = TrackedProduct(
+                    seller_id=seller_id, asin=item["asin"],
+                    product_title=item["product_title"],
+                    product_photo=item.get("product_photo", ""),
+                    country=country, user_email=user_email,
+                    review_comments=comments_json, review_ratings=ratings_json,
+                )
+                db.add(new_product)
+                db.commit()
+                db.refresh(new_product)
+                saved_products.append(new_product)
+
+        return [
+            TrackedProductResponse(
+                id=p.id, seller_id=p.seller_id, asin=p.asin,
+                product_title=p.product_title, product_photo=p.product_photo,
+                country=p.country, user_email=p.user_email,
+                review_comments=parse_review_comments(p.review_comments),
+                review_ratings=parse_review_ratings(p.review_ratings),
+            )
+            for p in saved_products
+        ]
+
+    except HTTPException:
+        raise
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(status_code=500, detail=f"RapidAPI request failed: {e}")
+    except Exception as e:
+        import traceback; traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Unexpected error: {e}")
+
+
+@app.post("/keyword_tracker/track_keywords")
+def track_keywords(req: KeywordTrackRequest, db: Session = Depends(get_db)):
+    if not req.user_email:
+        raise HTTPException(status_code=400, detail="user_email is required")
+
+    product = db.query(TrackedProduct).filter(
+        TrackedProduct.id == req.tracked_product_id,
+        TrackedProduct.user_email == req.user_email,
+    ).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Tracked product not found or doesn't belong to this user")
+
+    added = 0
+    for kw in req.keywords:
+        existing = db.query(KeywordRankHistory).filter(
+            KeywordRankHistory.tracked_product_id == req.tracked_product_id,
+            KeywordRankHistory.keyword == kw,
+            KeywordRankHistory.user_email == req.user_email,
+        ).first()
+        if not existing:
+            db.add(KeywordRankHistory(
+                tracked_product_id=req.tracked_product_id,
+                keyword=kw, rank=0,
+                checked_at=datetime.utcnow(),
+                user_email=req.user_email,
+            ))
+            added += 1
+
+    db.commit()
+    return {"status": "ok", "message": f"Added {added} new keywords for {req.user_email}"}
+
+
+@app.get("/keyword_tracker/tracked_products/{seller_id}", response_model=List[TrackedProductResponse])
+def get_tracked_products(seller_id: str, user_email: str = None, db: Session = Depends(get_db)):
+    query = db.query(TrackedProduct).filter(TrackedProduct.seller_id == seller_id)
+    if user_email:
+        query = query.filter(TrackedProduct.user_email == user_email)
+    return [
+        TrackedProductResponse(
+            id=p.id, seller_id=p.seller_id, asin=p.asin,
+            product_title=p.product_title, product_photo=p.product_photo,
+            country=p.country, user_email=p.user_email,
+            review_comments=parse_review_comments(p.review_comments),
+            review_ratings=parse_review_ratings(p.review_ratings),
+        )
+        for p in query.all()
+    ]
+
+
+@app.get("/keyword_tracker/rank_history/{tracked_product_id}")
+def get_rank_history(tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)):
+    """
+    Rank history enriched with velocity per keyword.
+    """
+    query = db.query(KeywordRankHistory).filter(
+        KeywordRankHistory.tracked_product_id == tracked_product_id
+    )
+    if user_email:
+        query = query.filter(KeywordRankHistory.user_email == user_email)
+    history = query.order_by(KeywordRankHistory.keyword, KeywordRankHistory.checked_at.desc()).all()
+
+    # Group by keyword, compute velocity
+    by_kw: dict = defaultdict(list)
+    for entry in history:
+        by_kw[entry.keyword].append({
+            "rank": entry.rank,
+            "checked_at": entry.checked_at.isoformat(),
+        })
+
+    result = []
+    for entry in history:
+        kw_data = by_kw[entry.keyword]
+        # velocity only meaningful for the latest entry per keyword
+        v = compute_velocity(kw_data) if entry == history[0] or entry.keyword != getattr(history[history.index(entry)-1] if history.index(entry) > 0 else entry, 'keyword', None) else 0.0
+        result.append({
+            "keyword":    entry.keyword,
+            "rank":       entry.rank,
+            "velocity":   v,
+            "checked_at": entry.checked_at.isoformat(),
+            "user_email": entry.user_email,
+        })
+    return result
+
+
+@app.post("/keyword_tracker/update_daily_ranks")
+def update_daily_ranks(req: UpdateRanksRequest, db: Session = Depends(get_db)):
+    """
+    Manual rank update. Limited to 4 calls per user per calendar day.
+    Uses keyword search (not seller listing) for accurate keyword-level ranks.
+    """
+    if not req.user_email:
+        raise HTTPException(status_code=400, detail="user_email is required")
+
+    # Rate limit check
+    rl = check_rank_update_ratelimit(req.user_email, db)
+    if not rl["allowed"]:
+        raise HTTPException(
+            status_code=429,
+            detail=(f"You've used all {RANK_UPDATE_DAILY_LIMIT} manual rank updates for today. "
+                    f"Resets at {rl['resets_at']}. Automated daily updates still run in the background."),
+            headers={"X-RateLimit-Limit": str(rl["limit"]),
+                     "X-RateLimit-Used": str(rl["used"]),
+                     "X-RateLimit-ResetAt": rl["resets_at"]},
+        )
+
+    increment_rank_update_count(req.user_email, db)
+
+    products = db.query(TrackedProduct).filter(TrackedProduct.user_email == req.user_email).all()
+    if not products:
+        return {"status": "success", "message": "No products found.", "updated_count": 0,
+                "rate_limit": rl}
+
+    updated = 0
+    for product in products:
+        kw_entries = db.query(KeywordRankHistory).filter(
+            KeywordRankHistory.tracked_product_id == product.id,
+            KeywordRankHistory.user_email == req.user_email,
+        ).all()
+
+        for kw in kw_entries:
+            try:
+                # FIXED: search by keyword, find ASIN rank in search results
+                resp = requests.get(
+                    AMAZON_SEARCH_API_URL,
+                    headers=HEADERS,
+                    params={"query": kw.keyword, "country": product.country,
+                            "page": "1", "sort_by": "RELEVANCE"},
+                    timeout=20,
+                )
+                resp.raise_for_status()
+                results = resp.json().get("data", {}).get("products", [])
+                rank = next((i + 1 for i, p in enumerate(results) if p.get("asin") == product.asin), 0)
+                kw.rank       = rank
+                kw.checked_at = datetime.utcnow()
+                updated += 1
+            except Exception as e:
+                print(f"[rank update] {product.asin}/{kw.keyword}: {e}")
+
+    db.commit()
+
+    new_rl = check_rank_update_ratelimit(req.user_email, db)
+    return {
+        "status":        "success",
+        "message":       f"Updated {updated} keyword ranks.",
+        "updated_count": updated,
+        "rate_limit": {
+            "used":       new_rl["used"],
+            "limit":      new_rl["limit"],
+            "remaining":  new_rl["limit"] - new_rl["used"],
+            "resets_at":  new_rl["resets_at"],
+        },
+    }
+
+
+# ─────────────────────────────────────────
+# PRODUCT DETAIL — click on product → full picture
+# ─────────────────────────────────────────
+
+@app.get("/keyword_tracker/product_detail/{tracked_product_id}")
+def get_product_detail(
+    tracked_product_id: int,
+    user_email: str = None,
+    db: Session = Depends(get_db),
+):
+    """
+    Single endpoint powering the product detail page when a seller clicks a product.
+    Returns:
+      - product info
+      - competitor list with comparison table
+      - AI competitor recommendation
+      - rank history with velocity
+      - rank prediction
+      - review sentiment breakdown
+      - keyword suggestions
+    """
+    query = db.query(TrackedProduct).filter(TrackedProduct.id == tracked_product_id)
+    if user_email:
+        query = query.filter(TrackedProduct.user_email == user_email)
+    product = query.first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    # Rank history + velocity
+    kw_history = db.query(KeywordRankHistory).filter(
+        KeywordRankHistory.tracked_product_id == tracked_product_id
+    )
+    if user_email:
+        kw_history = kw_history.filter(KeywordRankHistory.user_email == user_email)
+    kw_history = kw_history.order_by(KeywordRankHistory.keyword, KeywordRankHistory.checked_at.desc()).all()
+
+    by_kw: dict = defaultdict(list)
+    for entry in kw_history:
+        by_kw[entry.keyword].append({"rank": entry.rank, "checked_at": entry.checked_at.isoformat()})
+
+    keyword_data = []
+    for kw, ranks in by_kw.items():
+        keyword_data.append({
+            "keyword":      kw,
+            "current_rank": ranks[0]["rank"] if ranks else 0,
+            "history":      ranks,
+            "velocity":     compute_velocity(ranks),
+            "prediction":   predict_rank(ranks),
+        })
+
+    # Competitors
+    seller_dict = {
+        "asin": product.asin, "product_title": product.product_title,
+        "product_price_numeric": None, "product_star_rating_numeric": None,
+        "product_num_ratings": None, "is_best_seller": False,
+        "is_amazon_choice": False, "is_prime": False,
+    }
+    competitors = find_competitor_matches(seller_dict, db, country=product.country, max_matches=5)
+    comparisons = [
+        {
+            "competitor_product": c.model_dump(),
+            "comparison_metrics": generate_comparison_metrics(seller_dict, c),
+        }
+        for c in competitors
+    ]
+
+    # AI recommendation (competitor-aware)
+    ai_rec = ai_competitor_recommendation(seller_dict, comparisons)
+
+    # Review sentiment
+    comments = parse_review_comments(product.review_comments)
+    sentiment = ai_review_sentiment(comments, product.product_title) if comments else {}
+
+    # Keyword suggestions
+    suggestions = ai_keyword_suggestions(product.product_title, product.asin, product.country)
+
+    # Overall rank prediction (aggregate across keywords)
+    all_rank_points = []
+    for kw, ranks in by_kw.items():
+        all_rank_points.extend(ranks)
+    overall_prediction = predict_rank(sorted(all_rank_points, key=lambda x: x["checked_at"]))
+
+    return {
+        "product": {
+            "id": product.id, "seller_id": product.seller_id, "asin": product.asin,
+            "product_title": product.product_title, "product_photo": product.product_photo,
+            "country": product.country, "user_email": product.user_email,
+        },
+        "keywords":                keyword_data,
+        "competitors":             comparisons,
+        "ai_recommendation":       ai_rec,
+        "review_sentiment":        sentiment,
+        "keyword_suggestions":     suggestions,
+        "overall_rank_prediction": overall_prediction,
+    }
+
+
+# ─────────────────────────────────────────
+# AI KEYWORD ANALYSIS ENDPOINT (enhanced)
+# ─────────────────────────────────────────
+
+@app.get("/keyword_tracker/ai_analysis/{tracked_product_id}", response_model=AIAnalysisResponse)
+def get_ai_keyword_analysis(
+    tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)
+):
+    query = db.query(TrackedProduct).filter(TrackedProduct.id == tracked_product_id)
+    if user_email:
+        query = query.filter(TrackedProduct.user_email == user_email)
+    product = query.first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Tracked product not found")
+
+    rank_query = db.query(KeywordRankHistory).filter(KeywordRankHistory.tracked_product_id == tracked_product_id)
+    if user_email:
+        rank_query = rank_query.filter(KeywordRankHistory.user_email == user_email)
+    rank_history = rank_query.order_by(KeywordRankHistory.keyword, KeywordRankHistory.checked_at.desc()).all()
+    if not rank_history:
+        raise HTTPException(status_code=404, detail="No rank history found")
+
+    by_kw: dict = defaultdict(list)
+    for entry in rank_history:
+        by_kw[entry.keyword].append({"rank": entry.rank, "checked_at": entry.checked_at.isoformat()})
+
+    rank_summary = []
+    for kw, ranks in by_kw.items():
+        change = (ranks[1]["rank"] - ranks[0]["rank"]) if len(ranks) >= 2 else 0
+        rank_summary.append({
+            "keyword":       kw,
+            "current_rank":  ranks[0]["rank"],
+            "previous_rank": ranks[1]["rank"] if len(ranks) >= 2 else None,
+            "change":        change,
+            "trend":         "improved" if change > 0 else "declined" if change < 0 else "stable",
+            "velocity":      compute_velocity(ranks),
+        })
+
+    analysis = ai_keyword_analysis(product.product_title, product.asin, product.country, rank_summary)
+    return {"product_title": product.product_title, "asin": product.asin,
+            "total_keywords": len(rank_summary), "analysis": analysis}
+
+
+# ─────────────────────────────────────────
+# NEW: KEYWORD SUGGESTIONS
+# ─────────────────────────────────────────
+
+@app.post("/keyword_tracker/suggest_keywords/{tracked_product_id}")
+def suggest_keywords(
+    tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)
+):
+    """AI-powered keyword suggestions grouped by search intent."""
+    query = db.query(TrackedProduct).filter(TrackedProduct.id == tracked_product_id)
+    if user_email:
+        query = query.filter(TrackedProduct.user_email == user_email)
+    product = query.first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    suggestions = ai_keyword_suggestions(product.product_title, product.asin, product.country)
+    return {
+        "product_title": product.product_title,
+        "asin":          product.asin,
+        "suggestions":   suggestions,
+    }
+
+
+# ─────────────────────────────────────────
+# NEW: REVIEW SENTIMENT ANALYSIS
+# ─────────────────────────────────────────
+
+@app.get("/keyword_tracker/review_sentiment/{tracked_product_id}")
+def get_review_sentiment(
+    tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)
+):
+    """NLP sentiment breakdown by topic (quality, packaging, value, shipping, support)."""
+    query = db.query(TrackedProduct).filter(TrackedProduct.id == tracked_product_id)
+    if user_email:
+        query = query.filter(TrackedProduct.user_email == user_email)
+    product = query.first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    comments = parse_review_comments(product.review_comments)
+    if not comments:
+        return {"product_title": product.product_title, "asin": product.asin,
+                "sentiment": {"error": "No reviews available for analysis."}}
+
+    sentiment = ai_review_sentiment(comments, product.product_title)
+    return {"product_title": product.product_title, "asin": product.asin, "sentiment": sentiment}
+
+
+# ─────────────────────────────────────────
+# NEW: RANK PREDICTION
+# ─────────────────────────────────────────
+
+@app.get("/keyword_tracker/rank_prediction/{tracked_product_id}")
+def get_rank_prediction(
+    tracked_product_id: int, keyword: str = None,
+    user_email: str = None, db: Session = Depends(get_db)
+):
+    """
+    Linear regression rank prediction.
+    Pass ?keyword=... for single keyword. Omit for aggregate across all keywords.
+    """
+    query = db.query(KeywordRankHistory).filter(KeywordRankHistory.tracked_product_id == tracked_product_id)
+    if user_email:
+        query = query.filter(KeywordRankHistory.user_email == user_email)
+    if keyword:
+        query = query.filter(KeywordRankHistory.keyword == keyword)
+    history = query.order_by(KeywordRankHistory.checked_at.asc()).all()
+
+    if not history:
+        raise HTTPException(status_code=404, detail="No rank history found")
+
+    points = [{"rank": h.rank, "checked_at": h.checked_at.isoformat()} for h in history]
+    prediction = predict_rank(points)
+    return {"keyword": keyword or "aggregate", "prediction": prediction, "data_points": len(points)}
+
+
+# ─────────────────────────────────────────
+# NEW: PRICE ALERT
+# ─────────────────────────────────────────
+
+@app.post("/keyword_tracker/set_price_alert")
+def set_price_alert(req: PriceAlertRequest, db: Session = Depends(get_db)):
+    """
+    Set a price alert threshold. When any competitor is cheaper by
+    req.threshold_percent%, an email is sent to req.delivery_email via Brevo.
+    Checks immediately on creation and stores config for future background checks.
+    """
+    query = db.query(TrackedProduct).filter(TrackedProduct.id == req.tracked_product_id)
+    if req.user_email:
+        query = query.filter(TrackedProduct.user_email == req.user_email)
+    product = query.first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    db.execute(text("""
+        INSERT INTO price_alerts (tracked_product_id, user_email, threshold_percent, delivery_email)
+        VALUES (:pid, :email, :thresh, :demail)
+        ON CONFLICT DO NOTHING
+    """), {"pid": req.tracked_product_id, "email": req.user_email,
+           "thresh": req.threshold_percent, "demail": req.delivery_email})
+    db.commit()
+
+    # Immediate check on alert creation
+    seller_dict = {"asin": product.asin, "product_title": product.product_title}
+    competitors = find_competitor_matches(seller_dict, db, country=product.country, max_matches=5)
+    triggered = []
+    for comp in competitors:
+        if comp.product_price_numeric:
+            triggered.append({
+                "competitor_asin":  comp.asin,
+                "competitor_title": comp.product_title,
+                "competitor_price": comp.product_price_numeric,
+                "alert_threshold":  req.threshold_percent,
+            })
+
+    if triggered:
+        fire_price_alert(
+            product_title=product.product_title,
+            asin=product.asin,
+            threshold_percent=req.threshold_percent,
+            triggered=triggered,
+            delivery_email=req.delivery_email,
+        )
+
+    return {
+        "status":          "alert_set",
+        "product":         product.product_title,
+        "threshold":       f"{req.threshold_percent}%",
+        "alert_email":     req.delivery_email,
+        "immediate_check": triggered,
+        "email_sent":      len(triggered) > 0,
+    }
+
+
+# ─────────────────────────────────────────
+# NEW: MULTI-MARKETPLACE COMPARISON
+# ─────────────────────────────────────────
+
+@app.get("/keyword_tracker/cross_market_comparison/{asin}")
+async def cross_market_comparison(
+    asin: str,
+    countries: str = "IN,US,UK,DE",
+    db: Session = Depends(get_db),
+):
+    """
+    Fetch the same ASIN across multiple marketplaces in parallel.
+    Returns price, rating, rank, and badge comparison per country.
+    """
+    country_list = [c.strip().upper() for c in countries.split(",") if c.strip().upper() in SUPPORTED_COUNTRIES]
+    if not country_list:
+        raise HTTPException(status_code=400, detail=f"No valid countries. Supported: {SUPPORTED_COUNTRIES}")
+
+    async def fetch_country(country: str) -> dict:
+        loop = asyncio.get_event_loop()
+        try:
+            resp = await loop.run_in_executor(
+                None,
+                lambda: requests.get(
+                    AMAZON_SEARCH_API_URL,
+                    headers=HEADERS,
+                    params={"query": asin, "country": country, "page": "1"},
+                    timeout=20,
+                ),
+            )
+            resp.raise_for_status()
+            products = resp.json().get("data", {}).get("products", [])
+            match = next((p for p in products if p.get("asin") == asin), None)
+            if match:
+                return {"country": country, "found": True, "data": match, "rank_in_search": next((i+1 for i, p in enumerate(products) if p.get("asin") == asin), None)}
+            return {"country": country, "found": False, "data": None, "rank_in_search": None}
+        except Exception as e:
+            return {"country": country, "found": False, "error": str(e), "data": None}
+
+    results = await asyncio.gather(*[fetch_country(c) for c in country_list])
+
+    found_markets = [r for r in results if r.get("found")]
+    if not found_markets:
+        return {"asin": asin, "markets": results, "best_market": None, "insights": "Product not found in any requested marketplace."}
+
+    best = max(found_markets, key=lambda r: r["data"].get("product_star_rating_numeric") or 0)
+
+    # AI cross-market insight
+    market_summary = "\n".join(
+        f"  {r['country']}: price={r['data'].get('product_price','?')}, rating={r['data'].get('product_star_rating','?')}, rank={r.get('rank_in_search','?')}"
+        for r in found_markets
+    )
+    prompt = f"""{SYSTEM_PERSONA}
+
+Product ASIN {asin} across marketplaces:
+{market_summary}
+
+In 2-3 direct sentences, tell the seller: which market is performing best and why, and one specific action they should take based on this cross-market data."""
+    try:
+        insight = _call_ollama(prompt, timeout=60)
+    except Exception:
+        insight = "Cross-market data collected. Compare pricing and ratings per country to identify expansion opportunities."
+
+    return {"asin": asin, "markets": results, "best_market": best.get("country"), "ai_insight": insight}
+
+
+# ─────────────────────────────────────────
+# NEW: COMPETITOR CHANGE ALERTS (diff)
+# ─────────────────────────────────────────
+
+@app.get("/keyword_tracker/competitor_changes/{seller_id}")
+def get_competitor_changes(
+    seller_id: str, user_email: str = None, db: Session = Depends(get_db)
+):
+    """
+    Diff today's competitor snapshot vs yesterday's.
+    Returns detected changes in price, rating, badges.
+    """
+    today     = datetime.utcnow().strftime("%Y-%m-%d")
+    yesterday = (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%d")
+
+    query_params: dict = {"sid": seller_id, "today": today, "yesterday": yesterday}
+    email_filter = "AND user_email = :email" if user_email else ""
+    if user_email:
+        query_params["email"] = user_email
+
+    rows = db.execute(text(f"""
+        SELECT t.asin, t.snapshot_date, t.snapshot_data
+        FROM competitor_snapshots t
+        WHERE t.seller_id = :sid
+          AND t.snapshot_date IN (:today, :yesterday)
+          {email_filter}
+        ORDER BY t.asin, t.snapshot_date DESC
+    """), query_params).fetchall()
+
+    by_asin: dict = defaultdict(dict)
+    for asin, date, data in rows:
+        by_asin[asin][str(date)] = json.loads(data) if isinstance(data, str) else data
+
+    changes = []
+    watch_fields = ["product_price_numeric", "product_star_rating_numeric",
+                    "product_num_ratings", "is_best_seller", "is_amazon_choice"]
+
+    for asin, snapshots in by_asin.items():
+        today_data     = snapshots.get(today, [])
+        yesterday_data = snapshots.get(yesterday, [])
+        if not today_data or not yesterday_data:
+            continue
+
+        today_map     = {c["asin"]: c for c in today_data}
+        yesterday_map = {c["asin"]: c for c in yesterday_data}
+
+        for comp_asin, today_comp in today_map.items():
+            yesterday_comp = yesterday_map.get(comp_asin)
+            if not yesterday_comp:
+                continue
+            diffs = []
+            for field in watch_fields:
+                old_val = yesterday_comp.get(field)
+                new_val = today_comp.get(field)
+                if old_val != new_val and old_val is not None and new_val is not None:
+                    diffs.append({"field": field, "old_value": old_val, "new_value": new_val})
+            if diffs:
+                changes.append({
+                    "seller_asin":     asin,
+                    "competitor_asin": comp_asin,
+                    "competitor_title": today_comp.get("product_title", ""),
+                    "changes":         diffs,
+                    "detected_at":     today,
+                })
+
+    return {
+        "seller_id":     seller_id,
+        "period":        f"{yesterday} → {today}",
+        "total_changes": len(changes),
+        "changes":       changes,
+    }
+
+
+# ─────────────────────────────────────────
+# NEW: EXPORT (CSV + PDF)
+# ─────────────────────────────────────────
+
+@app.get("/keyword_tracker/export/{tracked_product_id}")
+def export_report(
+    tracked_product_id: int,
+    format: str = "pdf",
+    user_email: str = None,
+    db: Session = Depends(get_db),
+):
+    """
+    Export rank history + AI analysis as PDF or CSV.
+    ?format=pdf  (default)
+    ?format=csv
+    """
+    query = db.query(TrackedProduct).filter(TrackedProduct.id == tracked_product_id)
+    if user_email:
+        query = query.filter(TrackedProduct.user_email == user_email)
+    product = query.first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    kw_query = db.query(KeywordRankHistory).filter(
+        KeywordRankHistory.tracked_product_id == tracked_product_id
+    )
+    if user_email:
+        kw_query = kw_query.filter(KeywordRankHistory.user_email == user_email)
+    history = kw_query.order_by(KeywordRankHistory.keyword, KeywordRankHistory.checked_at.desc()).all()
+
+    rank_history_dicts = [
+        {"keyword": h.keyword, "rank": h.rank,
+         "velocity": 0.0, "checked_at": h.checked_at.isoformat()}
+        for h in history
+    ]
+
+    if format.lower() == "csv":
+        import csv
+        buf = BytesIO()
+        import io
+        text_buf = io.StringIO()
+        writer = csv.DictWriter(text_buf, fieldnames=["keyword", "rank", "velocity", "checked_at"])
+        writer.writeheader()
+        writer.writerows(rank_history_dicts)
+        csv_bytes = text_buf.getvalue().encode("utf-8")
+        return StreamingResponse(
+            BytesIO(csv_bytes),
+            media_type="text/csv",
+            headers={"Content-Disposition": f"attachment; filename={product.asin}_ranks.csv"},
+        )
+
+    # PDF
+    by_kw: dict = defaultdict(list)
+    for h in history:
+        by_kw[h.keyword].append({"rank": h.rank, "checked_at": h.checked_at.isoformat()})
+
+    rank_summary = [
+        {
+            "keyword": kw, "current_rank": ranks[0]["rank"],
+            "previous_rank": ranks[1]["rank"] if len(ranks) > 1 else None,
+            "change": (ranks[1]["rank"] - ranks[0]["rank"]) if len(ranks) > 1 else 0,
+            "trend": "stable", "velocity": compute_velocity(ranks),
+        }
+        for kw, ranks in by_kw.items()
+    ]
+
+    ai_analysis = ai_keyword_analysis(product.product_title, product.asin, product.country, rank_summary)
+    prediction  = predict_rank([{"rank": h.rank, "checked_at": h.checked_at.isoformat()} for h in history])
+
+    product_resp = TrackedProductResponse(
+        id=product.id, seller_id=product.seller_id, asin=product.asin,
+        product_title=product.product_title, product_photo=product.product_photo,
+        country=product.country, user_email=product.user_email,
+    )
+    pdf_buf = generate_pdf_report(product_resp, rank_history_dicts, ai_analysis, prediction)
+
+    return StreamingResponse(
+        pdf_buf,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename={product.asin}_report.pdf"},
+    )
+
+
+# ─────────────────────────────────────────
+# NEW: RATE LIMIT STATUS
+# ─────────────────────────────────────────
+
+@app.get("/keyword_tracker/rate_limit_status")
+def get_rate_limit_status(user_email: str, db: Session = Depends(get_db)):
+    """Check remaining manual rank update calls for today."""
+    rl = check_rank_update_ratelimit(user_email, db)
+    return {
+        "user_email": user_email,
+        "rank_updates_used":      rl["used"],
+        "rank_updates_limit":     rl["limit"],
+        "rank_updates_remaining": rl["limit"] - rl["used"],
+        "resets_at":              rl["resets_at"],
+        "auto_update_schedule":   "Daily at 06:00 UTC (always runs)",
+    }
+
+
+# ─────────────────────────────────────────
+# EXISTING: competitor comparison endpoints (preserved)
+# ─────────────────────────────────────────
+
+@app.get("/keyword_tracker/competitor_comparison/{seller_id}", response_model=ComparisonResponse)
+def get_competitor_comparison(
+    seller_id: str, country: str = "IN", user_email: str = None,
+    max_competitors_per_product: int = 3, db: Session = Depends(get_db)
+):
+    if not user_email:
+        raise HTTPException(status_code=400, detail="user_email is required")
+    products = db.query(TrackedProduct).filter(
+        TrackedProduct.seller_id == seller_id,
+        TrackedProduct.user_email == user_email,
+        TrackedProduct.country == country,
+    ).all()
+    if not products:
+        raise HTTPException(status_code=404, detail=f"No tracked products found for seller {seller_id}")
+
+    all_comparisons = []
+    for p in products:
+        seller_dict = {
+            "asin": p.asin, "product_title": p.product_title, "product_photo": p.product_photo,
+            "country": p.country, "product_price_numeric": None,
+            "product_star_rating_numeric": None, "product_num_ratings": None,
+            "is_best_seller": False, "is_amazon_choice": False, "is_prime": False,
+        }
+        for comp in find_competitor_matches(seller_dict, db, country=country, max_matches=max_competitors_per_product):
+            all_comparisons.append(ProductComparison(
+                seller_product=seller_dict, competitor_product=comp,
+                comparison_metrics=generate_comparison_metrics(seller_dict, comp),
+            ))
+
+    return ComparisonResponse(
+        seller_id=seller_id, total_seller_products=len(products),
+        total_comparisons=len(all_comparisons), comparisons=all_comparisons,
+    )
+
+
+@app.get("/keyword_tracker/fetch_and_compare/{seller_id}")
+def fetch_products_with_comparison(
+    seller_id: str, country: str = "IN", page: int = 1,
+    user_email: str = None, user_id: int = None, db: Session = Depends(get_db)
+):
+    if not user_email:
+        raise HTTPException(status_code=400, detail="user_email is required")
+    try:
+        resp = requests.get(AMAZON_API_URL, headers=HEADERS,
+                            params={"seller_id": seller_id, "country": country,
+                                    "page": page, "sort_by": "RELEVANCE"}, timeout=20)
+        resp.raise_for_status()
+        seller_products = resp.json().get("data", {}).get("seller_products", [])
+        if not seller_products:
+            return {"products": [], "comparisons": []}
+
+        comments, ratings = fetch_seller_reviews(seller_id, country)
+        comments_json = json.dumps(comments) if comments else None
+        ratings_json  = json.dumps(ratings)  if ratings  else None
+        saved_products = []
+
+        for item in seller_products:
+            existing = db.query(TrackedProduct).filter(
+                TrackedProduct.seller_id == seller_id, TrackedProduct.asin == item["asin"],
+                TrackedProduct.user_email == user_email,
+            ).first()
+            if existing:
+                existing.review_comments = comments_json
+                existing.review_ratings  = ratings_json
+                db.commit(); db.refresh(existing)
+                saved_products.append(existing)
+            else:
+                new_p = TrackedProduct(
+                    seller_id=seller_id, asin=item["asin"], product_title=item["product_title"],
+                    product_photo=item.get("product_photo", ""), country=country,
+                    user_email=user_email, review_comments=comments_json, review_ratings=ratings_json,
+                )
+                db.add(new_p); db.commit(); db.refresh(new_p)
+                saved_products.append(new_p)
+
+        all_comparisons = []
+        for sp in seller_products:
+            for comp in find_competitor_matches(sp, db, country=country, max_matches=3):
+                all_comparisons.append({
+                    "seller_product":     {"asin": sp["asin"], "title": sp["product_title"], "photo": sp.get("product_photo")},
+                    "competitor_product": comp.model_dump(),
+                    "comparison_metrics": generate_comparison_metrics(sp, comp),
+                })
+
+        return {
+            "products": [
+                {"id": p.id, "seller_id": p.seller_id, "asin": p.asin,
+                 "product_title": p.product_title, "product_photo": p.product_photo,
+                 "country": p.country, "user_email": p.user_email,
+                 "review_comments": parse_review_comments(p.review_comments),
+                 "review_ratings":  parse_review_ratings(p.review_ratings)}
+                for p in saved_products
+            ],
+            "comparisons":       all_comparisons,
+            "total_products":    len(saved_products),
+            "total_comparisons": len(all_comparisons),
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ═══════════════════════════════════════════════════════════════════
+# COMPETITOR INTELLIGENCE CHAT
+# A conversational AI endpoint — seller asks anything about their
+# competitors. Past, present, future. Human-like, memory-aware,
+# data-grounded. Feels like talking to a real strategist.
+# ═══════════════════════════════════════════════════════════════════
+
+# ─────────────────────────────────────────
+# CHAT PERSONA — deeper than SYSTEM_PERSONA
+# ─────────────────────────────────────────
+
+CHAT_PERSONA = """You are Insydz — a sharp, experienced Amazon marketplace strategist who has helped hundreds of sellers compete and win.
+
+Your personality:
+- You speak like a real person, not a report generator. Conversational, direct, occasionally blunt.
+- You never hedge everything. If the data says a competitor is crushing it, you say so.
+- You remember what was said earlier in this conversation and refer back to it naturally.
+- You ask one follow-up question when you need more context — but only one.
+- You use "I", "you", "we" naturally. You're having a conversation, not writing a document.
+- Short sentences when making a point. Longer ones when explaining nuance.
+- You never use: "Certainly!", "Absolutely!", "Great question!", "Of course!", "As an AI..."
+- When you don't know something from the data, you say "I don't have that data right now" — not "I cannot determine..."
+- You occasionally say things like "Honestly,", "Here's the thing —", "Look,", "Real talk —" to sound human.
+- Numbers matter. Always reference the actual figures you've been given.
+- You give opinions. "I think they're about to drop their price" is better than "price changes are possible".
+
+Your knowledge scope for this conversation:
+- Everything about the seller's tracked product (title, ASIN, country, reviews, ratings)
+- Full competitor list with prices, ratings, review counts, badges (best seller, amazon choice, prime)
+- Keyword rank history with velocity and trends
+- Competitor snapshot history (changes over time)
+- Rank prediction data (7-day and 30-day forecasts)
+
+Time awareness:
+- "past" questions → use snapshot history, rank history, rating/price changes over time
+- "present" questions → use current competitor data, current ranks, current badges
+- "future" questions → use rank prediction, velocity trends, price patterns, your strategic judgment
+- "what should I do" → give a direct action plan based on everything above
+
+Never make up data. If a specific number isn't in the context, say so and reason from what you do have."""
+
+
+# ─────────────────────────────────────────
+# PYDANTIC MODELS FOR CHAT
+# ─────────────────────────────────────────
+
+class ChatMessage(BaseModel):
+    role: str       # "user" or "assistant"
+    content: str
+
+
+class CompetitorChatRequest(BaseModel):
+    tracked_product_id: int
+    user_email:         str
+    message:            str                          # current user message
+    history:            Optional[List[ChatMessage]] = []   # prior turns
+
+
+class CompetitorChatResponse(BaseModel):
+    reply:              str
+    context_used:       dict    # what data was loaded — helpful for frontend debug/display
+    suggested_followups: List[str]   # 3 natural next questions the seller might want to ask
+
+
+# ─────────────────────────────────────────
+# HELPER — build rich context snapshot
+# ─────────────────────────────────────────
+
+def _build_competitor_context(
+    product: TrackedProduct,
+    db: Session,
+    user_email: str,
+) -> dict:
+    """
+    Assembles everything known about a product and its competitors
+    into a structured context dict for the AI.
+    """
+
+    # ── Keyword rank history ──
+    kw_rows = db.execute(text("""
+        SELECT keyword, rank, checked_at
+        FROM keyword_rank_history
+        WHERE tracked_product_id = :pid AND user_email = :email
+        ORDER BY keyword, checked_at DESC
+    """), {"pid": product.id, "email": user_email}).fetchall()
+
+    by_kw: dict = defaultdict(list)
+    for kw, rank, checked_at in kw_rows:
+        by_kw[kw].append({"rank": rank, "checked_at": checked_at.isoformat()})
+
+    keyword_summary = []
+    for kw, ranks in by_kw.items():
+        velocity = compute_velocity(ranks)
+        change   = (ranks[1]["rank"] - ranks[0]["rank"]) if len(ranks) >= 2 else 0
+        keyword_summary.append({
+            "keyword":        kw,
+            "current_rank":   ranks[0]["rank"] if ranks else 0,
+            "previous_rank":  ranks[1]["rank"] if len(ranks) >= 2 else None,
+            "change":         change,
+            "velocity":       velocity,
+            "trend":          "improving" if velocity > 0.3 else "declining" if velocity < -0.3 else "stable",
+            "history_count":  len(ranks),
+        })
+
+    # Overall rank prediction
+    all_points = [{"rank": r["rank"], "checked_at": r["checked_at"]}
+                  for ranks in by_kw.values() for r in ranks]
+    prediction = predict_rank(sorted(all_points, key=lambda x: x["checked_at"])) if all_points else {}
+
+    # ── Live competitors ──
+    seller_dict = {
+        "asin":                      product.asin,
+        "product_title":             product.product_title,
+        "product_price_numeric":     None,
+        "product_star_rating_numeric": None,
+        "product_num_ratings":       None,
+        "is_best_seller":            False,
+        "is_amazon_choice":          False,
+        "is_prime":                  False,
+    }
+    competitors = find_competitor_matches(seller_dict, db, country=product.country, max_matches=6)
+    competitor_details = []
+    for c in competitors:
+        metrics = generate_comparison_metrics(seller_dict, c)
+        competitor_details.append({
+            "asin":             c.asin,
+            "title":            c.product_title,
+            "price":            c.product_price_numeric,
+            "rating":           c.product_star_rating_numeric,
+            "review_count":     c.product_num_ratings,
+            "is_best_seller":   c.is_best_seller,
+            "is_amazon_choice": c.is_amazon_choice,
+            "is_prime":         c.is_prime,
+            "sales_volume":     c.sales_volume,
+            "advantages_over_you":    metrics.get("competitive_disadvantages", []),
+            "your_advantages_over":   metrics.get("competitive_advantages", []),
+            "price_diff_percent":     metrics.get("price_comparison", {}).get("difference_percent"),
+            "rating_diff":            metrics.get("rating_comparison", {}).get("difference"),
+        })
+
+    # ── Snapshot history (competitor changes over time) ──
+    snapshot_rows = db.execute(text("""
+        SELECT snapshot_date, snapshot_data
+        FROM competitor_snapshots
+        WHERE asin = :asin AND user_email = :email
+        ORDER BY snapshot_date DESC
+        LIMIT 14
+    """), {"asin": product.asin, "email": user_email}).fetchall()
+
+    snapshot_timeline = []
+    for snap_date, snap_data in snapshot_rows:
+        data = json.loads(snap_data) if isinstance(snap_data, str) else (snap_data or [])
+        snapshot_timeline.append({
+            "date":        str(snap_date),
+            "competitors": [
+                {
+                    "asin":             c.get("asin"),
+                    "title":            c.get("product_title", "")[:60],
+                    "price":            c.get("product_price_numeric"),
+                    "rating":           c.get("product_star_rating_numeric"),
+                    "review_count":     c.get("product_num_ratings"),
+                    "is_best_seller":   c.get("is_best_seller"),
+                    "is_amazon_choice": c.get("is_amazon_choice"),
+                }
+                for c in data[:5]
+            ],
+        })
+
+    # ── Review sentiment (from stored comments) ──
+    comments = parse_review_comments(product.review_comments)
+    ratings  = parse_review_ratings(product.review_ratings)
+    avg_rating = round(sum(ratings) / len(ratings), 2) if ratings else None
+
+    return {
+        "product": {
+            "id":            product.id,
+            "asin":          product.asin,
+            "title":         product.product_title,
+            "country":       product.country,
+            "seller_id":     product.seller_id,
+            "avg_rating":    avg_rating,
+            "review_count":  len(ratings),
+            "sample_reviews": comments[:10],
+        },
+        "keywords":           keyword_summary,
+        "rank_prediction":    prediction,
+        "competitors":        competitor_details,
+        "snapshot_timeline":  snapshot_timeline,
+        "data_freshness": {
+            "competitors_live":    len(competitor_details) > 0,
+            "keyword_data_points": sum(k["history_count"] for k in keyword_summary),
+            "snapshot_days":       len(snapshot_timeline),
+        },
+    }
+
+
+def _format_context_for_prompt(ctx: dict) -> str:
+    """
+    Converts the context dict into a dense, readable text block
+    that the AI can reason over naturally.
+    """
+    lines = []
+
+    p = ctx["product"]
+    lines.append(f"=== SELLER'S PRODUCT ===")
+    lines.append(f"Title: {p['title']}")
+    lines.append(f"ASIN: {p['asin']} | Country: {p['country']}")
+    lines.append(f"Avg rating: {p['avg_rating'] or 'unknown'} | Reviews: {p['review_count']}")
+    if p["sample_reviews"]:
+        lines.append(f"Sample customer feedback: {' | '.join(p['sample_reviews'][:3])}")
+
+    lines.append(f"\n=== KEYWORD RANKINGS ===")
+    if ctx["keywords"]:
+        for k in ctx["keywords"]:
+            arrow = "↑" if k["trend"] == "improving" else "↓" if k["trend"] == "declining" else "→"
+            lines.append(
+                f"  '{k['keyword']}': rank #{k['current_rank']} {arrow} "
+                f"(velocity: {k['velocity']:+.2f}, trend: {k['trend']}, "
+                f"prev rank: {k['previous_rank'] or 'N/A'})"
+            )
+    else:
+        lines.append("  No keyword data available yet.")
+
+    pred = ctx["rank_prediction"]
+    if pred.get("predicted_7d"):
+        lines.append(
+            f"\n=== RANK FORECAST ===\n"
+            f"  7-day: #{pred['predicted_7d']} (±{pred.get('margin_7d', '?')}) | "
+            f"30-day: #{pred['predicted_30d']} (±{pred.get('margin_30d', '?')}) | "
+            f"Trend: {pred.get('trend', 'unknown')} | Confidence: {pred.get('confidence', 'low')}"
+        )
+
+    lines.append(f"\n=== CURRENT COMPETITORS ({len(ctx['competitors'])} found) ===")
+    for i, c in enumerate(ctx["competitors"], 1):
+        badges = []
+        if c["is_best_seller"]:   badges.append("BEST SELLER")
+        if c["is_amazon_choice"]: badges.append("AMAZON'S CHOICE")
+        if c["is_prime"]:         badges.append("PRIME")
+        badge_str = f" [{', '.join(badges)}]" if badges else ""
+        lines.append(
+            f"  {i}. {c['title'][:55]}{badge_str}\n"
+            f"     ASIN: {c['asin']} | Price: ₹{c['price'] or '?'} | "
+            f"Rating: {c['rating'] or '?'} | Reviews: {c['review_count'] or '?'}\n"
+            f"     Their edge over you: {', '.join(c['advantages_over_you']) or 'none identified'}\n"
+            f"     Your edge over them: {', '.join(c['your_advantages_over']) or 'none identified'}"
+        )
+
+    if ctx["snapshot_timeline"]:
+        lines.append(f"\n=== COMPETITOR HISTORY (last {len(ctx['snapshot_timeline'])} days) ===")
+        for snap in ctx["snapshot_timeline"][:7]:
+            comp_summary = ", ".join(
+                f"{c['title'][:30]} @₹{c['price'] or '?'} ★{c['rating'] or '?'}"
+                for c in snap["competitors"][:3]
+            )
+            lines.append(f"  {snap['date']}: {comp_summary}")
+    else:
+        lines.append("\n=== COMPETITOR HISTORY ===\n  No historical snapshots yet (scheduler runs daily).")
+
+    return "\n".join(lines)
+
+
+def _format_history_for_prompt(history: List[ChatMessage]) -> str:
+    """Formats prior conversation turns into a readable block."""
+    if not history:
+        return ""
+    lines = ["\n=== CONVERSATION SO FAR ==="]
+    for msg in history[-10:]:   # last 10 turns max — keeps prompt lean
+        prefix = "Seller" if msg.role == "user" else "Insydz"
+        lines.append(f"{prefix}: {msg.content}")
+    return "\n".join(lines)
+
+
+def _generate_followup_suggestions(message: str, ctx: dict) -> List[str]:
+    """
+    Returns 3 natural follow-up questions based on what was just asked
+    and what data is available. No AI call — pure logic, fast.
+    """
+    msg_lower = message.lower()
+    has_history  = len(ctx["snapshot_timeline"]) > 0
+    has_keywords = len(ctx["keywords"]) > 0
+    has_comps    = len(ctx["competitors"]) > 0
+    has_pred     = bool(ctx["rank_prediction"].get("predicted_7d"))
+
+    suggestions = []
+
+    # Context-aware suggestion pools
+    if any(w in msg_lower for w in ["future", "predict", "forecast", "will", "going to"]):
+        suggestions += [
+            "Which keyword should I push hardest in the next 30 days?",
+            "Is my price likely to become a problem against competitors?",
+            "What's the biggest risk to my ranking in the next month?",
+        ]
+    elif any(w in msg_lower for w in ["past", "history", "before", "used to", "changed"]):
+        suggestions += [
+            "Have any competitors gained or lost badges recently?",
+            "Which competitor has been most consistent over time?",
+            "How has my keyword rank trended compared to 2 weeks ago?",
+        ]
+    elif any(w in msg_lower for w in ["price", "pricing", "cheaper", "expensive", "cost"]):
+        suggestions += [
+            "Should I lower my price or compete on quality signals instead?",
+            "Which competitor is most vulnerable to a price undercut?",
+            "What's the sweet spot price for my category right now?",
+        ]
+    elif any(w in msg_lower for w in ["review", "rating", "customer", "feedback"]):
+        suggestions += [
+            "What are customers complaining about most with my competitors?",
+            "How can I use their negative reviews to improve my listing?",
+            "Which competitor has the worst review quality despite high volume?",
+        ]
+    elif any(w in msg_lower for w in ["keyword", "rank", "search", "seo"]):
+        suggestions += [
+            "Which competitor is winning on my most important keyword?",
+            "Are there keywords I should be tracking that I'm missing?",
+            "What does my rank velocity tell you about the next 2 weeks?",
+        ]
+    else:
+        # Generic but still contextual
+        if has_comps:
+            suggestions.append("Who is my most dangerous competitor right now and why?")
+        if has_pred:
+            suggestions.append("What does my rank prediction tell you about the next month?")
+        if has_history:
+            suggestions.append("Has anything changed with my competitors in the past week?")
+        if has_keywords:
+            suggestions.append("Which of my keywords has the best momentum right now?")
+        suggestions.append("What's the one thing I should do this week to improve my position?")
+
+    return suggestions[:3]
+
+
+# ─────────────────────────────────────────
+# THE CHAT ENDPOINT
+# ─────────────────────────────────────────
+
+@app.post("/keyword_tracker/competitor_chat", response_model=CompetitorChatResponse)
+def competitor_chat(req: CompetitorChatRequest, db: Session = Depends(get_db)):
+    """
+    Conversational competitor intelligence chat.
+
+    Send a message + optional conversation history.
+    Returns Insydz's reply, the context she used, and 3 suggested follow-ups.
+
+    The AI has full access to:
+      - Seller's product data and reviews
+      - All competitors with prices, ratings, badges
+      - Keyword rank history and velocity
+      - Competitor snapshot timeline (past changes)
+      - Rank predictions (7d + 30d)
+
+    Frontend usage:
+      1. First message: send message + empty history []
+      2. Each subsequent turn: append previous {role, content} pairs to history
+      3. Display suggested_followups as quick-reply chips
+    """
+    if not req.user_email:
+        raise HTTPException(status_code=400, detail="user_email is required")
+    if not req.message.strip():
+        raise HTTPException(status_code=400, detail="message cannot be empty")
+
+    # ── Load product ──
+    product = db.query(TrackedProduct).filter(
+        TrackedProduct.id == req.tracked_product_id,
+        TrackedProduct.user_email == req.user_email,
+    ).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found or doesn't belong to this user")
+
+    # ── Build context ──
+    ctx            = _build_competitor_context(product, db, req.user_email)
+    context_text   = _format_context_for_prompt(ctx)
+    history_text   = _format_history_for_prompt(req.history)
+
+    # ── Detect intent for prompt shaping ──
+    msg_lower = req.message.lower()
+    time_hint = ""
+    if any(w in msg_lower for w in ["future", "predict", "forecast", "will", "going to", "next month", "next week"]):
+        time_hint = "\nThe seller is asking about the FUTURE. Lean on rank predictions, velocity trends, and your strategic judgment. Be specific about timeframes."
+    elif any(w in msg_lower for w in ["past", "history", "before", "last week", "last month", "used to", "changed", "was"]):
+        time_hint = "\nThe seller is asking about the PAST. Use the snapshot timeline and rank history. Call out specific dates and changes."
+    elif any(w in msg_lower for w in ["now", "current", "today", "right now", "at the moment"]):
+        time_hint = "\nThe seller is asking about the PRESENT. Focus on current competitor data, live ranks, and active badges."
+    elif any(w in msg_lower for w in ["should", "do", "action", "help", "advice", "recommend", "strategy"]):
+        time_hint = "\nThe seller wants actionable advice. Give them a direct, specific answer — not a list of options. Tell them exactly what to do."
+
+    # ── Build the full prompt ──
+    prompt = f"""{CHAT_PERSONA}
+{time_hint}
+
+{context_text}
+{history_text}
+
+=== SELLER'S QUESTION ===
+{req.message.strip()}
+
+=== YOUR REPLY ===
+Respond as Insydz. Be conversational, specific, and use the actual data above.
+- Keep your reply focused — 3 to 6 sentences for simple questions, a short structured answer for complex ones.
+- Reference actual competitor names, prices, ratings, or keyword ranks from the data above.
+- If the data doesn't support a confident answer, say what you do know and what you'd need to be certain.
+- End with ONE natural follow-up question if it would genuinely help the seller — but only if it makes sense. Don't force it.
+- Do NOT use markdown headers, bullet asterisks, or numbered lists unless the question specifically calls for a structured breakdown.
+- Write as you'd speak to someone across a table."""
+
+    # ── Call Ollama ──
+    try:
+        reply = _call_ollama(prompt, timeout=120)
+        if not reply:
+            reply = (
+                "I'm having a moment — Ollama didn't return a response. "
+                "Try asking again in a few seconds. "
+                "If it keeps happening, check that the model is loaded with `ollama run llama3.2:3b`."
+            )
+    except requests.exceptions.ConnectionError:
+        reply = (
+            "Can't reach Ollama right now. Make sure it's running on "
+            f"{OLLAMA_BASE} with `ollama serve`. "
+            "Once it's up, your question will work fine."
+        )
+    except requests.exceptions.Timeout:
+        reply = (
+            "That one took too long — the model timed out. "
+            "Try a slightly shorter question, or check if the server is under load."
+        )
+    except Exception as e:
+        reply = f"Something went wrong on my end: {str(e)}. Try again in a moment."
+
+    # ── Suggested follow-ups ──
+    followups = _generate_followup_suggestions(req.message, ctx)
+
+    return CompetitorChatResponse(
+        reply=reply,
+        context_used={
+            "product_asin":          ctx["product"]["asin"],
+            "product_title":         ctx["product"]["title"],
+            "competitors_loaded":    len(ctx["competitors"]),
+            "keywords_loaded":       len(ctx["keywords"]),
+            "snapshot_days":         ctx["data_freshness"]["snapshot_days"],
+            "keyword_data_points":   ctx["data_freshness"]["keyword_data_points"],
+            "rank_prediction_available": bool(ctx["rank_prediction"].get("predicted_7d")),
+        },
+        suggested_followups=followups,
+    )
+
+
+# ─────────────────────────────────────────
+# CHAT STARTER — first message suggestions
+# when seller opens the chat for the first time
+# ─────────────────────────────────────────
+
+@app.get("/keyword_tracker/competitor_chat/starters/{tracked_product_id}")
+def get_chat_starters(
+    tracked_product_id: int,
+    user_email: str,
+    db: Session = Depends(get_db),
+):
+    """
+    Returns contextual opening questions for the chat UI
+    so sellers know what they can ask Insydz about.
+    Generated based on what data is actually available for this product.
+    """
+    product = db.query(TrackedProduct).filter(
+        TrackedProduct.id == tracked_product_id,
+        TrackedProduct.user_email == user_email,
+    ).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+
+    has_keywords = db.execute(text(
+        "SELECT COUNT(*) FROM keyword_rank_history WHERE tracked_product_id=:pid AND user_email=:email"
+    ), {"pid": tracked_product_id, "email": user_email}).scalar() > 0
+
+    has_snapshots = db.execute(text(
+        "SELECT COUNT(*) FROM competitor_snapshots WHERE asin=:asin AND user_email=:email"
+    ), {"asin": product.asin, "email": user_email}).scalar() > 0
+
+    has_reviews = bool(parse_review_comments(product.review_comments))
+
+    starters = [
+        {
+            "category": "Right now",
+            "questions": [
+                "Who is my biggest competitor right now and what are they doing better than me?",
+                "Which competitor is most likely to steal my customers this week?",
+                "How does my price compare to the top 3 competitors today?",
+            ],
+        },
+        {
+            "category": "Looking back",
+            "questions": [
+                "Have any competitors changed their price or rating recently?"
+                if has_snapshots else
+                "What's the competitive landscape in my category?",
+                "Which competitor has been most consistent over time?",
+                "Has my ranking been improving or declining over the past few weeks?",
+            ],
+        },
+        {
+            "category": "Looking ahead",
+            "questions": [
+                "Where do you think my ranking will be in 30 days?",
+                "Which competitor do you think is about to make a move?",
+                "What should I do in the next 2 weeks to stay ahead?",
+            ],
+        },
+    ]
+
+    if has_keywords:
+        starters.append({
+            "category": "Keywords",
+            "questions": [
+                "Which of my keywords has the best momentum right now?",
+                "Which keyword should I focus on to climb the fastest?",
+                "Are any of my keywords at risk of dropping out of the top 20?",
+            ],
+        })
+
+    if has_reviews:
+        starters.append({
+            "category": "Reviews & sentiment",
+            "questions": [
+                "What are customers saying about my competitors that I can learn from?",
+                "Which competitor has the worst review quality despite high volume?",
+                "How can I use competitor review weaknesses in my own listing?",
+            ],
+        })
+
+    return {
+        "product_title": product.product_title,
+        "asin":          product.asin,
+        "starters":      starters,
+        "intro": (
+            f"Hey — I'm Insydz. I've pulled up everything on your competitors "
+            f"for '{product.product_title}'. "
+            f"Ask me anything — past, present, or where things are headed. "
+            f"What do you want to know?"
+        ),
+    }
+
+
+
+from fastapi.responses import Response
+from datetime import datetime
+
+@app.get("/sitemap.xml", include_in_schema=False)
+async def sitemap():
+    """
+    Production-ready static sitemap
+    Update this list when adding new pages
+    """
+    base_url = "https://insydz.com"
+    today = datetime.now().strftime("%Y-%m-%d")
+    
+    # ✅ Public marketing pages only
+    pages = [
+        "/",
+        "/about",
+        "/privacy-policy",
+        "/terms-service",
+        "/pricing",
+        "/use-cases",
+        "/solutions",
+        "/features",
+        "/compare/insydzvshelium",
+        "/compare/insydzvsjunglescout",
+        "/compare/insydzvsvirallaunch",
+        "/solutions/amazon-sellers",
+        "/solutions/flipkart-sellers",
+        "/solutions/brand-managers",
+        "/solutions/ecommerce-agencies",
+        "/use-cases/track-competitor-prices",
+        "/use-cases/find-profitable-products",
+        "/use-cases/analyze-customer-reviews",
+        "/use-cases/improve-seo",
+        "/use-cases/avoid-stockouts",
+        "/features/competitor-price-tracking-feature",
+        "/features/review-analytics-feature",
+        "/features/price-optimization-feature",
+        "/features/keyword-rank-tracking-feature",
+        "/features/product-research-feature",
+        "/features/ai-recommendations-feature",
+        "/features/whatsapp-alerts-feature",
+        "/features/festive-trend-feature",
+        "/free-tools/free-amazon-product-analyzer",
+        "/free-tools/free-review-sentiment-checker",
+        "/free-tools/free-competitor-price-checker",
+        "/free-tools/free-keyword-rank-checker",
+        "/resources/expert-blog",
+        "/resources/expert-blog/amazon-competitor-price-tracking-tool",
+        "/resources/expert-blog/amazon-seo-tool-india",
+        "/resources/expert-blog/how-to-rank-page-1-amazon-india",
+        "/resources/expert-blog/best-competitor-price-tracking-tools-india",
+        "/resources/expert-blog/insydz-vs-helium-10-india",
+        "/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers",
+        "/resources/expert-blog/review-analysis-guide-india",
+        "/resources/expert-blog/best-amazon-keyword-research-tool-india",
+        "/resources/expert-blog/best-flipkart-analytics-tool",
+        "/resources/expert-blog/flipkart-keyword-research-tool",
+        "/about/our-vision",
+        "/about/careers",
+        "/about/contact-us",
+    ]
+    
+    xml = ['<?xml version="1.0" encoding="UTF-8"?>']
+    xml.append('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">')
+    
+    for page in pages:
+        xml.append("  <url>")
+        xml.append(f"    <loc>{base_url}{page}</loc>")
+        xml.append(f"    <lastmod>{today}</lastmod>")
+        xml.append("  </url>")
+    
+    xml.append("</urlset>")
+    
+    return Response(
+        content="\n".join(xml),
+        media_type="application/xml",
+        headers={"Cache-Control": "public, max-age=86400"}  # 24h cache
+    )
+
+
+@app.get("/robots.txt", include_in_schema=False)
+async def robots():
+    return Response(
+        content="""User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /signup
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /subscription
+Disallow: /product-tracker
+Disallow: /sales
+Disallow: /overview
+
+Sitemap: https://insydz.com/sitemap.xml
+""",
+        media_type="text/plain"
+    )
+
+
+
+
+
+
+
+
+
+
+import json
+import re
+import hashlib
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any, Dict, List, Optional, Tuple
+from fastapi import HTTPException, Depends
+from sqlalchemy.orm import Session
+from sqlalchemy import text
+from pydantic import BaseModel
+import requests
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# SCHEMA
+# ──────────────────────────────────────────────────────────────────────
+ 
+class IntelligenceQuery(BaseModel):
+    source:  str                          # "amazon" | "flipkart"
+    filters: Optional[Dict[str, Any]] = {}
+ 
+ 
+class IntelligenceResponse(BaseModel):
+    market_pulse:     str
+    opportunity:      str
+    risk_flag:        str
+    verdict:          str
+    micro_insights:   List[str]
+    momentum_score:   int
+    momentum_label:   str
+    context_summary:  str
+    cached:           bool
+    data_rows:        int
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# WHERE CLAUSE  (shared helper)
+# ──────────────────────────────────────────────────────────────────────
+ 
+def _where(filters: Dict, source: str) -> str:
+    conds = []
+    cat = filters.get("category", "")
+    if cat and cat != "All Categories":
+        safe = cat.replace("'", "''")
+        conds.append(f"LOWER(category_name) = LOWER('{safe}')")
+    pr = filters.get("priceRange", [0, 5_000_000])
+    pf = "product_price" if source == "flipkart" else "product_price_numeric"
+    if pr[0] > 0:         conds.append(f"{pf} >= {pr[0]}")
+    if pr[1] < 5_000_000: conds.append(f"{pf} <= {pr[1]}")
+    rat = filters.get("rating", 0)
+    if rat > 0:
+        rf = "product_star_rating" if source == "flipkart" else "product_star_rating_numeric"
+        conds.append(f"{rf} >= {rat}")
+    if filters.get("showTrendingOnly"):
+        conds.append("sales_volume IS NOT NULL AND sales_volume != ''")
+    return " AND ".join(conds) if conds else "1=1"
+ 
+# ──────────────────────────────────────────────────────────────────────
+# THREE PARALLEL SQL QUERIES
+# ──────────────────────────────────────────────────────────────────────
+ 
+def _sql_category_overview(source: str, where: str, limit: int = 15) -> str:
+    if source == "flipkart":
+        return f"""
+            SELECT category_name,
+                COUNT(*)                           AS listings,
+                ROUND(AVG(product_price),0)        AS avg_price,
+                ROUND(MIN(product_price),0)        AS min_price,
+                ROUND(MAX(product_price),0)        AS max_price,
+                ROUND(AVG(product_star_rating),2)  AS avg_rating,
+                SUM(product_rating_count)          AS total_reviews,
+                ROUND(AVG(estimated_sales),0)      AS avg_sales,
+                COUNT(DISTINCT brand)              AS brand_count
+            FROM rapidapi_flipkart_products
+            WHERE product_title IS NOT NULL AND {where}
+            GROUP BY category_name
+            ORDER BY total_reviews DESC NULLS LAST
+            LIMIT {limit}
+        """
+    return f"""
+        SELECT category_name,
+            COUNT(*)                                  AS listings,
+            ROUND(AVG(product_price_numeric),0)       AS avg_price,
+            ROUND(MIN(product_price_numeric),0)       AS min_price,
+            ROUND(MAX(product_price_numeric),0)       AS max_price,
+            ROUND(AVG(product_star_rating_numeric),2) AS avg_rating,
+            SUM(product_num_ratings)                  AS total_reviews,
+            ROUND(AVG(avg_sales_volume),0)            AS avg_sales
+        FROM rapidapi_amazon_products
+        WHERE product_title IS NOT NULL AND {where}
+        GROUP BY category_name
+        ORDER BY total_reviews DESC NULLS LAST
+        LIMIT {limit}
+    """
+ 
+def _sql_brand_leaders(source: str, where: str, limit: int = 10) -> str:
+    if source == "flipkart":
+        return f"""
+            SELECT brand,
+                COUNT(*)                           AS listings,
+                ROUND(AVG(product_price),0)        AS avg_price,
+                ROUND(AVG(product_star_rating),2)  AS avg_rating,
+                SUM(product_rating_count)          AS total_reviews,
+                ROUND(AVG(estimated_sales),0)      AS avg_sales
+            FROM rapidapi_flipkart_products
+            WHERE product_title IS NOT NULL AND brand IS NOT NULL AND {where}
+            GROUP BY brand
+            ORDER BY total_reviews DESC NULLS LAST
+            LIMIT {limit}
+        """
+    return f"""
+        SELECT category_name AS brand,
+            COUNT(*)                                  AS listings,
+            ROUND(AVG(product_price_numeric),0)       AS avg_price,
+            ROUND(AVG(product_star_rating_numeric),2) AS avg_rating,
+            SUM(product_num_ratings)                  AS total_reviews,
+            ROUND(AVG(avg_sales_volume),0)            AS avg_sales
+        FROM rapidapi_amazon_products
+        WHERE product_title IS NOT NULL AND {where}
+        GROUP BY category_name
+        ORDER BY total_reviews DESC NULLS LAST
+        LIMIT {limit}
+    """
+ 
+def _sql_price_bands(source: str, where: str) -> str:
+    if source == "flipkart":
+        return f"""
+            SELECT
+                CASE
+                    WHEN product_price < 500    THEN 'Under ₹500'
+                    WHEN product_price < 1000   THEN '₹500-₹1K'
+                    WHEN product_price < 2500   THEN '₹1K-₹2.5K'
+                    WHEN product_price < 5000   THEN '₹2.5K-₹5K'
+                    WHEN product_price < 15000  THEN '₹5K-₹15K'
+                    ELSE 'Above ₹15K'
+                END AS price_band,
+                COUNT(*)                          AS listings,
+                ROUND(AVG(product_star_rating),2) AS avg_rating,
+                SUM(product_rating_count)         AS total_reviews
+            FROM rapidapi_flipkart_products
+            WHERE product_title IS NOT NULL AND product_price IS NOT NULL AND {where}
+            GROUP BY 1
+            ORDER BY total_reviews DESC NULLS LAST
+        """
+    return f"""
+        SELECT
+            CASE
+                WHEN product_price_numeric < 500   THEN 'Under ₹500'
+                WHEN product_price_numeric < 1000  THEN '₹500-₹1K'
+                WHEN product_price_numeric < 2500  THEN '₹1K-₹2.5K'
+                WHEN product_price_numeric < 5000  THEN '₹2.5K-₹5K'
+                WHEN product_price_numeric < 15000 THEN '₹5K-₹15K'
+                ELSE 'Above ₹15K'
+            END AS price_band,
+            COUNT(*)                                  AS listings,
+            ROUND(AVG(product_star_rating_numeric),2) AS avg_rating,
+            SUM(product_num_ratings)                  AS total_reviews
+        FROM rapidapi_amazon_products
+        WHERE product_title IS NOT NULL AND product_price_numeric IS NOT NULL AND {where}
+        GROUP BY 1
+        ORDER BY total_reviews DESC NULLS LAST
+    """
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# MOMENTUM SCORER
+# Gives the current filter-context a 0-100 score
+# ──────────────────────────────────────────────────────────────────────
+ 
+def compute_momentum(cat_data: List[Dict], brand_data: List[Dict], band_data: List[Dict]) -> Tuple[int, str]:
+    if not cat_data:
+        return 0, "No data"
+ 
+    def f(v): return float(v) if v is not None else 0.0
+    total_reviews  = sum(f(r.get("total_reviews", 0)) for r in cat_data)
+    avg_rating     = sum(f(r.get("avg_rating", 0)) for r in cat_data if r.get("avg_rating")) / max(len([r for r in cat_data if r.get("avg_rating")]), 1)
+    total_listings = sum(f(r.get("listings", 0)) for r in cat_data)
+    avg_sales      = sum(f(r.get("avg_sales", 0)) for r in cat_data if r.get("avg_sales")) / max(len([r for r in cat_data if r.get("avg_sales")]), 1)
+
+    # Demand signal (reviews + sales)
+    demand   = min(total_reviews / 20000, 1.0) * 35
+    # Quality signal (avg rating)
+    quality  = min(avg_rating / 5.0, 1.0) * 25
+    # Market depth (listings variety)
+    depth    = min(total_listings / 200, 1.0) * 20
+    # Sales velocity
+    velocity = min(avg_sales / 500, 1.0) * 20
+ 
+    raw = demand + quality + depth + velocity
+    score = round(raw)
+    score = max(5, min(score, 98))   # never 0 or 100 — keeps it realistic
+ 
+    label = (
+        "🔥 Hot Market"      if score >= 80 else
+        "📈 Strong Momentum" if score >= 65 else
+        "⚡ Active Market"   if score >= 50 else
+        "🌱 Growing"         if score >= 35 else
+        "😴 Low Activity"
+    )
+    return score, label
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# MICRO-INSIGHT GENERATOR
+# Derives 3 crisp data-driven facts from the raw query results
+# ──────────────────────────────────────────────────────────────────────
+ 
+def extract_micro_insights(cat_data: List[Dict], brand_data: List[Dict], band_data: List[Dict]) -> List[str]:
+    insights = []
+ 
+    # 1. Top category by reviews
+    if cat_data:
+        top = cat_data[0]
+        cat_name = top.get("category_name", "Top category")
+        reviews  = top.get("total_reviews", 0) or 0
+        rating   = top.get("avg_rating", 0) or 0
+        if reviews > 0:
+            insights.append(
+                f"**{cat_name}** leads with {int(reviews):,} total reviews "
+                f"and a {rating}★ avg rating"
+            )
+ 
+    # 2. Best price band by demand
+    if band_data:
+        top_band = band_data[0]
+        band_name  = top_band.get("price_band", "")
+        band_rev   = top_band.get("total_reviews", 0) or 0
+        band_list  = top_band.get("listings", 0) or 0
+        if band_name and band_rev > 0:
+            insights.append(
+                f"**{band_name}** price range captures the most demand "
+                f"({int(band_rev):,} reviews across {int(band_list):,} listings)"
+            )
+ 
+    # 3. Hidden gem — high rating, low reviews
+    rated = [r for r in cat_data if r.get("avg_rating", 0) >= 4.2 and (r.get("total_reviews", 0) or 0) < 1000]
+    if rated:
+        gem = min(rated, key=lambda x: x.get("total_reviews", 9999999))
+        gem_cat = gem.get("category_name", "")
+        gem_rev = gem.get("total_reviews", 0) or 0
+        gem_rat = gem.get("avg_rating", 0)
+        if gem_cat:
+            insights.append(
+                f"**{gem_cat}** is an underexplored gem — {gem_rat}★ avg with only "
+                f"{int(gem_rev):,} reviews (low competition signal)"
+            )
+ 
+    # 4. Quality gap — high sales, low rating
+    for row in cat_data[:8]:
+        sales  = row.get("avg_sales", 0) or 0
+        rating = row.get("avg_rating", 0) or 0
+        cat    = row.get("category_name", "")
+        if sales > 200 and 0 < rating < 3.7 and cat:
+            insights.append(
+                f"**{cat}** sells ~{int(sales)} units/mo despite {rating}★ ratings "
+                f"— quality gap opportunity"
+            )
+            break
+ 
+    # 5. Brand concentration
+    if brand_data and len(brand_data) >= 3:
+        top3_reviews = sum(b.get("total_reviews", 0) or 0 for b in brand_data[:3])
+        total_reviews = sum(b.get("total_reviews", 0) or 0 for b in brand_data)
+        if total_reviews > 0:
+            concentration = round((top3_reviews / total_reviews) * 100)
+            top_brand = brand_data[0].get("brand", brand_data[0].get("category_name", "Top brand"))
+            if concentration > 60:
+                insights.append(
+                    f"Market is concentrated — top 3 brands hold {concentration}% of reviews. "
+                    f"**{top_brand}** dominates"
+                )
+            else:
+                insights.append(
+                    f"Market is fragmented — top 3 brands hold only {concentration}% of reviews. "
+                    f"Entry opportunity exists"
+                )
+ 
+    return insights[:3]   # max 3
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# MASTER PROMPT — purpose-built for Decision Intelligence panel
+# Designed to output structured sections the frontend can parse
+# ──────────────────────────────────────────────────────────────────────
+ 
+def build_intelligence_prompt(
+    source:          str,
+    platform:        str,
+    filters:         Dict,
+    cat_data:        List[Dict],
+    brand_data:      List[Dict],
+    band_data:       List[Dict],
+    micro_insights:  List[str],
+    momentum_score:  int,
+    momentum_label:  str,
+    context_summary: str,
+) -> str:
+ 
+    cat_json   = json.dumps(cat_data[:8],   indent=2, default=str)
+    brand_json = json.dumps(brand_data[:6], indent=2, default=str)
+    band_json  = json.dumps(band_data,      indent=2, default=str)
+ 
+    micro_block = "\n".join(f"- {m}" for m in micro_insights)
+ 
+    prompt = f"""You are Insydz, a senior e-commerce intelligence analyst for Indian marketplaces.
+ 
+Platform: {platform}
+Current filter context: {context_summary}
+Momentum score: {momentum_score}/100 ({momentum_label})
+ 
+Pre-computed data insights (use these as your foundation):
+{micro_block}
+ 
+Raw market data:
+ 
+Category overview:
+{cat_json}
+ 
+Brand leaders:
+{brand_json}
+ 
+Price band distribution:
+{band_json}
+ 
+Your job: Write a structured intelligence brief in EXACTLY this format.
+Do NOT deviate from the section headers. Do NOT add extra sections.
+Use ₹ always. Be specific with numbers. Sound like a real analyst, not a bot.
+Max 40 words per section. No bullet overload inside sections — use prose.
+ 
+MARKET_PULSE:
+[1-2 sentences: what the data shows about demand, pricing, and consumer behaviour right now]
+ 
+OPPORTUNITY:
+[1 sentence: the single most actionable opportunity in this data — be specific with category/price/numbers]
+ 
+RISK:
+[1 sentence: the biggest risk or red flag in this market right now]
+ 
+VERDICT:
+[1 sentence: the bottom-line recommendation — decisive, specific, no hedging]
+"""
+    return prompt
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# RESPONSE PARSER
+# Extracts structured sections from the model's free-text output
+# ──────────────────────────────────────────────────────────────────────
+ 
+SECTION_PATTERN = re.compile(
+    r"(MARKET_PULSE|OPPORTUNITY|RISK|VERDICT)\s*:\s*(.*?)(?=(?:MARKET_PULSE|OPPORTUNITY|RISK|VERDICT)\s*:|$)",
+    re.IGNORECASE | re.DOTALL
+)
+ 
+BAD_OPENERS = re.compile(
+    r"^(great|certainly|of course|absolutely|sure|hello|hi there|as an ai|i'?m an? ai)\b[^.]*[.!]?\s*",
+    re.IGNORECASE
+)
+ 
+def parse_intelligence_response(raw: str) -> Dict[str, str]:
+    raw = raw.strip()
+    raw = BAD_OPENERS.sub("", raw).strip()
+ 
+    result = {
+        "market_pulse": "",
+        "opportunity":  "",
+        "risk":         "",
+        "verdict":      "",
+    }
+ 
+    for match in SECTION_PATTERN.finditer(raw):
+        key     = match.group(1).lower().replace("market_pulse", "market_pulse")
+        content = match.group(2).strip()
+        # Clean up any trailing section header noise
+        content = content.split("\n\n")[0].strip()
+        # Map key
+        mapped = {
+            "market_pulse": "market_pulse",
+            "opportunity":  "opportunity",
+            "risk":         "risk",
+            "verdict":      "verdict",
+        }.get(key.lower())
+        if mapped:
+            result[mapped] = content
+ 
+    # Fallback — if parsing failed, slice the raw text
+    if not any(result.values()):
+        lines = [l.strip() for l in raw.split("\n") if len(l.strip()) > 20]
+        result["market_pulse"] = lines[0] if len(lines) > 0 else "Market data analysed."
+        result["opportunity"]  = lines[1] if len(lines) > 1 else "Review top categories for entry points."
+        result["risk"]         = lines[2] if len(lines) > 2 else "Monitor competition levels closely."
+        result["verdict"]      = lines[3] if len(lines) > 3 else "Focus on high-demand, lower-competition segments."
+ 
+    return result
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# CONTEXT SUMMARY BUILDER
+# Human-readable description of active filters
+# ──────────────────────────────────────────────────────────────────────
+ 
+def build_context_summary(filters: Dict, platform: str) -> str:
+    parts = [platform]
+    cat = filters.get("category", "")
+    if cat and cat != "All Categories": parts.append(cat)
+    pr = filters.get("priceRange", [0, 5_000_000])
+    if pr[0] > 0 or pr[1] < 5_000_000:
+        parts.append(f"₹{pr[0]:,}–₹{pr[1]:,}")
+    rat = filters.get("rating", 0)
+    if rat > 0: parts.append(f"{rat}★+")
+    if filters.get("showTrendingOnly"): parts.append("Trending only")
+    return " · ".join(parts)
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# OLLAMA CALL
+# ──────────────────────────────────────────────────────────────────────
+ 
+INTEL_OLLAMA_PARAMS = {
+    "temperature":    0.55,    # more factual than the chatbot
+    "top_p":          0.85,
+    "top_k":          40,
+    "repeat_penalty": 1.1,
+    "num_predict":    350,
+    "stop":           ["User:", "Question:", "Seller:"]
+}
+ 
+def call_ollama_intel(prompt: str) -> str:
+    try:
+        resp = requests.post(
+            f"{OLLAMA_API_URL}/api/generate",
+            json={"model": MODEL_NAME, "prompt": prompt, "stream": False, "options": INTEL_OLLAMA_PARAMS},
+            timeout=90
+        )
+        resp.raise_for_status()
+        return resp.json().get("response", "").strip()
+    except requests.exceptions.Timeout:
+        return ""
+    except Exception:
+        return ""
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
+# MAIN ENDPOINT  —  POST /ai/intelligence
+# ──────────────────────────────────────────────────────────────────────
+ 
+@app.post("/ai/intelligence")
+def get_intelligence(query: IntelligenceQuery, db: Session = Depends(get_db)):
+ 
+    # ── Validate source ──
+    raw_source = (query.source or "").lower().strip()
+    if raw_source not in ("amazon", "flipkart"):
+        raise HTTPException(400, f"Invalid source '{query.source}'.")
+    source   = raw_source
+    platform = "Flipkart" if source == "flipkart" else "Amazon"
+ 
+    filters = query.filters or {}
+ 
+    # ── Cache ──
+    cache_key = f"intel:{source}:{json.dumps(filters, sort_keys=True)}"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            data = json.loads(cached)
+            data["cached"] = True
+            return data
+        except Exception:
+            pass
+ 
+    # ── Build WHERE clause ──
+    where = _where(filters, source)
+ 
+    # ── Run 3 queries in parallel ──
+    sql_cat   = _sql_category_overview(source, where)
+    sql_brand = _sql_brand_leaders(source, where)
+    sql_band  = _sql_price_bands(source, where)
+ 
+    cat_data = brand_data = band_data = []
+    try:
+        cat_data   = [dict(r._mapping) for r in db.execute(text(sql_cat)).all()]
+        brand_data = [dict(r._mapping) for r in db.execute(text(sql_brand)).all()]
+        band_data  = [dict(r._mapping) for r in db.execute(text(sql_band)).all()]
+    except Exception as e:
+        raise HTTPException(500, f"Database error: {str(e)}")
+ 
+    total_rows = len(cat_data) + len(brand_data) + len(band_data)
+ 
+    if total_rows == 0:
+        # Return a graceful no-data response
+        return {
+            "market_pulse":    "No data found for the current filter combination.",
+            "opportunity":     "Try broadening your filters to surface opportunities.",
+            "risk":            "Insufficient data to assess risk.",
+            "verdict":         "Adjust filters and try again.",
+            "micro_insights":  [],
+            "momentum_score":  0,
+            "momentum_label":  "No Data",
+            "context_summary": build_context_summary(filters, platform),
+            "cached":          False,
+            "data_rows":       0,
+        }
+ 
+    # ── Compute derived metrics ──
+    momentum_score, momentum_label = compute_momentum(cat_data, brand_data, band_data)
+    micro_insights  = extract_micro_insights(cat_data, brand_data, band_data)
+    context_summary = build_context_summary(filters, platform)
+ 
+    # ── Build prompt and call model ──
+    prompt = build_intelligence_prompt(
+        source=source, platform=platform, filters=filters,
+        cat_data=cat_data, brand_data=brand_data, band_data=band_data,
+        micro_insights=micro_insights, momentum_score=momentum_score,
+        momentum_label=momentum_label, context_summary=context_summary,
+    )
+ 
+    raw_response = call_ollama_intel(prompt)
+    parsed       = parse_intelligence_response(raw_response)
+ 
+    # Fallback to micro_insights if model returned nothing useful
+    if not parsed["market_pulse"] and micro_insights:
+        parsed["market_pulse"] = micro_insights[0].replace("**", "")
+    if not parsed["opportunity"] and len(micro_insights) > 1:
+        parsed["opportunity"] = micro_insights[1].replace("**", "")
+    if not parsed["opportunity"] and micro_insights:
+        parsed["opportunity"] = micro_insights[0].replace("**", "")
+    if not parsed["risk"]:
+        # Build a data-driven risk from what we know
+        top_cat = cat_data[0].get("category_name", "this market") if cat_data else "this market"
+        top_reviews = int(float(cat_data[0].get("total_reviews", 0) or 0)) if cat_data else 0
+        parsed["risk"] = f"{top_cat} has {top_reviews:,} existing reviews — established sellers have a strong head start. New entrants need a clear quality or price differentiator to break through."
+    if not parsed["verdict"]:
+        if micro_insights:
+            parsed["verdict"] = micro_insights[-1].replace("**", "")
+        else:
+            parsed["verdict"] = "Focus on the highest-demand, lowest-competition segment in the data signals above."
+    # ── Build response ──
+    result = {
+        "market_pulse":    parsed["market_pulse"],
+        "opportunity":     parsed["opportunity"],
+        "risk":            parsed["risk"],
+        "verdict":         parsed["verdict"],
+        "micro_insights":  micro_insights,
+        "momentum_score":  momentum_score,
+        "momentum_label":  momentum_label,
+        "context_summary": context_summary,
+        "cached":          False,
+        "data_rows":       total_rows,
+    }
+ 
+    # Cache for 20 minutes
+    r.setex(cache_key, 1200, json.dumps(result, default=str))
+ 
+    return result

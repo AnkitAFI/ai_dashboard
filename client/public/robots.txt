@@ -1,0 +1,38 @@
+User-agent: *
+Allow: /
+
+# Allow major AI crawlers
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: Bytespider
+Allow: /
+
+User-agent: meta-externalagent
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+# Block sensitive pages (recommended)
+Disallow: /login
+Disallow: /signup
+Disallow: /dashboard
+Disallow: /settings
+Disallow: /subscription
+Disallow: /product-tracker
+Disallow: /sales
+Disallow: /overview
+
+# Sitemap
+Sitemap: https://insydz.com/sitemap.xml

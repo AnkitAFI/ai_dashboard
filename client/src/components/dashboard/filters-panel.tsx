@@ -343,7 +343,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Filter, X, RotateCcw, Lock, Crown, Info, AlertCircle } from "lucide-react";
 import { useFilters } from "./FiltersContext";
-import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
+import { useSubscriptionLimits, UNLIMITED } from "@/hooks/useSubscriptionLimits";
 import {
   Dialog,
   DialogContent,
@@ -661,11 +661,11 @@ export default function FiltersPanel({ selectedSource }: { selectedSource: strin
                   <div className="group relative">
                     <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                     <div className="hidden group-hover:block absolute z-50 w-48 p-2 bg-gray-900 text-white text-xs rounded shadow-lg -top-2 left-6">
-                      Your limit: {limits.maxTopN === Infinity ? "Unlimited" : `Top ${limits.maxTopN}`}
+                      Your limit: {limits.maxTopN >= UNLIMITED ? "Unlimited" : `Top ${limits.maxTopN}`}
                     </div>
                   </div>
                 </Label>
-                {limits.maxTopN !== Infinity && (
+                {limits.maxTopN < UNLIMITED && (
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <Lock className="h-3 w-3" />
                     Max: {limits.maxTopN}
