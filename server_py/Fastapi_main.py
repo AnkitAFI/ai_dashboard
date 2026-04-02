@@ -7,7 +7,7 @@ from sqlalchemy import text, inspect
 from typing import List, Optional, Dict, Any
 import subprocess, json
 from pydantic import BaseModel, Field
-import uvicorn, hashlib
+import uvicorn, hashlib, bcrypt
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 from sklearn.preprocessing import MinMaxScaler
@@ -27,12 +27,29 @@ models.Base.metadata.create_all(bind=engine)
 from .models import AmazonProductDetails, User
 # app = FastAPI(title="API", version="1.0.0")
 import os
-IS_LOCAL = os.getenv("FASTAPI_LOCAL", "false").lower() == "true"
-app = FastAPI(     title="Amazon Reviews API",    version="1.0.0",     docs_url="/docs" if IS_LOCAL else None,     redoc_url="/redoc" if IS_LOCAL else None,     openapi_url="/openapi.json" if IS_LOCAL else None )
+from dotenv import load_dotenv
+
+# Load environment variables early (from server_py/.env)
+env_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(env_path)
+print(f"📡 Loading environment from: {env_path}")
+app = FastAPI(    title="Amazon Reviews API",    version="1.0.0",)
+# app = FastAPI(     title="Amazon Reviews API",    version="1.0.0",     docs_url="/docs" if IS_LOCAL else None,     redoc_url="/redoc" if IS_LOCAL else None,     openapi_url="/openapi.json" if IS_LOCAL else None )
+IS_LOCAL = True
+
+# Configure CORS
+origins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://insydz.com",
+    "https://www.insydz.com",
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://insydz.com"],  # TODO: restrict in production
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -57,8 +74,19 @@ OLLAMA_API_URL = "http://127.0.0.1:11434"  # Ollama HTTP API
 MAX_DATA_CHARS = 1500
 MODEL_NAME = "llama3.2:3b"
 
-# Redis client
-r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+# Redis client with environment-based configuration
+REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", "mystrongpassword")
+REDIS_DB = int(os.getenv("REDIS_DB", 0))
+
+r = redis.Redis(
+    host=REDIS_HOST, 
+    port=REDIS_PORT, 
+    db=REDIS_DB, 
+    password=REDIS_PASSWORD, 
+    decode_responses=True
+)
 
 def decimal_to_float(obj):
     if isinstance(obj, (int, float)):
@@ -4460,725 +4488,7 @@ def get_flipkart_top_products(n: int = 10, db: Session = Depends(get_db)):
         return {"data": [dict(row) for row in result]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-   
-# ============================================
-# FIXED LOGIN ENDPOINT - Replace in Fastapi_main.py
-# ============================================
- 
-# from passlib.context import CryptContext
-# from pydantic import BaseModel, EmailStr
-# from fastapi import HTTPException, Depends
-# from sqlalchemy.orm import Session
- 
-# # Password hashing
-# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
- 
-# def verify_password(plain_password: str, hashed_password: str) -> bool:
-#     return pwd_context.verify(plain_password, hashed_password)
- 
-# def get_password_hash(password: str) -> str:
-#     return pwd_context.hash(password)
- 
-# # ============================================
-# # Pydantic Models
-# # ============================================
- 
-# class UserLogin(BaseModel):
-#     email: EmailStr
-#     password: str
- 
-# class PasswordReset(BaseModel):
-#     email: EmailStr
-#     new_password: str
- 
-# class LoginResponse(BaseModel):
-#     success: bool
-#     message: str
-#     user: dict = None
- 
-# # ============================================
-# # FIXED LOGIN ENDPOINT (without is_active check)
-# # ============================================
- 
-# @app.post("/users/login", response_model=LoginResponse)
-# def login_user(login_data: UserLogin, db: Session = Depends(get_db)):
-#     """
-#     Authenticate user and return user data if successful
-#     """
-#     try:
-#         # Find user by email
-#         user = db.query(models.User).filter(
-#             models.User.email == login_data.email
-#         ).first()
-       
-#         # Check if user exists
-#         if not user:
-#             raise HTTPException(
-#                 status_code=404,
-#                 detail="No account found with this email. Please sign up first."
-#             )
-       
-#         # Verify password
-#         if not verify_password(login_data.password, user.password_hash):
-#             raise HTTPException(
-#                 status_code=401,
-#                 detail="Incorrect password. Please try again or reset your password."
-#             )
-       
-#         # Successful login
-#         return {
-#             "success": True,
-#             "message": "Login successful",
-#             "user": {
-#                 "id": user.id,
-#                 "first_name": user.first_name,
-#                 "last_name": user.last_name,
-#                 "email": user.email,
-#                 "business_name": user.business_name,
-#                 "location": user.location,
-#                 "business_interests": user.business_interests,
-#                 "created_at": str(user.created_at)
-#             }
-#         }
-#     except HTTPException:
-#         raise
-#     except Exception as e:
-#         print(f"âŒ Login error: {str(e)}")
-#         raise HTTPException(
-#             status_code=500,
-#             detail=f"Login failed: {str(e)}"
-#         )
- 
-# # ============================================
-# # FIXED SIGNUP ENDPOINT
-# # ============================================
- 
-# @app.post("/users/signup")
-# def signup_user(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
-#     """
-#     Create a new user account
-#     """
-#     try:
-#         # Check if email already exists
-#         existing_user = db.query(models.User).filter(
-#             models.User.email == user_data.email
-#         ).first()
-       
-#         if existing_user:
-#             raise HTTPException(
-#                 status_code=400,
-#                 detail="Email already registered. Please login instead."
-#             )
-       
-#         # Hash the password
-#         hashed_password = get_password_hash(user_data.password)
-       
-#         # Create new user (without is_active field)
-#         new_user = models.User(
-#             first_name=user_data.first_name,
-#             last_name=user_data.last_name,
-#             email=user_data.email,
-#             password_hash=hashed_password,
-#             business_name=user_data.business_name,
-#             location=user_data.location,
-#             business_interests=user_data.business_interests
-#         )
-       
-#         db.add(new_user)
-#         db.commit()
-#         db.refresh(new_user)
-       
-#         return {
-#             "id": new_user.id,
-#             "first_name": new_user.first_name,
-#             "last_name": new_user.last_name,
-#             "email": new_user.email,
-#             "business_name": new_user.business_name,
-#             "location": new_user.location,
-#             "business_interests": new_user.business_interests,
-#             "created_at": new_user.created_at,
-#             "message": "Account created successfully"
-#         }
-#     except HTTPException:
-#         raise
-#     except Exception as e:
-#         db.rollback()
-#         print(f"âŒ Signup error: {str(e)}")
-#         raise HTTPException(status_code=500, detail=f"Error creating user: {str(e)}")
- 
-# # ============================================
-# # PASSWORD RESET ENDPOINT
-# # ============================================
- 
-# @app.post("/users/reset-password")
-# def reset_password(reset_data: PasswordReset, db: Session = Depends(get_db)):
-#     """
-#     Reset user password
-#     """
-#     try:
-#         # Find user by email
-#         user = db.query(models.User).filter(
-#             models.User.email == reset_data.email
-#         ).first()
-       
-#         if not user:
-#             raise HTTPException(
-#                 status_code=404,
-#                 detail="No account found with this email"
-#             )
-       
-#         # Update password
-#         user.password_hash = get_password_hash(reset_data.new_password)
-       
-#         db.commit()
-#         return {
-#             "success": True,
-#             "message": "Password updated successfully"
-#         }
-#     except HTTPException:
-#         raise
-#     except Exception as e:
-#         db.rollback()
-#         print(f"âŒ Password reset error: {str(e)}")
-#         raise HTTPException(
-#             status_code=500,
-#             detail=f"Error updating password: {str(e)}"
-#         )
- 
-# # ============================================
-# # CHECK EMAIL ENDPOINT
-# # ============================================
- 
-# @app.get("/users/check-email/{email}")
-# def check_email_exists(email: str, db: Session = Depends(get_db)):
-#     """
-#     Check if an email is already registered
-#     """
-#     user = db.query(models.User).filter(
-#         models.User.email == email
-#     ).first()
-   
-#     return {
-#         "exists": user is not None,
-#         "email": email,
-#         "message": "Email is registered" if user else "Email is available"
-#     }
- 
-# # ============================================
-# # GET USER PROFILE ENDPOINT
-# # ============================================
- 
-# @app.get("/users/profile/{email}")
-# def get_user_profile(email: str, db: Session = Depends(get_db)):
-#     """
-#     Get user profile by email
-#     """
-#     user = db.query(models.User).filter(
-#         models.User.email == email
-#     ).first()
-   
-#     if not user:
-#         raise HTTPException(status_code=404, detail="User not found")
-   
-#     return {
-#         "id": user.id,
-#         "first_name": user.first_name,
-#         "last_name": user.last_name,
-#         "email": user.email,
-#         "business_name": user.business_name,
-#         "location": user.location,
-#         "business_interests": user.business_interests,
-#         "created_at": str(user.created_at)
-#     }
- 
-# from passlib.context import CryptContext
-# from pydantic import BaseModel, EmailStr
-# from fastapi import HTTPException, Depends, Response, Cookie
-# from sqlalchemy.orm import Session
-# from datetime import datetime, timedelta
-# import secrets
-# import hashlib
-# import redis
-# import json
 
-# # Password hashing
-# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-# def verify_password(plain_password: str, hashed_password: str) -> bool:
-#     return pwd_context.verify(plain_password, hashed_password)
-
-# def get_password_hash(password: str) -> str:
-#     return pwd_context.hash(password)
-
-# # ============================================
-# # Redis Session Management
-# # ============================================
-
-# # Reuse existing Redis client from your app configuration
-# # Assumes you already have: redis_client = redis.Redis(...) defined earlier
-# # If your Redis client has a different name, replace 'redis_client' with that name
-
-# def create_session_token() -> str:
-#     """Generate a secure session token"""
-#     return secrets.token_urlsafe(32)
-
-# def create_session(user_id: int, remember_me: bool = False) -> str:
-#     """Create a new session in Redis and return the session token"""
-#     session_token = create_session_token()
-#     expires_in_seconds = 30 * 24 * 60 * 60 if remember_me else 24 * 60 * 60  # 30 days or 1 day
-    
-#     session_data = {
-#         "user_id": user_id,
-#         "created_at": datetime.now().isoformat(),
-#         "expires_at": (datetime.now() + timedelta(seconds=expires_in_seconds)).isoformat()
-#     }
-    
-#     # Store session in Redis with expiration
-#     r.setex(
-#         f"session:{session_token}",
-#         expires_in_seconds,
-#         json.dumps(session_data)
-#     )
-    
-#     # Also maintain a user->sessions mapping for logout all devices
-#     r.sadd(f"user_sessions:{user_id}", session_token)
-#     r.expire(f"user_sessions:{user_id}", expires_in_seconds)
-    
-#     return session_token
-
-# def validate_session(session_token: str) -> dict:
-#     """Validate session token and return session data from Redis"""
-#     if not session_token:
-#         return None
-    
-#     # Retrieve session from Redis
-#     session_json = r.get(f"session:{session_token}")
-    
-#     if not session_json:
-#         return None
-    
-#     try:
-#         session = json.loads(session_json)
-        
-#         # Check if session expired (Redis TTL should handle this, but double-check)
-#         expires_at = datetime.fromisoformat(session["expires_at"])
-#         if datetime.now() > expires_at:
-#             delete_session(session_token)
-#             return None
-        
-#         return session
-#     except (json.JSONDecodeError, KeyError, ValueError):
-#         return None
-
-# def delete_session(session_token: str):
-#     """Delete a session from Redis"""
-#     # Get user_id before deleting to clean up user_sessions set
-#     session_json = r.get(f"session:{session_token}")
-#     if session_json:
-#         try:
-#             session = json.loads(session_json)
-#             user_id = session.get("user_id")
-#             if user_id:
-#                 r.srem(f"user_sessions:{user_id}", session_token)
-#         except (json.JSONDecodeError, KeyError):
-#             pass
-    
-#     # Delete the session
-#     r.delete(f"session:{session_token}")
-
-# def delete_all_user_sessions(user_id: int):
-#     """Delete all sessions for a specific user (logout from all devices)"""
-#     # Get all session tokens for this user
-#     session_tokens = r.smembers(f"user_sessions:{user_id}")
-    
-#     # Delete each session
-#     for token in session_tokens:
-#         r.delete(f"session:{token}")
-    
-#     # Delete the user sessions set
-#     r.delete(f"user_sessions:{user_id}")
-
-# def get_current_user(session_id: str = Cookie(None), db: Session = Depends(get_db)):
-#     """Dependency to get current authenticated user"""
-#     if not session_id:
-#         raise HTTPException(status_code=401, detail="Not authenticated")
-    
-#     session = validate_session(session_id)
-#     if not session:
-#         raise HTTPException(status_code=401, detail="Invalid or expired session")
-    
-#     user = db.query(models.User).filter(models.User.id == session["user_id"]).first()
-#     if not user:
-#         raise HTTPException(status_code=401, detail="User not found")
-    
-#     return user
-
-# # ============================================
-# # Pydantic Models
-# # ============================================
-
-# class UserLogin(BaseModel):
-#     email: EmailStr
-#     password: str
-#     remember_me: bool = False
-
-# class PasswordReset(BaseModel):
-#     email: EmailStr
-#     new_password: str
-
-# class LoginResponse(BaseModel):
-#     success: bool
-#     message: str
-#     user: dict = None
-
-# # ============================================
-# # SECURE LOGIN ENDPOINT (WITH REDIS SESSION)
-# # ============================================
-
-# @app.post("/users/login", response_model=LoginResponse)
-# def login_user(login_data: UserLogin, response: Response, db: Session = Depends(get_db)):
-#     """
-#     Authenticate user and set secure session cookie (stored in Redis)
-#     """
-#     try:
-#         print(f"🔍 Login attempt for: {login_data.email}")
-        
-#         # Find user by email
-#         user = db.query(models.User).filter(
-#             models.User.email == login_data.email
-#         ).first()
-       
-#         # Check if user exists
-#         if not user:
-#             print(f"❌ User not found: {login_data.email}")
-#             raise HTTPException(
-#                 status_code=404,
-#                 detail="No account found with this email. Please sign up first."
-#             )
-       
-#         # Verify password
-#         if not verify_password(login_data.password, user.password_hash):
-#             print(f"❌ Invalid password for: {login_data.email}")
-#             raise HTTPException(
-#                 status_code=401,
-#                 detail="Incorrect password. Please try again or reset your password."
-#             )
-        
-#         # Check if AI usage should be reset (new month)
-#         current_month = datetime.now().strftime("%Y-%m")
-#         if user.ai_chat_month != current_month:
-#             print(f"🔄 Resetting AI usage for new month: {current_month}")
-#             user.ai_chat_used = 0
-#             user.ai_chat_month = current_month
-#             db.commit()
-#             db.refresh(user)
-        
-#         # ✅ CREATE SESSION IN REDIS
-#         session_token = create_session(user.id, login_data.remember_me)
-        
-#         # ✅ SET HTTP-ONLY COOKIE
-#         max_age = 30 * 24 * 60 * 60 if login_data.remember_me else 24 * 60 * 60
-#         response.set_cookie(
-#             key="session_id",
-#             value=session_token,
-#             httponly=True,  # Prevents XSS attacks
-#             secure=True,    # HTTPS only in production (set to True in production)
-#             samesite="lax", # CSRF protection
-#             max_age=max_age
-#         )
-        
-#         print(f"📊 Database values for {user.email}:")
-#         print(f"   - ID: {user.id}")
-#         print(f"   - Subscription Tier: {user.subscription_tier}")
-#         print(f"   - AI Chat Used: {user.ai_chat_used}")
-       
-#         # ✅ RETURN USER DATA
-#         response_data = {
-#             "success": True,
-#             "message": "Login successful",
-#             "user": {
-#                 "id": user.id,
-#                 "first_name": user.first_name,
-#                 "last_name": user.last_name,
-#                 "email": user.email,
-#                 "business_name": user.business_name,
-#                 "location": user.location,
-#                 "business_interests": user.business_interests,
-#                 "subscription_tier": user.subscription_tier or 'free',
-#                 "ai_chat_used": user.ai_chat_used or 0,
-#                 "ai_chat_month": user.ai_chat_month or current_month,
-#                 "created_at": str(user.created_at)
-#             }
-#         }
-        
-#         print(f"✅ Login successful for {user.email}")
-#         print(f"✅ Session created in Redis: {session_token[:10]}...")
-        
-#         return response_data
-        
-#     except HTTPException:
-#         raise
-#     except Exception as e:
-#         print(f"❌ Login error: {str(e)}")
-#         import traceback
-#         traceback.print_exc()
-#         raise HTTPException(
-#             status_code=500,
-#             detail=f"Login failed: {str(e)}"
-#         )
-
-# # ============================================
-# # SECURE SIGNUP ENDPOINT (WITH REDIS SESSION)
-# # ============================================
-
-# @app.post("/users/signup")
-# def signup_user(user_data: schemas.UserCreate, response: Response, db: Session = Depends(get_db)):
-#     """
-#     Create a new user account and set session cookie (stored in Redis)
-#     """
-#     try:
-#         # Check if email already exists
-#         existing_user = db.query(models.User).filter(
-#             models.User.email == user_data.email
-#         ).first()
-       
-#         if existing_user:
-#             raise HTTPException(
-#                 status_code=400,
-#                 detail="Email already registered. Please login instead."
-#             )
-       
-#         # Hash the password
-#         hashed_password = get_password_hash(user_data.password)
-        
-#         # Get current month for AI usage tracking
-#         current_month = datetime.now().strftime("%Y-%m")
-       
-#         # ✅ CREATE NEW USER WITH SUBSCRIPTION FIELDS
-#         new_user = models.User(
-#             first_name=user_data.first_name,
-#             last_name=user_data.last_name,
-#             email=user_data.email,
-#             password_hash=hashed_password,
-#             business_name=user_data.business_name,
-#             location=user_data.location,
-#             business_interests=user_data.business_interests,
-#             subscription_tier='free',
-#             ai_chat_used=0,
-#             ai_chat_month=current_month
-#         )
-       
-#         db.add(new_user)
-#         db.commit()
-#         db.refresh(new_user)
-        
-#         # ✅ CREATE SESSION IN REDIS FOR NEW USER
-#         session_token = create_session(new_user.id, remember_me=False)
-        
-#         # ✅ SET HTTP-ONLY COOKIE
-#         response.set_cookie(
-#             key="session_id",
-#             value=session_token,
-#             httponly=True,
-#             secure=True,  # Set to True in production
-#             samesite="lax",
-#             max_age=24 * 60 * 60  # 24 hours
-#         )
-       
-#         print(f"✅ New user created: {new_user.email}")
-#         print(f"✅ Session created in Redis: {session_token[:10]}...")
-        
-#         # ✅ RETURN USER DATA WITH SUBSCRIPTION
-#         return {
-#             "id": new_user.id,
-#             "first_name": new_user.first_name,
-#             "last_name": new_user.last_name,
-#             "email": new_user.email,
-#             "business_name": new_user.business_name,
-#             "location": new_user.location,
-#             "business_interests": new_user.business_interests,
-#             "subscription_tier": new_user.subscription_tier,
-#             "ai_chat_used": new_user.ai_chat_used,
-#             "ai_chat_month": new_user.ai_chat_month,
-#             "created_at": new_user.created_at,
-#             "message": "Account created successfully"
-#         }
-#     except HTTPException:
-#         raise
-#     except Exception as e:
-#         db.rollback()
-#         print(f"❌ Signup error: {str(e)}")
-#         raise HTTPException(status_code=500, detail=f"Error creating user: {str(e)}")
-
-# # ============================================
-# # GET CURRENT USER (SESSION VERIFICATION)
-# # ============================================
-
-# @app.get("/api/auth/me")
-# def get_me(current_user: models.User = Depends(get_current_user)):
-#     """
-#     Get current authenticated user from Redis session
-#     """
-#     current_month = datetime.now().strftime("%Y-%m")
-    
-#     return {
-#         "id": current_user.id,
-#         "first_name": current_user.first_name,
-#         "last_name": current_user.last_name,
-#         "email": current_user.email,
-#         "business_name": current_user.business_name,
-#         "location": current_user.location,
-#         "business_interests": current_user.business_interests,
-#         "subscription_tier": current_user.subscription_tier or 'free',
-#         "ai_chat_used": current_user.ai_chat_used or 0,
-#         "ai_chat_month": current_user.ai_chat_month or current_month,
-#         "created_at": str(current_user.created_at)
-#     }
-
-# # ============================================
-# # LOGOUT ENDPOINT
-# # ============================================
-
-# @app.post("/api/auth/logout")
-# def logout(response: Response, session_id: str = Cookie(None)):
-#     """
-#     Logout user and clear Redis session
-#     """
-#     if session_id:
-#         delete_session(session_id)
-#         print(f"✅ Session deleted from Redis: {session_id[:10]}...")
-    
-#     # Clear the cookie
-#     response.delete_cookie(key="session_id")
-    
-#     return {"success": True, "message": "Logged out successfully"}
-
-# # ============================================
-# # LOGOUT ALL DEVICES ENDPOINT
-# # ============================================
-
-# @app.post("/api/auth/logout-all")
-# def logout_all_devices(
-#     response: Response, 
-#     current_user: models.User = Depends(get_current_user),
-#     session_id: str = Cookie(None)
-# ):
-#     """
-#     Logout user from all devices (delete all sessions)
-#     """
-#     delete_all_user_sessions(current_user.id)
-    
-#     # Clear the cookie
-#     response.delete_cookie(key="session_id")
-    
-#     print(f"✅ All sessions deleted for user: {current_user.email}")
-    
-#     return {"success": True, "message": "Logged out from all devices successfully"}
-
-# # ============================================
-# # PASSWORD RESET ENDPOINT
-# # ============================================
-
-# @app.post("/users/reset-password")
-# def reset_password(reset_data: PasswordReset, db: Session = Depends(get_db)):
-#     """
-#     Reset user password and invalidate all sessions
-#     """
-#     try:
-#         user = db.query(models.User).filter(
-#             models.User.email == reset_data.email
-#         ).first()
-       
-#         if not user:
-#             raise HTTPException(
-#                 status_code=404,
-#                 detail="No account found with this email"
-#             )
-       
-#         # Update password
-#         user.password_hash = get_password_hash(reset_data.new_password)
-#         db.commit()
-        
-#         # Invalidate all sessions for security
-#         delete_all_user_sessions(user.id)
-        
-#         return {
-#             "success": True,
-#             "message": "Password updated successfully. Please login again."
-#         }
-#     except HTTPException:
-#         raise
-#     except Exception as e:
-#         db.rollback()
-#         print(f"❌ Password reset error: {str(e)}")
-#         raise HTTPException(
-#             status_code=500,
-#             detail=f"Error updating password: {str(e)}"
-#         )
-
-# # ============================================
-# # CHECK EMAIL ENDPOINT
-# # ============================================
-
-# @app.get("/users/check-email/{email}")
-# def check_email_exists(email: str, db: Session = Depends(get_db)):
-#     """
-#     Check if an email is already registered
-#     """
-#     user = db.query(models.User).filter(
-#         models.User.email == email
-#     ).first()
-   
-#     return {
-#         "exists": user is not None,
-#         "email": email,
-#         "message": "Email is registered" if user else "Email is available"
-#     }
-
-# # ============================================
-# # GET USER PROFILE ENDPOINT (PROTECTED)
-# # ============================================
-
-# @app.get("/users/profile/{email}")
-# def get_user_profile(
-#     email: str, 
-#     current_user: models.User = Depends(get_current_user),
-#     db: Session = Depends(get_db)
-# ):
-#     """
-#     Get user profile by email (requires authentication)
-#     """
-#     # Only allow users to view their own profile or admins
-#     if current_user.email != email:
-#         raise HTTPException(
-#             status_code=403, 
-#             detail="Not authorized to view this profile"
-#         )
-    
-#     user = db.query(models.User).filter(
-#         models.User.email == email
-#     ).first()
-   
-#     if not user:
-#         raise HTTPException(status_code=404, detail="User not found")
-    
-#     current_month = datetime.now().strftime("%Y-%m")
-   
-#     return {
-#         "id": user.id,
-#         "first_name": user.first_name,
-#         "last_name": user.last_name,
-#         "email": user.email,
-#         "business_name": user.business_name,
-#         "location": user.location,
-#         "business_interests": user.business_interests,
-#         "subscription_tier": user.subscription_tier or 'free',
-#         "ai_chat_used": user.ai_chat_used or 0,
-#         "ai_chat_month": user.ai_chat_month or current_month,
-#         "created_at": str(user.created_at)
-#     }
-
-from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr
 from fastapi import HTTPException, Depends, Response, Cookie
 from sqlalchemy.orm import Session
@@ -5191,8 +4501,7 @@ import json
 import os
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables moved to the top of the file
 
 # ============================================
 # Environment Variables
@@ -5201,7 +4510,7 @@ BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 BREVO_SENDER_EMAIL = os.getenv("BREVO_SENDER_EMAIL", "noreply@insydz.com")
 BREVO_SENDER_NAME = os.getenv("BREVO_SENDER_NAME", "Insydz")
 
-SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "true").lower() == "true"
+SESSION_COOKIE_SECURE = False if IS_LOCAL else (os.getenv("SESSION_COOKIE_SECURE", "true").lower() == "true")
 SESSION_EXPIRE_DAYS_REMEMBER = int(os.getenv("SESSION_EXPIRE_DAYS_REMEMBER", 30))
 SESSION_EXPIRE_DAYS_NO_REMEMBER = int(os.getenv("SESSION_EXPIRE_DAYS_NO_REMEMBER", 1))
 
@@ -5219,13 +4528,22 @@ ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
 # r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
 # Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
+# Use bcrypt directly to avoid passlib version check issues with newer bcrypt
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        # Truncate to 72 bytes if needed (standard bcrypt limit)
+        pw_bytes = plain_password.encode("utf-8")[:72]
+        return bcrypt.checkpw(pw_bytes, hashed_password.encode("utf-8"))
+    except Exception:
+        return False
 
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    # Truncate to 72 bytes if needed
+    pw_bytes = password.encode("utf-8")[:72]
+    # Generate salt and hash
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(pw_bytes, salt)
+    return hashed.decode("utf-8")
 
 # ============================================
 # Brevo Email Configuration
@@ -5243,7 +4561,15 @@ def generate_otp() -> str:
 
 def send_otp_email(email: str, otp: str) -> bool:
     """Send OTP via Brevo email"""
+    if not BREVO_API_KEY:
+        print("❌ Error: BREVO_API_KEY is not set. Cannot send email.")
+        return False
+        
     try:
+        # Re-ensure configuration has the latest API key
+        if not configuration.api_key.get('api-key'):
+            configuration.api_key['api-key'] = BREVO_API_KEY
+            
         api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
             sib_api_v3_sdk.ApiClient(configuration)
         )
@@ -5364,7 +4690,11 @@ def store_otp(email: str, otp_data: dict):
         )
     except Exception as e:
         print(f"❌ Redis store OTP error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to store OTP")
+        # If in local dev, don't block the user from proceeding
+        if IS_LOCAL:
+            print("🛠️ Local environment (IS_LOCAL=True): Proceeding despite Redis failure. User can still log in if verified.")
+        else:
+            raise HTTPException(status_code=500, detail="Failed to store OTP")
 
 def get_otp(email: str) -> dict:
     """Retrieve OTP from Redis"""
@@ -5868,7 +5198,8 @@ def login_user(login_data: UserLogin, response: Response, db: Session = Depends(
                 "subscription_tier": user.subscription_tier or 'free',
                 "ai_chat_used": user.ai_chat_used or 0,
                 "ai_chat_month": user.ai_chat_month or current_month,
-                "created_at": str(user.created_at)
+                "created_at": str(user.created_at),
+                "onboarding_completed": user.onboarding_completed or False,
             }
         }
         
@@ -5952,13 +5283,19 @@ def signup_user(user_data: schemas.UserCreate, response: Response, db: Session =
         email_sent = send_otp_email(user_data.email, otp)
         
         if not email_sent:
-            # Rollback user creation if email fails
-            db.delete(new_user)
-            db.commit()
-            raise HTTPException(
-                status_code=500, 
-                detail="Failed to send verification email. Please try again."
-            )
+            print(f"⚠️ Email failed to send to {user_data.email}. OTP is: {otp}")
+            # If in local dev, allow proceeding so developers aren't blocked by API issues
+            if IS_LOCAL:
+                print("🛠️ Local environment (IS_LOCAL=True): Proceeding despite email failure. Check console for OTP.")
+                email_sent = True
+            else:
+                # Rollback user creation if email fails in production
+                db.delete(new_user)
+                db.commit()
+                raise HTTPException(
+                    status_code=500, 
+                    detail="Failed to send verification email. Please try again."
+                )
         
         store_otp(user_data.email, {
             "otp": otp,
@@ -6080,7 +5417,8 @@ def verify_email(request: VerifyOTPRequest, response: Response, db: Session = De
                 "subscription_tier": user.subscription_tier or 'free',
                 "ai_chat_used": user.ai_chat_used or 0,
                 "ai_chat_month": user.ai_chat_month or current_month,
-                "created_at": str(user.created_at)
+                "created_at": str(user.created_at),
+                "onboarding_completed": user.onboarding_completed or False,
             }
         }
     
@@ -6122,7 +5460,14 @@ def get_me(
 
         "ai_chat_used": current_user.ai_chat_used or 0,
         "ai_chat_month": current_user.ai_chat_month or current_month,
-        "created_at": str(current_user.created_at)
+        "created_at": str(current_user.created_at),
+
+        # Onboarding fields
+        "onboarding_completed": current_user.onboarding_completed or False,
+        "user_type": current_user.user_type,
+        "marketplace": current_user.marketplace,
+        "primary_category": current_user.primary_category,
+        "display_name": current_user.display_name,
     }
 
 # ============================================
@@ -6139,6 +5484,78 @@ def logout(response: Response, session_id: str = Cookie(None)):
     response.delete_cookie(key="session_id")
     
     return {"success": True, "message": "Logged out successfully"}
+
+# ============================================
+# ONBOARDING ENDPOINTS
+# ============================================
+
+@app.get("/api/onboarding/status")
+def get_onboarding_status(
+    current_user: models.User = Depends(get_current_user),
+):
+    """Check if the current user has completed onboarding."""
+    return {
+        "onboarding_completed": current_user.onboarding_completed or False,
+        "user_type": current_user.user_type,
+        "marketplace": current_user.marketplace,
+        "primary_category": current_user.primary_category,
+        "display_name": current_user.display_name,
+        "seller_id": current_user.seller_id,
+        "investment_budget": current_user.investment_budget,
+    }
+
+@app.post("/api/onboarding/complete")
+def complete_onboarding(
+    data: schemas.OnboardingSubmit,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Save onboarding answers and mark onboarding as completed."""
+    try:
+        # Validate user_type
+        if data.user_type not in ("active_seller", "researcher"):
+            raise HTTPException(status_code=400, detail="Invalid user_type. Must be 'active_seller' or 'researcher'.")
+        
+        # Validate marketplace
+        if data.marketplace not in ("amazon_india", "flipkart", "both"):
+            raise HTTPException(status_code=400, detail="Invalid marketplace. Must be 'amazon_india', 'flipkart', or 'both'.")
+        
+        # Save all onboarding fields
+        current_user.user_type = data.user_type
+        current_user.marketplace = data.marketplace
+        current_user.primary_category = data.primary_category
+        current_user.display_name = data.display_name
+        current_user.seller_id = data.seller_id if data.user_type == "active_seller" else None
+        current_user.investment_budget = data.investment_budget if data.user_type == "researcher" else None
+        current_user.onboarding_completed = True
+        current_user.onboarding_completed_at = datetime.now()
+        
+        db.commit()
+        db.refresh(current_user)
+        
+        print(f"✅ Onboarding completed for user: {current_user.email}")
+        
+        return {
+            "success": True,
+            "message": "Onboarding completed successfully",
+            "data": {
+                "user_type": current_user.user_type,
+                "marketplace": current_user.marketplace,
+                "primary_category": current_user.primary_category,
+                "display_name": current_user.display_name,
+                "seller_id": current_user.seller_id,
+                "investment_budget": current_user.investment_budget,
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        print(f"❌ Onboarding error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error saving onboarding data: {str(e)}"
+        )
 
 # ============================================
 # CHECK EMAIL ENDPOINT

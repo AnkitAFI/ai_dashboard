@@ -29,7 +29,7 @@
 
 // export default function Settings() {
 //   const { toast } = useToast();
-  
+
 //   // Local state only - no backend API calls since your backend doesn't have user endpoints
 //   const [profileData, setProfileData] = useState({
 //     firstName: "Demo",
@@ -51,15 +51,15 @@
 
 //   const handleProfileSubmit = (e: React.FormEvent) => {
 //     e.preventDefault();
-    
+
 //     // Simulate saving with local storage
 //     setIsSaving(true);
-    
+
 //     setTimeout(() => {
 //       // Save to localStorage for persistence
 //       localStorage.setItem('userProfile', JSON.stringify(profileData));
 //       localStorage.setItem('userPreferences', JSON.stringify(preferences));
-      
+
 //       setIsSaving(false);
 //       toast({
 //         title: "Settings saved",
@@ -85,9 +85,9 @@
 //   const handleExportData = async () => {
 //     try {
 //       // Export reviews data from your backend
-//       const response = await fetch('https://api.insydz.com/Amazon_Reviews/reviews?limit=1000');
+//       const response = await fetch('http://localhost:8000/Amazon_Reviews/reviews?limit=1000');
 //       const data = await response.json();
-      
+
 //       // Create CSV or JSON file
 //       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
 //       const url = window.URL.createObjectURL(blob);
@@ -98,7 +98,7 @@
 //       a.click();
 //       document.body.removeChild(a);
 //       window.URL.revokeObjectURL(url);
-      
+
 //       toast({
 //         title: "Data exported",
 //         description: "Your reviews data has been downloaded.",
@@ -120,7 +120,7 @@
 //       businessName: "Demo Store",
 //       location: "mumbai",
 //     });
-    
+
 //     setPreferences({
 //       emailNotifications: true,
 //       priceAlerts: true,
@@ -128,10 +128,10 @@
 //       targetMarket: "national",
 //       shareUsageData: true,
 //     });
-    
+
 //     localStorage.removeItem('userProfile');
 //     localStorage.removeItem('userPreferences');
-    
+
 //     toast({
 //       title: "Settings reset",
 //       description: "All settings have been reset to defaults.",
@@ -141,7 +141,7 @@
 //   return (
 //     <div className="min-h-screen bg-background">
 //       <Sidebar />
-      
+
 //       <div className="ml-64 min-h-screen">
 //         {/* Header */}
 //         <header className="bg-card border-b border-border px-6 py-4">
@@ -363,21 +363,21 @@
 //                   >
 //                     Export Reviews Data (JSON)
 //                   </Button>
-                  
+
 //                   <Button
 //                     variant="outline"
 //                     onClick={() => {
 //                       toast({
 //                         title: "API Documentation",
-//                         description: "Access API docs at https://api.insydz.com/docs",
+//                         description: "Access API docs at http://localhost:8000/docs",
 //                       });
-//                       window.open('https://api.insydz.com/docs', '_blank');
+//                       window.open('http://localhost:8000/docs', '_blank');
 //                     }}
 //                   >
 //                     View API Documentation
 //                   </Button>
 //                 </div>
-                
+
 //                 <p className="text-sm text-muted-foreground">
 //                   Export data directly from your Amazon Reviews database via the API
 //                 </p>
@@ -392,7 +392,7 @@
 //               <CardContent className="space-y-2 text-sm">
 //                 <div className="flex justify-between">
 //                   <span className="text-muted-foreground">API Endpoint:</span>
-//                   <span className="font-mono">https://api.insydz.com</span>
+//                   <span className="font-mono">http://localhost:8000</span>
 //                 </div>
 //                 <div className="flex justify-between">
 //                   <span className="text-muted-foreground">Database:</span>
@@ -442,7 +442,7 @@
 
 // export default function Settings() {
 //   const { toast } = useToast();
-  
+
 //   // Local state only - no backend API calls since your backend doesn't have user endpoints
 //   const [profileData, setProfileData] = useState({
 //     firstName: "Demo",
@@ -464,15 +464,15 @@
 
 //   const handleProfileSubmit = (e: React.FormEvent) => {
 //     e.preventDefault();
-    
+
 //     // Simulate saving with local storage
 //     setIsSaving(true);
-    
+
 //     setTimeout(() => {
 //       // Save to localStorage for persistence
 //       localStorage.setItem('userProfile', JSON.stringify(profileData));
 //       localStorage.setItem('userPreferences', JSON.stringify(preferences));
-      
+
 //       setIsSaving(false);
 //       toast({
 //         title: "Settings saved",
@@ -503,7 +503,7 @@
 //       businessName: "Demo Store",
 //       location: "mumbai",
 //     });
-    
+
 //     setPreferences({
 //       emailNotifications: true,
 //       priceAlerts: true,
@@ -511,10 +511,10 @@
 //       targetMarket: "national",
 //       shareUsageData: true,
 //     });
-    
+
 //     localStorage.removeItem('userProfile');
 //     localStorage.removeItem('userPreferences');
-    
+
 //     toast({
 //       title: "Settings reset",
 //       description: "All settings have been reset to defaults.",
@@ -524,7 +524,7 @@
 //   return (
 //     <div className="min-h-screen bg-background">
 //       <Sidebar />
-      
+
 //       <div className="ml-64 min-h-screen">
 //         {/* Header */}
 //         <header className="bg-card border-b border-border px-6 py-4">
@@ -764,11 +764,11 @@
 //   { value: "local", label: "Local (Mumbai Metro)" },
 // ];
 
-// const API_BASE_URL = "https://api.insydz.com";
+// const API_BASE_URL = "http://localhost:8000";
 
 // export default function Settings() {
 //   const { toast } = useToast();
-  
+
 //   const [profileData, setProfileData] = useState({
 //     firstName: "",
 //     lastName: "",
@@ -795,15 +795,15 @@
 //       try {
 //         // Get user from localStorage (set during login/signup)
 //         const userStr = localStorage.getItem('user');
-        
+
 //         if (userStr) {
 //           const user = JSON.parse(userStr);
-          
+
 //           // Extract first and last name from full name
 //           const nameParts = user.name?.split(' ') || [];
 //           const firstName = nameParts[0] || '';
 //           const lastName = nameParts.slice(1).join(' ') || '';
-          
+
 //           setProfileData({
 //             firstName: firstName,
 //             lastName: lastName,
@@ -811,10 +811,10 @@
 //             businessName: user.businessName || '',
 //             location: user.location || 'mumbai',
 //           });
-          
+
 //           setUserId(user.id);
 //         }
-        
+
 //         // Load preferences from localStorage
 //         const prefsStr = localStorage.getItem('userPreferences');
 //         if (prefsStr) {
@@ -831,7 +831,7 @@
 //         setIsLoading(false);
 //       }
 //     };
-    
+
 //     loadUserData();
 //   }, [toast]);
 
@@ -874,7 +874,7 @@
 //         businessName: updatedUser.business_name,
 //         location: updatedUser.location,
 //       };
-      
+
 //       localStorage.setItem('user', JSON.stringify(updatedUserData));
 //       localStorage.setItem('userPreferences', JSON.stringify(preferences));
 
@@ -913,7 +913,7 @@
 //     if (userStr) {
 //       const user = JSON.parse(userStr);
 //       const nameParts = user.name?.split(' ') || [];
-      
+
 //       setProfileData({
 //         firstName: nameParts[0] || '',
 //         lastName: nameParts.slice(1).join(' ') || '',
@@ -922,7 +922,7 @@
 //         location: user.location || 'mumbai',
 //       });
 //     }
-    
+
 //     setPreferences({
 //       emailNotifications: true,
 //       priceAlerts: true,
@@ -930,7 +930,7 @@
 //       targetMarket: "national",
 //       shareUsageData: true,
 //     });
-    
+
 //     localStorage.setItem('userPreferences', JSON.stringify({
 //       emailNotifications: true,
 //       priceAlerts: true,
@@ -938,7 +938,7 @@
 //       targetMarket: "national",
 //       shareUsageData: true,
 //     }));
-    
+
 //     toast({
 //       title: "Settings reset",
 //       description: "Preferences have been reset to defaults.",
@@ -962,7 +962,7 @@
 //   return (
 //     <div className="min-h-screen bg-background">
 //       <Sidebar />
-      
+
 //       <div className="ml-64 min-h-screen">
 //         <header className="bg-card border-b border-border px-6 py-4">
 //           <div>
@@ -1210,7 +1210,7 @@
 //   { value: "local", label: "Local (Mumbai Metro)" },
 // ];
 
-// const API_BASE_URL = "https://api.insydz.com";
+// const API_BASE_URL = "http://localhost:8000";
 
 // export default function Settings() {
 //   const { toast } = useToast();
@@ -1629,7 +1629,7 @@ const TARGET_MARKETS = [
   { value: "local", label: "Local (Mumbai Metro)" },
 ];
 
-const API_BASE_URL = "https://api.insydz.com";
+const API_BASE_URL = "http://localhost:8000";
 
 export default function Settings() {
   const { toast } = useToast();
@@ -1670,7 +1670,7 @@ export default function Settings() {
   // ✅ Handle profile update with session authentication
   const handleProfileSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!user?.id) {
       toast({
         title: "Authentication required",
@@ -1681,7 +1681,7 @@ export default function Settings() {
     }
 
     setIsSaving(true);
-    
+
     try {
       const response = await fetch(`${API_BASE_URL}/users/${user.id}`, {
         method: "PUT",
@@ -2013,7 +2013,7 @@ export default function Settings() {
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Subscription</span>
                 <Badge>
-                  {user.subscriptionTier 
+                  {user.subscriptionTier
                     ? `${user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1)} Plan`
                     : "Free Plan"
                   }

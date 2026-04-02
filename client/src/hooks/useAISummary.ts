@@ -19,7 +19,7 @@
 //           data
 //         )}\n\nQuestion: ${question}`;
 
-//         const res = await fetch("https://api.insydz.com/ai/query", {
+//         const res = await fetch("http://localhost:8000/ai/query", {
 //           method: "POST",
 //           headers: { "Content-Type": "application/json" },
 //           body: JSON.stringify({ question: prompt, source, limit }),
@@ -73,7 +73,7 @@
 
 //         console.log("📤 Sending AI request:", payload);
 
-//         const res = await fetch("https://api.insydz.com/ai/query", {
+//         const res = await fetch("http://localhost:8000/ai/query", {
 //           method: "POST",
 //           headers: { "Content-Type": "application/json" },
 //           body: JSON.stringify(payload),
@@ -120,7 +120,7 @@
 // export function useAISummary(question: string, source: string, data: any[], triggerKey: number) {
 //   const [summary, setSummary] = useState<string>("");
 //   const [loading, setLoading] = useState<boolean>(true);
- 
+
 //   useEffect(() => {
 //     console.log("🔍 useAISummary called:", { question, source, dataLength: data?.length });
 
@@ -130,7 +130,7 @@
 //       setLoading(false);
 //       return;
 //     }
- 
+
 //     const fetchSummary = async () => {
 //       setLoading(true);
 
@@ -146,7 +146,7 @@
 
 //         console.log("📤 Sending AI request:", payload);
 
-//         const res = await fetch("https://api.insydz.com/ai/query", {
+//         const res = await fetch("http://localhost:8000/ai/query", {
 //           method: "POST",
 //           headers: { "Content-Type": "application/json" },
 //           body: JSON.stringify(payload),
@@ -218,7 +218,7 @@
 // ) {
 //   const [summary, setSummary] = useState<string>("");
 //   const [loading, setLoading] = useState<boolean>(true);
- 
+
 //   useEffect(() => {
 //     console.log("🔍 useAISummary called:", { question, source, dataLength: data?.length, filters });
 
@@ -228,7 +228,7 @@
 //       setLoading(false);
 //       return;
 //     }
- 
+
 //     const fetchSummary = async () => {
 //       setLoading(true);
 
@@ -253,7 +253,7 @@
 
 //         console.log("📤 Sending AI request with filters:", payload);
 
-//         const res = await fetch("https://api.insydz.com/ai/query", {
+//         const res = await fetch("http://localhost:8000/ai/query", {
 //           method: "POST",
 //           headers: { "Content-Type": "application/json" },
 //           body: JSON.stringify(payload),
@@ -318,8 +318,8 @@ interface Filters {
 }
 
 export function useAISummary(
-  question: string, 
-  source: string, 
+  question: string,
+  source: string,
   data: any[],  // ✅ The ACTUAL chart data
   triggerKey: number,
   filters?: Filters
@@ -328,11 +328,11 @@ export function useAISummary(
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    console.log("🔍 useAISummary called:", { 
-      question, 
-      source, 
+    console.log("🔍 useAISummary called:", {
+      question,
+      source,
       actualDataCount: data?.length,
-      filters 
+      filters
     });
 
     if (!data || data.length === 0) {
@@ -358,7 +358,7 @@ export function useAISummary(
           sampleItem: data[0]
         });
 
-        const res = await fetch("https://api.insydz.com/ai/analyze-chart", {
+        const res = await fetch("http://localhost:8000/ai/analyze-chart", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
@@ -387,8 +387,8 @@ export function useAISummary(
     const timer = setTimeout(fetchSummary, 100);
     return () => clearTimeout(timer);
   }, [
-    question, 
-    source, 
+    question,
+    source,
     JSON.stringify(data),  // ✅ Re-run when data changes
     triggerKey
   ]);

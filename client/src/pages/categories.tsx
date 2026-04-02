@@ -11,7 +11,7 @@
 //   CardDescription,
 // } from "@/components/ui/card";
 // import { Tag, BarChart2, Star, ChevronRight } from "lucide-react";
- 
+
 // interface Category {
 //   category: string;
 //   total_products: number;
@@ -20,29 +20,29 @@
 //   total_reviews: number;
 //   source: string;
 // }
- 
+
 // export default function Categories() {
 //   const [categories, setCategories] = useState<Category[]>([]);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState("");
 //   const [tableFilter, setTableFilter] = useState<"flipkart" | "amazon" | "all">("all");
 //   const [, setLocation] = useLocation();
- 
+
 //   useEffect(() => {
 //     axios
-//       .get("https://api.insydz.com/analytics/category")
+//       .get("http://localhost:8000/analytics/category")
 //       .then((res) => setCategories(res.data.categories))
 //       .catch(() => setError("Failed to fetch category data"))
 //       .finally(() => setLoading(false));
 //   }, []);
- 
+
 //   if (loading)
 //     return (
 //       <div className="flex h-screen items-center justify-center text-slate-400">
 //         Loading categories...
 //       </div>
 //     );
- 
+
 //   if (error)
 //     return (
 //       <div className="flex h-screen items-center justify-center text-red-500">
@@ -54,11 +54,11 @@
 //     if (tableFilter === "all") return true;
 //     return cat.source === tableFilter;
 //   });
- 
+
 //   return (
 //     <div className="min-h-screen bg-gradient-to-br from-[#F8FBFF] via-[#E3F2FD] to-[#DFF5FF]">
 //       <Sidebar />
- 
+
 //       <div className="ml-64 min-h-screen">
 //         <header className="bg-white/70 backdrop-blur-md border-b border-slate-200 px-6 py-4 sticky top-0 z-10">
 //           <h2 className="text-2xl font-semibold text-slate-800">
@@ -83,7 +83,7 @@
 //                 Explore top-performing categories and jump directly to their product lists.
 //               </p>
 //             </div>
- 
+
 //             {/* Filter Dropdown */}
 //             <div className="flex items-center gap-4 mb-6">
 //               <label className="font-medium text-slate-700">Filter by Table:</label>
@@ -116,7 +116,7 @@
 //                       {cat.total_products.toLocaleString()} products
 //                     </CardDescription>
 //                   </CardHeader>
- 
+
 //                   <CardContent className="flex flex-col gap-3 mt-2">
 //                     <div className="flex items-center justify-between">
 //                       <span className="text-emerald-600 font-semibold">
@@ -129,7 +129,7 @@
 //                     <div className="text-slate-500 text-sm">
 //                       Total Reviews: {cat.total_reviews?.toLocaleString() ?? 0}
 //                     </div>
- 
+
 //                     <button
 //                       onClick={() =>
 //                         setLocation(
@@ -150,7 +150,7 @@
 //     </div>
 //   );
 // }
- 
+
 import { useState, useEffect } from "react";
 import { useLocation } from "wouter";
 import axios from "axios";
@@ -163,7 +163,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Tag, BarChart2, Star, ChevronRight } from "lucide-react";
- 
+
 interface Category {
   category: string;
   total_products: number;
@@ -172,7 +172,7 @@ interface Category {
   total_reviews: number;
   source: string;
 }
- 
+
 export default function Categories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -185,19 +185,19 @@ export default function Categories() {
 
   useEffect(() => {
     axios
-      .get("https://api.insydz.com/analytics/category")
+      .get("http://localhost:8000/analytics/category")
       .then((res) => setCategories(res.data.categories))
       .catch(() => setError("Failed to fetch category data"))
       .finally(() => setLoading(false));
   }, []);
- 
+
   if (loading)
     return (
       <div className="flex h-screen items-center justify-center text-slate-400">
         Loading categories...
       </div>
     );
- 
+
   if (error)
     return (
       <div className="flex h-screen items-center justify-center text-red-500">
@@ -209,7 +209,7 @@ export default function Categories() {
     if (tableFilter === "all") return true;
     return cat.source === tableFilter;
   });
- 
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F8FBFF] via-[#E3F2FD] to-[#DFF5FF] flex flex-col lg:flex-row">
       {/* Mobile Sidebar */}
@@ -338,4 +338,3 @@ export default function Categories() {
     </div>
   );
 }
-  

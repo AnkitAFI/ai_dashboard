@@ -14,7 +14,7 @@
 //   color: string;
 //   isLoading?: boolean;
 // }
- 
+
 // function MetricCard({ title, value, icon, color, isLoading }: MetricCardProps) {
 //   if (isLoading) {
 //     return (
@@ -29,7 +29,7 @@
 //       </Card>
 //     );
 //   }
- 
+
 //   return (
 //     <Card className="metric-card bg-card rounded-xl p-6 border shadow-sm hover:shadow-md transition-shadow">
 //       <div className="flex items-center justify-between mb-4">
@@ -43,11 +43,11 @@
 //     </Card>
 //   );
 // }
- 
+
 // export default function MetricsCards({ selectedSource }: { selectedSource: string }) {
-//   const BASE_URL = "https://api.insydz.com";
+//   const BASE_URL = "http://localhost:8000";
 //   const { filters } = useFilters(); // ✅ Get filters from context
-  
+
 //   const [flipkartStats, setFlipkartStats] = useState<any>(null);
 //   const [amazonStats, setAmazonStats] = useState<any>(null);
 //   const [flipkartCategories, setFlipkartCategories] = useState<any[]>([]);
@@ -57,30 +57,30 @@
 //   // ✅ Build query params from filters
 //   const buildQueryParams = () => {
 //     const params = new URLSearchParams();
-    
+
 //     if (filters.category && filters.category !== "All Categories") {
 //       params.append("category", filters.category);
 //     }
-    
+
 //     if (filters.priceRange[0] > 0) {
 //       params.append("min_price", filters.priceRange[0].toString());
 //     }
 //     if (filters.priceRange[1] < 5000000) {
 //       params.append("max_price", filters.priceRange[1].toString());
 //     }
-    
+
 //     if (filters.rating > 0) {
 //       params.append("min_rating", filters.rating.toString());
 //     }
-    
+
 //     if (filters.dateRange !== "all") {
 //       params.append("date_range", filters.dateRange);
 //     }
-    
+
 //     if (filters.showTrendingOnly) {
 //       params.append("trending_only", "true");
 //     }
-    
+
 //     return params.toString();
 //   };
 
@@ -90,7 +90,7 @@
 //       try {
 //         const table = filters.table || selectedSource;
 //         const queryParams = buildQueryParams();
-        
+
 //         if (table === "both") {
 //           const [flipkartStatsRes, amazonStatsRes, flipkartCatRes, amazonCatRes] = await Promise.all([
 //             fetch(`${BASE_URL}/analytics-summary?source=flipkart&${queryParams}`),
@@ -98,14 +98,14 @@
 //             fetch(`${BASE_URL}/flipkart/categories?${queryParams}`),
 //             fetch(`${BASE_URL}/rapidapi_amazon_products/categories?${queryParams}`),
 //           ]);
- 
+
 //           const [flipkartStatsJson, amazonStatsJson, flipkartCatJson, amazonCatJson] = await Promise.all([
 //             flipkartStatsRes.json(),
 //             amazonStatsRes.json(),
 //             flipkartCatRes.json(),
 //             amazonCatRes.json(),
 //           ]);
- 
+
 //           setFlipkartStats(flipkartStatsJson);
 //           setAmazonStats(amazonStatsJson);
 //           setFlipkartCategories(Array.isArray(flipkartCatJson) ? flipkartCatJson : []);
@@ -116,28 +116,28 @@
 //             fetch(`${BASE_URL}/analytics-summary?source=amazon&${queryParams}`),
 //             fetch(`${BASE_URL}/rapidapi_amazon_products/categories?${queryParams}`),
 //           ]);
- 
+
 //           const [statsJson, catsJson] = await Promise.all([
 //             statsRes.json(),
 //             catsRes.json(),
 //           ]);
- 
+
 //           setFlipkartStats(null);
 //           setAmazonStats(statsJson);
 //           setFlipkartCategories([]);
 //           setAmazonCategories(Array.isArray(catsJson) ? catsJson : []);
- 
+
 //         } else {
 //           const [statsRes, catsRes] = await Promise.all([
 //             fetch(`${BASE_URL}/analytics-summary?source=flipkart&${queryParams}`),
 //             fetch(`${BASE_URL}/flipkart/categories?${queryParams}`),
 //           ]);
- 
+
 //           const [statsJson, catsJson] = await Promise.all([
 //             statsRes.json(),
 //             catsRes.json(),
 //           ]);
- 
+
 //           setFlipkartStats(statsJson);
 //           setAmazonStats(null);
 //           setFlipkartCategories(Array.isArray(catsJson) ? catsJson : []);
@@ -153,7 +153,7 @@
 //         setIsLoading(false);
 //       }
 //     };
- 
+
 //     fetchData();
 //   }, [selectedSource, filters]); // ✅ Re-fetch when filters change
 
@@ -171,7 +171,7 @@
 //   let avgRating = 0;
 //   let totalProducts = 0;
 //   let totalCategories = 0;
- 
+
 //   if (showBoth) {
 //     totalReviews = (flipkartStats?.total_reviews || 0) + (amazonStats?.total_reviews || 0);
 //     const flipkartTotal = flipkartStats?.total_reviews || 0;
@@ -183,20 +183,20 @@
 //     }
 //     totalProducts = (flipkartStats?.total_products || 0) + (amazonStats?.total_products || 0);
 //     totalCategories = flipkartCategories.length + amazonCategories.length;
- 
+
 //   } else if (isAmazon) {
 //     totalReviews = amazonStats?.total_reviews || 0;
 //     avgRating = amazonStats?.avg_rating || amazonStats?.average_rating || 0;
 //     totalProducts = amazonStats?.total_products || 0;
 //     totalCategories = amazonCategories.length;
- 
+
 //   } else {
 //     totalReviews = flipkartStats?.total_reviews || 0;
 //     avgRating = flipkartStats?.avg_rating || 0;
 //     totalProducts = flipkartStats?.total_products || 0;
 //     totalCategories = flipkartCategories.length;
 //   }
- 
+
 //   const cards = [
 //     {
 //       title: showBoth ? "Total Reviews (Both)" : isAmazon ? "Total Reviews (Amazon)" : "Total Reviews (Flipkart)",
@@ -223,7 +223,7 @@
 //       color: "bg-purple-100",
 //     },
 //   ];
- 
+
 //   return (
 //     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
 //       {cards.map((card, index) => (
@@ -287,9 +287,9 @@
 // }
 
 // export default function MetricsCards({ selectedSource }: { selectedSource: string }) {
-//   const BASE_URL = "https://api.insydz.com";
+//   const BASE_URL = "http://localhost:8000";
 //   const { filters } = useFilters(); // ✅ Get filters from context
-  
+
 //   const [flipkartStats, setFlipkartStats] = useState<any>(null);
 //   const [amazonStats, setAmazonStats] = useState<any>(null);
 //   const [flipkartCategories, setFlipkartCategories] = useState<any[]>([]);
@@ -299,30 +299,30 @@
 //   // ✅ Build query params from filters
 //   const buildQueryParams = () => {
 //     const params = new URLSearchParams();
-    
+
 //     if (filters.category && filters.category !== "All Categories") {
 //       params.append("category", filters.category);
 //     }
-    
+
 //     if (filters.priceRange[0] > 0) {
 //       params.append("min_price", filters.priceRange[0].toString());
 //     }
 //     if (filters.priceRange[1] < 5000000) {
 //       params.append("max_price", filters.priceRange[1].toString());
 //     }
-    
+
 //     if (filters.rating > 0) {
 //       params.append("min_rating", filters.rating.toString());
 //     }
-    
+
 //     if (filters.dateRange !== "all") {
 //       params.append("date_range", filters.dateRange);
 //     }
-    
+
 //     if (filters.showTrendingOnly) {
 //       params.append("trending_only", "true");
 //     }
-    
+
 //     return params.toString();
 //   };
 
@@ -332,7 +332,7 @@
 //       try {
 //         const table = filters.table || selectedSource;
 //         const queryParams = buildQueryParams();
-        
+
 //         if (table === "both") {
 //           const [flipkartStatsRes, amazonStatsRes, flipkartCatRes, amazonCatRes] = await Promise.all([
 //             fetch(`${BASE_URL}/analytics-summary?source=flipkart&${queryParams}`),
@@ -530,9 +530,9 @@ function MetricCard({ title, value, icon, color, isLoading }: MetricCardProps) {
 }
 
 export default function MetricsCards({ selectedSource }: { selectedSource: string }) {
-  const BASE_URL = "https://api.insydz.com";
+  const BASE_URL = "http://localhost:8000";
   const { filters } = useFilters(); // ✅ Get filters from context
-  
+
   const [flipkartStats, setFlipkartStats] = useState<any>(null);
   const [amazonStats, setAmazonStats] = useState<any>(null);
   const [flipkartCategories, setFlipkartCategories] = useState<any[]>([]);
@@ -542,30 +542,30 @@ export default function MetricsCards({ selectedSource }: { selectedSource: strin
   // ✅ Build query params from filters
   const buildQueryParams = () => {
     const params = new URLSearchParams();
-    
+
     if (filters.category && filters.category !== "All Categories") {
       params.append("category", filters.category);
     }
-    
+
     if (filters.priceRange[0] > 0) {
       params.append("min_price", filters.priceRange[0].toString());
     }
     if (filters.priceRange[1] < 5000000) {
       params.append("max_price", filters.priceRange[1].toString());
     }
-    
+
     if (filters.rating > 0) {
       params.append("min_rating", filters.rating.toString());
     }
-    
+
     if (filters.dateRange !== "all") {
       params.append("date_range", filters.dateRange);
     }
-    
+
     if (filters.showTrendingOnly) {
       params.append("trending_only", "true");
     }
-    
+
     return params.toString();
   };
 
@@ -575,7 +575,7 @@ export default function MetricsCards({ selectedSource }: { selectedSource: strin
       try {
         const table = filters.table || selectedSource;
         const queryParams = buildQueryParams();
-        
+
         if (table === "both") {
           const [flipkartStatsRes, amazonStatsRes, flipkartCatRes, amazonCatRes] = await Promise.all([
             fetch(`${BASE_URL}/analytics-summary?source=flipkart&${queryParams}`),

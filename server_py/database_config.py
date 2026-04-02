@@ -13,7 +13,8 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 # Database URL - get directly from environment
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://seller-db:Seller!db@122.176.108.253:5432/db1")
+# DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://seller-db:Seller!db@122.176.108.253:5432/db1")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres123@localhost:5432/mydatabase")
 
 # Remove quotes if present in DATABASE_URL
 if DATABASE_URL.startswith('"') and DATABASE_URL.endswith('"'):
@@ -51,46 +52,60 @@ def auto_fix_schema():
     """Automatically fix missing columns in database"""
     try:
         inspector = inspect(engine)
+        tables = inspector.get_table_names()
         
-        # Check if products table exists
-        if 'products' not in inspector.get_table_names():
-            logger.info("Products table doesn't exist, will be created automatically")
-            return
-        
-        # Get existing columns
-        existing_columns = [col['name'] for col in inspector.get_columns('products')]
-        
-        # Define required columns that might be missing
-        required_columns = {
-            'source': "VARCHAR(50)",
-            'product_id': "VARCHAR(100)",
-            'asin': "VARCHAR(20)",
-            'original_price': "FLOAT",
-            'discount': "FLOAT",
-            'reviews_count': "INTEGER",
-            'is_bestseller': "BOOLEAN DEFAULT FALSE",
-            'is_deal': "BOOLEAN DEFAULT FALSE",
-            'variation': "JSONB",
-            'product_url': "VARCHAR(500)",
-            'description': "TEXT",
-            'features': "JSONB",
-            'specifications': "JSONB"
-        }
-        
-        # Add missing columns
-        with engine.connect() as conn:
-            for column_name, column_type in required_columns.items():
-                if column_name not in existing_columns:
-                    try:
-                        logger.info(f"Adding missing column: {column_name}")
-                        conn.execute(text(f"""
-                            ALTER TABLE products 
-                            ADD COLUMN IF NOT EXISTS {column_name} {column_type}
-                        """))
-                        conn.commit()
-                        logger.info(f"✅ Added column: {column_name}")
-                    except Exception as e:
-                        logger.warning(f"Could not add column {column_name}: {e}")
+        # --- PRODUCTS TABLE ---
+        if 'products' in tables:
+            existing_columns = [col['name'] for col in inspector.get_columns('products')]
+            required_columns = {
+                'source': "VARCHAR(50)",
+                'product_id': "VARCHAR(100)",
+                'asin': "VARCHAR(20)",
+                'original_price': "FLOAT",
+                'discount': "FLOAT",
+                'reviews_count': "INTEGER",
+                'is_bestseller': "BOOLEAN DEFAULT FALSE",
+                'is_deal': "BOOLEAN DEFAULT FALSE",
+                'variation': "JSONB",
+                'product_url': "VARCHAR(500)",
+                'description': "TEXT",
+                'features': "JSONB",
+                'specifications': "JSONB"
+            }
+            
+            with engine.connect() as conn:
+                for column_name, column_type in required_columns.items():
+                    if column_name not in existing_columns:
+                        try:
+                            logger.info(f"Adding missing column: {column_name}")
+                            conn.execute(text(f"ALTER TABLE products ADD COLUMN IF NOT EXISTS {column_name} {column_type}"))
+                            conn.commit()
+                        except Exception as e:
+                            logger.warning(f"Could not add column {column_name}: {e}")
+
+        # --- USERS TABLE (Onboarding Columns) ---
+        if 'users' in tables:
+            user_columns = [col['name'] for col in inspector.get_columns('users')]
+            required_user_columns = {
+                'onboarding_completed': "BOOLEAN DEFAULT FALSE",
+                'user_type': "VARCHAR(50)",
+                'marketplace': "VARCHAR(50)",
+                'primary_category': "VARCHAR(100)",
+                'display_name': "VARCHAR(150)",
+                'seller_id': "VARCHAR(100)",
+                'investment_budget': "VARCHAR(50)",
+                'onboarding_completed_at': "TIMESTAMP WITH TIME ZONE"
+            }
+            with engine.connect() as conn:
+                for column_name, column_type in required_user_columns.items():
+                    if column_name not in user_columns:
+                        try:
+                            logger.info(f"Adding missing user column: {column_name}")
+                            conn.execute(text(f"ALTER TABLE users ADD COLUMN IF NOT EXISTS {column_name} {column_type}"))
+                            conn.commit()
+                            logger.info(f"✅ Added user column: {column_name}")
+                        except Exception as e:
+                            logger.warning(f"Could not add user column {column_name}: {e}")
         
         logger.info("✅ Schema auto-fix completed")
         

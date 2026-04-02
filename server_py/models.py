@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Text, Integer, Float, Boolean, JSON, TIMESTAMP, ARRAY, Numeric, DateTime, Date, ForeignKey
+from sqlalchemy import Column, String, Text, Integer, Float, Boolean, JSON, TIMESTAMP, ARRAY, Numeric, DateTime, Date, ForeignKey, UniqueConstraint, SmallInteger
 from .database_config import Base
 from sqlalchemy.sql import func
 from datetime import datetime
@@ -209,6 +209,16 @@ class User(Base):
     payment_orders = relationship("PaymentOrder", back_populates="user")
     scheduled_downgrade_to = Column(String(50), nullable=True)
 
+    # --- Onboarding fields ---
+    onboarding_completed = Column(Boolean, default=False)
+    user_type = Column(String(50), nullable=True)            # active_seller | researcher
+    marketplace = Column(String(50), nullable=True)           # amazon_india | flipkart | both
+    primary_category = Column(String(100), nullable=True)
+    display_name = Column(String(150), nullable=True)
+    seller_id = Column(String(100), nullable=True)            # active sellers only
+    investment_budget = Column(String(50), nullable=True)     # researchers only
+    onboarding_completed_at = Column(DateTime(timezone=True), nullable=True)
+
     is_verified = Column(Boolean, default=False)
     # Optional: Add is_active if you want to enable/disable accounts
     # is_active = Column(Boolean, default=True)
@@ -334,3 +344,104 @@ class PaymentOrder(Base):
     refunded_at         = Column(DateTime, nullable=True)
 
     user = relationship("User", back_populates="payment_orders")
+
+
+class RapidapiFlipkartProduct(Base):
+    __tablename__ = "rapidapi_flipkart_products"
+
+    id = Column(Integer, primary_key=True)
+    pid = Column(String(100), index=True)
+    item_id = Column(String(100), nullable=True)
+    listing_id = Column(String(100), nullable=True)
+    category_id = Column(String(100), index=True, nullable=True)
+    category_name = Column(String(200), nullable=True)
+    brand = Column(String(200), index=True, nullable=True)
+    product_title = Column(Text, nullable=True)
+    product_subtitle = Column(Text, nullable=True)
+    product_url = Column(Text, nullable=True)
+    product_photo = Column(Text, nullable=True)
+    product_price = Column(Numeric(10, 2), nullable=True)
+    product_mrp = Column(Numeric(10, 2), nullable=True)
+    product_star_rating = Column(Numeric(3, 2), nullable=True)
+    product_rating_count = Column(Integer, nullable=True)
+    product_review_count = Column(Integer, nullable=True)
+    is_sponsored = Column(Boolean, nullable=True, default=False)
+    stock_status = Column(String(50), nullable=True)
+    highlights = Column(JSON, nullable=True)
+    rating_breakup = Column(JSON, nullable=True)
+    sales_volume = Column(Text, nullable=True)
+    estimated_sales = Column(Numeric(15, 2), nullable=True)
+    country = Column(String(10), nullable=True)
+    raw_data = Column(JSON, nullable=True)
+    avg_price = Column(Numeric(10, 2), nullable=True)
+    min_price = Column(Numeric(10, 2), nullable=True)
+    max_price = Column(Numeric(10, 2), nullable=True)
+    avg_sales_volume = Column(Numeric(15, 2), nullable=True)
+    min_sales_volume = Column(Numeric(15, 2), nullable=True)
+    max_sales_volume = Column(Numeric(15, 2), nullable=True)
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=True)
+    updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now(), index=True, nullable=True)
+
+    __table_args__ = (
+        UniqueConstraint('pid', 'category_id', 'country', name='uq_rapidapi_flipkart_products_pid_cat_country'),
+    )
+
+
+class RankUpdateRatelimit(Base):
+    __tablename__ = "rank_update_ratelimit"
+
+    user_email = Column(String(255), primary_key=True)
+    update_date = Column(Date, primary_key=True)
+    call_count = Column(Integer, default=0, nullable=True)
+
+
+class Feedback(Base):
+    __tablename__ = "feedback"
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    rating = Column(SmallInteger, nullable=False)
+    comment = Column(Text, nullable=True)
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), index=True)
+
+
+class CompetitorSnapshot(Base):
+    __tablename__ = "competitor_snapshots"
+
+    id = Column(Integer, primary_key=True)
+    seller_id = Column(String(255), index=True)
+    user_email = Column(String(255), index=True)
+    asin = Column(String(20), index=True)
+    snapshot_date = Column(Date, index=True)
+    snapshot_data = Column(JSON, nullable=True)
+
+    __table_args__ = (
+        UniqueConstraint('asin', 'snapshot_date', 'user_email', name='uq_competitor_snapshots_asin_date_user'),
+    )
+
+
+class TimeSeriesForcasting(Base):
+    __tablename__ = "Time_Series_Forcasting"
+
+    id = Column(Integer, primary_key=True)  # Added ID for ORM consistency
+    date = Column(Text)
+    product_id = Column(String, index=True)
+    product_name = Column(Text)
+    category = Column(Text)
+    brand = Column(Text)
+    discounted_price = Column(Numeric)
+    rating = Column(Numeric)
+    rating_count = Column(Integer)
+    review_count = Column(Integer)
+
+
+class PriceAlert(Base):
+    __tablename__ = "price_alerts"
+
+    id = Column(Integer, primary_key=True)
+    tracked_product_id = Column(Integer, ForeignKey("tracked_products.id", ondelete="CASCADE"), index=True)
+    user_email = Column(String(255), index=True)
+    threshold_percent = Column(Float)
+    delivery_email = Column(String(255))
+    is_active = Column(Boolean, default=True, nullable=True)
+    created_at = Column(TIMESTAMP, server_default=func.now(), nullable=True)

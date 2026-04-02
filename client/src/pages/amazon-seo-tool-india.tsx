@@ -5,8 +5,7 @@ import {
   MessageCircle, Package, Trophy, Zap, BookOpen, Video, FileText,
   Menu, X, Sun, Moon, ChevronDown, ShoppingBag, Store, Briefcase,
   Users, Bell, Code, Globe, ArrowLeft, Facebook, Twitter, Linkedin,
-  Instagram, Flame, Presentation, Instagram, Facebook, Twitter, Linkedin
-} from "lucide-react";
+  Instagram, Flame, Presentation } from "lucide-react"; 
 import { Button } from "@/components/ui/button";
 import { Helmet } from 'react-helmet-async';
 

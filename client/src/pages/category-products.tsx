@@ -20,13 +20,13 @@
 //   avg_rating: number;
 //   source: string;
 // }
- 
+
 // export default function CategoryProducts() {
 //   const [match, params] = useRoute("/category-products/:source/:category");
 //   const source = params?.source;
 //   const category = params?.category;
 //   const [, setLocation] = useLocation();
- 
+
 //   const [products, setProducts] = useState<Product[]>([]);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState("");
@@ -41,7 +41,7 @@
 
 //     axios
 //       .get(
-//         `https://api.insydz.com/category/products/${encodeURIComponent(
+//         `http://localhost:8000/category/products/${encodeURIComponent(
 //           decodedCategory
 //         )}?source=${source}&limit=${limit ?? 1000000}&offset=${(page - 1) * limit}`
 //       )
@@ -232,7 +232,7 @@
 //     </div>
 //   );
 // }
- 
+
 import { useState, useEffect } from "react";
 import { useLocation, useRoute } from "wouter";
 import axios from "axios";
@@ -255,13 +255,13 @@ interface Product {
   avg_rating: number;
   source: string;
 }
- 
+
 export default function CategoryProducts() {
   const [match, params] = useRoute("/category-products/:source/:category");
   const source = params?.source;
   const category = params?.category;
   const [, setLocation] = useLocation();
- 
+
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -277,12 +277,12 @@ export default function CategoryProducts() {
       const urlParams = new URLSearchParams(window.location.search);
       const fromParam = urlParams.get("from");
       const pageParam = urlParams.get("page");
-      
+
       setFromDashboard(fromParam === "dashboard");
       if (pageParam) {
         setPage(parseInt(pageParam));
       }
-      
+
       console.log("=== CATEGORY PRODUCTS PAGE LOADED ===");
       console.log("from param:", fromParam);
       console.log("fromDashboard:", fromParam === "dashboard");
@@ -299,7 +299,7 @@ export default function CategoryProducts() {
 
     axios
       .get(
-        `https://api.insydz.com/category/products/${encodeURIComponent(
+        `http://localhost:8000/category/products/${encodeURIComponent(
           decodedCategory
         )}?source=${source}&limit=${limit}&offset=${(page - 1) * limit}`
       )
@@ -317,12 +317,12 @@ export default function CategoryProducts() {
   const handleBackClick = () => {
     console.log("=== BACK BUTTON CLICKED ===");
     console.log("fromDashboard:", fromDashboard);
-    
+
     // ✅ Direct window check as backup
     const currentURL = new URLSearchParams(window.location.search);
     const fromParam = currentURL.get("from");
     console.log("Direct URL check - from param:", fromParam);
-    
+
     // Priority: If from dashboard, go back to dashboard
     if (fromDashboard || fromParam === "dashboard") {
       console.log("✅ Redirecting to Dashboard (/dashboard)");
@@ -331,7 +331,7 @@ export default function CategoryProducts() {
       console.log("Redirecting to Categories page");
       setLocation("/categories");
     }
-    
+
     console.log("===========================");
   };
 

@@ -25,7 +25,7 @@
 //     proxy: {
 //       // All frontend requests to /api will be forwarded to your backend
 //       "/api": {
-//         target: "https://api.insydz.com", // your FastAPI/Express backend
+//         target: "http://localhost:8000", // your FastAPI/Express backend
 //         changeOrigin: true,
 //         rewrite: (path) => path.replace(/^\/api/, ""),
 //       },
@@ -44,7 +44,7 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
- 
+
 export default defineConfig({
 
   plugins: [
@@ -54,7 +54,7 @@ export default defineConfig({
     runtimeErrorOverlay(),
 
   ],
- 
+
   resolve: {
 
     alias: {
@@ -68,9 +68,9 @@ export default defineConfig({
     },
 
   },
- 
+
   root: path.resolve(__dirname, "client"),
- 
+
   build: {
 
     outDir: path.resolve(__dirname, "dist/public"),
@@ -79,7 +79,7 @@ export default defineConfig({
     target: 'es2019',
 
   },
- 
+
   server: {
 
     // ✅ Allow Cloudflare Tunnel domain
@@ -93,12 +93,12 @@ export default defineConfig({
       "insydz.com",     // 👈 added your Cloudflare domain
 
     ],
- 
+
     proxy: {
 
       "/api": {
 
-        target: "https://api.insydz.com",
+        target: "http://localhost:8000",
 
         changeOrigin: true,
 
@@ -107,9 +107,9 @@ export default defineConfig({
       },
 
     },
- 
+
     port: 5173,
- 
+
     fs: {
 
       strict: true,
@@ -122,4 +122,4 @@ export default defineConfig({
 
 });
 
- 
+

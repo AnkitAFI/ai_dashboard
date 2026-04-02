@@ -130,19 +130,19 @@ interface UsageLimits {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const SOURCE_TYPE_LABELS: Record<string, { label: string; color: string }> = {
-  exact_match:       { label: "Exact Match",        color: "bg-green-100 text-green-800 border-green-300"   },
-  keyword_match:     { label: "Keyword Match",       color: "bg-blue-100 text-blue-800 border-blue-300"     },
-  broad_match:       { label: "Broad Match",         color: "bg-yellow-100 text-yellow-800 border-yellow-300"},
-  category_fallback: { label: "Category Fallback",   color: "bg-orange-100 text-orange-800 border-orange-300"},
-  no_data:           { label: "No Data",             color: "bg-red-100 text-red-800 border-red-300"        },
+  exact_match: { label: "Exact Match", color: "bg-green-100 text-green-800 border-green-300" },
+  keyword_match: { label: "Keyword Match", color: "bg-blue-100 text-blue-800 border-blue-300" },
+  broad_match: { label: "Broad Match", color: "bg-yellow-100 text-yellow-800 border-yellow-300" },
+  category_fallback: { label: "Category Fallback", color: "bg-orange-100 text-orange-800 border-orange-300" },
+  no_data: { label: "No Data", color: "bg-red-100 text-red-800 border-red-300" },
 };
 
 const TIER_LABELS: Record<string, string> = {
-  tier_1_exact:    "Tier 1 — Exact",
-  tier_2_keyword:  "Tier 2 — Keyword",
-  tier_3_broad:    "Tier 3 — Broad",
+  tier_1_exact: "Tier 1 — Exact",
+  tier_2_keyword: "Tier 2 — Keyword",
+  tier_3_broad: "Tier 3 — Broad",
   tier_4_category: "Tier 4 — Category",
-  no_data:         "No Data",
+  no_data: "No Data",
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -154,14 +154,14 @@ function ConfidencePanel({ cs }: { cs: NonNullable<ApiResponse["confidence_score
   const [open, setOpen] = useState(false);
   const pct = Math.round(cs.score * 100);
   const barColor =
-    cs.label === "High"   ? "bg-green-500"  :
-    cs.label === "Medium" ? "bg-yellow-500" : "bg-red-500";
+    cs.label === "High" ? "bg-green-500" :
+      cs.label === "Medium" ? "bg-yellow-500" : "bg-red-500";
   const textColor =
-    cs.label === "High"   ? "text-green-700"  :
-    cs.label === "Medium" ? "text-yellow-700" : "text-red-700";
+    cs.label === "High" ? "text-green-700" :
+      cs.label === "Medium" ? "text-yellow-700" : "text-red-700";
   const bgColor =
-    cs.label === "High"   ? "bg-green-50 border-green-200"   :
-    cs.label === "Medium" ? "bg-yellow-50 border-yellow-200" : "bg-red-50 border-red-200";
+    cs.label === "High" ? "bg-green-50 border-green-200" :
+      cs.label === "Medium" ? "bg-yellow-50 border-yellow-200" : "bg-red-50 border-red-200";
 
   return (
     <div className={`rounded-xl border-2 p-4 ${bgColor}`}>
@@ -287,24 +287,24 @@ function FallbackBanner({ reason }: { reason: string }) {
 export default function ProductTracker() {
   const { user, isLoading } = useAuth();
   const userEmail = user?.email || "";
-  const userId    = user?.id;
+  const userId = user?.id;
 
   const [productName, setProductName] = useState("");
-  const [category,    setCategory]    = useState("");
-  const [categories,  setCategories]  = useState<string[]>([]);
-  const [source,      setSource]      = useState("amazon");
-  const [baseCost,    setBaseCost]    = useState("");
-  const [loading,     setLoading]     = useState(false);
+  const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
+  const [source, setSource] = useState("amazon");
+  const [baseCost, setBaseCost] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // New: store the full ApiResponse, not just the inner data
   const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
   const result = apiResponse?.data ?? null;
 
-  const [isMobileMenuOpen,  setIsMobileMenuOpen]  = useState(false);
-  const [toasts,            setToasts]            = useState<Toast[]>([]);
-  const [usageLimits,       setUsageLimits]       = useState<UsageLimits | null>(null);
-  const [loadingUsage,      setLoadingUsage]      = useState(false);
-  const [showUpgradeModal,  setShowUpgradeModal]  = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [usageLimits, setUsageLimits] = useState<UsageLimits | null>(null);
+  const [loadingUsage, setLoadingUsage] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const UNLIMITED = 1_000_000;
 
@@ -315,15 +315,15 @@ export default function ProductTracker() {
     if (!userId) return;
     setLoadingUsage(true);
     try {
-      const res  = await fetch(`https://api.insydz.com/users/${userId}/analysis-usage`, { credentials: "include" });
+      const res = await fetch(`http://localhost:8000/users/${userId}/analysis-usage`, { credentials: "include" });
       // New envelope: { success, data: { count, limit, remaining, subscription_tier, month } }
       const body = await res.json();
-      const d    = body.data ?? body; // graceful fallback if old endpoint
+      const d = body.data ?? body; // graceful fallback if old endpoint
       if (res.ok) {
         setUsageLimits({
-          count:             d.count,
-          limit:             d.limit    === -1 ? UNLIMITED : d.limit,
-          remaining:         d.remaining === -1 ? UNLIMITED : d.remaining,
+          count: d.count,
+          limit: d.limit === -1 ? UNLIMITED : d.limit,
+          remaining: d.remaining === -1 ? UNLIMITED : d.remaining,
           subscription_tier: d.subscription_tier,
         });
       }
@@ -341,7 +341,7 @@ export default function ProductTracker() {
   const getUpgradeMessage = () => {
     if (!usageLimits) return "";
     const tier = usageLimits.subscription_tier.toLowerCase();
-    if (tier === "free")  return "Upgrade to Basic for 20 analyses per month";
+    if (tier === "free") return "Upgrade to Basic for 20 analyses per month";
     if (tier === "basic") return "Upgrade to Premium for unlimited analyses";
     return "Upgrade for more features";
   };
@@ -349,7 +349,7 @@ export default function ProductTracker() {
   // ── Categories ────────────────────────────────────────────────────────────
   const fetchCategories = async (src: string) => {
     try {
-      const res  = await fetch(`https://api.insydz.com/categories?table=${src}`);
+      const res = await fetch(`http://localhost:8000/categories?table=${src}`);
       const data = await res.json();
       const cats = data.map((c: any) => c.category);
       setCategories(cats);
@@ -396,14 +396,14 @@ export default function ProductTracker() {
     setApiResponse(null);
 
     try {
-      const res = await fetch("https://api.insydz.com/product-tracker/analyze", {
-        method:  "POST",
+      const res = await fetch("http://localhost:8000/product-tracker/analyze", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({
+        body: JSON.stringify({
           product_name: productName,
           category,
           source,
-          base_cost:  cost,
+          base_cost: cost,
           user_email: userEmail || null,
         }),
       });
@@ -437,15 +437,15 @@ export default function ProductTracker() {
 
   // ── Colour helpers (unchanged) ────────────────────────────────────────────
   const getConfidenceBadgeColor = (c: string) =>
-    c === "High"     ? "bg-green-100 text-green-800 border-green-300"   :
-    c === "Medium"   ? "bg-yellow-100 text-yellow-800 border-yellow-300" :
-    c === "Critical" ? "bg-red-100 text-red-800 border-red-300"         :
-                       "bg-red-100 text-red-800 border-red-300";
+    c === "High" ? "bg-green-100 text-green-800 border-green-300" :
+      c === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-300" :
+        c === "Critical" ? "bg-red-100 text-red-800 border-red-300" :
+          "bg-red-100 text-red-800 border-red-300";
 
   const getDemandBadgeColor = (d: string) =>
-    d === "High"   ? "bg-emerald-100 text-emerald-800 border-emerald-300" :
-    d === "Medium" ? "bg-blue-100 text-blue-800 border-blue-300"          :
-                     "bg-slate-100 text-slate-800 border-slate-300";
+    d === "High" ? "bg-emerald-100 text-emerald-800 border-emerald-300" :
+      d === "Medium" ? "bg-blue-100 text-blue-800 border-blue-300" :
+        "bg-slate-100 text-slate-800 border-slate-300";
 
   const getSourceColor = (s: string) =>
     s.toLowerCase() === "amazon"
@@ -453,14 +453,14 @@ export default function ProductTracker() {
       : "bg-yellow-100 text-yellow-800 border-yellow-300";
 
   const getSeverityColor = (s: string) =>
-    s === "High"   ? "border-red-300 bg-red-50"       :
-    s === "Medium" ? "border-yellow-300 bg-yellow-50" :
-                     "border-slate-200 bg-slate-50";
+    s === "High" ? "border-red-300 bg-red-50" :
+      s === "Medium" ? "border-yellow-300 bg-yellow-50" :
+        "border-slate-200 bg-slate-50";
 
   const getSeverityBadgeColor = (s: string) =>
-    s === "High"   ? "bg-red-100 text-red-800 border-red-300"       :
-    s === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-300" :
-                     "bg-slate-100 text-slate-800 border-slate-300";
+    s === "High" ? "bg-red-100 text-red-800 border-red-300" :
+      s === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-300" :
+        "bg-slate-100 text-slate-800 border-slate-300";
 
   // ──────────────────────────────────────────────────────────────────────────
   // RENDER
@@ -502,12 +502,11 @@ export default function ProductTracker() {
       {/* Toasts */}
       <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-md">
         {toasts.map(t => (
-          <div key={t.id} className={`flex items-start gap-3 p-4 rounded-lg shadow-lg border-2 backdrop-blur-md animate-in slide-in-from-right ${
-            t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
-          }`}>
+          <div key={t.id} className={`flex items-start gap-3 p-4 rounded-lg shadow-lg border-2 backdrop-blur-md animate-in slide-in-from-right ${t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
+            }`}>
             {t.variant === "success"
               ? <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
-              : <XCircle     className="h-5 w-5 text-red-600 mt-0.5" />}
+              : <XCircle className="h-5 w-5 text-red-600 mt-0.5" />}
             <div className="flex-1 min-w-0">
               <p className={`font-semibold text-sm ${t.variant === "success" ? "text-green-900" : "text-red-900"}`}>{t.title}</p>
               <p className={`text-sm mt-1 ${t.variant === "success" ? "text-green-700" : "text-red-700"}`}>{t.description}</p>
@@ -733,8 +732,8 @@ export default function ProductTracker() {
                     apiResponse.warnings[0].includes("CRITICAL") || apiResponse.warnings[0].includes("DANGER")
                       ? "border-red-300 bg-red-50"
                       : apiResponse.warnings[0].includes("EXCELLENT") || apiResponse.warnings[0].includes("VIABLE")
-                      ? "border-green-300 bg-green-50"
-                      : "border-yellow-300 bg-yellow-50"
+                        ? "border-green-300 bg-green-50"
+                        : "border-yellow-300 bg-yellow-50"
                   }>
                     <AlertTriangle className="h-4 w-4" />
                     <AlertDescription>
@@ -937,12 +936,11 @@ export default function ProductTracker() {
                         </div>
                       </div>
                       <div className="mt-2">
-                        <Badge className={`text-base px-4 py-1 ${
-                          result.final_verdict.verdict_color === "green"  ? "bg-green-100 text-green-800 border-green-300"     :
-                          result.final_verdict.verdict_color === "blue"   ? "bg-blue-100 text-blue-800 border-blue-300"       :
-                          result.final_verdict.verdict_color === "orange" ? "bg-orange-100 text-orange-800 border-orange-300" :
-                                                                            "bg-red-100 text-red-800 border-red-300"
-                        }`}>
+                        <Badge className={`text-base px-4 py-1 ${result.final_verdict.verdict_color === "green" ? "bg-green-100 text-green-800 border-green-300" :
+                            result.final_verdict.verdict_color === "blue" ? "bg-blue-100 text-blue-800 border-blue-300" :
+                              result.final_verdict.verdict_color === "orange" ? "bg-orange-100 text-orange-800 border-orange-300" :
+                                "bg-red-100 text-red-800 border-red-300"
+                          }`}>
                           {result.final_verdict.verdict_label}
                         </Badge>
                       </div>

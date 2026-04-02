@@ -15,7 +15,7 @@ def hash_password(password: str) -> str:
     """
     Hash password using bcrypt directly (compatible with Python 3.13)
     """
-    # Truncate to 72 bytes if needed
+    # Truncate to 72 bytes if needed (standard bcrypt limit)
     password_bytes = password.encode("utf-8")[:72]
     # Generate salt and hash
     salt = bcrypt.gensalt()
@@ -67,16 +67,4 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
- 
-# -----------------------------
-# Input schema for user creation
-# -----------------------------
-# class UserCreate(BaseModel):
-#     first_name: str = Field(..., example="John")
-#     last_name: str = Field(..., example="Doe")
-#     email: EmailStr = Field(..., example="john.doe@example.com")
-#     password: str = Field(..., min_length=6, example="password123")
-#     business_name: Optional[str] = Field(None, example="My Business")
-#     location: str = Field(..., example="mumbai")
-#     business_interests: List[str] = Field(..., example=["electronics", "books"])
  

@@ -8,54 +8,54 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/App";
 import {
-  ChartLine,
+  History,
+  Target,
+  BarChart3,
+  ShoppingBag,
+  Store,
+  Lock,
   Home,
   Crown,
   Info,
   Settings,
-  LogOut,
-  Menu,
-  X,
-  TrendingUp,
   Receipt,
+  TrendingUp,
   DollarSign,
   PieChart,
-  Users,
-  History,
-  Target,
-  BarChart3
+  Menu,
+  X,
+  LogOut
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
-const SECTIONS = [
-  {
-    label: "Navigation",
-    items: [
-      { href: "/dashboard", label: "Dashboard", icon: Home },
-      { href: "/subscription", label: "Subscription", icon: Crown },
-      { href: "/about", label: "About", icon: Info },
-      { href: "/settings", label: "Settings", icon: Settings },
-      { href: "/order-history", label: "Order History", icon: Receipt }
-    ],
-  },
-  {
-    label: "Analytics",
-    items: [
-      { href: "/sales", label: "Sales Analytics", icon: TrendingUp },
-      { href: "/overview", label: "Overview", icon: DollarSign },
-      { href: "/categories", label: "Categories", icon: PieChart },
-      { href: "/product-tracker", label: "Product Radar", icon: Target },
-      { href: "/share-of-voice", label: "Market Visibility Score", icon: BarChart3},
-      { href: "/keyword-tracker", label: "Keyword Tracker", icon: History}
- 
-    ],
-  },
-];
+const NAVIGATION_SECTION = {
+  label: "Navigation",
+  items: [
+    { href: "/dashboard", label: "Dashboard", icon: Home },
+    { href: "/subscription", label: "Subscription", icon: Crown },
+    { href: "/about", label: "About", icon: Info },
+    { href: "/settings", label: "Settings", icon: Settings },
+    { href: "/order-history", label: "Order History", icon: Receipt }
+  ],
+};
+
+const RESEARCH_SECTION = {
+  label: "RESEARCH TOOLS",
+  items: [
+    { href: "/sales", label: "Sales Analytics", icon: TrendingUp },
+    { href: "/overview", label: "Overview", icon: DollarSign },
+    { href: "/categories", label: "Categories", icon: PieChart },
+    { href: "/product-tracker", label: "Product Radar", icon: Target },
+    { href: "/share-of-voice", label: "Market Visibility Score", icon: BarChart3 },
+    { href: "/keyword-tracker", label: "Keyword Tracker", icon: History }
+  ],
+};
 
 export default function Sidebar() {
   const [location, setLocation] = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [mode, setMode] = useState<"find" | "track">("find");
   const { user, logout, isLoading } = useAuth();
   const { toast } = useToast();
 
@@ -65,9 +65,9 @@ export default function Sidebar() {
   const handleLogout = async () => {
     try {
       await logout(); // ✅ Calls backend to clear session
-      toast({ 
-        title: "Logged out", 
-        description: "You have been successfully logged out." 
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out."
       });
       setLocation("/login");
     } catch (error) {
@@ -82,14 +82,14 @@ export default function Sidebar() {
 
   const getUserInitials = () => {
     if (!user) return "U";
-    
+
     // Try firstName and lastName first
     if (user.firstName || user.lastName) {
       const first = user.firstName?.[0] || "";
       const last = user.lastName?.[0] || "";
       return `${first}${last}`.toUpperCase() || "U";
     }
-    
+
     // Fallback to name field
     if (user.name) {
       const parts = user.name.split(" ");
@@ -98,18 +98,18 @@ export default function Sidebar() {
       }
       return user.name.substring(0, 2).toUpperCase();
     }
-    
+
     // Final fallback
     return "U";
   };
 
   const getSubscriptionColor = (tier: string) => {
     switch (tier?.toLowerCase()) {
-      case "premium": 
+      case "premium":
         return "bg-gradient-to-r from-[#00D4FF] to-[#0099FF] text-white";
-      case "basic": 
+      case "basic":
         return "bg-[#B3E5FC] text-[#004C75]";
-      default: 
+      default:
         return "bg-slate-200 text-gray-700";
     }
   };
@@ -123,17 +123,17 @@ export default function Sidebar() {
 
   const getDisplayName = () => {
     if (!user) return "User";
-    
+
     // Try firstName and lastName
     if (user.firstName || user.lastName) {
       return `${user.firstName || ""} ${user.lastName || ""}`.trim();
     }
-    
+
     // Fallback to name field
     if (user.name) {
       return user.name;
     }
-    
+
     // Final fallback
     return "User";
   };
@@ -153,9 +153,9 @@ export default function Sidebar() {
   return (
     <>
       {!isCollapsed && (
-        <div 
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden" 
-          onClick={() => setIsCollapsed(true)} 
+        <div
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsCollapsed(true)}
         />
       )}
 
@@ -173,8 +173,8 @@ export default function Sidebar() {
             <Link href="/">
               <a className="cursor-pointer">
                 <img
-                  src="/logo.png" 
-                  alt="Insydz Logo" 
+                  src="/logo.png"
+                  alt="Insydz Logo"
                   className="w-10 h-10 object-contain rounded-xl shadow-md hover:scale-105 transition"
                 />
               </a>
@@ -188,27 +188,119 @@ export default function Sidebar() {
             )}
           </div>
 
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => setIsCollapsed(!isCollapsed)} 
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsCollapsed(!isCollapsed)}
             className="lg:hidden text-slate-600"
           >
             {isCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
           </Button>
         </div>
 
+        {/* Mode Toggle */}
+        <div className={cn("px-4 py-6 border-b border-white/20", isCollapsed && "px-2")}>
+          {!isCollapsed && (
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mb-4 ml-1">
+              MODE
+            </p>
+          )}
+          <div className={cn(
+            "bg-[#1e3a5f] p-1.5 rounded-2xl flex items-center transition-all duration-300 shadow-xl",
+            isCollapsed ? "flex-col space-y-2" : "space-x-1.5"
+          )}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setMode("find")}
+              className={cn(
+                "flex-1 h-11 rounded-xl transition-all duration-300 text-[11px] font-bold flex items-center justify-start px-2.5 group overflow-hidden",
+                mode === "find"
+                  ? "bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-[0_0_0_2px_rgba(255,255,255,1)] ring-2 ring-[#0072FF]"
+                  : "text-[#8ea9cc] hover:bg-white/10 hover:text-white",
+                isCollapsed && "w-11 px-0 h-11 justify-center"
+              )}
+            >
+              <div className="flex items-center space-x-1.5">
+                <ShoppingBag className={cn("h-4.5 w-4.5", isCollapsed && "h-6 w-6")} />
+                {!isCollapsed && (
+                  <div className="flex flex-col items-start leading-[1.1]">
+                    <span>Find</span>
+                    <span className="opacity-90 font-medium">Products</span>
+                  </div>
+                )}
+              </div>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setMode("track")}
+              className={cn(
+                "flex-1 h-11 rounded-xl transition-all duration-300 text-[11px] font-bold flex items-center justify-start px-2.5 group overflow-hidden",
+                mode === "track"
+                  ? "bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-[0_0_0_2px_rgba(255,255,255,1)] ring-2 ring-[#0072FF]"
+                  : "text-[#8ea9cc] hover:bg-white/10 hover:text-white",
+                isCollapsed && "w-11 px-0 h-11 justify-center"
+              )}
+            >
+              <div className="flex items-center space-x-1.5">
+                <Store className={cn("h-4.5 w-4.5", isCollapsed && "h-6 w-6")} />
+                {!isCollapsed && (
+                  <div className="flex flex-col items-start leading-[1.1]">
+                    <span>Track My</span>
+                    <span className="opacity-90 font-medium">Store</span>
+                  </div>
+                )}
+              </div>
+            </Button>
+          </div>
+        </div>
+
         {/* Navigation */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4 sidebar-scroll">
-          {SECTIONS.map(section => (
-            <div key={section.label}>
+          {/* Always show Navigation section */}
+          <div>
+            {!isCollapsed && (
+              <p className="text-slate-500 font-bold mb-4 uppercase text-[10px] tracking-[0.2em] ml-1">
+                {NAVIGATION_SECTION.label}
+              </p>
+            )}
+            <div className="space-y-1">
+              {NAVIGATION_SECTION.items.map(item => {
+                const Icon = item.icon;
+                return (
+                  <Link key={item.href} href={item.href}>
+                    <a>
+                      <Button
+                        variant={isActive(item.href) ? "default" : "ghost"}
+                        className={cn(
+                          "w-full justify-start transition-all duration-200 rounded-xl font-medium",
+                          isCollapsed && "justify-center px-2",
+                          isActive(item.href)
+                            ? "bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-md"
+                            : "text-slate-700 hover:bg-white/60"
+                        )}
+                      >
+                        <Icon className={cn("h-5 w-5", !isCollapsed && "mr-3")} />
+                        {!isCollapsed && <span>{item.label}</span>}
+                      </Button>
+                    </a>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Conditionally show Research Tools section */}
+          {mode === "find" && (
+            <div>
               {!isCollapsed && (
-                <p className="text-slate-500 font-semibold mb-2 uppercase text-xs tracking-wider">
-                  {section.label}
+                <p className="text-slate-500 font-bold mb-4 uppercase text-[10px] tracking-[0.2em] ml-1">
+                  {RESEARCH_SECTION.label}
                 </p>
               )}
               <div className="space-y-1">
-                {section.items.map(item => {
+                {RESEARCH_SECTION.items.map(item => {
                   const Icon = item.icon;
                   return (
                     <Link key={item.href} href={item.href}>
@@ -232,13 +324,13 @@ export default function Sidebar() {
                 })}
               </div>
             </div>
-          ))}
+          )}
         </div>
 
         {/* Profile */}
         <div className="p-4 border-t border-white/20 backdrop-blur-lg">
           <div className={cn(
-            "flex items-center p-3 bg-white/70 rounded-xl shadow-sm", 
+            "flex items-center p-3 bg-white/70 rounded-xl shadow-sm",
             isCollapsed && "justify-center"
           )}>
             <Avatar className="h-10 w-10">
@@ -246,7 +338,7 @@ export default function Sidebar() {
                 {getUserInitials()}
               </AvatarFallback>
             </Avatar>
-            
+
             {!isCollapsed && (
               <div className="flex-1 ml-3 min-w-0">
                 <p className="font-semibold text-sm text-[#003366] truncate">
@@ -259,14 +351,14 @@ export default function Sidebar() {
                     getSubscriptionColor(user?.subscriptionTier || "free")
                   )}
                 >
-                  {user?.subscriptionTier 
-                    ? `${user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1)} Plan` 
+                  {user?.subscriptionTier
+                    ? `${user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1)} Plan`
                     : "Free Plan"
                   }
                 </Badge>
               </div>
             )}
-            
+
             <Button
               variant="ghost"
               size="sm"

@@ -7,7 +7,7 @@
 // import { cn } from "@/lib/utils";
 // import { useFilters } from "@/components/dashboard/FiltersContext";
 // import { useAISummary } from "@/hooks/useAISummary";
- 
+
 // interface TrendingProduct {
 //   product_title?: string;
 //   title?: string;
@@ -17,7 +17,7 @@
 //   review_count?: number;
 //   reviews?: number;
 // }
- 
+
 // function ProductCard({
 //   product,
 //   index,
@@ -33,11 +33,11 @@
 //     "from-blue-50 to-blue-100",
 //     "from-purple-50 to-purple-100",
 //   ];
- 
+
 //   const productName = product.product_title || product.title || "Unknown Product";
 //   const reviewCount = product.review_count || product.reviews || 0;
 //   const rating = product.avg_rating || product.rating || product.star_rating || 0;
- 
+
 //   return (
 //     <div
 //       className={cn(
@@ -72,52 +72,52 @@
 //     </div>
 //   );
 // }
- 
+
 // export default function ProductRankings({
 //   selectedSource,
 // }: {
 //   selectedSource: string;
 // }) {
-//   const BASE_URL = "https://api.insydz.com";
+//   const BASE_URL = "http://localhost:8000";
 //   const { filters } = useFilters();
- 
+
 //   const [flipkartProducts, setFlipkartProducts] = useState<TrendingProduct[]>([]);
 //   const [amazonProducts, setAmazonProducts] = useState<TrendingProduct[]>([]);
 //   const [isLoading, setIsLoading] = useState(true);
- 
+
 //   const buildQueryParams = () => {
 //     const params = new URLSearchParams();
-   
+
 //     if (filters.category && filters.category !== "All Categories") {
 //       params.append("category", filters.category);
 //     }
-   
+
 //     if (filters.priceRange[0] > 0) {
 //       params.append("min_price", filters.priceRange[0].toString());
 //     }
 //     if (filters.priceRange[1] < 5000000) {
 //       params.append("max_price", filters.priceRange[1].toString());
 //     }
-   
+
 //     if (filters.rating > 0) {
 //       params.append("min_rating", filters.rating.toString());
 //     }
-   
+
 //     if (filters.dateRange !== "all") {
 //       params.append("date_range", filters.dateRange);
 //     }
-   
+
 //     if (filters.showTrendingOnly) {
 //       params.append("trending_only", "true");
 //     }
-   
+
 //     if (filters.sortBy) {
 //       params.append("sort_by", filters.sortBy);
 //     }
-   
+
 //     return params.toString();
 //   };
- 
+
 //   useEffect(() => {
 //     const fetchTrendingProducts = async () => {
 //       setIsLoading(true);
@@ -125,7 +125,7 @@
 //         const table = filters.table || selectedSource;
 //         const queryParams = buildQueryParams();
 //         const topN = filters.topN || 10; // Use topN from filters
-       
+
 //         if (table === "both") {
 //           // When showing both, split topN between sources (or use half for each)
 //           const halfN = Math.ceil(topN / 2);
@@ -133,12 +133,12 @@
 //             fetch(`${BASE_URL}/top?table=flipkart&n=${halfN}&${queryParams}`),
 //             fetch(`${BASE_URL}/top?table=rapidapi_amazon_products&n=${halfN}&${queryParams}`),
 //           ]);
- 
+
 //           const [flipkartJson, amazonJson] = await Promise.all([
 //             flipkartRes.json(),
 //             amazonRes.json(),
 //           ]);
- 
+
 //           setFlipkartProducts(flipkartJson.data || []);
 //           setAmazonProducts(amazonJson.data || []);
 //         } else if (table === "amazon_reviews") {
@@ -160,33 +160,33 @@
 //         setIsLoading(false);
 //       }
 //     };
- 
+
 //     fetchTrendingProducts();
 //   }, [selectedSource, filters]);
- 
+
 //   const table = filters.table || selectedSource;
 //   const showBoth = table === "both";
 //   const isAmazon = table === "amazon_reviews";
- 
+
 //   const allProducts = showBoth
 //     ? [...flipkartProducts, ...amazonProducts]
 //     : isAmazon
 //     ? amazonProducts
 //     : flipkartProducts;
- 
+
 //   const question =
 //     showBoth
 //       ? "Compare top trending Flipkart and Amazon products with key performance differences."
 //       : isAmazon
 //       ? "Summarize key patterns and insights from top trending Amazon products."
 //       : "Summarize key patterns and insights from top trending Flipkart products.";
- 
+
 //   const sourceTable = isAmazon
 //     ? "rapidapi_amazon_products"
 //     : table === "flipkart"
 //     ? "flipkart"
 //     : "combined_sources";
- 
+
 //   const { summary, loading: summaryLoading } = useAISummary(
 //     question,
 //     sourceTable,
@@ -194,7 +194,7 @@
 //     allProducts.length,
 //     filters
 //   );
- 
+
 //   return (
 //     <div className="grid grid-cols-1 gap-6 mb-8">
 //       <Card className="bg-card rounded-xl p-6 border hover:shadow-md transition-shadow">
@@ -210,7 +210,7 @@
 //             Live Data
 //           </Badge>
 //         </CardHeader>
- 
+
 //         <CardContent className="p-0">
 //           {summaryLoading ? (
 //             <p className="text-sm text-muted-foreground mb-3">
@@ -221,7 +221,7 @@
 //               {summary}
 //             </p>
 //           ) : null}
- 
+
 //           <div className="space-y-4">
 //             {isLoading ? (
 //               Array.from({ length: 5 }).map((_, index) => (
@@ -255,7 +255,7 @@
 //                     ))}
 //                   </>
 //                 )}
- 
+
 //                 {amazonProducts.length > 0 && (
 //                   <>
 //                     <h3 className="text-sm font-semibold text-muted-foreground mt-4 mb-2">
@@ -330,13 +330,13 @@
 //   ];
 
 //   const productName = product.product_title || product.title || "Unknown Product";
-  
+
 //   // Get sales volume
 //   const salesVolumeRaw = product.daily_sales || product.total_daily_sales || product.sales_volume || product.estimated_sales || 0;
 //   const salesVolume = typeof salesVolumeRaw === 'string' 
 //     ? parseFloat(salesVolumeRaw.replace(/[^0-9.]/g, '')) || 0 
 //     : salesVolumeRaw;
-  
+
 //   const price = product.avg_price || product.product_price || 0;
 
 //   return (
@@ -379,7 +379,7 @@
 // }: {
 //   selectedSource: string;
 // }) {
-//   const BASE_URL = "https://api.insydz.com";
+//   const BASE_URL = "http://localhost:8000";
 //   const { filters } = useFilters();
 
 //   const [flipkartProducts, setFlipkartProducts] = useState<TrendingProduct[]>([]);
@@ -388,34 +388,34 @@
 
 //   const buildQueryParams = () => {
 //     const params = new URLSearchParams();
-    
+
 //     if (filters.category && filters.category !== "All Categories") {
 //       params.append("category", filters.category);
 //     }
-    
+
 //     if (filters.priceRange[0] > 0) {
 //       params.append("min_price", filters.priceRange[0].toString());
 //     }
 //     if (filters.priceRange[1] < 5000000) {
 //       params.append("max_price", filters.priceRange[1].toString());
 //     }
-    
+
 //     if (filters.rating > 0) {
 //       params.append("min_rating", filters.rating.toString());
 //     }
-    
+
 //     if (filters.dateRange !== "all") {
 //       params.append("date_range", filters.dateRange);
 //     }
-    
+
 //     if (filters.showTrendingOnly) {
 //       params.append("trending_only", "true");
 //     }
-    
+
 //     if (filters.sortBy) {
 //       params.append("sort_by", filters.sortBy);
 //     }
-    
+
 //     return params.toString();
 //   };
 
@@ -426,7 +426,7 @@
 //         const table = filters.table || selectedSource;
 //         const queryParams = buildQueryParams();
 //         const topN = filters.topN || 10;
-        
+
 //         if (table === "both") {
 //           const halfN = Math.ceil(topN / 2);
 //           const [flipkartRes, amazonRes] = await Promise.all([
@@ -635,12 +635,12 @@ function ProductCard({
   ];
 
   const productName = product.product_title || product.title || "Unknown Product";
-  
+
   const salesVolumeRaw = product.daily_sales || product.total_daily_sales || product.sales_volume || product.estimated_sales || 0;
-  const salesVolume = typeof salesVolumeRaw === 'string' 
-    ? parseFloat(salesVolumeRaw.replace(/[^0-9.]/g, '')) || 0 
+  const salesVolume = typeof salesVolumeRaw === 'string'
+    ? parseFloat(salesVolumeRaw.replace(/[^0-9.]/g, '')) || 0
     : salesVolumeRaw;
-  
+
   const price = product.avg_price || product.product_price || 0;
 
   return (
@@ -683,7 +683,7 @@ export default function ProductRankings({
 }: {
   selectedSource: string;
 }) {
-  const BASE_URL = "https://api.insydz.com";
+  const BASE_URL = "http://localhost:8000";
   const { filters } = useFilters();
   const { canAccessFeature, currentTier } = useSubscriptionLimits();
 
@@ -693,34 +693,34 @@ export default function ProductRankings({
 
   const buildQueryParams = () => {
     const params = new URLSearchParams();
-    
+
     if (filters.category && filters.category !== "All Categories") {
       params.append("category", filters.category);
     }
-    
+
     if (filters.priceRange[0] > 0) {
       params.append("min_price", filters.priceRange[0].toString());
     }
     if (filters.priceRange[1] < 5000000) {
       params.append("max_price", filters.priceRange[1].toString());
     }
-    
+
     if (filters.rating > 0) {
       params.append("min_rating", filters.rating.toString());
     }
-    
+
     if (filters.dateRange !== "all") {
       params.append("date_range", filters.dateRange);
     }
-    
+
     if (filters.showTrendingOnly) {
       params.append("trending_only", "true");
     }
-    
+
     if (filters.sortBy) {
       params.append("sort_by", filters.sortBy);
     }
-    
+
     return params.toString();
   };
 
@@ -731,7 +731,7 @@ export default function ProductRankings({
         const table = filters.table || selectedSource;
         const queryParams = buildQueryParams();
         const topN = filters.topN || 10;
-        
+
         if (table === "both") {
           const halfN = Math.ceil(topN / 2);
           const [flipkartRes, amazonRes] = await Promise.all([
@@ -776,22 +776,22 @@ export default function ProductRankings({
   const allProducts = showBoth
     ? [...flipkartProducts, ...amazonProducts]
     : isAmazon
-    ? amazonProducts
-    : flipkartProducts;
+      ? amazonProducts
+      : flipkartProducts;
 
   const hasAISummaries = canAccessFeature('hasChartAISummaries');
 
   const question = showBoth
     ? "Compare top selling Flipkart and Amazon products by sales volume."
     : isAmazon
-    ? "Summarize key patterns and insights from top selling Amazon products by sales volume."
-    : "Summarize key patterns and insights from top selling Flipkart products by sales volume.";
+      ? "Summarize key patterns and insights from top selling Amazon products by sales volume."
+      : "Summarize key patterns and insights from top selling Flipkart products by sales volume.";
 
   const sourceTable = isAmazon
     ? "rapidapi_amazon_products"
     : table === "flipkart" || table === "rapidapi_flipkart_products"
-    ? "rapidapi_flipkart_products"
-    : "combined_sources";
+      ? "rapidapi_flipkart_products"
+      : "combined_sources";
 
   const { summary, loading: summaryLoading } = useAISummary(
     hasAISummaries ? question : "",
@@ -809,8 +809,8 @@ export default function ProductRankings({
             {showBoth
               ? "Market Movers (Both Sources)"
               : isAmazon
-              ? "Market Movers (Amazon)"
-              : "Market Movers (Flipkart)"}
+                ? "Market Movers (Amazon)"
+                : "Market Movers (Flipkart)"}
           </CardTitle>
           <Badge variant="secondary" className="text-xs">
             Live Data
@@ -840,7 +840,7 @@ export default function ProductRankings({
                     🎯 AI Market Insights Locked
                   </p>
                   <p className="text-xs text-amber-700 mt-1">
-                    {currentTier === 'free' 
+                    {currentTier === 'free'
                       ? 'Upgrade to Basic to get AI-powered analysis of market trends and product performance'
                       : 'Get instant insights on top-performing products'}
                   </p>

@@ -5,11 +5,22 @@ psycopg2-binary
 python-dotenv
 openai
 passlib[bcrypt]
+bcrypt==3.2.0
 pydantic-settings
 python-jose[cryptography]
 email-validator
 python-multipart
 pandas
+tensorflow
+numpy
+scikit-learn
+torch
+razorpay
+sib-api-v3-sdk
+apscheduler
+redis
+structlog
+reportlab
 
 # Core Framework
 fastapi==0.104.1

@@ -9,14 +9,14 @@
 //   CardDescription,
 // } from "@/components/ui/card";
 // import { TrendingUp, DollarSign, Star, ShoppingBag } from "lucide-react";
- 
+
 // interface Summary {
 //   total_products: number;
 //   avg_price: number;
 //   avg_rating: number;
 //   total_reviews: number;
 // }
- 
+
 // export default function Revenue() {
 //   const [summary, setSummary] = useState<Summary | null>(null);
 //   const [source, setSource] = useState<"flipkart" | "amazon" | "all">("flipkart");
@@ -25,7 +25,7 @@
 //   const fetchSummary = async (selectedSource: string) => {
 //     try {
 //       setLoading(true);
-//       const res = await axios.get(`https://api.insydz.com/analytics-summary?source=${selectedSource}`);
+//       const res = await axios.get(`http://localhost:8000/analytics-summary?source=${selectedSource}`);
 //       setSummary(res.data);
 //     } catch (err) {
 //       console.error("Error fetching summary:", err);
@@ -41,7 +41,7 @@
 //   return (
 //     <div className="min-h-screen bg-background">
 //       <Sidebar />
- 
+
 //       <div className="ml-64 min-h-screen">
 //         {/* Header */}
 //         <header className="bg-card border-b border-border px-6 py-4 flex justify-between items-center">
@@ -183,7 +183,7 @@
 //   avg_rating: number;
 //   total_reviews: number;
 // }
- 
+
 // export default function Revenue() {
 //   const [summary, setSummary] = useState<Summary | null>(null);
 //   const [source, setSource] = useState<"flipkart" | "amazon" | "all">("flipkart");
@@ -193,7 +193,7 @@
 //   const fetchSummary = async (selectedSource: string) => {
 //     try {
 //       setLoading(true);
-//       const res = await axios.get(`https://api.insydz.com/analytics-summary?source=${selectedSource}`);
+//       const res = await axios.get(`http://localhost:8000/analytics-summary?source=${selectedSource}`);
 //       setSummary(res.data);
 //     } catch (err) {
 //       console.error("Error fetching summary:", err);
@@ -208,7 +208,7 @@
 
 //   return (
 //     <div className="min-h-screen bg-background flex flex-col lg:flex-row">
-      
+
 //       {/* Mobile Sidebar Overlay */}
 //       {isMobileMenuOpen && (
 //         <>
@@ -398,7 +398,7 @@ export default function Overview() {
   const fetchSummary = async (selectedSource: string) => {
     try {
       setLoading(true);
-      const res = await axios.get(`https://api.insydz.com/analytics-summary?source=${selectedSource}`);
+      const res = await axios.get(`http://localhost:8000/analytics-summary?source=${selectedSource}`);
       setSummary(res.data);
     } catch (err) {
       console.error("Error fetching summary:", err);
@@ -413,7 +413,7 @@ export default function Overview() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col lg:flex-row">
-      
+
       {/* Mobile Sidebar Overlay */}
       {isMobileMenuOpen && (
         <>
@@ -434,7 +434,7 @@ export default function Overview() {
             <Sidebar />
           </aside>
         </>
-     )}
+      )}
 
       {/* Desktop Sidebar */}
       <aside className="hidden lg:block lg:w-64 fixed h-full z-30">
