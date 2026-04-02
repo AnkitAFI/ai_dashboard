@@ -5,7 +5,7 @@ import {
   MessageCircle, Package, Trophy, Zap, BookOpen, Video, FileText,
   Menu, X, Sun, Moon, ChevronDown, ShoppingBag, Store, Briefcase,
   Users, Bell, Code, Globe, ArrowLeft, Facebook, Twitter, Linkedin,
-  Instagram, Flame, Presentation, Instagram, Facebook, Twitter, Linkedin
+  Instagram, Flame, Presentation
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Helmet } from 'react-helmet-async';
@@ -158,27 +158,27 @@ const TOC = [
 const FAQS = [
   {
     q: "What is an Amazon SEO tool and do Indian sellers really need one?",
-    a: "An Amazon SEO tool is software that helps you find the right keywords, optimise your product listing, and track your ranking on Amazon search results. Indian sellers who rely on gut feel for keyword selection typically rank on page 3–5 for their target terms — invisible to most buyers. A tool replaces guesswork with data derived from actual Amazon.in search behaviour, directly impacting organic visibility and sales.",
+    a: "An Amazon SEO tool is software that helps you find the right keywords, optimise your product listing, and track your ranking on Amazon search results. Indian sellers who rely on gut feel for keyword selection typically rank on page 3–5 for their target terms invisible to most buyers. A tool replaces guesswork with data derived from actual Amazon.in search behaviour, directly impacting organic visibility and sales.",
   },
   {
     q: "How is Amazon SEO different from Google SEO?",
-    a: "Google SEO is about ranking web pages for information queries. Amazon SEO is about ranking product listings for purchase queries. Amazon's A9 algorithm weighs keyword relevance, sales velocity, pricing competitiveness, reviews, and conversion rate — not backlinks or domain authority. A standard website SEO tool is useless for Amazon — you need a marketplace-specific tool that understands e-commerce ranking signals.",
+    a: "Google SEO is about ranking web pages for information queries. Amazon SEO is about ranking product listings for purchase queries. Amazon's A9 algorithm weighs keyword relevance, sales velocity, pricing competitiveness, reviews, and conversion rate not backlinks or domain authority. A standard website SEO tool is useless for Amazon you need a marketplace-specific tool that understands e-commerce ranking signals.",
   },
   {
     q: "Which keywords should I prioritise first as an Indian seller?",
-    a: "Start with high-intent, mid-competition keywords — not the most popular terms in your category. For example, 'buy yoga mat online' has enormous competition. 'Anti-slip yoga mat 6mm for women' has lower competition and higher purchase intent. An Amazon keyword research tool for India will show you search volume, competition level, and estimated conversion rate — so you can prioritise intelligently rather than going after the hardest keywords first.",
+    a: "Start with high-intent, mid-competition keywords not the most popular terms in your category. For example, 'buy yoga mat online' has enormous competition. 'Anti-slip yoga mat 6mm for women' has lower competition and higher purchase intent. An Amazon keyword research tool for India will show you search volume, competition level, and estimated conversion rate so you can prioritise intelligently rather than going after the hardest keywords first.",
   },
   {
     q: "How long does it take to see results from Amazon listing optimisation?",
-    a: "Most sellers see measurable ranking improvement within 3–6 weeks of a well-executed listing optimisation. Organic ranking changes aren't instant — Amazon needs time to index changes and measure their impact on conversion rate. Combining listing optimisation with a targeted Sponsored Products campaign on your new keywords accelerates the timeline significantly. Track weekly, not daily, for accurate progress assessment.",
+    a: "Most sellers see measurable ranking improvement within 3–6 weeks of a well-executed listing optimisation. Organic ranking changes aren't instant Amazon needs time to index changes and measure their impact on conversion rate. Combining listing optimisation with a targeted Sponsored Products campaign on your new keywords accelerates the timeline significantly. Track weekly, not daily, for accurate progress assessment.",
   },
   {
     q: "Can I do Amazon SEO without paid tools if I'm just starting out?",
-    a: "Yes — with limitations. You can use Amazon's autocomplete, competitor listing analysis, and Seller Central's search term reports to build a basic keyword strategy. But this process is slow, incomplete, and hard to scale past 5–10 SKUs. Most sellers who try to do this manually spend 8–12 hours per product and still miss high-volume keywords that a tool would surface in minutes. A forever-free plan on platforms like Insydz lets you start with tool-level intelligence at zero cost.",
+    a: "Yes. With limitations. You can use Amazon's autocomplete, competitor listing analysis, and Seller Central's search term reports to build a basic keyword strategy. But this process is slow, incomplete, and hard to scale past 5–10 SKUs. Most sellers who try to do this manually spend 8–12 hours per product and still miss high-volume keywords that a tool would surface in minutes. A forever-free plan on platforms like Insydz lets you start with tool-level intelligence at zero cost.",
   },
   {
     q: "Does Amazon SEO work differently on Flipkart?",
-    a: "Yes — Flipkart uses its own search algorithm, which weighs factors like listing completeness, sales velocity, price competitiveness, and customer ratings somewhat differently from Amazon's A9. Keywords that rank well on Amazon.in don't automatically transfer to Flipkart. Sellers running multi-platform businesses need separate keyword strategies for each marketplace — or a unified tool that handles both simultaneously.",
+    a: "Yes. Flipkart uses its own search algorithm, which weighs factors like listing completeness, sales velocity, price competitiveness, and customer ratings somewhat differently from Amazon's A9. Keywords that rank well on Amazon.in don't automatically transfer to Flipkart. Sellers running multi-platform businesses need separate keyword strategies for each marketplace or a unified tool that handles both simultaneously.",
   },
 ];
 
@@ -269,7 +269,7 @@ export default function AmazonSeoToolIndia() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
+  const scrollToSection = (id: string) => { document.getElementById(id)?.scrollIntoView({ behavior:"smooth" }); };
   const go = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
     setTocOpen(false);
@@ -736,7 +736,7 @@ export default function AmazonSeoToolIndia() {
           <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mb-5 sm:mb-7" style={{ fontFamily: "'Lora', serif" }}>
             Discover how an{" "}
             <InLink to="/solutions/amazon-sellers">Amazon SEO tool built for India</InLink>{" "}
-            helps sellers rank higher, find buying keywords, and grow sales on Amazon.in — with India-specific keyword
+            helps sellers rank higher, find buying keywords, and grow sales on Amazon.in with India-specific keyword
             data, daily rank tracking, and AI-powered listing recommendations.
           </p>
 
@@ -775,7 +775,7 @@ export default function AmazonSeoToolIndia() {
             <ArticleImg
               src="/six.png"
               alt="Insydz Keyword Tracker — real-time keyword ranking and AI-powered listing recommendations for Amazon."
-              caption="Insydz Keyword Tracker — real-time keyword ranking and AI-powered listing recommendations for Amazon."
+              caption="Insydz Keyword Tracker real-time keyword ranking and AI-powered listing recommendations for Amazon."
             />
           </div>
         </div>
@@ -784,15 +784,15 @@ export default function AmazonSeoToolIndia() {
       {/* ══ KEY TAKEAWAYS ══ */}
       <div style={{ maxWidth: 1250, margin: "0 auto", padding: "20px 16px 0" }} className="sm:px-5 lg:px-6">
         <div className="takeaway-box">
-          <h3>📋 Key Takeaways for Indian Amazon Sellers</h3>
+          <h3>Key Takeaways for Indian Amazon Sellers</h3>
           {[
-            <span key="t0">70% of Amazon.in buyers never scroll past page 1 — if you're not ranking, you're invisible, regardless of your product quality.</span>,
-            <span key="t1"><InLink to="/features">Amazon's A9 algorithm ranks products based on keyword relevance</InLink> AND conversion performance — poor SEO leads to wasted ad spend, not just low organic rank.</span>,
-            <span key="t2">Indian buyers use Hinglish and regional search patterns that US-centric tools miss — <InLink to="/features/keyword-rank-tracking-feature">India-specific keyword data</InLink> is a fundamental competitive advantage.</span>,
-            <span key="t3">The biggest SEO opportunity for most Indian sellers is <InLink to="/features/keyword-rank-tracking-feature">competitor keyword gap analysis</InLink> — ranking for terms your rivals use that you don't even have in your listing.</span>,
-            <span key="t4"><InLink to="/features/keyword-rank-tracking-feature">Listing optimisation</InLink> is a one-time effort that compounds over time — unlike ad spend, which stops the moment you pause it.</span>,
+            <span key="t0">70% of Amazon.in buyers never scroll past page 1 if you're not ranking, you're invisible, regardless of your product quality.</span>,
+            <span key="t1"><InLink to="/features">Amazon's A9 algorithm ranks products based on keyword relevance</InLink> AND conversion performance poor SEO leads to wasted ad spend, not just low organic rank.</span>,
+            <span key="t2">Indian buyers use Hinglish and regional search patterns that US-centric tools miss <InLink to="/features/keyword-rank-tracking-feature">India-specific keyword data</InLink> is a fundamental competitive advantage.</span>,
+            <span key="t3">The biggest SEO opportunity for most Indian sellers is <InLink to="/features/keyword-rank-tracking-feature">competitor keyword gap analysis</InLink> ranking for terms your rivals use that you don't even have in your listing.</span>,
+            <span key="t4"><InLink to="/features/keyword-rank-tracking-feature">Listing optimisation</InLink> is a one-time effort that compounds over time unlike ad spend, which stops the moment you pause it.</span>,
             <span key="t5">Running Sponsored Products without optimising organic SEO first is burning ad budget with one hand while blocking the other.</span>,
-            <span key="t6"><InLink to="/features/keyword-rank-tracking-feature">Weekly rank tracking catches ranking drops</InLink> before they become revenue drops — the earlier you act, the less you lose.</span>,
+            <span key="t6"><InLink to="/features/keyword-rank-tracking-feature">Weekly rank tracking catches ranking drops</InLink> before they become revenue drops the earlier you act, the less you lose.</span>,
           ].map((t, i) => (
             <div className="takeaway-item" key={i}>
               <div className="takeaway-dot">✓</div>
@@ -824,7 +824,7 @@ export default function AmazonSeoToolIndia() {
 
         <main style={{ minWidth: 0 }}>
           <button className="mobile-toc-btn" onClick={() => setTocOpen(!tocOpen)}>
-            📋 Table of Contents <span>{tocOpen ? "▲" : "▼"}</span>
+            Table of Contents <span>{tocOpen ? "▲" : "▼"}</span>
           </button>
           <div className={`mobile-toc-panel${tocOpen ? " open" : ""}`}>
             {TOC.map(t => (
@@ -842,18 +842,18 @@ export default function AmazonSeoToolIndia() {
               <InLink to="/features/keyword-rank-tracking-feature">find the right keywords</InLink>,{" "}
               <InLink to="/features/keyword-rank-tracking-feature">track their product rankings</InLink>, and{" "}
               <InLink to="/features/keyword-rank-tracking-feature">optimise product listings to rank higher</InLink> on
-              Amazon.in — so their products appear higher in search results and in front of buyers who are ready to purchase.
+              Amazon.in so their products appear higher in search results and in front of buyers who are ready to purchase.
             </p>
             <p>
-              Here's the reality check: <strong>70% of Amazon.in customers never scroll past the first page</strong> of search results. If your product isn't ranking for the keywords your buyers are actually using, you're essentially invisible — regardless of how good your product is.
+              Here's the reality check: <strong>70% of Amazon.in customers never scroll past the first page</strong> of search results. If your product isn't ranking for the keywords your buyers are actually using, you're essentially invisible regardless of how good your product is.
             </p>
 
             <div className="callout teal">
-              <div className="callout-label">💡 In Simple Terms</div>
+              <div className="callout-label">In Simple Terms</div>
               <div className="callout-text">
                 Amazon SEO means making your product show up when buyers search on Amazon.in. An Amazon SEO tool tells
                 you exactly which words buyers are using, how well your product ranks for those words today, and what
-                you need to fix in your listing to rank higher — and sell more — tomorrow.
+                you need to fix in your listing to rank higher and sell more tomorrow.
               </div>
             </div>
 
@@ -865,23 +865,23 @@ export default function AmazonSeoToolIndia() {
               for the exact phrases buyers use,{" "}
               Amazon's <InLink to="/features">A9 algorithm</InLink>{" "}
               will <InLink to="/features">rank you below competitors who are</InLink>. The gap between
-              page 1 and page 3 isn't inconvenient — it's a <strong>90% drop in potential clicks</strong>.
+              page 1 and page 3 isn't inconvenient it's a <strong>90% drop in potential clicks</strong>.
             </p>
 
             <h3>Indian Buyers Search Differently</h3>
             <p>
-              Indian buyers search in a mix of English and Hinglish — "kitchen chimney under 5000", "best mobile under 15000", "cricket bat for beginners". A US-centric tool trained on American search behaviour will miss these patterns entirely. An{" "}
+              Indian buyers search in a mix of English and Hinglish "kitchen chimney under 5000", "best mobile under 15000", "cricket bat for beginners". A US-centric tool trained on American search behaviour will miss these patterns entirely. An{" "}
               <InLink to="/features">Amazon SEO tool for India</InLink>{" "}
               understands this language nuance and surfaces keywords that actually convert on Amazon.in.
             </p>
 
             <h3>The Algorithm Gap: Most Sellers Are Guessing</h3>
             <p>
-              <InLink to="/features">Amazon's A9 algorithm ranks products based on keyword relevance</InLink> and performance. Most Indian sellers write their product titles and descriptions based on gut feel — missing high-volume keywords, stuffing irrelevant terms, or ignoring backend search terms entirely. The result: poor ranking, low conversions, wasted ad spend.
+              <InLink to="/features">Amazon's A9 algorithm ranks products based on keyword relevance</InLink> and performance. Most Indian sellers write their product titles and descriptions based on gut feel missing high-volume keywords, stuffing irrelevant terms, or ignoring backend search terms entirely. The result: poor ranking, low conversions, wasted ad spend.
             </p>
 
             <div className="callout warn">
-              <div className="callout-label">📦 Real Seller Example — Pune Water Bottle Seller</div>
+              <div className="callout-label">Real Seller Example Pune Water Bottle Seller</div>
               <div className="callout-text">
                 A Pune-based seller of stainless steel water bottles was doing ₹1.8 lakh/month on Amazon. After an SEO
                 audit, they discovered their listing wasn't ranking for "leak proof water bottle office." They updated their listing and ran a small{" "}
@@ -892,11 +892,12 @@ export default function AmazonSeoToolIndia() {
             </div>
 
             <div className="callout indigo">
-              <div className="callout-label">🤖 AI Overview Summary</div>
+              <div className="callout-label">AI Overview Summary</div>
               <div className="callout-text">
-                <InLink to="/features">Amazon SEO tools for India help sellers identify high-converting keywords, track daily ranking positions, and optimise product listings to rank higher on Amazon.in's A9 algorithm</InLink>. For Indian sellers, tools built specifically for the Indian market surface Hinglish search patterns and{" "}
+                Amazon SEO tools for India help sellers identify high-converting keywords, track daily ranking positions, and optimise product listings to {' '}
+                <InLink to="/features"> rank higher on Amazon.in's A9 algorithm</InLink>. For Indian sellers, tools built specifically for the Indian market surface Hinglish search patterns and{" "}
                 <InLink to="/features/keyword-rank-tracking-feature">India-specific keyword data</InLink>{" "}
-                that global tools miss — directly impacting product visibility and sales conversion.
+                that global tools miss directly impacting product visibility and sales conversion.
               </div>
             </div>
 
@@ -907,7 +908,7 @@ export default function AmazonSeoToolIndia() {
             <div className="pipe-visual">
               <div className="pipe-left">
                 <h3>5 Steps.<br /><span>Rank #1.</span></h3>
-                <p>From keyword gap to page-one ranking — automated, 24×7, on Amazon.in.</p>
+                <p>From keyword gap to page-one ranking automated, 24×7, on Amazon.in.</p>
               </div>
               <div className="pipe-card">
                 <div className="pipe-card-bar">
@@ -919,10 +920,10 @@ export default function AmazonSeoToolIndia() {
                 </div>
                 {[
                   { n: 1, color: "#EC4899", name: "Keyword Discovery",               desc: "Pulls Amazon.in queries from your category",    tag: "auto-tag", label: "Automated" },
-                  { n: 2, color: "#7C3AED", name: "Competitor Keyword Gap",           desc: "Reveals what rivals rank for — you don't",      tag: "ai-tag",   label: "AI-Powered" },
+                  { n: 2, color: "#7C3AED", name: "Competitor Keyword Gap",           desc: "Reveals what rivals rank for you don't",      tag: "ai-tag",   label: "AI-Powered" },
                   { n: 3, color: "#2563EB", name: "Listing Health Audit",             desc: "Scores title, bullets, backend 0–100",          tag: "ai-tag",   label: "AI-Powered" },
                   { n: 4, color: "#0D9488", name: "Daily Rank Tracking",              desc: "WhatsApp alert if you drop positions",          tag: "auto-tag", label: "Automated" },
-                  { n: 5, color: "#16A34A", name: "AI Optimisation Recommendations",  desc: '"Add this phrase — 22K monthly searches"',     tag: "green-tag", label: "AI Decision" },
+                  { n: 5, color: "#16A34A", name: "AI Optimisation Recommendations",  desc: '"Add this phrase 22K monthly searches"',     tag: "green-tag", label: "AI Decision" },
                 ].map(s => (
                   <div className="pipe-step" key={s.n}>
                     <div className="pipe-step-n" style={{ background: s.color }}>{s.n}</div>
@@ -936,11 +937,11 @@ export default function AmazonSeoToolIndia() {
               </div>
             </div>
             <p className="img-caption" style={{ textAlign: "center" }}>
-              Insydz 5-step SEO intelligence pipeline — from keyword discovery to actionable listing recommendations
+              Insydz 5-step SEO intelligence pipeline from keyword discovery to actionable listing recommendations
             </p>
 
             <div className="callout pro">
-              <div className="callout-label">⚖️ Guesswork vs. Intelligence</div>
+              <div className="callout-label">Guesswork vs. Intelligence</div>
               <div className="callout-text">
                 <strong>Guesswork</strong> means writing your listing based on what sounds right to you.{" "}
                 <strong>Intelligence</strong> means writing it based on what 50,000 actual Amazon buyers searched for
@@ -957,7 +958,7 @@ export default function AmazonSeoToolIndia() {
                 <div style={{ maxWidth: 220, flexShrink: 0 }}>
                   <div style={{ display: "inline-block", background: "rgba(124,58,237,.2)", border: "1px solid rgba(124,58,237,.3)", color: "#C4B5FD", fontSize: "clamp(9px,1.5vw,11px)", fontWeight: 700, letterSpacing: ".7px", textTransform: "uppercase", padding: "4px 10px", borderRadius: 20, marginBottom: 12 }}>Six Pillars</div>
                   <div style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(18px,3vw,26px)", fontWeight: 900, color: "white", lineHeight: 1.18, letterSpacing: -1, marginBottom: 10 }}>Complete<br />Amazon<br /><span style={{ color: "#FDE68A" }}>SEO System</span></div>
-                  <p style={{ fontSize: "clamp(10px,1.5vw,12.5px)", color: "rgba(255,255,255,.5)", lineHeight: 1.6, margin: 0 }}>Every SEO component tracked in one dashboard — gaps, rank, health score, all live.</p>
+                  <p style={{ fontSize: "clamp(10px,1.5vw,12.5px)", color: "rgba(255,255,255,.5)", lineHeight: 1.6, margin: 0 }}>Every SEO component tracked in one dashboard gaps, rank, health score, all live.</p>
                 </div>
                 <div className="dash-dark" style={{ flex: 1, minWidth: 0 }}>
                   <div className="dash-bar">
@@ -1003,7 +1004,7 @@ export default function AmazonSeoToolIndia() {
                 </div>
               </div>
             </div>
-            <p className="img-caption">Insydz Keyword Intelligence Dashboard — tracking 248 keywords with live gap detection and rank movement alerts</p>
+            <p className="img-caption">Insydz Keyword Intelligence Dashboard tracking 248 keywords with live gap detection and rank movement alerts</p>
 
             <div className="dt-wrap">
               <table className="dt">
@@ -1101,7 +1102,7 @@ export default function AmazonSeoToolIndia() {
 
             {/* ── S5: Mistakes ────────────────────────────────────────── */}
             <h2 id="s5">5 Critical Amazon SEO Mistakes Indian Sellers Make</h2>
-            <p>These five mistakes are costing Indian sellers ranking positions, organic traffic, and sales — often without them realising it.</p>
+            <p>These five mistakes are costing Indian sellers ranking positions, organic traffic, and sales often without them realising it.</p>
 
             {/* Mistake 1 */}
             <div className="mistake-card">
@@ -1117,11 +1118,12 @@ export default function AmazonSeoToolIndia() {
               <div className="mistake-num">2</div>
               <div className="mistake-body">
                 <strong>
+                  Ignoring {' '}
                   <InLink to="/resources/expert-blog/amazon-seo-tool-india">
-                    Ignoring Hinglish and Regional Search Patterns
+                     Hinglish and Regional Search Patterns
                   </InLink>
                 </strong>
-                <p>Buyers in smaller cities search differently from metro buyers. 'Mixer grinder' vs 'juicer mixer grinder', 'chapati maker' vs 'roti maker', 'pressure cooker induction' vs 'induction pressure cooker'. Missing regional search variants costs sellers in tier-2 and tier-3 cities — the fastest-growing e-commerce segments in India right now.</p>
+                <p>Buyers in smaller cities search differently from metro buyers. 'Mixer grinder' vs 'juicer mixer grinder', 'chapati maker' vs 'roti maker', 'pressure cooker induction' vs 'induction pressure cooker'. Missing regional search variants costs sellers in tier-2 and tier-3 cities the fastest-growing e-commerce segments in India right now.</p>
               </div>
             </div>
 
@@ -1131,7 +1133,7 @@ export default function AmazonSeoToolIndia() {
               <div className="mistake-body">
                 <strong>Keyword Stuffing (The Old Way That Now Hurts You)</strong>
                 <p>
-                  Amazon's A9 algorithm has gotten smarter. Stuffing 15 keywords into your title doesn't improve ranking — it reduces click-through rate because the title reads like gibberish.{" "}
+                  Amazon's A9 algorithm has gotten smarter. Stuffing 15 keywords into your title doesn't improve ranking it reduces click-through rate because the title reads like gibberish.{" "}
                   <InLink to="/features">Amazon penalises poor conversion rates</InLink>, which feeds back into lower ranking. Smart keyword placement in title, bullets, and backend is more effective than volume stuffing.
                 </p>
               </div>
@@ -1147,7 +1149,7 @@ export default function AmazonSeoToolIndia() {
                   <InLink to="/resources/expert-blog">Sponsored Products</InLink>{" "}
                   without fixing their{" "}
                   <InLink to="/features/keyword-rank-tracking-feature">organic listing first</InLink>.
-                  {" "}If your listing isn't converting organically, your ad spend will also convert poorly — and Amazon's ad algorithm will throttle your ad visibility as a result. Every rupee spent on ads performs better when the underlying listing is{" "}
+                  {" "}If your listing isn't converting organically, your ad spend will also convert poorly and Amazon's ad algorithm will throttle your ad visibility as a result. Every rupee spent on ads performs better when the underlying listing is{" "}
                   <InLink to="/features/keyword-rank-tracking-feature">SEO-optimised</InLink>.
                 </p>
               </div>
@@ -1164,7 +1166,7 @@ export default function AmazonSeoToolIndia() {
                   <InLink to="/features/keyword-rank-tracking-feature">
                     listing optimised in January may be significantly underperforming by July
                   </InLink>{" "}
-                  if you haven't tracked and updated it. Rank tracking tools catch this drift early — before it becomes a revenue problem.
+                  if you haven't tracked and updated it. Rank tracking tools catch this drift early before it becomes a revenue problem.
                 </p>
               </div>
             </div>
@@ -1182,7 +1184,7 @@ export default function AmazonSeoToolIndia() {
 
             {/* ── S6: Best Practices ──────────────────────────────────── */}
             <h2 id="s6">Best Practices: Weekly Amazon SEO Execution Model</h2>
-            <p>The most effective Amazon SEO isn't a one-time project — it's a repeatable weekly workflow. Here's the model that high-performing Indian sellers follow to maintain and grow organic rank consistently.</p>
+            <p>The most effective Amazon SEO isn't a one-time project it's a repeatable weekly workflow. Here's the model that high-performing Indian sellers follow to maintain and grow organic rank consistently.</p>
 
             <ArticleImg
               src="/eight.png"
@@ -1194,8 +1196,8 @@ export default function AmazonSeoToolIndia() {
             <div className="metrics-grid">
               {([
                 { num: "Top 10",        lbl: "Organic rank for target keywords (track daily)", link: "/features/keyword-rank-tracking-feature" },
-                { num: "CTR",           lbl: "Click-through rate — low CTR signals poor title or image", link: null },
-                { num: "CVR",           lbl: "Conversion rate — low CVR means listing isn't convincing buyers", link: null },
+                { num: "CTR",           lbl: "Click-through rate low CTR signals poor title or image", link: null },
+                { num: "CVR",           lbl: "Conversion rate low CVR means listing isn't convincing buyers", link: null },
                 { num: "Organic Split", lbl: "Keyword-level organic vs. paid sales breakdown", link: null },
               ] as { num: string; lbl: string; link: string | null }[]).map((m, i) => (
                 <div className="metric-card" key={i}>
@@ -1226,7 +1228,7 @@ export default function AmazonSeoToolIndia() {
 
             <h3><InLink to="/features">Insydz: Amazon SEO Intelligence Built for India</InLink></h3>
             <p>
-              Insydz approaches Amazon SEO differently — not as a standalone keyword tool, but as a{" "}
+              Insydz approaches Amazon SEO differently not as a standalone keyword tool, but as a{" "}
               <InLink to="/features"><strong>connected intelligence layer</strong></InLink>{" "}
               that ties SEO to competitor pricing, review sentiment, and market trends simultaneously.
             </p>
@@ -1240,7 +1242,7 @@ export default function AmazonSeoToolIndia() {
             <div className="callout pink">
               <div className="callout-label">🇮🇳 The India Advantage</div>
               <div className="callout-text">
-                The real advantage of an India-first tool isn't just affordability — it's that the data actually
+                The real advantage of an India-first tool isn't just affordability it's that the data actually
                 reflects how Indian buyers search. A keyword tool that doesn't understand "best laptop under 40000" or
                 "mixer grinder 750 watt" as high-intent queries on Amazon.in is only giving you half the picture.
               </div>
@@ -1268,7 +1270,7 @@ export default function AmazonSeoToolIndia() {
                 <div className="faq-a">
                   Google SEO is about ranking web pages for information queries. Amazon SEO is about ranking product listings for purchase queries.{" "}
                   <InLink to="/features">Amazon's A9 algorithm</InLink>{" "}
-                  weighs keyword relevance, sales velocity, pricing competitiveness, reviews, and conversion rate — not backlinks or domain authority. A standard website SEO tool is useless for Amazon — you need a marketplace-specific tool that understands e-commerce ranking signals.
+                  weighs keyword relevance, sales velocity, pricing competitiveness, reviews, and conversion rate not backlinks or domain authority. A standard website SEO tool is useless for Amazon you need a marketplace-specific tool that understands e-commerce ranking signals.
                 </div>
               )}
             </div>
@@ -1281,11 +1283,11 @@ export default function AmazonSeoToolIndia() {
               </div>
               {openFaq === 2 && (
                 <div className="faq-a">
-                  Start with high-intent, mid-competition keywords — not the most popular terms in your category. For example, 'buy yoga mat online' has enormous competition. 'Anti-slip yoga mat 6mm for women' has lower competition and higher purchase intent. An{" "}
+                  Start with high-intent, mid-competition keywords not the most popular terms in your category. For example, 'buy yoga mat online' has enormous competition. 'Anti-slip yoga mat 6mm for women' has lower competition and higher purchase intent. An{" "}
                   <InLink to="/resources/expert-blog/amazon-seo-tool-india">
                     Amazon Keyword Research India
                   </InLink>{" "}
-                  tool will show you search volume, competition level, and estimated conversion rate — so you can prioritise intelligently rather than going after the hardest keywords first.
+                  tool will show you search volume, competition level, and estimated conversion rate so you can prioritise intelligently rather than going after the hardest keywords first.
                 </div>
               )}
             </div>
@@ -1298,7 +1300,7 @@ export default function AmazonSeoToolIndia() {
               </div>
               {openFaq === 3 && (
                 <div className="faq-a">
-                  Most sellers see measurable ranking improvement within 3–6 weeks of a well-executed listing optimisation. Organic ranking changes aren't instant — Amazon needs time to index changes and measure their impact on conversion rate. Combining listing optimisation with a targeted{" "}
+                  Most sellers see measurable ranking improvement within 3–6 weeks of a well-executed listing optimisation. Organic ranking changes aren't instant Amazon needs time to index changes and measure their impact on conversion rate. Combining listing optimisation with a targeted{" "}
                   <InLink to="/resources/expert-blog">Sponsored Products</InLink>{" "}
                   campaign on your new keywords accelerates the timeline significantly. Use{" "}
                   <InLink to="/features/keyword-rank-tracking-feature">daily rank tracking</InLink>{" "}
@@ -1505,7 +1507,7 @@ export default function AmazonSeoToolIndia() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

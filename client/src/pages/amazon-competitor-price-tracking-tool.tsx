@@ -1269,7 +1269,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 amazon competitor price tracking tool for India
               </InLink>{" "}
               is software that automatically monitors your rivals' product prices, stock availability, and listing
-              changes on Amazon.in, Flipkart — in real time, without any manual effort. Unlike generic
+              changes on Amazon.in, Flipkart in real time, without any manual effort. Unlike generic
               global tools built for US or European marketplaces, India-focused platforms account for the pricing
               dynamics, seller behaviour, and platform nuances unique to Indian e-commerce.
             </p>
@@ -1277,20 +1277,20 @@ export default function AmazonCompetitorPriceTrackingTool() {
               Here's the scale of the problem: Indian sellers on Amazon.in collectively lose an estimated{" "}
               {/* Link #11 — "reactive — rather than proactive — pricing decisions" → /features/price-optimization-feature */}
               <InLink to="/features/price-optimization-feature">
-                reactive — rather than proactive — pricing decisions
+                reactive — rather than proactive pricing decisions
               </InLink>{" "}
               cost sellers <strong>15–30% of potential monthly profit</strong>.
             </p>
 
             <div className="callout teal">
-              <div className="callout-label">💡 In Simple Terms</div>
+              <div className="callout-label">In Simple Terms</div>
               <div className="callout-text">
                 Instead of manually checking 10 competitor listings every morning on Amazon.in (which takes 2–3 hours),
-                a price tracking tool does it automatically, 24×7, and{" "}
+                a price tracking tool does it automatically, 24×7, and alerts you on WhatsApp the moment a {" "}
                 <strong>
                   {/* Link #20 — "competitor drops their price or goes out of stock" → /features/competitor-price-tracking-feature */}
                   <InLink to="/features/competitor-price-tracking-feature">
-                    alerts you on WhatsApp the moment a competitor drops their price or goes out of stock
+                    competitor drops their price or goes out of stock
                   </InLink>
                 </strong>{" "}
                 — so you can act first.
@@ -1326,11 +1326,11 @@ export default function AmazonCompetitorPriceTrackingTool() {
             </p>
 
             <div className="callout warn">
-              <div className="callout-label">⚠️ Real Seller Example</div>
+              <div className="callout-label">Real Seller Example</div>
               <div className="callout-text">
                 A Delhi-based electronics accessories seller was doing ₹3.2 lakh/month on Amazon. A new competitor
                 entered with a ₹30 lower price. Sales dropped to ₹1.8 lakh within 6 weeks. The seller found out via a
-                customer message — not a tool. Had they tracked prices in real time, they could have matched the
+                customer message not a tool. Had they tracked prices in real time, they could have matched the
                 competitor within an hour and retained the Buy Box.
               </div>
             </div>
@@ -1365,13 +1365,14 @@ export default function AmazonCompetitorPriceTrackingTool() {
                   lineHeight: "1.6"
                 }}
               >
+                Amazon competitor price tracking tools help Indian sellers {' '}
                 {/* Link #10 — "monitor rival prices on Amazon.in, Flipkart" → /solutions/amazon-sellers */}
                 <InLink to="/solutions/amazon-sellers">
-                  Amazon competitor price tracking tools help Indian sellers monitor rival prices on Amazon.in,
+                   monitor rival prices on Amazon.in,
                   Flipkart
                 </InLink>{" "}
                 in real time. They reduce revenue leakage caused by reactive pricing, protect Buy Box position, and
-                enable faster, smarter decisions — especially for sellers managing 10–50 SKUs without a full-time
+                enable faster, smarter decisions especially for sellers managing 10–50 SKUs without a full-time
                 analyst.
               </div>
             </div>
@@ -1379,7 +1380,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
             <h3>The Festive Season Window is Unforgiving</h3>
             <p>
               During Big Billion Days and Great Indian Festival, 40–60% of annual e-commerce revenue concentrates into
-              4–7 days. A seller who loses the Buy Box on Day 1 of a festive event often can't recover — the algorithm
+              4–7 days. A seller who loses the Buy Box on Day 1 of a festive event often can't recover the algorithm
               has already reallocated visibility to competitors.
             </p>
 
@@ -1406,7 +1407,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
                       <InLink to="/features/competitor-price-tracking-feature">
                         amazon price tracker
                       </InLink>{" "}
-                      crawler or API pulls live price data from product listings at frequent intervals — every 15–60
+                      crawler or API pulls live price data from product listings at frequent intervals every 15–60
                       minutes for AI-powered tools like Insydz.
                     </>
                   ),
@@ -1445,7 +1446,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
             ))}
 
             <div className="callout pro">
-              <div className="callout-label">🔑 Key Insight</div>
+              <div className="callout-label">Key Insight</div>
               <div className="callout-text">
                 <strong>Manual tracking gives you data points. AI-powered intelligence gives you decisions.</strong>{" "}
                 That gap is the difference between reacting tomorrow and winning today.
@@ -1476,7 +1477,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 <InLink to="/features/competitor-price-tracking-feature">
                   price tracking dashboards
                 </InLink>{" "}
-                surface the exact adjustments needed to protect Buy Box position — no manual analysis required.
+                surface the exact adjustments needed to protect Buy Box position no manual analysis required.
               </div>
             </figure>
 
@@ -1531,11 +1532,11 @@ export default function AmazonCompetitorPriceTrackingTool() {
 
             <div className="inline-cta">
               <div style={{ flex: 1, minWidth: 0 }}>
-                <h4>Start Tracking Competitor Prices — Free</h4>
+                <h4>Start Tracking Competitor Prices Free</h4>
                 <p>WhatsApp alerts. No credit card. No dashboards to learn. Set up in 5 minutes.</p>
               </div>
               <button className="inline-cta-btn" onClick={() => setLocation("/login")}>
-                👉 Try Insydz Free
+                Try Insydz Free
               </button>
             </div>
 
@@ -1548,7 +1549,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
               <div className="mistake-body">
                 <strong>Tracking Prices in Excel Every Morning</strong>
                 <p>
-                  If you're opening 10 competitor tabs every morning and copying prices into a spreadsheet — you're
+                  If you're opening 10 competitor tabs every morning and copying prices into a spreadsheet you're
                   already 24 hours behind. The competitor changed their price at 11 PM last night. You found out at
                   9 AM today. You lost the Buy Box for 10 hours.
                 </p>
@@ -1561,7 +1562,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 <strong>Ignoring Email Alerts (and Missing WhatsApp)</strong>
                 <p>
                   Most Indian SMB sellers check email 2–3 times a day at most. They check WhatsApp 50+ times. A price
-                  alert sent to an email that's opened 4 hours later is not an alert — it's a history lesson.
+                  alert sent to an email that's opened 4 hours later is not an alert it's a history lesson.
                 </p>
               </div>
             </div>
@@ -1593,7 +1594,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
                   <InLink to="/features/review-analytics-feature">
                     Review Analytics
                   </InLink>{" "}
-                  — review velocity and sentiment tracking — should run alongside price tracking.
+                  — review velocity and sentiment tracking should run alongside price tracking.
                 </p>
               </div>
             </div>
@@ -1617,7 +1618,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
             {/* ── S6: Best Practices ──────────────────────────────────── */}
             <h2 id="best-practices">Best Practices for Indian Sellers: Weekly Execution Model</h2>
             <p>
-              The most successful Indian sellers don't react to pricing changes — they run a structured weekly rhythm
+              The most successful Indian sellers don't react to pricing changes they run a structured weekly rhythm
               that keeps them consistently competitive without manual effort.
             </p>
 
@@ -1636,7 +1637,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
                   head: "Weekly — 30 Min Review",
                   color: "#111827",
                   items: [
-                    "Review competitor review sentiment — recurring pain points?",
+                    "Review competitor review sentiment recurring pain points?",
                     "Check keyword rank movements for top 5 keywords",
                     "Identify competitors that went out of stock (opportunity)",
                     "Adjust 1–2 product prices based on AI recommendations",
@@ -1721,13 +1722,13 @@ export default function AmazonCompetitorPriceTrackingTool() {
               <InLink to="/features/keyword-rank-tracking-feature">
                 Keyword Rank Tracking
               </InLink>{" "}
-              movements to understand the full competitive picture — not just price.
+              movements to understand the full competitive picture not just price.
             </p>
 
             {/* ── S7: Best Tools ──────────────────────────────────────── */}
             <h2 id="best-tools">Best Tools for Amazon Competitor Price Tracking in India</h2>
             <p>
-              Not all tools are built equally — and for Indian sellers, the platform choice is critical. Here's an
+              Not all tools are built equally and for Indian sellers, the platform choice is critical. Here's an
               honest, side-by-side comparison.
             </p>
 
@@ -1823,10 +1824,10 @@ export default function AmazonCompetitorPriceTrackingTool() {
                     Industry standard globally — but significant gaps for Indian sellers:
                   </p>
                   <ul style={{ marginTop: "10px", lineHeight: "1.8" }}>
-                    <li>❌ ₹4,000–8,000/month — too expensive for most SMB sellers</li>
-                    <li>❌ No Flipkart coverage</li>
-                    <li>❌ English-only dashboards</li>
-                    <li>❌ Email alerts only</li>
+                    <li>₹4,000–8,000/month — too expensive for most SMB sellers</li>
+                    <li>No Flipkart coverage</li>
+                    <li>English-only dashboards</li>
+                    <li>Email alerts only</li>
                   </ul>
                 </div>
               </div>
@@ -1866,24 +1867,24 @@ export default function AmazonCompetitorPriceTrackingTool() {
                     Built ground-up for how Indian sellers actually work:
                   </p>
                   <ul style={{ marginTop: "10px", lineHeight: "1.8" }}>
-                    <li>✅ Real-time WhatsApp alerts</li>
-                    <li>✅ AI price recommendations</li>
-                    <li>✅ Amazon + Flipkart coverage</li>
-                    <li>✅ ₹1,999–2,999/month pricing</li>
+                    <li>Real-time WhatsApp alerts</li>
+                    <li>AI price recommendations</li>
+                    <li>Amazon + Flipkart coverage</li>
+                    <li>₹1,999–2,999/month pricing</li>
                   </ul>
                 </div>
               </div>
             </div>
 
             <div className="callout pro">
-              <div className="callout-label">📌 No Aggressive Pitch</div>
+              <div className="callout-label">No Aggressive Pitch</div>
               <div className="callout-text">
                 If you're an Indian seller on Amazon.in or Flipkart and you're not{" "}
                 {/* Link #9 — "tracking competitor prices with AI" → /features/competitor-price-tracking-feature */}
                 <InLink to="/features/competitor-price-tracking-feature">
                   tracking competitor prices with AI
                 </InLink>
-                , you're operating on guesswork. The question isn't whether you need a tool — it's which one fits
+                , you're operating on guesswork. The question isn't whether you need a tool it's which one fits
                 your budget and platforms.
               </div>
             </div>
@@ -1947,7 +1948,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
                     best Amazon competitor price tracking tool
                   </InLink>{" "}
                   covers Amazon.in AND Flipkart, sends WhatsApp alerts, and fits within the ₹500–3,000/month
-                  budget range that Indian SMBs can justify. Insydz is purpose-built for this — it's the only platform
+                  budget range that Indian SMBs can justify. Insydz is purpose-built for this it's the only platform
                   offering AI-powered price intelligence for all three major Indian marketplaces at this price point.
                 </div>
               )}
@@ -1994,7 +1995,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
               </div>
               {openFaq === 3 && (
                 <div className="faq-a">
-                  Only if done poorly. Blind automation — matching any competitor drop instantly — does cause price
+                  Only if done poorly. Blind automation matching any competitor drop instantly does cause price
                   wars. Smart tools like Insydz calculate the{" "}
                   {/* Link #13 — "Price Optimization" → /features/price-optimization-feature */}
                   <InLink to="/features/price-optimization-feature">
@@ -2021,13 +2022,13 @@ export default function AmazonCompetitorPriceTrackingTool() {
             {/* ── Conclusion ──────────────────────────────────────────── */}
             <h2 id="conclusion">Final Thoughts</h2>
             <p>
-              Winning on Amazon India and Flipkart in 2026 isn't about having the best product — it's about having the
+              Winning on Amazon India and Flipkart in 2026 isn't about having the best product it's about having the
               best intelligence. Competitor price tracking is the foundation of that intelligence layer.
             </p>
             <p>
               Sellers who implement real-time AI-powered price monitoring stop reacting to the market and start leading
               it. They know when a rival goes out of stock before buyers do. They know when a competitor undercuts them
-              within 45 minutes, not 45 hours. And they recover their Buy Box with a precise price adjustment — enabled
+              within 45 minutes, not 45 hours. And they recover their Buy Box with a precise price adjustment enabled
               by{" "}
               {/* Link #18 — "complete competitive picture" → /features/competitor-price-tracking-feature */}
               <InLink to="/features/competitor-price-tracking-feature">
@@ -2059,7 +2060,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
               </div>
               <button className="final-cta-btn" onClick={() => setLocation("/login")}>
                 <Zap className="w-5 h-5" />
-                Try Insydz Free — insydz.com
+                Try Insydz Free insydz.com
               </button>
               <p className="text-gray-500 text-xs mt-4">
                 No setup required · Amazon India, Flipkart &amp; supported
@@ -2194,7 +2195,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

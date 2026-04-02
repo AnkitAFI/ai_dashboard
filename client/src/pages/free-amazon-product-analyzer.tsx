@@ -214,7 +214,7 @@ export default function FreeAmazonProductAnalyzerPage() {
   const faqs = [
     { id: 'faq-1', question: 'Is this Amazon product analyzer free?', answer: 'Yes, completely free. No credit card, no login required. Just enter an ASIN or product URL and get instant analysis.' },
     { id: 'faq-2', question: 'Does it work for Amazon India only?', answer: 'Currently, this tool is optimized for Amazon India (amazon.in). It understands INR pricing, India-specific demand signals, and competition dynamics in the Indian marketplace.' },
-    { id: 'faq-3', question: 'How accurate is the demand estimate?', answer: 'The demand estimate is based on structured marketplace signals including review velocity, BSR trends, and category benchmarks. It is an indicator — not a guarantee — and is useful for directional decision-making.' },
+    { id: 'faq-3', question: 'How accurate is the demand estimate?', answer: 'The demand estimate is based on structured marketplace signals including review velocity, BSR trends, and category benchmarks. It is an indicator not a guarantee and is useful for directional decision-making.' },
     { id: 'faq-4', question: 'Can I analyze multiple products?', answer: 'Yes, you can analyze as many products as you want. Simply enter a new ASIN or URL each time. For bulk analysis and continuous tracking, consider upgrading to the full Insydz platform.' },
     { id: 'faq-5', question: 'Is login required?', answer: 'No. The free tool works without any account or login. If you want to save reports, track over time, or get deeper insights, you can sign up for free.' },
   ];
@@ -692,7 +692,7 @@ export default function FreeAmazonProductAnalyzerPage() {
       <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl font-black text-center text-gray-900 dark:text-white mb-3">Example Product Analysis Report</h2>
-          <p className="text-center text-gray-500 dark:text-gray-400 mb-10">Here's what a typical analysis looks like — so you know exactly what to expect.</p>
+          <p className="text-center text-gray-500 dark:text-gray-400 mb-10">Here's what a typical analysis looks like so you know exactly what to expect.</p>
 
           <div className="bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-3xl overflow-hidden shadow-2xl">
             {/* Report Header */}
@@ -789,7 +789,7 @@ export default function FreeAmazonProductAnalyzerPage() {
           <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">Sign in to receive extended competitor analysis, opportunity score breakdown, and pricing strategy insight.</p>
           {isLoggedIn ? (
             <div className="flex items-center justify-center gap-2 text-green-600 dark:text-green-400 font-semibold">
-              <CheckCircle2 className="w-5 h-5" /> You're logged in — full report access enabled.
+              <CheckCircle2 className="w-5 h-5" /> You're logged in full report access enabled.
             </div>
           ) : (
             <div className="flex gap-3 justify-center flex-wrap">
@@ -824,7 +824,7 @@ export default function FreeAmazonProductAnalyzerPage() {
               </div>
             ))}
           </div>
-          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mt-2">This is not scraped guesswork — it's structured marketplace intelligence.</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mt-2">This is not scraped guesswork it's structured marketplace intelligence.</p>
           <p className="text-gray-400 dark:text-gray-500 text-xs mt-1">Used by sellers evaluating products across Amazon India categories.</p>
         </div>
       </section>
@@ -953,7 +953,7 @@ export default function FreeAmazonProductAnalyzerPage() {
           onClick={() => { if (!isLoggedIn) { setLocation('/login'); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); } }}
           className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2"
         >
-          {isLoggedIn ? <><BarChart3 className="w-4 h-4" /> Analyze Product Now — Free</> : <><LogIn className="w-4 h-4" /> Log In to Analyze Free</>}
+          {isLoggedIn ? <><BarChart3 className="w-4 h-4" /> Analyze Product Now Free</> : <><LogIn className="w-4 h-4" /> Log In to Analyze Free</>}
         </button>
       </div>
 
@@ -1082,7 +1082,7 @@ export default function FreeAmazonProductAnalyzerPage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

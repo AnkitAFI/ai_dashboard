@@ -197,20 +197,20 @@ const UseCasesPage = () => {
       category: 'pricing',
       tag: 'Most Common',
       context: 'Common in price-sensitive categories on Amazon India and Flipkart',
-      problem: 'Competitors change prices suddenly — often at night, during weekends, or right before a sale event — and steal your Buy Box position and sales rank before you\'ve had a chance to react. By the time you notice, you\'ve already lost a day of orders.',
+      problem: 'Competitors change prices suddenly often at night, during weekends, or right before a sale event and steal your Buy Box position and sales rank before you\'ve had a chance to react. By the time you notice, you\'ve already lost a day of orders.',
       whyManualFails: [
         'Checking competitor listings manually takes 30–60 minutes per category, per day',
         'Prices change multiple times a day during sale season — manual checks miss most of them',
         'No alert system means you discover a price drop only when your sales velocity has already dropped',
         'Panic discounting without margin data leads to selling below break-even'
       ],
-      solution: 'Track competitor price changes in real time and get instant WhatsApp alerts the moment a rival adjusts pricing in your category — before your Buy Box rank or daily sales velocity is affected.',
+      solution: 'Track competitor price changes in real time and get instant WhatsApp alerts the moment a rival adjusts pricing in your category before your Buy Box rank or daily sales velocity is affected.',
       scenario: 'A kitchenware seller on Amazon India was losing ₹15,000–₹20,000 in sales every Monday. Insydz revealed a competitor was running weekend flash pricing from Friday night to Monday morning. Once the seller knew the pattern, she set a counter-price alert and a repricing rule. Losses stopped within the first week.',
       steps: [
-        'Connect your ASINs or Flipkart listings — Insydz auto-identifies your top 100+ competitors.',
-        'Set your alert thresholds — get notified when any competitor drops price by 5%, 10%, or your custom trigger.',
-        'Receive WhatsApp alerts instantly — see exact before/after pricing and AI-suggested response price.',
-        'Reprice with confidence — AI shows your margin floor so you never discount below break-even.'
+        'Connect your ASINs or Flipkart listings Insydz auto-identifies your top 100+ competitors.',
+        'Set your alert thresholds get notified when any competitor drops price by 5%, 10%, or your custom trigger.',
+        'Receive WhatsApp alerts instantly see exact before/after pricing and AI-suggested response price.',
+        'Reprice with confidence AI shows your margin floor so you never discount below break-even.'
       ],
       roi: [
         { label: 'Weekly loss from late price response (before Insydz)', value: '−₹18,000', neg: true },
@@ -220,7 +220,6 @@ const UseCasesPage = () => {
       outcomes: ['Faster reactions (within 15 min, not 2 days)', 'Protected margins', 'No panic discounting'],
       link: '/use-cases/track-competitor-prices',
       learnMore: { text: 'Amazon Price Tracker', href: '/features/competitor-price-tracking-feature' },
-      visual: '📊',
       color: 'from-orange-500 to-red-500'
     },
     {
@@ -230,29 +229,28 @@ const UseCasesPage = () => {
       category: 'product',
       tag: 'Popular',
       context: 'Ideal for seasonal & festive sellers launching new SKUs',
-      problem: 'Launching products without knowing real demand leads to dead inventory, wasted ad spend, and months of losses. Most Indian sellers rely on gut feel, category browsing, or copying what a competitor is already selling — which means entering overcrowded markets too late.',
+      problem: 'Launching products without knowing real demand leads to dead inventory, wasted ad spend, and months of losses. Most Indian sellers rely on gut feel, category browsing, or copying what a competitor is already selling which means entering overcrowded markets too late.',
       whyManualFails: [
-        'Category browsing shows what\'s popular now — not what\'s about to grow',
+        'Category browsing shows what\'s popular now not what\'s about to grow',
         'Copying competitors means entering markets at peak saturation',
         'Global product research tools (Jungle Scout, Helium 10) don\'t track Amazon.in demand accurately',
         'No review gap analysis means missing the product differentiation opportunity already visible in competitor reviews'
       ],
-      solution: 'Use India\'s most comprehensive ecommerce product research tool to identify high-demand, low-competition opportunities using real marketplace data — before you invest a single rupee in inventory.',
+      solution: 'Use India\'s most comprehensive ecommerce product research tool to identify high-demand, low-competition opportunities using real marketplace data before you invest a single rupee in inventory.',
       scenario: 'A home décor seller from Jaipur was about to launch a new line of LED strip lights in December. Insydz showed the keyword \'LED strip lights for bedroom\' had 340% higher search velocity in Nov–Dec but was dominated by 3 sellers with ratings below 3.9. He launched targeting those gaps. First month GMV: ₹3.4L with 4.6 rating.',
       steps: [
-        'Enter your product category or keyword — Insydz scans Amazon India and Flipkart for real demand signals.',
-        'See demand-to-competition ratios — identify where buyer intent is high but top sellers have weak ratings.',
-        'Analyse review gaps in existing products — what complaints are your differentiation opportunity?',
-        'Validate price points before sourcing — see what price range the market rewards before procurement.'
+        'Enter your product category or keyword Insydz scans Amazon India and Flipkart for real demand signals.',
+        'See demand-to-competition ratios identify where buyer intent is high but top sellers have weak ratings.',
+        'Analyse review gaps in existing products what complaints are your differentiation opportunity?',
+        'Validate price points before sourcing see what price range the market rewards before procurement.'
       ],
       roi: [
         { label: 'Typical cost of failed product launch (dead inventory + ads)', value: '−₹2,50,000', neg: true },
-        { label: 'Data-validated launch with Insydz — first month GMV', value: '+₹3,40,000', neg: false },
+        { label: 'Data-validated launch with Insydz first month GMV', value: '+₹3,40,000', neg: false },
       ],
       outcomes: ['Smarter launches', 'Lower risk', 'Better margins from day one'],
       link: '/use-cases/find-profitable-products',
       learnMore: { text: 'Ecommerce Product Research Tool', href: '/features/product-research-feature' },
-      visual: '🎯',
       color: 'from-blue-500 to-cyan-500'
     },
     {
@@ -262,20 +260,20 @@ const UseCasesPage = () => {
       category: 'seo',
       tag: 'Popular',
       context: 'Best for high-competition keywords and stagnating listings',
-      problem: 'Your products don\'t rank for the keywords that actually drive sales. Organic traffic drops without warning. You\'re running ads to compensate for listings that should be ranking organically — paying for visibility you should be earning for free.',
+      problem: 'Your products don\'t rank for the keywords that actually drive sales. Organic traffic drops without warning. You\'re running ads to compensate for listings that should be ranking organically paying for visibility you should be earning for free.',
       whyManualFails: [
         'Manually checking keyword positions across Amazon and Flipkart takes hours per product',
-        'No alert when rankings slip — you only find out when sales drop significantly',
+        'No alert when rankings slip you only find out when sales drop significantly',
         'Generic SEO tools track Google rankings, not Indian marketplace search rankings',
         'No clear guidance on which listing change will have the biggest rank impact'
       ],
       solution: 'Track keyword rankings on Amazon India and Flipkart daily, discover competitor keywords your listings are missing, and get plain-language listing optimisation suggestions based on what\'s actually winning search in your category right now.',
       scenario: 'A Mumbai electronics accessories seller saw organic sales drop 40% over 6 weeks. Insydz showed 4 top keywords had slipped from page 1 to page 3. Competitors had updated titles. Insydz flagged the exact title changes needed. Within 12 days, all 4 keywords were back on page 1. Organic revenue recovered ₹1.8L over the following month.',
       steps: [
-        'Add your ASINs or Flipkart listings — Insydz begins daily keyword rank tracking immediately.',
-        'Get ranking alerts — when any keyword slips 3+ positions, WhatsApp alert with cause analysis.',
-        'Receive listing fix suggestions — AI tells exact title, bullet, and backend keyword changes to make.',
-        'Track recovery daily — see rankings move as you implement changes, no waiting weeks.'
+        'Add your ASINs or Flipkart listings Insydz begins daily keyword rank tracking immediately.',
+        'Get ranking alerts when any keyword slips 3+ positions, WhatsApp alert with cause analysis.',
+        'Receive listing fix suggestions AI tells exact title, bullet, and backend keyword changes to make.',
+        'Track recovery daily see rankings move as you implement changes, no waiting weeks.'
       ],
       roi: [
         { label: 'Monthly organic revenue lost during 6-week ranking drop', value: '−₹1,80,000', neg: true },
@@ -285,7 +283,6 @@ const UseCasesPage = () => {
       outcomes: ['Higher visibility', 'More organic sales', 'Faster SEO decisions'],
       link: '/use-cases/improve-seo',
       learnMore: { text: 'Flipkart & Amazon Keyword Rank Tracker', href: '/features/keyword-rank-tracking-feature' },
-      visual: '🔍',
       color: 'from-purple-500 to-pink-500'
     },
     {
@@ -295,20 +292,20 @@ const UseCasesPage = () => {
       category: 'product',
       tag: '',
       context: 'Critical for listings with 100+ reviews and before any product update',
-      problem: 'Thousands of reviews hide insights you don\'t have time to read. A product quality issue mentioned in 200 reviews is actively hurting your conversion rate — but you only know about it when your rating has already dropped and returns have spiked.',
+      problem: 'Thousands of reviews hide insights you don\'t have time to read. A product quality issue mentioned in 200 reviews is actively hurting your conversion rate but you only know about it when your rating has already dropped and returns have spiked.',
       whyManualFails: [
-        '500+ reviews per product — impossible to read every one systematically',
-        'No pattern detection — you might read 20 reviews and miss the complaint 180 others share',
+        '500+ reviews per product impossible to read every one systematically',
+        'No pattern detection you might read 20 reviews and miss the complaint 180 others share',
         'Competitor review analysis is completely impractical manually',
         'By the time you notice a rating drop, the damage is already done'
       ],
-      solution: 'Analyse customer reviews at scale to uncover pain points, feature gaps, and product improvement opportunities — for your listings and your competitors\'. Turn 500 reviews into a 5-point action list in minutes, not days.',
+      solution: 'Analyse customer reviews at scale to uncover pain points, feature gaps, and product improvement opportunities for your listings and your competitors\'. Turn 500 reviews into a 5-point action list in minutes, not days.',
       scenario: 'A Pune personal care brand had a 4.1 rating for their premium face wash. Returns were up 14% month-on-month. Insydz analysed 680 reviews and surfaced one dominant complaint: \'pump dispenser leaks in courier.\' New packaging implemented in 3 weeks. Rating climbed to 4.6. Returns dropped 19%.',
       steps: [
-        'Add your product ASIN or any competitor — Insydz AI reads every review in under 60 seconds.',
-        'See ranked complaint clusters — AI groups similar complaints, most frequent shown first with example quotes.',
-        'Identify what 5-star reviews say — understand what\'s winning buyer loyalty to emphasise in listing.',
-        'Set ongoing review alerts — get notified when a new negative theme appears across 10+ reviews.'
+        'Add your product ASIN or any competitor Insydz AI reads every review in under 60 seconds.',
+        'See ranked complaint clusters AI groups similar complaints, most frequent shown first with example quotes.',
+        'Identify what 5-star reviews say understand what\'s winning buyer loyalty to emphasise in listing.',
+        'Set ongoing review alerts get notified when a new negative theme appears across 10+ reviews.'
       ],
       roi: [
         { label: 'Monthly return cost before packaging fix (14% return rate)', value: '−₹28,000', neg: true },
@@ -318,7 +315,6 @@ const UseCasesPage = () => {
       outcomes: ['Better ratings', 'Fewer returns', 'Smarter product improvements'],
       link: '/use-cases/analyze-customer-reviews',
       learnMore: { text: 'AI Review Intelligence', href: '/features/review-analytics-feature' },
-      visual: '⭐',
       color: 'from-yellow-500 to-orange-500'
     },
     {
@@ -328,20 +324,20 @@ const UseCasesPage = () => {
       category: 'inventory',
       tag: '',
       context: 'Essential during festive & high-demand sale periods on Amazon & Flipkart',
-      problem: 'Stockouts during high demand don\'t just mean missed sales — they kill your momentum and your rankings. Once a product goes out of stock during Big Billion Days or Diwali, recovering the keyword rank you\'d built over months can take 6–8 weeks after you restock.',
+      problem: 'Stockouts during high demand don\'t just mean missed sales they kill your momentum and your rankings. Once a product goes out of stock during Big Billion Days or Diwali, recovering the keyword rank you\'d built over months can take 6–8 weeks after you restock.',
       whyManualFails: [
         'Last year\'s sales data doesn\'t account for category growth or new competitor entries',
-        'No signal when competitors start stocking out — a leading indicator you need more inventory',
+        'No signal when competitors start stocking out a leading indicator you need more inventory',
         'No visibility into demand acceleration before supplier lead times become a constraint',
         'Post-stockout rank recovery costs weeks of momentum and often additional ad spend'
       ],
       solution: 'Monitor demand signals, competitor stock status, and sales velocity trends to plan inventory smarter. This is marketplace analytics software that makes procurement decisions data-driven, not gut-feel.',
       scenario: 'A Bengaluru electronics seller stocked 400 units of a Bluetooth speaker for Big Billion Days based on last year\'s data. Insydz showed 3 top competitors had already started stocking out 2 weeks before the sale. He sourced 250 additional units. Sold through all 650. Estimated additional revenue: ₹5.2L.',
       steps: [
-        'Track competitor stock levels — Insydz monitors when top rivals start stocking out (early demand signal).',
-        'Monitor your own sales velocity — project days-of-stock remaining at current run rate.',
+        'Track competitor stock levels Insydz monitors when top rivals start stocking out (early demand signal).',
+        'Monitor your own sales velocity project days-of-stock remaining at current run rate.',
         'Get demand spike alerts 1–2 weeks before sale events — unusual search velocity increases detected early.',
-        'Plan procurement with confidence — historical demand curves + real-time signals = accurate orders.'
+        'Plan procurement with confidence historical demand curves + real-time signals = accurate orders.'
       ],
       roi: [
         { label: 'Additional revenue from 250 extra units sourced using Insydz demand data', value: '+₹5,20,000', neg: false },
@@ -350,7 +346,6 @@ const UseCasesPage = () => {
       outcomes: ['Fewer stockouts during Diwali/Big Billion Days', 'Better inventory planning', 'Protected rankings'],
       link: '/use-cases/avoid-stockouts',
       learnMore: { text: 'Inventory Intelligence', href: '/features/product-research-feature' },
-      visual: '📦',
       color: 'from-green-500 to-emerald-500'
     }
   ];
@@ -363,14 +358,18 @@ const UseCasesPage = () => {
   ];
 
   const faqs = [
-    { id: 'faq-1', question: 'Can I access multiple use cases on the free plan?', answer: 'Yes. The free plan includes access to core use cases — competitor price tracking, basic keyword ranking, and review summaries — with no credit card required. Advanced capabilities like price elasticity modelling, deep product research, and full inventory demand signals are available on paid plans.' },
-    { id: 'faq-2', question: 'Do these use cases work for Amazon India and Flipkart?', answer: 'Yes. Every Insydz use case is built specifically for Amazon.in and Flipkart. All data is in INR, all competitor tracking covers Indian marketplace categories, and all keyword rankings are tracked on Indian marketplace search — not US or global platforms.' },
+    { id: 'faq-1', question: 'Can I access multiple use cases on the free plan?', answer: 'Yes. The free plan includes access to core use cases competitor price tracking, basic keyword ranking, and review summaries with no credit card required. Advanced capabilities like price elasticity modelling, deep product research, and full inventory demand signals are available on paid plans.' },
+    { id: 'faq-2', question: 'Do these use cases work for Amazon India and Flipkart?', answer: 'Yes. Every Insydz use case is built specifically for Amazon.in and Flipkart. All data is in INR, all competitor tracking covers Indian marketplace categories, and all keyword rankings are tracked on Indian marketplace search not US or global platforms.' },
     { id: 'faq-3', question: 'Are these separate tools or one platform?', answer: 'One platform. All five use cases run inside a single Insydz dashboard. Insights from one use case automatically connect to others. When a competitor stocks out (inventory use case), you\'ll also see their keyword ranking impact (SEO use case) in the same view.' },
-    { id: 'faq-4', question: 'Which use case should I start with?', answer: 'New sellers: Find Profitable Products. Active sellers in competitive categories: Track Competitor Prices. Stagnating listings with unexplained sales drops: Improve SEO and Analyse Reviews — ranking slippage and review quality deterioration are the two most common hidden causes.' },
+    { id: 'faq-4', question: 'Which use case should I start with?', answer: 'New sellers: Find Profitable Products. Active sellers in competitive categories: Track Competitor Prices. Stagnating listings with unexplained sales drops: Improve SEO and Analyse Reviews ranking slippage and review quality deterioration are the two most common hidden causes.' },
     { id: 'faq-5', question: 'Can agencies use these use cases for clients?', answer: 'Yes. Insydz\'s agency plan lets you run all five use cases across multiple client accounts from one dashboard. Each client gets their own workspace with full use case access. White-label reports covering all active use cases can be generated per client in one click.' },
-    { id: 'faq-6', question: 'Which use case gives the fastest ROI?', answer: 'Track Competitor Prices typically delivers the fastest measurable ROI — often within the first week. For new sellers, Find Profitable Products delivers the highest long-term ROI by preventing costly launch mistakes. Review Analysis often delivers the most surprising ROI — sellers frequently discover hidden product issues costing thousands in returns monthly.' },
+    { id: 'faq-6', question: 'Which use case gives the fastest ROI?', answer: 'Track Competitor Prices typically delivers the fastest measurable ROI often within the first week. For new sellers, Find Profitable Products delivers the highest long-term ROI by preventing costly launch mistakes. Review Analysis often delivers the most surprising ROI sellers frequently discover hidden product issues costing thousands in returns monthly.' },
     { id: 'faq-7', question: 'Do I need to use all use cases together?', answer: 'No. Start with one use case that solves your most urgent problem today. Most sellers begin with competitor price tracking or product research, then expand to SEO and review analysis as their business grows. Insydz is designed to start simple and scale with you.' }
   ];
+
+  function scrollToSection(arg0: string) {
+    throw new Error('Function not implemented.');
+  }
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 overflow-x-hidden">
@@ -488,12 +487,12 @@ const UseCasesPage = () => {
               </h1>
 
               <p className="text-base sm:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
-                India's most trusted <strong>ecommerce seller analytics software</strong> — built around how sellers actually think. From tracking competitor prices to preventing festive season stockouts, Insydz solves real, everyday marketplace problems.
+                India's most trusted <strong>ecommerce seller analytics software</strong> built around how sellers actually think. From tracking competitor prices to preventing festive season stockouts, Insydz solves real, everyday marketplace problems.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group">
-                  👉 Start Free
+                  Start Free
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button onClick={() => document.getElementById('use-cases-grid')?.scrollIntoView({ behavior: 'smooth' })} size="lg" variant="outline" className="border-2 border-orange-600 text-orange-700 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full">
@@ -502,7 +501,7 @@ const UseCasesPage = () => {
               </div>
 
               <div className="flex flex-wrap items-center gap-3 sm:gap-6 pt-2 sm:pt-4">
-                {["Amazon & Flipkart ready — Indian data, INR pricing","Real seller problems solved — not just dashboards","No credit card required"].map((t, i) => (
+                {["Amazon & Flipkart ready Indian data, INR pricing","Real seller problems solved not just dashboards","No credit card required"].map((t, i) => (
                   <div key={i} className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                     <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" /><span>{t}</span>
                   </div>
@@ -567,7 +566,6 @@ const UseCasesPage = () => {
           </div>
 
           <div className="bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/20 dark:to-red-900/20 border-2 border-orange-400 dark:border-orange-600 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-lg">
-            <Lightbulb className="w-8 h-8 sm:w-12 sm:h-12 text-orange-600 dark:text-orange-500 mx-auto mb-3 sm:mb-4" />
             <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
               Sellers don't wake up looking for <span className="text-orange-600 dark:text-orange-500">"features."</span>
             </p>
@@ -619,7 +617,6 @@ const UseCasesPage = () => {
                       <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 italic">{uc.context}</p>
                     </div>
                   </div>
-                  <span className="text-2xl sm:text-3xl lg:text-4xl ml-2 sm:ml-4 flex-shrink-0">{uc.visual}</span>
                 </div>
 
                 {/* Problem & Solution */}
@@ -732,9 +729,9 @@ const UseCasesPage = () => {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
             {[
-              { icon: <TrendingUp className="w-8 h-8 sm:w-10 sm:h-10" />, title: "New Sellers", tag: "→ Start with Find Profitable Products", desc: "Launch with data, not guesswork. Avoid costly inventory mistakes before they happen. Know your market before you invest your first rupee in stock.", link: "/use-cases/find-profitable-products", color: "from-blue-500 to-cyan-500" },
-              { icon: <DollarSign className="w-8 h-8 sm:w-10 sm:h-10" />, title: "Active Sellers", tag: "→ Start with Track Competitor Prices", desc: "Protect margins and respond to market changes instantly. If you're doing ₹5L+ a month, every pricing lag is costing you measurable revenue.", link: "/use-cases/track-competitor-prices", color: "from-orange-500 to-red-500" },
-              { icon: <Search className="w-8 h-8 sm:w-10 sm:h-10" />, title: "Struggling Listings", tag: "→ Start with Improve SEO & Analyse Reviews", desc: "Boost visibility and fix what's silently hurting conversion. If sales have dropped without obvious cause — rankings and reviews are the first places to look.", link: "/use-cases/improve-seo", color: "from-purple-500 to-pink-500" }
+              { icon: <TrendingUp className="w-8 h-8 sm:w-10 sm:h-10" />, title: "New Sellers", tag: "Start with Find Profitable Products", desc: "Launch with data, not guesswork. Avoid costly inventory mistakes before they happen. Know your market before you invest your first rupee in stock.", link: "/use-cases/find-profitable-products", color: "from-blue-500 to-cyan-500" },
+              { icon: <DollarSign className="w-8 h-8 sm:w-10 sm:h-10" />, title: "Active Sellers", tag: "Start with Track Competitor Prices", desc: "Protect margins and respond to market changes instantly. If you're doing ₹5L+ a month, every pricing lag is costing you measurable revenue.", link: "/use-cases/track-competitor-prices", color: "from-orange-500 to-red-500" },
+              { icon: <Search className="w-8 h-8 sm:w-10 sm:h-10" />, title: "Struggling Listings", tag: "Start with Improve SEO & Analyse Reviews", desc: "Boost visibility and fix what's silently hurting conversion. If sales have dropped without obvious cause rankings and reviews are the first places to look.", link: "/use-cases/improve-seo", color: "from-purple-500 to-pink-500" }
             ].map((item, i) => (
               <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 sm:p-8 hover:border-orange-400 hover:shadow-xl transition-all group">
                 <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center mb-3 sm:mb-4 text-white group-hover:scale-110 transition-transform shadow-lg`}>{item.icon}</div>
@@ -752,7 +749,7 @@ const UseCasesPage = () => {
 
           <div className="text-center">
             <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group">
-              👉 Start Free &amp; Explore
+              Start Free &amp; Explore
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -819,7 +816,7 @@ const UseCasesPage = () => {
             <div className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 sm:p-8">
               <div className="flex items-center gap-3 mb-4 sm:mb-6">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-xl sm:text-2xl">⚠️</span>
+                  <X className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Not Ideal For</h3>
               </div>
@@ -840,7 +837,7 @@ const UseCasesPage = () => {
       <section className="py-12 sm:py-16 lg:py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-8 sm:mb-12 text-center text-gray-900 dark:text-white">
-            Use Cases — <span className="text-orange-600 dark:text-orange-500">FAQs</span>
+            Use Cases <span className="text-orange-600 dark:text-orange-500">FAQs</span>
           </h2>
           <div className="space-y-3 sm:space-y-4">
             {faqs.map((faq) => (
@@ -916,7 +913,7 @@ const UseCasesPage = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Button onClick={handleGetStarted} size="lg" className="bg-white hover:bg-gray-100 text-orange-700 font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl group">
-              👉 Start Free
+              Start Free
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button onClick={() => document.getElementById('use-cases-grid')?.scrollIntoView({ behavior: 'smooth' })} size="lg" className="bg-orange-700 hover:bg-orange-800 text-white font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full border-2 border-orange-400">
@@ -1051,7 +1048,7 @@ const UseCasesPage = () => {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

@@ -234,7 +234,7 @@ export default function WhatsAppAlertsFeaturePage() {
   const faqs = [
     {
       question: "How do I set up WhatsApp alerts for Amazon seller notifications?",
-      answer: "Setting up Insydz WhatsApp alerts takes 60 seconds and requires no technical knowledge. Connect your WhatsApp by scanning a QR code inside your Insydz dashboard, choose which alert types you want (price changes, Buy Box, stockouts, reviews, rank changes), set your thresholds, and you're live. The first alert arrives within minutes of setup. No app installation required — alerts arrive directly in your existing WhatsApp."
+      answer: "Setting up Insydz WhatsApp alerts takes 60 seconds and requires no technical knowledge. Connect your WhatsApp by scanning a QR code inside your Insydz dashboard, choose which alert types you want (price changes, Buy Box, stockouts, reviews, rank changes), set your thresholds, and you're live. The first alert arrives within minutes of setup. No app installation required alerts arrive directly in your existing WhatsApp."
     },
     {
       question: "Which alerts can I receive on WhatsApp for my Amazon India store?",
@@ -246,62 +246,63 @@ export default function WhatsAppAlertsFeaturePage() {
     },
     {
       question: "Does this work with WhatsApp Business?",
-      answer: "Yes. Insydz WhatsApp alerts work with both regular WhatsApp and WhatsApp Business. You can also add multiple WhatsApp numbers — useful if you want alerts going to both you and a team member or VA who manages your listings."
+      answer: "Yes. Insydz WhatsApp alerts work with both regular WhatsApp and WhatsApp Business. You can also add multiple WhatsApp numbers useful if you want alerts going to both you and a team member or VA who manages your listings."
     },
     {
       question: "Are WhatsApp alerts available on the free plan?",
-      answer: "Yes. The free plan includes WhatsApp alerts for price changes, stockout warnings, basic Buy Box alerts, and review notifications — permanently, with no credit card required and no expiry date. Paid plans (₹1,999/month and ₹2,999/month) unlock unlimited alerts, multiple WhatsApp numbers, instant delivery (under 2 minutes), and custom alert templates."
+      answer: "Yes. The free plan includes WhatsApp alerts for price changes, stockout warnings, basic Buy Box alerts, and review notifications permanently, with no credit card required and no expiry date. Paid plans (₹1,999/month and ₹2,999/month) unlock unlimited alerts, multiple WhatsApp numbers, instant delivery (under 2 minutes), and custom alert templates."
     },
     {
       question: "Can multiple team members receive the same WhatsApp alerts?",
-      answer: "Yes. On paid plans (₹1,999/month and ₹2,999/month), you can add multiple WhatsApp numbers. Each team member can be assigned specific alert types — the operations manager gets stockout warnings, the pricing manager gets price and Buy Box alerts, and the founder gets a daily digest. Agencies can send client-specific alerts directly to individual seller WhatsApp numbers."
+      answer: "Yes. On paid plans (₹1,999/month and ₹2,999/month), you can add multiple WhatsApp numbers. Each team member can be assigned specific alert types the operations manager gets stockout warnings, the pricing manager gets price and Buy Box alerts, and the founder gets a daily digest. Agencies can send client-specific alerts directly to individual seller WhatsApp numbers."
     },
   ];
 
   const alertTypes = [
     {
-      emoji: "💰",
       title: "Price Change Alerts",
       desc: "Competitor dropped price by 10%+ on your top product",
-      detail: "Know the moment a competitor reprices — before you lose the Buy Box to a lower price. Set your sensitivity threshold so you only get alerted when it actually matters.",
+      detail: "Know the moment a competitor reprices before you lose the Buy Box to a lower price. Set your sensitivity threshold so you only get alerted when it actually matters.",
       color: "border-green-400 bg-green-50 dark:bg-green-900/20"
     },
     {
-      emoji: "📦",
       title: "Stockout Warnings",
       desc: "Only 12 units left. Reorder now to avoid stockout",
-      detail: "Get notified when inventory drops below your reorder threshold — before you run out, lose rank, and hand sales to competitors during a festive sale peak.",
+      detail: "Get notified when inventory drops below your reorder threshold before you run out, lose rank, and hand sales to competitors during a festive sale peak.",
       color: "border-orange-400 bg-orange-50 dark:bg-orange-900/20"
     },
     {
-      emoji: "⭐",
       title: "New Review Alerts",
       desc: "1-star review received on Wireless Earbuds Pro",
-      detail: "1-star and 2-star reviews flagged the moment they land — in Hindi and English. Respond, escalate, or request removal before it damages your rating. The only instant alert tool for sellers that processes both languages.",
+      detail: "1-star and 2-star reviews flagged the moment they land in Hindi and English. Respond, escalate, or request removal before it damages your rating. The only instant alert tool for sellers that processes both languages.",
       color: "border-red-400 bg-red-50 dark:bg-red-900/20"
     },
     {
-      emoji: "🎯",
       title: "Buy Box Lost Alert",
-      desc: "You lost Buy Box on Phone Case Bundle — act now",
-      detail: "The single most expensive event for any Amazon seller — losing the Buy Box silently. Get alerted the moment it happens with the current competitor price, so you can reprice in minutes.",
+      desc: "You lost Buy Box on Phone Case Bundle act now",
+      detail: "The single most expensive event for any Amazon seller losing the Buy Box silently. Get alerted the moment it happens with the current competitor price, so you can reprice in minutes.",
       color: "border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20"
     },
     {
-      emoji: "🚀",
       title: "AI Opportunity Alert",
-      desc: '"budget earbuds" — low competition, 18K searches/mo',
-      detail: "Not just alerts about what's going wrong — alerts about what's going right for you to act on. New low-competition, high-demand products surfaced in your category as AI detects them.",
+      desc: '"budget earbuds" low competition, 18K searches/mo',
+      detail: "Not just alerts about what's going wrong alerts about what's going right for you to act on. New low-competition, high-demand products surfaced in your category as AI detects them.",
       color: "border-blue-400 bg-blue-50 dark:bg-blue-900/20"
     },
     {
-      emoji: "📈",
       title: "Rank Change Alert",
       desc: "Your keyword rank improved from #12 to #4 today!",
       detail: "Track your keyword rank movement in real time. Get notified when you break into the top 10, or when a rank drop signals a listing issue you need to act on immediately.",
       color: "border-purple-400 bg-purple-50 dark:bg-purple-900/20"
     },
   ];
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
@@ -661,19 +662,19 @@ export default function WhatsAppAlertsFeaturePage() {
                 <span className="text-sm font-medium text-green-700">Feature Spotlight • NEW</span>
               </div>
               <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
-                WhatsApp Alerts —
+                WhatsApp Alerts
                 <br />
                 <span className="bg-gradient-to-r from-green-600 via-emerald-600 to-green-700 bg-clip-text text-transparent">Get Notified</span>
                 <br />
                 Where You Actually Look
               </h1>
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
-                India's only Amazon seller WhatsApp notification tool delivers instant price alerts, Buy Box warnings, stockout signals, and bad review flags — straight to the app you check 50 times a day.
-                <span className="text-green-700 font-semibold"> Because you check WhatsApp 50× a day — not your email.</span>
+                India's only Amazon seller WhatsApp notification tool delivers instant price alerts, Buy Box warnings, stockout signals, and bad review flags straight to the app you check 50 times a day.
+                <span className="text-green-700 font-semibold"> Because you check WhatsApp 50× a day not your email.</span>
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                 <a href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-8 py-6 text-lg rounded-full shadow-2xl transition-all inline-flex items-center">
-                  👉 Enable WhatsApp Alerts Free
+                 <a href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-6 py-3 text-sm rounded-full shadow-2xl transition-all inline-flex items-center">
+                  Enable WhatsApp Alerts Free
                   <ArrowRight className="ml-2" />
                 </a>
                 <Button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} size="lg" variant="outline" className="border-2 border-green-600 text-green-700 dark:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 font-semibold px-8 py-6 text-lg rounded-full">
@@ -704,9 +705,9 @@ export default function WhatsAppAlertsFeaturePage() {
                 </div>
                 <div className="space-y-3">
                   {[
-                    { emoji: "💰", msg: "🚨 Price Alert!\nCompetitor dropped Wireless Earbuds to ₹999 (was ₹1,299)\nYour price: ₹1,199\nAction needed to win Buy Box!", time: "10:23 AM", urgent: true },
-                    { emoji: "📦", msg: "⚠️ Low Stock Warning!\nPhone Case Bundle: Only 8 units left\nReorder ASAP to avoid stockout this weekend", time: "11:45 AM", urgent: false },
-                    { emoji: "⭐", msg: "📢 New Review Alert!\n1★ review on Gaming Mouse X1\n\"stopped working after 2 weeks\"\nRespond quickly to protect rating!", time: "2:17 PM", urgent: true },
+                    {  msg: "Price Alert!\nCompetitor dropped Wireless Earbuds to ₹999 (was ₹1,299)\nYour price: ₹1,199\nAction needed to win Buy Box!", time: "10:23 AM", urgent: true },
+                    {  msg: "Low Stock Warning!\nPhone Case Bundle: Only 8 units left\nReorder ASAP to avoid stockout this weekend", time: "11:45 AM", urgent: false },
+                    {  msg: "New Review Alert!\n1★ review on Gaming Mouse X1\n\"stopped working after 2 weeks\"\nRespond quickly to protect rating!", time: "2:17 PM", urgent: true },
                   ].map((msg, i) => (
                     <div key={i} className={`rounded-2xl rounded-tl-sm p-3 max-w-[90%] ${msg.urgent ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700' : 'bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700'}`}>
                       <p className="text-xs text-gray-800 dark:text-gray-200 whitespace-pre-line leading-relaxed">{msg.msg}</p>
@@ -714,7 +715,7 @@ export default function WhatsAppAlertsFeaturePage() {
                     </div>
                   ))}
                   <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl rounded-tr-sm p-3 max-w-[80%] ml-auto">
-                    <p className="text-xs text-gray-700 dark:text-gray-300">Got it! Adjusting price now 👍</p>
+                    <p className="text-xs text-gray-700 dark:text-gray-300">Got it! Adjusting price now</p>
                     <p className="text-xs text-gray-400 mt-1 text-right">2:18 PM ✓✓</p>
                   </div>
                 </div>
@@ -732,12 +733,11 @@ export default function WhatsAppAlertsFeaturePage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">6 Types of Alerts That Save Your Business</h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400">Never miss a critical event again — get the right alert at the right time, directly on your WhatsApp.</p>
+            <p className="text-lg text-gray-600 dark:text-gray-400">Never miss a critical event again get the right alert at the right time, directly on your WhatsApp.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {alertTypes.map((alert, i) => (
               <div key={i} className={`border-2 ${alert.color} rounded-2xl p-6 hover:shadow-lg transition-all`}>
-                <div className="text-4xl mb-4">{alert.emoji}</div>
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{alert.title}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{alert.detail}</p>
                 <div className="bg-white dark:bg-gray-800 rounded-xl p-3 border border-gray-200 dark:border-gray-700">
@@ -756,11 +756,11 @@ export default function WhatsAppAlertsFeaturePage() {
             <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">
               Why Email Alerts <br /><span className="text-red-600">Don't Work for Sellers</span>
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">The problem isn't that Indian sellers aren't monitoring their stores. The problem is they're monitoring the wrong channel — and by the time they see the alert, the damage is done.</p>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">The problem isn't that Indian sellers aren't monitoring their stores. The problem is they're monitoring the wrong channel and by the time they see the alert, the damage is done.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 mt-10">
             {[
-              { icon: <Clock className="w-8 h-8" />, title: "Emails sit unread for hours", detail: "A price alert at 11pm means you see it at 9am — by which point you've already lost 10 hours of Buy Box.", color: "from-red-500 to-orange-500" },
+              { icon: <Clock className="w-8 h-8" />, title: "Emails sit unread for hours", detail: "A price alert at 11pm means you see it at 9am by which point you've already lost 10 hours of Buy Box.", color: "from-red-500 to-orange-500" },
               { icon: <AlertCircle className="w-8 h-8" />, title: "Critical alerts lost in spam", detail: "Your email client doesn't know the difference between a Buy Box alert and a promotional newsletter.", color: "from-orange-500 to-yellow-500" },
               { icon: <Eye className="w-8 h-8" />, title: "You check WhatsApp, not dashboards", detail: "Most sellers check their phones dozens of times a day and their email twice.", color: "from-yellow-500 to-orange-500" },
               { icon: <TrendingDown className="w-8 h-8" />, title: "Slow reaction = lost sales", detail: "In a Big Billion Days scenario, 4 hours of missed Buy Box can mean ₹1–3L in lost revenue for a mid-size seller.", color: "from-orange-500 to-red-500" },
@@ -773,8 +773,7 @@ export default function WhatsAppAlertsFeaturePage() {
             ))}
           </div>
           <div className="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-400 dark:border-green-600 rounded-3xl p-8 text-center shadow-lg">
-            <Smartphone className="w-12 h-12 text-green-600 mx-auto mb-4" />
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Indians open <span className="text-green-600">WhatsApp 50+ times daily</span> — but check email twice</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Indians open <span className="text-green-600">WhatsApp 50+ times daily</span> but check email twice</p>
             <p className="text-gray-700 dark:text-gray-300 text-lg">Your alerts should be where your attention already is. Not where it isn't.</p>
           </div>
         </div>
@@ -786,7 +785,7 @@ export default function WhatsAppAlertsFeaturePage() {
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white">Set Up in 60 Seconds</h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-              No technical knowledge needed — no app installation, no API keys, no developer required.
+              No technical knowledge needed no app installation, no API keys, no developer required.
               <span className="text-green-700 font-semibold"> Connect WhatsApp, choose alerts, and you're live.</span>
             </p>
           </div>
@@ -795,13 +794,13 @@ export default function WhatsAppAlertsFeaturePage() {
             <div className="grid lg:grid-cols-4 gap-8 relative">
               {[
                 { step: "1", title: "Connect your WhatsApp", detail: "Scan the QR code inside your Insydz dashboard. Takes 10 seconds. Works with personal WhatsApp and WhatsApp Business.", icon: <Smartphone className="w-12 h-12" /> },
-                { step: "2", title: "Choose your alerts", detail: "Pick which alert types matter to your business — price changes, Buy Box, stockouts, reviews, rank changes, or AI opportunities.", icon: <Bell className="w-12 h-12" /> },
+                { step: "2", title: "Choose your alerts", detail: "Pick which alert types matter to your business price changes, Buy Box, stockouts, reviews, rank changes, or AI opportunities.", icon: <Bell className="w-12 h-12" /> },
                 { step: "3", title: "Set your thresholds", detail: "Control when and how often you're notified. Set quiet hours, minimum price change %, and stock level triggers to avoid noise.", icon: <Shield className="w-12 h-12" /> },
-                { step: "4", title: "React instantly", detail: "Take action before competitors do. Reprice, reorder, or respond to reviews in minutes — not the next morning when you check your email.", icon: <Zap className="w-12 h-12" /> },
+                { step: "4", title: "React instantly", detail: "Take action before competitors do. Reprice, reorder, or respond to reviews in minutes not the next morning when you check your email.", icon: <Zap className="w-12 h-12" /> },
               ].map((item, i) => (
                 <div key={i} className="bg-white dark:bg-gray-800 border-2 border-green-300 dark:border-green-700 rounded-2xl p-6 text-center relative z-10 shadow-lg hover:shadow-xl transition-all">
                   <div className="w-12 h-12 bg-gradient-to-br from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-black text-white">{item.step}</div>
-                  <div className="bg-green-100 dark:bg-green-900/20 rounded-xl p-4 mb-4 text-green-600">{item.icon}</div>
+                  <div className="bg-green-100 dark:bg-green-900/20 rounded-xl p-4 mb-4 text-green-600 flex items-center justify-center">{item.icon}</div>
                   <p className="text-gray-900 dark:text-white font-semibold mb-2">{item.title}</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{item.detail}</p>
                 </div>
@@ -810,7 +809,7 @@ export default function WhatsAppAlertsFeaturePage() {
           </div>
           <div className="text-center mt-12">
             <a href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-12 py-6 text-lg rounded-full shadow-2xl inline-flex items-center">
-              👉 Enable WhatsApp Alerts Free
+              Enable WhatsApp Alerts Free
               <ChevronRight className="ml-2" />
             </a>
           </div>
@@ -822,7 +821,7 @@ export default function WhatsAppAlertsFeaturePage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-6">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">What WhatsApp Alerts Do for Your Business</h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400">Six outcomes Indian sellers unlock when critical events stop getting missed — and start getting acted on in minutes.</p>
+            <p className="text-xl text-gray-600 dark:text-gray-400">Six outcomes Indian sellers unlock when critical events stop getting missed and start getting acted on in minutes.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
             {[
@@ -835,19 +834,19 @@ export default function WhatsAppAlertsFeaturePage() {
               {
                 icon: <Shield />,
                 title: "Protect from stockouts",
-                detail: "Running out of stock during Diwali, Big Billion Days, or a viral moment doesn't just cost today's sales — it collapses your rank and review velocity for weeks. Stockout warnings prevent this entirely.",
+                detail: "Running out of stock during Diwali, Big Billion Days, or a viral moment doesn't just cost today's sales it collapses your rank and review velocity for weeks. Stockout warnings prevent this entirely.",
                 color: "text-blue-600"
               },
               {
                 icon: <Star />,
                 title: "Guard your reputation",
-                detail: "A 1-star review responded to within 2 hours has a materially different impact than one left unanswered for 48 hours. Fast response signals to buyers — and Amazon's algorithm — that you're an engaged seller.",
+                detail: "A 1-star review responded to within 2 hours has a materially different impact than one left unanswered for 48 hours. Fast response signals to buyers and Amazon's algorithm that you're an engaged seller.",
                 color: "text-yellow-600"
               },
               {
                 icon: <TrendingUp />,
                 title: "Win the Buy Box faster",
-                detail: "Immediate price change notifications mean you can reprice the moment a competitor drops their price — not the next time you happen to log into your dashboard.",
+                detail: "Immediate price change notifications mean you can reprice the moment a competitor drops their price not the next time you happen to log into your dashboard.",
                 color: "text-emerald-600"
               },
               {
@@ -859,14 +858,13 @@ export default function WhatsAppAlertsFeaturePage() {
               {
                 icon: <RefreshCw />,
                 title: "Stay updated 24/7",
-                detail: "AI watches your store while you sleep. Competitors don't stop repricing at 10pm — and your WhatsApp notifications don't either.",
+                detail: "AI watches your store while you sleep. Competitors don't stop repricing at 10pm and your WhatsApp notifications don't either.",
                 color: "text-orange-600"
               },
             ].map((outcome, i) => (
               <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:border-green-400 hover:shadow-lg transition-all">
                 <div className="flex items-center justify-between mb-4">
                   <div className={`w-12 h-12 bg-green-100 dark:bg-green-900/20 rounded-xl flex items-center justify-center ${outcome.color}`}>{outcome.icon}</div>
-                  <ThumbsUp className="w-6 h-6 text-green-500" />
                 </div>
                 <p className="text-gray-900 dark:text-white font-semibold leading-relaxed mb-2">{outcome.title}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">{outcome.detail}</p>
@@ -891,26 +889,26 @@ export default function WhatsAppAlertsFeaturePage() {
             {[
               {
                 icon: <Smartphone className="w-8 h-8" />,
-                title: "WhatsApp is India's business channel — not a workaround",
-                detail: "Indian sellers manage vendors, VAs, warehouses, and operations on WhatsApp every day. Insydz delivers to the channel you're already using — not one more dashboard you have to remember to check.",
+                title: "WhatsApp is India's business channel not a workaround",
+                detail: "Indian sellers manage vendors, VAs, warehouses, and operations on WhatsApp every day. Insydz delivers to the channel you're already using not one more dashboard you have to remember to check.",
                 color: "from-green-500 to-emerald-500",
               },
               {
                 icon: <Store className="w-8 h-8" />,
-                title: "Amazon India + Flipkart — not just one marketplace",
-                detail: "Most Amazon seller alert tools cover Amazon only. Indian sellers increasingly operate across Amazon India, Flipkart. Insydz covers all three — so a price drop on Flipkart triggers the same instant WhatsApp notification as one on Amazon India.",
+                title: "Amazon India + Flipkart not just one marketplace",
+                detail: "Most Amazon seller alert tools cover Amazon only. Indian sellers increasingly operate across Amazon India, Flipkart. Insydz covers all three so a price drop on Flipkart triggers the same instant WhatsApp notification as one on Amazon India.",
                 color: "from-blue-500 to-cyan-500",
               },
               {
                 icon: <Flame className="w-8 h-8" />,
-                title: "Festive sale intelligence — alerts calibrated for Indian events",
-                detail: "Big Billion Days, Great Indian Festival, Holi, and Diwali see 10–20× normal pricing volatility. Insydz automatically increases alert sensitivity during detected sale periods — so you get notified faster when the cost of a missed alert is highest.",
+                title: "Festive sale intelligence alerts calibrated for Indian events",
+                detail: "Big Billion Days, Great Indian Festival, Holi, and Diwali see 10–20× normal pricing volatility. Insydz automatically increases alert sensitivity during detected sale periods so you get notified faster when the cost of a missed alert is highest.",
                 color: "from-orange-500 to-amber-500",
               },
               {
                 icon: <MessageCircle className="w-8 h-8" />,
-                title: "Hindi review alerts — the signal most tools can't read",
-                detail: "60–70% of Amazon India reviews are written in Hindi. Most instant alert tools only process English reviews — meaning the majority of your customer feedback goes unmonitored. Insydz flags 1-star and 2-star reviews in both Hindi and English, so no bad review goes unnoticed.",
+                title: "Hindi review alerts the signal most tools can't read",
+                detail: "60–70% of Amazon India reviews are written in Hindi. Most instant alert tools only process English reviews meaning the majority of your customer feedback goes unmonitored. Insydz flags 1-star and 2-star reviews in both Hindi and English, so no bad review goes unnoticed.",
                 color: "from-purple-500 to-pink-500",
               },
             ].map((item, i) => (
@@ -931,7 +929,7 @@ export default function WhatsAppAlertsFeaturePage() {
               <div>
                 <p className="text-sm font-bold text-amber-700 dark:text-amber-400 mb-2">What most tools don't tell you:</p>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                  An Amazon suppression listing tool that only monitors listings in English misses the single most common reason Indian sellers get suppressed — a pattern of negative reviews that start in Hindi and compound over weeks before the seller even knows there's a problem. Insydz's new review alert tool reads both languages so you can act on the complaint before it becomes a suppression.
+                  An Amazon suppression listing tool that only monitors listings in English misses the single most common reason Indian sellers get suppressed a pattern of negative reviews that start in Hindi and compound over weeks before the seller even knows there's a problem. Insydz's new review alert tool reads both languages so you can act on the complaint before it becomes a suppression.
                 </p>
               </div>
             </div>
@@ -958,7 +956,7 @@ export default function WhatsAppAlertsFeaturePage() {
                 <MapPin className="w-5 h-5 text-green-200" />
                 <span className="text-green-100 text-sm">Electronics seller, Hyderabad | Amazon India | 22 SKUs | Managing alone with one VA</span>
               </div>
-              <h3 className="text-2xl font-black text-white">Deepa's ₹4.6L Big Billion Days — Saved by a WhatsApp Message at 11:47pm</h3>
+              <h3 className="text-2xl font-black text-white">Deepa's ₹4.6L Big Billion Days Saved by a WhatsApp Message at 11:47pm</h3>
             </div>
 
             <div className="p-8 grid md:grid-cols-2 gap-8">
@@ -991,8 +989,8 @@ export default function WhatsAppAlertsFeaturePage() {
                 </div>
                 <div className="space-y-3">
                   {[
-                    "11:47pm — WhatsApp alert: '🔴 Price Alert! Competitor dropped Bluetooth Speaker to ₹999. Your price: ₹1,149. Action needed to win Buy Box.' Deepa sees it immediately.",
-                    "11:51pm — She reprices to ₹989 from her phone. Buy Box recovered in 4 minutes. She also sees a stockout warning — WhatsApps her VA to reorder before midnight.",
+                    "11:47pm — WhatsApp alert: 'Price Alert! Competitor dropped Bluetooth Speaker to ₹999. Your price: ₹1,149. Action needed to win Buy Box.' Deepa sees it immediately.",
+                    "11:51pm — She reprices to ₹989 from her phone. Buy Box recovered in 4 minutes. She also sees a stockout warning WhatsApps her VA to reorder before midnight.",
                     "Next day — 1★ review on her earbuds. She responds within 90 minutes, offers a replacement, buyer updates to 3★. Rating stays at 4.4★ through peak.",
                   ].map((item, i) => (
                     <div key={i} className="flex items-start gap-2">
@@ -1033,15 +1031,15 @@ export default function WhatsAppAlertsFeaturePage() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-6">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">Email Alerts vs WhatsApp Alerts</h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400">The honest comparison — every dimension that determines whether your critical business events get acted on in minutes or the next morning.</p>
+            <p className="text-xl text-gray-600 dark:text-gray-400">The honest comparison every dimension that determines whether your critical business events get acted on in minutes or the next morning.</p>
           </div>
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden border-2 border-gray-200 dark:border-gray-700 mt-10">
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-100 dark:bg-gray-800">
                   <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Aspect</th>
-                  <th className="px-6 py-4 text-center text-sm font-bold text-gray-700 dark:text-gray-300">Email Alerts</th>
-                  <th className="px-6 py-4 text-center text-sm font-bold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20">WhatsApp Alerts (Insydz)</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Email Alerts</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20">WhatsApp Alerts (Insydz)</th>
                 </tr>
               </thead>
               <tbody>
@@ -1050,20 +1048,20 @@ export default function WhatsAppAlertsFeaturePage() {
                   { aspect: "Response Time", manual: "Hours later", insydz: "Within minutes" },
                   { aspect: "Visibility", manual: "Buried in inbox", insydz: "Front & centre on phone" },
                   { aspect: "Team Reach", manual: "One inbox only", insydz: "Multiple numbers" },
-                  { aspect: "User Experience", manual: "Friction-heavy — login to act", insydz: "Natural & instant — act from alert" },
-                  { aspect: "Spam Risk", manual: "High — often auto-filtered", insydz: "None — not a spam channel" },
+                  { aspect: "User Experience", manual: "Friction-heavy login to act", insydz: "Natural & instant act from alert" },
+                  { aspect: "Spam Risk", manual: "High often auto-filtered", insydz: "None not a spam channel" },
                   { aspect: "Night / Weekend Alerts", manual: "Seen next morning", insydz: "Seen and acted on in minutes" },
                 ].map((row, i) => (
                   <tr key={i} className="border-t border-gray-200 dark:border-gray-700">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{row.aspect}</td>
-                    <td className="px-6 py-4 text-center">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-6 py-4 text-left">
+                      <div className="flex items-left justify-left gap-2">
                         <X className="w-5 h-5 text-red-500" />
                         <span className="text-sm text-gray-600 dark:text-gray-400">{row.manual}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-center bg-green-50 dark:bg-green-900/20">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-6 py-4 text-left bg-green-50 dark:bg-green-900/20">
+                      <div className="flex items-left justify-left gap-2">
                         <Check className="w-5 h-5 text-green-600" />
                         <span className="text-sm text-gray-900 dark:text-white font-medium">{row.insydz}</span>
                       </div>
@@ -1075,7 +1073,7 @@ export default function WhatsAppAlertsFeaturePage() {
           </div>
           <div className="text-center mt-8">
             <a href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-10 py-6 text-lg rounded-full shadow-xl inline-block">
-            👉 Switch to WhatsApp Alerts
+            Switch to WhatsApp Alerts
           </a>
           </div>
         </div>
@@ -1110,7 +1108,7 @@ export default function WhatsAppAlertsFeaturePage() {
             </div>
             <div className="text-center">
               <a href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-12 py-6 text-lg rounded-full shadow-2xl inline-block">
-                👉 Enable WhatsApp Alerts Free
+                Enable WhatsApp Alerts Free
               </a>
             </div>
           </div>
@@ -1214,7 +1212,7 @@ export default function WhatsAppAlertsFeaturePage() {
       <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">WhatsApp Alerts — FAQs</h2>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">WhatsApp Alerts FAQs</h2>
           </div>
           <div className="space-y-4">
             {faqs.map((faq, i) => (
@@ -1263,7 +1261,7 @@ export default function WhatsAppAlertsFeaturePage() {
             <br />
             <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Get Them on WhatsApp.</span>
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-12">India's only Amazon seller WhatsApp notification tool — start free in 60 seconds.</p>
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-12">India's only Amazon seller WhatsApp notification tool start free in 60 seconds.</p>
 
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             {/* New Seller */}
@@ -1272,9 +1270,9 @@ export default function WhatsAppAlertsFeaturePage() {
                 <Smartphone className="w-6 h-6 text-green-600" />
               </div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">For New Sellers</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Start monitoring your first products for free — get price alerts, stockout warnings, and Buy Box signals from day one.</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Start monitoring your first products for free get price alerts, stockout warnings, and Buy Box signals from day one.</p>
               <a href="/login" className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-full py-2 block text-center">
-                🚀 Start Free →
+                Start Free →
               </a>
             </div>
 
@@ -1286,7 +1284,7 @@ export default function WhatsAppAlertsFeaturePage() {
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">For Growing Sellers</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Unlock unlimited alerts, multiple WhatsApp numbers, and instant delivery on the Growth Plan.</p>
               <a href="/pricing" className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-full shadow-lg py-2 block text-center">
-                📈 Try Growth Plan →
+                Try Growth Plan →
               </a>
             </div>
 
@@ -1296,9 +1294,9 @@ export default function WhatsAppAlertsFeaturePage() {
                 <Building2 className="w-6 h-6 text-green-600" />
               </div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">For Agencies</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Set up WhatsApp alert groups for all your clients — they stay informed, you stay in control.</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Set up WhatsApp alert groups for all your clients they stay informed, you stay in control.</p>
               <a href="/about/contact-us" className="w-full bg-white dark:bg-gray-700 border-2 border-green-600 text-green-700 dark:text-green-400 font-bold rounded-full hover:bg-green-50 py-2 block text-center">
-                🏢 Book Demo →
+                Book Demo →
               </a>
             </div>
           </div>
@@ -1317,7 +1315,7 @@ export default function WhatsAppAlertsFeaturePage() {
       {/* ── STICKY MOBILE CTA ── */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-green-300 dark:border-green-700 p-4 shadow-2xl z-40">
         <a href="/login" className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold py-4 rounded-full shadow-xl flex items-center justify-center">
-          👉 Enable WhatsApp Alerts Free
+          Enable WhatsApp Alerts Free
         </a>
   
       </div>
@@ -1446,7 +1444,7 @@ export default function WhatsAppAlertsFeaturePage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

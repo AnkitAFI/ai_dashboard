@@ -285,7 +285,7 @@ export default function PriceOptimizationFeaturePage() {
     {
       icon: <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8" />,
       title: "Panic discounting kills margins",
-      description: "Sellers who see Buy Box drop immediately cut price — often below their own cost, especially after Amazon fees.",
+      description: "Sellers who see Buy Box drop immediately cut price often below their own cost, especially after Amazon fees.",
       color: "from-orange-500 to-yellow-500",
     },
     {
@@ -297,32 +297,32 @@ export default function PriceOptimizationFeaturePage() {
     {
       icon: <Percent className="w-6 h-6 sm:w-8 sm:h-8" />,
       title: "Overpricing = zero sales",
-      description: "Hold too high during a demand dip and you're invisible. No clicks, no sales, no data — and a ranking that slides.",
+      description: "Hold too high during a demand dip and you're invisible. No clicks, no sales, no data and a ranking that slides.",
       color: "from-orange-500 to-red-500",
     },
   ];
 
   const outcomes = [
-    { icon: <DollarSign />, title: "Increase profit per sale", detail: "AI finds the highest profitable price point the market will bear — without losing sales velocity.", color: "text-green-600" },
-    { icon: <ShoppingCart />, title: "Win more Buy Boxes", detail: "Competitive without panic discounting — because the AI knows exactly how low to go and no lower.", color: "text-blue-600" },
+    { icon: <DollarSign />, title: "Increase profit per sale", detail: "AI finds the highest profitable price point the market will bear without losing sales velocity.", color: "text-green-600" },
+    { icon: <ShoppingCart />, title: "Win more Buy Boxes", detail: "Competitive without panic discounting because the AI knows exactly how low to go and no lower.", color: "text-blue-600" },
     { icon: <TrendingUp />, title: "Boost revenue 15–30%", detail: "Smart pricing means more conversions at better margins. Revenue compounds faster than manual pricing.", color: "text-emerald-600" },
-    { icon: <Shield />, title: "Protect margins automatically", detail: "Set your floor price once. AI respects it — always. Never sell below your profit target again.", color: "text-purple-600" },
+    { icon: <Shield />, title: "Protect margins automatically", detail: "Set your floor price once. AI respects it always. Never sell below your profit target again.", color: "text-purple-600" },
     { icon: <Award />, title: "Beat competitors strategically", detail: "Data wins over guesswork. Know when a competitor has priced themselves out of the Buy Box.", color: "text-orange-600" },
-    { icon: <Maximize2 />, title: "Scale without manual work", detail: "AI optimizes pricing 24/7 — for 10 products or 500. Your time scales. The results don't drop.", color: "text-indigo-600" },
+    { icon: <Maximize2 />, title: "Scale without manual work", detail: "AI optimizes pricing 24/7 for 10 products or 500. Your time scales. The results don't drop.", color: "text-indigo-600" },
   ];
 
   const indiaPains = [
     {
       title: "Most Indian sellers price by watching one competitor",
-      description: "The real Buy Box is won by understanding all active competitors, demand velocity, your category's price elasticity, and Buy Box probability — simultaneously. Watching one ASIN manually misses 80% of what's actually driving the algorithm.",
+      description: "The real Buy Box is won by understanding all active competitors, demand velocity, your category's price elasticity, and Buy Box probability simultaneously. Watching one ASIN manually misses 80% of what's actually driving the algorithm.",
     },
     {
       title: "Festive season pricing is the hardest to get right manually",
       description: "During Diwali, Big Billion Days, and Great Indian Festival, demand multipliers shift category dynamics hourly. A price that wins Buy Box at 2pm can lose it by 6pm as competitors stack discounts. Manual pricing can't keep pace with hourly shifts.",
     },
     {
-      title: "Margin floor calculations are done wrong — or not at all",
-      description: "Most sellers know their purchase cost. Few correctly account for Amazon commission (8–15%), GST implications, fulfilment fees, return rates, and ad spend before setting a margin floor. AI does all of this automatically — in INR, every time.",
+      title: "Margin floor calculations are done wrong or not at all",
+      description: "Most sellers know their purchase cost. Few correctly account for Amazon commission (8–15%), GST implications, fulfilment fees, return rates, and ad spend before setting a margin floor. AI does all of this automatically in INR, every time.",
     },
     {
       title: "Global pricing tools don't understand Flipkart or Indian demand signals",
@@ -331,34 +331,34 @@ export default function PriceOptimizationFeaturePage() {
   ];
 
   const intelligenceModules = [
-    { feature: "Dynamic Price Recommendations", result: "AI adjusts to market changes hourly — not when you remember to check", icon: <RefreshCw className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-blue-500 to-cyan-500" },
+    { feature: "Dynamic Price Recommendations", result: "AI adjusts to market changes hourly not when you remember to check", icon: <RefreshCw className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-blue-500 to-cyan-500" },
     { feature: "Buy Box Win Probability", result: "See exact Buy Box win probability at any price point before committing", icon: <Percent className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-purple-500 to-pink-500" },
-    { feature: "Margin Protection Rules", result: "Set floor once. AI respects it unconditionally — even during a 2am flash sale", icon: <Shield className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-red-500 to-orange-500" },
-    { feature: "Competitor Price Analysis", result: "Track all active competitors simultaneously — not just the one you last checked", icon: <Eye className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-green-500 to-emerald-500" },
-    { feature: "Seasonal Demand Detection", result: "Diwali, Big Billion Days, GIF — demand multipliers built into every recommendation", icon: <LineChart className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-orange-500 to-red-500" },
-    { feature: "A/B Price Testing", result: "Test two price points simultaneously — find the winner with data, not instinct", icon: <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-indigo-500 to-purple-500" },
+    { feature: "Margin Protection Rules", result: "Set floor once. AI respects it unconditionally even during a 2am flash sale", icon: <Shield className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-red-500 to-orange-500" },
+    { feature: "Competitor Price Analysis", result: "Track all active competitors simultaneously not just the one you last checked", icon: <Eye className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-green-500 to-emerald-500" },
+    { feature: "Seasonal Demand Detection", result: "Diwali, Big Billion Days, GIF demand multipliers built into every recommendation", icon: <LineChart className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-orange-500 to-red-500" },
+    { feature: "A/B Price Testing", result: "Test two price points simultaneously find the winner with data, not instinct", icon: <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-indigo-500 to-purple-500" },
   ];
 
   const comparisonRows = [
     { aspect: "Data Analysis", manual: "Gut feeling, limited data", ai: "Thousands of data points analyzed hourly" },
     { aspect: "Speed", manual: "Hours to days", ai: "Recommendations in seconds" },
     { aspect: "Accuracy", manual: "Hit or miss", ai: "Proven 15–30% revenue increase" },
-    { aspect: "Margin Safety", manual: "Manual calculations, errors common", ai: "Automated margin protection — floor never breached" },
+    { aspect: "Margin Safety", manual: "Manual calculations, errors common", ai: "Automated margin protection floor never breached" },
     { aspect: "Scalability", manual: "Impossible for 100+ products", ai: "Works for unlimited products simultaneously" },
-    { aspect: "Festive Demand", manual: "Priced the same as off-season", ai: "Demand multipliers built in — Diwali, BBD, GIF" },
+    { aspect: "Festive Demand", manual: "Priced the same as off-season", ai: "Demand multipliers built in Diwali, BBD, GIF" },
     { aspect: "Flipkart Support", manual: "Separate process, usually skipped", ai: "Amazon India + Flipkart in one recommendation" },
   ];
 
   const indiaFirstFeatures = [
     { feature: "Amazon India + Flipkart optimization", meaning: "Price recommendations account for both marketplace Buy Box mechanics simultaneously." },
-    { feature: "Indian festive demand multipliers", meaning: "Diwali, Big Billion Days, Great Indian Festival, Republic Day — built into every hourly recommendation." },
-    { feature: "Amazon.in fee structure built in", meaning: "Commission rates, fulfilment fees, GST, and return rates factored into every margin floor calculation — in INR." },
+    { feature: "Indian festive demand multipliers", meaning: "Diwali, Big Billion Days, Great Indian Festival, Republic Day built into every hourly recommendation." },
+    { feature: "Amazon.in fee structure built in", meaning: "Commission rates, fulfilment fees, GST, and return rates factored into every margin floor calculation in INR." },
     { feature: "WhatsApp recommendations, not dashboards", meaning: "Price recommendations arrive on WhatsApp with suggested price, Buy Box probability, and one-tap apply." },
   ];
 
   const testimonials = [
     {
-      quote: "Before Insydz I was repricing manually twice a day during Big Billion Days. I was always reactive — seeing what competitors did and matching it. Insydz showed me the Buy Box win probability at each price before I moved. I stopped following and started leading.",
+      quote: "Before Insydz I was repricing manually twice a day during Big Billion Days. I was always reactive seeing what competitors did and matching it. Insydz showed me the Buy Box win probability at each price before I moved. I stopped following and started leading.",
       name: "Sanjay M.",
       role: "Electronics accessories, Hyderabad · Amazon India + Flipkart",
     },
@@ -368,7 +368,7 @@ export default function PriceOptimizationFeaturePage() {
       role: "D2C home decor brand, Jaipur · Amazon India",
     },
     {
-      quote: "We manage 22 seller accounts. Manual pricing at scale was impossible — especially across Amazon and Flipkart simultaneously. Our clients average Buy Box rate went from 51% to 74% in 45 days.",
+      quote: "We manage 22 seller accounts. Manual pricing at scale was impossible especially across Amazon and Flipkart simultaneously. Our clients average Buy Box rate went from 51% to 74% in 45 days.",
       name: "Karan T.",
       role: "E-commerce agency, Delhi · 22 seller accounts",
     },
@@ -377,27 +377,27 @@ export default function PriceOptimizationFeaturePage() {
   const faqs = [
     {
       question: "How does AI price optimization work?",
-      answer: "Insydz AI scans competitor prices, demand signals, Buy Box win probability at different price points, seasonal demand multipliers, and your margin floor — every hour. It then recommends the price that maximizes revenue and Buy Box probability while staying above your profit threshold. The recommendation appears on your dashboard and as a WhatsApp notification. The AI recalculates automatically as market conditions change — no manual intervention required.",
+      answer: "Insydz AI scans competitor prices, demand signals, Buy Box win probability at different price points, seasonal demand multipliers, and your margin floor every hour. It then recommends the price that maximizes revenue and Buy Box probability while staying above your profit threshold. The recommendation appears on your dashboard and as a WhatsApp notification. The AI recalculates automatically as market conditions change no manual intervention required.",
     },
     {
       question: "Will I lose the Buy Box if prices are optimized?",
-      answer: "No — the AI is specifically designed to maximize Buy Box win probability, not just lower your price. Every recommendation includes the predicted Buy Box probability at that price point. In testing with Indian sellers, Insydz-optimized pricing increased Buy Box win rates from an average of 51% to 74% over 45 days — while maintaining or improving margins — because the AI found the optimal competitive position rather than blindly following competitors down.",
+      answer: "No. the AI is specifically designed to maximize Buy Box win probability, not just lower your price. Every recommendation includes the predicted Buy Box probability at that price point. In testing with Indian sellers, Insydz-optimized pricing increased Buy Box win rates from an average of 51% to 74% over 45 days while maintaining or improving margins because the AI found the optimal competitive position rather than blindly following competitors down.",
     },
     {
       question: "Can I set minimum profit margins?",
-      answer: "Yes — margin floor protection is core to how Insydz price optimization works. You set your minimum acceptable margin or absolute floor price per product. Insydz automatically accounts for Amazon.in commission, fulfilment fees, and your purchase cost when calculating this floor. No recommendation will ever suggest a price below your floor — even during a competitor price war or a flash sale at 2am when you're asleep.",
+      answer: "Yes. margin floor protection is core to how Insydz price optimization works. You set your minimum acceptable margin or absolute floor price per product. Insydz automatically accounts for Amazon.in commission, fulfilment fees, and your purchase cost when calculating this floor. No recommendation will ever suggest a price below your floor even during a competitor price war or a flash sale at 2am when you're asleep.",
     },
     {
       question: "Does this work for seasonal products?",
-      answer: "Yes — Indian festive demand multipliers (Diwali, Big Billion Days, Great Indian Festival, Republic Day, Holi) are built into every hourly recommendation. During high-demand seasons, the AI recognizes that higher prices can still win the Buy Box because all sellers are operating at elevated demand — and recommends the most profitable price accordingly, not a conservative one based on off-season dynamics.",
+      answer: "Yes. Indian festive demand multipliers (Diwali, Big Billion Days, Great Indian Festival, Republic Day, Holi) are built into every hourly recommendation. During high-demand seasons, the AI recognizes that higher prices can still win the Buy Box because all sellers are operating at elevated demand and recommends the most profitable price accordingly, not a conservative one based on off-season dynamics.",
     },
     {
       question: "Is price optimization available on the free plan?",
-      answer: "Yes. The free plan includes AI price recommendations for a limited number of products, Buy Box probability analysis, margin protection settings, and basic optimization alerts — permanently, with no credit card required and no expiry date. Paid plans (₹1,999/month and ₹2,999/month) unlock automated price changes, unlimited products, A/B price testing, and advanced seasonal demand detection.",
+      answer: "Yes. The free plan includes AI price recommendations for a limited number of products, Buy Box probability analysis, margin protection settings, and basic optimization alerts permanently, with no credit card required and no expiry date. Paid plans (₹1,999/month and ₹2,999/month) unlock automated price changes, unlimited products, A/B price testing, and advanced seasonal demand detection.",
     },
     {
       question: "How is this different from competitor price tracking?",
-      answer: "Competitor price tracking tells you what competitors are charging. AI price optimization tells you what you should charge — accounting for your margin, Buy Box probability, demand signals, and competitive position simultaneously. Price tracking is reactive. Price optimization is proactive. For Indian sellers on Amazon India and Flipkart, both are useful — but optimization drives revenue. Tracking alone does not.",
+      answer: "Competitor price tracking tells you what competitors are charging. AI price optimization tells you what you should charge accounting for your margin, Buy Box probability, demand signals, and competitive position simultaneously. Price tracking is reactive. Price optimization is proactive. For Indian sellers on Amazon India and Flipkart, both are useful but optimization drives revenue. Tracking alone does not.",
     },
   ];
 
@@ -598,7 +598,7 @@ export default function PriceOptimizationFeaturePage() {
               </div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-black leading-tight text-gray-900 dark:text-white">
-                AI Price Optimization —
+                AI Price Optimization 
                 <br />
                 <span className="bg-gradient-to-r from-green-600 via-emerald-600 to-green-700 bg-clip-text text-transparent">
                   Maximize Profit
@@ -610,15 +610,15 @@ export default function PriceOptimizationFeaturePage() {
               <p className="text-base sm:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
                 AI-powered <strong>price optimization software</strong> that finds the perfect price
                 point for every product, every hour. Win Buy Box, protect margins, and increase
-                revenue — all at once.{" "}
+                revenue all at once.{" "}
                 <span className="text-green-700 dark:text-green-400 font-semibold">
                   No manual repricing. No gut feeling. No panic discounting.
                 </span>
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                  <a href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-6 sm:px-8 py-4 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl transition-all inline-flex items-center justify-center w-full sm:w-auto">
-                  💰 Start Optimizing Prices Free
+                  <a href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-16 sm:px-8 py-4 sm:py-3 text-base sm:text-sm rounded-full shadow-2xl transition-all inline-flex items-center justify-center w-full sm:w-auto">
+                   Start Optimizing Prices Free
                   <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5" />
                 </a>
                 <Button
@@ -726,7 +726,6 @@ export default function PriceOptimizationFeaturePage() {
           </div>
 
           <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-2xl sm:rounded-3xl p-5 sm:p-6 lg:p-8 text-center shadow-lg mb-8 sm:mb-10 lg:mb-12">
-            <AlertCircle className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 text-red-600 mx-auto mb-3 sm:mb-4" />
             <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-2">
               Wrong pricing costs sellers{" "}
               <span className="text-red-600">15–35% of potential revenue</span>
@@ -785,7 +784,7 @@ export default function PriceOptimizationFeaturePage() {
               How AI Price Optimization Works
             </h2>
             <p className="text-sm sm:text-base lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Insydz AI analyzes thousands of data points every hour to recommend the perfect price —
+              Insydz AI analyzes thousands of data points every hour to recommend the perfect price
               balancing competitiveness, margins, and{" "}
               <a href="/features/price-optimization-feature#buybox" className="text-green-600 underline">
                 Buy Box win probability
@@ -796,10 +795,10 @@ export default function PriceOptimizationFeaturePage() {
             <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-green-600 via-emerald-600 to-green-600 -translate-y-1/2 z-0" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 relative z-10">
               {[
-                { step: "1", title: "AI scans market data", detail: "Competitor prices, demand signals, and seasonality — updated every hour, not once a day.", icon: <Eye className="w-8 h-8 sm:w-10 sm:h-10" /> },
-                { step: "2", title: "Analyzes Buy Box dynamics", detail: "Win probability calculated at multiple price points — showing the optimal competitive position.", icon: <Brain className="w-8 h-8 sm:w-10 sm:h-10" /> },
-                { step: "3", title: "Calculates optimal price", detail: "Maximum profit while staying competitive — margin floor built into every calculation.", icon: <Calculator className="w-8 h-8 sm:w-10 sm:h-10" /> },
-                { step: "4", title: "Recommends & alerts you", detail: "Dashboard recommendation + WhatsApp notification — act in seconds from anywhere.", icon: <Bell className="w-8 h-8 sm:w-10 sm:h-10" /> },
+                { step: "1", title: "AI scans market data", detail: "Competitor prices, demand signals, and seasonality updated every hour, not once a day.", icon: <Eye className="w-8 h-8 sm:w-10 sm:h-10" /> },
+                { step: "2", title: "Analyzes Buy Box dynamics", detail: "Win probability calculated at multiple price points showing the optimal competitive position.", icon: <Brain className="w-8 h-8 sm:w-10 sm:h-10" /> },
+                { step: "3", title: "Calculates optimal price", detail: "Maximum profit while staying competitive margin floor built into every calculation.", icon: <Calculator className="w-8 h-8 sm:w-10 sm:h-10" /> },
+                { step: "4", title: "Recommends & alerts you", detail: "Dashboard recommendation + WhatsApp notification act in seconds from anywhere.", icon: <Bell className="w-8 h-8 sm:w-10 sm:h-10" /> },
               ].map((item, i) => (
                 <div key={i} className="bg-white dark:bg-gray-800 border-2 border-green-300 dark:border-green-700 rounded-xl sm:rounded-2xl p-5 sm:p-6 text-center shadow-lg hover:shadow-xl transition-all">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-600 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 text-base sm:text-lg font-black text-white">
@@ -816,7 +815,7 @@ export default function PriceOptimizationFeaturePage() {
           </div>
           <div className="text-center mt-8 sm:mt-10 lg:mt-12">
               <a href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-8 sm:px-10 lg:px-12 py-4 sm:py-5 lg:py-6 text-base sm:text-lg rounded-full shadow-2xl inline-flex items-center justify-center w-full sm:w-auto">
-              💰 Get AI Price Recommendations Free
+              Get AI Price Recommendations Free
               <ChevronRight className="ml-2" />
             </a>
           </div>
@@ -831,7 +830,7 @@ export default function PriceOptimizationFeaturePage() {
               What You Can Do with Price Optimization
             </h2>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Six outcomes Indian sellers get from switching to AI-powered pricing — in the first 30 days.
+              Six outcomes Indian sellers get from switching to AI-powered pricing in the first 30 days.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
@@ -859,7 +858,7 @@ export default function PriceOptimizationFeaturePage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8 sm:mb-10 lg:mb-12">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900 dark:text-white mb-3 sm:mb-4">
-              Why Indian Sellers Struggle with Pricing — Even When They Have the Right Product
+              Why Indian Sellers Struggle with Pricing Even When They Have the Right Product
             </h2>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
               A seller with a 4.5-star product, good reviews, and a competitive landing cost can
@@ -895,7 +894,7 @@ export default function PriceOptimizationFeaturePage() {
               Advanced AI Pricing Intelligence
             </h2>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Six intelligence modules working simultaneously — so every price recommendation is
+              Six intelligence modules working simultaneously so every price recommendation is
               built on the full picture, not a single data point.
             </p>
           </div>
@@ -927,7 +926,7 @@ export default function PriceOptimizationFeaturePage() {
             </h2>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
               Most <strong>ecommerce price optimization tools</strong> optimize for the Buy Box.
-              Insydz optimizes for the Buy Box <em>and</em> your margin — simultaneously. There's a
+              Insydz optimizes for the Buy Box <em>and</em> your margin simultaneously. There's a
               difference worth ₹2.4L.
             </p>
           </div>
@@ -935,7 +934,7 @@ export default function PriceOptimizationFeaturePage() {
           <div className="bg-white dark:bg-gray-800 rounded-2xl sm:rounded-3xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-xl mb-6 sm:mb-8">
             <div className="bg-gradient-to-r from-green-600 to-emerald-600 px-4 sm:px-6 py-3 sm:py-4">
               <h3 className="text-white font-bold text-base sm:text-lg">
-                Riya's Diwali Pricing — The ₹10 Decision That Changed Everything
+                Riya's Diwali Pricing The ₹10 Decision That Changed Everything
               </h3>
               <p className="text-green-200 text-xs sm:text-sm">Fashion Accessories, Amazon India + Flipkart</p>
             </div>
@@ -951,22 +950,22 @@ export default function PriceOptimizationFeaturePage() {
                 <tbody>
                   {[
                     { scenario: "Product", without: "Ethnic jewellery set at ₹1,499. 4.3 stars, 180+ reviews. Diwali approaching.", with: "Same product, same season" },
-                    { scenario: "Pricing decision", without: "Dropped to ₹1,199 to stay competitive — ₹300/unit margin lost", with: "Insydz showed Buy Box at ₹1,349 was 74% — nearly same as ₹1,199 at 71%" },
+                    { scenario: "Pricing decision", without: "Dropped to ₹1,199 to stay competitive ₹300/unit margin lost", with: "Insydz showed Buy Box at ₹1,349 was 74% nearly same as ₹1,199 at 71%" },
                     { scenario: "What happened next", without: "Competitors matched. Price war to ₹999. Margin fell below cost after Amazon fees.", with: "Held ₹1,349. Margin protected. Competitors raced to the bottom around her." },
-                    { scenario: "Diwali revenue", without: "Below cost at scale — unrecoverable during sale window", with: "₹21.6L Diwali revenue at 22% margin" },
+                    { scenario: "Diwali revenue", without: "Below cost at scale unrecoverable during sale window", with: "₹21.6L Diwali revenue at 22% margin" },
                     { scenario: "The ₹150 difference", without: "N/A", with: "1,600 units × ₹150 = ₹2,40,000 more revenue vs ₹1,199 pricing" },
                     { scenario: "Post-Diwali", without: "Depleted margin, ranking fell after sale event", with: "Ranked #2 in category. Held position for next sale cycle." },
                   ].map((row, i) => (
                     <tr key={i} className="border-t border-gray-200 dark:border-gray-700">
                       <td className="px-3 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">{row.scenario}</td>
-                      <td className="px-3 sm:px-5 py-2.5 sm:py-3 text-center">
-                        <div className="flex items-start justify-center gap-1">
+                      <td className="px-3 sm:px-5 py-2.5 sm:py-3 text-left">
+                        <div className="flex items-start justify-left gap-1">
                           <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 flex-shrink-0 mt-0.5" />
                           <span className="text-xs text-gray-600 dark:text-gray-400 text-left">{row.without}</span>
                         </div>
                       </td>
                       <td className="px-3 sm:px-5 py-2.5 sm:py-3 text-center bg-green-50 dark:bg-green-900/10">
-                        <div className="flex items-start justify-center gap-1">
+                        <div className="flex items-start justify-left gap-1">
                           <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600 flex-shrink-0 mt-0.5" />
                           <span className="text-xs text-gray-900 dark:text-white font-medium text-left">{row.with}</span>
                         </div>
@@ -981,13 +980,13 @@ export default function PriceOptimizationFeaturePage() {
           <div className="bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-400 rounded-2xl sm:rounded-3xl p-5 sm:p-6 lg:p-8 text-center">
             <p className="text-base sm:text-lg lg:text-xl font-bold text-gray-900 dark:text-white mb-2 sm:mb-3">
               Riya pays ₹2,999/month for Insydz. The single Diwali pricing decision returned
-              ₹2,40,000 in recovered revenue — an{" "}
+              ₹2,40,000 in recovered revenue an{" "}
               <span className="text-green-600">80x return</span> on her monthly subscription in one
               sale season.
             </p>
             <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm italic">
               "The difference wasn't the price. It was knowing that ₹1,349 had 74% Buy Box win
-              probability — nearly identical to ₹1,199 — before making the decision."
+              probability nearly identical to ₹1,199 before making the decision."
             </p>
           </div>
         </div>
@@ -1001,7 +1000,7 @@ export default function PriceOptimizationFeaturePage() {
               Manual Pricing vs AI Optimization
             </h2>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-              The honest comparison — every dimension that matters for an Indian marketplace seller.
+              The honest comparison every dimension that matters for an Indian marketplace seller.
             </p>
           </div>
           <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-xl overflow-hidden border-2 border-gray-200 dark:border-gray-700">
@@ -1010,22 +1009,22 @@ export default function PriceOptimizationFeaturePage() {
                 <thead>
                   <tr className="bg-gray-100 dark:bg-gray-800">
                     <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">Aspect</th>
-                    <th className="px-3 sm:px-6 py-3 sm:py-4 text-center text-xs font-bold text-red-600 uppercase">Manual Pricing</th>
-                    <th className="px-3 sm:px-6 py-3 sm:py-4 text-center text-xs font-bold text-green-600 uppercase bg-green-50 dark:bg-green-900/20">AI Optimization</th>
+                    <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-bold text-red-600 uppercase">Manual Pricing</th>
+                    <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-bold text-green-600 uppercase bg-green-50 dark:bg-green-900/20">AI Optimization</th>
                   </tr>
                 </thead>
                 <tbody>
                   {comparisonRows.map((row, i) => (
                     <tr key={i} className="border-t border-gray-200 dark:border-gray-700">
                       <td className="px-3 sm:px-6 py-2.5 sm:py-4 text-xs sm:text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">{row.aspect}</td>
-                      <td className="px-3 sm:px-6 py-2.5 sm:py-4 text-center">
-                        <div className="flex items-start justify-center gap-1.5 sm:gap-2">
+                      <td className="px-3 sm:px-6 py-2.5 sm:py-4 text-left">
+                        <div className="flex items-start justify-left gap-1.5 sm:gap-2">
                           <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 flex-shrink-0 mt-0.5" />
                           <span className="text-xs text-gray-600 dark:text-gray-400 text-left">{row.manual}</span>
                         </div>
                       </td>
-                      <td className="px-3 sm:px-6 py-2.5 sm:py-4 text-center bg-green-50 dark:bg-green-900/10">
-                        <div className="flex items-start justify-center gap-1.5 sm:gap-2">
+                      <td className="px-3 sm:px-6 py-2.5 sm:py-4 text-left bg-green-50 dark:bg-green-900/10">
+                        <div className="flex items-start justify-left gap-1.5 sm:gap-2">
                           <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600 flex-shrink-0 mt-0.5" />
                           <span className="text-xs text-gray-900 dark:text-white font-medium text-left">{row.ai}</span>
                         </div>
@@ -1038,7 +1037,7 @@ export default function PriceOptimizationFeaturePage() {
           </div>
           <div className="text-center mt-6 sm:mt-8">
             <a href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-8 sm:px-10 py-4 sm:py-6 text-base sm:text-lg rounded-full shadow-xl inline-flex items-center justify-center w-full sm:w-auto">
-              💰 Switch to AI Pricing
+              Switch to AI Pricing
               <ArrowRight className="ml-2" />
             </a>
           </div>
@@ -1077,13 +1076,13 @@ export default function PriceOptimizationFeaturePage() {
             <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-4 sm:p-5 mb-5 sm:mb-6 border border-green-200 dark:border-green-700">
               <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">
                 <span className="font-bold text-green-600">Upgrade:</span> Unlock automated price
-                changes, unlimited products, and advanced A/B testing on paid plans —{" "}
+                changes, unlimited products, and advanced A/B testing on paid plans{" "}
                 <a href="/pricing" className="text-green-600 underline">₹1,999/month and ₹2,999/month</a>.
               </p>
             </div>
             <div className="text-center">
               <a href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-8 sm:px-10 lg:px-12 py-4 sm:py-5 lg:py-6 text-base sm:text-lg rounded-full shadow-2xl inline-block w-full sm:w-auto text-center">
-                💰 Start AI Price Optimization Free
+                Start AI Price Optimization Free
               </a>
             </div>
           </div>
@@ -1125,7 +1124,7 @@ export default function PriceOptimizationFeaturePage() {
             <p className="text-gray-300 text-sm sm:text-base lg:text-lg">
               <span className="text-green-400 font-bold">What most ecommerce price optimization tools don't tell you:</span>{" "}
               Buy Box probability isn't linear. Dropping price 10% doesn't increase Buy Box win
-              probability by 10% — it depends on who else is competing, at what price, and what
+              probability by 10% it depends on who else is competing, at what price, and what
               Amazon's current weighting factors are. Insydz models this in real time.
             </p>
           </div>
@@ -1229,7 +1228,7 @@ export default function PriceOptimizationFeaturePage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8 sm:mb-10 lg:mb-12">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900 dark:text-white mb-3 sm:mb-4">
-              Price Optimization — FAQs
+              Price Optimization FAQs
             </h2>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
               Each answer leads with a direct response for Google Featured Snippet and AI Overview extraction.
@@ -1270,11 +1269,11 @@ export default function PriceOptimizationFeaturePage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
             {[
               { title: "Competitor Price Tracking", desc: "Monitor competitor price movements in real time", icon: <TrendingDown />, color: "from-orange-500 to-red-500", route: "/features/competitor-price-tracking-feature" },
-              { title: "Review Analytics", desc: "AI review clustering — Hindi + English", icon: <MessageCircle />, color: "from-purple-500 to-pink-500", route: "/features/review-analytics-feature" },
+              { title: "Review Analytics", desc: "AI review clustering Hindi + English", icon: <MessageCircle />, color: "from-purple-500 to-pink-500", route: "/features/review-analytics-feature" },
               { title: "Keyword & Rank Tracking", desc: "Track organic position and keyword movement", icon: <Search />, color: "from-blue-500 to-cyan-500", route: "/features/keyword-rank-tracking-feature" },
               { title: "Product Research", desc: "Find profitable products before launch", icon: <Target />, color: "from-indigo-500 to-purple-500", route: "/features/product-research-feature" },
               { title: "AI Recommendations", desc: "Unified AI-driven growth suggestions", icon: <Sparkles />, color: "from-green-500 to-emerald-500", route: "/features/ai-recommendations-feature" },
-              { title: "WhatsApp Alerts", desc: "Real-time alerts to WhatsApp — not email", icon: <Bell />, color: "from-emerald-500 to-green-500", route: "/features/whatsapp-alerts-feature" },
+              { title: "WhatsApp Alerts", desc: "Real-time alerts to WhatsApp not email", icon: <Bell />, color: "from-emerald-500 to-green-500", route: "/features/whatsapp-alerts-feature" },
             ].map((feature, i) => (
                <Link
                 key={i}
@@ -1308,19 +1307,31 @@ export default function PriceOptimizationFeaturePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 lg:gap-6 mb-8 sm:mb-10">
              {[
-                { icp: "New Seller", headline: "Start free — AI pricing for your first products", cta: "Start Free →", href: "/login", style: "from-green-600 to-emerald-600" },
+                { icp: "New Seller", headline: "Start free AI pricing for your first products", cta: "Start Free →", href: "/login", style: "from-green-600 to-emerald-600" },
                 { icp: "Growing Seller", headline: "Protect margins while scaling to ₹10L+/month", cta: "Try Growth Plan →", href: "/pricing", style: "from-emerald-600 to-green-700" },
                 { icp: "Agency", headline: "AI pricing for every account you manage", cta: "Book Demo →", href: "/login", style: "from-teal-600 to-green-600" },
               ].map((card, i) => (
-                <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl p-5 sm:p-6 text-center hover:shadow-xl transition-all">
-                  <div className={`inline-flex text-xs font-bold text-white bg-gradient-to-r ${card.style} px-3 py-1 rounded-full mb-3 sm:mb-4`}>
-                    {card.icp}
-                  </div>
-                  <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 sm:mb-5 leading-relaxed">{card.headline}</p>
-                  <a href={card.href} className={`w-full bg-gradient-to-r ${card.style} text-white font-bold rounded-full text-sm sm:text-base py-2 sm:py-2.5 block text-center`}>
-                    {card.cta}
-                  </a>
-                </div>
+  <div
+    key={i}
+    className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl p-5 sm:p-6 text-center hover:shadow-xl transition-all flex flex-col h-full"
+  >
+    <div
+      className={`inline-flex text-xs font-bold text-white bg-gradient-to-r ${card.style} px-3 py-1 rounded-full mb-3 sm:mb-4 self-center`}
+    >
+      {card.icp}
+    </div>
+
+    <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 sm:mb-5 leading-relaxed flex-grow">
+      {card.headline}
+    </p>
+
+    <a
+      href={card.href}
+      className={`w-full bg-gradient-to-r ${card.style} text-white font-bold rounded-full text-sm sm:text-base py-2 sm:py-2.5 block text-center mt-auto`}
+    >
+      {card.cta}
+    </a>
+  </div>
               ))}
           </div>
 
@@ -1335,7 +1346,7 @@ export default function PriceOptimizationFeaturePage() {
 
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
              <a href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-8 sm:px-10 lg:px-12 py-4 sm:py-5 lg:py-6 text-base sm:text-lg rounded-full shadow-2xl inline-flex items-center justify-center w-full sm:w-auto">
-              💰 Start AI Pricing Free
+              Start AI Pricing Free
               <ArrowRight className="ml-2" />
             </a>
             <a href="/features" className="border-2 border-green-600 text-green-700 dark:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 font-semibold px-8 sm:px-10 lg:px-12 py-4 sm:py-5 lg:py-6 text-base sm:text-lg rounded-full inline-block text-center w-full sm:w-auto">
@@ -1348,7 +1359,7 @@ export default function PriceOptimizationFeaturePage() {
       {/* Sticky Mobile CTA — shown only on mobile/tablet, with bottom padding for safe area */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-green-300 dark:border-green-700 p-3 sm:p-4 shadow-2xl z-40 pb-safe">
         <a href="/login" className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-3 sm:py-4 rounded-full shadow-xl text-sm sm:text-base flex items-center justify-center">
-          💰 Start AI Pricing Free
+          Start AI Pricing Free
         </a>
       </div>
 
@@ -1466,7 +1477,7 @@ export default function PriceOptimizationFeaturePage() {
           <div className="border-t border-white/10 pt-6 sm:pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
               <p className="text-gray-500 text-xs sm:text-sm text-center sm:text-left">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

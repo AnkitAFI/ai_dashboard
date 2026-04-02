@@ -179,7 +179,7 @@ export default function InsydzVsJungleScoutPage() {
 
   // Updated comparison data from DOCX
   const comparisonFeatures = [
-    { area: 'Marketplace Coverage', insydz: 'Amazon India + Flipkart', competitor: 'Amazon.com only — no Amazon.in, no Flipkart', insydzIcon: <Globe className="w-5 h-5 text-green-600" />, competitorIcon: <Package className="w-5 h-5 text-gray-500" /> },
+    { area: 'Marketplace Coverage', insydz: 'Amazon India + Flipkart', competitor: 'Amazon.com only no Amazon.in, no Flipkart', insydzIcon: <Globe className="w-5 h-5 text-green-600" />, competitorIcon: <Package className="w-5 h-5 text-gray-500" /> },
     { area: 'Pricing', insydz: '₹0 / ₹1,999 / ₹2,999/month in INR', competitor: '$49–$129/month (~₹4,100–₹10,800). Billed in USD.', insydzIcon: <IndianRupee className="w-5 h-5 text-green-600" />, competitorIcon: <DollarSign className="w-5 h-5 text-gray-500" /> },
     { area: 'Free Plan', insydz: 'Free forever — 25 products, no credit card', competitor: 'No free plan. 7-day money-back only. Card required upfront.', insydzIcon: <CheckCircle2 className="w-5 h-5 text-green-600" />, competitorIcon: <AlertCircle className="w-5 h-5 text-gray-500" /> },
     { area: 'Alert Channel', insydz: 'WhatsApp + Dashboard', competitor: 'Email + Dashboard only', insydzIcon: <Smartphone className="w-5 h-5 text-green-600" />, competitorIcon: <Mail className="w-5 h-5 text-gray-500" /> },
@@ -187,19 +187,19 @@ export default function InsydzVsJungleScoutPage() {
     { area: 'Keyword Research', insydz: 'Amazon.in + Flipkart data in Indian volumes', competitor: 'Amazon.com data — not calibrated for Indian search volumes', insydzIcon: <Search className="w-5 h-5 text-green-600" />, competitorIcon: <BarChart3 className="w-5 h-5 text-gray-500" /> },
     { area: 'Competitor Price Tracking', insydz: 'Real-time, WhatsApp alert, AI reprice in INR', competitor: 'Price tracking on Amazon.com only', insydzIcon: <TrendingDown className="w-5 h-5 text-green-600" />, competitorIcon: <AlertCircle className="w-5 h-5 text-gray-500" /> },
     { area: 'Review Analysis', insydz: 'AI clustering in Hindi & English', competitor: 'English only', insydzIcon: <MessageCircle className="w-5 h-5 text-green-600" />, competitorIcon: <Globe className="w-5 h-5 text-gray-500" /> },
-    { area: 'Festive Demand Intelligence', insydz: 'Diwali, BBD, GIF, Republic Day forecasting', competitor: 'Not available — built for US market', insydzIcon: <Flame className="w-5 h-5 text-green-600" />, competitorIcon: <AlertCircle className="w-5 h-5 text-gray-500" /> },
-    { area: 'Data Accuracy for India', insydz: 'Built from Amazon.in + Flipkart data directly', competitor: 'US-calibrated data — directional but not India-accurate', insydzIcon: <CheckCircle2 className="w-5 h-5 text-green-600" />, competitorIcon: <AlertCircle className="w-5 h-5 text-orange-500" /> },
-    { area: 'Ease of Use', insydz: 'Action-driven — every alert includes next step', competitor: 'Data-heavy, requires learning curve to act on insights', insydzIcon: <Zap className="w-5 h-5 text-green-600" />, competitorIcon: <BarChart3 className="w-5 h-5 text-gray-500" /> },
-    { area: 'Product Research Depth', insydz: 'Focused — 5 Indian marketplace use cases', competitor: 'Deep Amazon.com product research — AccuSales, Opportunity Score', insydzIcon: <AlertCircle className="w-5 h-5 text-gray-400" />, competitorIcon: <CheckCircle2 className="w-5 h-5 text-green-600" /> },
+    { area: 'Festive Demand Intelligence', insydz: 'Diwali, BBD, GIF, Republic Day forecasting', competitor: 'Not available built for US market', insydzIcon: <Flame className="w-5 h-5 text-green-600" />, competitorIcon: <AlertCircle className="w-5 h-5 text-gray-500" /> },
+    { area: 'Data Accuracy for India', insydz: 'Built from Amazon.in + Flipkart data directly', competitor: 'US-calibrated data directional but not India-accurate', insydzIcon: <CheckCircle2 className="w-5 h-5 text-green-600" />, competitorIcon: <AlertCircle className="w-5 h-5 text-orange-500" /> },
+    { area: 'Ease of Use', insydz: 'Action-driven every alert includes next step', competitor: 'Data-heavy, requires learning curve to act on insights', insydzIcon: <Zap className="w-5 h-5 text-green-600" />, competitorIcon: <BarChart3 className="w-5 h-5 text-gray-500" /> },
+    { area: 'Product Research Depth', insydz: 'Focused 5 Indian marketplace use cases', competitor: 'Deep Amazon.com product research AccuSales, Opportunity Score', insydzIcon: <AlertCircle className="w-5 h-5 text-gray-400" />, competitorIcon: <CheckCircle2 className="w-5 h-5 text-green-600" /> },
     { area: 'Supplier Database', insydz: 'Not available', competitor: 'Supplier database for global sourcing (US-focused)', insydzIcon: <AlertCircle className="w-5 h-5 text-gray-400" />, competitorIcon: <CheckCircle2 className="w-5 h-5 text-green-600" /> },
-    { area: 'Amazon PPC Tools', insydz: 'Not available (focus: organic intelligence)', competitor: 'Cobalt — keyword PPC tracking for Amazon Ads', insydzIcon: <AlertCircle className="w-5 h-5 text-gray-400" />, competitorIcon: <CheckCircle2 className="w-5 h-5 text-green-600" /> },
+    { area: 'Amazon PPC Tools', insydz: 'Not available (focus: organic intelligence)', competitor: 'Cobalt keyword PPC tracking for Amazon Ads', insydzIcon: <AlertCircle className="w-5 h-5 text-gray-400" />, competitorIcon: <CheckCircle2 className="w-5 h-5 text-green-600" /> },
   ];
 
   const faqs = [
     {
       id: 'faq-1',
       question: 'Is Insydz a replacement for Jungle Scout?',
-      answer: "For Indian sellers on Amazon India, Flipkart — yes, Insydz is a direct and more capable replacement. It covers Flipkart data, WhatsApp alerts, Hindi review analysis, INR pricing, and Indian festive demand intelligence that Jungle Scout cannot provide. If you also sell on Amazon.com and need deep US-market tools (AccuSales, supplier database), Jungle Scout may be worth evaluating separately for that use case."
+      answer: "For Indian sellers on Amazon India, Flipkart yes, Insydz is a direct and more capable replacement. It covers Flipkart data, WhatsApp alerts, Hindi review analysis, INR pricing, and Indian festive demand intelligence that Jungle Scout cannot provide. If you also sell on Amazon.com and need deep US-market tools (AccuSales, supplier database), Jungle Scout may be worth evaluating separately for that use case."
     },
     {
       id: 'faq-2',
@@ -209,32 +209,32 @@ export default function InsydzVsJungleScoutPage() {
     {
       id: 'faq-3',
       question: 'Can I use Insydz and Jungle Scout together?',
-      answer: "Yes — some sellers with cross-border operations do exactly this. They use Jungle Scout for Amazon.com product research and global supplier sourcing, and Insydz for Indian marketplace intelligence: Flipkart tracking, Hindi review analysis, WhatsApp alerts, and festive demand forecasting. If India and USA are both active markets, this combination covers both without compromise."
+      answer: "Yes some sellers with cross-border operations do exactly this. They use Jungle Scout for Amazon.com product research and global supplier sourcing, and Insydz for Indian marketplace intelligence: Flipkart tracking, Hindi review analysis, WhatsApp alerts, and festive demand forecasting. If India and USA are both active markets, this combination covers both without compromise."
     },
     {
       id: 'faq-4',
       question: 'How accurate is Jungle Scout data for Amazon India?',
-      answer: "Jungle Scout's data is calibrated for Amazon.com. When applied to Amazon India, keyword volume estimates are off because Indian search behaviour differs significantly from US patterns. Demand projections don't account for Indian festive spikes. Revenue estimates use US marketplace fee structures, not Amazon.in fees. Directional signals can sometimes be useful — but for precise inventory, repricing, and launch decisions, Amazon.in-native data from Insydz is materially more accurate."
+      answer: "Jungle Scout's data is calibrated for Amazon.com. When applied to Amazon India, keyword volume estimates are off because Indian search behaviour differs significantly from US patterns. Demand projections don't account for Indian festive spikes. Revenue estimates use US marketplace fee structures, not Amazon.in fees. Directional signals can sometimes be useful but for precise inventory, repricing, and launch decisions, Amazon.in-native data from Insydz is materially more accurate."
     },
     {
       id: 'faq-5',
       question: 'What is the cheapest Jungle Scout alternative for Indian sellers?',
-      answer: "Insydz is the most affordable Jungle Scout alternative built specifically for Indian sellers — with a permanent free plan (no credit card, no expiry) and paid plans from ₹1,999/month. Other alternatives include SellerApp (covers Amazon India, English-only, no Flipkart) and Helium 10 (USD pricing, Amazon.com focused). For sellers whose primary market is India, Insydz is the only purpose-built option of the three."
+      answer: "Insydz is the most affordable Jungle Scout alternative built specifically for Indian sellers with a permanent free plan (no credit card, no expiry) and paid plans from ₹1,999/month. Other alternatives include SellerApp (covers Amazon India, English-only, no Flipkart) and Helium 10 (USD pricing, Amazon.com focused). For sellers whose primary market is India, Insydz is the only purpose-built option of the three."
     },
     {
       id: 'faq-6',
       question: 'Does Insydz work for Flipkart sellers?',
-      answer: "Yes — this is one of Insydz's most significant advantages over Jungle Scout. Insydz provides competitor price tracking, keyword rank monitoring, review sentiment analysis, and inventory management for Flipkart sellers. Jungle Scout has no Flipkart support whatsoever. If Flipkart is part of your business, Insydz is the only option between these two tools."
+      answer: "Yes. This is one of Insydz's most significant advantages over Jungle Scout. Insydz provides competitor price tracking, keyword rank monitoring, review sentiment analysis, and inventory management for Flipkart sellers. Jungle Scout has no Flipkart support whatsoever. If Flipkart is part of your business, Insydz is the only option between these two tools."
     },
     {
       id: 'faq-7',
       question: 'Is there a free plan for Insydz?',
-      answer: "Yes. Insydz has a permanent free plan — not a trial. It covers up to 25 products with competitor price monitoring, keyword rank tracking, review analysis, and inventory alerts. No credit card required, no expiry. Jungle Scout has no free plan — only a 7-day money-back period after you enter credit card details."
+      answer: "Yes. Insydz has a permanent free plan not a trial. It covers up to 25 products with competitor price monitoring, keyword rank tracking, review analysis, and inventory alerts. No credit card required, no expiry. Jungle Scout has no free plan only a 7-day money-back period after you enter credit card details."
     },
     {
       id: 'faq-8',
       question: 'What are the best Jungle Scout alternatives for India in 2025?',
-      answer: "The top Jungle Scout alternatives for Indian sellers are: (1) Insydz — most India-specific, covers Amazon India + Flipkart, WhatsApp alerts, Hindi reviews, INR pricing, free plan. (2) SellerApp — covers Amazon India, English-only, no Flipkart. (3) Helium 10 — powerful but USD pricing, Amazon.com focused, no Flipkart support. For sellers whose primary market is India, Insydz is the only purpose-built option of the three."
+      answer: "The top Jungle Scout alternatives for Indian sellers are: (1) Insydz most India-specific, covers Amazon India + Flipkart, WhatsApp alerts, Hindi reviews, INR pricing, free plan. (2) SellerApp covers Amazon India, English-only, no Flipkart. (3) Helium 10 powerful but USD pricing, Amazon.com focused, no Flipkart support. For sellers whose primary market is India, Insydz is the only purpose-built option of the three."
     },
   ];
 
@@ -644,12 +644,12 @@ export default function InsydzVsJungleScoutPage() {
             <span className="text-sm font-medium text-blue-700">🇮🇳 Built for Indian Sellers</span>
           </div>
           <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white mb-6">
-            Insydz vs Jungle Scout —
+            Insydz vs Jungle Scout
             <br />
             <span className="bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">Which Tool Fits Indian Sellers Better?</span>
           </h1>
           <p className="text-xl text-gray-700 dark:text-gray-300 mb-8 max-w-4xl mx-auto">
-            Both tools help sellers grow on Amazon. The difference is who they're built for. Compare pricing, marketplaces, alerts, and usability — then decide confidently.
+            Both tools help sellers grow on Amazon. The difference is who they're built for. Compare pricing, marketplaces, alerts, and usability then decide confidently.
           </p>
 
           {/* Verdict Strip */}
@@ -658,8 +658,8 @@ export default function InsydzVsJungleScoutPage() {
               <thead>
                 <tr>
                   <th className="text-left text-gray-400 font-medium pb-3 pr-6">Metric</th>
-                  <th className="text-center text-blue-400 font-bold pb-3 pr-6">Insydz</th>
-                  <th className="text-center text-gray-400 font-medium pb-3">Jungle Scout</th>
+                  <th className="text-left text-blue-400 font-bold pb-3 pr-6">Insydz</th>
+                  <th className="text-left text-gray-400 font-medium pb-3">Jungle Scout</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
@@ -672,8 +672,8 @@ export default function InsydzVsJungleScoutPage() {
                 ].map((row, i) => (
                   <tr key={i}>
                     <td className="text-gray-400 py-2.5 pr-6 text-left">{row.label}</td>
-                    <td className="text-green-400 font-semibold py-2.5 pr-6 text-center">{row.insydz}</td>
-                    <td className="text-gray-500 py-2.5 text-center">{row.competitor}</td>
+                    <td className="text-green-400 font-semibold py-2.5 pr-6 text-left">{row.insydz}</td>
+                    <td className="text-gray-500 py-2.5 text-left">{row.competitor}</td>
                   </tr>
                 ))}
               </tbody>
@@ -682,7 +682,7 @@ export default function InsydzVsJungleScoutPage() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold px-8 py-6 rounded-full shadow-2xl group">
-              🚀 Start Free with Insydz <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+              Start Free with Insydz <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button
               onClick={() => document.getElementById('comparison-table')?.scrollIntoView({ behavior: 'smooth' })}
@@ -703,31 +703,31 @@ export default function InsydzVsJungleScoutPage() {
             Why Indian Sellers Struggle with Jungle Scout
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 text-center mb-14 max-w-3xl mx-auto">
-            Jungle Scout is a serious tool — for Amazon.com sellers in the US. Indian sellers who try it for Amazon India or Flipkart hit the same four walls within weeks.
+            Jungle Scout is a serious tool for Amazon.com sellers in the US. Indian sellers who try it for Amazon India or Flipkart hit the same four walls within weeks.
           </p>
           <div className="grid md:grid-cols-2 gap-8">
             {[
               {
                 number: '01',
                 title: 'No free plan. Just a 7-day window.',
-                desc: "Jungle Scout's entry plan is $49/month (~₹4,100). There's no permanent free tier — just a 7-day money-back window. For a new Indian seller who needs weeks to validate their niche before committing, that's not a real trial.",
+                desc: "Jungle Scout's entry plan is $49/month (~₹4,100). There's no permanent free tier just a 7-day money-back window. For a new Indian seller who needs weeks to validate their niche before committing, that's not a real trial.",
                 color: 'from-red-500 to-orange-500',
               },
               {
                 number: '02',
                 title: "Jungle Scout doesn't know Flipkart exists",
-                desc: "Jungle Scout is built for Amazon.com. It has zero data on Flipkart, or Indian marketplace search patterns. If Flipkart is part of your business, Jungle Scout can't help — regardless of which plan you're on.",
+                desc: "Jungle Scout is built for Amazon.com. It has zero data on Flipkart, or Indian marketplace search patterns. If Flipkart is part of your business, Jungle Scout can't help regardless of which plan you're on.",
                 color: 'from-orange-500 to-yellow-500',
               },
               {
                 number: '03',
                 title: 'Email alerts in a WhatsApp-first world',
-                desc: "Jungle Scout sends alerts by email. Most Indian sellers don't monitor business email on mobile the way they monitor WhatsApp. A competitor repricing your product at 11pm during sale season? You'll see the email in the morning — too late.",
+                desc: "Jungle Scout sends alerts by email. Most Indian sellers don't monitor business email on mobile the way they monitor WhatsApp. A competitor repricing your product at 11pm during sale season? You'll see the email in the morning too late.",
                 color: 'from-yellow-500 to-green-500',
               },
               {
                 number: '04',
-                title: 'Jungle Scout data accuracy for India — real talk',
+                title: 'Jungle Scout data accuracy for India real talk',
                 desc: "Jungle Scout's demand estimates, keyword volumes, and revenue projections are calibrated for Amazon.com. When applied to Amazon India, the data is directionally useful but not accurate for Indian search behaviour, INR margin calculations, or festive season demand spikes.",
                 color: 'from-blue-500 to-cyan-500',
               },
@@ -747,7 +747,7 @@ export default function InsydzVsJungleScoutPage() {
           </div>
           <div className="mt-10 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-6 max-w-3xl mx-auto text-center">
             <p className="text-blue-800 dark:text-blue-300 text-sm leading-relaxed">
-              <strong>A fair note:</strong> Jungle Scout is a well-built product for Amazon.com sellers. If your primary business is Amazon USA, it's worth evaluating. This comparison is specifically for Indian sellers on Amazon India, Flipkart — where the data gap matters most.
+              <strong>A fair note:</strong> Jungle Scout is a well-built product for Amazon.com sellers. If your primary business is Amazon USA, it's worth evaluating. This comparison is specifically for Indian sellers on Amazon India, Flipkart where the data gap matters most.
             </p>
           </div>
         </div>
@@ -757,10 +757,10 @@ export default function InsydzVsJungleScoutPage() {
       <section id="comparison-table" className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-4xl font-black mb-4 text-center text-gray-900 dark:text-white">
-            Insydz vs Jungle Scout — Every Dimension That Matters
+            Insydz vs Jungle Scout Every Dimension That Matters
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 text-center mb-12 max-w-3xl mx-auto">
-            A complete comparison for Indian marketplace sellers — including areas where Jungle Scout has a genuine edge too.
+            A complete comparison for Indian marketplace sellers including areas where Jungle Scout has a genuine edge too.
           </p>
           <div className="bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-2xl border-2 border-gray-200 dark:border-gray-700">
             <table className="w-full">
@@ -799,7 +799,7 @@ export default function InsydzVsJungleScoutPage() {
       <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-4xl font-black mb-4 text-center text-gray-900 dark:text-white">
-            Insydz vs Jungle Scout Pricing — Paying in Dollars When You Sell in Rupees
+            Insydz vs Jungle Scout Pricing Paying in Dollars When You Sell in Rupees
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 text-center mb-14 max-w-3xl mx-auto">
             Every month, Jungle Scout's bill changes based on the USD/INR exchange rate. Insydz bills in INR.
@@ -836,7 +836,6 @@ export default function InsydzVsJungleScoutPage() {
             {/* Jungle Scout Pricing */}
             <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-8 border-2 border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-3 mb-6">
-                <span className="text-3xl">🌐</span>
                 <h3 className="text-2xl font-black text-gray-900 dark:text-white">Jungle Scout Pricing (India Reality)</h3>
               </div>
               <ul className="space-y-4">
@@ -872,7 +871,7 @@ export default function InsydzVsJungleScoutPage() {
           <div className="bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl p-8 text-white text-center">
             <h3 className="text-2xl font-black mb-3">12-Month Real Cost Comparison</h3>
             <p className="text-white/90 text-lg max-w-3xl mx-auto">
-              A seller on Jungle Scout Suite pays ~<strong>₹69,600/year</strong>. Insydz Premium is <strong>₹35,988/year</strong> — covering Amazon India, Flipkart, with WhatsApp alerts and Hindi review analysis.
+              A seller on Jungle Scout Suite pays ~<strong>₹69,600/year</strong>. Insydz Premium is <strong>₹35,988/year</strong> covering Amazon India, Flipkart, with WhatsApp alerts and Hindi review analysis.
             </p>
             <p className="text-white font-black text-3xl mt-4">That's ₹33,612 per year back into inventory or ads.</p>
           </div>
@@ -886,11 +885,11 @@ export default function InsydzVsJungleScoutPage() {
             What Most Tools Don't Tell You About India-Specific Risk
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 text-center mb-14 max-w-3xl mx-auto">
-            The biggest cost of using the wrong tool isn't the subscription fee. It's the revenue you miss because your tool didn't warn you in time — with Indian data, in the right channel.
+            The biggest cost of using the wrong tool isn't the subscription fee. It's the revenue you miss because your tool didn't warn you in time with Indian data, in the right channel.
           </p>
           <div className="bg-white dark:bg-gray-950 rounded-3xl p-8 shadow-2xl border-2 border-gray-200 dark:border-gray-700 max-w-4xl mx-auto">
             <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-6">
-              Meenakshi's Diwali Stock Disaster — Kitchen Appliances Category, Amazon India
+              Meenakshi's Diwali Stock Disaster Kitchen Appliances Category, Amazon India
             </h3>
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
@@ -898,7 +897,7 @@ export default function InsydzVsJungleScoutPage() {
                   {[
                     { label: 'The situation', value: 'Selling mixer-grinder, ₹2,499 price point, 4.1★ rating, strong pre-Diwali demand' },
                     { label: 'What happened', value: "Stocked 200 units based on last year. Sold out in 4 days. Listed as 'Currently Unavailable' for 9 days during peak Diwali week." },
-                    { label: 'Why it happened', value: "Jungle Scout demand estimate was based on Amazon.com data — didn't account for 4× Indian festive demand spike. No WhatsApp alert. Email arrived 2 days after stockout." },
+                    { label: 'Why it happened', value: "Jungle Scout demand estimate was based on Amazon.com data didn't account for 4× Indian festive demand spike. No WhatsApp alert. Email arrived 2 days after stockout." },
                     { label: 'The cost', value: '₹3.2L missed revenue. Page 1 ranking dropped from #6 → #29. Took 8 weeks to recover.' },
                     { label: 'With Insydz (same scenario)', value: '14-day festive demand alert with 4× multiplier applied. Reordered 600 units. Zero stockout days.', highlight: true },
                     { label: 'Revenue captured', value: '₹4.8L Diwali revenue. Ranking held at #5 through festive week.', highlight: true },
@@ -912,7 +911,7 @@ export default function InsydzVsJungleScoutPage() {
               </table>
             </div>
             <p className="mt-6 text-gray-500 dark:text-gray-400 italic text-sm">
-              The problem wasn't Meenakshi's product or her instincts. The problem was that her tool's demand data was built for Seattle, not Surat — and the alert arrived in her email, not her WhatsApp.
+              The problem wasn't Meenakshi's product or her instincts. The problem was that her tool's demand data was built for Seattle, not Surat and the alert arrived in her email, not her WhatsApp.
             </p>
           </div>
         </div>
@@ -933,12 +932,12 @@ export default function InsydzVsJungleScoutPage() {
               <ul className="space-y-3">
                 {[
                   'Sell on Flipkart alongside Amazon India',
-                  'Want WhatsApp alerts — not email digests',
+                  'Want WhatsApp alerts not email digests',
                   'Need pricing in INR with no currency risk',
                   'Have customers who review in Hindi or Hinglish',
                   'Need festive demand forecasting (Diwali, BBD, Great Indian Festival)',
                   'Are a new or growing seller who needs value before scale',
-                  'Want action-driven insights — not raw data to interpret',
+                  'Want action-driven insights not raw data to interpret',
                   'Run a D2C brand on Indian marketplaces',
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
@@ -949,7 +948,7 @@ export default function InsydzVsJungleScoutPage() {
               </ul>
             </div>
             <div className="bg-gray-50 dark:bg-gray-900 rounded-3xl p-8 border-2 border-gray-200 dark:border-gray-700">
-              <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-6">🌐 Choose Jungle Scout if you...</h3>
+              <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-6">Choose Jungle Scout if you...</h3>
               <ul className="space-y-3">
                 {[
                   'Sell primarily on Amazon.com (US marketplace)',
@@ -980,7 +979,7 @@ export default function InsydzVsJungleScoutPage() {
             The Alert That Actually Gets Acted On
           </h2>
           <p className="text-xl text-gray-600 dark:text-gray-400 text-center mb-14 max-w-3xl mx-auto">
-            Jungle Scout sends alerts to email. Insydz sends them to WhatsApp — with the exact action needed, the moment it matters.
+            Jungle Scout sends alerts to email. Insydz sends them to WhatsApp with the exact action needed, the moment it matters.
           </p>
           <div className="grid md:grid-cols-3 gap-8">
             {[
@@ -988,7 +987,7 @@ export default function InsydzVsJungleScoutPage() {
                 type: 'Competitor Price Drop',
                 icon: <IndianRupee className="w-6 h-6" />,
                 color: 'from-green-500 to-emerald-500',
-                message: 'Competitor cut price on Mixer Grinder (1000W). Their new price: ₹2,199 (was ₹2,499). Your price: ₹2,499. AI suggested response: ₹2,299 — stays above ₹2,050 margin floor.',
+                message: 'Competitor cut price on Mixer Grinder (1000W). Their new price: ₹2,199 (was ₹2,499). Your price: ₹2,499. AI suggested response: ₹2,299 stays above ₹2,050 margin floor.',
               },
               {
                 type: 'Festive Demand Warning',
@@ -1023,7 +1022,7 @@ export default function InsydzVsJungleScoutPage() {
       <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-4xl font-black mb-12 text-center text-gray-900 dark:text-white">
-            FAQs — Insydz vs Jungle Scout
+            FAQs Insydz vs Jungle Scout
           </h2>
           <div className="space-y-4">
             {faqs.map((faq) => (
@@ -1048,7 +1047,7 @@ export default function InsydzVsJungleScoutPage() {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-black mb-4 text-white">Compare Clearly. Choose What Fits.</h2>
           <p className="text-white/90 text-xl mb-10 max-w-2xl mx-auto">
-            Start with the free plan — no credit card, no 7-day expiry. See Insydz vs Jungle Scout on your own products, with your own data, before spending a rupee.
+            Start with the free plan no credit card, no 7-day expiry. See Insydz vs Jungle Scout on your own products, with your own data, before spending a rupee.
           </p>
           <div className="grid sm:grid-cols-3 gap-6 mb-10">
             {[
@@ -1070,7 +1069,7 @@ export default function InsydzVsJungleScoutPage() {
             ))}
           </div>
           <Button onClick={handleGetStarted} size="lg" className="bg-white text-blue-700 font-bold px-12 py-6 rounded-full shadow-2xl group">
-            🚀 Start Free with Insydz <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+            Start Free with Insydz <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
         </div>
       </section>
@@ -1199,7 +1198,7 @@ export default function InsydzVsJungleScoutPage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

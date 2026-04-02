@@ -905,10 +905,10 @@ export default function AmazonSellersPage() {
                 <p className="font-bold text-gray-700 dark:text-gray-300 text-sm">Feature</p>
               </div>
               <div className="bg-orange-500 px-6 py-4 border-b-2 border-orange-400">
-                <p className="font-bold text-white text-sm text-center">✓ Insydz</p>
+                <p className="font-bold text-white text-sm text-left">✓ Insydz</p>
               </div>
               <div className="bg-gray-100 dark:bg-gray-800 px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700">
-                <p className="font-bold text-gray-500 text-sm text-center">Helium 10 / Jungle Scout</p>
+                <p className="font-bold text-gray-500 text-sm text-left">Helium 10 / Jungle Scout</p>
               </div>
 
               {comparisonRows.map((row, i) => (
@@ -916,10 +916,10 @@ export default function AmazonSellersPage() {
                   <div key={`f-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}>
                     <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">{row.feature}</p>
                   </div>
-                  <div key={`i-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 text-center ${i % 2 === 0 ? "bg-orange-50 dark:bg-orange-900/10" : "bg-orange-50/50 dark:bg-orange-900/10"}`}>
+                  <div key={`i-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 text-left ${i % 2 === 0 ? "bg-orange-50 dark:bg-orange-900/10" : "bg-orange-50/50 dark:bg-orange-900/10"}`}>
                     <p className="text-sm text-orange-700 dark:text-orange-400 font-semibold">{row.insydz}</p>
                   </div>
-                  <div key={`o-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 text-center ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}>
+                  <div key={`o-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 text-left ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}>
                     <p className="text-sm text-gray-500">{row.others}</p>
                   </div>
                 </>
@@ -1359,7 +1359,7 @@ export default function AmazonSellersPage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

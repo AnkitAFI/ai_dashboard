@@ -223,8 +223,8 @@ export default function EcommerceAgenciesPage() {
     {
       icon: <Layout className="w-10 h-10" />,
       title: "Unified Multi-Client Dashboard",
-      desc: "Manage all client accounts from one central command hub — no logging in and out, no switching tabs, no missed alerts. See every client's GMV, competitor movements, keyword rankings, and review trends at a glance.",
-      scenario: "A Delhi-based agency managing 15 Amazon sellers was spending 3 hours every Monday pulling weekly reports. With Insydz's unified dashboard, their account manager now reviews all 15 clients in 25 minutes — and spends the rest of Monday building strategy.",
+      desc: "Manage all client accounts from one central command hub no logging in and out, no switching tabs, no missed alerts. See every client's GMV, competitor movements, keyword rankings, and review trends at a glance.",
+      scenario: "A Delhi-based agency managing 15 Amazon sellers was spending 3 hours every Monday pulling weekly reports. With Insydz's unified dashboard, their account manager now reviews all 15 clients in 25 minutes and spends the rest of Monday building strategy.",
       bullets: [
         "Bird's-eye view of all 12+ client accounts simultaneously",
         "Client-level performance alerts delivered in one feed",
@@ -237,13 +237,13 @@ export default function EcommerceAgenciesPage() {
     {
       icon: <FileText className="w-10 h-10" />,
       title: "White-Label Client Reporting",
-      desc: "Send clients professional, data-rich monthly reports with your agency's logo — auto-generated in one click. No more weekends spent stitching screenshots into PowerPoint decks.",
+      desc: "Send clients professional, data-rich monthly reports with your agency's logo auto-generated in one click. No more weekends spent stitching screenshots into PowerPoint decks.",
       scenario: "An agency in Bengaluru was losing clients after 3 months because clients couldn't 'see the work.' After switching to Insydz white-label reports, their average client tenure went from 4 months to 14 months. The reports did the retention work.",
       bullets: [
         "Auto-generated monthly and weekly branded reports",
         "Includes competitor movements, ranking changes, review summaries",
-        "Customisable per client — show only what's relevant",
-        "One-click share via email or PDF — 10x faster than manual",
+        "Customisable per client show only what's relevant",
+        "One-click share via email or PDF 10x faster than manual",
       ],
       color: "from-purple-500 to-pink-500",
       link: "/features/white-label-reporting",
@@ -251,7 +251,7 @@ export default function EcommerceAgenciesPage() {
     {
       icon: <Workflow className="w-10 h-10" />,
       title: "Automated Client Intelligence Workflows",
-      desc: "Set it once, monitor across all accounts. Insydz automates the intelligence gathering your team previously did by hand — across every client account, every day, automatically.",
+      desc: "Set it once, monitor across all accounts. Insydz automates the intelligence gathering your team previously did by hand across every client account, every day, automatically.",
       scenario: "A Mumbai agency cut their analyst headcount requirement from 3 to 1 after deploying Insydz. The same team now manages 22 clients instead of 8 — without sacrificing report quality or response time for any account.",
       bullets: [
         "Automated competitor price alerts per client (WhatsApp + email)",
@@ -266,7 +266,7 @@ export default function EcommerceAgenciesPage() {
       icon: <Users className="w-10 h-10" />,
       title: "Team Collaboration & Access Controls",
       desc: "Assign team members to specific clients with role-based permissions. Your account managers see only their clients. Senior staff see everything.",
-      scenario: "A Hyderabad agency onboarded 6 new clients in one quarter without hiring. Using Insydz's team controls, they redistributed client ownership across existing analysts — each with their own filtered dashboard view — and maintained quality across all accounts.",
+      scenario: "A Hyderabad agency onboarded 6 new clients in one quarter without hiring. Using Insydz's team controls, they redistributed client ownership across existing analysts each with their own filtered dashboard view and maintained quality across all accounts.",
       bullets: [
         "Role-based access: Admin, Manager, Analyst, Viewer",
         "Assign specific clients to specific team members",
@@ -666,7 +666,7 @@ export default function EcommerceAgenciesPage() {
               </h1>
 
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
-                Insydz is India's most powerful <strong>ecommerce analytics platform for agencies</strong> — built to manage multiple clients effortlessly. Deliver data-driven strategies that drive real ROI, automate competitive intelligence across Amazon and Flipkart,
+                Insydz is India's most powerful <strong>ecommerce analytics platform for agencies</strong> built to manage multiple clients effortlessly. Deliver data-driven strategies that drive real ROI, automate competitive intelligence across Amazon and Flipkart,
                 <span className="text-cyan-700 font-semibold"> and keep clients coming back month after month.</span>
               </p>
 
@@ -674,7 +674,7 @@ export default function EcommerceAgenciesPage() {
                 <Button onClick={handleGetStarted} size="lg"
                   className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold px-4 sm:px-8 py-6 text-sm sm:text-lg rounded-full shadow-2xl hover:shadow-cyan-500/50 transition-all group w-full sm:w-auto"
                 >
-                  👉 Start Free Agency Account
+                  Start Free Agency Account
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button
@@ -687,7 +687,7 @@ export default function EcommerceAgenciesPage() {
               </div>
 
               <div className="flex flex-wrap items-center gap-6 pt-4">
-                {["Multi-client dashboard — all accounts in one place", "White-label reports with your agency's branding", "Agency pricing available — no credit card required"].map(t => (
+                {["Multi-client dashboard all accounts in one place", "White-label reports with your agency's branding", "Agency pricing available no credit card required"].map(t => (
                   <div key={t} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
                     <span>{t}</span>
@@ -770,22 +770,27 @@ export default function EcommerceAgenciesPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {[
-              { icon: <Clock className="w-8 h-8" />, title: "Hours wasted on manual reporting for each client — every single month", color: "from-red-500 to-orange-500" },
-              { icon: <Eye className="w-8 h-8" />, title: "Can't track all clients' competitors in real time — blind spots everywhere", color: "from-orange-500 to-yellow-500" },
+              { icon: <Clock className="w-8 h-8" />, title: "Hours wasted on manual reporting for each client every single month", color: "from-red-500 to-orange-500" },
+              { icon: <Eye className="w-8 h-8" />, title: "Can't track all clients' competitors in real time blind spots everywhere", color: "from-orange-500 to-yellow-500" },
               { icon: <Settings className="w-8 h-8" />, title: "Switching between 5+ different tools per client kills team productivity", color: "from-cyan-500 to-blue-500" },
               { icon: <TrendingDown className="w-8 h-8" />, title: "Client churn rises when results aren't communicated with data and proof", color: "from-blue-500 to-indigo-500" },
             ].map((pain, i) => (
               <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 hover:border-cyan-400 hover:shadow-xl transition-all group">
-                <div className={`w-16 h-16 bg-gradient-to-br ${pain.color} rounded-2xl flex items-center justify-center mb-4 text-white group-hover:scale-110 transition-transform shadow-lg`}>
-                  {pain.icon}
-                </div>
+                <div className={`w-16 h-16 bg-gradient-to-br ${pain.color}
+  rounded-2xl flex items-center justify-center
+  mb-4 mx-auto
+  text-white group-hover:scale-110
+  transition-transform shadow-lg`}>
+  <div className="flex items-center justify-center w-full h-full">
+    {pain.icon}
+  </div>
+</div>
                 <p className="text-gray-700 dark:text-gray-300 font-medium leading-relaxed">{pain.title}</p>
               </div>
             ))}
           </div>
 
           <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-3xl p-8 text-center shadow-lg">
-            <Lightbulb className="w-12 h-12 text-red-600 mx-auto mb-4" />
             <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               Agencies waste <span className="text-red-600">40–60 hours/month</span> on manual work
             </p>
@@ -806,7 +811,7 @@ export default function EcommerceAgenciesPage() {
               <span className="text-red-600">for Brands, Not for Agencies</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              US-built platforms like Triple Whale or StoreHero were designed for single-brand DTC marketers in the West. They don't support the multi-client, multi-marketplace complexity of Indian e-commerce agencies managing accounts across Amazon.in and Flipkart — with all data in INR.
+              US-built platforms like Triple Whale or StoreHero were designed for single-brand DTC marketers in the West. They don't support the multi-client, multi-marketplace complexity of Indian e-commerce agencies managing accounts across Amazon.in and Flipkart with all data in INR.
             </p>
           </div>
 
@@ -816,23 +821,37 @@ export default function EcommerceAgenciesPage() {
                 <p className="font-bold text-gray-700 dark:text-gray-300 text-sm">Feature</p>
               </div>
               <div className="bg-cyan-600 px-6 py-4 border-b-2 border-cyan-500">
-                <p className="font-bold text-white text-sm text-center">✓ Insydz</p>
-              </div>
-              <div className="bg-gray-100 dark:bg-gray-800 px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700">
-                <p className="font-bold text-gray-500 text-sm text-center">Generic Tools</p>
-              </div>
+  <p className="font-bold text-white text-sm">✓ Insydz</p>
+</div>
+
+<div className="bg-gray-100 dark:bg-gray-800 px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700">
+  <p className="font-bold text-gray-500 text-sm">Generic Tools</p>
+</div>
 
               {comparisonRows.map((row, i) => (
                 <>
                   <div key={`f-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}>
                     <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">{row.feature}</p>
                   </div>
-                  <div key={`i-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 text-center ${i % 2 === 0 ? "bg-cyan-50 dark:bg-cyan-900/10" : "bg-cyan-50/50 dark:bg-cyan-900/10"}`}>
-                    <p className="text-sm text-cyan-700 dark:text-cyan-400 font-semibold">{row.insydz}</p>
-                  </div>
-                  <div key={`o-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 text-center ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}>
-                    <p className="text-sm text-gray-500">{row.others}</p>
-                  </div>
+                  <div
+  key={`i-${i}`}
+  className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 
+  ${i % 2 === 0 ? "bg-cyan-50 dark:bg-cyan-900/10" : "bg-cyan-50/50 dark:bg-cyan-900/10"}`}
+>
+  <p className="text-sm text-cyan-700 dark:text-cyan-400 font-semibold">
+    {row.insydz}
+  </p>
+</div>
+
+<div
+  key={`o-${i}`}
+  className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 
+  ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}
+>
+  <p className="text-sm text-gray-500">
+    {row.others}
+  </p>
+</div>
                 </>
               ))}
             </div>
@@ -851,13 +870,13 @@ export default function EcommerceAgenciesPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white">
-              Meet Insydz —
+              Meet Insydz 
               <br />
               <span className="bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">Your Agency Growth Engine</span>
             </h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
               The only <strong>ecommerce analytics platform</strong> built specifically for Indian agencies managing multiple clients.
-              <span className="text-cyan-700 font-semibold"> Deliver premium intelligence without premium overhead — and stop trading time for revenue.</span>
+              <span className="text-cyan-700 font-semibold"> Deliver premium intelligence without premium overhead and stop trading time for revenue.</span>
             </p>
           </div>
 
@@ -885,7 +904,7 @@ export default function EcommerceAgenciesPage() {
 
                 <div className={`bg-gradient-to-br from-cyan-100 to-blue-100 dark:from-cyan-900/20 dark:to-blue-900/20 border-2 border-cyan-300 dark:border-cyan-700 rounded-3xl p-8 ${i % 2 === 1 ? "lg:order-1" : ""}`}>
                   <div className="flex items-center gap-2 mb-4">
-                    <span className="text-2xl">📌</span>
+                
                     <p className="text-sm font-bold text-cyan-700 dark:text-cyan-400 uppercase tracking-wider">Agency Scenario</p>
                   </div>
                   <p className="text-gray-700 dark:text-gray-300 leading-relaxed italic text-base">{feat.scenario}</p>
@@ -908,12 +927,12 @@ export default function EcommerceAgenciesPage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
-              { icon: <Layout className="w-8 h-8" />, title: "Client Management Dashboard", desc: "Bird's-eye view of all accounts, alerts, and performance — no tab-switching" },
+              { icon: <Layout className="w-8 h-8" />, title: "Client Management Dashboard", desc: "Bird's-eye view of all accounts, alerts, and performance no tab-switching" },
               { icon: <FileText className="w-8 h-8" />, title: "Branded White-Label Reports", desc: "Auto-generated monthly/weekly reports with your logo, one-click delivery" },
               { icon: <Users className="w-8 h-8" />, title: "Team Access Controls", desc: "Role permissions (Admin, Manager, Analyst, Viewer), client assignment, separated data views" },
-              { icon: <Target className="w-8 h-8" />, title: "Custom Client KPIs", desc: "Unique success metrics per client — tracked and reported automatically" },
+              { icon: <Target className="w-8 h-8" />, title: "Custom Client KPIs", desc: "Unique success metrics per client tracked and reported automatically" },
               { icon: <Sparkles className="w-8 h-8" />, title: "API Access", desc: "Integrate Insydz data into your existing agency tech stack seamlessly" },
-              { icon: <IndianRupee className="w-8 h-8" />, title: "Agency Pricing Tiers", desc: "Volume discounts and flexible billing as you scale — no per-seat surprises" },
+              { icon: <IndianRupee className="w-8 h-8" />, title: "Agency Pricing Tiers", desc: "Volume discounts and flexible billing as you scale no per-seat surprises" },
             ].map((feature, i) => (
               <div key={i} className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:border-cyan-400 hover:shadow-lg transition-all">
                 <div className="w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-xl flex items-center justify-center mb-4 text-white shadow-md">{feature.icon}</div>
@@ -943,56 +962,83 @@ export default function EcommerceAgenciesPage() {
             <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 -translate-y-1/2"></div>
             <div className="grid lg:grid-cols-3 gap-12 relative">
               {[
-                {
-                  num: "1",
-                  title: "Onboard All Your Clients",
-                  desc: "Add unlimited clients to your agency dashboard. Each gets their own workspace with full tracking for Amazon, Flipkart, and competitor data. Onboarding a new client takes under 10 minutes.",
-                  icon: <Users className="w-12 h-12 text-cyan-600" />,
-                  bg: "bg-cyan-100 dark:bg-cyan-900/20"
-                },
-                {
-                  num: "2",
-                  title: "Automated Intelligence Gathering",
-                  desc: "Insydz monitors all clients 24/7 — tracking competitors, prices, reviews, keyword rankings, and market trends automatically. Your team stops collecting data and starts acting on it.",
-                  icon: <Brain className="w-12 h-12 text-blue-600 animate-pulse" />,
-                  bg: "bg-blue-100 dark:bg-blue-900/20"
-                },
-                {
-                  num: "3",
-                  title: "Deliver White-Label Reports",
-                  desc: "Your clients receive professional, branded reports and you receive the alerts that need action. Intelligence flows — without manual effort.",
-                  icon: null,
-                  bullets: [
-                    { color: "green", text: "One-click branded reports for clients" },
-                    { color: "blue", text: "Automated alerts on client performance" },
-                    { color: "purple", text: "Actionable AI recommendations to share" },
-                  ],
-                  bg: null
-                }
-              ].map((step, i) => (
-                <div key={i} className="relative">
-                  <div className="bg-white dark:bg-gray-900 border-2 border-cyan-300 dark:border-cyan-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all">
-                    <div className="w-16 h-16 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">
-                      {step.num}
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{step.title}</h3>
-                    {step.desc && <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">{step.desc}</p>}
-                    {step.icon && (
-                      <div className={`${step.bg} rounded-2xl p-4`}>{step.icon}</div>
-                    )}
-                    {step.bullets && (
-                      <div className="space-y-3 text-left">
-                        {step.bullets.map((b, j) => (
-                          <div key={j} className={`flex items-start gap-2 bg-${b.color}-50 dark:bg-${b.color}-900/20 border border-${b.color}-300 dark:border-${b.color}-700 rounded-lg p-3`}>
-                            <CheckCircle2 className={`w-5 h-5 text-${b.color}-600 flex-shrink-0 mt-0.5`} />
-                            <span className="text-sm text-gray-800 dark:text-gray-300">{b.text}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
+  {
+    num: "1",
+    title: "Onboard All Your Clients",
+    desc: "Add unlimited clients to your agency dashboard. Each gets their own workspace with full tracking for Amazon, Flipkart, and competitor data. Onboarding a new client takes under 10 minutes.",
+    icon: <Users className="w-12 h-12 text-cyan-600" />,
+    bg: "bg-cyan-100 dark:bg-cyan-900/20"
+  },
+  {
+    num: "2",
+    title: "Automated Intelligence Gathering",
+    desc: "Insydz monitors all clients 24/7 tracking competitors, prices, reviews, keyword rankings, and market trends automatically. Your team stops collecting data and starts acting on it.",
+    icon: <Brain className="w-12 h-12 text-blue-600 animate-pulse" />,
+    bg: "bg-blue-100 dark:bg-blue-900/20"
+  },
+  {
+    num: "3",
+    title: "Deliver White-Label Reports",
+    desc: "Your clients receive professional, branded reports and you receive the alerts that need action. Intelligence flows without manual effort.",
+    icon: null,
+    bullets: [
+      "One-click branded reports for clients",
+      "Automated alerts on client performance",
+      "Actionable AI recommendations to share",
+    ],
+    bg: null
+  }
+].map((step, i) => (
+  <div key={i} className="relative h-full">
+    
+    <div className="h-full bg-white dark:bg-gray-900 border-2 border-cyan-300 dark:border-cyan-700 rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all flex flex-col items-center text-center">
+
+      {/* Number */}
+      <div className="w-16 h-16 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-full flex items-center justify-center mb-6 text-2xl font-black text-white shadow-lg">
+        {step.num}
+      </div>
+
+      {/* Title */}
+      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+        {step.title}
+      </h3>
+
+      {/* Description */}
+      {step.desc && (
+        <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
+          {step.desc}
+        </p>
+      )}
+
+      {/* Icon (NOW PERFECTLY CENTERED) */}
+      {step.icon && (
+        <div className="w-full flex justify-center">
+          <div className={`rounded-2xl p-5 ${step.bg} flex items-center justify-center`}>
+            {step.icon}
+          </div>
+        </div>
+      )}
+
+      {/* Bullets */}
+      {step.bullets && (
+        <div className="mt-4 w-full space-y-3 text-left">
+          {step.bullets.map((text, j) => (
+            <div
+              key={j}
+              className="flex items-start gap-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3"
+            >
+              <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+              <span className="text-gray-700 dark:text-gray-300 text-sm">
+                {text}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+    </div>
+  </div>
+))}
             </div>
           </div>
 
@@ -1000,7 +1046,7 @@ export default function EcommerceAgenciesPage() {
             <Button onClick={handleGetStarted} size="lg"
               className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold px-4 sm:px-12 py-6 text-sm sm:text-lg rounded-full shadow-2xl hover:shadow-cyan-500/50 transition-all group w-full sm:w-auto"
             >
-              👉 Start Free Agency Account
+              Start Free Agency Account
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -1022,7 +1068,7 @@ export default function EcommerceAgenciesPage() {
             {/* Without */}
             <div className="rounded-2xl border-2 border-red-300 dark:border-red-700 overflow-hidden shadow-lg">
               <div className="bg-red-50 dark:bg-red-900/30 px-6 py-4">
-                <p className="font-bold text-red-700 dark:text-red-400 text-lg">❌ Without Insydz — Monthly Cost Leakage</p>
+                <p className="font-bold text-red-700 dark:text-red-400 text-lg">Without Insydz — Monthly Cost Leakage</p>
               </div>
               <div className="bg-white dark:bg-gray-900">
                 {roiWithout.map((row, i) => (
@@ -1041,7 +1087,7 @@ export default function EcommerceAgenciesPage() {
             {/* With */}
             <div className="rounded-2xl border-2 border-green-300 dark:border-green-700 overflow-hidden shadow-lg">
               <div className="bg-green-50 dark:bg-green-900/30 px-6 py-4">
-                <p className="font-bold text-green-700 dark:text-green-400 text-lg">✅ With Insydz — Monthly Value Created</p>
+                <p className="font-bold text-green-700 dark:text-green-400 text-lg">With Insydz — Monthly Value Created</p>
               </div>
               <div className="bg-white dark:bg-gray-900">
                 {roiWith.map((row, i) => (
@@ -1133,29 +1179,26 @@ export default function EcommerceAgenciesPage() {
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             {[
               {
-                emoji: "🆕",
                 label: "New Agencies (Free Account)",
-                desc: "Just starting out with your first 3 clients? Get the full Insydz intelligence stack — free. No credit card, no setup complexity.",
+                desc: "Just starting out with your first 3 clients? Get the full Insydz intelligence stack free. No credit card, no setup complexity.",
                 cta: "Start Free Agency Account →",
                 action: handleGetStarted
               },
               {
-                emoji: "📈",
                 label: "Growing Agencies (5–20 clients)",
                 desc: "You've outgrown spreadsheets. The Agency Growth Plan gives you unlimited clients, full white-label reporting, team access controls, and automated intelligence.",
                 cta: "Try Agency Growth Plan →",
                 action: () => setLocation("/pricing")
               },
               {
-                emoji: "🏢",
                 label: "High-Performance Agencies (20+ clients)",
-                desc: "Custom needs? API access, custom KPIs, dedicated account manager, white-glove onboarding, and volume pricing — everything you need to dominate at scale.",
+                desc: "Custom needs? API access, custom KPIs, dedicated account manager, white-glove onboarding, and volume pricing everything you need to dominate at scale.",
                 cta: "Book a Demo →",
                 action: () => setLocation("/demo")
               }
             ].map((card, i) => (
               <div key={i} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-left">
-                <p className="text-2xl mb-2">{card.emoji}</p>
+              
                 <p className="font-bold text-white mb-2">{card.label}</p>
                 <p className="text-white/80 text-sm mb-4">{card.desc}</p>
                 <button onClick={card.action} className="text-cyan-200 font-semibold text-sm hover:text-white transition-colors underline">{card.cta}</button>
@@ -1304,7 +1347,7 @@ export default function EcommerceAgenciesPage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

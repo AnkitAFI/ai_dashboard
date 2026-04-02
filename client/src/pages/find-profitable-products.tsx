@@ -107,12 +107,12 @@ const comparisonRows = [
 ];
 
 const whatYouDiscover = [
-  { icon: <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Trending Products Before Saturation", desc: "See which categories are gaining search velocity on Amazon India and Flipkart — so you can enter the market while competition is still low.", color: "from-green-500 to-emerald-500", link: "/features/demand-signals", linkLabel: "product demand analysis tool" },
-  { icon: <DollarSign className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Profit Margin Estimates Per Unit", desc: "Insydz shows estimated profit per unit in INR — factoring in Amazon.in and Flipkart fees, typical sourcing costs, and current price ranges. Know your numbers before you place a purchase order.", color: "from-blue-500 to-cyan-500", link: "/features/margin-calculator", linkLabel: "product margin calculator" },
+  { icon: <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Trending Products Before Saturation", desc: "See which categories are gaining search velocity on Amazon India and Flipkart so you can enter the market while competition is still low.", color: "from-green-500 to-emerald-500", link: "/features/demand-signals", linkLabel: "product demand analysis tool" },
+  { icon: <DollarSign className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Profit Margin Estimates Per Unit", desc: "Insydz shows estimated profit per unit in INR factoring in Amazon.in and Flipkart fees, typical sourcing costs, and current price ranges. Know your numbers before you place a purchase order.", color: "from-blue-500 to-cyan-500", link: "/features/margin-calculator", linkLabel: "product margin calculator" },
   { icon: <Target className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Competition Analysis & Gaps", desc: "Insydz flags categories where top sellers have weak ratings (below 4.0), low review counts, or listing quality gaps. These are your launch advantage points.", color: "from-purple-500 to-pink-500", link: "/features/product-research", linkLabel: "ecommerce product research tool" },
-  { icon: <Search className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Search Volume & Demand Data", desc: "Real demand signals from Indian marketplaces — including festive season demand spikes for Diwali, Navratri, and Republic Day sale events.", color: "from-orange-500 to-red-500", link: "/features/demand-signals", linkLabel: "product demand analysis tool" },
-  { icon: <Award className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Best-Selling Categories", desc: "See which categories generate the highest GMV on Amazon India and Flipkart right now — ranked by actual revenue performance.", color: "from-indigo-500 to-purple-500", link: "/features/product-research", linkLabel: "profitable product finder" },
-  { icon: <Sparkles className="w-6 h-6 sm:w-8 sm:h-8" />, title: "AI Opportunity Score (1–100)", desc: "Every product opportunity gets a single AI score combining demand, competition, profitability, and timing. Higher score = stronger launch opportunity. No analysis paralysis — just a clear ranked list.", color: "from-yellow-500 to-orange-500", link: "/use-cases/find-profitable-products", linkLabel: "product opportunity finder" },
+  { icon: <Search className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Search Volume & Demand Data", desc: "Real demand signals from Indian marketplaces including festive season demand spikes for Diwali, Navratri, and Republic Day sale events.", color: "from-orange-500 to-red-500", link: "/features/demand-signals", linkLabel: "product demand analysis tool" },
+  { icon: <Award className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Best-Selling Categories", desc: "See which categories generate the highest GMV on Amazon India and Flipkart right now ranked by actual revenue performance.", color: "from-indigo-500 to-purple-500", link: "/features/product-research", linkLabel: "profitable product finder" },
+  { icon: <Sparkles className="w-6 h-6 sm:w-8 sm:h-8" />, title: "AI Opportunity Score (1–100)", desc: "Every product opportunity gets a single AI score combining demand, competition, profitability, and timing. Higher score = stronger launch opportunity. No analysis paralysis just a clear ranked list.", color: "from-yellow-500 to-orange-500", link: "/use-cases/find-profitable-products", linkLabel: "product opportunity finder" },
 ];
 
 const roiWithout = [
@@ -124,20 +124,20 @@ const roiWithout = [
 ];
 
 const roiWith = [
-  { label: "Same budget — validated with demand data", value: "₹3,00,000 invested wisely" },
-  { label: "Low-competition category — page 1 in 14 days", value: "+organic rank from week 2" },
-  { label: "Differentiated product — 4.6★ from month 1", value: "+conversion advantage" },
+  { label: "Same budget validated with demand data", value: "₹3,00,000 invested wisely" },
+  { label: "Low-competition category page 1 in 14 days", value: "+organic rank from week 2" },
+  { label: "Differentiated product 4.6★ from month 1", value: "+conversion advantage" },
   { label: "First-month sell-through (₹450 × 760 units)", value: "+₹3,42,000" },
-  { label: "2× reorders placed — months 2–6", value: "+₹7,20,000" },
+  { label: "2× reorders placed months 2–6", value: "+₹7,20,000" },
 ];
 
 const faqs = [
-  { id: "faq-1", q: "How does Insydz find profitable products on Amazon India and Flipkart?", a: "Insydz analyses millions of products across Amazon.in and Flipkart in real time — combining demand signals, competition density, and profit margin estimates to generate an AI opportunity score from 1–100. Products with high demand, low competition, and healthy margins surface first." },
-  { id: "faq-2", q: "Can I find profitable products for both Amazon India and Flipkart?", a: "Yes. Insydz analyses product opportunities across both platforms simultaneously — comparing demand levels and competition density for the same product, so you know which marketplace has the better opportunity right now." },
+  { id: "faq-1", q: "How does Insydz find profitable products on Amazon India and Flipkart?", a: "Insydz analyses millions of products across Amazon.in and Flipkart in real time combining demand signals, competition density, and profit margin estimates to generate an AI opportunity score from 1–100. Products with high demand, low competition, and healthy margins surface first." },
+  { id: "faq-2", q: "Can I find profitable products for both Amazon India and Flipkart?", a: "Yes. Insydz analyses product opportunities across both platforms simultaneously comparing demand levels and competition density for the same product, so you know which marketplace has the better opportunity right now." },
   { id: "faq-3", q: "What makes a product 'profitable' according to Insydz?", a: "Four factors: demand strength, competition gap (weak top sellers?), margin viability (does price support profit after fees?), and timing (growing or saturating category?). Products scoring well on all four get a high AI opportunity score." },
-  { id: "faq-4", q: "Do I need product research experience to use Insydz?", a: "No. Enter your budget, target margin, and preferred categories. The AI surfaces opportunities in plain language: 'High demand, low competition — estimated profit ₹450/unit.' No experience, spreadsheets, or specialist knowledge required." },
-  { id: "faq-5", q: "How often is product opportunity data updated?", a: "Continuously. Trending opportunities are flagged in real time. You can also set category alerts so you're notified when a new high-opportunity product appears — even when you're not actively using the dashboard." },
-  { id: "faq-6", q: "Can I save products I'm interested in researching further?", a: "Yes. Save any opportunity to your watchlist and track how demand, competition, and margin scores change over time — especially useful for validating seasonal trends before you commit to sourcing inventory for the Indian festive season." },
+  { id: "faq-4", q: "Do I need product research experience to use Insydz?", a: "No. Enter your budget, target margin, and preferred categories. The AI surfaces opportunities in plain language: 'High demand, low competition estimated profit ₹450/unit.' No experience, spreadsheets, or specialist knowledge required." },
+  { id: "faq-5", q: "How often is product opportunity data updated?", a: "Continuously. Trending opportunities are flagged in real time. You can also set category alerts so you're notified when a new high-opportunity product appears even when you're not actively using the dashboard." },
+  { id: "faq-6", q: "Can I save products I'm interested in researching further?", a: "Yes. Save any opportunity to your watchlist and track how demand, competition, and margin scores change over time especially useful for validating seasonal trends before you commit to sourcing inventory for the Indian festive season." },
 ];
 
 export default function FindProfitableProductsPage() {
@@ -188,6 +188,10 @@ export default function FindProfitableProductsPage() {
   const toggleMobileMenu = (name: string) => setMobileActiveMenu(mobileActiveMenu === name ? null : name);
   const handleMenuItemClick = (item: MenuItemWithBadge) => {
     if (item.route) { setLocation(item.route); setActiveDropdown(null); setIsMenuOpen(false); }
+  };
+    const scrollToSection = (sectionId: string) => {
+    setLocation('/');
+    setTimeout(() => document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   };
 
   const DesktopDropdown = ({ label, menuKey, accent = "purple" }: { label: string; menuKey: keyof NavigationMenu; accent?: "purple" | "blue" }) => {
@@ -332,13 +336,13 @@ export default function FindProfitableProductsPage() {
               </h1>
 
               <p className="text-base sm:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
-                India's most powerful <strong>product profitability analysis software</strong> for Amazon and Flipkart sellers — with AI-powered insights that show you exactly what to sell next,
+                India's most powerful <strong>product profitability analysis software</strong> for Amazon and Flipkart sellers with AI-powered insights that show you exactly what to sell next,
                 <span className="text-blue-700 font-semibold"> backed by real demand data and margin calculations in INR.</span>
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all group">
-                  👉 Discover Profitable Products Free
+                  Discover Profitable Products Free
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
@@ -403,14 +407,14 @@ export default function FindProfitableProductsPage() {
               <span className="text-red-600">The Wrong Products</span>
             </h2>
             <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              The biggest mistake Indian Amazon and Flipkart sellers make isn't in their operations — it's in their product selection. Most sellers launch on instinct, copy competitors, or rely on outdated research methods.
+              The biggest mistake Indian Amazon and Flipkart sellers make isn't in their operations it's in their product selection. Most sellers launch on instinct, copy competitors, or rely on outdated research methods.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
             {[
               { icon: <Eye className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Guessing based on gut feeling, not real demand data", color: "from-red-500 to-orange-500" },
-              { icon: <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Entering oversaturated markets too late — after competitors are entrenched", color: "from-orange-500 to-yellow-500" },
+              { icon: <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Entering oversaturated markets too late after competitors are entrenched", color: "from-orange-500 to-yellow-500" },
               { icon: <DollarSign className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Missing hidden profit opportunities that aren't obvious from browsing", color: "from-blue-500 to-indigo-500" },
               { icon: <Clock className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Wasting weeks on manual research that still gives incomplete data", color: "from-indigo-500 to-purple-500" },
             ].map((pain, i) => (
@@ -422,12 +426,11 @@ export default function FindProfitableProductsPage() {
           </div>
 
           <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-lg">
-            <AlertCircle className="w-8 h-8 sm:w-12 sm:h-12 text-red-600 mx-auto mb-3 sm:mb-4" />
             <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
               <span className="text-red-600">67% of new sellers</span> fail in their first year
             </p>
             <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-lg">
-              ...because they launch products without proper market research — investing in inventory before validating demand, margins, or competition levels on Indian marketplaces.
+              ...because they launch products without proper market research investing in inventory before validating demand, margins, or competition levels on Indian marketplaces.
             </p>
           </div>
         </div>
@@ -451,13 +454,13 @@ export default function FindProfitableProductsPage() {
             <div className="min-w-[480px]">
               <div className="grid grid-cols-3">
                 <div className="bg-gray-100 dark:bg-gray-800 px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-gray-200 dark:border-gray-700"><p className="font-bold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">What You Need to Know</p></div>
-                <div className="bg-gray-100 dark:bg-gray-800 px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-gray-200 dark:border-gray-700"><p className="font-bold text-gray-500 text-xs sm:text-sm text-center">Manual Research</p></div>
-                <div className="bg-blue-600 px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-blue-500"><p className="font-bold text-white text-xs sm:text-sm text-center">✓ Insydz</p></div>
+                <div className="bg-gray-100 dark:bg-gray-800 px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-gray-200 dark:border-gray-700"><p className="font-bold text-gray-500 text-xs sm:text-sm text-left">Manual Research</p></div>
+                <div className="bg-blue-600 px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-blue-500"><p className="font-bold text-white text-xs sm:text-sm text-left">✓ Insydz</p></div>
                 {comparisonRows.map((row, i) => (
                   <>
                     <div key={`f-${i}`} className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}><p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 font-medium">{row.feature}</p></div>
-                    <div key={`m-${i}`} className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 text-center ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}><p className="text-xs sm:text-sm text-gray-500">{row.manual}</p></div>
-                    <div key={`s-${i}`} className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 text-center ${i % 2 === 0 ? "bg-blue-50 dark:bg-blue-900/10" : "bg-blue-50/50 dark:bg-blue-900/10"}`}><p className="text-xs sm:text-sm text-blue-700 dark:text-blue-400 font-semibold">{row.insydz}</p></div>
+                    <div key={`m-${i}`} className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 text-left ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}><p className="text-xs sm:text-sm text-gray-500">{row.manual}</p></div>
+                    <div key={`s-${i}`} className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 text-left ${i % 2 === 0 ? "bg-blue-50 dark:bg-blue-900/10" : "bg-blue-50/50 dark:bg-blue-900/10"}`}><p className="text-xs sm:text-sm text-blue-700 dark:text-blue-400 font-semibold">{row.insydz}</p></div>
                   </>
                 ))}
               </div>
@@ -472,7 +475,7 @@ export default function FindProfitableProductsPage() {
               <div>
                 <p className="font-bold text-gray-900 dark:text-white mb-1.5 sm:mb-2 text-sm sm:text-base">India-First Differentiator</p>
                 <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm leading-relaxed">
-                  Global tools like Jungle Scout and Helium 10 are calibrated for Amazon.com — not Amazon.in. Their demand estimates, competition scores, and profitability calculations are built on US marketplace behaviour. Indian category dynamics, price sensitivity, festive demand cycles, and marketplace fee structures are completely different. Insydz is the only <strong>product opportunity finder</strong> built on Indian marketplace data from the ground up.
+                  Global tools like Jungle Scout and Helium 10 are calibrated for Amazon.com not Amazon.in. Their demand estimates, competition scores, and profitability calculations are built on US marketplace behaviour. Indian category dynamics, price sensitivity, festive demand cycles, and marketplace fee structures are completely different. Insydz is the only <strong>product opportunity finder</strong> built on Indian marketplace data from the ground up.
                 </p>
               </div>
             </div>
@@ -490,7 +493,7 @@ export default function FindProfitableProductsPage() {
               <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">with Insydz</span>
             </h2>
             <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              From zero to validated product opportunity in under 10 minutes — no research experience needed.
+              From zero to validated product opportunity in under 10 minutes no research experience needed.
             </p>
           </div>
 
@@ -498,7 +501,7 @@ export default function FindProfitableProductsPage() {
             <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-blue-500 -translate-y-1/2 z-0" />
             {[
               { step: 1, title: "Set Your Criteria", desc: "Tell Insydz your budget, target margin, and preferred categories. AI filters millions of products across Amazon India and Flipkart instantly.", visual: <Filter className="w-10 h-10 sm:w-12 sm:h-12 text-blue-600 mx-auto" />, bg: "bg-blue-100 dark:bg-blue-900/20", isResults: false },
-              { step: 2, title: "AI Analyses Market Data", desc: "We analyse demand signals, competition density, pricing trends, profitability margins, and review gap opportunities — calibrated for Indian marketplace behaviour.", visual: <BarChart3 className="w-10 h-10 sm:w-12 sm:h-12 text-purple-600 mx-auto animate-pulse" />, bg: "bg-purple-100 dark:bg-purple-900/20", isResults: false },
+              { step: 2, title: "AI Analyses Market Data", desc: "We analyse demand signals, competition density, pricing trends, profitability margins, and review gap opportunities calibrated for Indian marketplace behaviour.", visual: <BarChart3 className="w-10 h-10 sm:w-12 sm:h-12 text-purple-600 mx-auto animate-pulse" />, bg: "bg-purple-100 dark:bg-purple-900/20", isResults: false },
               { step: 3, title: "Get Winning Products", desc: "", visual: null, bg: "bg-green-100 dark:bg-green-900/20", isResults: true },
             ].map((step, i) => (
               <div key={i} className="relative z-10">
@@ -506,18 +509,24 @@ export default function FindProfitableProductsPage() {
                   <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 text-xl sm:text-2xl font-black text-white shadow-lg">{step.step}</div>
                   <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">{step.title}</h3>
                   {step.isResults ? (
-                    <div className="space-y-2 sm:space-y-3 text-left">
-                      {[
-                        { cls: "bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700", icon: "text-green-600", text: '"High demand, low competition product found"' },
-                        { cls: "bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700", icon: "text-blue-600", text: '"Estimated profit: ₹450/unit"' },
-                        { cls: "bg-indigo-50 dark:bg-indigo-900/20 border-indigo-300 dark:border-indigo-700", icon: "text-indigo-600", text: '"Top sellers have 3.7 rating — gap to win"' },
-                      ].map((a, ai) => (
-                        <div key={ai} className={`flex items-start gap-2 ${a.cls} border rounded-lg p-2.5 sm:p-3`}>
-                          <CheckCircle2 className={`w-4 h-4 sm:w-5 sm:h-5 ${a.icon} flex-shrink-0 mt-0.5`} />
-                          <span className="text-xs sm:text-sm text-gray-800 dark:text-gray-300">{a.text}</span>
-                        </div>
-                      ))}
-                    </div>
+                    <div className="grid grid-rows-3 gap-2 sm:gap-3 text-left h-[240px]">
+  {[
+    { cls: "bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700", icon: "text-green-600", text: '"High demand, low competition product found"' },
+    { cls: "bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700", icon: "text-blue-600", text: '"Estimated profit: ₹450/unit"' },
+    { cls: "bg-indigo-50 dark:bg-indigo-900/20 border-indigo-300 dark:border-indigo-700", icon: "text-indigo-600", text: '"Top sellers have 3.7 rating — gap to win"' },
+  ].map((a, ai) => (
+    <div
+  key={ai}
+  className={`flex items-center gap-2 ${a.cls} border rounded-lg p-3 h-full`}
+>
+  <CheckCircle2 className={`w-4 h-4 sm:w-5 sm:h-5 ${a.icon} flex-shrink-0`} />
+
+  <span className="text-xs sm:text-sm text-gray-800 dark:text-gray-300 leading-snug">
+    {a.text}
+  </span>
+</div>
+  ))}
+</div>
                   ) : (
                     <>
                       <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">{step.desc}</p>
@@ -531,7 +540,7 @@ export default function FindProfitableProductsPage() {
 
           <div className="text-center mt-8 sm:mt-12">
             <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all group">
-              👉 Find Your First Profitable Product Free
+              Find Your First Profitable Product Free
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -567,7 +576,7 @@ export default function FindProfitableProductsPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 sm:mb-6 text-gray-900 dark:text-white">
-              How Insydz Is Different —
+              How Insydz Is Different
               <br />
               <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Built on Indian Marketplace Data</span>
             </h2>
@@ -576,13 +585,12 @@ export default function FindProfitableProductsPage() {
           {/* Scenario */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-2xl sm:rounded-3xl p-6 sm:p-8 mb-8 sm:mb-12 shadow-lg">
             <div className="flex items-center gap-3 mb-4 sm:mb-6">
-              <span className="text-2xl sm:text-3xl">📌</span>
               <div>
                 <p className="text-xs sm:text-sm font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wider">Real Seller Scenario</p>
                 <p className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Home Décor Seller, Jaipur</p>
               </div>
             </div>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">Priya sells home décor on Amazon India. In October, she was planning to launch LED strip lights for the Diwali season. Her instinct said "popular" — but she had no data to back up how much to source or whether the market was already crowded.</p>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">Priya sells home décor on Amazon India. In October, she was planning to launch LED strip lights for the Diwali season. Her instinct said "popular" but she had no data to back up how much to source or whether the market was already crowded.</p>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">Using Insydz's <strong>product demand analysis tool</strong>, she ran a 10-minute analysis. Results: "LED strip lights for bedroom" had 340% higher search velocity in Nov–Dec. But the top 4 sellers all had ratings below 3.9, primarily due to cable quality complaints and unclear installation guides.</p>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">Priya launched with upgraded braided cables and a Hindi installation card. Her listing converted at 4.8 stars from week two.</p>
             <div className="grid grid-cols-3 gap-2 sm:gap-4">
@@ -600,16 +608,16 @@ export default function FindProfitableProductsPage() {
         4 India-First Advantages
       </h2>
       <p className="text-gray-600 dark:text-gray-400 mt-3 max-w-2xl mx-auto">
-        Built specifically for Indian e-commerce sellers — not adapted from global tools.
+        Built specifically for Indian e-commerce sellers not adapted from global tools.
       </p>
     </div>
 
           {/* 4 India-First Advantages */}
           <div className="grid sm:grid-cols-2 gap-4 sm:gap-6">
             {[
-              { icon: <Flame className="w-5 h-5 sm:w-6 sm:h-6" />, title: "Indian Demand Cycles", desc: "Calibrated for Diwali, Navratri, Republic Day — not Black Friday or Prime Day.", color: "from-orange-500 to-red-500" },
-              { icon: <DollarSign className="w-5 h-5 sm:w-6 sm:h-6" />, title: "Accurate INR Profit Modelling", desc: "Margin estimates factor in Amazon India and Flipkart fee structures — not US equivalents.", color: "from-green-500 to-emerald-500" },
-              { icon: <MapPin className="w-5 h-5 sm:w-6 sm:h-6" />, title: "Tier 1–3 City Demand Intelligence", desc: "Demand signals from all-India activity — not just Delhi/Mumbai/Bengaluru.", color: "from-blue-500 to-cyan-500" },
+              { icon: <Flame className="w-5 h-5 sm:w-6 sm:h-6" />, title: "Indian Demand Cycles", desc: "Calibrated for Diwali, Navratri, Republic Day not Black Friday or Prime Day.", color: "from-orange-500 to-red-500" },
+              { icon: <DollarSign className="w-5 h-5 sm:w-6 sm:h-6" />, title: "Accurate INR Profit Modelling", desc: "Margin estimates factor in Amazon India and Flipkart fee structures not US equivalents.", color: "from-green-500 to-emerald-500" },
+              { icon: <MapPin className="w-5 h-5 sm:w-6 sm:h-6" />, title: "Tier 1–3 City Demand Intelligence", desc: "Demand signals from all-India activity not just Delhi/Mumbai/Bengaluru.", color: "from-blue-500 to-cyan-500" },
               { icon: <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />, title: "Review Gap Analysis", desc: "AI reads competitor reviews to surface product differentiation brief (250,000+ reviews analysed daily).", color: "from-purple-500 to-pink-500" },
             ].map((adv, i) => (
               <div key={i} className="bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-5 sm:p-6 flex items-start gap-3 sm:gap-4 hover:border-blue-400 transition-all">
@@ -640,8 +648,8 @@ export default function FindProfitableProductsPage() {
 
           <div className="grid sm:grid-cols-2 gap-5 sm:gap-8 mb-6 sm:mb-8">
             {[
-              { title: "❌ Without Insydz — 6-Month Launch Outcome", rows: roiWithout, total: "Total Cost of Wrong Product Selection", totalValue: "−₹1,05,000", headerCls: "bg-red-50 dark:bg-red-900/30", textCls: "text-red-700 dark:text-red-400", valueCls: "text-red-600", totalBg: "bg-red-50 dark:bg-red-900/20", totalTextCls: "text-red-700", borderCls: "border-red-300 dark:border-red-700" },
-              { title: "✅ With Insydz — Same 6-Month Period", rows: roiWith, total: "6-Month Net Revenue", totalValue: "+₹10,62,000", headerCls: "bg-green-50 dark:bg-green-900/30", textCls: "text-green-700 dark:text-green-400", valueCls: "text-green-600", totalBg: "bg-green-50 dark:bg-green-900/20", totalTextCls: "text-green-700", borderCls: "border-green-300 dark:border-green-700" },
+              { title: "Without Insydz 6-Month Launch Outcome", rows: roiWithout, total: "Total Cost of Wrong Product Selection", totalValue: "−₹1,05,000", headerCls: "bg-red-50 dark:bg-red-900/30", textCls: "text-red-700 dark:text-red-400", valueCls: "text-red-600", totalBg: "bg-red-50 dark:bg-red-900/20", totalTextCls: "text-red-700", borderCls: "border-red-300 dark:border-red-700" },
+              { title: "With Insydz Same 6-Month Period", rows: roiWith, total: "6-Month Net Revenue", totalValue: "+₹10,62,000", headerCls: "bg-green-50 dark:bg-green-900/30", textCls: "text-green-700 dark:text-green-400", valueCls: "text-green-600", totalBg: "bg-green-50 dark:bg-green-900/20", totalTextCls: "text-green-700", borderCls: "border-green-300 dark:border-green-700" },
             ].map((panel, pi) => (
               <div key={pi} className={`rounded-2xl border-2 ${panel.borderCls} overflow-hidden shadow-lg`}>
                 <div className={`${panel.headerCls} px-4 sm:px-6 py-3 sm:py-4`}><p className={`font-bold ${panel.textCls} text-sm sm:text-base lg:text-lg`}>{panel.title}</p></div>
@@ -676,7 +684,7 @@ export default function FindProfitableProductsPage() {
             <br />
             <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">See Real Opportunities.</span>
           </h2>
-          <p className="text-base sm:text-xl text-gray-600 dark:text-gray-400 mb-8 sm:mb-10">Free Plan — ₹0 / Forever — No credit card required</p>
+          <p className="text-base sm:text-xl text-gray-600 dark:text-gray-400 mb-8 sm:mb-10">Free Plan — ₹0 / Forever No credit card required</p>
 
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-300 dark:border-blue-700 rounded-2xl sm:rounded-3xl p-6 sm:p-8 mb-6 sm:mb-8 text-left shadow-xl">
             <h3 className="font-bold text-gray-900 dark:text-white text-lg sm:text-xl mb-4 sm:mb-6 text-center">Free Plan Includes:</h3>
@@ -698,7 +706,7 @@ export default function FindProfitableProductsPage() {
           </div>
 
           <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl group">
-            👉 Discover Profitable Products Free
+            Discover Profitable Products Free
             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
         </div>
@@ -712,12 +720,11 @@ export default function FindProfitableProductsPage() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
             {[
-              { emoji: "🆕", label: "New Sellers (Free Plan)", desc: "The free plan validates your first product idea before you spend a rupee on inventory. No experience needed — the AI does the analysis, you make the call.", cta: "Start Free — No Card Needed →", action: handleGetStarted },
-              { emoji: "📈", label: "Growing Sellers (Growth Plan)", desc: "Doing ₹5L+ monthly and planning your next SKU? The Growth Plan unlocks unlimited research, full demand history, advanced margin modelling, and automated alerts.", cta: "Try Growth Plan →", action: () => setLocation("/pricing") },
-              { emoji: "🏢", label: "D2C Brands / Agencies (Demo)", desc: "Managing multiple product launches? Custom workflows, white-label opportunity reports, API access, and dedicated account support.", cta: "Book a Demo →", action: () => setLocation("/demo") },
+              { label: "New Sellers (Free Plan)", desc: "The free plan validates your first product idea before you spend a rupee on inventory. No experience needed the AI does the analysis, you make the call.", cta: "Start Free — No Card Needed →", action: handleGetStarted },
+              { label: "Growing Sellers (Growth Plan)", desc: "Doing ₹5L+ monthly and planning your next SKU? The Growth Plan unlocks unlimited research, full demand history, advanced margin modelling, and automated alerts.", cta: "Try Growth Plan →", action: () => setLocation("/pricing") },
+              { label: "D2C Brands / Agencies (Demo)", desc: "Managing multiple product launches? Custom workflows, white-label opportunity reports, API access, and dedicated account support.", cta: "Book a Demo →", action: () => setLocation("/demo") },
             ].map((card, i) => (
               <div key={i} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 sm:p-6 text-left">
-                <p className="text-xl sm:text-2xl mb-2">{card.emoji}</p>
                 <p className="font-bold text-white mb-1.5 sm:mb-2 text-sm sm:text-base">{card.label}</p>
                 <p className="text-white/80 text-xs sm:text-sm mb-3 sm:mb-4">{card.desc}</p>
                 {card.cta === "Try Growth Plan →" ? (
@@ -732,7 +739,7 @@ export default function FindProfitableProductsPage() {
           </div>
 
           <Button onClick={handleGetStarted} size="lg" className="bg-white hover:bg-gray-100 text-blue-700 font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl group">
-            👉 Discover Profitable Products Free
+            Discover Profitable Products Free
             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
           <p className="text-white/80 mt-4 sm:mt-6 text-xs sm:text-sm">✓ No credit card required  ✓ Setup in 2 minutes  ✓ Cancel anytime</p>
@@ -742,7 +749,7 @@ export default function FindProfitableProductsPage() {
       {/* ══ FAQ ══ */}
       <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-2 sm:mb-4 text-center text-gray-900 dark:text-white">Product Research — FAQs</h2>
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-2 sm:mb-4 text-center text-gray-900 dark:text-white">Product Research FAQs</h2>
           <p className="text-center text-gray-500 mb-8 sm:mb-12 text-base sm:text-lg">About Finding Profitable Products on Amazon & Flipkart India</p>
           <div className="space-y-3 sm:space-y-4">
             {faqs.map((faq) => (
@@ -765,7 +772,7 @@ export default function FindProfitableProductsPage() {
       {/* ══ STICKY MOBILE CTA ══ */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-blue-300 dark:border-blue-700 p-3 sm:p-4 shadow-2xl z-40" style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}>
         <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 sm:py-4 rounded-full shadow-xl text-sm sm:text-base">
-          👉 Find Profitable Products Free
+          Find Profitable Products Free
         </Button>
       </div>
 
@@ -896,7 +903,7 @@ export default function FindProfitableProductsPage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

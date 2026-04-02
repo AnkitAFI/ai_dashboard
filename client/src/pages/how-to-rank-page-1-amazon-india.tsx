@@ -98,23 +98,23 @@ const TOC = [
 const FAQS = [
   {
     q: "How long does it take to rank on page 1 of Amazon India?",
-    a: "For new listings in moderately competitive categories, well-optimised listings typically reach page 1 for long-tail keywords within 3–6 weeks, and for primary keywords within 6–12 weeks — assuming consistent sales velocity and an optimised listing from the start. Highly competitive categories (electronics, fashion, kitchen) may take 12–20 weeks for primary keyword page 1 positions. Long-tail keywords, regardless of category, typically rank faster and are the recommended entry point for sellers newer to SEO.",
+    a: "For new listings in moderately competitive categories, well-optimised listings typically reach page 1 for long-tail keywords within 3–6 weeks, and for primary keywords within 6–12 weeks assuming consistent sales velocity and an optimised listing from the start. Highly competitive categories (electronics, fashion, kitchen) may take 12–20 weeks for primary keyword page 1 positions. Long-tail keywords, regardless of category, typically rank faster and are the recommended entry point for sellers newer to SEO.",
   },
   {
     q: "Does lowering my price help me rank higher on Amazon.in?",
-    a: "Partially — Amazon factors in price competitiveness, but it's not the dominant ranking signal. Drastically reducing your price to rank faster erodes margin without a proportional ranking benefit. The better lever is improving conversion rate through listing quality — better images, stronger title, more compelling bullet points. A product priced 15% above the category median with a 14% CVR will outrank a product priced at the median with a 7% CVR.",
+    a: "Partially Amazon factors in price competitiveness, but it's not the dominant ranking signal. Drastically reducing your price to rank faster erodes margin without a proportional ranking benefit. The better lever is improving conversion rate through listing quality — better images, stronger title, more compelling bullet points. A product priced 15% above the category median with a 14% CVR will outrank a product priced at the median with a 7% CVR.",
   },
   {
     q: "What is the most important part of Amazon listing optimisation for Indian sellers?",
-    a: "The product title and backend search terms together have the highest impact on ranking on Amazon India. The title determines which searches Amazon considers you relevant for — your primary keyword must appear in the first 80 characters. Backend search terms (250 bytes) are the single biggest untapped opportunity for most Indian sellers — the majority leave them blank or populated with duplicates. Filling them correctly with Hinglish variants, long-tail phrases, and competitor brand names (where permitted) can unlock significant additional organic visibility with no visible listing change.",
+    a: "The product title and backend search terms together have the highest impact on ranking on Amazon India. The title determines which searches Amazon considers you relevant for your primary keyword must appear in the first 80 characters. Backend search terms (250 bytes) are the single biggest untapped opportunity for most Indian sellers the majority leave them blank or populated with duplicates. Filling them correctly with Hinglish variants, long-tail phrases, and competitor brand names (where permitted) can unlock significant additional organic visibility with no visible listing change.",
   },
   {
     q: "How many keywords should I target in my Amazon listing?",
-    a: "Focus on 1 primary keyword in your title, 3–5 secondary keywords spread across bullet points, and 10–20 long-tail keywords in your backend search terms. Total keyword count matters less than selection quality — 15 high-intent, accurately-matched keywords will outperform 50 loosely related ones. Keyword stuffing in the title reduces CTR, which feeds back as a negative ranking signal. Aim for natural language in the title with your primary keyword placed prominently in the first 80 characters.",
+    a: "Focus on 1 primary keyword in your title, 3–5 secondary keywords spread across bullet points, and 10–20 long-tail keywords in your backend search terms. Total keyword count matters less than selection quality 15 high-intent, accurately-matched keywords will outperform 50 loosely related ones. Keyword stuffing in the title reduces CTR, which feeds back as a negative ranking signal. Aim for natural language in the title with your primary keyword placed prominently in the first 80 characters.",
   },
   {
     q: "Can I rank on page 1 without running paid ads on Amazon India?",
-    a: "Yes — but it takes longer. Organic ranking relies on accumulating sales velocity and conversion signals over time. Paid ads accelerate this by driving early sales that signal to the A9 algorithm. For sellers with limited budgets, focus on listing optimisation first, then run a small targeted Sponsored Products campaign on your top 3 keywords once the listing is ready. Organic ranking is more sustainable long-term — once achieved, it costs nothing to maintain compared to the ongoing cost of paid placement.",
+    a: "Yes. But it takes longer. Organic ranking relies on accumulating sales velocity and conversion signals over time. Paid ads accelerate this by driving early sales that signal to the A9 algorithm. For sellers with limited budgets, focus on listing optimisation first, then run a small targeted Sponsored Products campaign on your top 3 keywords once the listing is ready. Organic ranking is more sustainable long-term once achieved, it costs nothing to maintain compared to the ongoing cost of paid placement.",
   },
 ];
 
@@ -183,6 +183,10 @@ export default function HowToRankPage1AmazonIndia() {
 
   const handleMenuItemClick = (item: MenuItemWithBadge) => {
     if (item.route) { setLocation(item.route); setActiveDropdown(null); setIsMenuOpen(false); }
+  };
+  const scrollToSection = (sectionId: string) => {
+    setLocation('/');
+    setTimeout(() => document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   };
 
   const toggleMobileMenu = (name: string) => setMobileActiveMenu(prev => prev === name ? null : name);
@@ -554,22 +558,22 @@ export default function HowToRankPage1AmazonIndia() {
               style={{ width: "100%", display: "block" }}
             />
           </figure>
-          <p className="img-caption">Insydz Rank Tracker — real-time page 1 ranking positions and AI-powered listing recommendations for Amazon.in sellers</p>
+          <p className="img-caption">Insydz Rank Tracker real-time page 1 ranking positions and AI-powered listing recommendations for Amazon.in sellers</p>
         </div>
       </section>
 
       {/* ══════════ KEY TAKEAWAYS (full width) ═══════════════════════════════ */}
       <div style={{ maxWidth: "1200px", margin: "40px auto" }}>
         <div className="takeaway-box">
-          <h3>📋 Key Takeaways for Indian Amazon Sellers</h3>
+          <h3>Key Takeaways for Indian Amazon Sellers</h3>
           {[
-            "Page 1 of Amazon.in captures over 70% of all buyer clicks for any search term — the revenue difference between page 1 and page 3 for the same keyword can be 10x, with zero difference in ad spend.",
-            "Amazon's A9 algorithm is a two-stage filter: first relevance (keyword indexing), then performance (CVR, velocity, CTR). You must win both stages — optimising only one is not enough.",
-            "Your product title carries the highest SEO weight on Amazon.in. Primary keywords must appear in the first 80 characters — marketing language belongs in bullet points, not the title.",
-            "Backend search terms (250 bytes in Seller Central) are a major untapped opportunity for most Indian sellers — fill them with non-duplicate keywords, Hinglish variations, and long-tail phrases.",
-            "Running ads before fixing your listing is the most expensive mistake in Amazon SEO — ads amplify conversion rate, not compensate for it. Optimise listing first, then scale spend.",
+            "Page 1 of Amazon.in captures over 70% of all buyer clicks for any search term the revenue difference between page 1 and page 3 for the same keyword can be 10x, with zero difference in ad spend.",
+            "Amazon's A9 algorithm is a two-stage filter: first relevance (keyword indexing), then performance (CVR, velocity, CTR). You must win both stages optimising only one is not enough.",
+            "Your product title carries the highest SEO weight on Amazon.in. Primary keywords must appear in the first 80 characters marketing language belongs in bullet points, not the title.",
+            "Backend search terms (250 bytes in Seller Central) are a major untapped opportunity for most Indian sellers fill them with non-duplicate keywords, Hinglish variations, and long-tail phrases.",
+            "Running ads before fixing your listing is the most expensive mistake in Amazon SEO ads amplify conversion rate, not compensate for it. Optimise listing first, then scale spend.",
             "Weekly keyword rank tracking is non-negotiable for competitive categories. Catching ranking drops early costs a listing update; catching them late costs months of revenue.",
-            "India-specific keyword tools matter because Amazon.in search patterns differ significantly from Amazon.com — Hinglish, regional buying intent, and platform-specific search require India-calibrated data.",
+            "India-specific keyword tools matter because Amazon.in search patterns differ significantly from Amazon.com Hinglish, regional buying intent, and platform-specific search require India-calibrated data.",
           ].map(t => (
             <div className="takeaway-item" key={t}>
               <div className="takeaway-dot">✓</div>
@@ -590,7 +594,7 @@ export default function HowToRankPage1AmazonIndia() {
           ))}
           <div className="mt-5 pt-5 border-t border-gray-200 dark:border-gray-800">
             <button onClick={() => setLocation("/login")} className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-sm font-bold py-2.5 rounded-xl transition-all">
-              👉 Start Free at insydz.com
+              Start Free at insydz.com
             </button>
             <p className="text-center text-xs text-gray-400 mt-2">No credit card required</p>
           </div>
@@ -599,7 +603,7 @@ export default function HowToRankPage1AmazonIndia() {
         {/* Article body */}
         <main>
           <button className="mobile-toc-btn" onClick={() => setTocOpen(!tocOpen)}>
-            📋 Table of Contents <span>{tocOpen ? "▲" : "▼"}</span>
+            Table of Contents <span>{tocOpen ? "▲" : "▼"}</span>
           </button>
           <div className={`mobile-toc-panel${tocOpen ? " open" : ""}`}>
             {TOC.map(t => (
@@ -613,22 +617,22 @@ export default function HowToRankPage1AmazonIndia() {
             <h2 id="s1">What Does Ranking on Page 1 of Amazon India Actually Mean?</h2>
             <p>
               To <strong>rank on page 1 of Amazon India</strong> means getting your product to appear within the first
-              16–24 results when a buyer searches for your category on Amazon.in — the prime real estate where 70% of
+              16–24 results when a buyer searches for your category on Amazon.in the prime real estate where 70% of
               all clicks occur. Sellers who occupy this space capture the majority of organic demand without paying for
               every click. Sellers outside it are essentially invisible, regardless of product quality or price.
             </p>
             <p>
               The scale of the opportunity is significant: the difference between ranking on page 1 vs. page 3 for the
               same keyword can mean a <strong>10x gap in daily organic sales</strong>, with zero additional ad spend
-              required once the ranking is established. This is compounding leverage — a well-optimised listing earns
+              required once the ranking is established. This is compounding leverage a well-optimised listing earns
               revenue around the clock, unlike a Sponsored Products campaign that stops the moment you pause it.
             </p>
             <div className="callout teal">
-              <div className="callout-label">💡 In Simple Terms</div>
+              <div className="callout-label">In Simple Terms</div>
               <div className="callout-text">
                 Page 1 ranking on Amazon.in means your product shows up first when buyers search for what you're
                 selling. Amazon decides who shows up there based on how relevant your listing is to the buyer's search
-                query and how likely your product is to result in a purchase. Both factors are within your control —
+                query and how likely your product is to result in a purchase. Both factors are within your control
                 and this guide explains exactly how to optimise them.
               </div>
             </div>
@@ -641,16 +645,16 @@ export default function HowToRankPage1AmazonIndia() {
               Amazon.in buyer behaviour follows a steep drop-off after the first page. Research consistently shows that
               page 1 captures over 70% of all clicks for any given search query. Page 2 gets around 15%. Everything
               after page 2 shares the remaining crumbs. The implication for ad spend is equally stark: sellers who rank
-              poorly organically compensate by running Sponsored Products campaigns continuously — paying ₹8–25 per
+              poorly organically compensate by running Sponsored Products campaigns continuously paying ₹8–25 per
               click for visibility they could earn for free with better listing optimisation.
             </p>
 
-            <h3>Indian Buyers Search at Scale — and They Search Specifically</h3>
+            <h3>Indian Buyers Search at Scale and They Search Specifically</h3>
             <p>
               Amazon.in processes hundreds of millions of search queries every month across categories from electronics
               to kirana goods. Indian buyers have become increasingly specific in their searches: not just "water
               bottle" but "insulated water bottle for office 1 litre steel under 400". These long-tail queries have
-              lower competition and higher purchase intent — and a page 1 ranking for even three or four of them can
+              lower competition and higher purchase intent and a page 1 ranking for even three or four of them can
               meaningfully move your monthly revenue.
             </p>
 
@@ -663,7 +667,7 @@ export default function HowToRankPage1AmazonIndia() {
             </p>
 
             <div className="callout warn">
-              <div className="callout-label">📊 Real Seller Example — Surat Textile Seller</div>
+              <div className="callout-label">Real Seller Example Surat Textile Seller</div>
               <div className="callout-text">
                 A Surat-based textile seller was doing ₹2.4 lakh/month selling cotton bedsheets. After a keyword audit,
                 they identified 11 high-volume keywords their top competitors ranked for that were completely absent
@@ -673,7 +677,7 @@ export default function HowToRankPage1AmazonIndia() {
             </div>
 
             <div className="callout indigo">
-              <div className="callout-label">🤖 AI Overview Summary</div>
+              <div className="callout-label">AI Overview Summary</div>
               <div className="callout-text">
                 Ranking on page 1 of Amazon India requires optimising your product listing for the A9 algorithm across
                 four core signals: keyword relevance (title, bullets, backend), sales velocity, conversion rate, and
@@ -687,7 +691,7 @@ export default function HowToRankPage1AmazonIndia() {
             <p>
               The A9 algorithm has two jobs: find products relevant to what the buyer searched, then rank them by
               which ones are most likely to result in a purchase. Understanding this two-step logic is the key to
-              ranking on page 1 of Amazon India — because the algorithm isn't just looking at your keywords, it's
+              ranking on page 1 of Amazon India because the algorithm isn't just looking at your keywords, it's
               looking at your entire commercial track record.
             </p>
 
@@ -699,36 +703,36 @@ export default function HowToRankPage1AmazonIndia() {
                 style={{ width: "100%", display: "block" }}
               />
             </figure>
-            <p className="img-caption">Amazon A9 algorithm ranking signals — relative weights that determine your page 1 position on Amazon.in</p>
+            <p className="img-caption">Amazon A9 algorithm ranking signals relative weights that determine your page 1 position on Amazon.in</p>
 
             <h3>Step 1 — Relevance: Can Amazon Find Your Product?</h3>
             <p>
               <strong>Keyword Indexing:</strong> Amazon scans your product title, bullet points, product description,
               and backend search terms to understand what your product is. If a keyword doesn't appear anywhere in your
-              listing, Amazon will not rank you for it — regardless of how relevant your product actually is. This is
+              listing, Amazon will not rank you for it regardless of how relevant your product actually is. This is
               why keyword research must precede listing writing, not follow it.
             </p>
             <p>
               <strong>Title Weight:</strong> Your product title carries the highest SEO weight in the A9 algorithm.
-              The first 80 characters of your title are most critical — Amazon prioritises these for indexing and
+              The first 80 characters of your title are most critical Amazon prioritises these for indexing and
               they're what buyers see in compressed mobile search results. Marketing language like "premium quality" or
               "best in class" wastes these characters without adding ranking value.
             </p>
             <p>
               <strong>Backend Search Terms:</strong> Amazon gives you 250 bytes of hidden search terms in Seller
               Central. These are invisible to buyers but fully indexed by the algorithm. Most sellers either leave
-              these blank or fill them with duplicate keywords already in their title — both are significant missed
+              these blank or fill them with duplicate keywords already in their title both are significant missed
               opportunities.
             </p>
 
             <h3>Step 2 — Performance: Will Your Product Convert?</h3>
             <p>
               <strong>Sales Velocity:</strong> Amazon tracks how many units you sell per day. Higher sales velocity
-              signals a popular, trustworthy product — and Amazon rewards it with better ranking.
+              signals a popular, trustworthy product and Amazon rewards it with better ranking.
             </p>
             <p>
               <strong>Conversion Rate (CVR):</strong> Of all the buyers who view your listing, what percentage actually
-              buy? A product with a 12% CVR will outrank a product with a 6% CVR for the same keyword — even if they
+              buy? A product with a 12% CVR will outrank a product with a 6% CVR for the same keyword even if they
               have identical titles and backend keywords. CVR is improved through better images, stronger bullet points,
               competitive pricing, and social proof from reviews.
             </p>
@@ -740,7 +744,7 @@ export default function HowToRankPage1AmazonIndia() {
             </p>
 
             {/* ── S4: 6 Ranking Factors ──────────────────────────────────── */}
-            <h2 id="s4">The 6 Core Ranking Factors on Amazon.in — Explained</h2>
+            <h2 id="s4">The 6 Core Ranking Factors on Amazon.in Explained</h2>
             <p>
               Understanding the A9 algorithm in detail allows you to systematically improve each ranking factor. Here
               is how each factor works and what it means in practice for Indian sellers.
@@ -754,7 +758,7 @@ export default function HowToRankPage1AmazonIndia() {
                 style={{ width: "100%", display: "block" }}
               />
             </figure>
-            <p className="img-caption">Insydz Listing Health Dashboard — tracking all 6 A9 ranking factors with actionable improvement scores for Amazon.in sellers</p>
+            <p className="img-caption">Insydz Listing Health Dashboard tracking all 6 A9 ranking factors with actionable improvement scores for Amazon.in sellers</p>
 
             <div className="dt-wrap">
               <table className="dt">
@@ -775,14 +779,14 @@ export default function HowToRankPage1AmazonIndia() {
             {/* ── S5: Mistakes ─────────────────────────────────────────────── */}
             <h2 id="s5">5 Critical Mistakes That Keep Indian Sellers Off Page 1</h2>
             <p>
-              These five mistakes are the most common reasons Indian sellers fail to break into page 1 — and stay
+              These five mistakes are the most common reasons Indian sellers fail to break into page 1 and stay
               there. Each one is entirely preventable once you understand the mechanics behind it.
             </p>
 
             {[
               {
                 n: 1, title: "Writing Titles for Yourself, Not the Algorithm",
-                body: "A seller who titles their product \"Premium Quality Handcrafted Copper Water Bottle — Eco Friendly and Stylish\" has written a marketing headline, not an SEO title. Amazon cannot rank you for \"copper water bottle\" if the exact phrase doesn't appear coherently in your title. The vocabulary buyers use to search and the vocabulary sellers use to describe are often entirely different — and the algorithm sides with buyers, not sellers.",
+                body: "A seller who titles their product \"Premium Quality Handcrafted Copper Water Bottle Eco Friendly and Stylish\" has written a marketing headline, not an SEO title. Amazon cannot rank you for \"copper water bottle\" if the exact phrase doesn't appear coherently in your title. The vocabulary buyers use to search and the vocabulary sellers use to describe are often entirely different and the algorithm sides with buyers, not sellers.",
               },
               {
                 n: 2, title: "Leaving Backend Search Terms Empty or Duplicated",
@@ -790,7 +794,7 @@ export default function HowToRankPage1AmazonIndia() {
               },
               {
                 n: 3, title: "Launching Ads Before Fixing the Listing",
-                body: "Running Sponsored Products on an unoptimised listing is paying for traffic that won't convert. If your listing has poor images, thin bullet points, or no reviews — ads bring visitors who leave. Amazon's algorithm interprets this low conversion as a signal to reduce your organic ranking further. Fix the listing first, then amplify it with ads. This sequence is not negotiable.",
+                body: "Running Sponsored Products on an unoptimised listing is paying for traffic that won't convert. If your listing has poor images, thin bullet points, or no reviews ads bring visitors who leave. Amazon's algorithm interprets this low conversion as a signal to reduce your organic ranking further. Fix the listing first, then amplify it with ads. This sequence is not negotiable.",
               },
               {
                 n: 4, title: "Ignoring Long-Tail Keywords Where the Real Intent Lives",
@@ -798,7 +802,7 @@ export default function HowToRankPage1AmazonIndia() {
               },
               {
                 n: 5, title: "Treating SEO as a One-Time Task",
-                body: "Sellers who optimise a listing once and never revisit it lose rankings as competitors update their listings, new search trends emerge, and seasonal keywords shift. Category leaders review and update their listings quarterly at minimum — and track keyword rankings weekly to catch drops before they compound into sustained revenue losses. Ranking is not a destination; it's a position you defend with data.",
+                body: "Sellers who optimise a listing once and never revisit it lose rankings as competitors update their listings, new search trends emerge, and seasonal keywords shift. Category leaders review and update their listings quarterly at minimum and track keyword rankings weekly to catch drops before they compound into sustained revenue losses. Ranking is not a destination; it's a position you defend with data.",
               },
             ].map(m => (
               <div className="mistake-card" key={m.n}>
@@ -811,7 +815,7 @@ export default function HowToRankPage1AmazonIndia() {
               <div className="callout-label">⚠ Counterintuitive Truth</div>
               <div className="callout-text">
                 Running more ads will not fix a broken listing. Ads amplify what's already there. If your listing
-                converts at 4%, ads just bring more people who don't buy — and you pay for each one. The correct
+                converts at 4%, ads just bring more people who don't buy and you pay for each one. The correct
                 sequence is always: optimise the listing organically first, then scale with paid traffic once you know
                 the listing converts.
               </div>
@@ -820,7 +824,7 @@ export default function HowToRankPage1AmazonIndia() {
             <div className="inline-cta">
               <div>
                 <h4>Find Your Keyword Gaps in Minutes</h4>
-                <p>Insydz gives Indian sellers the exact keywords their top competitors rank for — that they don't even have in their listing yet.</p>
+                <p>Insydz gives Indian sellers the exact keywords their top competitors rank for that they don't even have in their listing yet.</p>
               </div>
               <button onClick={() => setLocation("/login")} className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm px-6 py-3 rounded-xl transition-all whitespace-nowrap">
                 Start Free at insydz.com →
@@ -830,7 +834,7 @@ export default function HowToRankPage1AmazonIndia() {
             {/* ── S6: Execution Plan ───────────────────────────────────────── */}
             <h2 id="s6">Best Practices: A Page 1 Ranking Execution Plan for Indian Sellers</h2>
             <p>
-              The sellers who consistently hold page 1 positions on Amazon.in don't rely on guesswork — they follow a
+              The sellers who consistently hold page 1 positions on Amazon.in don't rely on guesswork they follow a
               structured four-phase process. Here is the complete execution framework, from initial keyword research
               through ongoing tracking and iteration.
             </p>
@@ -843,16 +847,16 @@ export default function HowToRankPage1AmazonIndia() {
                 style={{ width: "100%", display: "block" }}
               />
             </figure>
-            <p className="img-caption">Insydz 4-phase page 1 execution plan — a structured, data-driven workflow for sustained organic rank growth on Amazon.in</p>
+            <p className="img-caption">Insydz 4-phase page 1 execution plan a structured, data-driven workflow for sustained organic rank growth on Amazon.in</p>
 
             {[
               {
                 phase: "ph1", n: 1,
                 title: "Phase 1: Keyword Research (Before Touching Your Listing)",
-                sub: "Foundation — cannot be skipped",
+                sub: "Foundation cannot be skipped",
                 items: [
                   "Use a keyword research tool to find your primary keyword (highest volume, medium competition), 3–5 secondary keywords (related terms), and 10–15 long-tail keywords (specific, high-intent phrases).",
-                  "Run a competitor reverse ASIN lookup on your top 3 rivals — find keywords they rank for that you don't even have in your listing.",
+                  "Run a competitor reverse ASIN lookup on your top 3 rivals find keywords they rank for that you don't even have in your listing.",
                   "Identify seasonal keywords relevant to your category (e.g., \"Diwali gift ideas\", \"monsoon raincoat\", \"back to school stationery\") and plan listing updates 4–6 weeks before the season.",
                   "Map keywords to their intended placement: primary keyword in title, secondary keywords in bullets, long-tail and Hinglish variants in backend search terms.",
                 ],
@@ -866,7 +870,7 @@ export default function HowToRankPage1AmazonIndia() {
                   "Bullet Points: Address the top 5 buyer questions or objections. Lead each bullet with a benefit, not a feature. Include 1–2 secondary keywords per bullet naturally.",
                   "Backend Search Terms: Fill all 250 bytes with non-duplicate, relevant keywords, common misspellings, and Hinglish variations. Do not repeat keywords already in your title.",
                   "Images: Minimum 6 images. Main image on white background, product fills 85% of frame. Secondary images: lifestyle, dimensions, feature callouts, use-case scenarios.",
-                  "A+ Content: If brand-registered, use A+ Content. Include keywords naturally in the narrative text — this is indexed by Amazon and improves CTR with visual storytelling.",
+                  "A+ Content: If brand-registered, use A+ Content. Include keywords naturally in the narrative text this is indexed by Amazon and improves CTR with visual storytelling.",
                 ],
               },
               {
@@ -874,10 +878,10 @@ export default function HowToRankPage1AmazonIndia() {
                 title: "Phase 3: Sales Velocity Building",
                 sub: "Weeks 1–4 post-optimisation",
                 items: [
-                  "Run a targeted Sponsored Products campaign on your top 5 keywords for the first 2–4 weeks post-optimisation — not to profit, but to signal sales velocity to the A9 algorithm.",
-                  "Use Amazon's \"Request a Review\" button for every order — consistent review velocity helps ranking more than a burst of reviews followed by silence.",
+                  "Run a targeted Sponsored Products campaign on your top 5 keywords for the first 2–4 weeks post-optimisation not to profit, but to signal sales velocity to the A9 algorithm.",
+                  "Use Amazon's \"Request a Review\" button for every order consistent review velocity helps ranking more than a burst of reviews followed by silence.",
                   "Consider a launch-period deal or coupon (5–10% off) to boost CTR in search results during the initial ranking push.",
-                  "Monitor your conversion rate daily during this phase — if CVR drops below 8%, revisit bullet points and main image before scaling ad spend.",
+                  "Monitor your conversion rate daily during this phase if CVR drops below 8%, revisit bullet points and main image before scaling ad spend.",
                 ],
               },
               {
@@ -885,10 +889,10 @@ export default function HowToRankPage1AmazonIndia() {
                 title: "Phase 4: Tracking and Iteration (Ongoing)",
                 sub: "Weekly tracking, quarterly audits",
                 items: [
-                  "Track your keyword rankings weekly — not just overall BSR. BSR is category-level; keyword rank tells you exactly where you stand for each target term.",
-                  "Monitor CTR and CVR in Seller Central's Brand Analytics — if CTR is low, test a new main image; if CVR is low, revisit bullet points and pricing.",
-                  "Quarterly: full listing audit against your top competitor's listing — where are they stronger? What keywords are they using that you aren't?",
-                  "Set up rank drop alerts (WhatsApp or email) so you know within 24 hours if a key ranking position shifts — early intervention prevents weeks-long ranking recovery.",
+                  "Track your keyword rankings weekly not just overall BSR. BSR is category-level; keyword rank tells you exactly where you stand for each target term.",
+                  "Monitor CTR and CVR in Seller Central's Brand Analytics if CTR is low, test a new main image; if CVR is low, revisit bullet points and pricing.",
+                  "Quarterly: full listing audit against your top competitor's listing where are they stronger? What keywords are they using that you aren't?",
+                  "Set up rank drop alerts (WhatsApp or email) so you know within 24 hours if a key ranking position shifts early intervention prevents weeks-long ranking recovery.",
                 ],
               },
             ].map(ph => (
@@ -913,10 +917,10 @@ export default function HowToRankPage1AmazonIndia() {
             <h3>Key Metrics to Track Weekly</h3>
             <div className="metrics-grid">
               {[
-                { num: "Keyword Rank", lbl: "Track daily position for each target keyword — not just overall BSR" },
-                { num: "CTR",          lbl: "Click-through rate in search — low CTR signals weak main image or title" },
-                { num: "CVR",          lbl: "Conversion rate — below 8% means your listing isn't convincing buyers" },
-                { num: "Organic Split",lbl: "% of sales from organic vs. paid — growth in organic share signals healthy ranking" },
+                { num: "Keyword Rank", lbl: "Track daily position for each target keyword not just overall BSR" },
+                { num: "CTR",          lbl: "Click-through rate in search low CTR signals weak main image or title" },
+                { num: "CVR",          lbl: "Conversion rate below 8% means your listing isn't convincing buyers" },
+                { num: "Organic Split",lbl: "% of sales from organic vs. paid growth in organic share signals healthy ranking" },
               ].map(m => (
                 <div className="metric-card" key={m.num}>
                   <span className="metric-num">{m.num}</span>
@@ -935,9 +939,9 @@ export default function HowToRankPage1AmazonIndia() {
               usefulness:
             </p>
             <ul>
-              <li><strong>Jungle Scout:</strong> Excellent keyword research and rank tracking — but database is US-centric. Amazon.in search volumes and Hinglish keyword patterns are significantly underrepresented. Plans start at approximately ₹3,800/month.</li>
+              <li><strong>Jungle Scout:</strong> Excellent keyword research and rank tracking but database is US-centric. Amazon.in search volumes and Hinglish keyword patterns are significantly underrepresented. Plans start at approximately ₹3,800/month.</li>
               <li><strong>Helium 10:</strong> Comprehensive suite including Cerebro (reverse ASIN), Magnet (keyword discovery), and Keyword Tracker. Same India data limitations. Plans range from ₹3,300–8,300/month.</li>
-              <li><strong>Platform gap:</strong> Neither tool covers Flipkart keyword intelligence — a significant limitation for Indian sellers running multi-platform businesses.</li>
+              <li><strong>Platform gap:</strong> Neither tool covers Flipkart keyword intelligence  a significant limitation for Indian sellers running multi-platform businesses.</li>
             </ul>
 
             {/* ── Tools Comparison Graphic — IMG 5 */}
@@ -948,26 +952,26 @@ export default function HowToRankPage1AmazonIndia() {
                 style={{ width: "100%", display: "block" }}
               />
             </figure>
-            <p className="img-caption">Insydz vs. global tools — India-specific keyword intelligence, Flipkart SEO, and WhatsApp rank alerts built for Amazon.in sellers</p>
+            <p className="img-caption">Insydz vs. global tools India-specific keyword intelligence, Flipkart SEO, and WhatsApp rank alerts built for Amazon.in sellers</p>
 
             <h3>Insydz: Page 1 Ranking Intelligence Built for Amazon.in</h3>
-            <p>Insydz takes a connected approach to Amazon ranking — rather than treating SEO as a standalone function, it ties keyword intelligence to competitor pricing, review sentiment, and market trends in one dashboard. For sellers focused specifically on ranking on page 1 of Amazon India, the tool provides:</p>
+            <p>Insydz takes a connected approach to Amazon ranking rather than treating SEO as a standalone function, it ties keyword intelligence to competitor pricing, review sentiment, and market trends in one dashboard. For sellers focused specifically on ranking on page 1 of Amazon India, the tool provides:</p>
             <ul>
-              <li><strong>Keyword research powered by Amazon.in-specific data</strong> — including Hinglish variants and India-specific buying intent patterns that global tools miss entirely.</li>
-              <li><strong>Competitor reverse ASIN analysis</strong> — see exactly which keywords your rivals are ranking for, and which gaps you can target first to gain ground.</li>
-              <li><strong>Daily keyword rank tracking with WhatsApp alerts</strong> when you drop positions — so you catch ranking losses within hours, not weeks.</li>
-              <li><strong>Listing optimisation recommendations in plain language</strong> — not just a score, but actionable next steps like "Add this keyword to your title because it has 18,000 monthly searches and your top 3 competitors all use it."</li>
-              <li><strong>Flipkart keyword intelligence alongside Amazon.in</strong> — one tool for both platforms.</li>
-              <li><strong>Pricing from ₹1999/month</strong> — with a forever-free plan for sellers starting out.</li>
+              <li><strong>Keyword research powered by Amazon.in-specific data</strong> including Hinglish variants and India-specific buying intent patterns that global tools miss entirely.</li>
+              <li><strong>Competitor reverse ASIN analysis</strong> see exactly which keywords your rivals are ranking for, and which gaps you can target first to gain ground.</li>
+              <li><strong>Daily keyword rank tracking with WhatsApp alerts</strong> when you drop positions so you catch ranking losses within hours, not weeks.</li>
+              <li><strong>Listing optimisation recommendations in plain language</strong> not just a score, but actionable next steps like "Add this keyword to your title because it has 18,000 monthly searches and your top 3 competitors all use it."</li>
+              <li><strong>Flipkart keyword intelligence alongside Amazon.in</strong> one tool for both platforms.</li>
+              <li><strong>Pricing from ₹1999/month</strong> with a forever-free plan for sellers starting out.</li>
             </ul>
 
             <div className="callout pro">
-              <div className="callout-label">📈 Real Outcome from Insydz</div>
+              <div className="callout-label">Real Outcome from Insydz</div>
               <div className="callout-text">
                 A kitchen appliances seller used the competitor keyword gap tool to identify 14 high-volume keywords
                 their top competitors ranked for that were missing from their listing entirely. After adding these
                 keywords to their title, bullet points, and backend search terms, their average keyword rank improved
-                from #18 to #6 across target terms — and{" "}
+                from #18 to #6 across target terms and{" "}
                 <strong>organic sessions increased 340% within 6 weeks, with no change in ad spend.</strong>
               </div>
             </div>
@@ -1010,7 +1014,7 @@ export default function HowToRankPage1AmazonIndia() {
                 Page 1 Isn't Luck. It's a System.
               </h2>
               <p className="text-gray-400 mb-8 text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 28px" }}>
-                Sellers who rank on page 1 of Amazon India aren't guessing which keywords to use — they're using data.
+                Sellers who rank on page 1 of Amazon India aren't guessing which keywords to use they're using data.
                 They're tracking competitors. They're catching ranking drops before they lose revenue. Insydz gives you
                 the same intelligence, built specifically for Amazon.in and Flipkart.
               </p>
@@ -1156,7 +1160,7 @@ export default function HowToRankPage1AmazonIndia() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

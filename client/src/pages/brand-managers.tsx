@@ -460,7 +460,7 @@ export default function BrandManagersPage() {
                   </button>
                   {mobileActiveMenu === menu && (
                     <div className="ml-4 mt-2 space-y-1">
-                      {(navigationMenu[key] as MenuItemWithBadge[]).map((item, i) => (
+                      {(navigationMenu[menu] as MenuItemWithBadge[]).map((item, i) => (
   item.route ? (
     <Link href={item.route} key={i} onClick={() => setIsMenuOpen(false)}
       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg"
@@ -518,13 +518,13 @@ export default function BrandManagersPage() {
               </h1>
 
               <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
-                Insydz is India's most powerful <strong>brand monitoring tool</strong> for brand managers on Amazon and Flipkart —
+                Insydz is India's most powerful <strong>brand monitoring tool</strong> for brand managers on Amazon and Flipkart
                 <span className="text-purple-700 font-semibold"> so you can protect market share, optimise pricing strategies, and outmanoeuvre competitors with complete marketplace intelligence, not delayed reports.</span>
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 w-full">
                 <Button onClick={handleGetStarted} size="lg" className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-purple-500/50 transition-all group">
-                  👉 Start Free for Brand Managers
+                  Start Free for Brand Managers
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} size="lg" variant="outline" className="border-2 border-purple-600 text-purple-700 dark:text-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20 font-semibold px-8 py-6 text-lg rounded-full">
@@ -535,7 +535,7 @@ export default function BrandManagersPage() {
               <div className="flex flex-wrap items-center gap-6 pt-4">
                 {[
                   "Multi-brand portfolio tracking across Amazon & Flipkart",
-                  "Executive-ready reports — one click, no manual work",
+                  "Executive-ready reports one click, no manual work",
                   "No credit card required"
                 ].map((t, i) => (
                   <div key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -605,7 +605,7 @@ export default function BrandManagersPage() {
               <span className="text-red-600">Without Real-Time Intelligence</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Managing brands on e-commerce without live data is like driving blind. Competitors move at speed, customer sentiment shifts overnight, and by the time your monthly report is ready — the market has already moved against you.
+              Managing brands on e-commerce without live data is like driving blind. Competitors move at speed, customer sentiment shifts overnight, and by the time your monthly report is ready the market has already moved against you.
             </p>
           </div>
 
@@ -625,12 +625,11 @@ export default function BrandManagersPage() {
           </div>
 
           <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-3xl p-8 text-center shadow-lg">
-            <Lightbulb className="w-12 h-12 text-red-600 mx-auto mb-4" />
             <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               Brands lose <span className="text-red-600">20–40% market share annually</span>
             </p>
             <p className="text-gray-700 dark:text-gray-300 text-lg">
-              due to slow competitive response, delayed pricing decisions, and missed customer sentiment signals — on the marketplaces that matter most to Indian consumers.
+              due to slow competitive response, delayed pricing decisions, and missed customer sentiment signals on the marketplaces that matter most to Indian consumers.
             </p>
           </div>
         </div>
@@ -646,7 +645,7 @@ export default function BrandManagersPage() {
               <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Insydz Tracks What They Buy.</span>
             </h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Brandwatch, BrandMentions, and Locobuzz excel at tracking social media chatter. But for brand managers selling on Amazon and Flipkart, the signals that actually move market share — pricing moves, keyword rankings, review sentiment, competitor product launches — happen on the marketplace, not on social media.
+              Brandwatch, BrandMentions, and Locobuzz excel at tracking social media chatter. But for brand managers selling on Amazon and Flipkart, the signals that actually move market share pricing moves, keyword rankings, review sentiment, competitor product launches happen on the marketplace, not on social media.
             </p>
           </div>
 
@@ -655,8 +654,8 @@ export default function BrandManagersPage() {
               <thead>
                 <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
                   <th className="text-left px-6 py-4 font-bold text-base">Feature</th>
-                  <th className="px-6 py-4 font-bold text-base text-center">Insydz</th>
-                  <th className="px-6 py-4 font-bold text-base text-center">Social Listening Tools</th>
+                  <th className="px-6 py-4 font-bold text-base text-left">Insydz</th>
+                  <th className="px-6 py-4 font-bold text-base text-left">Social Listening Tools</th>
                 </tr>
               </thead>
               <tbody>
@@ -672,8 +671,8 @@ export default function BrandManagersPage() {
                 ].map((row, i) => (
                   <tr key={i} className={`border-t border-gray-200 dark:border-gray-700 ${i % 2 === 0 ? 'bg-white dark:bg-gray-950' : 'bg-gray-50 dark:bg-gray-900'}`}>
                     <td className="px-6 py-4 text-gray-700 dark:text-gray-300 font-medium">{row.feature}</td>
-                    <td className="px-6 py-4 text-center font-semibold text-green-600">{row.insydz}</td>
-                    <td className="px-6 py-4 text-center font-semibold">
+                    <td className="px-6 py-4 text-left font-semibold text-green-600">{row.insydz}</td>
+                    <td className="px-6 py-4 text-left font-semibold">
                       <span className={row.other.startsWith('✓') ? 'text-green-600' : row.other.startsWith('⚠') ? 'text-yellow-600' : 'text-red-500'}>{row.other}</span>
                     </td>
                   </tr>
@@ -695,12 +694,12 @@ export default function BrandManagersPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white">
-              Meet Insydz —
+              Meet Insydz
               <br />
               Your <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Strategic Brand Intelligence Platform</span>
             </h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Built for brand managers who need to make fast, confident decisions. Get complete market visibility across Amazon and Flipkart in one unified dashboard —
+              Built for brand managers who need to make fast, confident decisions. Get complete market visibility across Amazon and Flipkart in one unified dashboard
               <span className="text-purple-700 font-semibold"> with AI that tells you what to do, not just what happened.</span>
             </p>
           </div>
@@ -714,7 +713,7 @@ export default function BrandManagersPage() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">1. Multi-Brand Portfolio View</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Monitor all your brand's product lines and competitors simultaneously from one real-time brand tracking dashboard. Whether you manage 2 brands or 12 SKU families, Insydz gives you the complete picture — GMV trends, market share shifts, and competitive threats — without toggling between tools.</p>
+                  <p className="text-gray-600 dark:text-gray-400">Monitor all your brand's product lines and competitors simultaneously from one real-time brand tracking dashboard. Whether you manage 2 brands or 12 SKU families, Insydz gives you the complete picture GMV trends, market share shifts, and competitive threats without toggling between tools.</p>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
@@ -732,7 +731,7 @@ export default function BrandManagersPage() {
               </div>
               <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-2xl p-4">
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  <span className="font-semibold text-purple-700 dark:text-purple-400">📌 Brand Manager scenario:</span> A skincare brand manager in Mumbai was tracking 4 sub-brands manually across two marketplaces. Category managers were presenting outdated data in Monday reviews. With Insydz, the entire portfolio — ₹2.4Cr monthly GMV across 3 brands — is visible in real time every morning before the standup.
+                  <span className="font-semibold text-purple-700 dark:text-purple-400">Brand Manager scenario:</span> A skincare brand manager in Mumbai was tracking 4 sub-brands manually across two marketplaces. Category managers were presenting outdated data in Monday reviews. With Insydz, the entire portfolio ₹2.4Cr monthly GMV across 3 brands is visible in real time every morning before the standup.
                 </p>
               </div>
             </div>
@@ -745,7 +744,7 @@ export default function BrandManagersPage() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">2. AI-Powered Market Intelligence</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Stop receiving data. Start receiving decisions. Insydz's brand intelligence platform doesn't just surface competitor moves — it tells you exactly how to respond. Get strategic recommendations, not just numbers, backed by marketplace AI trained on Indian category data.</p>
+                  <p className="text-gray-600 dark:text-gray-400">Stop receiving data. Start receiving decisions. Insydz's brand intelligence platform doesn't just surface competitor moves it tells you exactly how to respond. Get strategic recommendations, not just numbers, backed by marketplace AI trained on Indian category data.</p>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
@@ -753,7 +752,7 @@ export default function BrandManagersPage() {
                   "Competitor product launch detection with price & positioning analysis",
                   "AI-calculated optimal price range to protect share without margin erosion",
                   "Market share shift alerts with attribution (price/review/ranking cause)",
-                  "Demand signal analysis — where your category is growing or declining"
+                  "Demand signal analysis where your category is growing or declining"
                 ].map((point, i) => (
                   <div key={i} className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
@@ -763,7 +762,7 @@ export default function BrandManagersPage() {
               </div>
               <div className="bg-pink-50 dark:bg-pink-900/20 border border-pink-200 dark:border-pink-700 rounded-2xl p-4">
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  <span className="font-semibold text-pink-700 dark:text-pink-400">📌 Brand Manager scenario:</span> A FMCG brand's premium hair care line started losing market share on Flipkart. Insydz identified the cause in 48 hours: a competitor had dropped price by 18% and gained 3 keyword positions simultaneously. The AI recommended a ₹45 price adjustment and two listing changes. Share recovered within 3 weeks.
+                  <span className="font-semibold text-pink-700 dark:text-pink-400">Brand Manager scenario:</span> A FMCG brand's premium hair care line started losing market share on Flipkart. Insydz identified the cause in 48 hours: a competitor had dropped price by 18% and gained 3 keyword positions simultaneously. The AI recommended a ₹45 price adjustment and two listing changes. Share recovered within 3 weeks.
                 </p>
               </div>
             </div>
@@ -776,7 +775,7 @@ export default function BrandManagersPage() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">3. Executive Reporting &amp; Custom Dashboards</h3>
-                  <p className="text-gray-600 dark:text-gray-400">One click. Board-ready. Insydz generates performance analytics reports formatted for leadership review — market share trends, competitive landscape summaries, keyword position charts, and sentiment scores — without a single hour of manual data compilation.</p>
+                  <p className="text-gray-600 dark:text-gray-400">One click. Board-ready. Insydz generates performance analytics reports formatted for leadership review market share trends, competitive landscape summaries, keyword position charts, and sentiment scores without a single hour of manual data compilation.</p>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
@@ -794,7 +793,7 @@ export default function BrandManagersPage() {
               </div>
               <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-2xl p-4 mb-4">
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  <span className="font-semibold text-orange-700 dark:text-orange-400">📌 Brand Manager scenario:</span> A brand manager at a consumer electronics company spent 6 hours every month compiling competitor data for the CMO review deck. With Insydz, the same report auto-generates in 90 seconds. Six hours returned to strategy every month.
+                  <span className="font-semibold text-orange-700 dark:text-orange-400">Brand Manager scenario:</span> A brand manager at a consumer electronics company spent 6 hours every month compiling competitor data for the CMO review deck. With Insydz, the same report auto-generates in 90 seconds. Six hours returned to strategy every month.
                 </p>
               </div>
               <button onClick={() => setLocation('/features/ai-recommendations-feature')} className="text-orange-600 dark:text-orange-400 font-semibold text-sm hover:underline">
@@ -810,7 +809,7 @@ export default function BrandManagersPage() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">4. Competitive Defence Alerts</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Real-time brand tracking means knowing about competitive threats the moment they happen — not after your sales data confirms the damage. Insydz monitors the market 24/7 and delivers WhatsApp alerts for every significant competitive event that could affect your brand's position.</p>
+                  <p className="text-gray-600 dark:text-gray-400">Real-time brand tracking means knowing about competitive threats the moment they happen not after your sales data confirms the damage. Insydz monitors the market 24/7 and delivers WhatsApp alerts for every significant competitive event that could affect your brand's position.</p>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
@@ -818,7 +817,7 @@ export default function BrandManagersPage() {
                   "New competitor product launch alert with full pricing intel",
                   "Market share erosion alert when position drops more than 5%",
                   "Keyword ranking loss alert with AI-recommended recovery action",
-                  "Review sentiment deterioration alert — before ratings visibly decline"
+                  "Review sentiment deterioration alert before ratings visibly decline"
                 ].map((point, i) => (
                   <div key={i} className="flex items-start gap-2">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
@@ -828,7 +827,7 @@ export default function BrandManagersPage() {
               </div>
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-2xl p-4">
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  <span className="font-semibold text-green-700 dark:text-green-400">📌 Brand Manager scenario:</span> A home appliances brand manager received an Insydz alert on a Tuesday afternoon: Competitor X launched a similar product at 23% lower price. By Thursday, she had approved a tactical pricing response and a review solicitation push. Market share held within 2% of pre-launch levels.
+                  <span className="font-semibold text-green-700 dark:text-green-400">Brand Manager scenario:</span> A home appliances brand manager received an Insydz alert on a Tuesday afternoon: Competitor X launched a similar product at 23% lower price. By Thursday, she had approved a tactical pricing response and a review solicitation push. Market share held within 2% of pre-launch levels.
                 </p>
               </div>
             </div>
@@ -846,7 +845,7 @@ export default function BrandManagersPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
               { icon: <PieChart className="w-8 h-8" />, title: "Market Share Tracking", desc: "Real-time category position vs. all competitors across Amazon and Flipkart" },
-              { icon: <TrendingUp className="w-8 h-8" />, title: "Price Elasticity Analysis", desc: "AI models category price sensitivity — never price blind again" },
+              { icon: <TrendingUp className="w-8 h-8" />, title: "Price Elasticity Analysis", desc: "AI models category price sensitivity never price blind again" },
               { icon: <MessageCircle className="w-8 h-8" />, title: "Sentiment Analytics", desc: "AI-powered review analysis across 250K+ reviews; brand perception tracking" },
               { icon: <Target className="w-8 h-8" />, title: "Competitive Benchmarking", desc: "20+ metrics: pricing, reviews, keyword rankings, GMV estimates" },
               { icon: <Sparkles className="w-8 h-8" />, title: "Product Performance", desc: "Star performer vs. underperformer analysis across your portfolio" },
@@ -881,12 +880,12 @@ export default function BrandManagersPage() {
                 {
                   num: "1", title: "Connect Your Brand Portfolio",
                   desc: "Add your brands and key competitors across Amazon and Flipkart. Insydz automatically tracks pricing, reviews, rankings, and market trends across your entire product catalogue and category.",
-                  icon: <Layers className="w-12 h-12 text-purple-600 mx-auto" />, bg: "bg-purple-100 dark:bg-purple-900/20"
+                  icon: <Layers className="w-12 h-12 text-purple-600" />, bg: "bg-purple-100 dark:bg-purple-900/20"
                 },
                 {
                   num: "2", title: "AI Analyses Market Dynamics",
-                  desc: "Our AI continuously monitors market share shifts, pricing strategies, customer sentiment, and competitive positioning across your categories — 24/7, in real time, in INR.",
-                  icon: <Brain className="w-12 h-12 text-pink-600 mx-auto animate-pulse" />, bg: "bg-pink-100 dark:bg-pink-900/20"
+                  desc: "Our AI continuously monitors market share shifts, pricing strategies, customer sentiment, and competitive positioning across your categories 24/7, in real time, in INR.",
+                  icon: <Brain className="w-12 h-12 text-pink-600 animate-pulse" />, bg: "bg-pink-100 dark:bg-pink-900/20"
                 },
                 {
                   num: "3", title: "Get Strategic Recommendations", desc: "Instead of raw data, you receive decision-ready intelligence:", icon: null, bg: null
@@ -896,7 +895,13 @@ export default function BrandManagersPage() {
                   <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">{step.num}</div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{step.title}</h3>
                   {step.desc && <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">{step.desc}</p>}
-                  {step.icon && <div className={`${step.bg} rounded-2xl p-4`}>{step.icon}</div>}
+                  {step.icon && (
+  <div className={`${step.bg} rounded-2xl p-4 flex items-center justify-center`}>
+    <div className="flex items-center justify-center w-12 h-12">
+      {step.icon}
+    </div>
+  </div>
+)}
                   {i === 2 && (
                     <div className="space-y-3 text-left">
                       {[
@@ -918,7 +923,7 @@ export default function BrandManagersPage() {
 
           <div className="text-center mt-12">
             <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold px-4 sm:px-12 py-6 text-sm sm:text-lg rounded-full shadow-2xl hover:shadow-purple-500/50 transition-all group w-full sm:w-auto">
-              👉 Start Free &amp; Get Brand Intelligence
+              Start Free &amp; Get Brand Intelligence
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -939,7 +944,7 @@ export default function BrandManagersPage() {
             {/* Without */}
             <div className="bg-white dark:bg-gray-900 border-2 border-red-200 dark:border-red-800 rounded-3xl p-8 shadow-xl">
               <h3 className="text-xl font-black text-red-600 mb-6 flex items-center gap-2">
-                <AlertCircle className="w-6 h-6" /> Without Insydz — Monthly Value at Risk
+                <div className="w-6 h-6" /> Without Insydz Monthly Value at Risk
               </h3>
               <div className="space-y-4">
                 {[
@@ -963,7 +968,7 @@ export default function BrandManagersPage() {
             {/* With */}
             <div className="bg-white dark:bg-gray-900 border-2 border-green-200 dark:border-green-800 rounded-3xl p-8 shadow-xl">
               <h3 className="text-xl font-black text-green-600 mb-6 flex items-center gap-2">
-                <CheckCircle2 className="w-6 h-6" /> With Insydz — Monthly Value Protected
+                <div className="w-6 h-6" /> With Insydz Monthly Value Protected
               </h3>
               <div className="space-y-4">
                 {[
@@ -1052,7 +1057,7 @@ export default function BrandManagersPage() {
                 Building your brand on Indian marketplaces? Get competitor intelligence and market positioning data from day one. The free plan requires no credit card and gives new brand managers the visibility they need before making their first major strategic decision.
               </p>
               <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-full">
-                Start Free — No Card Needed →
+                Start Free No Card Needed →
               </Button>
             </div>
 
@@ -1078,7 +1083,7 @@ export default function BrandManagersPage() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">For Enterprise &amp; Multi-Brand Leaders</h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-6">
-                Managing a multi-brand portfolio? Custom dashboards, dedicated account manager, white-glove onboarding, API access, and enterprise pricing — built for brand leaders managing complex multi-category portfolios across Indian marketplaces.
+                Managing a multi-brand portfolio? Custom dashboards, dedicated account manager, white-glove onboarding, API access, and enterprise pricing built for brand leaders managing complex multi-category portfolios across Indian marketplaces.
               </p>
               <Button onClick={() => setLocation('/solutions/ecommerce-agencies')} variant="outline" className="w-full border-2 border-purple-600 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 font-bold rounded-full">
                 Book a Strategic Demo →
@@ -1218,7 +1223,7 @@ export default function BrandManagersPage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>
