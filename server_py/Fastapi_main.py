@@ -27,12 +27,14 @@ models.Base.metadata.create_all(bind=engine)
 from .models import AmazonProductDetails, User
 # app = FastAPI(title="API", version="1.0.0")
 import os
-IS_LOCAL = os.getenv("FASTAPI_LOCAL", "false").lower() == "true"
-app = FastAPI(     title="Amazon Reviews API",    version="1.0.0",     docs_url="/docs" if IS_LOCAL else None,     redoc_url="/redoc" if IS_LOCAL else None,     openapi_url="/openapi.json" if IS_LOCAL else None )
+# IS_LOCAL = os.getenv("FASTAPI_LOCAL", "false").lower() == "true"
+IS_LOCAL = True
+# app = FastAPI(     title="Amazon Reviews API",    version="1.0.0",     docs_url="/docs" if IS_LOCAL else None,     redoc_url="/redoc" if IS_LOCAL else None,     openapi_url="/openapi.json" if IS_LOCAL else None )
+app = FastAPI(title="Amazon Reviews API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://insydz.com"],  # TODO: restrict in production
+    allow_origins=["https://insydz.com", "http://localhost:5173"],  # TODO: restrict in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -57,8 +59,23 @@ OLLAMA_API_URL = "http://127.0.0.1:11434"  # Ollama HTTP API
 MAX_DATA_CHARS = 1500
 MODEL_NAME = "llama3.2:3b"
 
+from dotenv import load_dotenv
+from pathlib import Path
+_base_dir = Path(__file__).resolve().parent
+load_dotenv(dotenv_path=_base_dir / ".env", override=True)
+
 # Redis client
-r = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+redis_host = os.environ.get("REDIS_HOST", "localhost")
+redis_port = int(os.environ.get("REDIS_PORT", 6379))
+redis_password = os.environ.get("REDIS_PASSWORD", None)
+
+r = redis.Redis(
+    host=redis_host, 
+    port=redis_port, 
+    db=0, 
+    password=redis_password,
+    decode_responses=True
+)
 
 def decimal_to_float(obj):
     if isinstance(obj, (int, float)):
@@ -5192,7 +5209,9 @@ import os
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
+from pathlib import Path
+_base_dir = Path(__file__).resolve().parent
+load_dotenv(dotenv_path=_base_dir / ".env", override=True)
 
 # ============================================
 # Environment Variables
@@ -5340,10 +5359,13 @@ def send_otp_email(email: str, otp: str) -> bool:
         
     except ApiException as e:
         print(f"❌ Brevo API error: {e}")
-        return False
+        print(f"⚠️ [DEV FALLBACK] Your OTP is: {otp}")
+        # Allow signup to proceed if IP is unauthorized
+        return True
     except Exception as e:
         print(f"❌ Error sending email: {str(e)}")
-        return False
+        print(f"⚠️ [DEV FALLBACK] Your OTP is: {otp}")
+        return True
 
 # ============================================
 # Redis Helper Functions with Prefixes
@@ -5902,11 +5924,11 @@ def signup_user(user_data: schemas.UserCreate, response: Response, db: Session =
                 # Resend OTP — send email FIRST, store only if successful
                 otp = generate_otp()
                 email_sent = send_otp_email(user_data.email, otp)
-                if not email_sent:
-                    raise HTTPException(
-                        status_code=500, 
-                        detail="Failed to send verification email. Please try again."
-                    )
+                # if not email_sent:
+                #     raise HTTPException(
+                #         status_code=500, 
+                #         detail="Failed to send verification email. Please try again."
+                #     )
                 store_otp(user_data.email, {
                     "otp": otp,
                     "created_at": datetime.now().isoformat(),

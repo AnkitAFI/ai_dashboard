@@ -17,9 +17,9 @@
 // import { Bar, Doughnut } from "react-chartjs-2";
 // import { useFilters } from "@/components/dashboard/FiltersContext";
 // import { useAISummary } from "@/hooks/useAISummary";
- 
+
 // ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
- 
+
 // interface ChartCardProps {
 //   title: string;
 //   children: React.ReactNode;
@@ -27,7 +27,7 @@
 //   summary?: string;
 //   summaryLoading?: boolean;
 // }
- 
+
 // function ChartCard({ title, children, isLoading, summary, summaryLoading }: ChartCardProps) {
 //   return (
 //     <Card className="bg-card rounded-xl p-6 border hover:shadow-md transition-shadow">
@@ -54,12 +54,12 @@
 //     </Card>
 //   );
 // }
- 
+
 // export default function ChartsGrid({ selectedSource }: { selectedSource: string }) {
-//   const BASE_URL = "https://api.insydz.com";
+//   const BASE_URL = "http://localhost:8000";
 //   const { filters } = useFilters();
 //   const [, setLocation] = useLocation();
- 
+
 //   const [flipkartProducts, setFlipkartProducts] = useState<any[]>([]);
 //   const [amazonProducts, setAmazonProducts] = useState<any[]>([]);
 //   const [flipkartCategories, setFlipkartCategories] = useState<any[]>([]);
@@ -68,40 +68,40 @@
 //   const [sentiments, setSentiments] = useState<any[]>([]);
 //   const [rapidApiProducts, setRapidApiProducts] = useState<any[]>([]);
 //   const [isLoading, setIsLoading] = useState(true);
- 
+
 //   const buildQueryParams = (table: string) => {
 //     const params = new URLSearchParams();
-   
+
 //     if (filters.category && filters.category !== "All Categories") {
 //       params.append("category", filters.category);
 //     }
-   
+
 //     if (filters.priceRange[0] > 0) {
 //       params.append("min_price", filters.priceRange[0].toString());
 //     }
 //     if (filters.priceRange[1] < 5000000) {
 //       params.append("max_price", filters.priceRange[1].toString());
 //     }
-   
+
 //     if (filters.rating > 0) {
 //       params.append("min_rating", filters.rating.toString());
 //     }
-   
+
 //     if (filters.dateRange !== "all") {
 //       params.append("date_range", filters.dateRange);
 //     }
-   
+
 //     if (filters.showTrendingOnly) {
 //       params.append("trending_only", "true");
 //     }
-   
+
 //     if (filters.sortBy) {
 //       params.append("sort_by", filters.sortBy);
 //     }
-   
+
 //     return params.toString();
 //   };
- 
+
 //   useEffect(() => {
 //     const fetchAll = async () => {
 //       setIsLoading(true);
@@ -109,11 +109,11 @@
 //         const table = filters.table || selectedSource;
 //         const queryParams = buildQueryParams(table);
 //         const topN = filters.topN || 10; // Use topN from filters
-       
+
 //         if (selectedSource === "both" || table === "both") {
 //           const flipkartParams = buildQueryParams("flipkart");
 //           const amazonParams = buildQueryParams("amazon_reviews");
-         
+
 //           const [
 //             flipkartRes,
 //             amazonRes,
@@ -131,7 +131,7 @@
 //             fetch(`${BASE_URL}/rapidapi_amazon_products/sentiment?${amazonParams}`),
 //             fetch(`${BASE_URL}/rapidapi/top-sales?limit=${topN}&${amazonParams}`),
 //           ]);
- 
+
 //           const [
 //             flipkartJson,
 //             amazonJson,
@@ -149,7 +149,7 @@
 //             sentimentRes.json(),
 //             rapidApiRes.json(),
 //           ]);
- 
+
 //           setFlipkartProducts(flipkartJson.data || []);
 //           setAmazonProducts(amazonJson.data || []);
 //           setFlipkartCategories(flipkartCatJson || []);
@@ -166,7 +166,7 @@
 //               fetch(`${BASE_URL}/rapidapi_amazon_products/sentiment?${queryParams}`),
 //               fetch(`${BASE_URL}/rapidapi/top-sales?limit=${topN}&${queryParams}`),
 //             ]);
- 
+
 //           const [productsJson, categoriesJson, ratingsJson, sentimentJson, rapidApiJson] =
 //             await Promise.all([
 //               productsRes.json(),
@@ -175,7 +175,7 @@
 //               sentimentRes.json(),
 //               rapidApiRes.json(),
 //             ]);
- 
+
 //           setFlipkartProducts([]);
 //           setAmazonProducts(productsJson.data || []);
 //           setFlipkartCategories([]);
@@ -188,12 +188,12 @@
 //             fetch(`${BASE_URL}/top?table=flipkart&n=${topN}&${queryParams}`),
 //             fetch(`${BASE_URL}/flipkart/categories?${queryParams}`),
 //           ]);
- 
+
 //           const [productsJson, categoryJson] = await Promise.all([
 //             productsRes.json(),
 //             categoryRes.json(),
 //           ]);
- 
+
 //           setFlipkartProducts(productsJson.data || []);
 //           setAmazonProducts([]);
 //           setFlipkartCategories(categoryJson || []);
@@ -208,32 +208,32 @@
 //         setIsLoading(false);
 //       }
 //     };
- 
+
 //     fetchAll();
 //   }, [selectedSource, filters]);
- 
+
 //   // 🔹 AI Summaries
 //   const { summary: flipkartProductsSummary, loading: flipkartProductsLoading } =
 //     useAISummary("Summarize Flipkart top products by rating", "flipkart", flipkartProducts, flipkartProducts.length, filters);
- 
+
 //   const { summary: flipkartReviewsSummary, loading: flipkartReviewsLoading } =
 //     useAISummary("Summarize Flipkart products with most reviews", "flipkart", flipkartProducts, flipkartProducts.length, filters);
- 
+
 //   const { summary: flipkartCategoriesSummary, loading: flipkartCategoriesLoading } =
 //     useAISummary("Summarize Flipkart category distribution", "flipkart", flipkartCategories, flipkartCategories.length, filters);
- 
+
 //   const { summary: amazonCategoriesSummary, loading: amazonCategoriesLoading } =
 //     useAISummary("Summarize Amazon category distribution", "rapidapi_amazon_products", amazonCategories, amazonCategories.length, filters);
- 
+
 //   const { summary: ratingsSummary, loading: ratingsLoading } =
 //     useAISummary("Summarize rating distribution", "rapidapi_amazon_products", ratings, ratings.length, filters);
- 
+
 //   const { summary: sentimentsSummary, loading: sentimentsLoading } =
 //     useAISummary("Summarize sentiment distribution", "rapidapi_amazon_products", sentiments, sentiments.length, filters);
- 
+
 //   const { summary: rapidApiSalesSummary, loading: rapidApiSalesLoading } =
 //     useAISummary("Summarize top selling products by daily sales volume from RapidAPI data", "rapidapi_amazon_products", rapidApiProducts, rapidApiProducts.length, filters);
- 
+
 //   // 🔹 Click Handlers for Navigation
 //   const handleFlipkartProductClick = (index: number) => {
 //     const product = flipkartProducts[index];
@@ -243,7 +243,7 @@
 //       setLocation(`/product/${productName}?from=dashboard&source=flipkart`);
 //     }
 //   };
- 
+
 //   const handleFlipkartCategoryClick = (index: number) => {
 //     const category = flipkartCategories[index];
 //     if (category && category.category) {
@@ -252,7 +252,7 @@
 //       setLocation(`/category-products/flipkart/${categoryName}?page=1&from=dashboard`);
 //     }
 //   };
- 
+
 //   const handleAmazonCategoryClick = (index: number) => {
 //     const category = amazonCategories[index];
 //     if (category && (category.category || category.category_name)) {
@@ -261,7 +261,7 @@
 //       setLocation(`/category-products/amazon/${categoryName}?page=1&from=dashboard`);
 //     }
 //   };
- 
+
 //   const handleRapidApiProductClick = (index: number) => {
 //     const product = rapidApiProducts[index];
 //     if (product && product.product_title) {
@@ -270,7 +270,7 @@
 //       setLocation(`/product/${productName}?from=dashboard&source=amazon`);
 //     }
 //   };
- 
+
 //   // 🔹 Common Chart Options with Click Events
 //   const createBarOptions = (clickHandler: (index: number) => void) => ({
 //     responsive: true,
@@ -296,7 +296,7 @@
 //       }
 //     }
 //   });
- 
+
 //   const createDoughnutOptions = (clickHandler?: (index: number) => void) => ({
 //     responsive: true,
 //     maintainAspectRatio: false,
@@ -321,12 +321,12 @@
 //       }
 //     } : undefined
 //   });
- 
+
 //   const truncateName = (name: string) => {
 //     const cleaned = name.replace(/"/g, "");
 //     return cleaned.substring(0, 30) + (cleaned.length > 30 ? "..." : "");
 //   };
- 
+
 //   const flipkartProductsChart = {
 //     labels: flipkartProducts.map((p) => truncateName(p.title || "Unknown")),
 //     datasets: [
@@ -337,7 +337,7 @@
 //       },
 //     ],
 //   };
- 
+
 //   const flipkartReviewsChart = {
 //     labels: flipkartProducts.map((p) => truncateName(p.title || "Unknown")),
 //     datasets: [
@@ -348,7 +348,7 @@
 //       },
 //     ],
 //   };
- 
+
 //   const flipkartCategoriesChart = {
 //     labels: flipkartCategories.map((c) => c.category || "Unknown"),
 //     datasets: [
@@ -359,7 +359,7 @@
 //       },
 //     ],
 //   };
- 
+
 //   const amazonCategoriesChart = {
 //     labels: amazonCategories.map((c) => c.category || c.category_name || "Unknown"),
 //     datasets: [
@@ -371,7 +371,7 @@
 //       },
 //     ],
 //   };
- 
+
 //   const ratingsChart = {
 //     labels: ratings.map((r) => `${r.rating}★`),
 //     datasets: [
@@ -382,7 +382,7 @@
 //       },
 //     ],
 //   };
- 
+
 //   const sentimentsChart = {
 //     labels: sentiments.map((s) => s.sentiment || "Unknown"),
 //     datasets: [
@@ -399,7 +399,7 @@
 //       },
 //     ],
 //   };
- 
+
 //   const rapidApiSalesChart = {
 //     labels: rapidApiProducts.map((p) => truncateName(p.product_title || "Unknown")),
 //     datasets: [
@@ -411,7 +411,7 @@
 //       },
 //     ],
 //   };
- 
+
 //   return (
 //     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 //       {flipkartProducts.length > 0 && (
@@ -424,7 +424,7 @@
 //           >
 //             <Bar data={flipkartProductsChart} options={createBarOptions(handleFlipkartProductClick)} />
 //           </ChartCard>
- 
+
 //           <ChartCard
 //             title="Flipkart Products with Most Reviews"
 //             isLoading={isLoading}
@@ -433,7 +433,7 @@
 //           >
 //             <Bar data={flipkartReviewsChart} options={createBarOptions(handleFlipkartProductClick)} />
 //           </ChartCard>
- 
+
 //           <ChartCard
 //             title="Flipkart Categories Distribution"
 //             isLoading={isLoading}
@@ -444,7 +444,7 @@
 //           </ChartCard>
 //         </>
 //       )}
- 
+
 //       {amazonCategories.length > 0 && (
 //         <ChartCard
 //           title="Amazon Categories Distribution"
@@ -455,7 +455,7 @@
 //           <Bar data={amazonCategoriesChart} options={createBarOptions(handleAmazonCategoryClick)} />
 //         </ChartCard>
 //       )}
- 
+
 //       {ratings.length > 0 && (
 //         <ChartCard
 //           title="Rating Distribution (Amazon)"
@@ -466,7 +466,7 @@
 //           <Bar data={ratingsChart} options={createBarOptions(() => {})} />
 //         </ChartCard>
 //       )}
- 
+
 //       {sentiments.length > 0 && (
 //         <ChartCard
 //           title="Sentiment Distribution (Amazon)"
@@ -477,7 +477,7 @@
 //           <Doughnut data={sentimentsChart} options={createDoughnutOptions()} />
 //         </ChartCard>
 //       )}
- 
+
 //       {rapidApiProducts.length > 0 && (
 //         <ChartCard
 //           title="Top Products by Daily Sales"
@@ -550,7 +550,7 @@
 // }
 
 // export default function ChartsGrid({ selectedSource }: { selectedSource: string }) {
-//   const BASE_URL = "https://api.insydz.com";
+//   const BASE_URL = "http://localhost:8000";
 //   const { filters } = useFilters();
 //   const [, setLocation] = useLocation();
 
@@ -568,34 +568,34 @@
 
 //   const buildQueryParams = (table: string) => {
 //     const params = new URLSearchParams();
-    
+
 //     if (filters.category && filters.category !== "All Categories") {
 //       params.append("category", filters.category);
 //     }
-    
+
 //     if (filters.priceRange[0] > 0) {
 //       params.append("min_price", filters.priceRange[0].toString());
 //     }
 //     if (filters.priceRange[1] < 5000000) {
 //       params.append("max_price", filters.priceRange[1].toString());
 //     }
-    
+
 //     if (filters.rating > 0) {
 //       params.append("min_rating", filters.rating.toString());
 //     }
-    
+
 //     if (filters.dateRange !== "all") {
 //       params.append("date_range", filters.dateRange);
 //     }
-    
+
 //     if (filters.showTrendingOnly) {
 //       params.append("trending_only", "true");
 //     }
-    
+
 //     if (filters.sortBy) {
 //       params.append("sort_by", filters.sortBy);
 //     }
-    
+
 //     return params.toString();
 //   };
 
@@ -606,12 +606,12 @@
 //         const table = filters.table || selectedSource;
 //         const queryParams = buildQueryParams(table);
 //         const topN = filters.topN || 10;
-        
+
 //         if (selectedSource === "both" || table === "both") {
 //           // Fetch both Flipkart and Amazon data
 //           const flipkartParams = buildQueryParams("rapidapi_flipkart_products");
 //           const amazonParams = buildQueryParams("rapidapi_amazon_products");
-          
+
 //           const [
 //             flipkartRes,
 //             amazonRes,
@@ -1116,7 +1116,7 @@
 // }
 
 // export default function ChartsGrid({ selectedSource }: { selectedSource: string }) {
-//   const BASE_URL = "https://api.insydz.com";
+//   const BASE_URL = "http://localhost:8000";
 //   const { filters } = useFilters();
 //   const [, setLocation] = useLocation();
 
@@ -1134,34 +1134,34 @@
 
 //   const buildQueryParams = (table: string) => {
 //     const params = new URLSearchParams();
-    
+
 //     if (filters.category && filters.category !== "All Categories") {
 //       params.append("category", filters.category);
 //     }
-    
+
 //     if (filters.priceRange[0] > 0) {
 //       params.append("min_price", filters.priceRange[0].toString());
 //     }
 //     if (filters.priceRange[1] < 5000000) {
 //       params.append("max_price", filters.priceRange[1].toString());
 //     }
-    
+
 //     if (filters.rating > 0) {
 //       params.append("min_rating", filters.rating.toString());
 //     }
-    
+
 //     if (filters.dateRange !== "all") {
 //       params.append("date_range", filters.dateRange);
 //     }
-    
+
 //     if (filters.showTrendingOnly) {
 //       params.append("trending_only", "true");
 //     }
-    
+
 //     if (filters.sortBy) {
 //       params.append("sort_by", filters.sortBy);
 //     }
-    
+
 //     return params.toString();
 //   };
 
@@ -1172,11 +1172,11 @@
 //         const table = filters.table || selectedSource;
 //         const queryParams = buildQueryParams(table);
 //         const topN = filters.topN || 10;
-        
+
 //         if (selectedSource === "both" || table === "both") {
 //           const flipkartParams = buildQueryParams("rapidapi_flipkart_products");
 //           const amazonParams = buildQueryParams("rapidapi_amazon_products");
-          
+
 //           const [
 //             flipkartRes,
 //             amazonRes,
@@ -1735,7 +1735,7 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
         <div className="chart-container relative h-80 w-full">
           {isLoading ? <Skeleton className="w-full h-full" /> : children}
         </div>
-        
+
         {/* AI Summary Section with Subscription Gates */}
         {hasAISummaries ? (
           summaryLoading ? (
@@ -1758,7 +1758,7 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
                   🎯 AI Chart Insights Locked
                 </p>
                 <p className="text-xs text-amber-700 mt-1">
-                  {currentTier === 'free' 
+                  {currentTier === 'free'
                     ? 'Upgrade to Basic for AI-powered chart summaries and deeper insights'
                     : 'Get instant AI analysis of your data patterns'}
                 </p>
@@ -1781,7 +1781,7 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
 }
 
 export default function ChartsGrid({ selectedSource }: { selectedSource: string }) {
-  const BASE_URL = "https://api.insydz.com";
+  const BASE_URL = "http://localhost:8000";
   const { filters } = useFilters();
   const { canAccessFeature } = useSubscriptionLimits();
   const [, setLocation] = useLocation();
@@ -1800,34 +1800,34 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
 
   const buildQueryParams = (table: string) => {
     const params = new URLSearchParams();
-    
+
     if (filters.category && filters.category !== "All Categories") {
       params.append("category", filters.category);
     }
-    
+
     if (filters.priceRange[0] > 0) {
       params.append("min_price", filters.priceRange[0].toString());
     }
     if (filters.priceRange[1] < 5000000) {
       params.append("max_price", filters.priceRange[1].toString());
     }
-    
+
     if (filters.rating > 0) {
       params.append("min_rating", filters.rating.toString());
     }
-    
+
     if (filters.dateRange !== "all") {
       params.append("date_range", filters.dateRange);
     }
-    
+
     if (filters.showTrendingOnly) {
       params.append("trending_only", "true");
     }
-    
+
     if (filters.sortBy) {
       params.append("sort_by", filters.sortBy);
     }
-    
+
     return params.toString();
   };
 
@@ -1838,11 +1838,11 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
         const table = filters.table || selectedSource;
         const queryParams = buildQueryParams(table);
         const topN = filters.topN || 10;
-        
+
         if (selectedSource === "both" || table === "both") {
           const flipkartParams = buildQueryParams("rapidapi_flipkart_products");
           const amazonParams = buildQueryParams("rapidapi_amazon_products");
-          
+
           const [
             flipkartRes, amazonRes, flipkartCatRes, amazonCatRes,
             flipkartRatingsRes, amazonRatingsRes, flipkartSentimentRes,
@@ -1947,73 +1947,73 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
 
   const { summary: flipkartCategoriesSummary, loading: flipkartCategoriesLoading } =
     useAISummary(
-      hasAISummaries ? "Summarize Flipkart category distribution" : "", 
-      "rapidapi_flipkart_products", 
-      flipkartCategories, 
-      flipkartCategories.length, 
+      hasAISummaries ? "Summarize Flipkart category distribution" : "",
+      "rapidapi_flipkart_products",
+      flipkartCategories,
+      flipkartCategories.length,
       filters
     );
 
   const { summary: flipkartRatingsSummary, loading: flipkartRatingsLoading } =
     useAISummary(
-      hasAISummaries ? "Summarize Flipkart rating distribution" : "", 
-      "rapidapi_flipkart_products", 
-      flipkartRatings, 
-      flipkartRatings.length, 
+      hasAISummaries ? "Summarize Flipkart rating distribution" : "",
+      "rapidapi_flipkart_products",
+      flipkartRatings,
+      flipkartRatings.length,
       filters
     );
 
   const { summary: flipkartSentimentsSummary, loading: flipkartSentimentsLoading } =
     useAISummary(
-      hasAISummaries ? "Summarize Flipkart sentiment distribution" : "", 
-      "rapidapi_flipkart_products", 
-      flipkartSentiments, 
-      flipkartSentiments.length, 
+      hasAISummaries ? "Summarize Flipkart sentiment distribution" : "",
+      "rapidapi_flipkart_products",
+      flipkartSentiments,
+      flipkartSentiments.length,
       filters
     );
 
   const { summary: flipkartSalesSummary, loading: flipkartSalesLoading } =
     useAISummary(
-      hasAISummaries ? "Summarize top selling Flipkart products by daily sales volume" : "", 
-      "rapidapi_flipkart_products", 
-      flipkartSalesProducts, 
-      flipkartSalesProducts.length, 
+      hasAISummaries ? "Summarize top selling Flipkart products by daily sales volume" : "",
+      "rapidapi_flipkart_products",
+      flipkartSalesProducts,
+      flipkartSalesProducts.length,
       filters
     );
 
   const { summary: amazonCategoriesSummary, loading: amazonCategoriesLoading } =
     useAISummary(
-      hasAISummaries ? "Summarize Amazon category distribution" : "", 
-      "rapidapi_amazon_products", 
-      amazonCategories, 
-      amazonCategories.length, 
+      hasAISummaries ? "Summarize Amazon category distribution" : "",
+      "rapidapi_amazon_products",
+      amazonCategories,
+      amazonCategories.length,
       filters
     );
 
   const { summary: amazonRatingsSummary, loading: amazonRatingsLoading } =
     useAISummary(
-      hasAISummaries ? "Summarize Amazon rating distribution" : "", 
-      "rapidapi_amazon_products", 
-      amazonRatings, 
-      amazonRatings.length, 
+      hasAISummaries ? "Summarize Amazon rating distribution" : "",
+      "rapidapi_amazon_products",
+      amazonRatings,
+      amazonRatings.length,
       filters
     );
 
   const { summary: amazonSentimentsSummary, loading: amazonSentimentsLoading } =
     useAISummary(
-      hasAISummaries ? "Summarize Amazon sentiment distribution" : "", 
-      "rapidapi_amazon_products", 
-      amazonSentiments, 
-      amazonSentiments.length, 
+      hasAISummaries ? "Summarize Amazon sentiment distribution" : "",
+      "rapidapi_amazon_products",
+      amazonSentiments,
+      amazonSentiments.length,
       filters
     );
 
   const { summary: amazonSalesSummary, loading: amazonSalesLoading } =
     useAISummary(
-      hasAISummaries ? "Summarize top selling Amazon products by daily sales volume" : "", 
-      "rapidapi_amazon_products", 
-      amazonSalesProducts, 
-      amazonSalesProducts.length, 
+      hasAISummaries ? "Summarize top selling Amazon products by daily sales volume" : "",
+      "rapidapi_amazon_products",
+      amazonSalesProducts,
+      amazonSalesProducts.length,
       filters
     );
 
@@ -2056,7 +2056,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
       const sentimentType = sentiment.sentiment.toLowerCase();
       let url = `/sentiment-products/flipkart/${sentimentType}`;
       const params = new URLSearchParams();
-      
+
       if (filters.category && filters.category !== "All Categories") {
         params.append("category", filters.category);
       }
@@ -2078,11 +2078,11 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
       if (filters.sortBy) {
         params.append("sort_by", filters.sortBy);
       }
-      
+
       if (params.toString()) {
         url += `?${params.toString()}`;
       }
-      
+
       setLocation(url);
     }
   };
@@ -2093,7 +2093,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
       const sentimentType = sentiment.sentiment.toLowerCase();
       let url = `/sentiment-products/amazon/${sentimentType}`;
       const params = new URLSearchParams();
-      
+
       if (filters.category && filters.category !== "All Categories") {
         params.append("category", filters.category);
       }
@@ -2115,11 +2115,11 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
       if (filters.sortBy) {
         params.append("sort_by", filters.sortBy);
       }
-      
+
       if (params.toString()) {
         url += `?${params.toString()}`;
       }
-      
+
       setLocation(url);
     }
   };
@@ -2127,7 +2127,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
   const createBarOptions = (clickHandler: (index: number) => void) => ({
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { 
+    plugins: {
       legend: { display: true, position: "bottom" as const },
       tooltip: {
         callbacks: {
@@ -2152,9 +2152,9 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
   const createDoughnutOptions = (clickHandler: (index: number) => void) => ({
     responsive: true,
     maintainAspectRatio: false,
-    plugins: { 
-      legend: { 
-        display: true, 
+    plugins: {
+      legend: {
+        display: true,
         position: "bottom" as const,
         labels: {
           padding: 15,
@@ -2302,8 +2302,8 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {/* Flipkart Charts */}
       {flipkartCategories.length > 0 && (
-        <ChartCard 
-          title="Product Category Landscape (Flipkart)" 
+        <ChartCard
+          title="Product Category Landscape (Flipkart)"
           isLoading={isLoading}
           summary={flipkartCategoriesSummary}
           summaryLoading={flipkartCategoriesLoading}
@@ -2313,33 +2313,33 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
       )}
 
       {flipkartRatings.length > 0 && (
-        <ChartCard 
-          title="Customer Rating Profile (Flipkart)" 
+        <ChartCard
+          title="Customer Rating Profile (Flipkart)"
           isLoading={isLoading}
           summary={flipkartRatingsSummary}
           summaryLoading={flipkartRatingsLoading}
         >
-          <Bar data={flipkartRatingsChart} options={createBarOptions(() => {})} />
+          <Bar data={flipkartRatingsChart} options={createBarOptions(() => { })} />
         </ChartCard>
       )}
 
       {flipkartSentiments.length > 0 && (
-        <ChartCard 
-          title="Voice of the Customer (Flipkart)" 
+        <ChartCard
+          title="Voice of the Customer (Flipkart)"
           isLoading={isLoading}
           summary={flipkartSentimentsSummary}
           summaryLoading={flipkartSentimentsLoading}
         >
-          <Doughnut 
-            data={flipkartSentimentsChart} 
-            options={createDoughnutOptions(handleFlipkartSentimentClick)} 
+          <Doughnut
+            data={flipkartSentimentsChart}
+            options={createDoughnutOptions(handleFlipkartSentimentClick)}
           />
         </ChartCard>
       )}
 
       {flipkartSalesProducts.length > 0 && (
-        <ChartCard 
-          title="High-Velocity Products (Flipkart)" 
+        <ChartCard
+          title="High-Velocity Products (Flipkart)"
           isLoading={isLoading}
           summary={flipkartSalesSummary}
           summaryLoading={flipkartSalesLoading}
@@ -2350,8 +2350,8 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
 
       {/* Amazon Charts */}
       {amazonCategories.length > 0 && (
-        <ChartCard 
-          title="Product Category Landscape (Amazon)" 
+        <ChartCard
+          title="Product Category Landscape (Amazon)"
           isLoading={isLoading}
           summary={amazonCategoriesSummary}
           summaryLoading={amazonCategoriesLoading}
@@ -2361,33 +2361,33 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
       )}
 
       {amazonRatings.length > 0 && (
-        <ChartCard 
-          title="Customer Rating Profile (Amazon)" 
+        <ChartCard
+          title="Customer Rating Profile (Amazon)"
           isLoading={isLoading}
           summary={amazonRatingsSummary}
           summaryLoading={amazonRatingsLoading}
         >
-          <Bar data={amazonRatingsChart} options={createBarOptions(() => {})} />
+          <Bar data={amazonRatingsChart} options={createBarOptions(() => { })} />
         </ChartCard>
       )}
 
       {amazonSentiments.length > 0 && (
-        <ChartCard 
-          title="Voice of the Customer (Amazon)" 
+        <ChartCard
+          title="Voice of the Customer (Amazon)"
           isLoading={isLoading}
           summary={amazonSentimentsSummary}
           summaryLoading={amazonSentimentsLoading}
         >
-          <Doughnut 
-            data={amazonSentimentsChart} 
-            options={createDoughnutOptions(handleAmazonSentimentClick)} 
+          <Doughnut
+            data={amazonSentimentsChart}
+            options={createDoughnutOptions(handleAmazonSentimentClick)}
           />
         </ChartCard>
       )}
 
       {amazonSalesProducts.length > 0 && (
-        <ChartCard 
-          title="High-Velocity Products (Amazon)" 
+        <ChartCard
+          title="High-Velocity Products (Amazon)"
           isLoading={isLoading}
           summary={amazonSalesSummary}
           summaryLoading={amazonSalesLoading}

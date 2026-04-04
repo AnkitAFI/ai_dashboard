@@ -23,7 +23,7 @@
 //   source?: string;
 //   product_price?: string;
 // }
- 
+
 // export default function Sales() {
 //   const [products, setProducts] = useState<TrendingProduct[]>([]);
 //   const [source, setSource] = useState<"flipkart" | "amazon">("flipkart");
@@ -44,8 +44,8 @@
 //     setLoading(true);
 //     const url =
 //       source === "flipkart"
-//         ? "https://api.insydz.com/top?table=flipkart&n=500"
-//         : "https://api.insydz.com/rapidapi/top-sales?limit=500";
+//         ? "http://localhost:8000/top?table=flipkart&n=500"
+//         : "http://localhost:8000/rapidapi/top-sales?limit=500";
 
 //     axios
 //       .get(url)
@@ -79,7 +79,7 @@
 //   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 //   const currentProducts = sortedProducts.slice(indexOfFirstItem, indexOfLastItem);
 //   const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
- 
+
 //   const toggleSort = (field: "reviews" | "price" | "rating") => {
 //     if (sortField === field) {
 //       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -88,28 +88,28 @@
 //       setSortOrder("desc");
 //     }
 //   };
- 
+
 //   const handlePageChange = (page: number) => {
 //     if (page >= 1 && page <= totalPages) {
 //       setCurrentPage(page);
 //       window.scrollTo({ top: 0, behavior: "smooth" });
 //     }
 //   };
- 
+
 //   if (loading)
 //     return (
 //       <div className="flex h-screen items-center justify-center text-slate-400">
 //         Loading {source} top product data...
 //       </div>
 //     );
- 
+
 //   if (error)
 //     return (
 //       <div className="flex h-screen items-center justify-center text-red-500">
 //         {error}
 //       </div>
 //     );
- 
+
 //   return (
 //     <div className="min-h-screen bg-gradient-to-br from-[#F8FBFF] via-[#ECF5FF] to-[#E0F2FE] overflow-x-hidden">
 
@@ -209,7 +209,7 @@
 //                   ({sortOrder === "asc" ? "Low → High" : "High → Low"})
 //                 </CardTitle>
 //               </CardHeader>
- 
+
 //               <CardContent className="overflow-x-auto">
 //                 <table className="w-full text-sm text-slate-700">
 //                   <thead className="bg-slate-100 text-slate-700 uppercase text-xs font-semibold">
@@ -289,7 +289,7 @@
 //     </div>
 //   );
 // }
-  
+
 
 // import { useEffect, useState } from "react";
 // import axios from "axios";
@@ -336,8 +336,8 @@
 //     setLoading(true);
 //     const url =
 //       source === "flipkart"
-//         ? "https://api.insydz.com/top?table=rapidapi_flipkart_products&n=500"
-//         : "https://api.insydz.com/rapidapi/top-sales?limit=500";
+//         ? "http://localhost:8000/top?table=rapidapi_flipkart_products&n=500"
+//         : "http://localhost:8000/rapidapi/top-sales?limit=500";
 
 //     axios
 //       .get(url)
@@ -634,14 +634,14 @@ export default function Sales() {
   const parseSalesVolume = (salesText?: string, avgSales?: number): number => {
     if (avgSales) return avgSales;
     if (!salesText) return 0;
-    
+
     // Extract number and multiplier (K, M, etc.)
     const match = salesText.match(/([\d.]+)([KMB])?/i);
     if (!match) return 0;
-    
+
     const num = parseFloat(match[1]);
     const multiplier = match[2]?.toUpperCase();
-    
+
     switch (multiplier) {
       case 'K': return num * 1000;
       case 'M': return num * 1000000;
@@ -654,8 +654,8 @@ export default function Sales() {
     setLoading(true);
     const url =
       source === "flipkart"
-        ? "https://api.insydz.com/top?table=rapidapi_flipkart_products&n=500"
-        : "https://api.insydz.com/rapidapi/top-sales?limit=500";
+        ? "http://localhost:8000/top?table=rapidapi_flipkart_products&n=500"
+        : "http://localhost:8000/rapidapi/top-sales?limit=500";
 
     axios
       .get(url)
@@ -813,11 +813,10 @@ export default function Sales() {
                 <Button
                   key={field}
                   variant={sortField === field ? "default" : "outline"}
-                  className={`flex items-center gap-2 ${
-                    sortField === field
+                  className={`flex items-center gap-2 ${sortField === field
                       ? "bg-blue-500 text-white hover:bg-blue-600"
                       : "text-slate-700 border-slate-300 hover:bg-slate-100"
-                  }`}
+                    }`}
                   onClick={() => toggleSort(field as "reviews" | "price" | "rating" | "sales")}
                 >
                   <ArrowUpDown className="w-4 h-4" />

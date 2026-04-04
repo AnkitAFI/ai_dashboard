@@ -39,38 +39,38 @@
 //   const [totalPages, setTotalPages] = useState(1);
 //   const [totalProducts, setTotalProducts] = useState(0);
 //   const [productsPerPage] = useState(24);
-  
+
 //   const source = params?.source || "flipkart";
 //   const sentiment = params?.sentiment || "positive";
-//   const BASE_URL = "https://api.insydz.com";
+//   const BASE_URL = "http://localhost:8000";
 
 //   useEffect(() => {
 //     const fetchProducts = async () => {
 //       setIsLoading(true);
 //       setError(null);
-      
+
 //       try {
 //         const table = source === "flipkart" 
 //           ? "rapidapi_flipkart_products" 
 //           : "rapidapi_amazon_products";
-        
+
 //         const response = await fetch(
 //           `${BASE_URL}/products/by-sentiment?table=${table}&sentiment=${sentiment}&page=${currentPage}&limit=${productsPerPage}`
 //         );
-        
+
 //         if (!response.ok) {
 //           throw new Error(`HTTP error! status: ${response.status}`);
 //         }
-        
+
 //         const data: ApiResponse = await response.json();
-        
+
 //         console.log(`📊 API Response:`, {
 //           sentiment: data.sentiment,
 //           page: data.page,
 //           total: data.total_products,
 //           count: data.count
 //         });
-        
+
 //         if (data.success && data.data) {
 //           setProducts(data.data);
 //           setTotalPages(data.total_pages);
@@ -99,9 +99,9 @@
 //     if (sentimentScore && sentimentScore > 0) {
 //       return Math.round(sentimentScore * 100);
 //     }
-    
+
 //     if (!rating || rating === 0) return 50;
-    
+
 //     // Adjusted for new ranges
 //     if (sentiment === "positive") {
 //       if (rating >= 4.5) return Math.round(85 + (rating - 4.5) * 30);
@@ -307,7 +307,7 @@
 //                       )}
 //                     </div>
 //                   )}
-                  
+
 //                   <CardHeader className="pb-3">
 //                     <CardTitle className="text-base line-clamp-2 group-hover:text-blue-600 transition-colors">
 //                       {product.product_title}
@@ -341,7 +341,7 @@
 //                         <span className="font-medium text-slate-700">Sentiment Score</span>
 //                         <span className="font-bold text-slate-900">{sentimentPercentage}%</span>
 //                       </div>
-                      
+
 //                       <div className="relative h-3 bg-slate-200 rounded-full overflow-hidden">
 //                         <div
 //                           className={`h-full bg-gradient-to-r ${getProgressGradient(sentimentPercentage)} transition-all duration-1000 ease-out rounded-full relative`}
@@ -386,7 +386,7 @@
 //               >
 //                 <ChevronLeft className="w-4 h-4" />
 //               </button>
-              
+
 //               {/* Page numbers */}
 //               {[...Array(Math.min(5, totalPages))].map((_, i) => {
 //                 let pageNum;
@@ -399,7 +399,7 @@
 //                 } else {
 //                   pageNum = currentPage - 2 + i;
 //                 }
-                
+
 //                 return (
 //                   <button
 //                     key={i}
@@ -414,7 +414,7 @@
 //                   </button>
 //                 );
 //               })}
-              
+
 //               <button
 //                 onClick={() => handlePageChange(currentPage + 1)}
 //                 disabled={currentPage === totalPages}
@@ -491,10 +491,10 @@ export default function SentimentProductsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
   const [productsPerPage] = useState(24);
-  
+
   const source = params?.source || "flipkart";
   const sentiment = params?.sentiment || "positive";
-  const BASE_URL = "https://api.insydz.com";
+  const BASE_URL = "http://localhost:8000";
 
   // 🆕 Extract ALL filters from URL parameters
   const urlParams = new URLSearchParams(window.location.search);
@@ -510,12 +510,12 @@ export default function SentimentProductsPage() {
     const fetchProducts = async () => {
       setIsLoading(true);
       setError(null);
-      
+
       try {
-        const table = source === "flipkart" 
-          ? "rapidapi_flipkart_products" 
+        const table = source === "flipkart"
+          ? "rapidapi_flipkart_products"
           : "rapidapi_amazon_products";
-        
+
         // 🆕 Build URL with ALL filters if present
         const queryParams = new URLSearchParams({
           table,
@@ -546,17 +546,17 @@ export default function SentimentProductsPage() {
         if (sortByFilter) {
           queryParams.append('sort_by', sortByFilter);
         }
-        
+
         const response = await fetch(
           `${BASE_URL}/products/by-sentiment?${queryParams.toString()}`
         );
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data: ApiResponse = await response.json();
-        
+
         console.log(`📊 API Response:`, {
           sentiment: data.sentiment,
           page: data.page,
@@ -572,7 +572,7 @@ export default function SentimentProductsPage() {
             sortBy: sortByFilter || 'default'
           }
         });
-        
+
         if (data.success && data.data) {
           setProducts(data.data);
           setTotalPages(data.total_pages);
@@ -601,9 +601,9 @@ export default function SentimentProductsPage() {
     if (sentimentScore && sentimentScore > 0) {
       return Math.round(sentimentScore * 100);
     }
-    
+
     if (!rating || rating === 0) return 50;
-    
+
     // Adjusted for new ranges
     if (sentiment === "positive") {
       if (rating >= 4.5) return Math.round(85 + (rating - 4.5) * 30);
@@ -703,48 +703,48 @@ export default function SentimentProductsPage() {
               {sentiment === "neutral" && "⭐ Rating 3.5-3.99"}
               {sentiment === "negative" && "⭐ Rating below 3.5"}
             </p>
-            
+
             {/* 🆕 Active Filters Display */}
             {activeFiltersCount > 0 && (
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <span className="text-xs text-gray-500 font-medium">Active Filters:</span>
-                
+
                 {categoryFilter && (
                   <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 px-3 py-1">
                     📁 {categoryFilter}
                   </Badge>
                 )}
-                
+
                 {(minPriceFilter && minPriceFilter !== '0') || (maxPriceFilter && maxPriceFilter !== '5000000') && (
                   <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 px-3 py-1">
                     💰 ₹{minPriceFilter || '0'} - ₹{maxPriceFilter || '5000000'}
                   </Badge>
                 )}
-                
+
                 {minRatingFilter && minRatingFilter !== '0' && (
                   <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-700 border-yellow-200 px-3 py-1">
                     ⭐ {minRatingFilter}+
                   </Badge>
                 )}
-                
+
                 {dateRangeFilter && dateRangeFilter !== 'all' && (
                   <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200 px-3 py-1">
                     📅 {dateRangeFilter}
                   </Badge>
                 )}
-                
+
                 {trendingOnlyFilter === 'true' && (
                   <Badge variant="outline" className="text-xs bg-rose-50 text-rose-700 border-rose-200 px-3 py-1">
                     🔥 Trending
                   </Badge>
                 )}
-                
+
                 {sortByFilter && sortByFilter !== 'default' && (
                   <Badge variant="outline" className="text-xs bg-indigo-50 text-indigo-700 border-indigo-200 px-3 py-1">
                     🔄 {sortByFilter}
                   </Badge>
                 )}
-                
+
                 <button
                   onClick={handleRemoveAllFilters}
                   className="text-xs text-gray-500 hover:text-red-600 transition-colors flex items-center gap-1 ml-2"
@@ -760,7 +760,7 @@ export default function SentimentProductsPage() {
             <span className={`inline-flex items-center px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium ${getSentimentColor(sentiment)}`}>
               {getSentimentIcon(sentiment)} {formatSentiment(sentiment)}
             </span>
-            <button 
+            <button
               onClick={() => setLocation("/dashboard")}
               className="text-xs sm:text-sm font-medium bg-gradient-to-r from-sky-400 to-sky-600 text-white px-3 sm:px-4 py-2 rounded-xl shadow hover:shadow-lg hover:scale-105 transition-all whitespace-nowrap"
             >
@@ -857,13 +857,13 @@ export default function SentimentProductsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {products.map((product, index) => {
               const sentimentPercentage = calculateSentimentPercentage(
-                product.rating, 
+                product.rating,
                 product.sentiment_score
               );
 
               return (
-                <Card 
-                  key={index} 
+                <Card
+                  key={index}
                   className="overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group"
                   onClick={() => {
                     const productName = encodeURIComponent(product.product_title);
@@ -872,8 +872,8 @@ export default function SentimentProductsPage() {
                 >
                   {product.image_url && (
                     <div className="relative h-48 bg-slate-100 overflow-hidden">
-                      <img 
-                        src={product.image_url} 
+                      <img
+                        src={product.image_url}
                         alt={product.product_title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                         onError={(e) => {
@@ -888,7 +888,7 @@ export default function SentimentProductsPage() {
                       )}
                     </div>
                   )}
-                  
+
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base line-clamp-2 group-hover:text-blue-600 transition-colors">
                       {product.product_title}
@@ -922,7 +922,7 @@ export default function SentimentProductsPage() {
                         <span className="font-medium text-slate-700">Sentiment Score</span>
                         <span className="font-bold text-slate-900">{sentimentPercentage}%</span>
                       </div>
-                      
+
                       <div className="relative h-3 bg-slate-200 rounded-full overflow-hidden">
                         <div
                           className={`h-full bg-gradient-to-r ${getProgressGradient(sentimentPercentage)} transition-all duration-1000 ease-out rounded-full relative`}
@@ -967,7 +967,7 @@ export default function SentimentProductsPage() {
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
-              
+
               {/* Page numbers */}
               {[...Array(Math.min(5, totalPages))].map((_, i) => {
                 let pageNum;
@@ -980,22 +980,21 @@ export default function SentimentProductsPage() {
                 } else {
                   pageNum = currentPage - 2 + i;
                 }
-                
+
                 return (
                   <button
                     key={i}
                     onClick={() => handlePageChange(pageNum)}
-                    className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg shadow transition-all ${
-                      currentPage === pageNum
+                    className={`px-3 py-1.5 text-xs sm:text-sm rounded-lg shadow transition-all ${currentPage === pageNum
                         ? 'bg-gradient-to-r from-sky-500 to-sky-700 text-white hover:scale-105'
                         : 'bg-white/70 text-sky-900 hover:bg-white hover:scale-105'
-                    }`}
+                      }`}
                   >
                     {pageNum}
                   </button>
                 );
               })}
-              
+
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}

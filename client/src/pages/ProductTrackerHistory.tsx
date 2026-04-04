@@ -106,9 +106,9 @@
 
 //   const fetchHistory = async (email: string) => {
 //     try {
-//       const response = await fetch(`https://api.insydz.com/product-tracker/history?user_email=${email}&limit=50`);
+//       const response = await fetch(`http://localhost:8000/product-tracker/history?user_email=${email}&limit=50`);
 //       const data = await response.json();
-      
+
 //       if (data.success) {
 //         setHistory(data.data);
 //       }
@@ -122,9 +122,9 @@
 //   const fetchAnalysisDetails = async (id: number) => {
 //     setDetailsLoading(true);
 //     try {
-//       const response = await fetch(`https://api.insydz.com/product-tracker/analysis/${id}`);
+//       const response = await fetch(`http://localhost:8000/product-tracker/analysis/${id}`);
 //       const data = await response.json();
-      
+
 //       if (data.success) {
 //         setSelectedAnalysis(data.data);
 //       }
@@ -157,10 +157,10 @@
 //     setIsDeleting(true);
 //     try {
 //       const response = await fetch(
-//         `https://api.insydz.com/product-tracker/analysis/${deleteDialog.itemId}?user_email=${userEmail}`,
+//         `http://localhost:8000/product-tracker/analysis/${deleteDialog.itemId}?user_email=${userEmail}`,
 //         { method: "DELETE" }
 //       );
-      
+
 //       if (response.ok) {
 //         setHistory(prev => prev.filter(item => item.id !== deleteDialog.itemId));
 //         if (selectedAnalysis?.id === deleteDialog.itemId) {
@@ -673,7 +673,7 @@ export default function ProductTrackerHistory() {
   const fetchHistory = async (email: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`https://api.insydz.com/product-tracker/history?user_email=${email}&limit=50`);
+      const response = await fetch(`http://localhost:8000/product-tracker/history?user_email=${email}&limit=50`);
       const data = await response.json();
       if (data.success) {
         setHistory(data.data);
@@ -688,9 +688,9 @@ export default function ProductTrackerHistory() {
   const fetchAnalysisDetails = async (id: number) => {
     setDetailsLoading(true);
     try {
-      const response = await fetch(`https://api.insydz.com/product-tracker/analysis/${id}`);
+      const response = await fetch(`http://localhost:8000/product-tracker/analysis/${id}`);
       const data = await response.json();
-      
+
       if (data.success) {
         setSelectedAnalysis(data.data);
       }
@@ -723,10 +723,10 @@ export default function ProductTrackerHistory() {
     setIsDeleting(true);
     try {
       const response = await fetch(
-        `https://api.insydz.com/product-tracker/analysis/${deleteDialog.itemId}?user_email=${userEmail}`,
+        `http://localhost:8000/product-tracker/analysis/${deleteDialog.itemId}?user_email=${userEmail}`,
         { method: "DELETE" }
       );
-      
+
       if (response.ok) {
         setHistory(prev => prev.filter(item => item.id !== deleteDialog.itemId));
         if (selectedAnalysis?.id === deleteDialog.itemId) {
@@ -743,9 +743,9 @@ export default function ProductTrackerHistory() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-IN', { 
-      day: 'numeric', 
-      month: 'short', 
+    return date.toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -869,8 +869,8 @@ export default function ProductTrackerHistory() {
                 <p className="text-sm text-slate-500">Your past product analyses</p>
               </div>
             </div>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setLocation("/product-tracker")}
               className="flex items-center gap-2"
             >
@@ -893,33 +893,32 @@ export default function ProductTrackerHistory() {
             )}
 
             {authLoading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
-        </div>
-      ) : !userEmail ? (
-        <Card className="text-center p-12">
-          <AlertCircle className="h-16 w-16 mx-auto mb-4 text-orange-500" />
-          <h3 className="text-xl font-semibold mb-2">Please Login</h3>
-          <p className="text-slate-600 mb-6">You need to login to view your analysis history</p>
-          <Button onClick={() => setLocation("/login")}>Go to Login</Button>
-        </Card>
-      ) : history.length === 0 ? (
-        <Card className="text-center p-12">
-          <Package className="h-16 w-16 mx-auto mb-4 text-slate-400" />
-          <h3 className="text-xl font-semibold mb-2">No Analysis Yet</h3>
-          <p className="text-slate-600 mb-6">You haven't analyzed any products yet. Start your first analysis!</p>
-          <Button onClick={() => setLocation("/product-tracker")}>Analyze Product</Button>
-        </Card>
-      ) : (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+              </div>
+            ) : !userEmail ? (
+              <Card className="text-center p-12">
+                <AlertCircle className="h-16 w-16 mx-auto mb-4 text-orange-500" />
+                <h3 className="text-xl font-semibold mb-2">Please Login</h3>
+                <p className="text-slate-600 mb-6">You need to login to view your analysis history</p>
+                <Button onClick={() => setLocation("/login")}>Go to Login</Button>
+              </Card>
+            ) : history.length === 0 ? (
+              <Card className="text-center p-12">
+                <Package className="h-16 w-16 mx-auto mb-4 text-slate-400" />
+                <h3 className="text-xl font-semibold mb-2">No Analysis Yet</h3>
+                <p className="text-slate-600 mb-6">You haven't analyzed any products yet. Start your first analysis!</p>
+                <Button onClick={() => setLocation("/product-tracker")}>Analyze Product</Button>
+              </Card>
+            ) : (
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* History List */}
                 <div className="lg:col-span-5 space-y-3 max-h-[calc(100vh-200px)] overflow-y-auto">
                   {history.map((item) => (
-                    <Card 
-                      key={item.id} 
-                      className={`cursor-pointer transition-all hover:shadow-lg ${
-                        selectedAnalysis?.id === item.id ? 'border-2 border-blue-500 bg-blue-50' : ''
-                      }`}
+                    <Card
+                      key={item.id}
+                      className={`cursor-pointer transition-all hover:shadow-lg ${selectedAnalysis?.id === item.id ? 'border-2 border-blue-500 bg-blue-50' : ''
+                        }`}
                     >
                       <CardContent className="p-4">
                         <div className="flex justify-between items-start mb-2">
@@ -962,16 +961,16 @@ export default function ProductTrackerHistory() {
                         </div>
 
                         <div className="flex gap-2">
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             className="flex-1"
                             onClick={() => fetchAnalysisDetails(item.id)}
                           >
                             <Eye className="h-3 w-3 mr-1" />
                             View Details
                           </Button>
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             variant="destructive"
                             onClick={(e) => {
                               e.stopPropagation();

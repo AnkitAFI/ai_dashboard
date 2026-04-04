@@ -13,42 +13,42 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const API_BASE = "https://api.insydz.com";
+const API_BASE = "http://localhost:8000";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface PaymentPlan {
-  id:          string;
-  name:        string;
-  price:       number;      // prorated charge from /billing-preview
+  id: string;
+  name: string;
+  price: number;      // prorated charge from /billing-preview
   description: string;
-  priceNote?:  string;      // e.g. "₹400 credit applied — pay ₹1599 today"
+  priceNote?: string;      // e.g. "₹400 credit applied — pay ₹1599 today"
 }
 
 interface BillingForm {
-  fullName:       string;
-  email:          string;
-  mobile:         string;
-  companyName:    string;
+  fullName: string;
+  email: string;
+  mobile: string;
+  companyName: string;
   billingAddress: string;
-  hasGst:         boolean;
-  gstNumber:      string;
+  hasGst: boolean;
+  gstNumber: string;
 }
 
 interface PriceBreakup {
   basePrice: number;
-  gstRate:   number;
+  gstRate: number;
   gstAmount: number;
-  total:     number;
+  total: number;
 }
 
 export interface PaymentModalProps {
-  isOpen:           boolean;
-  onClose:          () => void;
-  plan:             PaymentPlan;
-  userId:           number;
-  userEmail?:       string;
-  userName?:        string;
+  isOpen: boolean;
+  onClose: () => void;
+  plan: PaymentPlan;
+  userId: number;
+  userEmail?: string;
+  userName?: string;
   onPaymentSuccess: (planId: string) => void;
 }
 
@@ -69,23 +69,23 @@ interface RazorpayOptions {
 }
 interface RazorpayResponse {
   razorpay_payment_id: string;
-  razorpay_order_id:   string;
-  razorpay_signature:  string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
 }
 interface RazorpayInstance { open: () => void; }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const GST_REGEX  = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+const GST_REGEX = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
 const isValidGST = (g: string) => GST_REGEX.test(g.toUpperCase());
 
 const loadRazorpay = (): Promise<boolean> =>
   new Promise((resolve) => {
     if (document.getElementById("rzp-sdk")) return resolve(true);
-    const s   = document.createElement("script");
-    s.id      = "rzp-sdk";
-    s.src     = "https://checkout.razorpay.com/v1/checkout.js";
-    s.onload  = () => resolve(true);
+    const s = document.createElement("script");
+    s.id = "rzp-sdk";
+    s.src = "https://checkout.razorpay.com/v1/checkout.js";
+    s.onload = () => resolve(true);
     s.onerror = () => resolve(false);
     document.body.appendChild(s);
   });
@@ -106,8 +106,8 @@ function StepIndicator({ current }: { current: number }) {
               ${i < current
                 ? "bg-sky-500 text-white shadow-md shadow-sky-200"
                 : i === current
-                ? "bg-sky-600 text-white ring-4 ring-sky-100 shadow-lg shadow-sky-200"
-                : "bg-slate-100 text-slate-400 border border-slate-200"
+                  ? "bg-sky-600 text-white ring-4 ring-sky-100 shadow-lg shadow-sky-200"
+                  : "bg-slate-100 text-slate-400 border border-slate-200"
               }
             `}>
               {i < current ? <CheckCircle2 className="h-4 w-4" /> : <span>{i + 1}</span>}
@@ -237,13 +237,13 @@ function PriceCard({
 export default function PaymentModal({
   isOpen, onClose, plan, userId, userEmail = "", userName = "", onPaymentSuccess,
 }: PaymentModalProps) {
-  const [step, setStep]           = useState(0);
-  const [loading, setLoading]     = useState(false);
-  const [error, setError]         = useState<string | null>(null);
-  const [done, setDone]           = useState(false);
+  const [step, setStep] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
   const [invoiceId, setInvoiceId] = useState<number | null>(null);
 
-  const mountedRef      = useRef(true);
+  const mountedRef = useRef(true);
   const paymentHandledRef = useRef(false);
 
   useEffect(() => {
@@ -281,12 +281,12 @@ export default function PaymentModal({
 
   const validate = (): boolean => {
     const e: Partial<Record<keyof BillingForm, string>> = {};
-    if (!form.fullName.trim())                                         e.fullName       = "Full name is required.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))               e.email          = "Enter a valid email.";
-    if (!/^[6-9]\d{9}$/.test(form.mobile))                            e.mobile         = "Enter a valid 10-digit mobile number.";
-    if (!form.billingAddress.trim())                                   e.billingAddress = "Billing address is required.";
-    if (form.hasGst && !form.gstNumber.trim())                         e.gstNumber      = "GSTIN is required when GST is selected.";
-    if (form.hasGst && form.gstNumber && !isValidGST(form.gstNumber)) e.gstNumber      = "Invalid GSTIN format. Example: 29ABCDE1234F1Z5";
+    if (!form.fullName.trim()) e.fullName = "Full name is required.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email = "Enter a valid email.";
+    if (!/^[6-9]\d{9}$/.test(form.mobile)) e.mobile = "Enter a valid 10-digit mobile number.";
+    if (!form.billingAddress.trim()) e.billingAddress = "Billing address is required.";
+    if (form.hasGst && !form.gstNumber.trim()) e.gstNumber = "GSTIN is required when GST is selected.";
+    if (form.hasGst && form.gstNumber && !isValidGST(form.gstNumber)) e.gstNumber = "Invalid GSTIN format. Example: 29ABCDE1234F1Z5";
     setErrs(e);
     return Object.keys(e).length === 0;
   };
@@ -294,13 +294,13 @@ export default function PaymentModal({
   const verify = useCallback(async (r: RazorpayResponse, dbId: number) => {
     try {
       const res = await fetch(`${API_BASE}/api/payments/verify`, {
-        method:  "POST",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
           razorpay_payment_id: r.razorpay_payment_id,
-          razorpay_order_id:   r.razorpay_order_id,
-          razorpay_signature:  r.razorpay_signature,
+          razorpay_order_id: r.razorpay_order_id,
+          razorpay_signature: r.razorpay_signature,
           order_db_id: dbId, user_id: userId, plan_id: plan.id,
         }),
       });
@@ -327,20 +327,20 @@ export default function PaymentModal({
       if (!sdkLoaded) throw new Error("Failed to load Razorpay. Check your internet connection.");
 
       const res = await fetch(`${API_BASE}/api/payments/create-order`, {
-        method:  "POST",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
           user_id: userId, plan_id: plan.id, amount: breakup.total,
           billing: {
-            full_name:       form.fullName,
-            email:           form.email,
-            mobile:          form.mobile,
-            company_name:    form.companyName || null,
+            full_name: form.fullName,
+            email: form.email,
+            mobile: form.mobile,
+            company_name: form.companyName || null,
             billing_address: form.billingAddress,
-            gst_number:      form.hasGst ? form.gstNumber.toUpperCase() : null,
-            gst_amount:      breakup.gstAmount,
-            base_amount:     breakup.basePrice,
+            gst_number: form.hasGst ? form.gstNumber.toUpperCase() : null,
+            gst_amount: breakup.gstAmount,
+            base_amount: breakup.basePrice,
           },
         }),
       });
@@ -364,16 +364,16 @@ export default function PaymentModal({
       paymentHandledRef.current = false;
 
       const rzp = new window.Razorpay({
-        key:         data.razorpay_key_id,
-        amount:      data.amount,
-        currency:    data.currency,
-        name:        "Insydz Analytics",
+        key: data.razorpay_key_id,
+        amount: data.amount,
+        currency: data.currency,
+        name: "Insydz Analytics",
         description: `${plan.name} Plan – Monthly`,
-        order_id:    data.razorpay_order_id,
-        prefill:     { name: form.fullName, email: form.email, contact: `+91${form.mobile}` },
+        order_id: data.razorpay_order_id,
+        prefill: { name: form.fullName, email: form.email, contact: `+91${form.mobile}` },
         notes: {
-          plan_id:    plan.id,
-          user_id:    String(userId),
+          plan_id: plan.id,
+          user_id: String(userId),
           gst_number: form.hasGst ? form.gstNumber.toUpperCase() : "",
         },
         theme: { color: "#0284c7" },
@@ -382,7 +382,7 @@ export default function PaymentModal({
           await verify(response, data.order_db_id);
         },
         modal: {
-          escape:    false,
+          escape: false,
           animation: true,
           ondismiss: () => {
             if (!paymentHandledRef.current && mountedRef.current) {
@@ -405,10 +405,10 @@ export default function PaymentModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
-         style={{ backgroundColor: "rgba(15,23,42,0.65)", backdropFilter: "blur(6px)" }}>
+      style={{ backgroundColor: "rgba(15,23,42,0.65)", backdropFilter: "blur(6px)" }}>
 
       <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl flex flex-col"
-           style={{ maxHeight: "92vh" }}>
+        style={{ maxHeight: "92vh" }}>
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 flex-shrink-0
@@ -430,7 +430,7 @@ export default function PaymentModal({
           </div>
           {/* Disabled while Razorpay is open */}
           <button onClick={onClose} disabled={step === 2 && !done}
-                  className="w-9 h-9 rounded-xl flex items-center justify-center
+            className="w-9 h-9 rounded-xl flex items-center justify-center
                              text-slate-400 hover:text-slate-700 hover:bg-slate-100
                              transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
             <X className="h-5 w-5" />
@@ -460,8 +460,8 @@ export default function PaymentModal({
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 {invoiceId && (
                   <a href={`${API_BASE}/api/payments/invoice/${invoiceId}`}
-                     target="_blank" rel="noopener noreferrer"
-                     className="inline-flex items-center justify-center gap-2 px-5 py-2.5
+                    target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5
                                 rounded-xl border-2 border-sky-200 text-sky-700 hover:bg-sky-50
                                 transition-colors text-sm font-semibold">
                     <FileText className="h-4 w-4" />
@@ -469,7 +469,7 @@ export default function PaymentModal({
                   </a>
                 )}
                 <Button onClick={onClose}
-                        className="bg-gradient-to-r from-sky-600 to-blue-700
+                  className="bg-gradient-to-r from-sky-600 to-blue-700
                                    hover:from-sky-700 hover:to-blue-800
                                    text-white px-8 rounded-xl font-bold shadow-md shadow-sky-200">
                   Go to Dashboard
@@ -494,42 +494,42 @@ export default function PaymentModal({
                   <div className="grid grid-cols-2 gap-4">
 
                     <Field label="Full Name" required icon={<User className="h-4 w-4" />}
-                           error={errs.fullName} span2>
+                      error={errs.fullName} span2>
                       <Input value={form.fullName} onChange={(e) => set("fullName", e.target.value)}
-                             placeholder="John Doe"
-                             className={`rounded-xl border-slate-200 bg-slate-50 focus:bg-white
+                        placeholder="John Doe"
+                        className={`rounded-xl border-slate-200 bg-slate-50 focus:bg-white
                                transition-colors h-11 ${errs.fullName ? "border-rose-400 bg-rose-50" : ""}`} />
                     </Field>
 
                     <Field label="Email" required icon={<Mail className="h-4 w-4" />} error={errs.email}>
                       <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)}
-                             placeholder="john@company.com"
-                             className={`rounded-xl border-slate-200 bg-slate-50 focus:bg-white
+                        placeholder="john@company.com"
+                        className={`rounded-xl border-slate-200 bg-slate-50 focus:bg-white
                                transition-colors h-11 ${errs.email ? "border-rose-400 bg-rose-50" : ""}`} />
                     </Field>
 
                     <Field label="Mobile Number" required icon={<Phone className="h-4 w-4" />}
-                           error={errs.mobile}>
+                      error={errs.mobile}>
                       <Input type="tel" value={form.mobile}
-                             onChange={(e) => set("mobile", e.target.value.replace(/\D/g, ""))}
-                             placeholder="9876543210" maxLength={10}
-                             className={`rounded-xl border-slate-200 bg-slate-50 focus:bg-white
+                        onChange={(e) => set("mobile", e.target.value.replace(/\D/g, ""))}
+                        placeholder="9876543210" maxLength={10}
+                        className={`rounded-xl border-slate-200 bg-slate-50 focus:bg-white
                                transition-colors h-11 ${errs.mobile ? "border-rose-400 bg-rose-50" : ""}`} />
                     </Field>
 
                     <Field label="Company Name" icon={<Building2 className="h-4 w-4" />}>
                       <Input value={form.companyName} onChange={(e) => set("companyName", e.target.value)}
-                             placeholder="Acme Pvt. Ltd. (optional)"
-                             className="rounded-xl border-slate-200 bg-slate-50 focus:bg-white
+                        placeholder="Acme Pvt. Ltd. (optional)"
+                        className="rounded-xl border-slate-200 bg-slate-50 focus:bg-white
                                transition-colors h-11" />
                     </Field>
 
                     <Field label="Billing Address" required icon={<MapPin className="h-4 w-4" />}
-                           error={errs.billingAddress} span2>
+                      error={errs.billingAddress} span2>
                       <Textarea value={form.billingAddress}
-                                onChange={(e) => set("billingAddress", e.target.value)}
-                                placeholder="123, MG Road, Bengaluru, Karnataka – 560001" rows={3}
-                                className={`rounded-xl border-slate-200 bg-slate-50 focus:bg-white
+                        onChange={(e) => set("billingAddress", e.target.value)}
+                        placeholder="123, MG Road, Bengaluru, Karnataka – 560001" rows={3}
+                        className={`rounded-xl border-slate-200 bg-slate-50 focus:bg-white
                                   transition-colors resize-none pt-2.5
                                   ${errs.billingAddress ? "border-rose-400 bg-rose-50" : ""}`} />
                     </Field>
@@ -541,8 +541,8 @@ export default function PaymentModal({
                     ${form.hasGst ? "border-sky-300 bg-sky-50" : "border-slate-200 bg-slate-50"}`}>
                     <div className="flex items-start gap-3">
                       <Checkbox id="gst" checked={form.hasGst}
-                                onCheckedChange={(c) => set("hasGst", !!c)}
-                                className="mt-0.5 border-slate-300 data-[state=checked]:bg-sky-600
+                        onCheckedChange={(c) => set("hasGst", !!c)}
+                        className="mt-0.5 border-slate-300 data-[state=checked]:bg-sky-600
                                            data-[state=checked]:border-sky-600" />
                       <label htmlFor="gst" className="cursor-pointer select-none">
                         <p className="text-sm font-semibold text-slate-700">I have a GST Number</p>
@@ -555,12 +555,12 @@ export default function PaymentModal({
                           GSTIN <span className="text-rose-400">*</span>
                         </Label>
                         <Input value={form.gstNumber}
-                               onChange={(e) => set("gstNumber", e.target.value.toUpperCase())}
-                               placeholder="29ABCDE1234F1Z5" maxLength={15}
-                               className={`rounded-xl font-mono tracking-widest uppercase h-11 bg-white
+                          onChange={(e) => set("gstNumber", e.target.value.toUpperCase())}
+                          placeholder="29ABCDE1234F1Z5" maxLength={15}
+                          className={`rounded-xl font-mono tracking-widest uppercase h-11 bg-white
                                  transition-colors ${errs.gstNumber ? "border-rose-400"
-                                   : form.gstNumber.length === 15 && isValidGST(form.gstNumber)
-                                   ? "border-green-400 bg-green-50" : "border-slate-200"}`} />
+                              : form.gstNumber.length === 15 && isValidGST(form.gstNumber)
+                                ? "border-green-400 bg-green-50" : "border-slate-200"}`} />
                         {errs.gstNumber ? (
                           <p className="text-xs text-rose-500 flex items-center gap-1">
                             <AlertCircle className="h-3 w-3" />{errs.gstNumber}
@@ -577,7 +577,7 @@ export default function PaymentModal({
                   </div>
 
                   <Button onClick={() => { if (validate()) setStep(1); }}
-                          className="w-full h-12 rounded-xl font-bold text-sm
+                    className="w-full h-12 rounded-xl font-bold text-sm
                                      bg-gradient-to-r from-sky-600 to-blue-700
                                      hover:from-sky-700 hover:to-blue-800
                                      text-white shadow-lg shadow-sky-200 transition-all duration-200">
@@ -618,7 +618,7 @@ export default function PaymentModal({
                   </div>
 
                   <PriceCard breakup={breakup} hasGst={form.hasGst}
-                             gstNumber={form.gstNumber} priceNote={plan.priceNote} />
+                    gstNumber={form.gstNumber} priceNote={plan.priceNote} />
 
                   <div className="flex items-center justify-center gap-2 py-1">
                     <Lock className="h-3.5 w-3.5 text-green-500" />
@@ -628,12 +628,12 @@ export default function PaymentModal({
 
                   <div className="flex gap-3">
                     <Button variant="outline" onClick={() => setStep(0)} disabled={loading}
-                            className="flex-1 h-12 rounded-xl border-2 border-slate-200
+                      className="flex-1 h-12 rounded-xl border-2 border-slate-200
                                        text-slate-600 hover:bg-slate-50 font-semibold">
                       ← Edit
                     </Button>
                     <Button onClick={pay} disabled={loading}
-                            className="flex-[2] h-12 rounded-xl font-bold text-sm
+                      className="flex-[2] h-12 rounded-xl font-bold text-sm
                                        bg-gradient-to-r from-sky-600 to-blue-700
                                        hover:from-sky-700 hover:to-blue-800
                                        text-white shadow-lg shadow-sky-200 transition-all duration-200">

@@ -16,23 +16,23 @@ import { useSubscriptionSync } from "@/hooks/useSubscriptionSync";
 // ─────────────────────────────────────────────
 
 interface IntelligenceData {
-  market_pulse:    string;
-  opportunity:     string;
-  risk:            string;
-  verdict:         string;
-  micro_insights:  string[];
-  momentum_score:  number;
-  momentum_label:  string;
+  market_pulse: string;
+  opportunity: string;
+  risk: string;
+  verdict: string;
+  micro_insights: string[];
+  momentum_score: number;
+  momentum_label: string;
   context_summary: string;
-  cached:          boolean;
-  data_rows:       number;
+  cached: boolean;
+  data_rows: number;
 }
 
 interface RecommendationCardProps {
-  icon:        React.ReactNode;
-  title:       string;
+  icon: React.ReactNode;
+  title: string;
   description: string;
-  gradient:    string;
+  gradient: string;
 }
 
 // ─────────────────────────────────────────────
@@ -40,10 +40,10 @@ interface RecommendationCardProps {
 // ─────────────────────────────────────────────
 
 function MomentumRing({ score, label }: { score: number; label: string }) {
-  const radius     = 28;
+  const radius = 28;
   const circumference = 2 * Math.PI * radius;
-  const progress   = (score / 100) * circumference;
-  const color      = score >= 70 ? "#22c55e" : score >= 50 ? "#f59e0b" : score >= 30 ? "#3b82f6" : "#94a3b8";
+  const progress = (score / 100) * circumference;
+  const color = score >= 70 ? "#22c55e" : score >= 50 ? "#f59e0b" : score >= 30 ? "#3b82f6" : "#94a3b8";
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -113,18 +113,18 @@ function MicroInsight({ text, index }: { text: string; index: number }) {
 // MAIN COMPONENT
 // ─────────────────────────────────────────────
 
-const BASE_URL = "https://api.insydz.com";
+const BASE_URL = "http://localhost:8000";
 
 export default function AIRecommendations({ selectedSource }: { selectedSource: string }) {
-  const { filters }                              = useFilters();
-  const { canAccessFeature, currentTier }        = useSubscriptionLimits();
+  const { filters } = useFilters();
+  const { canAccessFeature, currentTier } = useSubscriptionLimits();
   const { trackAIChatUsage, canUseAIFeature, getAIUsage } = useSubscriptionSync();
 
   const hasAIRecommendations = canAccessFeature("hasChartAISummaries");
 
-  const [data, setData]                     = useState<IntelligenceData | null>(null);
-  const [loading, setLoading]               = useState(true);
-  const [aiUsage, setAiUsage]               = useState<{ used: number; limit: number; month: string } | null>(null);
+  const [data, setData] = useState<IntelligenceData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [aiUsage, setAiUsage] = useState<{ used: number; limit: number; month: string } | null>(null);
   const [usageLimitReached, setUsageLimitReached] = useState(false);
 
   // Abort controller to cancel in-flight requests on filter change
@@ -154,20 +154,20 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
     setLoading(true);
 
     const sourceMap: Record<string, string> = {
-      flipkart:                  "flipkart",
-      amazon:                    "amazon",
-      rapidapi_amazon_products:  "amazon",
-      both:                      "flipkart",   // fallback for "both"
+      flipkart: "flipkart",
+      amazon: "amazon",
+      rapidapi_amazon_products: "amazon",
+      both: "flipkart",   // fallback for "both"
     };
     const mappedSource = sourceMap[filters.table || selectedSource] || "flipkart";
 
     try {
       const res = await fetch(`${BASE_URL}/ai/intelligence`, {
-        method:      "POST",
+        method: "POST",
         credentials: "include",
-        headers:     { "Content-Type": "application/json" },
-        body:        JSON.stringify({ source: mappedSource, filters }),
-        signal:      abortRef.current.signal,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ source: mappedSource, filters }),
+        signal: abortRef.current.signal,
       });
 
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -189,19 +189,19 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
       console.error("Intelligence fetch error:", err);
 
       // Graceful fallback — set minimal data so the UI doesn't crash
-      const cat     = filters.category && filters.category !== "All Categories" ? filters.category : "the selected market";
-      const src     = mappedSource === "amazon" ? "Amazon" : "Flipkart";
+      const cat = filters.category && filters.category !== "All Categories" ? filters.category : "the selected market";
+      const src = mappedSource === "amazon" ? "Amazon" : "Flipkart";
       setData({
-        market_pulse:    `${src} data for ${cat} is being analysed. Try refreshing.`,
-        opportunity:     "Broaden your filters to surface more opportunities.",
-        risk:            "Unable to assess risk — check your filter selection.",
-        verdict:         "Refresh to get the latest intelligence for these filters.",
-        micro_insights:  [],
-        momentum_score:  0,
-        momentum_label:  "Loading…",
+        market_pulse: `${src} data for ${cat} is being analysed. Try refreshing.`,
+        opportunity: "Broaden your filters to surface more opportunities.",
+        risk: "Unable to assess risk — check your filter selection.",
+        verdict: "Refresh to get the latest intelligence for these filters.",
+        micro_insights: [],
+        momentum_score: 0,
+        momentum_label: "Loading…",
         context_summary: `${src} · ${cat}`,
-        cached:          false,
-        data_rows:       0,
+        cached: false,
+        data_rows: 0,
       });
     } finally {
       setLoading(false);
@@ -218,12 +218,12 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
 
   // ── Derived display values ──
   const displaySource =
-    (filters.table || selectedSource) === "both"   ? "Both Platforms" :
-    (filters.table || selectedSource) === "amazon" ? "Amazon"         : "Flipkart";
+    (filters.table || selectedSource) === "both" ? "Both Platforms" :
+      (filters.table || selectedSource) === "amazon" ? "Amazon" : "Flipkart";
 
   const cardStyles = [
-    { icon: <Target    className="h-5 w-5" />, gradient: "from-green-500 to-emerald-600",  title: "Key Opportunity" },
-    { icon: <TrendingUp className="h-5 w-5" />, gradient: "from-blue-500 to-cyan-600",     title: "Action Plan"     },
+    { icon: <Target className="h-5 w-5" />, gradient: "from-green-500 to-emerald-600", title: "Key Opportunity" },
+    { icon: <TrendingUp className="h-5 w-5" />, gradient: "from-blue-500 to-cyan-600", title: "Action Plan" },
   ];
 
   // ─────────────────────────────────────────
@@ -291,7 +291,7 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
             </div>
           </div>
 
-        /* ── LIMIT REACHED ── */
+          /* ── LIMIT REACHED ── */
         ) : usageLimitReached ? (
           <div className="p-6 bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-lg">
             <div className="flex items-start gap-3">
@@ -309,7 +309,7 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
             </div>
           </div>
 
-        /* ── MAIN CONTENT ── */
+          /* ── MAIN CONTENT ── */
         ) : (
           <>
             {/* ── TOP ROW: Momentum ring + Market Pulse ── */}

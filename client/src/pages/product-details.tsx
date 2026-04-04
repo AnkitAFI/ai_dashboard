@@ -67,15 +67,15 @@
 //       const categoryParam = urlParams.get("category");
 //       const sourceParam = urlParams.get("source");
 //       const pageParam = urlParams.get("page");
-      
+
 //       setFromCategory(categoryParam || "");
 //       setFromPage(parseInt(pageParam || "1"));
 //       setSource(sourceParam || "");
-      
+
 //       // ✅ Strong check for dashboard
 //       const isDashboard = fromParam === "dashboard";
 //       setFromDashboard(isDashboard);
-      
+
 //       // Debug: Console mein check karo
 //       console.log("=== PRODUCT DETAILS PAGE LOADED ===");
 //       console.log("Full URL:", window.location.href);
@@ -95,7 +95,7 @@
 //   const [activeTab, setActiveTab] = useState("1y");
 //   const [isAmazon, setIsAmazon] = useState(false);
 
-//   const BASE_URL = "https://api.insydz.com";
+//   const BASE_URL = "http://localhost:8000";
 
 //   useEffect(() => {
 //     if (!productName) return;
@@ -276,24 +276,24 @@
 //             onClick={(e) => {
 //               e.preventDefault();
 //               e.stopPropagation();
-              
+
 //               console.log("=== BACK BUTTON CLICKED ===");
 //               console.log("fromDashboard state:", fromDashboard);
 //               console.log("fromCategory state:", fromCategory);
 //               console.log("source state:", source);
-              
+
 //               // ✅ Direct window check as backup
 //               const currentURL = new URLSearchParams(window.location.search);
 //               const fromParam = currentURL.get("from");
 //               console.log("Direct URL check - from param:", fromParam);
-              
+
 //               // Priority check
 //               if (fromDashboard || fromParam === "dashboard") {
 //                 console.log("✅ Redirecting to Dashboard (/dashboard)");
 //                 window.location.href = "/dashboard";
 //                 return;
 //               }
-              
+
 //               // Otherwise category ya categories pe jao
 //               if (fromCategory && source) {
 //                 console.log("Redirecting to category products");
@@ -306,7 +306,7 @@
 //                 console.log("Redirecting to categories list");
 //                 setLocation("/categories");
 //               }
-              
+
 //               console.log("===========================");
 //             }}
 //             className="text-xs sm:text-sm font-medium bg-gradient-to-r from-sky-400 to-sky-600 text-white px-3 sm:px-4 py-2 rounded-xl shadow hover:shadow-lg hover:scale-105 transition-all whitespace-nowrap"
@@ -510,14 +510,14 @@
 //       const categoryParam = urlParams.get("category");
 //       const sourceParam = urlParams.get("source");
 //       const pageParam = urlParams.get("page");
-      
+
 //       setFromCategory(categoryParam || "");
 //       setFromPage(parseInt(pageParam || "1"));
 //       setSource(sourceParam || "");
-      
+
 //       const isDashboard = fromParam === "dashboard";
 //       setFromDashboard(isDashboard);
-      
+
 //       console.log("=== PRODUCT DETAILS PAGE LOADED ===");
 //       console.log("Full URL:", window.location.href);
 //       console.log("from param:", fromParam);
@@ -534,7 +534,7 @@
 //   const [activeTab, setActiveTab] = useState("1y");
 //   const [isAmazon, setIsAmazon] = useState(false);
 
-//   const BASE_URL = "https://api.insydz.com";
+//   const BASE_URL = "http://localhost:8000";
 
 //   useEffect(() => {
 //     if (!productName) return;
@@ -710,20 +710,20 @@
 //             onClick={(e) => {
 //               e.preventDefault();
 //               e.stopPropagation();
-              
+
 //               console.log("=== BACK BUTTON CLICKED ===");
 //               console.log("fromDashboard state:", fromDashboard);
-              
+
 //               const currentURL = new URLSearchParams(window.location.search);
 //               const fromParam = currentURL.get("from");
 //               console.log("Direct URL check - from param:", fromParam);
-              
+
 //               if (fromDashboard || fromParam === "dashboard") {
 //                 console.log("✅ Redirecting to Dashboard");
 //                 window.location.href = "/dashboard";
 //                 return;
 //               }
-              
+
 //               if (fromCategory && source) {
 //                 console.log("Redirecting to category products");
 //                 setLocation(
@@ -937,14 +937,14 @@ export default function ProductDetails() {
       const categoryParam = urlParams.get("category");
       const sourceParam = urlParams.get("source");
       const pageParam = urlParams.get("page");
-      
+
       setFromCategory(categoryParam || "");
       setFromPage(parseInt(pageParam || "1"));
       setSource(sourceParam || "");
-      
+
       const isDashboard = fromParam === "dashboard";
       setFromDashboard(isDashboard);
-      
+
       console.log("=== PRODUCT DETAILS PAGE LOADED ===");
       console.log("Full URL:", window.location.href);
       console.log("from param:", fromParam);
@@ -961,7 +961,7 @@ export default function ProductDetails() {
   const [activeTab, setActiveTab] = useState("1y");
   const [isAmazon, setIsAmazon] = useState(false);
 
-  const BASE_URL = "https://api.insydz.com";
+  const BASE_URL = "http://localhost:8000";
 
   useEffect(() => {
     if (!productName) return;
@@ -1137,20 +1137,20 @@ export default function ProductDetails() {
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              
+
               console.log("=== BACK BUTTON CLICKED ===");
               console.log("fromDashboard state:", fromDashboard);
-              
+
               const currentURL = new URLSearchParams(window.location.search);
               const fromParam = currentURL.get("from");
               console.log("Direct URL check - from param:", fromParam);
-              
+
               if (fromDashboard || fromParam === "dashboard") {
                 console.log("✅ Redirecting to Dashboard");
                 window.location.href = "/dashboard";
                 return;
               }
-              
+
               if (fromCategory && source) {
                 console.log("Redirecting to category products");
                 setLocation(
@@ -1181,9 +1181,8 @@ export default function ProductDetails() {
 
         <div className="mb-6">
           <span
-            className={`inline-flex items-center px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium ${
-              isAmazon ? "bg-blue-100 text-blue-800" : "bg-orange-100 text-orange-800"
-            }`}
+            className={`inline-flex items-center px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium ${isAmazon ? "bg-blue-100 text-blue-800" : "bg-orange-100 text-orange-800"
+              }`}
           >
             {isAmazon ? "🛒 Amazon Product" : "🛍️ Flipkart Product"}
           </span>
@@ -1261,11 +1260,10 @@ export default function ProductDetails() {
                 <button
                   key={tab.key}
                   onClick={() => setActiveTab(tab.key)}
-                  className={`px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                    activeTab === tab.key
+                  className={`px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-medium transition-all ${activeTab === tab.key
                       ? "bg-sky-500 text-white shadow"
                       : "bg-sky-100 text-sky-700 hover:bg-sky-200"
-                  }`}
+                    }`}
                 >
                   {tab.label}
                 </button>
@@ -1281,8 +1279,8 @@ export default function ProductDetails() {
                 </div>
                 <div className="mt-3 pt-3 border-t border-slate-100">
                   <p className="text-[10px] sm:text-[11px] text-center text-slate-400/70 leading-relaxed select-none">
-                    <strong>Disclaimer:</strong> Sales forecasts are predictive estimates based on historical data and statistical models. 
-                    Actual sales may vary due to market conditions, seasonality, competition, and other factors. 
+                    <strong>Disclaimer:</strong> Sales forecasts are predictive estimates based on historical data and statistical models.
+                    Actual sales may vary due to market conditions, seasonality, competition, and other factors.
                     Use these forecasts as guidance only and not as guaranteed outcomes.
                   </p>
                 </div>

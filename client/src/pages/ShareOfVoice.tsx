@@ -324,11 +324,10 @@ function Pagination({
         <button
           key={p}
           onClick={() => onPageChange(p)}
-          className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${
-            currentPage === p
+          className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${currentPage === p
               ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-blue-500 shadow-sm"
               : "border-slate-300 hover:bg-blue-50"
-          }`}
+            }`}
         >
           {p}
         </button>
@@ -428,7 +427,7 @@ export default function ShareOfVoice() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const API_BASE_URL = "https://api.insydz.com/api";
+  const API_BASE_URL = "http://localhost:8000/api";
 
   useEffect(() => { if (userId) fetchUsageLimits(); }, [userId]);
   useEffect(() => { fetchCategories(); }, [marketplace]);
@@ -486,9 +485,8 @@ export default function ShareOfVoice() {
     setMarketHealth(null); setAiInsights(null);
 
     try {
-      const url = `${API_BASE_URL}/sov/category/${encodeURIComponent(selectedCategory)}?marketplace=${marketplace}${
-        yourBrand ? `&your_brand=${encodeURIComponent(yourBrand)}` : ""
-      }${userId ? `&user_id=${userId}` : ""}`;
+      const url = `${API_BASE_URL}/sov/category/${encodeURIComponent(selectedCategory)}?marketplace=${marketplace}${yourBrand ? `&your_brand=${encodeURIComponent(yourBrand)}` : ""
+        }${userId ? `&user_id=${userId}` : ""}`;
       const res = await axios.get(url);
 
       if (res.data.error) {
@@ -551,9 +549,8 @@ export default function ShareOfVoice() {
     if (!selectedCategory) return;
     setLoadingHealth(true);
     try {
-      const url = `${API_BASE_URL}/sov/market-health/${encodeURIComponent(selectedCategory)}?marketplace=${marketplace}${
-        yourBrand ? `&your_brand=${encodeURIComponent(yourBrand)}` : ""
-      }${userId ? `&user_id=${userId}` : ""}`;
+      const url = `${API_BASE_URL}/sov/market-health/${encodeURIComponent(selectedCategory)}?marketplace=${marketplace}${yourBrand ? `&your_brand=${encodeURIComponent(yourBrand)}` : ""
+        }${userId ? `&user_id=${userId}` : ""}`;
       const res = await axios.get(url);
       if (!res.data.error) setMarketHealth(res.data);
     } catch { /* silent */ } finally { setLoadingHealth(false); }
@@ -673,9 +670,8 @@ export default function ShareOfVoice() {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`flex items-start gap-3 p-4 rounded-xl shadow-lg border-2 backdrop-blur-md ${
-              t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
-            }`}
+            className={`flex items-start gap-3 p-4 rounded-xl shadow-lg border-2 backdrop-blur-md ${t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
+              }`}
           >
             {t.variant === "success" ? <CheckCircle className="h-5 w-5 text-green-600 shrink-0 mt-0.5" /> : <XCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />}
             <div className="flex-1 min-w-0">
@@ -784,9 +780,8 @@ export default function ShareOfVoice() {
                   <button
                     key={tab}
                     onClick={() => { setActiveTab(tab); setCurrentPage(1); }}
-                    className={`flex-1 py-4 px-6 font-medium transition-all ${
-                      activeTab === tab ? "border-b-2 border-blue-500 text-blue-600 bg-blue-50/50" : "text-gray-600 hover:bg-gray-50"
-                    }`}
+                    className={`flex-1 py-4 px-6 font-medium transition-all ${activeTab === tab ? "border-b-2 border-blue-500 text-blue-600 bg-blue-50/50" : "text-gray-600 hover:bg-gray-50"
+                      }`}
                   >
                     <div className="flex items-center justify-center gap-2">
                       {tab === "category" ? <BarChart3 className="w-4 h-4" /> : <Search className="w-4 h-4" />}
@@ -848,13 +843,12 @@ export default function ShareOfVoice() {
                       <Button
                         onClick={analyzeCategorySov}
                         disabled={loading || (!!userId && !canAnalyze)}
-                        className={`w-full py-3 rounded-lg text-white font-medium flex items-center justify-center gap-2 ${
-                          userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
-                        }`}
+                        className={`w-full py-3 rounded-lg text-white font-medium flex items-center justify-center gap-2 ${userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
+                          }`}
                       >
                         {loading ? <><RefreshCw className="w-4 h-4 animate-spin" /> Analyzing…</>
                           : userId && !canAnalyze ? <><Lock className="w-4 h-4" /> Limit Reached</>
-                          : <><Search className="w-4 h-4" /> Analyze</>}
+                            : <><Search className="w-4 h-4" /> Analyze</>}
                       </Button>
                     </div>
                   </>
@@ -884,9 +878,8 @@ export default function ShareOfVoice() {
                       <Button
                         onClick={analyzeKeywordSov}
                         disabled={loading || (!!userId && !canAnalyze)}
-                        className={`mb-0 py-3 px-5 rounded-lg text-white font-medium flex items-center gap-2 ${
-                          userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
-                        }`}
+                        className={`mb-0 py-3 px-5 rounded-lg text-white font-medium flex items-center gap-2 ${userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
+                          }`}
                       >
                         {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                       </Button>
@@ -1024,10 +1017,9 @@ export default function ShareOfVoice() {
                       </CardHeader>
                       <CardContent>
                         <div className="flex items-center gap-3 mb-2">
-                          <div className={`px-3 py-1 rounded-full text-sm font-bold ${
-                            marketHealth.trend.trend === "Growing" ? "bg-green-100 text-green-700" :
-                            marketHealth.trend.trend === "Declining" ? "bg-red-100 text-red-700" : "bg-slate-100 text-slate-700"
-                          }`}>
+                          <div className={`px-3 py-1 rounded-full text-sm font-bold ${marketHealth.trend.trend === "Growing" ? "bg-green-100 text-green-700" :
+                              marketHealth.trend.trend === "Declining" ? "bg-red-100 text-red-700" : "bg-slate-100 text-slate-700"
+                            }`}>
                             {marketHealth.trend.trend === "Growing" ? "📈" : marketHealth.trend.trend === "Declining" ? "📉" : "➡️"} {marketHealth.trend.trend}
                           </div>
                           <span className={`text-lg font-black ${marketHealth.trend.growth_proxy_pct > 0 ? "text-green-600" : "text-red-600"}`}>
@@ -1231,8 +1223,8 @@ export default function ShareOfVoice() {
                           {marketHealth.all_price_gaps.map((g, i) => (
                             <Cell key={i} fill={
                               g.opportunity === "High" ? "#10b981" :
-                              g.opportunity === "Medium" ? "#f59e0b" :
-                              g.opportunity === "Low" ? "#3b82f6" : "#ef4444"
+                                g.opportunity === "Medium" ? "#f59e0b" :
+                                  g.opportunity === "Low" ? "#3b82f6" : "#ef4444"
                             } />
                           ))}
                         </Bar>
@@ -1361,17 +1353,15 @@ export default function ShareOfVoice() {
                     <div className="space-y-4">
                       {marketHealth.action_plan.steps.map((step) => (
                         <div key={step.step} className="flex gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-200 hover:bg-blue-50/30 transition-all">
-                          <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow ${
-                            step.priority === "Critical" ? "bg-red-500" : step.priority === "High" ? "bg-orange-500" : "bg-blue-500"
-                          }`}>
+                          <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow ${step.priority === "Critical" ? "bg-red-500" : step.priority === "High" ? "bg-orange-500" : "bg-blue-500"
+                            }`}>
                             {step.step}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap mb-1">
                               <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">{step.area}</span>
-                              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                                step.priority === "Critical" ? "bg-red-100 text-red-700" : step.priority === "High" ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-600"
-                              }`}>{step.priority}</span>
+                              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${step.priority === "Critical" ? "bg-red-100 text-red-700" : step.priority === "High" ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-600"
+                                }`}>{step.priority}</span>
                               <span className="text-xs text-slate-400">{step.timeline}</span>
                             </div>
                             <p className="font-semibold text-slate-800 text-sm mb-1">{step.action}</p>
@@ -1448,10 +1438,9 @@ export default function ShareOfVoice() {
                       ))}
                     </div>
                     {marketHealth.listing_quality.your_brand_vs_median && (
-                      <div className={`mt-4 p-3 rounded-xl text-sm font-medium flex items-center gap-2 ${
-                        marketHealth.listing_quality.your_brand_vs_median === "Above" ? "bg-green-50 text-green-700" :
-                        marketHealth.listing_quality.your_brand_vs_median === "Below" ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
-                      }`}>
+                      <div className={`mt-4 p-3 rounded-xl text-sm font-medium flex items-center gap-2 ${marketHealth.listing_quality.your_brand_vs_median === "Above" ? "bg-green-50 text-green-700" :
+                          marketHealth.listing_quality.your_brand_vs_median === "Below" ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
+                        }`}>
                         {marketHealth.listing_quality.your_brand_vs_median === "Above" ? "✅" : marketHealth.listing_quality.your_brand_vs_median === "Below" ? "⚠️" : "➡️"}
                         Your brand is <strong>&nbsp;{marketHealth.listing_quality.your_brand_vs_median}&nbsp;</strong> median review density
                         {marketHealth.listing_quality.your_brand_density && ` (${marketHealth.listing_quality.your_brand_density} reviews/product)`}
@@ -1493,9 +1482,8 @@ export default function ShareOfVoice() {
                             <tr key={idx} className={`border-b border-slate-100 transition-colors ${isYours ? "bg-blue-50 border-l-4 border-l-blue-500" : "hover:bg-slate-50"}`}>
                               <td className="p-3">
                                 <div className="flex items-center gap-2">
-                                  <span className={`w-6 h-6 rounded-md flex items-center justify-center text-white text-xs font-bold shrink-0 ${
-                                    rank === 1 ? "bg-yellow-400" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-orange-400" : "bg-blue-400"
-                                  }`}>{rank}</span>
+                                  <span className={`w-6 h-6 rounded-md flex items-center justify-center text-white text-xs font-bold shrink-0 ${rank === 1 ? "bg-yellow-400" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-orange-400" : "bg-blue-400"
+                                    }`}>{rank}</span>
                                   <span className="font-medium text-slate-800">{brand.brand}</span>
                                   {isYours && <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-semibold">You</span>}
                                 </div>
@@ -1662,15 +1650,13 @@ export default function ShareOfVoice() {
                             <div className="space-y-3">
                               {aiInsights.actionable_recommendations.map((rec: any, idx: number) => (
                                 <div key={idx} className="flex gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-orange-200 hover:bg-orange-50/30 transition-all">
-                                  <div className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-white font-black text-sm ${
-                                    rec.priority === "High" ? "bg-red-500" : rec.priority === "Medium" ? "bg-yellow-500" : "bg-blue-500"
-                                  }`}>{idx + 1}</div>
+                                  <div className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-white font-black text-sm ${rec.priority === "High" ? "bg-red-500" : rec.priority === "Medium" ? "bg-yellow-500" : "bg-blue-500"
+                                    }`}>{idx + 1}</div>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                                       <span className="font-bold text-slate-800 text-sm">{rec.type}</span>
-                                      <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                                        rec.priority === "High" ? "bg-red-100 text-red-700" : rec.priority === "Medium" ? "bg-yellow-100 text-yellow-700" : "bg-blue-100 text-blue-700"
-                                      }`}>{rec.priority}</span>
+                                      <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${rec.priority === "High" ? "bg-red-100 text-red-700" : rec.priority === "Medium" ? "bg-yellow-100 text-yellow-700" : "bg-blue-100 text-blue-700"
+                                        }`}>{rec.priority}</span>
                                     </div>
                                     <p className="text-xs text-slate-600">{rec.action}</p>
                                     <p className="text-xs text-emerald-600 font-medium mt-1">💡 {rec.impact}</p>
@@ -1828,9 +1814,8 @@ export default function ShareOfVoice() {
                           <CardContent className="p-5">
                             <div className="flex items-start justify-between mb-4">
                               <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow ${
-                                  rank === 1 ? "bg-yellow-400" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-orange-400" : "bg-blue-500"
-                                }`}>{rank}</div>
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow ${rank === 1 ? "bg-yellow-400" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-orange-400" : "bg-blue-500"
+                                  }`}>{rank}</div>
                                 <div>
                                   <h4 className="font-bold text-slate-800">{c.competitor_name}</h4>
                                   <p className="text-xs text-slate-500">{c.total_products} products</p>

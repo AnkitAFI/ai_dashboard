@@ -10,7 +10,7 @@
 // import { Separator } from "@/components/ui/separator";
 // import { Filter, X, RotateCcw } from "lucide-react";
 // import { useFilters } from "./FiltersContext";
- 
+
 // interface FilterState {
 //   table: string;
 //   category: string;
@@ -21,7 +21,7 @@
 //   sortBy: string;
 //   topN: number;
 // }
- 
+
 // const DATE_RANGES = [
 //   { value: "7d", label: "Last 7 days" },
 //   { value: "30d", label: "Last 30 days" },
@@ -29,7 +29,7 @@
 //   { value: "1y", label: "Last year" },
 //   { value: "all", label: "All time" },
 // ];
- 
+
 // const SORT_OPTIONS = [
 //   { value: "sales_desc", label: "Sales (High to Low)" },
 //   { value: "sales_asc", label: "Sales (Low to High)" },
@@ -40,7 +40,7 @@
 //   { value: "price_asc", label: "Price (Low to High)" },
 //   { value: "trending", label: "Trending" },
 // ];
- 
+
 // const TOP_N_OPTIONS = [
 //   { value: 5, label: "Top 5" },
 //   { value: 10, label: "Top 10" },
@@ -48,29 +48,29 @@
 //   { value: 50, label: "Top 50" },
 //   { value: 100, label: "Top 100" },
 // ];
- 
+
 // export default function FiltersPanel({ selectedSource }: { selectedSource: string }) {
 //   const { filters: appliedFiltersContext, setFilters: setAppliedFiltersContext } = useFilters();
- 
+
 //   // Local state for temporary filter changes (before applying)
 //   const [localFilters, setLocalFilters] = useState<FilterState>(appliedFiltersContext);
 //   const [appliedFilters, setAppliedFilters] = useState<string[]>([]);
 //   const [categories, setCategories] = useState<string[]>([]);
- 
+
 //   // Sync local filters with context on mount
 //   useEffect(() => {
 //     setLocalFilters(appliedFiltersContext);
 //   }, []);
- 
+
 //   // ------------------ Fetch Categories ------------------
 //   const fetchCategories = async (table: string) => {
 //     try {
-//       const res = await fetch(`https://api.insydz.com/categories?table=${table}`);
+//       const res = await fetch(`http://localhost:8000/categories?table=${table}`);
 //       const data = await res.json();
 //       const cats = data.map((c: any) => c.category);
- 
+
 //       setCategories(["All Categories", ...cats]);
- 
+
 //       // Reset category if current not in list
 //       setLocalFilters(prev => {
 //         if (!["All Categories", ...cats].includes(prev.category)) {
@@ -82,18 +82,18 @@
 //       console.error("Failed to fetch categories:", err);
 //     }
 //   };
- 
+
 //   useEffect(() => {
 //     fetchCategories(localFilters.table);
 //   }, [localFilters.table]);
- 
+
 //   // ------------------ Helpers ------------------
 //   const updateLocalFilter = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
 //     setLocalFilters({ ...localFilters, [key]: value });
 //   };
- 
+
 //   const formatPrice = (price: number) => (price >= 10000 ? `₹${(price / 1000).toFixed(0)}K` : `₹${price.toLocaleString()}`);
- 
+
 //   const resetFilters = () => {
 //     const defaultFilters: FilterState = {
 //       table: "flipkart",
@@ -105,16 +105,16 @@
 //       sortBy: "sales_desc",
 //       topN: 10,
 //     };
-   
+
 //     setLocalFilters(defaultFilters);
 //     setAppliedFiltersContext(defaultFilters); // Apply immediately
 //     setAppliedFilters([]);
 //   };
- 
+
 //   const applyFilters = () => {
 //     // Update the actual context with local filters
 //     setAppliedFiltersContext(localFilters);
-   
+
 //     // Generate applied filters badges
 //     const applied: string[] = [];
 //     applied.push(`Table: ${localFilters.table}`);
@@ -124,26 +124,26 @@
 //     if (localFilters.rating > 0) applied.push(`Rating: ${localFilters.rating}+ stars`);
 //     if (localFilters.showTrendingOnly) applied.push("Trending Only");
 //     if (localFilters.topN !== 10) applied.push(`Top ${localFilters.topN} Products`);
- 
+
 //     setAppliedFilters(applied);
 //   };
- 
+
 //   const removeFilter = (filterToRemove: string) => {
 //     setAppliedFilters(prev => prev.filter(f => f !== filterToRemove));
- 
+
 //     let updatedFilters = { ...localFilters };
-   
+
 //     if (filterToRemove.startsWith("Table:")) updatedFilters.table = "flipkart";
 //     else if (filterToRemove.startsWith("Category:")) updatedFilters.category = "All Categories";
 //     else if (filterToRemove.startsWith("Price:")) updatedFilters.priceRange = [0, 5000000];
 //     else if (filterToRemove.startsWith("Rating:")) updatedFilters.rating = 0;
 //     else if (filterToRemove === "Trending Only") updatedFilters.showTrendingOnly = false;
 //     else if (filterToRemove.startsWith("Top")) updatedFilters.topN = 10;
-   
+
 //     setLocalFilters(updatedFilters);
 //     setAppliedFiltersContext(updatedFilters); // Apply immediately when removing
 //   };
- 
+
 //   // ------------------ Render ------------------
 //   return (
 //     <Card className="bg-card rounded-lg border mb-6">
@@ -156,7 +156,7 @@
 //           <RotateCcw className="h-4 w-4 mr-2" /> Reset
 //         </Button>
 //       </CardHeader>
- 
+
 //       <CardContent className="space-y-6">
 //         {/* Applied Filters */}
 //         {appliedFilters.length > 0 && (
@@ -177,7 +177,7 @@
 //             <Separator className="mt-4" />
 //           </div>
 //         )}
- 
+
 //         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 //           {/* Table Selector */}
 //           <div className="space-y-2">
@@ -192,7 +192,7 @@
 //               </SelectContent>
 //             </Select>
 //           </div>
- 
+
 //           {/* Category Selector */}
 //           <div className="space-y-2">
 //             <Label>Category</Label>
@@ -209,7 +209,7 @@
 //               </SelectContent>
 //             </Select>
 //           </div>
- 
+
 //           {/* Price Range */}
 //           <div className="space-y-2">
 //             <Label>Price Range</Label>
@@ -228,7 +228,7 @@
 //               </div>
 //             </div>
 //           </div>
- 
+
 //           {/* Rating */}
 //           <div className="space-y-2">
 //             <Label>Minimum Rating</Label>
@@ -246,7 +246,7 @@
 //               </SelectContent>
 //             </Select>
 //           </div>
- 
+
 //           {/* Date Range */}
 //           <div className="space-y-2">
 //             <Label>Date Range</Label>
@@ -263,7 +263,7 @@
 //               </SelectContent>
 //             </Select>
 //           </div>
- 
+
 //           {/* Sort By */}
 //           <div className="space-y-2">
 //             <Label>Sort By</Label>
@@ -280,7 +280,7 @@
 //               </SelectContent>
 //             </Select>
 //           </div>
- 
+
 //           {/* Top N Products */}
 //           <div className="space-y-2">
 //             <Label>Top N Products</Label>
@@ -298,7 +298,7 @@
 //             </Select>
 //           </div>
 //         </div>
- 
+
 //         {/* Advanced Options */}
 //         <Separator />
 //         <div className="space-y-4">
@@ -316,7 +316,7 @@
 //             />
 //           </div>
 //         </div>
- 
+
 //         {/* Apply & Clear Buttons */}
 //         <div className="flex gap-2 pt-4">
 //           <Button onClick={applyFilters} className="flex-1">
@@ -393,7 +393,7 @@ const TOP_N_OPTIONS = [
 export default function FiltersPanel({ selectedSource }: { selectedSource: string }) {
   const { filters: appliedFiltersContext, setFilters: setAppliedFiltersContext, maxTopN } = useFilters();
   const { currentTier, limits, canAccessFeature } = useSubscriptionLimits();
-  
+
   // Local state for temporary filter changes (before applying)
   const [localFilters, setLocalFilters] = useState<FilterState>(appliedFiltersContext);
   const [appliedFilters, setAppliedFilters] = useState<string[]>([]);
@@ -409,7 +409,7 @@ export default function FiltersPanel({ selectedSource }: { selectedSource: strin
   // ------------------ Fetch Categories ------------------
   const fetchCategories = async (table: string) => {
     try {
-      const res = await fetch(`https://api.insydz.com/categories?table=${table}`);
+      const res = await fetch(`http://localhost:8000/categories?table=${table}`);
       const data = await res.json();
       const cats = data.map((c: any) => c.category);
 
@@ -449,7 +449,7 @@ export default function FiltersPanel({ selectedSource }: { selectedSource: strin
       sortBy: "sales_desc",
       topN: Math.min(10, limits.maxTopN), // Respect subscription limit
     };
-    
+
     setLocalFilters(defaultFilters);
     setAppliedFiltersContext(defaultFilters);
     setAppliedFilters([]);
@@ -458,7 +458,7 @@ export default function FiltersPanel({ selectedSource }: { selectedSource: strin
   const applyFilters = () => {
     // Update the actual context with local filters
     setAppliedFiltersContext(localFilters);
-    
+
     // Generate applied filters badges
     const applied: string[] = [];
     applied.push(`Table: ${localFilters.table}`);
@@ -476,14 +476,14 @@ export default function FiltersPanel({ selectedSource }: { selectedSource: strin
     setAppliedFilters(prev => prev.filter(f => f !== filterToRemove));
 
     let updatedFilters = { ...localFilters };
-    
+
     if (filterToRemove.startsWith("Table:")) updatedFilters.table = "flipkart";
     else if (filterToRemove.startsWith("Category:")) updatedFilters.category = "All Categories";
     else if (filterToRemove.startsWith("Price:")) updatedFilters.priceRange = [0, 5000000];
     else if (filterToRemove.startsWith("Rating:")) updatedFilters.rating = 0;
     else if (filterToRemove === "Trending Only") updatedFilters.showTrendingOnly = false;
     else if (filterToRemove.startsWith("Top")) updatedFilters.topN = Math.min(10, limits.maxTopN);
-    
+
     setLocalFilters(updatedFilters);
     setAppliedFiltersContext(updatedFilters);
   };
@@ -491,13 +491,13 @@ export default function FiltersPanel({ selectedSource }: { selectedSource: strin
   // Handle Top N change with subscription check
   const handleTopNChange = (value: string) => {
     const numValue = parseInt(value);
-    
+
     if (numValue > limits.maxTopN) {
       setAttemptedTopN(numValue);
       setShowUpgradeDialog(true);
       return;
     }
-    
+
     updateLocalFilter("topN", numValue);
   };
 
@@ -672,8 +672,8 @@ export default function FiltersPanel({ selectedSource }: { selectedSource: strin
                   </span>
                 )}
               </div>
-              <Select 
-                value={localFilters.topN.toString()} 
+              <Select
+                value={localFilters.topN.toString()}
                 onValueChange={handleTopNChange}
               >
                 <SelectTrigger className="w-full">
@@ -683,8 +683,8 @@ export default function FiltersPanel({ selectedSource }: { selectedSource: strin
                   {TOP_N_OPTIONS.map((option) => {
                     const locked = isTopNLocked(option.value);
                     return (
-                      <SelectItem 
-                        key={option.value} 
+                      <SelectItem
+                        key={option.value}
                         value={option.value.toString()}
                         disabled={locked}
                         className={locked ? "opacity-50" : ""}
@@ -700,7 +700,7 @@ export default function FiltersPanel({ selectedSource }: { selectedSource: strin
                   })}
                 </SelectContent>
               </Select>
-              
+
               {/* Current selection display */}
               <div className="text-xs text-muted-foreground">
                 Currently: Top {localFilters.topN} products
@@ -718,11 +718,11 @@ export default function FiltersPanel({ selectedSource }: { selectedSource: strin
                     🚀 Unlock More Data Insights
                   </p>
                   <p className="text-xs text-purple-700 mb-2">
-                    {currentTier === "free" 
+                    {currentTier === "free"
                       ? "Upgrade to Basic for Top 20 products or Premium for Top 100"
                       : currentTier === "basic"
-                      ? "Upgrade to Premium for Top 100 products + real-time alerts"
-                      : "Upgrade to Enterprise for unlimited products"}
+                        ? "Upgrade to Premium for Top 100 products + real-time alerts"
+                        : "Upgrade to Enterprise for unlimited products"}
                   </p>
                   <div className="flex gap-2">
                     <Button
@@ -786,13 +786,13 @@ export default function FiltersPanel({ selectedSource }: { selectedSource: strin
               Upgrade to View More Products
             </DialogTitle>
             <DialogDescription>
-              {attemptedTopN 
+              {attemptedTopN
                 ? `You tried to select Top ${attemptedTopN}, but your ${currentTier} plan is limited to Top ${limits.maxTopN}`
                 : `Your ${currentTier} plan is limited to Top ${limits.maxTopN} products`
               }
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             {/* Current Plan Info */}
             <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
@@ -812,7 +812,7 @@ export default function FiltersPanel({ selectedSource }: { selectedSource: strin
               <h4 className="font-semibold text-sm text-slate-800">
                 📊 Upgrade Options:
               </h4>
-              
+
               <div className="space-y-2">
                 {currentTier === "free" && (
                   <>
@@ -836,7 +836,7 @@ export default function FiltersPanel({ selectedSource }: { selectedSource: strin
                     </div>
                   </>
                 )}
-                
+
                 {currentTier === "basic" && (
                   <div className="border-l-4 border-purple-500 bg-purple-50 p-3 rounded-r-lg">
                     <p className="font-semibold text-sm text-purple-900">Premium - ₹1999/month ⭐</p>
