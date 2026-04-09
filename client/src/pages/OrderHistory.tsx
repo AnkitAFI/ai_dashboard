@@ -27,11 +27,7 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
 const API_BASE = "http://localhost:8000";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface PaymentOrder {
   id: number;
@@ -47,8 +43,6 @@ interface PaymentOrder {
   created_at: string;
   paid_at: string | null;
 }
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<
   string,
@@ -142,7 +136,7 @@ function EmptyState() {
   );
 }
 
-// ─── Order Detail Modal ───────────────────────────────────────────────────────
+// ─── Order Detail Modal
 
 function OrderDetailModal({
   order,
@@ -257,9 +251,7 @@ function OrderDetailModal({
   );
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
 // MAIN PAGE
-// ═════════════════════════════════════════════════════════════════════════════
 
 export default function OrderHistory() {
   const { user, isLoading: authLoading } = useAuth();
@@ -270,7 +262,7 @@ export default function OrderHistory() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<PaymentOrder | null>(null);
 
-  // ── Fetch orders ──────────────────────────────────────────────────────────
+  // ── Fetch orders
 
   const fetchOrders = async () => {
     if (!user?.id) return;
@@ -297,7 +289,7 @@ export default function OrderHistory() {
     if (user) fetchOrders();
   }, [user]);
 
-  // ── Auth guards ───────────────────────────────────────────────────────────
+  // ── Auth guards
 
   if (authLoading) {
     return (
@@ -329,13 +321,13 @@ export default function OrderHistory() {
     );
   }
 
-  // ── Stats ─────────────────────────────────────────────────────────────────
+  // ── Stats
 
   const totalPaid = orders.filter((o) => o.status === "paid").reduce((s, o) => s + o.amount, 0);
   const paidCount = orders.filter((o) => o.status === "paid").length;
   const pendingCount = orders.filter((o) => o.status === "pending").length;
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // ── Render
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100 flex flex-col lg:flex-row">

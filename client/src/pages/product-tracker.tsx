@@ -15,10 +15,6 @@ import {
 } from "lucide-react";
 import Sidebar from "@/components/layout/sidebar";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TYPES  — aligned with the new ApiResponse envelope from fastapi_main_v2.py
-// ─────────────────────────────────────────────────────────────────────────────
-
 interface GapItem {
   gap_type: string;
   severity: string;
@@ -125,10 +121,6 @@ interface UsageLimits {
   subscription_tier: string;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
-
 const SOURCE_TYPE_LABELS: Record<string, { label: string; color: string }> = {
   exact_match: { label: "Exact Match", color: "bg-green-100 text-green-800 border-green-300" },
   keyword_match: { label: "Keyword Match", color: "bg-blue-100 text-blue-800 border-blue-300" },
@@ -144,10 +136,6 @@ const TIER_LABELS: Record<string, string> = {
   tier_4_category: "Tier 4 — Category",
   no_data: "No Data",
 };
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SUB-COMPONENTS
-// ─────────────────────────────────────────────────────────────────────────────
 
 /** Confidence score pill + expandable breakdown */
 function ConfidencePanel({ cs }: { cs: NonNullable<ApiResponse["confidence_score"]> }) {
@@ -280,10 +268,6 @@ function FallbackBanner({ reason }: { reason: string }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
-
 export default function ProductTracker() {
   const { user, isLoading } = useAuth();
   const userEmail = user?.email || "";
@@ -361,7 +345,7 @@ export default function ProductTracker() {
   };
   useEffect(() => { fetchCategories(source); }, [source]);
 
-  // ── Toasts ────────────────────────────────────────────────────────────────
+  // ── Toasts
   const showToast = (title: string, description: string, variant: "success" | "error" = "success") => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, title, description, variant }]);
@@ -369,7 +353,7 @@ export default function ProductTracker() {
   };
   const removeToast = (id: number) => setToasts(prev => prev.filter(t => t.id !== id));
 
-  // ── Analyse ───────────────────────────────────────────────────────────────
+  // ── Analyse
   const handleAnalyze = async () => {
     if (userId && !canAnalyze) {
       setShowUpgradeModal(true);
@@ -435,7 +419,7 @@ export default function ProductTracker() {
     }
   };
 
-  // ── Colour helpers (unchanged) ────────────────────────────────────────────
+  // Colour helpers
   const getConfidenceBadgeColor = (c: string) =>
     c === "High" ? "bg-green-100 text-green-800 border-green-300" :
       c === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-300" :
@@ -462,9 +446,6 @@ export default function ProductTracker() {
       s === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-300" :
         "bg-slate-100 text-slate-800 border-slate-300";
 
-  // ──────────────────────────────────────────────────────────────────────────
-  // RENDER
-  // ──────────────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F8FBFF] via-[#ECF5FF] to-[#E0F2FE] overflow-x-hidden">
 
@@ -937,9 +918,9 @@ export default function ProductTracker() {
                       </div>
                       <div className="mt-2">
                         <Badge className={`text-base px-4 py-1 ${result.final_verdict.verdict_color === "green" ? "bg-green-100 text-green-800 border-green-300" :
-                            result.final_verdict.verdict_color === "blue" ? "bg-blue-100 text-blue-800 border-blue-300" :
-                              result.final_verdict.verdict_color === "orange" ? "bg-orange-100 text-orange-800 border-orange-300" :
-                                "bg-red-100 text-red-800 border-red-300"
+                          result.final_verdict.verdict_color === "blue" ? "bg-blue-100 text-blue-800 border-blue-300" :
+                            result.final_verdict.verdict_color === "orange" ? "bg-orange-100 text-orange-800 border-orange-300" :
+                              "bg-red-100 text-red-800 border-red-300"
                           }`}>
                           {result.final_verdict.verdict_label}
                         </Badge>

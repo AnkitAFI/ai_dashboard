@@ -4,14 +4,14 @@ from typing import Optional
 
 class Settings(BaseSettings):
     # Core Settings
-    SECRET_KEY: str
-    Gemini_API_KEY: str
-    VITE_API_URL: str
-    DATABASE_URL: str
+    SECRET_KEY: str = "secret"
+    Gemini_API_KEY: str = ""
+    VITE_API_URL: str = ""
+    DATABASE_URL: str = ""
     
     # DataForSEO API
-    DATAFORSEO_LOGIN: str
-    DATAFORSEO_PASSWORD: str
+    DATAFORSEO_LOGIN: str = ""
+    DATAFORSEO_PASSWORD: str = ""
     
     # Optional Settings
     DEFAULT_LOCATION_CODE: int = 2840
@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+        extra = "ignore"
 
 
 settings = Settings()

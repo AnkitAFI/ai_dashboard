@@ -28,6 +28,8 @@ import { Badge } from "@/components/ui/badge";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/useSubscriptionLimits";
 import { useSubscriptionSync } from "@/hooks/useSubscriptionSync";
 import { useAuth } from "@/App";
+import OnboardingModal, { OnboardingData } from "@/components/modals/OnboardingModal";
+import { toast } from "@/hooks/use-toast";
 
 // Type definitions
 interface NotificationDetails {
@@ -63,11 +65,12 @@ function DashboardContent() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [selectedAlert, setSelectedAlert] = useState<Notification | null>(null);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
 
   // Subscription hooks
   const { limits, canAccessFeature, currentTier } = useSubscriptionLimits();
   const { updateSubscriptionInDB } = useSubscriptionSync();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
 
   const { filters, setFilters } = useFilters();
   const BASE_URL = "http://localhost:8000";
@@ -121,6 +124,43 @@ function DashboardContent() {
     const interval = setInterval(() => fetchNotifications(selectedSource), 30000);
     return () => clearInterval(interval);
   }, [selectedSource, currentTier]);
+
+  useEffect(() => {
+    if (user && !user.onboardingCompleted) {
+      setIsOnboardingOpen(true);
+    }
+  }, [user]);
+
+  const handleOnboardingComplete = async (data: OnboardingData) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/auth/onboarding`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (res.ok) {
+        toast({
+          title: "Welcome onboard! 🚀",
+          description: "Your personalized dashboard is being set up.",
+        });
+        await refreshUser();
+        setIsOnboardingOpen(false);
+      } else {
+        throw new Error("Failed to save onboarding data");
+      }
+    } catch (error) {
+      console.error("Onboarding error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save your preferences. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleSourceChange = (newSource: string) => {
     setFilters({ ...filters, table: newSource });
@@ -590,6 +630,11 @@ function DashboardContent() {
           )}
         </DialogContent>
       </Dialog>
+      <OnboardingModal 
+        isOpen={isOnboardingOpen} 
+        onClose={() => setIsOnboardingOpen(false)} 
+        onComplete={handleOnboardingComplete}
+      />
     </div>
   );
 }

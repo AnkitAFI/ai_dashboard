@@ -2,66 +2,14 @@ import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import Sidebar from "@/components/layout/sidebar";
 import { useAuth } from "@/App";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { TrendingUp, Target, BarChart3, Search, RefreshCw, AlertCircle, CheckCircle, Users, Award, Filter, ChevronLeft, ChevronRight, Lock, Crown, XCircle, X, Zap, ShieldCheck, Map, Layers, Star, ArrowRight, TrendingDown, Minus, } from "lucide-react";
 import {
-  TrendingUp,
-  Target,
-  BarChart3,
-  Search,
-  RefreshCw,
-  AlertCircle,
-  CheckCircle,
-  Users,
-  Award,
-  Filter,
-  ChevronLeft,
-  ChevronRight,
-  Lock,
-  Crown,
-  XCircle,
-  X,
-  Zap,
-  ShieldCheck,
-  Map,
-  Layers,
-  Star,
-  ArrowRight,
-  TrendingDown,
-  Minus,
-} from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  RadarChart,
-  Radar,
-  PolarGrid,
-  PolarAngleAxis,
-  ScatterChart,
-  Scatter,
-  ZAxis,
+  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, ScatterChart, Scatter, ZAxis,
 } from "recharts";
-
-// ─── Interfaces ───────────────────────────────────────────────────────────────
 
 interface BrandShareData {
   brand: string;
@@ -139,7 +87,6 @@ interface UsageLimits {
   subscription_tier: string;
 }
 
-// New endpoint interfaces
 interface MarketConcentration {
   hhi_score: number;
   label: string;
@@ -265,8 +212,6 @@ interface MarketHealthResponse {
   listing_quality: ListingQualityBenchmark;
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
 const COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316"];
 
 const QUADRANT_COLORS: Record<string, string> = {
@@ -276,8 +221,6 @@ const QUADRANT_COLORS: Record<string, string> = {
   "Poor Value": "#94a3b8",
 };
 
-// ─── Custom Tooltip ───────────────────────────────────────────────────────────
-
 const CustomTooltipStyle = {
   backgroundColor: "rgba(255,255,255,0.97)",
   borderRadius: "12px",
@@ -286,8 +229,6 @@ const CustomTooltipStyle = {
   fontSize: 13,
   padding: "10px 16px",
 };
-
-// ─── Pagination Component ─────────────────────────────────────────────────────
 
 function Pagination({
   currentPage,
@@ -325,8 +266,8 @@ function Pagination({
           key={p}
           onClick={() => onPageChange(p)}
           className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${currentPage === p
-              ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-blue-500 shadow-sm"
-              : "border-slate-300 hover:bg-blue-50"
+            ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-blue-500 shadow-sm"
+            : "border-slate-300 hover:bg-blue-50"
             }`}
         >
           {p}
@@ -350,7 +291,7 @@ function Pagination({
   );
 }
 
-// ─── Score Ring Component ─────────────────────────────────────────────────────
+// Score Ring Component
 
 function ScoreRing({ score, color, size = 80 }: { score: number; color: string; size?: number }) {
   const r = (size - 12) / 2;
@@ -374,7 +315,7 @@ function ScoreRing({ score, color, size = 80 }: { score: number; color: string; 
   );
 }
 
-// ─── Opportunity Badge ────────────────────────────────────────────────────────
+// Opportunity Badge
 
 function OppBadge({ opp }: { opp: string }) {
   const map: Record<string, string> = {
@@ -390,7 +331,7 @@ function OppBadge({ opp }: { opp: string }) {
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+//  Main Component
 
 export default function ShareOfVoice() {
   const { user, isLoading } = useAuth();
@@ -1018,7 +959,7 @@ export default function ShareOfVoice() {
                       <CardContent>
                         <div className="flex items-center gap-3 mb-2">
                           <div className={`px-3 py-1 rounded-full text-sm font-bold ${marketHealth.trend.trend === "Growing" ? "bg-green-100 text-green-700" :
-                              marketHealth.trend.trend === "Declining" ? "bg-red-100 text-red-700" : "bg-slate-100 text-slate-700"
+                            marketHealth.trend.trend === "Declining" ? "bg-red-100 text-red-700" : "bg-slate-100 text-slate-700"
                             }`}>
                             {marketHealth.trend.trend === "Growing" ? "📈" : marketHealth.trend.trend === "Declining" ? "📉" : "➡️"} {marketHealth.trend.trend}
                           </div>
@@ -1439,7 +1380,7 @@ export default function ShareOfVoice() {
                     </div>
                     {marketHealth.listing_quality.your_brand_vs_median && (
                       <div className={`mt-4 p-3 rounded-xl text-sm font-medium flex items-center gap-2 ${marketHealth.listing_quality.your_brand_vs_median === "Above" ? "bg-green-50 text-green-700" :
-                          marketHealth.listing_quality.your_brand_vs_median === "Below" ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
+                        marketHealth.listing_quality.your_brand_vs_median === "Below" ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
                         }`}>
                         {marketHealth.listing_quality.your_brand_vs_median === "Above" ? "✅" : marketHealth.listing_quality.your_brand_vs_median === "Below" ? "⚠️" : "➡️"}
                         Your brand is <strong>&nbsp;{marketHealth.listing_quality.your_brand_vs_median}&nbsp;</strong> median review density

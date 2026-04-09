@@ -11,11 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
 const API_BASE = "http://localhost:8000";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface PaymentPlan {
   id: string;
@@ -229,10 +225,7 @@ function PriceCard({
     </div>
   );
 }
-
-// ═════════════════════════════════════════════════════════════════════════════
 // MAIN COMPONENT
-// ═════════════════════════════════════════════════════════════════════════════
 
 export default function PaymentModal({
   isOpen, onClose, plan, userId, userEmail = "", userName = "", onPaymentSuccess,

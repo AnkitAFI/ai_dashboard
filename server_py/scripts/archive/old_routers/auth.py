@@ -29,7 +29,7 @@ def signup(user: schemas.UserCreate, db: Session = Depends(database.get_db)):
 @router.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(database.get_db)):
     user = crud.get_user_by_email(db, email=form_data.username)
-    if not user or not crud.pwd_context.verify(form_data.password, user.password):
+    if not user or not crud.pwd_context.verify(form_data.password[:72], user.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",

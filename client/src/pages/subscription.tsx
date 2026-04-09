@@ -3,36 +3,14 @@ import { useAuth } from "@/App";
 import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
 import { useSubscriptionSync } from "@/hooks/useSubscriptionSync";
 import Sidebar from "@/components/layout/sidebar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Check,
-  X,
-  Crown,
-  Zap,
-  Building2,
-  Loader2,
-  AlertCircle,
-  Menu,
-  Sparkles,
-  Infinity,
-  Shield,
-} from "lucide-react";
+import { Check, X, Crown, Zap, Building2, Loader2, AlertCircle, Menu, Sparkles, Infinity, Shield, } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import PaymentModal, { type PaymentPlan } from "@/components/payment/PaymentModal";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
 const API_BASE = "http://localhost:8000";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface SubscriptionPlan {
   id: string;
@@ -53,8 +31,6 @@ interface BillingPreview {
   explanation: string;
   requires_payment: boolean;
 }
-
-// ─── Plan Data ────────────────────────────────────────────────────────────────
 
 const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
@@ -134,8 +110,6 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   },
 ];
 
-// ─── Trust strip ──────────────────────────────────────────────────────────────
-
 const TRUST_ITEMS = [
   {
     icon: <Zap className="h-5 w-5 text-sky-500" />,
@@ -159,8 +133,6 @@ const TRUST_ITEMS = [
   },
 ];
 
-// ─── FAQ ──────────────────────────────────────────────────────────────────────
-
 const FAQ = [
   {
     q: "Can I upgrade my plan anytime?",
@@ -179,8 +151,6 @@ const FAQ = [
     a: "Upgrades are instant. If you upgrade mid-cycle, you only pay a prorated amount based on your remaining days.",
   },
 ];
-
-// ─── Per-plan accent colours ──────────────────────────────────────────────────
 
 const PLAN_STYLES: Record<
   string,
@@ -212,12 +182,7 @@ const PLAN_STYLES: Record<
   },
 };
 
-// Plan rank order — used to decide if a plan is an upgrade
 const PLAN_ORDER = ["free", "basic", "premium", "enterprise"];
-
-// ═════════════════════════════════════════════════════════════════════════════
-// COMPONENT
-// ═════════════════════════════════════════════════════════════════════════════
 
 export default function Subscription() {
   const { user, refreshUser, isLoading: authLoading } = useAuth();
@@ -239,12 +204,6 @@ export default function Subscription() {
       getAIUsage().then(setAiUsage).catch(console.error);
     }
   }, [currentTier, user]);
-
-  // ── handleUpgrade ─────────────────────────────────────────────────────────
-  // 1. GET /billing-preview  → learn exact charge + scenario
-  // 2. already_active        → show error
-  // 3. requires_payment      → open PaymentModal with prorated price
-  // Downgrade buttons are hidden — they never reach here
 
   const handleUpgrade = async (planId: string) => {
     setError(null);
@@ -315,8 +274,6 @@ export default function Subscription() {
     setPaymentPlan(null);
   };
 
-  // ── Auth guards ───────────────────────────────────────────────────────────
-
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100
@@ -350,14 +307,10 @@ export default function Subscription() {
     );
   }
 
-  // ── Derived values ────────────────────────────────────────────────────────
-
   const usagePct = aiUsage.limit > 0 ? Math.min((aiUsage.used / aiUsage.limit) * 100, 100) : 0;
   const limitReached = aiUsage.limit > 0 && aiUsage.used >= aiUsage.limit;
   const currentRank = PLAN_ORDER.indexOf(currentTier);
   const isUpgradeable = (planId: string) => PLAN_ORDER.indexOf(planId) > currentRank;
-
-  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100
@@ -676,7 +629,7 @@ export default function Subscription() {
           plan={paymentPlan}
           userId={user.id}
           userEmail={user.email}
-          userName={user.first_name ? `${user.first_name} ${user.last_name ?? ""}`.trim() : ""}
+          userName={user.firstName ? `${user.firstName} ${user.lastName ?? ""}`.trim() : ""}
           onPaymentSuccess={handlePaymentSuccess}
         />
       )}

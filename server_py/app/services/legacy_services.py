@@ -1,7 +1,6 @@
-
 from sqlalchemy.orm import Session
 from sqlalchemy import func, or_
-from . import models
+from app.models import legacy_models as models
 from sqlalchemy import text
 from typing import List, Dict, Any, Optional
 import pandas as pd

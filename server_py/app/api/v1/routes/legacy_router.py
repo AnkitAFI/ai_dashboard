@@ -1,4 +1,7 @@
 from __future__ import annotations
+from fastapi import APIRouter
+router = APIRouter()
+# Legacy endpoints preserved below
 
 from fastapi import FastAPI, Depends, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,30 +20,34 @@ from urllib.parse import unquote
 from decimal import Decimal
 import numpy as np
 import pandas as pd
-from server_py.crud import lstm_forecast
+from app.services.legacy_services import lstm_forecast
+from app.schemas import legacy_schemas as schemas
+from app.models import legacy_models as models
+from app.services import legacy_services as crud
 from datetime import datetime, timedelta
-from . import crud, schemas, models
-from .payment_routes import router as payment_router
-from .database_config import get_db, engine
-import requests, traceback
+import requests, traceback, logging
+# from payment_routes import router as payment_router
+from app.db import session as database_config
+from app.db.session import get_db, engine
+from app.models.legacy_models import AmazonReview, Product, AmazonProductDetails, IndianProduct, User, ProductTrackerAnalysis, TrackedProduct, KeywordRankHistory, PaymentOrder, PriceAlert, RapidapiFlipkartProduct, RankUpdateRatelimit, Feedback, CompetitorSnapshot, TimeSeriesForcasting
+from app.core.security import verify_password, get_password_hash
 models.Base.metadata.create_all(bind=engine)
-from .models import AmazonProductDetails, User
 # app = FastAPI(title="API", version="1.0.0")
 import os
 # IS_LOCAL = os.getenv("FASTAPI_LOCAL", "false").lower() == "true"
 IS_LOCAL = True
 # app = FastAPI(     title="Amazon Reviews API",    version="1.0.0",     docs_url="/docs" if IS_LOCAL else None,     redoc_url="/redoc" if IS_LOCAL else None,     openapi_url="/openapi.json" if IS_LOCAL else None )
-app = FastAPI(title="Amazon Reviews API", version="1.0.0")
+# app = FastAPI()  # Migrated to main.py
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["https://insydz.com", "http://localhost:5173"],  # TODO: restrict in production
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["https://insydz.com", "http://localhost:5173"],  # TODO: restrict in production
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
  
-app.include_router(payment_router, prefix="/api/payments", tags=["payments"])
+# app.include_router(payment_router, prefix="/api/payments", tags=["payments"]) # Migrated to main.py
 
 class AIQuery(BaseModel):
     question: str
@@ -89,34 +96,34 @@ def decimal_to_float(obj):
 # @app.get("/")
 # def read_root():
 #     return {"message": "API running"}
-@app.get("/")
+@router.get("/")
 def read_root():
     if IS_LOCAL:
         return {"message": "Amazon Reviews API running", "docs": "/docs"}
     raise HTTPException(status_code=404, detail="Not Found")
 
-@app.get("/health")
+@router.get("/health")
 def health_check():
     return {"status": "healthy"}
  
 # ----------- Reviews -------------
-@app.get("/Amazon_Reviews/reviews", response_model=List[schemas.AmazonReview])
+@router.get("/Amazon_Reviews/reviews", response_model=List[schemas.AmazonReview])
 def get_reviews(limit: int = 50, offset: int = 0, db: Session = Depends(get_db)):
     return crud.get_reviews(db, limit=limit, offset=offset)
  
-@app.get("/Amazon_Reviews/reviews/{review_id}", response_model=schemas.AmazonReview)
+@router.get("/Amazon_Reviews/reviews/{review_id}", response_model=schemas.AmazonReview)
 def get_review(review_id: str, db: Session = Depends(get_db)):
     return crud.get_review_by_id(db, review_id)
  
-@app.get("/Amazon_Reviews/product/{product_id}", response_model=List[schemas.AmazonReview])
+@router.get("/Amazon_Reviews/product/{product_id}", response_model=List[schemas.AmazonReview])
 def get_product_reviews(product_id: str, limit: int = 20, db: Session = Depends(get_db)):
     return crud.get_product_reviews(db, product_id, limit)
  
-@app.get("/Amazon_Reviews/search/{query}", response_model=List[schemas.AmazonReview])
+@router.get("/Amazon_Reviews/search/{query}", response_model=List[schemas.AmazonReview])
 def search_reviews(query: str, limit: int = 50, db: Session = Depends(get_db)):
     return crud.search_reviews(db, query, limit)
 
-@app.get("/rapidapi_amazon_products/statistics")
+@router.get("/rapidapi_amazon_products/statistics")
 def get_statistics(db: Session = Depends(get_db)):
     """
     Return summary statistics for RapidAPI Amazon Products table
@@ -140,52 +147,52 @@ def get_statistics(db: Session = Depends(get_db)):
     }
 
 
-@app.get("/Amazon_Reviews/sentiment", response_model=List[schemas.SentimentOut])
+@router.get("/Amazon_Reviews/sentiment", response_model=List[schemas.SentimentOut])
 def get_sentiment(db: Session = Depends(get_db)):
     results = crud.get_sentiment_distribution(db)
     return [schemas.SentimentOut(sentiment=sentiment, count=count) for sentiment, count in results]
  
-@app.get("/Amazon_Reviews/ratings", response_model=List[schemas.RatingOut])
+@router.get("/Amazon_Reviews/ratings", response_model=List[schemas.RatingOut])
 def get_ratings(db: Session = Depends(get_db)):
     results = crud.get_ratings_distribution(db)
     return [schemas.RatingOut(rating=rating, count=count) for rating, count in results]
  
-@app.get("/Amazon_Reviews/categories", response_model=List[schemas.CategoryOut])
+@router.get("/Amazon_Reviews/categories", response_model=List[schemas.CategoryOut])
 def get_category_stats(db: Session = Depends(get_db)):
     return crud.get_category_statistics(db)
  
 # ----------- Analytics -------------
-@app.get("/Amazon_Reviews/trending", response_model=List[schemas.TrendingProductOut])
+@router.get("/Amazon_Reviews/trending", response_model=List[schemas.TrendingProductOut])
 def get_trending(limit: int = 10, db: Session = Depends(get_db)):
     return crud.get_trending_products(db, limit)
  
-@app.get("/Amazon_Reviews/trends/monthly", response_model=List[schemas.MonthlyTrendOut])
+@router.get("/Amazon_Reviews/trends/monthly", response_model=List[schemas.MonthlyTrendOut])
 def monthly_trends(year: int, db: Session = Depends(get_db)):
     return crud.get_monthly_trends(db, year)
  
-@app.get("/Amazon_Reviews/helpful")
+@router.get("/Amazon_Reviews/helpful")
 def get_helpful(limit: int = 10, db: Session = Depends(get_db)):
     return crud.get_helpful_reviews(db, limit)
  
-@app.get("/Amazon_Reviews/sentiment/{product_id}", response_model=List[schemas.SentimentOut])
+@router.get("/Amazon_Reviews/sentiment/{product_id}", response_model=List[schemas.SentimentOut])
 def get_sentiment(product_id: str, db: Session = Depends(get_db)):
     return crud.get_product_sentiment_breakdown(db, product_id)
  
 # ----------- flipkart -------------
-@app.get("/flipkart", response_model=List[schemas.Product])
+@router.get("/flipkart", response_model=List[schemas.Product])
 def read_products(limit: int = 10, offset: int = 0, category: schemas.Optional[str] = None,
                   min_price: schemas.Optional[float] = None, max_price: schemas.Optional[float] = None,
                   db: Session = Depends(get_db)):
     return crud.get_products(db, limit, offset, category, min_price, max_price)
 
-@app.get("/analytics-summary")
+@router.get("/analytics-summary")
 def analytics_summary(
     source: str = Query("flipkart", enum=["flipkart", "amazon", "all"]),
     db: Session = Depends(get_db)
 ):
     return crud.get_summary(db, source)
 
-@app.get("/analytics/category", response_model=schemas.CategoryAnalyticsResponse)
+@router.get("/analytics/category", response_model=schemas.CategoryAnalyticsResponse)
 def analytics_by_category(db: Session = Depends(get_db)):
     categories = crud.get_category_analytics(db)
     return {"categories": categories}
@@ -941,7 +948,7 @@ def stream_ollama(prompt: str):
 # MAIN ENDPOINT  —  /ai/query
 # ──────────────────────────────────────────────────────────────────────
  
-@app.post("/ai/query")
+@router.post("/ai/query")
 def ask_ai(query: AIQuery, db: Session = Depends(get_db)):
  
     # ── Validate ──
@@ -1118,13 +1125,13 @@ def ask_ai(query: AIQuery, db: Session = Depends(get_db)):
 class ResetRequest(BaseModel):
     session_id: str
  
-@app.post("/ai/reset")
+@router.post("/ai/reset")
 def reset_session(req: ResetRequest):
     r.delete(_history_key(req.session_id))
     r.delete(_context_key(req.session_id))
     return {"status": "ok", "message": f"Session {req.session_id} cleared."}
  
-@app.get("/ai/history/{session_id}")
+@router.get("/ai/history/{session_id}")
 def get_history_endpoint(session_id: str):
     return {
         "session_id": session_id,
@@ -1132,7 +1139,7 @@ def get_history_endpoint(session_id: str):
         "context":    load_context(session_id),
     }
  
-@app.get("/ai/context/{session_id}")
+@router.get("/ai/context/{session_id}")
 def get_context(session_id: str):
     """Returns what Insydz knows about this seller so far."""
     return {"session_id": session_id, "context": load_context(session_id)}
@@ -1198,7 +1205,7 @@ def make_cache_key(chart_data, question, source):
     return "ai:chart:" + hashlib.sha256(raw.encode()).hexdigest()
 
 
-@app.post("/ai/analyze-chart")
+@router.post("/ai/analyze-chart")
 def analyze_chart_data(request: AIChartAnalysis):
 
     chart_data = request.chartData or []
@@ -1987,7 +1994,7 @@ def decimal_to_float(obj):
 #             "error": "Invalid table. Use 'rapidapi_flipkart_products' or 'rapidapi_amazon_products'."
 #         }
 
-@app.get("/top")
+@router.get("/top")
 def get_top_items(
     table: str = Query(..., description="Choose 'rapidapi_flipkart_products' or 'rapidapi_amazon_products'"),
     n: int = Query(10, description="Number of top items to fetch"),
@@ -2191,7 +2198,7 @@ def get_top_items(
         }
 
 
-@app.get("/forecast_all_products")
+@router.get("/forecast_all_products")
 def forecast_all_products(n_forecast_days: int = Query(30, description="Days to forecast"),
                           db: Session = Depends(get_db)):
     forecast_list = crud.get_forecast_all_products(db, n_forecast_days)
@@ -2329,7 +2336,7 @@ def forecast_all_products(n_forecast_days: int = Query(30, description="Days to 
 #             "error": str(e)
 #         }
 
-@app.get("/notifications")
+@router.get("/notifications")
 def get_notifications(
     table: str = Query("flipkart", description="Choose 'flipkart', 'amazon', or 'both'"),
     limit: int = Query(10, description="Number of recent alerts"),
@@ -2751,7 +2758,7 @@ def get_notifications(
 #         "products": products
 #     }
 
-@app.get("/category/products/{category_name}")
+@router.get("/category/products/{category_name}")
 def get_category_products(
     category_name: str,
     source: str,  # must be 'amazon' or 'flipkart'
@@ -2922,7 +2929,7 @@ def get_category_products(
 
 #     raise HTTPException(status_code=404, detail="Product not found")
 
-@app.get("/product/{product_name:path}")
+@router.get("/product/{product_name:path}")
 def get_product_details(product_name: str, db: Session = Depends(get_db)):
 
     clean_name = product_name.strip().strip('"').strip("'").strip()
@@ -3014,7 +3021,7 @@ def get_product_details(product_name: str, db: Session = Depends(get_db)):
 
 
 
-@app.get("/categories")
+@router.get("/categories")
 def get_categories(table: str = Query("flipkart"), db: Session = Depends(get_db)):
     """
     Return a list of distinct categories for a given table
@@ -3074,7 +3081,7 @@ def get_categories(table: str = Query("flipkart"), db: Session = Depends(get_db)
    
 #     return categories
  
-@app.get("/flipkart/categories")
+@router.get("/flipkart/categories")
 def get_flipkart_categories_distribution(
     category: Optional[str] = Query(None),
     min_price: Optional[float] = Query(None),
@@ -3121,7 +3128,7 @@ def get_flipkart_categories_distribution(
 
 
  
-@app.get("/api/products/{asin}")
+@router.get("/api/products/{asin}")
 def get_product_detail(asin: str, db: Session = Depends(get_db)):
     """
     Get complete details of a single product
@@ -3207,7 +3214,7 @@ def get_product_detail(asin: str, db: Session = Depends(get_db)):
     }
  
  
-@app.get("/api/products")
+@router.get("/api/products")
 def get_all_products(
     limit: int = 50,
     offset: int = 0,
@@ -3282,7 +3289,7 @@ def get_all_products(
     }
  
  
-@app.get("/api/top-sellers")
+@router.get("/api/top-sellers")
 def get_top_selling_products(limit: int = 20, db: Session = Depends(get_db)):
     """
     Get top selling products with complete info
@@ -3317,7 +3324,7 @@ def get_top_selling_products(limit: int = 20, db: Session = Depends(get_db)):
     }
  
  
-@app.get("/api/stats")
+@router.get("/api/stats")
 def get_database_stats(db: Session = Depends(get_db)):
     """
     Get comprehensive statistics
@@ -3338,7 +3345,7 @@ def get_database_stats(db: Session = Depends(get_db)):
     }
  
  
-@app.get("/rapidapi/top-sales")
+@router.get("/rapidapi/top-sales")
 def get_top_sales_products(
     limit: int = 10,
     category: Optional[str] = Query(None),
@@ -3442,7 +3449,7 @@ def get_top_sales_products(
         raise HTTPException(status_code=500, detail=f"Error fetching top sales products: {str(e)}")
    
  
-@app.get("/top")
+@router.get("/top")
 def get_top_products(table: str, n: int = 10, db: Session = Depends(get_db)):
     try:
         query = text(f"""
@@ -3460,7 +3467,7 @@ def get_top_products(table: str, n: int = 10, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
  
-@app.get("/rapidapi_amazon_products/categories")
+@router.get("/rapidapi_amazon_products/categories")
 def get_amazon_categories(
     category: Optional[str] = Query(None),
     min_price: Optional[float] = Query(None),
@@ -3511,7 +3518,7 @@ def get_amazon_categories(
 # -----------------------------
 
  
-@app.get("/rapidapi_amazon_products/ratings")
+@router.get("/rapidapi_amazon_products/ratings")
 def get_amazon_ratings(
     category: Optional[str] = Query(None),
     min_price: Optional[float] = Query(None),
@@ -3616,7 +3623,7 @@ def get_amazon_ratings(
     
 #     return categories
 
-@app.get("/rapidapi_amazon_products/sentiment")
+@router.get("/rapidapi_amazon_products/sentiment")
 def get_amazon_sentiment(
     category: Optional[str] = Query(None),
     min_price: Optional[float] = Query(None),
@@ -3731,7 +3738,7 @@ def fetch_df(sql: str, params: dict) -> pd.DataFrame:
         return df
  
 # ----- Amazon Endpoint -----
-@app.get("/lstm_forecast/amazon/{product_name:path}")
+@router.get("/lstm_forecast/amazon/{product_name:path}")
 def forecast_amazon(product_name: str):
     try:
         clean_product_name = unquote(product_name).strip().strip('"')
@@ -3797,7 +3804,7 @@ def forecast_amazon(product_name: str):
         raise HTTPException(status_code=500, detail=str(e))
  
 # ----- Flipkart Endpoint -----
-@app.get("/lstm_forecast/flipkart/{product_name:path}")
+@router.get("/lstm_forecast/flipkart/{product_name:path}")
 def forecast_flipkart(product_name: str):
     try:
         clean_product_name = unquote(product_name).strip().strip('"')
@@ -3867,7 +3874,7 @@ def forecast_flipkart(product_name: str):
 
 
 
-@app.get("/rapidapi/top-sales")
+@router.get("/rapidapi/top-sales")
 def get_top_sales_products(
     limit: int = 10,
     category: Optional[str] = Query(None),
@@ -3971,7 +3978,7 @@ def get_top_sales_products(
         raise HTTPException(status_code=500, detail=f"Error fetching top sales products: {str(e)}")
 
 
-@app.get("/top")
+@router.get("/top")
 def get_top_products(table: str, n: int = 10, db: Session = Depends(get_db)):
     try:
         query = text(f"""
@@ -3992,7 +3999,7 @@ def get_top_products(table: str, n: int = 10, db: Session = Depends(get_db)):
 # -----------------------------
 # 🔹 2. Category Distribution
 # -----------------------------
-@app.get("/rapidapi_amazon_products/categories")
+@router.get("/rapidapi_amazon_products/categories")
 def get_amazon_categories(
     category: Optional[str] = Query(None),
     min_price: Optional[float] = Query(None),
@@ -4039,7 +4046,7 @@ def get_amazon_categories(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/rapidapi_amazon_products/ratings")
+@router.get("/rapidapi_amazon_products/ratings")
 def get_amazon_ratings(
     category: Optional[str] = Query(None),
     min_price: Optional[float] = Query(None),
@@ -4093,7 +4100,7 @@ def get_amazon_ratings(
 # -----------------------------
 # 🔹 4. Sentiment Simulation (Based on Rating)
 # -----------------------------
-@app.get("/rapidapi_amazon_products/sentiment")
+@router.get("/rapidapi_amazon_products/sentiment")
 def get_amazon_sentiment(
     category: Optional[str] = Query(None),
     min_price: Optional[float] = Query(None),
@@ -4141,7 +4148,7 @@ def get_amazon_sentiment(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/rapidapi/flipkart/top-sales")
+@router.get("/rapidapi/flipkart/top-sales")
 def get_flipkart_top_sales_products(
     limit: int = 10,
     category: Optional[str] = Query(None),
@@ -4248,7 +4255,7 @@ def get_flipkart_top_sales_products(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching Flipkart top sales products: {str(e)}")
 
-@app.get("/rapidapi_flipkart_products/categories")
+@router.get("/rapidapi_flipkart_products/categories")
 def get_flipkart_categories(
     category: Optional[str] = Query(None),
     min_price: Optional[float] = Query(None),
@@ -4296,7 +4303,7 @@ def get_flipkart_categories(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/rapidapi_flipkart_products/ratings")
+@router.get("/rapidapi_flipkart_products/ratings")
 def get_flipkart_ratings(
     category: Optional[str] = Query(None),
     min_price: Optional[float] = Query(None),
@@ -4396,7 +4403,7 @@ def get_flipkart_ratings(
 #     except Exception as e:
 #         raise HTTPException(status_code=500, detail=str(e))
 
-@app.get("/rapidapi_flipkart_products/sentiment")
+@router.get("/rapidapi_flipkart_products/sentiment")
 def get_flipkart_sentiment(
     category: Optional[str] = Query(None),
     min_price: Optional[float] = Query(None),
@@ -4460,7 +4467,7 @@ def get_flipkart_sentiment(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.get("/rapidapi_flipkart_products/top")
+@router.get("/rapidapi_flipkart_products/top")
 def get_flipkart_top_products(n: int = 10, db: Session = Depends(get_db)):
     try:
         query = text(f"""
@@ -5220,7 +5227,8 @@ BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 BREVO_SENDER_EMAIL = os.getenv("BREVO_SENDER_EMAIL", "noreply@insydz.com")
 BREVO_SENDER_NAME = os.getenv("BREVO_SENDER_NAME", "Insydz")
 
-SESSION_COOKIE_SECURE = os.getenv("SESSION_COOKIE_SECURE", "true").lower() == "true"
+# Cookie Security: Disable on localhost (non-HTTPS)
+SESSION_COOKIE_SECURE = False if IS_LOCAL else (os.getenv("SESSION_COOKIE_SECURE", "true").lower() == "true")
 SESSION_EXPIRE_DAYS_REMEMBER = int(os.getenv("SESSION_EXPIRE_DAYS_REMEMBER", 30))
 SESSION_EXPIRE_DAYS_NO_REMEMBER = int(os.getenv("SESSION_EXPIRE_DAYS_NO_REMEMBER", 1))
 
@@ -5237,14 +5245,9 @@ ADMIN_EMAIL = os.getenv("ADMIN_EMAIL")
 # Example:
 # r = redis.Redis(host='localhost', port=6379, decode_responses=True)
 
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Password hashing - Now handled centrally in app.core.security
+# verify_password and get_password_hash are imported at the top of this file
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
-
-def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
 
 # ============================================
 # Brevo Email Configuration
@@ -5554,7 +5557,7 @@ class LoginResponse(BaseModel):
 # FORGOT PASSWORD - STEP 1: REQUEST OTP
 # ============================================
 
-@app.post("/api/auth/forgot-password")
+@router.post("/api/auth/forgot-password")
 def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
     """
     Step 1: Verify email exists and send OTP
@@ -5615,7 +5618,7 @@ def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db
 # FORGOT PASSWORD - STEP 2: VERIFY OTP
 # ============================================
 
-@app.post("/api/auth/verify-otp")
+@router.post("/api/auth/verify-otp")
 def verify_otp(request: VerifyOTPRequest):
     """
     Step 2: Verify the OTP entered by user
@@ -5673,7 +5676,7 @@ def verify_otp(request: VerifyOTPRequest):
 # FORGOT PASSWORD - STEP 3: RESET PASSWORD
 # ============================================
 
-@app.post("/api/auth/reset-password-with-otp")
+@router.post("/api/auth/reset-password-with-otp")
 def reset_password_with_otp(request: ResetPasswordRequest, db: Session = Depends(get_db)):
     """
     Step 3: Reset password after OTP verification
@@ -5751,7 +5754,7 @@ def reset_password_with_otp(request: ResetPasswordRequest, db: Session = Depends
 # RESEND OTP
 # ============================================
 
-@app.post("/api/auth/resend-otp")
+@router.post("/api/auth/resend-otp")
 def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
     """
     Resend OTP to user's email
@@ -5824,7 +5827,7 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
 # LOGIN ENDPOINT
 # ============================================
 
-@app.post("/users/login", response_model=LoginResponse)
+@router.post("/users/login", response_model=LoginResponse)
 def login_user(login_data: UserLogin, response: Response, db: Session = Depends(get_db)):
     """Authenticate user and set secure session cookie"""
     try:
@@ -5912,7 +5915,7 @@ def login_user(login_data: UserLogin, response: Response, db: Session = Depends(
 # SIGNUP ENDPOINT
 # ============================================
 
-@app.post("/users/signup")
+@router.post("/users/signup")
 def signup_user(user_data: schemas.UserCreate, response: Response, db: Session = Depends(get_db)):
     try:
         existing_user = db.query(models.User).filter(
@@ -6009,7 +6012,7 @@ def signup_user(user_data: schemas.UserCreate, response: Response, db: Session =
             detail=f"Error creating user: {str(e)}"
         )
 
-@app.post("/users/verify-email")
+@router.post("/users/verify-email")
 def verify_email(request: VerifyOTPRequest, response: Response, db: Session = Depends(get_db)):
     try:
         # Get OTP data from Redis
@@ -6120,7 +6123,7 @@ def verify_email(request: VerifyOTPRequest, response: Response, db: Session = De
 # GET CURRENT USER
 # ============================================
 
-@app.get("/api/auth/me")
+@router.get("/api/auth/me")
 def get_me(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -6144,14 +6147,18 @@ def get_me(
 
         "ai_chat_used": current_user.ai_chat_used or 0,
         "ai_chat_month": current_user.ai_chat_month or current_month,
-        "created_at": str(current_user.created_at)
+        "created_at": str(current_user.created_at),
+        "onboarding_completed": current_user.onboarding_completed,
+        "onboarding_goal": current_user.onboarding_goal,
+        "onboarding_marketplace": current_user.onboarding_marketplace,
+        "onboarding_details": current_user.onboarding_details
     }
 
 # ============================================
 # LOGOUT ENDPOINT
 # ============================================
 
-@app.post("/api/auth/logout")
+@router.post("/api/auth/logout")
 def logout(response: Response, session_id: str = Cookie(None)):
     """Logout user and clear session"""
     if session_id:
@@ -6166,7 +6173,7 @@ def logout(response: Response, session_id: str = Cookie(None)):
 # CHECK EMAIL ENDPOINT
 # ============================================
 
-@app.get("/users/check-email/{email}")
+@router.get("/users/check-email/{email}")
 def check_email_exists(email: str, db: Session = Depends(get_db)):
     """Check if an email is already registered"""
     user = db.query(models.User).filter(
@@ -6183,7 +6190,7 @@ def check_email_exists(email: str, db: Session = Depends(get_db)):
 # GET USER PROFILE ENDPOINT (PROTECTED)
 # ============================================
 
-@app.get("/users/profile/{email}")
+@router.get("/users/profile/{email}")
 def get_user_profile(
     email: str, 
     current_user: models.User = Depends(get_current_user),
@@ -6219,7 +6226,7 @@ def get_user_profile(
         "created_at": str(user.created_at)
     }
 
-@app.get("/api/admin/stats")
+@router.get("/api/admin/stats")
 def get_admin_stats(
     current_user: models.User = Depends(get_current_user),
     db: Session = Depends(get_db)
@@ -6347,31 +6354,31 @@ class QuotaError(AppError):
  
  
  
-@app.exception_handler(AppError)
-async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
-    return JSONResponse(
-        status_code=exc.http_status,
-        content={
-            "success":    False,
-            "error_code": exc.error_code,
-            "message":    exc.message,
-            "detail":     exc.detail,
-            "request_id": getattr(request.state, "request_id", None),
-        },
-    )
- 
- 
-@app.exception_handler(HTTPException)
-async def http_error_handler(request: Request, exc: HTTPException) -> JSONResponse:
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={
-            "success":    False,
-            "error_code": "HTTP_ERROR",
-            "message":    exc.detail,
-            "request_id": getattr(request.state, "request_id", None),
-        },
-    )
+# @router.exception_handler(AppError)
+# async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
+#     return JSONResponse(
+#         status_code=exc.http_status,
+#         content={
+#             "success":    False,
+#             "error_code": exc.error_code,
+#             "message":    exc.message,
+#             "detail":     exc.detail,
+#             "request_id": getattr(request.state, "request_id", None),
+#         },
+#     )
+#  
+#  
+# # @router.exception_handler(HTTPException)
+# # async def http_error_handler(request: Request, exc: HTTPException) -> JSONResponse:
+# #     return JSONResponse(
+# #         status_code=exc.status_code,
+# #         content={
+# #             "success":    False,
+# #             "error_code": "HTTP_ERROR",
+# #             "message":    exc.detail,
+# #             "request_id": getattr(request.state, "request_id", None),
+# #         },
+# #     )
  
  
 # ─────────────────────────────────────────────────────────────────────────────
@@ -6396,22 +6403,22 @@ logging.basicConfig(level=logging.INFO)
 _stdlib_log = logging.getLogger(__name__)
  
  
-@app.middleware("http")
-async def attach_request_id(request: Request, call_next):
-    request_id = str(uuid.uuid4())
-    request.state.request_id = request_id
-    structlog.contextvars.clear_contextvars()
-    structlog.contextvars.bind_contextvars(
-        request_id=request_id,
-        path=request.url.path,
-        method=request.method,
-    )
-    t0 = time.perf_counter()
-    response = await call_next(request)
-    latency_ms = round((time.perf_counter() - t0) * 1000, 1)
-    log.info("request_complete", status=response.status_code, latency_ms=latency_ms)
-    response.headers["X-Request-ID"] = request_id
-    return response
+# @router.middleware("http")
+# async def attach_request_id(request: Request, call_next):
+#     request_id = str(uuid.uuid4())
+#     request.state.request_id = request_id
+#     structlog.contextvars.clear_contextvars()
+#     structlog.contextvars.bind_contextvars(
+#         request_id=request_id,
+#         path=request.url.path,
+#         method=request.method,
+#     )
+#     t0 = time.perf_counter()
+#     response = await call_next(request)
+#     latency_ms = round((time.perf_counter() - t0) * 1000, 1)
+#     log.info("request_complete", status=response.status_code, latency_ms=latency_ms)
+#     response.headers["X-Request-ID"] = request_id
+#     return response
  
  
 # ─────────────────────────────────────────────────────────────────────────────
@@ -8010,7 +8017,7 @@ def get_analysis_limit(tier: str) -> float:
 # [IMP-9]  HEALTH CHECK ENDPOINT
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.get("/health")
+@router.get("/health")
 async def health_check():
     """
     [IMP-9] Stateless health probe suitable for load-balancer checks.
@@ -8059,7 +8066,7 @@ except ImportError:
 # MAIN ANALYZE ENDPOINT
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.post("/product-tracker/analyze")
+@router.post("/product-tracker/analyze")
 async def analyze_product_opportunity(
     request_body: ProductTrackerRequest,
     background_tasks: BackgroundTasks,
@@ -8293,7 +8300,7 @@ def _persist_analysis(
 # REMAINING ENDPOINTS  — all return ApiResponse envelope  [IMP-8]
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.get("/users/{user_id}/analysis-usage")
+@router.get("/users/{user_id}/analysis-usage")
 def get_analysis_usage(
     user_id: int,
     raw_request: Request,
@@ -8320,7 +8327,7 @@ def get_analysis_usage(
     )
  
  
-@app.post("/users/{user_id}/analysis-usage")
+@router.post("/users/{user_id}/analysis-usage")
 def track_analysis_usage(
     user_id: int,
     request_body: AnalysisTrackRequest,
@@ -8350,7 +8357,7 @@ def track_analysis_usage(
     )
  
  
-@app.post("/users/{user_id}/check-analysis-limit")
+@router.post("/users/{user_id}/check-analysis-limit")
 def check_analysis_limit(
     user_id: int, raw_request: Request, db: Session = Depends(get_db),
 ) -> ApiResponse:
@@ -8373,7 +8380,7 @@ def check_analysis_limit(
     )
  
  
-@app.get("/product-tracker/history")
+@router.get("/product-tracker/history")
 def get_tracker_history(
     raw_request: Request,
     user_email: str = Query(...),
@@ -8393,7 +8400,7 @@ def get_tracker_history(
         raise DatabaseError("Failed to fetch analysis history.")
  
  
-@app.get("/product-tracker/analysis/{analysis_id}")
+@router.get("/product-tracker/analysis/{analysis_id}")
 def get_analysis_details(
     analysis_id: int, raw_request: Request, db: Session = Depends(get_db),
 ) -> ApiResponse:
@@ -8413,7 +8420,7 @@ def get_analysis_details(
         raise DatabaseError("Failed to fetch analysis details.")
  
  
-@app.delete("/product-tracker/analysis/{analysis_id}")
+@router.delete("/product-tracker/analysis/{analysis_id}")
 def delete_analysis(
     analysis_id: int, raw_request: Request,
     user_email: str = Query(...), db: Session = Depends(get_db),
@@ -8434,7 +8441,7 @@ def delete_analysis(
         raise DatabaseError("Failed to delete analysis.")
  
  
-@app.get("/product-tracker/stats")
+@router.get("/product-tracker/stats")
 def get_tracker_stats(raw_request: Request, db: Session = Depends(get_db)) -> ApiResponse:
     try:
         from sqlalchemy import func
@@ -8633,7 +8640,7 @@ def get_tracker_stats(raw_request: Request, db: Session = Depends(get_db)) -> Ap
 #         traceback.print_exc()
 #         raise HTTPException(status_code=500, detail=f"Error: {str(e)}") 
 
-@app.get("/products/by-sentiment")
+@router.get("/products/by-sentiment")
 def get_products_by_sentiment(
     table: str = Query(..., description="rapidapi_flipkart_products or rapidapi_amazon_products"),
     sentiment: str = Query(..., description="positive, neutral, or negative"),
@@ -8893,7 +8900,7 @@ class AIUsageUpdate(BaseModel):
 
 # ==================== SUBSCRIPTION ENDPOINTS ====================
 
-@app.patch("/users/{user_id}/subscription")
+@router.patch("/users/{user_id}/subscription")
 def update_user_subscription(
     user_id: int, 
     data: SubscriptionUpdate, 
@@ -8958,7 +8965,7 @@ def update_user_subscription(
 
 # ==================== AI USAGE TRACKING ENDPOINTS ====================
 
-@app.post("/users/{user_id}/ai-usage")
+@router.post("/users/{user_id}/ai-usage")
 def track_ai_usage(
     user_id: int, 
     data: AIUsageUpdate, 
@@ -9019,7 +9026,7 @@ def track_ai_usage(
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
-@app.get("/users/{user_id}/ai-usage")
+@router.get("/users/{user_id}/ai-usage")
 def get_ai_usage(
     user_id: int, 
     current_user: models.User = Depends(get_current_user),  # ✅ Require authentication
@@ -9065,7 +9072,7 @@ def get_ai_usage(
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
-@app.get("/users/{user_id}/profile")
+@router.get("/users/{user_id}/profile")
 def get_user_profile_complete(
     user_id: int, 
     current_user: models.User = Depends(get_current_user),  # ✅ Require authentication
@@ -9113,7 +9120,7 @@ def get_user_profile_complete(
 
 # ==================== SUBSCRIPTION STATUS ENDPOINTS ====================
 
-@app.get("/users/{user_id}/subscription-status")
+@router.get("/users/{user_id}/subscription-status")
 def get_subscription_status(
     user_id: int, 
     current_user: models.User = Depends(get_current_user),  # ✅ Require authentication
@@ -9205,7 +9212,7 @@ def get_subscription_status(
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
-@app.post("/users/{user_id}/reset-ai-usage")
+@router.post("/users/{user_id}/reset-ai-usage")
 def reset_ai_usage(
     user_id: int, 
     current_user: models.User = Depends(get_current_user),  # ✅ Require authentication
@@ -9258,7 +9265,7 @@ def reset_ai_usage(
 
 # ==================== ADMIN ENDPOINTS (Optional) ====================
 
-@app.patch("/admin/users/{user_id}/subscription")
+@router.patch("/admin/users/{user_id}/subscription")
 def admin_update_subscription(
     user_id: int,
     data: SubscriptionUpdate,
@@ -9308,7 +9315,7 @@ def admin_update_subscription(
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 
-@app.get("/admin/users/{user_id}/profile")
+@router.get("/admin/users/{user_id}/profile")
 def admin_get_user_profile(
     user_id: int,
     current_user: models.User = Depends(get_current_user),
@@ -10522,7 +10529,7 @@ def _generate_fallback_strategy(
 # USAGE
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.get("/api/users/{user_id}/sov-usage")
+@router.get("/api/users/{user_id}/sov-usage")
 async def get_sov_usage(user_id: int, db: Session = Depends(get_db)):
     try:
         user = db.query(User).filter(User.id == user_id).first()
@@ -10552,7 +10559,7 @@ async def get_sov_usage(user_id: int, db: Session = Depends(get_db)):
 # CATEGORIES LIST
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.get("/api/sov/categories")
+@router.get("/api/sov/categories")
 def get_sov_categories(
     marketplace: str = Query(default="all", enum=["flipkart", "amazon", "all"]),
     db: Session = Depends(get_db),
@@ -10583,7 +10590,7 @@ def get_sov_categories(
 # CATEGORY SOV
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.get("/api/sov/category/{category_name}")
+@router.get("/api/sov/category/{category_name}")
 async def get_category_sov(
     category_name: str,
     marketplace:   str           = Query(default="flipkart", enum=["flipkart", "amazon"]),
@@ -10608,7 +10615,7 @@ async def get_category_sov(
 # KEYWORD SOV
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.get("/api/sov/keyword/{keyword}")
+@router.get("/api/sov/keyword/{keyword}")
 async def get_keyword_sov(
     keyword:    str,
     marketplace: str            = Query(default="flipkart", enum=["flipkart", "amazon"]),
@@ -10717,7 +10724,7 @@ async def get_keyword_sov(
 # PROGRESS TRACKING
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.get("/api/sov/progress/{category_name}")
+@router.get("/api/sov/progress/{category_name}")
 def track_sov_progress(
     category_name: str,
     your_brand:    str,
@@ -10780,7 +10787,7 @@ def track_sov_progress(
 # COMPETITOR ANALYSIS
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.get("/api/sov/competitors/{category_name}")
+@router.get("/api/sov/competitors/{category_name}")
 def analyze_sov_competitors(
     category_name: str,
     your_brand:    str,
@@ -10818,7 +10825,7 @@ def analyze_sov_competitors(
 # COMBINED SOV (Flipkart + Amazon)
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.get("/api/sov/combined/{category_name}")
+@router.get("/api/sov/combined/{category_name}")
 def get_combined_sov(
     category_name: str,
     your_brand:    Optional[str] = Query(default=None),
@@ -10885,7 +10892,7 @@ def get_combined_sov(
 # BRANDS LIST
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.get("/api/sov/brands")
+@router.get("/api/sov/brands")
 def get_all_brands(
     marketplace: str = Query(default="all", enum=["flipkart", "amazon", "all"]),
     db: Session = Depends(get_db),
@@ -10914,7 +10921,7 @@ def get_all_brands(
 # [NEW-8]  CSV EXPORT
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.get("/api/sov/export/{category_name}")
+@router.get("/api/sov/export/{category_name}")
 def export_sov_csv(
     category_name: str,
     marketplace:   str           = Query(default="flipkart", enum=["flipkart", "amazon"]),
@@ -10954,7 +10961,7 @@ def export_sov_csv(
 #          Now includes: [NEW-A] decision, [NEW-B] confidence, [NEW-C] action plan
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.get("/api/sov/market-health/{category_name}")
+@router.get("/api/sov/market-health/{category_name}")
 def get_market_health(
     category_name: str,
     marketplace:   str           = Query(default="flipkart", enum=["flipkart", "amazon"]),
@@ -11051,7 +11058,7 @@ def get_market_health(
 # [NEW-10]  PRICING MAP
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.get("/api/sov/pricing-map/{category_name}")
+@router.get("/api/sov/pricing-map/{category_name}")
 def get_pricing_map(
     category_name: str,
     marketplace:   str   = Query(default="flipkart", enum=["flipkart", "amazon"]),
@@ -11079,7 +11086,7 @@ def get_pricing_map(
 # AI INSIGHTS
 # ─────────────────────────────────────────────────────────────────────────────
  
-@app.post("/api/sov/ai-insights")
+@router.post("/api/sov/ai-insights")
 def get_ai_insights(
     category_name: str   = Query(...),
     your_brand:    str   = Query(...),
@@ -11358,8 +11365,8 @@ from reportlab.lib import colors
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 from dotenv import load_dotenv
 
-from .models import TrackedProduct, KeywordRankHistory, User
-from .database_config import get_db, SessionLocal
+from app.models.legacy_models import TrackedProduct, KeywordRankHistory, User
+from app.db.session import get_db, SessionLocal
 
 # ─────────────────────────────────────────
 # ENV + CONFIG
@@ -12573,13 +12580,13 @@ scheduler.start()
 # EXISTING ENDPOINTS (preserved + enhanced)
 # ─────────────────────────────────────────
 
-@app.get("/users/{user_id}/keyword-tracker-usage", response_model=UsageLimitsResponse)
+@router.get("/users/{user_id}/keyword-tracker-usage", response_model=UsageLimitsResponse)
 def get_keyword_tracker_usage(user_id: int, db: Session = Depends(get_db)):
     """Current keyword tracker usage and limits for a user."""
     return UsageLimitsResponse(**check_keyword_tracker_limit(user_id, db))
 
 
-@app.get("/keyword_tracker/fetch_and_store_products/{seller_id}", response_model=List[TrackedProductResponse])
+@router.get("/keyword_tracker/fetch_and_store_products/{seller_id}", response_model=List[TrackedProductResponse])
 def fetch_and_store_seller_products(
     seller_id: str, country: str = "IN", page: int = 1,
     user_email: str = None, user_id: int = None,
@@ -12676,7 +12683,7 @@ def fetch_and_store_seller_products(
         raise HTTPException(status_code=500, detail=f"Unexpected error: {e}")
 
 
-@app.post("/keyword_tracker/track_keywords")
+@router.post("/keyword_tracker/track_keywords")
 def track_keywords(req: KeywordTrackRequest, db: Session = Depends(get_db)):
     if not req.user_email:
         raise HTTPException(status_code=400, detail="user_email is required")
@@ -12708,7 +12715,7 @@ def track_keywords(req: KeywordTrackRequest, db: Session = Depends(get_db)):
     return {"status": "ok", "message": f"Added {added} new keywords for {req.user_email}"}
 
 
-@app.get("/keyword_tracker/tracked_products/{seller_id}", response_model=List[TrackedProductResponse])
+@router.get("/keyword_tracker/tracked_products/{seller_id}", response_model=List[TrackedProductResponse])
 def get_tracked_products(seller_id: str, user_email: str = None, db: Session = Depends(get_db)):
     query = db.query(TrackedProduct).filter(TrackedProduct.seller_id == seller_id)
     if user_email:
@@ -12725,7 +12732,7 @@ def get_tracked_products(seller_id: str, user_email: str = None, db: Session = D
     ]
 
 
-@app.get("/keyword_tracker/rank_history/{tracked_product_id}")
+@router.get("/keyword_tracker/rank_history/{tracked_product_id}")
 def get_rank_history(tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)):
     """
     Rank history enriched with velocity per keyword.
@@ -12760,7 +12767,7 @@ def get_rank_history(tracked_product_id: int, user_email: str = None, db: Sessio
     return result
 
 
-@app.post("/keyword_tracker/update_daily_ranks")
+@router.post("/keyword_tracker/update_daily_ranks")
 def update_daily_ranks(req: UpdateRanksRequest, db: Session = Depends(get_db)):
     """
     Manual rank update. Limited to 4 calls per user per calendar day.
@@ -12834,7 +12841,7 @@ def update_daily_ranks(req: UpdateRanksRequest, db: Session = Depends(get_db)):
 # PRODUCT DETAIL — click on product → full picture
 # ─────────────────────────────────────────
 
-@app.get("/keyword_tracker/product_detail/{tracked_product_id}")
+@router.get("/keyword_tracker/product_detail/{tracked_product_id}")
 def get_product_detail(
     tracked_product_id: int,
     user_email: str = None,
@@ -12931,7 +12938,7 @@ def get_product_detail(
 # AI KEYWORD ANALYSIS ENDPOINT (enhanced)
 # ─────────────────────────────────────────
 
-@app.get("/keyword_tracker/ai_analysis/{tracked_product_id}", response_model=AIAnalysisResponse)
+@router.get("/keyword_tracker/ai_analysis/{tracked_product_id}", response_model=AIAnalysisResponse)
 def get_ai_keyword_analysis(
     tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)
 ):
@@ -12974,7 +12981,7 @@ def get_ai_keyword_analysis(
 # NEW: KEYWORD SUGGESTIONS
 # ─────────────────────────────────────────
 
-@app.post("/keyword_tracker/suggest_keywords/{tracked_product_id}")
+@router.post("/keyword_tracker/suggest_keywords/{tracked_product_id}")
 def suggest_keywords(
     tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)
 ):
@@ -12998,7 +13005,7 @@ def suggest_keywords(
 # NEW: REVIEW SENTIMENT ANALYSIS
 # ─────────────────────────────────────────
 
-@app.get("/keyword_tracker/review_sentiment/{tracked_product_id}")
+@router.get("/keyword_tracker/review_sentiment/{tracked_product_id}")
 def get_review_sentiment(
     tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)
 ):
@@ -13023,7 +13030,7 @@ def get_review_sentiment(
 # NEW: RANK PREDICTION
 # ─────────────────────────────────────────
 
-@app.get("/keyword_tracker/rank_prediction/{tracked_product_id}")
+@router.get("/keyword_tracker/rank_prediction/{tracked_product_id}")
 def get_rank_prediction(
     tracked_product_id: int, keyword: str = None,
     user_email: str = None, db: Session = Depends(get_db)
@@ -13051,7 +13058,7 @@ def get_rank_prediction(
 # NEW: PRICE ALERT
 # ─────────────────────────────────────────
 
-@app.post("/keyword_tracker/set_price_alert")
+@router.post("/keyword_tracker/set_price_alert")
 def set_price_alert(req: PriceAlertRequest, db: Session = Depends(get_db)):
     """
     Set a price alert threshold. When any competitor is cheaper by
@@ -13109,7 +13116,7 @@ def set_price_alert(req: PriceAlertRequest, db: Session = Depends(get_db)):
 # NEW: MULTI-MARKETPLACE COMPARISON
 # ─────────────────────────────────────────
 
-@app.get("/keyword_tracker/cross_market_comparison/{asin}")
+@router.get("/keyword_tracker/cross_market_comparison/{asin}")
 async def cross_market_comparison(
     asin: str,
     countries: str = "IN,US,UK,DE",
@@ -13175,7 +13182,7 @@ In 2-3 direct sentences, tell the seller: which market is performing best and wh
 # NEW: COMPETITOR CHANGE ALERTS (diff)
 # ─────────────────────────────────────────
 
-@app.get("/keyword_tracker/competitor_changes/{seller_id}")
+@router.get("/keyword_tracker/competitor_changes/{seller_id}")
 def get_competitor_changes(
     seller_id: str, user_email: str = None, db: Session = Depends(get_db)
 ):
@@ -13248,7 +13255,7 @@ def get_competitor_changes(
 # NEW: EXPORT (CSV + PDF)
 # ─────────────────────────────────────────
 
-@app.get("/keyword_tracker/export/{tracked_product_id}")
+@router.get("/keyword_tracker/export/{tracked_product_id}")
 def export_report(
     tracked_product_id: int,
     format: str = "pdf",
@@ -13331,7 +13338,7 @@ def export_report(
 # NEW: RATE LIMIT STATUS
 # ─────────────────────────────────────────
 
-@app.get("/keyword_tracker/rate_limit_status")
+@router.get("/keyword_tracker/rate_limit_status")
 def get_rate_limit_status(user_email: str, db: Session = Depends(get_db)):
     """Check remaining manual rank update calls for today."""
     rl = check_rank_update_ratelimit(user_email, db)
@@ -13349,7 +13356,7 @@ def get_rate_limit_status(user_email: str, db: Session = Depends(get_db)):
 # EXISTING: competitor comparison endpoints (preserved)
 # ─────────────────────────────────────────
 
-@app.get("/keyword_tracker/competitor_comparison/{seller_id}", response_model=ComparisonResponse)
+@router.get("/keyword_tracker/competitor_comparison/{seller_id}", response_model=ComparisonResponse)
 def get_competitor_comparison(
     seller_id: str, country: str = "IN", user_email: str = None,
     max_competitors_per_product: int = 3, db: Session = Depends(get_db)
@@ -13384,7 +13391,7 @@ def get_competitor_comparison(
     )
 
 
-@app.get("/keyword_tracker/fetch_and_compare/{seller_id}")
+@router.get("/keyword_tracker/fetch_and_compare/{seller_id}")
 def fetch_products_with_comparison(
     seller_id: str, country: str = "IN", page: int = 1,
     user_email: str = None, user_id: int = None, db: Session = Depends(get_db)
@@ -13785,7 +13792,7 @@ def _generate_followup_suggestions(message: str, ctx: dict) -> List[str]:
 # THE CHAT ENDPOINT
 # ─────────────────────────────────────────
 
-@app.post("/keyword_tracker/competitor_chat", response_model=CompetitorChatResponse)
+@router.post("/keyword_tracker/competitor_chat", response_model=CompetitorChatResponse)
 def competitor_chat(req: CompetitorChatRequest, db: Session = Depends(get_db)):
     """
     Conversational competitor intelligence chat.
@@ -13900,7 +13907,7 @@ Respond as Insydz. Be conversational, specific, and use the actual data above.
 # when seller opens the chat for the first time
 # ─────────────────────────────────────────
 
-@app.get("/keyword_tracker/competitor_chat/starters/{tracked_product_id}")
+@router.get("/keyword_tracker/competitor_chat/starters/{tracked_product_id}")
 def get_chat_starters(
     tracked_product_id: int,
     user_email: str,
@@ -13994,7 +14001,7 @@ def get_chat_starters(
 from fastapi.responses import Response
 from datetime import datetime
 
-@app.get("/sitemap.xml", include_in_schema=False)
+@router.get("/sitemap.xml", include_in_schema=False)
 async def sitemap():
     """
     Production-ready static sitemap
@@ -14071,7 +14078,7 @@ async def sitemap():
     )
 
 
-@app.get("/robots.txt", include_in_schema=False)
+@router.get("/robots.txt", include_in_schema=False)
 async def robots():
     return Response(
         content="""User-agent: *
@@ -14544,7 +14551,7 @@ def call_ollama_intel(prompt: str) -> str:
 # MAIN ENDPOINT  —  POST /ai/intelligence
 # ──────────────────────────────────────────────────────────────────────
  
-@app.post("/ai/intelligence")
+@router.post("/ai/intelligence")
 def get_intelligence(query: IntelligenceQuery, db: Session = Depends(get_db)):
  
     # ── Validate source ──

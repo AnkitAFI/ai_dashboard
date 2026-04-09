@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Text, Integer, Float, Boolean, JSON, TIMESTAMP, ARRAY, Numeric, DateTime, Date, ForeignKey, UniqueConstraint, Index, SmallInteger
-from .database_config import Base
+from app.db.session import Base
 from sqlalchemy.sql import func
 from datetime import datetime
 from sqlalchemy.orm import relationship
@@ -209,9 +209,12 @@ class User(Base):
     payment_orders = relationship("PaymentOrder", back_populates="user")
     scheduled_downgrade_to = Column(String(50), nullable=True)
 
+    # Onboarding fields
     is_verified = Column(Boolean, default=False)
-    # Optional: Add is_active if you want to enable/disable accounts
-    # is_active = Column(Boolean, default=True)
+    onboarding_completed = Column(Boolean, default=False)
+    onboarding_goal = Column(String(100), nullable=True)
+    onboarding_marketplace = Column(String(100), nullable=True)
+    onboarding_details = Column(String(500), nullable=True)
    
     def __repr__(self):
         return f"<User {self.email}>"  

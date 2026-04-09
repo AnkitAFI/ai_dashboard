@@ -1,6 +1,4 @@
-
-
-import { Switch, Route, useLocation, Router as WouterRouter } from "wouter";
+import { Switch, Route, useLocation, Redirect, Router as WouterRouter } from "wouter";
 import { useBrowserLocation } from "wouter/use-browser-location";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
@@ -60,6 +58,7 @@ import FlipkartKeywordResearchTool from "@/pages/flipkart-keyword-research-tool"
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
 import Dashboard from "@/pages/dashboard";
+import FeatureComingSoon from "@/pages/FeatureComingSoon";
 import Subscription from "@/pages/subscription";
 import About from "@/pages/about";
 import Settings from "@/pages/settings";
@@ -101,6 +100,7 @@ interface User {
   aiChatMonth?: string;
   businessInterests?: string[];
   createdAt?: string;
+  onboardingCompleted: boolean;
 }
 
 interface AuthContextType {
@@ -160,6 +160,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
           aiChatMonth: data.ai_chat_month,
           businessInterests: data.business_interests,
           createdAt: data.created_at,
+          onboardingCompleted: data.onboarding_completed,
         });
       } else {
         setUser(null);
@@ -292,7 +293,13 @@ function Router() {
   return (
     <Switch>
       {/* Public Pages (always accessible) */}
-      <Route path="/" component={Landing} />
+      <Route path="/">
+        {() => {
+          const { isAuthenticated, isLoading } = useAuth();
+          if (isLoading) return null;
+          return isAuthenticated ? <Redirect to="/dashboard" /> : <Landing />;
+        }}
+      </Route>
       <Route path="/about" component={About} />
       <Route path="/privacy-policy" component={PrivacyPolicy} />
       <Route path="/terms-service" component={TermsOfService} />
@@ -370,6 +377,29 @@ function Router() {
       <ProtectedRoute path="/keyword-tracker" component={KeywordTracker} />
       <ProtectedRoute path="/order-history" component={OrderHistory} />
       <ProtectedRoute path="/admin-dashboard" component={AdminDashboard} />
+
+      {/* Explorer Placeholder Routes */}
+      <ProtectedRoute path="/explorer/start-here" component={FeatureComingSoon} />
+      <ProtectedRoute path="/explorer/product-research" component={FeatureComingSoon} />
+      <ProtectedRoute path="/explorer/competitor-prices" component={FeatureComingSoon} />
+      <ProtectedRoute path="/explorer/review-analytics" component={FeatureComingSoon} />
+      <ProtectedRoute path="/explorer/price-optimizer" component={FeatureComingSoon} />
+      <ProtectedRoute path="/explorer/ai-advisor" component={FeatureComingSoon} />
+      <ProtectedRoute path="/explorer/whatsapp-alerts" component={FeatureComingSoon} />
+      <ProtectedRoute path="/explorer/festive-trends" component={FeatureComingSoon} />
+      <ProtectedRoute path="/explorer/my-watchlist" component={FeatureComingSoon} />
+
+      {/* Seller Placeholder Routes */}
+      <ProtectedRoute path="/seller/my-products" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/listing-audit" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/price-comparison" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/review-comparison" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/keyword-gap" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/price-optimizer" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/seo-optimizer" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/ai-advisor" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/whatsapp-alerts" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/festive-trends" component={FeatureComingSoon} />
 
       {/* 404 Fallback */}
       <Route component={NotFound} />

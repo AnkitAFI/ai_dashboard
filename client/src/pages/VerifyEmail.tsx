@@ -79,13 +79,15 @@ export default function VerifyEmail() {
       // clear verify_email cookie
       deleteCookie("verify_email");
 
+      // session cookie set by backend, refresh user
+      await refreshUser();
+      
       toast({
         title: "Email verified!",
         description: "Welcome to Insydz!",
       });
 
-      // session cookie set by backend, refresh user and go to dashboard
-      await refreshUser();
+      // Navigate to dashboard
       setLocation("/dashboard");
 
     } catch (err: any) {
