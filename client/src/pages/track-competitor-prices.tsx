@@ -101,22 +101,22 @@ const comparisonRows = [
   { feature: "Response Time", manual: "Late reactions (hours/days)", insydz: "Instant alerts (minutes)" },
   { feature: "Data Management", manual: "Excel sheets, constantly stale", insydz: "Live dashboard, always current" },
   { feature: "Decision Quality", manual: "Panic discounts without margin data", insydz: "AI-guided, margin-aware repricing" },
-  { feature: "Time Investment", manual: "8–12 hours wasted per week", insydz: "Minutes per day — set and forget" },
+  { feature: "Time Investment", manual: "8–12 hours wasted per week", insydz: "Minutes per day set and forget" },
   { feature: "Historical Data", manual: "No pattern detection", insydz: "90-day price history per competitor" },
 ];
 
 const roiWithout = [
-  { label: "Competitor drops Friday 9pm — discovered Monday morning", value: "−₹22,000" },
+  { label: "Competitor drops Friday 9pm discovered Monday morning", value: "−₹22,000" },
   { label: "Panic discounting below margin floor to recover Buy Box", value: "−₹8,000" },
   { label: "Hours spent manually checking 8 competitors, 3× per week", value: "−14 hrs/month" },
   { label: "Missed upward pricing opportunity (all rivals raised prices)", value: "−₹12,000" },
 ];
 
 const roiWith = [
-  { label: "Friday 9:04pm WhatsApp alert — repriced by 9:07pm", value: "+₹19,000" },
-  { label: "AI margin floor shown — no panic discounting", value: "+₹7,500" },
-  { label: "Zero manual checking — 14 hours freed", value: "+₹14,000" },
-  { label: "Spot rival price increases early — raised own price by ₹80", value: "+₹11,200" },
+  { label: "Friday 9:04pm WhatsApp alert repriced by 9:07pm", value: "+₹19,000" },
+  { label: "AI margin floor shown no panic discounting", value: "+₹7,500" },
+  { label: "Zero manual checking 14 hours freed", value: "+₹14,000" },
+  { label: "Spot rival price increases early raised own price by ₹80", value: "+₹11,200" },
 ];
 
 const faqs = [
@@ -334,13 +334,13 @@ export default function TrackCompetitorPricesPage() {
               </h1>
 
               <p className="text-base sm:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
-                India's most powerful <strong>competitor price tracking tool</strong> for Amazon and Flipkart sellers. Monitor rival pricing automatically and react instantly —
+                India's most powerful <strong>competitor price tracking tool</strong> for Amazon and Flipkart sellers. Monitor rival pricing automatically and react instantly
                 <span className="text-orange-700 font-semibold"> without manual tracking or Excel chaos.</span>
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group">
-                  👉 Start Free Price Tracking
+                  Start Free Price Tracking
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })} size="lg" variant="outline" className="border-2 border-orange-600 text-orange-700 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full">
@@ -349,7 +349,7 @@ export default function TrackCompetitorPricesPage() {
               </div>
 
               <div className="flex flex-wrap items-center gap-3 sm:gap-6 pt-2 sm:pt-4">
-                {["Built for Indian marketplaces — all data in INR","Amazon & Flipkart supported simultaneously","WhatsApp price alerts — no credit card required"].map((t) => (
+                {["Built for Indian marketplaces all data in INR","Amazon & Flipkart supported simultaneously","WhatsApp price alerts no credit card required"].map((t) => (
                   <div key={t} className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                     <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" /><span>{t}</span>
                   </div>
@@ -437,10 +437,10 @@ export default function TrackCompetitorPricesPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
             {[
-              { icon: <RefreshCw className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Competitors change prices multiple times a day — you can't keep up manually", color: "from-red-500 to-orange-500" },
-              { icon: <Clock className="w-6 h-6 sm:w-8 sm:h-8" />, title: "You notice price drops too late — after your Buy Box rank has already fallen", color: "from-orange-500 to-yellow-500" },
-              { icon: <FileSpreadsheet className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Excel tracking is outdated within hours — the data is stale before you use it", color: "from-yellow-500 to-orange-500" },
-              { icon: <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Price wars silently eat your margins — panic discounting costs more than the lost sale", color: "from-orange-500 to-red-500" },
+              { icon: <RefreshCw className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Competitors change prices multiple times a day you can't keep up manually", color: "from-red-500 to-orange-500" },
+              { icon: <Clock className="w-6 h-6 sm:w-8 sm:h-8" />, title: "You notice price drops too late after your Buy Box rank has already fallen", color: "from-orange-500 to-yellow-500" },
+              { icon: <FileSpreadsheet className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Excel tracking is outdated within hours the data is stale before you use it", color: "from-yellow-500 to-orange-500" },
+              { icon: <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Price wars silently eat your margins panic discounting costs more than the lost sale", color: "from-orange-500 to-red-500" },
             ].map((pain, i) => (
               <div key={i} className="bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-5 sm:p-6 hover:border-orange-400 hover:shadow-lg transition-all group">
                 <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br ${pain.color} rounded-2xl flex items-center justify-center mb-3 sm:mb-4 text-white group-hover:scale-110 transition-transform shadow-md`}>{pain.icon}</div>
@@ -479,7 +479,7 @@ export default function TrackCompetitorPricesPage() {
                 <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">With Insydz</h3>
               </div>
               <ul className="space-y-2 sm:space-y-3">
-                {["Automatic 24/7 competitor monitoring — no manual checks needed","Instant WhatsApp alerts when any competitor changes price","Never miss a price change — even at 2am during Big Billion Days","AI shows your margin floor before you reprice","Set it once — monitor forever"].map((item, i) => (
+                {["Automatic 24/7 competitor monitoring no manual checks needed","Instant WhatsApp alerts when any competitor changes price","Never miss a price change even at 2am during Big Billion Days","AI shows your margin floor before you reprice","Set it once monitor forever"].map((item, i) => (
                   <li key={i} className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
                     <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600 flex-shrink-0 mt-0.5" />{item}
                   </li>
@@ -544,7 +544,7 @@ export default function TrackCompetitorPricesPage() {
             <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 -translate-y-1/2 z-0" />
             {[
               { step: 1, title: "Add Your Product", desc: "Enter your ASIN or Flipkart listing. Insydz automatically identifies 100+ competitors in your category. Setup: under 2 minutes.", visual: <ShoppingBag className="w-10 h-10 sm:w-12 sm:h-12 text-orange-600 mx-auto" />, bg: "bg-orange-100 dark:bg-orange-900/20", isAlerts: false },
-              { step: 2, title: "AI Monitors Prices 24/7", desc: "We track competitor price changes, discounts, and stock signals continuously — overnight, weekends, and during festive sale events.", visual: <Eye className="w-10 h-10 sm:w-12 sm:h-12 text-purple-600 mx-auto animate-pulse" />, bg: "bg-purple-100 dark:bg-purple-900/20", isAlerts: false },
+              { step: 2, title: "AI Monitors Prices 24/7", desc: "We track competitor price changes, discounts, and stock signals continuously overnight, weekends, and during festive sale events.", visual: <Eye className="w-10 h-10 sm:w-12 sm:h-12 text-purple-600 mx-auto animate-pulse" />, bg: "bg-purple-100 dark:bg-purple-900/20", isAlerts: false },
               { step: 3, title: "Get Instant Alerts & Actions", desc: "", visual: null, bg: "", isAlerts: true },
             ].map((step, i) => (
               <div key={i} className="relative z-10">
@@ -555,8 +555,8 @@ export default function TrackCompetitorPricesPage() {
                     <div className="space-y-2 sm:space-y-3 text-left">
                       {[
                         { cls: "bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700", icon: "text-red-600", text: '"Competitor dropped price by 11%"' },
-                        { cls: "bg-orange-50 dark:bg-orange-900/20 border-orange-300 dark:border-orange-700", icon: "text-orange-600", text: '"Lowest price changed — Buy Box at risk"' },
-                        { cls: "bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700", icon: "text-green-600", text: '"AI suggests: ₹1,049 — protects margin & Buy Box"' },
+                        { cls: "bg-orange-50 dark:bg-orange-900/20 border-orange-300 dark:border-orange-700", icon: "text-orange-600", text: '"Lowest price changed Buy Box at risk"' },
+                        { cls: "bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700", icon: "text-green-600", text: '"AI suggests: ₹1,049 protects margin & Buy Box"' },
                       ].map((a, ai) => (
                         <div key={ai} className={`flex items-start gap-2 ${a.cls} border rounded-lg p-2.5 sm:p-3`}>
                           <CheckCircle2 className={`w-4 h-4 sm:w-5 sm:h-5 ${a.icon} flex-shrink-0 mt-0.5`} />
@@ -600,17 +600,16 @@ export default function TrackCompetitorPricesPage() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[
-              { icon: <Zap className="w-5 h-5 sm:w-7 sm:h-7" />, title: "React Instantly to Price Drops", desc: "WhatsApp alert arrives within minutes of a competitor drop. Reprice from your phone before your Buy Box rank slips even at 11pm during sale season.", trend: <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5 text-red-500" /> },
-              { icon: <Shield className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Protect Buy Box Without Panic Discounting", desc: "See your margin floor alongside every alert. Make informed price decisions not desperate ones knowing exactly how low you can go without selling at a loss.", trend: <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" /> },
-              { icon: <Eye className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Identify Fake Price Wars", desc: "Historical price trend data reveals which competitor drops are temporary tactics and which represent a real market shift so you don't cut prices unnecessarily.", trend: <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" /> },
-              { icon: <Clock className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Time Discounts Intelligently", desc: "Spot recurring competitor pricing patterns weekend drops, pre-sale inflation and time your own promotional pricing to maximise impact and margin.", trend: <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" /> },
-              { icon: <TrendingUp className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Increase Profit Without Losing Volume", desc: "When all competitors raise prices, you see it immediately and can adjust upward with confidence capturing higher margins without losing market share.", trend: <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-green-500" /> },
-              { icon: <Target className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Stay Competitive in Your Category", desc: "Never be the seller who finds out about a price war on Monday morning after losing the whole weekend's orders.", trend: <Target className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500" /> },
+              { icon: <Zap className="w-5 h-5 sm:w-7 sm:h-7" />, title: "React Instantly to Price Drops", desc: "WhatsApp alert arrives within minutes of a competitor drop. Reprice from your phone before your Buy Box rank slips even at 11pm during sale season."},
+              { icon: <Shield className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Protect Buy Box Without Panic Discounting", desc: "See your margin floor alongside every alert. Make informed price decisions not desperate ones knowing exactly how low you can go without selling at a loss."},
+              { icon: <Eye className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Identify Fake Price Wars", desc: "Historical price trend data reveals which competitor drops are temporary tactics and which represent a real market shift so you don't cut prices unnecessarily."},
+              { icon: <Clock className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Time Discounts Intelligently", desc: "Spot recurring competitor pricing patterns weekend drops, pre-sale inflation and time your own promotional pricing to maximise impact and margin."},
+              { icon: <TrendingUp className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Increase Profit Without Losing Volume", desc: "When all competitors raise prices, you see it immediately and can adjust upward with confidence capturing higher margins without losing market share."},
+              { icon: <Target className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Stay Competitive in Your Category", desc: "Never be the seller who finds out about a price war on Monday morning after losing the whole weekend's orders."},
             ].map((uc, i) => (
               <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-5 sm:p-6 hover:border-orange-400 hover:shadow-lg transition-all">
                 <div className="flex items-center justify-between mb-2 sm:mb-3">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 dark:bg-orange-900/20 rounded-xl flex items-center justify-center text-orange-600 dark:text-orange-400">{uc.icon}</div>
-                  {uc.trend}
                 </div>
                 <h3 className="font-bold text-gray-900 dark:text-white mb-1.5 sm:mb-2 text-sm sm:text-base">{uc.title}</h3>
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{uc.desc}</p>
@@ -660,13 +659,13 @@ export default function TrackCompetitorPricesPage() {
             <div className="min-w-[480px]">
               <div className="grid grid-cols-3">
                 <div className="bg-gray-100 dark:bg-gray-800 px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-gray-200 dark:border-gray-700"><p className="font-bold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">Task</p></div>
-                <div className="bg-gray-100 dark:bg-gray-800 px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-gray-200 dark:border-gray-700"><p className="font-bold text-gray-500 text-xs sm:text-sm text-center">Manual Tracking</p></div>
-                <div className="bg-orange-500 px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-orange-400"><p className="font-bold text-white text-xs sm:text-sm text-center">✓ Insydz</p></div>
+                <div className="bg-gray-100 dark:bg-gray-800 px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-gray-200 dark:border-gray-700"><p className="font-bold text-gray-500 text-xs sm:text-sm text-left">Manual Tracking</p></div>
+                <div className="bg-orange-500 px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-orange-400"><p className="font-bold text-white text-xs sm:text-sm text-left">✓ Insydz</p></div>
                 {comparisonRows.map((row, i) => (
                   <>
                     <div key={`f-${i}`} className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}><p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 font-medium">{row.feature}</p></div>
-                    <div key={`m-${i}`} className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 text-center ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}><p className="text-xs sm:text-sm text-gray-500 flex items-center justify-center gap-1"><X className="w-3 h-3 text-red-500 flex-shrink-0" />{row.manual}</p></div>
-                    <div key={`s-${i}`} className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 === 0 ? "bg-orange-50 dark:bg-orange-900/10" : "bg-orange-50/50 dark:bg-orange-900/10"}`}><p className="text-xs sm:text-sm text-orange-700 dark:text-orange-400 font-semibold flex items-center justify-center gap-1"><Check className="w-3 h-3 text-green-600 flex-shrink-0" />{row.insydz}</p></div>
+                    <div key={`m-${i}`} className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 text-center ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}><p className="text-xs sm:text-sm text-gray-500 flex items-left justify-left gap-1"><X className="w-3 h-3 text-red-500 flex-shrink-0" />{row.manual}</p></div>
+                    <div key={`s-${i}`} className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 === 0 ? "bg-orange-50 dark:bg-orange-900/10" : "bg-orange-50/50 dark:bg-orange-900/10"}`}><p className="text-xs sm:text-sm text-orange-700 dark:text-orange-400 font-semibold flex items-left justify-left gap-1"><Check className="w-3 h-3 text-green-600 flex-shrink-0" />{row.insydz}</p></div>
                   </>
                 ))}
               </div>
@@ -827,7 +826,7 @@ export default function TrackCompetitorPricesPage() {
             {[
               { label: "New Sellers (Free Plan)", desc: "The free plan gives you real competitor pricing data from day one so you launch knowing what price the market will actually bear. No credit card required.", cta: "Start Free Price Tracking →", action: handleGetStarted },
               { label: "Growing Sellers (Growth Plan)", desc: "Doing ₹5L+ monthly? Every day of slow price reaction is costing you measurable revenue. The Growth Plan gives you full competitor tracking across your entire catalogue.", cta: "Try Growth Plan →", action: () => setLocation("/pricing") },
-              { label: "Agencies & Brand Managers (Demo)", desc: "Managing multiple seller accounts? Run competitor price tracking across all clients from one dashboard — with white-label reporting per account.", cta: "Book a Demo →", action: () => setLocation("/demo") },
+              { label: "Agencies & Brand Managers (Demo)", desc: "Managing multiple seller accounts? Run competitor price tracking across all clients from one dashboard with white-label reporting per account.", cta: "Book a Demo →", action: () => setLocation("/demo") },
             ].map((card, i) => (
               <div key={i} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 sm:p-6 text-left">
                 <p className="font-bold text-white mb-1.5 sm:mb-2 text-sm sm:text-base">{card.label}</p>

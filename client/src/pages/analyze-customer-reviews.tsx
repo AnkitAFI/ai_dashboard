@@ -508,7 +508,7 @@ export default function AnalyzeCustomerReviewsPage() {
               <div>
                 <p className="text-xs font-bold text-purple-600 dark:text-purple-400 uppercase tracking-widest mb-2 sm:mb-3">Real Seller Scenario Personal Care Brand, Pune</p>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
-                  Ananya runs a premium face wash brand on Amazon India. Her product held a 4.1 rating for three months. Return rates were creeping up to 14% month-on-month. She assumed it was a listing issue. When she ran Insydz's customer review analysis tool on her 680 reviews, the AI surfaced a single dominant complaint in 3 minutes: <strong className="text-gray-900 dark:text-white">'pump dispenser leaks during delivery'</strong> — mentioned across 127 reviews in various phrasings, including Hindi reviews she had never read.
+                  Ananya runs a premium face wash brand on Amazon India. Her product held a 4.1 rating for three months. Return rates were creeping up to 14% month-on-month. She assumed it was a listing issue. When she ran Insydz's customer review analysis tool on her 680 reviews, the AI surfaced a single dominant complaint in 3 minutes: <strong className="text-gray-900 dark:text-white">'pump dispenser leaks during delivery'</strong> mentioned across 127 reviews in various phrasings, including Hindi reviews she had never read.
                 </p>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed mt-2 sm:mt-3 text-sm sm:text-base">
                   She passed the finding to her supplier. New pump mechanism. Updated packaging. Three weeks to implement. <strong className="text-gray-900 dark:text-white">Result: rating climbed 4.1 → 4.6. Returns dropped from 14% to 5%.</strong> The packaging fix cost ₹12/unit. The return problem had been costing ₹28,000/month. Research time: 3 minutes.
@@ -611,10 +611,10 @@ export default function AnalyzeCustomerReviewsPage() {
                 borderCls: "border-green-200 dark:border-green-800",
                 rows: [
                   { label: "Issue detected in week 3 instead of month 4", value: "3 months earlier" },
-                  { label: "₹12/unit packaging fix — implemented in 3 weeks", value: "₹12/unit investment" },
-                  { label: "Returns drop 14% → 5% — monthly recovery", value: "+₹25,200/month" },
-                  { label: "Rating climbs 4.1 → 4.6 — conversion uplift", value: "+₹16,000/month" },
-                  { label: "Organic rank recovery — reduced ad dependency", value: "+₹9,000/month saved" },
+                  { label: "₹12/unit packaging fix implemented in 3 weeks", value: "₹12/unit investment" },
+                  { label: "Returns drop 14% → 5% monthly recovery", value: "+₹25,200/month" },
+                  { label: "Rating climbs 4.1 → 4.6 conversion uplift", value: "+₹16,000/month" },
+                  { label: "Organic rank recovery reduced ad dependency", value: "+₹9,000/month saved" },
                 ],
                 totalLabel: "Net monthly value recovered",
                 totalValue: "+₹50,200",

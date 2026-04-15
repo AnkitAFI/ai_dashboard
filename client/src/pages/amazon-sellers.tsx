@@ -874,7 +874,6 @@ export default function AmazonSellersPage() {
           </div>
 
           <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-3xl p-8 text-center shadow-lg">
-            <Lightbulb className="w-12 h-12 text-red-600 mx-auto mb-4" />
             <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               Most Amazon sellers lose <span className="text-red-600">15–30% of profit every month</span>
             </p>
@@ -1000,14 +999,14 @@ export default function AmazonSellersPage() {
 
           <div className="relative">
             <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 -translate-y-1/2"></div>
-            <div className="grid lg:grid-cols-3 gap-12 relative">
+            <div className="grid lg:grid-cols-3 gap-12 relative items-stretch">
 
               <div className="relative">
-                <div className="bg-white dark:bg-gray-900 border-2 border-orange-300 dark:border-orange-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all">
+                <div className="bg-white dark:bg-gray-900 border-2 border-orange-300 dark:border-orange-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all h-full flex flex-col">
                   <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">1</div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Connect Your Amazon Store</h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-                    Connect your Amazon seller account or add your ASINs. Insydz automatically begins tracking your products, competitors, and entire category — no manual configuration needed.
+                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6 min-h-[96px]">
+                    Connect your Amazon seller account or add your ASINs. Insydz automatically begins tracking your products, competitors, and entire category no manual configuration needed.
                   </p>
                   <div className="bg-orange-100 dark:bg-orange-900/20 rounded-2xl p-4">
                     <ShoppingBag className="w-12 h-12 text-orange-600 mx-auto" />
@@ -1016,11 +1015,11 @@ export default function AmazonSellersPage() {
               </div>
 
               <div className="relative">
-                <div className="bg-white dark:bg-gray-900 border-2 border-orange-300 dark:border-orange-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all">
+                <div className="bg-white dark:bg-gray-900 border-2 border-orange-300 dark:border-orange-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all h-full flex flex-col">
                   <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">2</div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">AI Analyses Everything</h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-                    Our AI scans prices, reviews, keyword rankings, and competitor trends across Amazon India — 24/7, in real time. No manual data pulling. No Excel uploads.
+                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6 min-h-[96px]">
+                    Our AI scans prices, reviews, keyword rankings, and competitor trends across Amazon India 24/7, in real time. No manual data pulling. No Excel uploads.
                   </p>
                   <div className="bg-purple-100 dark:bg-purple-900/20 rounded-2xl p-4">
                     <BarChart3 className="w-12 h-12 text-purple-600 mx-auto animate-pulse" />
@@ -1029,10 +1028,10 @@ export default function AmazonSellersPage() {
               </div>
 
               <div className="relative">
-                <div className="bg-white dark:bg-gray-900 border-2 border-orange-300 dark:border-orange-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all">
+                <div className="bg-white dark:bg-gray-900 border-2 border-orange-300 dark:border-orange-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all h-full flex flex-col">
                   <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">3</div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">You Get Clear Actions</h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">Instead of charts and confusing dashboards, you get direct, plain-language instructions:</p>
+                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 min-h-[96px]">Instead of charts and confusing dashboards, you get direct, plain-language instructions:</p>
                   <div className="space-y-3 text-left">
                     <div className="flex items-start gap-2 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg p-3">
                       <CheckCircle2 className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
@@ -1056,7 +1055,7 @@ export default function AmazonSellersPage() {
             <Button onClick={handleGetStarted} size="lg"
               className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-4 sm:px-12 py-6 text-sm sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group w-full sm:w-auto"
             >
-              👉 Start Free & See Your First Insights
+              Start Free & See Your First Insights
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -1188,29 +1187,25 @@ export default function AmazonSellersPage() {
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             {[
               {
-                emoji: "🆕",
                 label: "New Sellers (Free Plan)",
                 desc: "Just launched on Amazon India? Get your first competitor insights and keyword rankings without spending a rupee. Learn the market before you scale.",
                 cta: "Start Free — No Card Needed →",
                 action: handleGetStarted,
               },
               {
-                emoji: "📈",
                 label: "Growing Sellers (₹5L–₹50L/month)",
                 desc: "At your scale, every pricing mistake and ranking drop costs real money. Get full competitor tracking, AI recommendations, and WhatsApp alerts.",
                 cta: "Try Growth Plan →",
                 action: () => setLocation("/pricing"),
               },
               {
-                emoji: "🏢",
                 label: "Agencies & Brand Managers",
-                desc: "Managing multiple brands? Multi-account intelligence, white-label reporting, and portfolio-level competitor analysis — built for scale.",
+                desc: "Managing multiple brands? Multi-account intelligence, white-label reporting, and portfolio-level competitor analysis built for scale.",
                 cta: "Book a Demo →",
                 action: () => setLocation("/demo"),
               },
             ].map((card, i) => (
               <div key={i} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-left">
-                <p className="text-2xl mb-2">{card.emoji}</p>
                 <p className="font-bold text-white mb-2">{card.label}</p>
                 <p className="text-white/80 text-sm mb-4">{card.desc}</p>
                 <button onClick={card.action} className="text-orange-200 font-semibold text-sm hover:text-white transition-colors underline">{card.cta}</button>

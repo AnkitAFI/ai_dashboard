@@ -252,7 +252,7 @@ export default function EcommerceAgenciesPage() {
       icon: <Workflow className="w-10 h-10" />,
       title: "Automated Client Intelligence Workflows",
       desc: "Set it once, monitor across all accounts. Insydz automates the intelligence gathering your team previously did by hand across every client account, every day, automatically.",
-      scenario: "A Mumbai agency cut their analyst headcount requirement from 3 to 1 after deploying Insydz. The same team now manages 22 clients instead of 8 — without sacrificing report quality or response time for any account.",
+      scenario: "A Mumbai agency cut their analyst headcount requirement from 3 to 1 after deploying Insydz. The same team now manages 22 clients instead of 8 without sacrificing report quality or response time for any account.",
       bullets: [
         "Automated competitor price alerts per client (WhatsApp + email)",
         "Keyword ranking reports generated without analyst input",
@@ -764,7 +764,7 @@ export default function EcommerceAgenciesPage() {
               <span className="text-red-600">Struggle to Scale</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              Managing multiple clients without the right tools is a recipe for burnout — and client churn. Most Indian e-commerce agencies are stuck using a patchwork of spreadsheets, manual tracking, and generic tools that were never built for multi-client management.
+              Managing multiple clients without the right tools is a recipe for burnout and client churn. Most Indian e-commerce agencies are stuck using a patchwork of spreadsheets, manual tracking, and generic tools that were never built for multi-client management.
             </p>
           </div>
 
@@ -778,7 +778,7 @@ export default function EcommerceAgenciesPage() {
               <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 hover:border-cyan-400 hover:shadow-xl transition-all group">
                 <div className={`w-16 h-16 bg-gradient-to-br ${pain.color}
   rounded-2xl flex items-center justify-center
-  mb-4 mx-auto
+  mb-4 mr-auto
   text-white group-hover:scale-110
   transition-transform shadow-lg`}>
   <div className="flex items-center justify-center w-full h-full">

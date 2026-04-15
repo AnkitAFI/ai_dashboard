@@ -292,35 +292,35 @@ export default function FestiveTrendFeaturePage() {
   const faqs = [
     {
       question: "When will Festive Trend Intelligence be available?",
-      answer: "Festive Trend Intelligence is currently in development and will launch before 2026. You can join the waitlist to be notified the moment it goes live — waitlist members will get early access before the general release."
+      answer: "Festive Trend Intelligence is currently in development and will launch before 2026. You can join the waitlist to be notified the moment it goes live waitlist members will get early access before the general release."
     },
     {
       question: "Which Indian festivals will be covered by this tool?",
-      answer: "Insydz Festive Trend Intelligence will cover 15+ major Indian festivals including Diwali, Holi, Eid, Navratri, Dussehra, Pongal, Onam, Bihu, Big Billion Day, Republic Day Sale, Independence Day Sale, and more — with category-specific demand predictions for each. Regional festivals with e-commerce impact will also be included."
+      answer: "Insydz Festive Trend Intelligence will cover 15+ major Indian festivals including Diwali, Holi, Eid, Navratri, Dussehra, Pongal, Onam, Bihu, Big Billion Day, Republic Day Sale, Independence Day Sale, and more with category-specific demand predictions for each. Regional festivals with e-commerce impact will also be included."
     },
     {
       question: "How far in advance will festive demand predictions be available?",
-      answer: "Demand forecasts will be available 4 to 8 weeks before each festive season — giving you enough time to source and stock inventory, update your listings with festive keywords, set pricing windows, and rank before your competitors even start preparing."
+      answer: "Demand forecasts will be available 4 to 8 weeks before each festive season giving you enough time to source and stock inventory, update your listings with festive keywords, set pricing windows, and rank before your competitors even start preparing."
     },
     {
       question: "Will it work for both Amazon India and Flipkart sellers?",
-      answer: "Yes. Insydz Festive Trend Intelligence is built natively for both Amazon India and Flipkart — giving you category-level demand signals, festive keyword alerts, and pricing window recommendations across both marketplaces in one dashboard."
+      answer: "Yes. Insydz Festive Trend Intelligence is built natively for both Amazon India and Flipkart giving you category-level demand signals, festive keyword alerts, and pricing window recommendations across both marketplaces in one dashboard."
     },
     {
       question: "What kind of predictions will it make?",
-      answer: "The tool will predict category-level and product-level demand spikes, recommend optimal inventory levels before each festival, identify festive keywords starting to trend weeks before peak search volume, and signal the best pricing windows to maximize margins. All predictions are specific to the Indian marketplace — not generic global trend data."
+      answer: "The tool will predict category-level and product-level demand spikes, recommend optimal inventory levels before each festival, identify festive keywords starting to trend weeks before peak search volume, and signal the best pricing windows to maximize margins. All predictions are specific to the Indian marketplace not generic global trend data."
     },
     {
       question: "Is this the same as Amazon's trend tools or Helium 10?",
-      answer: "No. Amazon's built-in tools show current trends — not advance forecasts. Helium 10 is built for the US market and doesn't account for Indian festive cycles — Diwali, Big Billion Day, Onam, Pongal, or Eid. Insydz Festive Trend Intelligence is built specifically around the Indian festive calendar, with 4–8 week advance demand predictions for both Amazon India and Flipkart sellers."
+      answer: "No. Amazon's built-in tools show current trends — not advance forecasts. Helium 10 is built for the US market and doesn't account for Indian festive cycles Diwali, Big Billion Day, Onam, Pongal, or Eid. Insydz Festive Trend Intelligence is built specifically around the Indian festive calendar, with 4–8 week advance demand predictions for both Amazon India and Flipkart sellers."
     },
     {
       question: "Is this available on the free plan?",
-      answer: "Festive Trend Intelligence will be available on paid Insydz plans. The exact plan tier details will be announced at launch. Join the waitlist to be notified about pricing and plan availability. Other Insydz features — including competitor price tracking, review analytics, and keyword rank tracking — are available on the free plan today."
+      answer: "Festive Trend Intelligence will be available on paid Insydz plans. The exact plan tier details will be announced at launch. Join the waitlist to be notified about pricing and plan availability. Other Insydz features including competitor price tracking, review analytics, and keyword rank tracking — are available on the free plan today."
     },
     {
       question: "How is this different from just watching Google Trends?",
-      answer: "Google Trends shows search volume — it doesn't tell you what will happen 6 weeks from now on Amazon India or Flipkart, what inventory to stock, what keywords to optimize for, or what price to set. Insydz Festive Trend Intelligence combines years of Indian marketplace demand data with your specific product category and gives you actionable, specific recommendations — not just trend graphs."
+      answer: "Google Trends shows search volume it doesn't tell you what will happen 6 weeks from now on Amazon India or Flipkart, what inventory to stock, what keywords to optimize for, or what price to set. Insydz Festive Trend Intelligence combines years of Indian marketplace demand data with your specific product category and gives you actionable, specific recommendations — not just trend graphs."
     },
   ];
 
@@ -682,7 +682,7 @@ export default function FestiveTrendFeaturePage() {
                 </div>
                 <div className="inline-flex items-center gap-2 bg-amber-100 dark:bg-amber-900/30 border border-amber-400 dark:border-amber-600 rounded-full px-4 py-2 animate-pulse">
                   <Clock className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-                  <span className="text-sm font-bold text-amber-800 dark:text-amber-300">⏳ Coming Soon — 2026</span>
+                  <span className="text-sm font-bold text-amber-800 dark:text-amber-300">Coming Soon 2026</span>
                 </div>
               </div>
 
@@ -883,7 +883,7 @@ export default function FestiveTrendFeaturePage() {
               <div>
                 <p className="text-sm font-bold text-amber-700 dark:text-amber-400 mb-2">Real scenario — Bengaluru apparel seller, Navratri 2023</p>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                  She saw 'chaniya choli' trending on October 5th. By then, the top listings had been ranking for 6 weeks. Her product was buried on page 4. She ordered stock on October 8th — it arrived October 22nd. Navratri ended October 24th. She sold 11 units out of 200 in stock. Dead inventory worth <span className="font-bold text-red-600">₹1.1L</span>.
+                  She saw 'chaniya choli' trending on October 5th. By then, the top listings had been ranking for 6 weeks. Her product was buried on page 4. She ordered stock on October 8th it arrived October 22nd. Navratri ended October 24th. She sold 11 units out of 200 in stock. Dead inventory worth <span className="font-bold text-red-600">₹1.1L</span>.
                 </p>
                 <p className="text-orange-700 dark:text-orange-400 font-semibold mt-2">
                   With 8-week advance demand forecasting, she would have started optimizing her listing in mid-August and stocked in early September.
@@ -961,7 +961,7 @@ export default function FestiveTrendFeaturePage() {
                 {
                   step: "1",
                   title: "AI Tracks Festive Demand Patterns",
-                  detail: "Across years of Indian marketplace data on Amazon India & Flipkart, Insydz's AI builds category-level demand models for every major Indian festival — identifying when demand historically starts rising, peaks, and falls for your product type.",
+                  detail: "Across years of Indian marketplace data on Amazon India & Flipkart, Insydz's AI builds category-level demand models for every major Indian festival identifying when demand historically starts rising, peaks, and falls for your product type.",
                   icon: <BarChart2 className="w-12 h-12 " />
                 },
                 {
@@ -1012,7 +1012,7 @@ export default function FestiveTrendFeaturePage() {
               {
                 icon: <CalendarDays />,
                 title: "Predict Festive Demand 4–8 Weeks Early",
-                detail: "Never get caught off guard again. Know which categories will spike before Diwali, Big Billion Day, or Eid — while there's still time to act, source, and stock.",
+                detail: "Never get caught off guard again. Know which categories will spike before Diwali, Big Billion Day, or Eid while there's still time to act, source, and stock.",
                 outcome: "Stock the right products before demand spikes. Never miss a peak window again.",
                 color: "text-orange-600"
               },
@@ -1198,7 +1198,7 @@ export default function FestiveTrendFeaturePage() {
               ))}
             </div>
             <div className="inline-flex items-center gap-2 bg-orange-500 text-white font-bold px-8 py-4 rounded-full shadow-xl text-lg">
-              <Clock className="w-5 h-5" /> Coming Soon — 2026
+              <Clock className="w-5 h-5" /> Coming Soon 2026
             </div>
           </div>
         </div>
@@ -1367,7 +1367,7 @@ rounded-2xl p-8 text-left flex flex-col h-full">
       {/* ── STICKY MOBILE CTA ── */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-orange-300 dark:border-orange-700 p-4 shadow-2xl z-40">
         <div className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold py-4 rounded-full shadow-xl flex items-center justify-center gap-2">
-          <Clock className="w-5 h-5" /> Coming Soon — 2026
+          <Clock className="w-5 h-5" /> Coming Soon 2026
         </div>
       </div>
 

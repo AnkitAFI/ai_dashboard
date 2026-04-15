@@ -8,7 +8,7 @@ import {
   Video, FileText, MessageCircle, Bell, Search, TrendingDown,
   Flame, Presentation, ArrowLeft, Play, AlertCircle,
   Link as LinkIcon, Layers, RefreshCw,
-  Mail, Facebook, Instagram, Linkedin, Twitter
+  Mail, Facebook, Instagram, Linkedin, Twitter, BellRing, Brain
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Helmet } from 'react-helmet-async';
@@ -434,16 +434,16 @@ function FeatureSection({ id, tag, tagColor, h2, desc, outcomes, howItWorks, sce
 
 // ── FAQ Accordion ──────────────────────────────────────────────────────────────
 const FAQS = [
-  { q: "Do I get access to all features on the free plan?", a: "Yes. When you start free on Insydz, you get access to all core features including competitor price tracking, review analytics, keyword rank tracking, and AI recommendations — with usage limits. You can start tracking your first products immediately with no credit card required. Upgrade when you need more products, more competitors, or more alerts." },
+  { q: "Do I get access to all features on the free plan?", a: "Yes. When you start free on Insydz, you get access to all core features including competitor price tracking, review analytics, keyword rank tracking, and AI recommendations with usage limits. You can start tracking your first products immediately with no credit card required. Upgrade when you need more products, more competitors, or more alerts." },
   { q: "Is Insydz available for both Amazon India and Flipkart?", a: "Yes. Insydz is one of the only all-in-one seller tools built specifically for both Amazon India and Flipkart. You can track competitor prices, keyword rankings, and review analytics across both platforms from a single dashboard." },
-  { q: "How does Insydz's competitor price tracking work for Indian sellers?", a: "Insydz continuously monitors competitor product listings on Amazon India and Flipkart. When a price change is detected, Insydz calculates the impact on your Buy Box position, compares it against your floor price, and sends you a WhatsApp alert in real time — so you can act before you lose sales." },
-  { q: "Can Insydz analyze Amazon reviews automatically?", a: "Yes. Insydz automatically analyzes customer reviews across your Amazon India and Flipkart listings. It identifies complaint clusters, recurring themes, and sentiment trends — surfacing patterns like packaging damage, sizing issues, or quality complaints before they compound. You don't need to read every review manually." },
-  { q: "Is this an amazon repricing software for Indian sellers?", a: "Insydz includes AI-powered price optimization that suggests the right price based on competitor data, demand signals, and your margin floor. Unlike automated repricing tools that just match the lowest price (and destroy margins), Insydz recommends the optimal price — giving you context and control before you make the change." },
-  { q: "Do I need technical knowledge to use Insydz?", a: "No. Insydz is built for Indian sellers — not developers. Setup takes 2 minutes. You connect your seller account, add your products, and Insydz starts surfacing insights and recommendations immediately. No spreadsheets, no complex configurations, no technical skills required." },
+  { q: "How does Insydz's competitor price tracking work for Indian sellers?", a: "Insydz continuously monitors competitor product listings on Amazon India and Flipkart. When a price change is detected, Insydz calculates the impact on your Buy Box position, compares it against your floor price, and sends you a WhatsApp alert in real time so you can act before you lose sales." },
+  { q: "Can Insydz analyze Amazon reviews automatically?", a: "Yes. Insydz automatically analyzes customer reviews across your Amazon India and Flipkart listings. It identifies complaint clusters, recurring themes, and sentiment trends surfacing patterns like packaging damage, sizing issues, or quality complaints before they compound. You don't need to read every review manually." },
+  { q: "Is this an amazon repricing software for Indian sellers?", a: "Insydz includes AI-powered price optimization that suggests the right price based on competitor data, demand signals, and your margin floor. Unlike automated repricing tools that just match the lowest price (and destroy margins), Insydz recommends the optimal price giving you context and control before you make the change." },
+  { q: "Do I need technical knowledge to use Insydz?", a: "No. Insydz is built for Indian sellers not developers. Setup takes 2 minutes. You connect your seller account, add your products, and Insydz starts surfacing insights and recommendations immediately. No spreadsheets, no complex configurations, no technical skills required." },
   { q: "How often is data updated across features?", a: "Price tracking and competitor monitoring run continuously. Keyword rankings are updated daily. Review analytics are refreshed every 24–48 hours depending on your plan. WhatsApp alerts are sent in real time the moment a critical change is detected." },
-  { q: "Can I upgrade only for specific features?", a: "Insydz is one integrated platform — all features work together and are included in each plan tier. You cannot purchase features individually, because the intelligence value comes from features connecting with each other. You can start free and upgrade to a higher plan as your seller business scales." },
-  { q: "How is Insydz different from SellerApp, Helium 10, or similar tools?", a: "SellerApp and Helium 10 are primarily built for global (US-centric) Amazon markets. They don't natively support Flipkart, don't send WhatsApp alerts, and aren't optimized for Indian seller economics (INR pricing, Indian festive seasons, Indian competition patterns). Insydz is built from the ground up for Amazon India and Flipkart sellers — not adapted from a foreign tool." },
-  { q: "What is the best all-in-one seller tool for Amazon India?", a: "For Indian sellers who need competitor price tracking, review analytics, keyword ranking, AI pricing, and WhatsApp alerts in one platform — Insydz is built specifically for Amazon India and Flipkart. It's the only all-in-one seller tool India that combines all these features with native support for both marketplaces and WhatsApp-first alerts." },
+  { q: "Can I upgrade only for specific features?", a: "Insydz is one integrated platform all features work together and are included in each plan tier. You cannot purchase features individually, because the intelligence value comes from features connecting with each other. You can start free and upgrade to a higher plan as your seller business scales." },
+  { q: "How is Insydz different from SellerApp, Helium 10, or similar tools?", a: "SellerApp and Helium 10 are primarily built for global (US-centric) Amazon markets. They don't natively support Flipkart, don't send WhatsApp alerts, and aren't optimized for Indian seller economics (INR pricing, Indian festive seasons, Indian competition patterns). Insydz is built from the ground up for Amazon India and Flipkart sellers not adapted from a foreign tool." },
+  { q: "What is the best all-in-one seller tool for Amazon India?", a: "For Indian sellers who need competitor price tracking, review analytics, keyword ranking, AI pricing, and WhatsApp alerts in one platform Insydz is built specifically for Amazon India and Flipkart. It's the only all-in-one seller tool India that combines all these features with native support for both marketplaces and WhatsApp-first alerts." },
 ];
 
 // ── Main Page ──────────────────────────────────────────────────────────────────
@@ -634,10 +634,10 @@ export default function AllFeaturesPage() {
     {
       id: "ai-recommendations",
       h2: "AI Recommendations Know Exactly What to Do Next",
-      desc: "Data without direction is noise. Most Amazon seller tools give you charts and leave you to figure out what to do. Insydz gives you a clear, prioritized action list every day — so you always know your next move. No dashboard fatigue. No missed alerts buried in a report. Just three things that will move your business forward today.",
+      desc: "Data without direction is noise. Most Amazon seller tools give you charts and leave you to figure out what to do. Insydz gives you a clear, prioritized action list every day so you always know your next move. No dashboard fatigue. No missed alerts buried in a report. Just three things that will move your business forward today.",
       outcomes: ["Daily AI-generated action recommendations across pricing, SEO, and product quality", "Priority-ranked actions: highest-impact tasks surface first", "Cross-feature intelligence: one recommendation combines insights from price, review, and keyword data", "Clear next steps tied to specific products and listings"],
       howItWorks: "Every morning, Insydz's AI synthesizes your price data, reviews, keyword movements, and competitor actions into a prioritized recommendation list. Each card explains what changed, why it matters, and exactly what you should do in plain language.",
-      scenario: "A D2C skincare brand in Pune logs into Insydz. Three recommendations waiting: (1) Pricing 'Reduce price by ₹80 to recapture Buy Box — 3 competitors are below you.' (2) Product 'Improve packaging: 31 reviews mention damage in transit this month.' (3) SEO — 'You lost rank for wireless earbuds — add keyword to title.' Three actions. Twenty minutes. Done.",
+      scenario: "A D2C skincare brand in Pune logs into Insydz. Three recommendations waiting: (1) Pricing 'Reduce price by ₹80 to recapture Buy Box 3 competitors are below you.' (2) Product 'Improve packaging: 31 reviews mention damage in transit this month.' (3) SEO 'You lost rank for wireless earbuds add keyword to title.' Three actions. Twenty minutes. Done.",
       route: "/features/ai-recommendations-feature",
       mock: <AIMock />,
       flip: true,
@@ -650,10 +650,10 @@ export default function AllFeaturesPage() {
       tag: "NEW",
       tagColor: "bg-green-100 text-green-700",
       h2: "WhatsApp Alerts Critical Seller Alerts, Delivered Where You Actually Are",
-      desc: "Indian sellers don't sit at a desktop refreshing dashboards. You're at a factory, at a warehouse, on a call, or managing a family business from a phone. That's why Insydz delivers all critical alerts directly to WhatsApp. When something changes that needs your attention — price drop, rank fall, review spike you hear about it in seconds, not hours.",
+      desc: "Indian sellers don't sit at a desktop refreshing dashboards. You're at a factory, at a warehouse, on a call, or managing a family business from a phone. That's why Insydz delivers all critical alerts directly to WhatsApp. When something changes that needs your attention price drop, rank fall, review spike you hear about it in seconds, not hours.",
       outcomes: ["Instant WhatsApp notifications for price changes, Buy Box loss, and rank drops", "Formatted alerts with context: what happened, what's at risk, and what to do", "No more missed emails, ignored push notifications, or skipped dashboards", "Configurable alert types: choose what you want to be notified about"],
       howItWorks: "Connect your WhatsApp number in one click. You choose which events trigger alerts competitor price drops, Buy Box loss, ranking falls, review spikes. Each alert includes the context and a recommended action. No login required to act.",
-      scenario: "It's 9:30 PM. A kitchenware seller from Rajkot is done for the day. His phone buzzes on WhatsApp: 'Insydz Alert: Competitor A dropped to ₹1,249 (−₹150). Buy Box at risk for ASIN B08X7GH21K — act within 2 hours.' He adjusts price from his phone. WhatsApp confirms: 'You updated to ₹1,269. Buy Box secured.' Total time: 4 minutes.",
+      scenario: "It's 9:30 PM. A kitchenware seller from Rajkot is done for the day. His phone buzzes on WhatsApp: 'Insydz Alert: Competitor A dropped to ₹1,249 (−₹150). Buy Box at risk for ASIN B08X7GH21K act within 2 hours.' He adjusts price from his phone. WhatsApp confirms: 'You updated to ₹1,269. Buy Box secured.' Total time: 4 minutes.",
       route: "/features/whatsapp-alerts-feature",
       mock: <WhatsAppMock />,
       gradient: "from-green-500 to-emerald-600",
@@ -774,7 +774,7 @@ export default function AllFeaturesPage() {
       {/* Mobile sticky CTA */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 px-3 sm:px-4 pb-3 sm:pb-4 pt-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur border-t border-gray-200 dark:border-gray-800">
         <a href="/signup" className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-3 sm:py-4 rounded-full shadow-xl text-sm sm:text-base flex items-center justify-center">
-          👉 Start Free — No Credit Card
+          Start Free — No Credit Card
         </a>
       </div>
 
@@ -815,7 +815,7 @@ export default function AllFeaturesPage() {
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full">
                     <a href="/signup" className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-16 sm:px-8 py-3 sm:py-2 text-sm sm:text-base md:text-sm rounded-full shadow-2xl transition-all inline-flex items-center justify-center">
-                  Start Free — No Credit Card Required
+                  Start Free No Credit Card Required
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </a>
                 <Button onClick={() => document.getElementById("price-tracking")?.scrollIntoView({ behavior: "smooth" })} size="lg" variant="outline" className="w-full sm:w-auto border-2 border-orange-600 text-orange-700 dark:text-orange-500 hover:bg-orange-50 font-semibold px-6 sm:px-8 py-4 sm:py-6 text-sm sm:text-base md:text-lg rounded-full">
@@ -844,6 +844,8 @@ export default function AllFeaturesPage() {
                     { icon: <Search className="w-4 h-4 sm:w-5 sm:h-5" />, label: "Keyword Tracking", grad: "from-green-500 to-emerald-500" },
                     { icon: <Package className="w-4 h-4 sm:w-5 sm:h-5" />, label: "Product Research", grad: "from-yellow-500 to-orange-500" },
                     { icon: <Zap className="w-4 h-4 sm:w-5 sm:h-5" />, label: "AI Recommendations", grad: "from-violet-500 to-purple-600" },
+                    { icon: <BellRing  className="w-4 h-4 sm:w-5 sm:h-5" />, label: "Whatsapp Alerts", grad: "from-green-500 to-emerald-500" },
+                    { icon: <Brain className="w-4 h-4 sm:w-5 sm:h-5" />, label: "Festive Trend Intelligence", grad: "from-yellow-500 to-orange-600" },
                   ].map((tile, i) => (
                     <div key={i} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-2 sm:p-3 hover:border-orange-300 transition-all group cursor-default">
                       <div className={`w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br ${tile.grad} rounded-lg flex items-center justify-center text-white flex-shrink-0 group-hover:scale-110 transition-transform`}>
@@ -852,10 +854,6 @@ export default function AllFeaturesPage() {
                       <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{tile.label}</span>
                     </div>
                   ))}
-                </div>
-                <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-xl p-2 sm:p-3">
-                  <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" />
-                  <span className="text-xs font-bold text-green-700 dark:text-green-400">+ WhatsApp Alerts — All connected. One platform.</span>
                 </div>
                 <div className="absolute -top-3 sm:-top-4 -right-3 sm:-right-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-1.5 sm:py-2 shadow-xl">
                   <p className="text-white font-bold text-xs sm:text-sm">8 Features</p>
@@ -1163,7 +1161,7 @@ export default function AllFeaturesPage() {
             All the Intelligence You Need.
           </h2>
           <p className="text-sm sm:text-base md:text-xl text-white/90 mb-8 sm:mb-10 leading-relaxed max-w-2xl mx-auto">
-            Start free and experience real insights on your own products — no setup, no credit card, no commitment.
+            Start free and experience real insights on your own products no setup, no credit card, no commitment.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto mb-6 sm:mb-8">
             {[

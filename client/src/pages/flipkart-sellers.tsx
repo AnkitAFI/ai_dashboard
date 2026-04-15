@@ -1081,7 +1081,7 @@ export default function FlipkartSellersPage() {
               </div>
               <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-2xl p-4 mb-4">
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  <span className="font-semibold text-orange-700 dark:text-orange-400">Real scenario:</span> A home décor seller's keyword 'led strip lights for bedroom' slipped from rank #6 to #24 on Flipkart. Insydz sent an alert with two specific fixes — a ₹60 price reduction and a title tweak. Rank recovered to #9 within 5 days.
+                  <span className="font-semibold text-orange-700 dark:text-orange-400">Real scenario:</span> A home décor seller's keyword 'led strip lights for bedroom' slipped from rank #6 to #24 on Flipkart. Insydz sent an alert with two specific fixes a ₹60 price reduction and a title tweak. Rank recovered to #9 within 5 days.
                 </p>
               </div>
               <button
@@ -1159,7 +1159,7 @@ export default function FlipkartSellersPage() {
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">2</div>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">AI Analyses Market Data</h3>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-                  Our AI continuously scans Flipkart for pricing changes, review patterns, keyword ranking shifts, and competitor strategies — 24/7, in real time. No manual work. No spreadsheets.
+                  Our AI continuously scans Flipkart for pricing changes, review patterns, keyword ranking shifts, and competitor strategies 24/7, in real time. No manual work. No spreadsheets.
                 </p>
                 <div className="bg-purple-100 dark:bg-purple-900/20 rounded-2xl p-4">
                   <BarChart3 className="w-12 h-12 text-purple-600 mx-auto animate-pulse" />

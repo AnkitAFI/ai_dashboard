@@ -797,17 +797,17 @@ export default function AvoidStockoutsPage() {
               {
                 icon: <RefreshCw className="w-7 h-7" />,
                 title: "Static Data in a Dynamic World",
-                desc: "A spreadsheet shows stock levels as of the last update. It doesn't account for sales acceleration — when your product suddenly sells 3× faster due to a competitor stocking out, a festive promotion, or a ranking improvement. By the time you notice, you're already critical.",
+                desc: "A spreadsheet shows stock levels as of the last update. It doesn't account for sales acceleration when your product suddenly sells 3× faster due to a competitor stocking out, a festive promotion, or a ranking improvement. By the time you notice, you're already critical.",
               },
               {
                 icon: <Flame className="w-7 h-7" />,
                 title: "No Festive Season Intelligence",
-                desc: "Manual planning uses last year's sales as baseline. But Indian festive demand doesn't follow a smooth curve — a product selling 50 units/day in October last year might sell 150/day this year. Static reorder points miss these spikes every single time.",
+                desc: "Manual planning uses last year's sales as baseline. But Indian festive demand doesn't follow a smooth curve a product selling 50 units/day in October last year might sell 150/day this year. Static reorder points miss these spikes every single time.",
               },
               {
                 icon: <Eye className="w-7 h-7" />,
                 title: "Zero Competitor Stock Visibility",
-                desc: "When a top competitor goes out of stock, demand for your product spikes. Manual tracking has no way to monitor competitor stock levels — so when the spike hits, you're already running lean.",
+                desc: "When a top competitor goes out of stock, demand for your product spikes. Manual tracking has no way to monitor competitor stock levels so when the spike hits, you're already running lean.",
               },
               {
                 icon: <Clock className="w-7 h-7" />,

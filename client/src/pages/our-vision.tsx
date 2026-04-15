@@ -337,7 +337,7 @@ export default function OurVisionPage() {
 
               <div className="flex flex-col sm:flex-row gap-4 pt-2">
                 <Button onClick={handleGetStarted} size="lg" className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-6 text-base rounded-full shadow-xl hover:shadow-orange-400/40 transition-all group">
-                  👉 Start Free
+                  Start Free
                   <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button onClick={() => setLocation('/solutions')} size="lg" variant="outline" className="border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-orange-400 hover:text-orange-600 font-semibold px-8 py-6 text-base rounded-full transition-all">
@@ -406,7 +406,7 @@ export default function OurVisionPage() {
               </div>
               <div className="w-12 h-0.5 bg-orange-400"></div>
               <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-                INSYDZ is an AI-powered e-commerce intelligence platform built specifically for Indian marketplace sellers — on Amazon, Flipkart.
+                INSYDZ is an AI-powered e-commerce intelligence platform built specifically for Indian marketplace sellers on Amazon, Flipkart.
               </p>
               <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
                 We don't adapt global tools. We build for Indian pricing dynamics, Indian competition patterns, and Indian seller workflows from the ground up.
@@ -524,7 +524,7 @@ export default function OurVisionPage() {
             {[
               { icon: <CheckCircle2 className="w-6 h-6" />, title: "Affordable", desc: "For growing sellers at every stage", color: "from-green-500 to-emerald-500" },
               { icon: <Store className="w-6 h-6" />, title: "India-Built", desc: "For Indian marketplace dynamics", color: "from-orange-500 to-orange-600" },
-              { icon: <Zap className="w-6 h-6" />, title: "Actionable", desc: "Not just analytical — tells you what to do", color: "from-yellow-500 to-orange-500" },
+              { icon: <Zap className="w-6 h-6" />, title: "Actionable", desc: "Not just analytical tells you what to do", color: "from-yellow-500 to-orange-500" },
               { icon: <Layers className="w-6 h-6" />, title: "Clear Design", desc: "Designed for clarity, not complexity", color: "from-blue-500 to-cyan-500" },
             ].map((card, i) => (
               <div key={i} className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-md hover:shadow-xl hover:-translate-y-1 transition-all group cursor-default">
@@ -623,7 +623,7 @@ export default function OurVisionPage() {
                 We are intentional about what we don't build.
               </p>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                Clarity of purpose matters. Knowing what we're not helps us stay focused on what we are — and it helps sellers know exactly what to expect.
+                Clarity of purpose matters. Knowing what we're not helps us stay focused on what we are and it helps sellers know exactly what to expect.
               </p>
             </div>
 
@@ -658,12 +658,12 @@ export default function OurVisionPage() {
           <div className="w-12 h-0.5 bg-orange-400 mb-8"></div>
 
           <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-10 max-w-2xl">
-            A seller intelligence brain — one that helps Indian sellers make the right decisions at the right time.
+            A seller intelligence brain one that helps Indian sellers make the right decisions at the right time.
           </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { icon: <Zap className="w-6 h-6" />, title: "AI Recommendations", desc: "Not just data — specific actions to take next", color: "from-yellow-500 to-orange-500" },
+              { icon: <Zap className="w-6 h-6" />, title: "AI Recommendations", desc: "Not just data specific actions to take next", color: "from-yellow-500 to-orange-500" },
               { icon: <Bell className="w-6 h-6" />, title: "Real-Time Alerts", desc: "WhatsApp notifications the moment something changes", color: "from-green-500 to-emerald-500" },
               { icon: <BarChart2 className="w-6 h-6" />, title: "Marketplace Insights", desc: "Deep data from Amazon, Flipkart", color: "from-blue-500 to-cyan-500" },
               { icon: <Calendar className="w-6 h-6" />, title: "Festive Trend Intelligence", desc: "Plan ahead for Diwali, Big Billion Days, and more", color: "from-purple-500 to-pink-500" },
@@ -699,7 +699,7 @@ export default function OurVisionPage() {
 
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-              INSYDZ is not a short-term product experiment. We are building infrastructure for Indian e-commerce growth — for the long haul.
+              INSYDZ is not a short-term product experiment. We are building infrastructure for Indian e-commerce growth for the long haul.
             </p>
 
             <div className="space-y-5">
@@ -748,7 +748,7 @@ export default function OurVisionPage() {
           </h2>
           <p className="text-gray-500 dark:text-gray-400 mb-8 text-lg">No credit card required.</p>
           <Button onClick={handleGetStarted} size="lg" className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-12 py-7 text-lg rounded-full shadow-2xl hover:shadow-orange-400/40 transition-all group">
-            👉 Start Free with INSYDZ
+            Start Free with INSYDZ
             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
         </div>

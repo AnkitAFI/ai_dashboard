@@ -716,7 +716,6 @@ const UseCasesPage = () => {
       <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-900 dark:to-gray-950">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10 sm:mb-16">
-            <Lightbulb className="w-8 h-8 sm:w-12 sm:h-12 text-orange-500 mx-auto mb-3 sm:mb-4" />
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 sm:mb-6 text-gray-900 dark:text-white">
               Not Sure Which
               <br />
