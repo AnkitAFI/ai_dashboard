@@ -354,7 +354,7 @@ export default function SolutionsPage() {
     {
       id: 'faq-1',
       question: 'Can I switch between solutions later?',
-      answer: 'Yes. Insydz is designed to adapt as your business grows. You can switch your solution type inside the product dashboard at any time — no data loss, no restart required.'
+      answer: 'Yes. Insydz is designed to adapt as your business grows. You can switch your solution type inside the product dashboard at any time no data loss, no restart required.'
     },
     {
       id: 'faq-2',
@@ -369,7 +369,7 @@ export default function SolutionsPage() {
     {
       id: 'faq-4',
       question: 'Can agencies access multiple solutions for different clients?',
-      answer: 'Yes. The Agency solution includes multi-account access, allowing you to manage different client profiles — each with their own solution type, marketplace focus, and reporting view — from a single Insydz workspace.'
+      answer: 'Yes. The Agency solution includes multi-account access, allowing you to manage different client profiles each with their own solution type, marketplace focus, and reporting view from a single Insydz workspace.'
     },
     {
       id: 'faq-5',
@@ -389,7 +389,7 @@ export default function SolutionsPage() {
     {
       id: 'faq-8',
       question: 'What is the best ecommerce analytics solution for Indian sellers?',
-      answer: 'Insydz is purpose-built for Indian marketplace sellers — covering Amazon India, Flipkart. Unlike global analytics tools, Insydz provides India-specific pricing intelligence, Flipkart SEO tracking, regional trend analysis, and AI-powered review mining — all in one platform built for sellers doing ₹5L to ₹50L+ per month.'
+      answer: 'Insydz is purpose-built for Indian marketplace sellers covering Amazon India, Flipkart. Unlike global analytics tools, Insydz provides India-specific pricing intelligence, Flipkart SEO tracking, regional trend analysis, and AI-powered review mining all in one platform built for sellers doing ₹5L to ₹50L+ per month.'
     }
   ];
 
@@ -865,9 +865,9 @@ export default function SolutionsPage() {
             <p className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-6">Here's what most Amazon seller tools don't tell you:</p>
             <div className="space-y-4">
               {[
-                'Your competitor dropped their price at 11 PM on a Friday — and took your Buy Box before you woke up',
+                'Your competitor dropped their price at 11 PM on a Friday and took your Buy Box before you woke up',
                 'Your product keyword ranks #4 on Flipkart search but your listing title hasn\'t been optimised in 6 months',
-                'A cluster of 1-star reviews about "packaging" is quietly tanking your conversion — but you\'ve never spotted the pattern',
+                'A cluster of 1-star reviews about "packaging" is quietly tanking your conversion but you\'ve never spotted the pattern',
                 'You launched a new SKU based on gut feeling and it\'s been sitting dead in inventory for 3 months',
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
@@ -1029,7 +1029,7 @@ export default function SolutionsPage() {
               {
                 icon: <ShoppingBag className="w-8 h-8" />,
                 title: 'Amazon India-native',
-                desc: 'We track Indian ASINs, Indian seller behaviour, and India-specific pricing dynamics — not US market proxies.',
+                desc: 'We track Indian ASINs, Indian seller behaviour, and India-specific pricing dynamics not US market proxies.',
                 color: 'from-orange-500 to-red-500'
               },
               {
@@ -1221,7 +1221,7 @@ export default function SolutionsPage() {
             <span className="text-orange-100">Insydz Fits.</span>
           </h2>
           <p className="text-xl text-white/90 mb-12 leading-relaxed">
-            Start free — choose your solution inside the product.
+            Start free choose your solution inside the product.
           </p>
 
           <div className="grid md:grid-cols-3 gap-6 mb-10 items-stretch">

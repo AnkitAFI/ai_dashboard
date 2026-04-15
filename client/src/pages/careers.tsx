@@ -286,7 +286,7 @@ export default function CareersPage() {
   const WHAT_MEANS = [
     "You work on product that impacts real businesses",
     "You solve real marketplace problems, not synthetic ones",
-    "You ship fast — but thoughtfully",
+    "You ship fast but thoughtfully",
     "You take ownership from day one",
   ];
 
@@ -427,7 +427,7 @@ export default function CareersPage() {
               </h1>
 
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
-                We're building infrastructure for serious sellers —
+                We're building infrastructure for serious sellers
                 <span className="text-orange-700 font-semibold"> and we're looking for serious builders.</span>
               </p>
 
@@ -505,7 +505,7 @@ export default function CareersPage() {
             <div>
               <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
                 Indian marketplace sellers operate in one of the most competitive environments in the world.
-                We believe they deserve structured intelligence — not guesswork.
+                We believe they deserve structured intelligence not guesswork.
               </p>
               <div className="space-y-4">
                 {WHY_BULLETS.map((b, i) => (

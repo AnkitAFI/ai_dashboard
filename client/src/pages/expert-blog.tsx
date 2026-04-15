@@ -147,6 +147,28 @@ type Article = {
 
 // Sample articles data
 const articles: Article[] = [
+  {
+    id: "12",
+    title: "Manual vs Automated Competitor Tracking: What Works in 2026?",
+    excerpt: "Indian ecommerce sellers spend 3–5 hours daily tracking competitor prices in Excel — and still react 24 hours too late. Here's an honest, data-backed comparison of manual price tracking versus AI-powered automated competitor tracking, and exactly which approach works for Indian sellers at every growth stage.",
+    category: "Seller Tools & Strategy",
+    readTime: "8 min read",
+    image: "/manual-vs-automated-hero.png", // ✅ only this article has the image
+    route: "/resources/expert-blog/manual-vs-automated-competitor-tracking-tool",
+    featured: true,
+    popular: true
+  },
+  {
+    id: "11",
+    title: "Amazon vs Flipkart: Which Marketplace is Better in India? (2026)",
+    excerpt: "The amazon vs flipkart india sellers debate isn't a brand preference it's a margin and strategy question. Amazon and Flipkart reward very different seller behaviours. A strategy that wins you the Buy Box on Amazon.in can actively hurt your ranking on Flipkart because their algorithms weigh seller competition, pricing behaviour, and fulfilment speed differently.",
+    category: "Seller Tools & Strategy",
+    readTime: "8 min read",
+    image: "/amazon-vs-flipkart-hero-metrics.png", // ✅ only this article has the image
+    route: "/resources/expert-blog/amazon-vs-flipkart-india-seller",
+    featured: true,
+    popular: true
+  },
    {
      id: "10",
      title: "Flipkart Keyword Research Tool & SEO Optimization Guide for Sellers (2026)",

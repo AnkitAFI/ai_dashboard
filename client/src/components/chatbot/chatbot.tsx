@@ -26,36 +26,36 @@ import { useSubscriptionSync } from "@/hooks/useSubscriptionSync";
 // ─────────────────────────────────────────────
 
 interface MarketScore {
-  overall_score:      number;
-  demand_score:       number;
-  competition_score:  number;
-  margin_score:       number;
-  avg_price:          number;
-  avg_rating:         number;
-  avg_sales:          number;
-  total_listings:     number;
-  verdict:            string;
+  overall_score: number;
+  demand_score: number;
+  competition_score: number;
+  margin_score: number;
+  avg_price: number;
+  avg_rating: number;
+  avg_sales: number;
+  total_listings: number;
+  verdict: string;
 }
 
 interface ChatMessage {
-  id:                   string;
-  message:              string;
-  isUser:               boolean;
-  timestamp:            Date;
-  isStreaming?:         boolean;
-  intents?:             string[];
+  id: string;
+  message: string;
+  isUser: boolean;
+  timestamp: Date;
+  isStreaming?: boolean;
+  intents?: string[];
   hasProactiveInsight?: boolean;
-  followupQuestions?:   string[];
-  marketScore?:         MarketScore | null;
-  mode?:                string;
-  extractedProduct?:    string | null;
+  followupQuestions?: string[];
+  marketScore?: MarketScore | null;
+  mode?: string;
+  extractedProduct?: string | null;
 }
 
 // ─────────────────────────────────────────────
 // CONSTANTS
 // ─────────────────────────────────────────────
 
-const API_BASE = "https://api.insydz.com";
+const API_BASE = "http://localhost:8000";
 
 const QUICK_QUESTIONS = [
   "What products are trending now?",
@@ -68,17 +68,17 @@ const QUICK_QUESTIONS = [
 
 const SUGGESTION_ICONS: Record<string, JSX.Element> = {
   trending: <TrendingUp className="h-3 w-3" />,
-  profit:   <DollarSign  className="h-3 w-3" />,
-  sales:    <BarChart3   className="h-3 w-3" />,
-  default:  <Sparkles    className="h-3 w-3" />,
+  profit: <DollarSign className="h-3 w-3" />,
+  sales: <BarChart3 className="h-3 w-3" />,
+  default: <Sparkles className="h-3 w-3" />,
 };
 
 const MODE_LABELS: Record<string, { label: string; color: string }> = {
-  viability: { label: "Viability Check", color: "bg-amber-100 text-amber-700"   },
-  decision:  { label: "Decision Mode",   color: "bg-blue-100 text-blue-700"     },
-  execution: { label: "How-To Mode",     color: "bg-green-100 text-green-700"   },
-  deep_dive: { label: "Deep Dive",       color: "bg-purple-100 text-purple-700" },
-  research:  { label: "Research Mode",   color: "bg-gray-100 text-gray-600"     },
+  viability: { label: "Viability Check", color: "bg-amber-100 text-amber-700" },
+  decision: { label: "Decision Mode", color: "bg-blue-100 text-blue-700" },
+  execution: { label: "How-To Mode", color: "bg-green-100 text-green-700" },
+  deep_dive: { label: "Deep Dive", color: "bg-purple-100 text-purple-700" },
+  research: { label: "Research Mode", color: "bg-gray-100 text-gray-600" },
 };
 
 // ─────────────────────────────────────────────
@@ -105,8 +105,8 @@ function ScoreBar({ label, value, color }: { label: string; value: number; color
 function MarketScoreCard({ score, product }: { score: MarketScore; product?: string | null }) {
   const overallColor =
     score.overall_score >= 70 ? "text-green-600" :
-    score.overall_score >= 50 ? "text-amber-600" :
-    "text-red-500";
+      score.overall_score >= 50 ? "text-amber-600" :
+        "text-red-500";
 
   return (
     <div className="mt-2 bg-white border border-gray-200 rounded-lg p-3 space-y-2.5 shadow-sm">
@@ -119,9 +119,9 @@ function MarketScoreCard({ score, product }: { score: MarketScore; product?: str
         </span>
       </div>
       <div className="space-y-1.5">
-        <ScoreBar label="Demand"      value={score.demand_score}      color="bg-blue-500"   />
-        <ScoreBar label="Low Competition" value={score.competition_score} color="bg-green-500"  />
-        <ScoreBar label="Margin Room" value={score.margin_score}      color="bg-purple-500" />
+        <ScoreBar label="Demand" value={score.demand_score} color="bg-blue-500" />
+        <ScoreBar label="Low Competition" value={score.competition_score} color="bg-green-500" />
+        <ScoreBar label="Margin Room" value={score.margin_score} color="bg-purple-500" />
       </div>
       <div className="grid grid-cols-3 gap-1 pt-1 border-t border-gray-100">
         <div className="text-center">
@@ -140,8 +140,8 @@ function MarketScoreCard({ score, product }: { score: MarketScore; product?: str
       <div className={cn(
         "text-center text-[11px] font-semibold py-1 rounded-md",
         score.overall_score >= 70 ? "bg-green-50 text-green-700" :
-        score.overall_score >= 50 ? "bg-amber-50 text-amber-700" :
-        "bg-red-50 text-red-600"
+          score.overall_score >= 50 ? "bg-amber-50 text-amber-700" :
+            "bg-red-50 text-red-600"
       )}>
         {score.verdict}
       </div>
@@ -159,14 +159,14 @@ function useStreamingChat() {
   const streamMessage = useCallback(async (
     payload: object,
     onToken: (token: string) => void,
-    onDone:  (meta: {
-      session_id?:            string;
-      intents?:               string[];
-      mode?:                  string;
-      followup_questions?:    string[];
-      market_score?:          MarketScore | null;
+    onDone: (meta: {
+      session_id?: string;
+      intents?: string[];
+      mode?: string;
+      followup_questions?: string[];
+      market_score?: MarketScore | null;
       had_proactive_insight?: boolean;
-      extracted_product?:     string | null;
+      extracted_product?: string | null;
     }) => void,
     onError: (err: string) => void
   ) => {
@@ -201,7 +201,7 @@ function useStreamingChat() {
             const json = JSON.parse(line.slice(6));
             if (json.token !== undefined) onToken(json.token);
             if (json.done) onDone(json);
-          } catch {}
+          } catch { }
         }
       }
     } catch (err: any) {
@@ -223,22 +223,22 @@ export default function Chatbot() {
   const { trackAIChatUsage, getAIUsage } = useSubscriptionSync();
   const { streamMessage, abort } = useStreamingChat();
 
-  const [aiUsage, setAiUsage]               = useState({ used: 0, limit: 0 });
+  const [aiUsage, setAiUsage] = useState({ used: 0, limit: 0 });
   const [isLoadingUsage, setIsLoadingUsage] = useState(true);
-  const [isOpen, setIsOpen]                 = useState(false);
-  const [messages, setMessages]             = useState<ChatMessage[]>([]);
-  const [inputMessage, setInputMessage]     = useState("");
-  const [isTyping, setIsTyping]             = useState(false);
-  const [isStreaming, setIsStreaming]       = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [inputMessage, setInputMessage] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
   const [selectedSource, setSelectedSource] = useState("flipkart");
-  const [sessionId, setSessionId]           = useState<string | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
-  const messagesEndRef     = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const inputRef           = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const isAuthenticated = !!user;
-  const isChatLocked    = !isAuthenticated || (
+  const isChatLocked = !isAuthenticated || (
     limits.maxAIChatMessagesPerMonth < UNLIMITED &&
     aiUsage.used >= aiUsage.limit
   );
@@ -290,9 +290,8 @@ export default function Chatbot() {
     if (limits.maxAIChatMessagesPerMonth < UNLIMITED && aiUsage.used >= aiUsage.limit) {
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
-        message: `🔒 You've reached your ${aiUsage.limit} AI chat limit for this month.\n\nUpgrade to ${
-          currentTier === "free" ? "Basic (20 chats)" : "Premium (unlimited)"
-        } to continue.`,
+        message: `🔒 You've reached your ${aiUsage.limit} AI chat limit for this month.\n\nUpgrade to ${currentTier === "free" ? "Basic (20 chats)" : "Premium (unlimited)"
+          } to continue.`,
         isUser: false, timestamp: new Date(),
       }]);
       return;
@@ -304,7 +303,7 @@ export default function Chatbot() {
     setMessages(prev => [...prev, { id: Date.now().toString(), message: text, isUser: true, timestamp: new Date() }]);
     setInputMessage("");
 
-    try { await trackAIChatUsage(); setAiUsage(prev => ({ ...prev, used: prev.used + 1 })); } catch {}
+    try { await trackAIChatUsage(); setAiUsage(prev => ({ ...prev, used: prev.used + 1 })); } catch { }
 
     setIsTyping(true);
     const streamId = `stream-${Date.now()}`;
@@ -333,13 +332,13 @@ export default function Chatbot() {
         setMessages(prev => prev.map(m =>
           m.id === streamId ? {
             ...m,
-            isStreaming:          false,
+            isStreaming: false,
             intents,
             mode,
-            followupQuestions:    followup_questions,
-            marketScore:          market_score,
-            hasProactiveInsight:  had_proactive_insight,
-            extractedProduct:     extracted_product,
+            followupQuestions: followup_questions,
+            marketScore: market_score,
+            hasProactiveInsight: had_proactive_insight,
+            extractedProduct: extracted_product,
           } : m
         ));
       },
@@ -364,7 +363,7 @@ export default function Chatbot() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ session_id: sessionId }),
         });
-      } catch {}
+      } catch { }
     }
     abort();
     setSessionId(null);
@@ -378,9 +377,9 @@ export default function Chatbot() {
 
   const getSuggestionIcon = (s: string) => {
     const l = s.toLowerCase();
-    if (l.includes("trend"))  return SUGGESTION_ICONS.trending;
+    if (l.includes("trend")) return SUGGESTION_ICONS.trending;
     if (l.includes("profit")) return SUGGESTION_ICONS.profit;
-    if (l.includes("sales"))  return SUGGESTION_ICONS.sales;
+    if (l.includes("sales")) return SUGGESTION_ICONS.sales;
     return SUGGESTION_ICONS.default;
   };
 
@@ -389,7 +388,7 @@ export default function Chatbot() {
     if (aiUsage.limit >= UNLIMITED) return "bg-green-500";
     const pct = (aiUsage.used / aiUsage.limit) * 100;
     if (pct >= 100) return "bg-red-500";
-    if (pct >= 80)  return "bg-orange-500";
+    if (pct >= 80) return "bg-orange-500";
     return "bg-green-500";
   };
 
@@ -464,20 +463,20 @@ export default function Chatbot() {
             <div className={cn(
               "px-3 py-2 text-xs flex items-center justify-between",
               !isAuthenticated ? "bg-gray-50 text-gray-700"
-              : isChatLocked   ? "bg-red-50 text-red-700"
-              : aiUsage.limit >= UNLIMITED ? "bg-green-50 text-green-700"
-              : "bg-blue-50 text-blue-700"
+                : isChatLocked ? "bg-red-50 text-red-700"
+                  : aiUsage.limit >= UNLIMITED ? "bg-green-50 text-green-700"
+                    : "bg-blue-50 text-blue-700"
             )}>
               <div className="flex items-center gap-1">
                 {!isAuthenticated ? <LogIn className="h-3 w-3" />
-                 : isChatLocked   ? <Lock className="h-3 w-3" />
-                 : aiUsage.limit >= UNLIMITED ? <Crown className="h-3 w-3" />
-                 : <Sparkles className="h-3 w-3" />}
+                  : isChatLocked ? <Lock className="h-3 w-3" />
+                    : aiUsage.limit >= UNLIMITED ? <Crown className="h-3 w-3" />
+                      : <Sparkles className="h-3 w-3" />}
                 <span className="font-medium">
                   {!isAuthenticated ? "Login Required"
-                   : aiUsage.limit >= UNLIMITED ? "Unlimited AI Chats"
-                   : isChatLocked ? "Limit Reached"
-                   : `${aiUsage.used}/${aiUsage.limit} chats used`}
+                    : aiUsage.limit >= UNLIMITED ? "Unlimited AI Chats"
+                      : isChatLocked ? "Limit Reached"
+                        : `${aiUsage.used}/${aiUsage.limit} chats used`}
                 </span>
                 {sessionId && isAuthenticated && !isChatLocked && (
                   <span className="ml-1 px-1.5 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[10px] font-medium">
@@ -592,8 +591,8 @@ export default function Chatbot() {
                   onKeyDown={(e) => e.key === "Enter" && !isChatLocked && sendMessage()}
                   placeholder={
                     !isAuthenticated ? "Login to chat..."
-                    : isChatLocked   ? "Upgrade to continue..."
-                    : "Ask about trends, prices, or reviews..."
+                      : isChatLocked ? "Upgrade to continue..."
+                        : "Ask about trends, prices, or reviews..."
                   }
                   className="flex-1 text-sm"
                   disabled={isTyping || isStreaming || isChatLocked}
@@ -605,10 +604,10 @@ export default function Chatbot() {
                   className={cn("px-3", isStreaming && "bg-red-500 hover:bg-red-600 border-0")}
                 >
                   {!isAuthenticated ? <LogIn className="h-4 w-4" />
-                   : isChatLocked   ? <Lock className="h-4 w-4" />
-                   : isTyping       ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                   : isStreaming    ? <X className="h-4 w-4" />
-                   : <Send className="h-4 w-4" />}
+                    : isChatLocked ? <Lock className="h-4 w-4" />
+                      : isTyping ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                        : isStreaming ? <X className="h-4 w-4" />
+                          : <Send className="h-4 w-4" />}
                 </Button>
               </div>
 

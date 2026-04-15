@@ -3,36 +3,14 @@ import { useAuth } from "@/App";
 import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
 import { useSubscriptionSync } from "@/hooks/useSubscriptionSync";
 import Sidebar from "@/components/layout/sidebar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Check,
-  X,
-  Crown,
-  Zap,
-  Building2,
-  Loader2,
-  AlertCircle,
-  Menu,
-  Sparkles,
-  Infinity,
-  Shield,
-} from "lucide-react";
+import { Check, X, Crown, Zap, Building2, Loader2, AlertCircle, Menu, Sparkles, Infinity, Shield, } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import PaymentModal, { type PaymentPlan } from "@/components/payment/PaymentModal";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const API_BASE = "https://api.insydz.com";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
+const API_BASE = "http://localhost:8000";
 
 interface SubscriptionPlan {
   id: string;
@@ -47,14 +25,12 @@ interface SubscriptionPlan {
 }
 
 interface BillingPreview {
-  scenario:         string;   // already_active | upgrade_full | upgrade_prorated | new_subscription
-  charge:           number;
-  full_price:       number;
-  explanation:      string;
+  scenario: string;   // already_active | upgrade_full | upgrade_prorated | new_subscription
+  charge: number;
+  full_price: number;
+  explanation: string;
   requires_payment: boolean;
 }
-
-// ─── Plan Data ────────────────────────────────────────────────────────────────
 
 const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
@@ -134,8 +110,6 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   },
 ];
 
-// ─── Trust strip ──────────────────────────────────────────────────────────────
-
 const TRUST_ITEMS = [
   {
     icon: <Zap className="h-5 w-5 text-sky-500" />,
@@ -159,8 +133,6 @@ const TRUST_ITEMS = [
   },
 ];
 
-// ─── FAQ ──────────────────────────────────────────────────────────────────────
-
 const FAQ = [
   {
     q: "Can I upgrade my plan anytime?",
@@ -180,58 +152,51 @@ const FAQ = [
   },
 ];
 
-// ─── Per-plan accent colours ──────────────────────────────────────────────────
-
 const PLAN_STYLES: Record<
   string,
   { iconBg: string; ring: string; upgradeBtn: string; discountBadge: string }
 > = {
   free: {
-    iconBg:        "bg-slate-100",
-    ring:          "",
-    upgradeBtn:    "bg-slate-500 hover:bg-slate-600 text-white",
+    iconBg: "bg-slate-100",
+    ring: "",
+    upgradeBtn: "bg-slate-500 hover:bg-slate-600 text-white",
     discountBadge: "bg-slate-500",
   },
   basic: {
-    iconBg:        "bg-sky-100",
-    ring:          "ring-2 ring-sky-500 ring-offset-2",
-    upgradeBtn:    "bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white shadow-sky-200",
+    iconBg: "bg-sky-100",
+    ring: "ring-2 ring-sky-500 ring-offset-2",
+    upgradeBtn: "bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white shadow-sky-200",
     discountBadge: "bg-sky-600",
   },
   premium: {
-    iconBg:        "bg-amber-100",
-    ring:          "",
-    upgradeBtn:    "bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-amber-200",
+    iconBg: "bg-amber-100",
+    ring: "",
+    upgradeBtn: "bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-amber-200",
     discountBadge: "bg-amber-500",
   },
   enterprise: {
-    iconBg:        "bg-indigo-100",
-    ring:          "",
-    upgradeBtn:    "bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white shadow-indigo-200",
+    iconBg: "bg-indigo-100",
+    ring: "",
+    upgradeBtn: "bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white shadow-indigo-200",
     discountBadge: "bg-indigo-600",
   },
 };
 
-// Plan rank order — used to decide if a plan is an upgrade
 const PLAN_ORDER = ["free", "basic", "premium", "enterprise"];
-
-// ═════════════════════════════════════════════════════════════════════════════
-// COMPONENT
-// ═════════════════════════════════════════════════════════════════════════════
 
 export default function Subscription() {
   const { user, refreshUser, isLoading: authLoading } = useAuth();
-  const { currentTier }                               = useSubscriptionLimits();
-  const { getAIUsage }                                = useSubscriptionSync();
+  const { currentTier } = useSubscriptionLimits();
+  const { getAIUsage } = useSubscriptionSync();
 
-  const [selectedPlan, setSelectedPlan]         = useState<string>(currentTier);
+  const [selectedPlan, setSelectedPlan] = useState<string>(currentTier);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [loading, setLoading]                   = useState(false);
+  const [loading, setLoading] = useState(false);
   const [previewLoadingPlan, setPreviewLoadingPlan] = useState<string | null>(null);
-  const [error, setError]                       = useState<string | null>(null);
-  const [success, setSuccess]                   = useState<string | null>(null);
-  const [aiUsage, setAiUsage]                   = useState({ used: 0, limit: 0, month: "" });
-  const [paymentPlan, setPaymentPlan]           = useState<PaymentPlan | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [aiUsage, setAiUsage] = useState({ used: 0, limit: 0, month: "" });
+  const [paymentPlan, setPaymentPlan] = useState<PaymentPlan | null>(null);
 
   useEffect(() => {
     setSelectedPlan(currentTier);
@@ -239,12 +204,6 @@ export default function Subscription() {
       getAIUsage().then(setAiUsage).catch(console.error);
     }
   }, [currentTier, user]);
-
-  // ── handleUpgrade ─────────────────────────────────────────────────────────
-  // 1. GET /billing-preview  → learn exact charge + scenario
-  // 2. already_active        → show error
-  // 3. requires_payment      → open PaymentModal with prorated price
-  // Downgrade buttons are hidden — they never reach here
 
   const handleUpgrade = async (planId: string) => {
     setError(null);
@@ -293,11 +252,11 @@ export default function Subscription() {
       const plan = SUBSCRIPTION_PLANS.find((p) => p.id === planId);
       if (!plan) return;
       setPaymentPlan({
-        id:          plan.id,
-        name:        plan.name,
-        price:       preview.charge,       // prorated amount, not list price
+        id: plan.id,
+        name: plan.name,
+        price: preview.charge,       // prorated amount, not list price
         description: plan.description,
-        priceNote:   preview.explanation,  // shown in PriceCard
+        priceNote: preview.explanation,  // shown in PriceCard
       });
     }
   };
@@ -314,8 +273,6 @@ export default function Subscription() {
     }
     setPaymentPlan(null);
   };
-
-  // ── Auth guards ───────────────────────────────────────────────────────────
 
   if (authLoading) {
     return (
@@ -341,7 +298,7 @@ export default function Subscription() {
           </CardHeader>
           <CardContent>
             <Button onClick={() => (window.location.href = "/login")}
-                    className="w-full bg-sky-600 hover:bg-sky-700 text-white rounded-xl h-11 font-bold">
+              className="w-full bg-sky-600 hover:bg-sky-700 text-white rounded-xl h-11 font-bold">
               Go to Login
             </Button>
           </CardContent>
@@ -350,14 +307,10 @@ export default function Subscription() {
     );
   }
 
-  // ── Derived values ────────────────────────────────────────────────────────
-
-  const usagePct      = aiUsage.limit > 0 ? Math.min((aiUsage.used / aiUsage.limit) * 100, 100) : 0;
-  const limitReached  = aiUsage.limit > 0 && aiUsage.used >= aiUsage.limit;
-  const currentRank   = PLAN_ORDER.indexOf(currentTier);
+  const usagePct = aiUsage.limit > 0 ? Math.min((aiUsage.used / aiUsage.limit) * 100, 100) : 0;
+  const limitReached = aiUsage.limit > 0 && aiUsage.used >= aiUsage.limit;
+  const currentRank = PLAN_ORDER.indexOf(currentTier);
   const isUpgradeable = (planId: string) => PLAN_ORDER.indexOf(planId) > currentRank;
-
-  // ── Render ────────────────────────────────────────────────────────────────
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100
@@ -367,7 +320,7 @@ export default function Subscription() {
       {isMobileMenuOpen && (
         <>
           <div className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-               onClick={() => setIsMobileMenuOpen(false)} />
+            onClick={() => setIsMobileMenuOpen(false)} />
           <aside className="fixed inset-y-0 left-0 w-64 bg-white z-50 lg:hidden
                             shadow-2xl transform transition-transform">
             <div className="flex justify-end p-4">
@@ -395,7 +348,7 @@ export default function Subscription() {
                            z-20 mx-0 sm:mx-6">
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <button onClick={() => setIsMobileMenuOpen(true)}
-                    className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors">
+              className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors">
               <Menu className="h-5 w-5 text-sky-900" />
             </button>
             <div>
@@ -417,7 +370,7 @@ export default function Subscription() {
           {/* Alerts */}
           {error && (
             <Alert variant="destructive"
-                   className="mx-auto max-w-4xl rounded-2xl border-rose-200 bg-rose-50">
+              className="mx-auto max-w-4xl rounded-2xl border-rose-200 bg-rose-50">
               <AlertCircle className="h-4 w-4 text-rose-500" />
               <AlertDescription className="text-rose-700">{error}</AlertDescription>
             </Alert>
@@ -464,8 +417,8 @@ export default function Subscription() {
                       ${limitReached
                         ? "bg-gradient-to-r from-rose-400 to-rose-600"
                         : usagePct > 75
-                        ? "bg-gradient-to-r from-amber-400 to-orange-500"
-                        : "bg-gradient-to-r from-sky-500 to-blue-600"
+                          ? "bg-gradient-to-r from-amber-400 to-orange-500"
+                          : "bg-gradient-to-r from-sky-500 to-blue-600"
                       }`}
                     style={{ width: `${usagePct}%` }}
                   />
@@ -484,13 +437,13 @@ export default function Subscription() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {SUBSCRIPTION_PLANS.map((plan) => {
               const isCurrentPlan = plan.id === currentTier;
-              const canUpgrade    = isUpgradeable(plan.id);
+              const canUpgrade = isUpgradeable(plan.id);
               const isThisLoading = previewLoadingPlan === plan.id;
-              const styles        = PLAN_STYLES[plan.id] || PLAN_STYLES.free;
+              const styles = PLAN_STYLES[plan.id] || PLAN_STYLES.free;
 
               return (
                 <Card key={plan.id}
-                      className={`
+                  className={`
                         relative flex flex-col transition-all duration-300
                         hover:shadow-xl hover:-translate-y-0.5 shadow-md border rounded-3xl
                         ${styles.ring}
@@ -590,15 +543,15 @@ export default function Subscription() {
                     <div className="pt-2">
                       {plan.id === "enterprise" ? (
                         <Button variant="outline"
-                                className="w-full h-11 rounded-xl border-2 border-indigo-200
+                          className="w-full h-11 rounded-xl border-2 border-indigo-200
                                            text-indigo-700 hover:bg-indigo-50 font-bold text-sm"
-                                onClick={() => alert("Contact our sales team at sales@insydz.com")}>
+                          onClick={() => alert("Contact our sales team at sales@insydz.com")}>
                           Contact Sales
                         </Button>
 
                       ) : isCurrentPlan ? (
                         <Button disabled
-                                className="w-full h-11 rounded-xl bg-green-50 border-2
+                          className="w-full h-11 rounded-xl bg-green-50 border-2
                                            border-green-200 text-green-700 font-bold
                                            text-sm cursor-not-allowed opacity-100">
                           <Check className="h-4 w-4 mr-2" /> Current Plan
@@ -676,7 +629,7 @@ export default function Subscription() {
           plan={paymentPlan}
           userId={user.id}
           userEmail={user.email}
-          userName={user.first_name ? `${user.first_name} ${user.last_name ?? ""}`.trim() : ""}
+          userName={user.firstName ? `${user.firstName} ${user.lastName ?? ""}`.trim() : ""}
           onPaymentSuccess={handlePaymentSuccess}
         />
       )}

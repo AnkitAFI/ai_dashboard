@@ -658,7 +658,7 @@ export default function FlipkartKeywordResearchTool() {
       </nav>
 
       {/* BREADCRUMB — "Flipkart sellers" anchor → pillar hub per internal linking strategy */}
-      <div className="breadcrumb" style={{ marginTop: 64 }}>
+      <div className="breadcrumb" style={{ marginTop: 80 }}>
         <div className="breadcrumb-inner">
           <button onClick={() => setLocation("/")} style={{ color:"#64748B", fontWeight:500, background:"none", border:"none", cursor:"pointer", fontSize:"inherit" }}>Home</button>
           <span>›</span>
@@ -707,11 +707,11 @@ export default function FlipkartKeywordResearchTool() {
         <div className="takeaway-box">
           <h3>✅ Key Takeaways</h3>
           {[
-            "Flipkart's algorithm scores listings differently — attribute completeness and F-Assured status are unique Flipkart ranking factors that no Amazon tool accounts for.",
-            "Most Flipkart sellers optimise for Amazon keywords — Flipkart buyers use shorter queries and stronger price-bracket modifiers that require Flipkart-native search data.",
-            "Keyword tracking on Flipkart is invisible to global tools — Helium 10 and Jungle Scout have zero Flipkart rank data. Your Flipkart positions are completely dark without an India-first tool.",
-            "Flipkart's product discovery AI rewards attribute-rich listings over keyword-dense but attribute-incomplete listings — making Seller Hub attribute completion your fastest ranking lever.",
-            "India-first platforms like Insydz track Flipkart rank positions in real time with WhatsApp rank drop alerts — turning invisible rank loss into a 60-minute action window.",
+            "Flipkart's algorithm scores listings differently attribute completeness and F-Assured status are unique Flipkart ranking factors that no Amazon tool accounts for.",
+            "Most Flipkart sellers optimise for Amazon keywords Flipkart buyers use shorter queries and stronger price-bracket modifiers that require Flipkart-native search data.",
+            "Keyword tracking on Flipkart is invisible to global tools Helium 10 and Jungle Scout have zero Flipkart rank data. Your Flipkart positions are completely dark without an India-first tool.",
+            "Flipkart's product discovery AI rewards attribute-rich listings over keyword-dense but attribute-incomplete listings making Seller Hub attribute completion your fastest ranking lever.",
+            "India-first platforms like Insydz track Flipkart rank positions in real time with WhatsApp rank drop alerts turning invisible rank loss into a 60-minute action window.",
             "Combining Flipkart keyword research with competitor price tracking gives Indian sellers a complete AI-powered search visibility picture across both major Indian marketplaces.",
           ].map(t => (
             <div className="takeaway-item" key={t}>
@@ -736,7 +736,7 @@ export default function FlipkartKeywordResearchTool() {
             ))}
           </ul>
           <div style={{ background:"linear-gradient(160deg,#0A0F1A 0%,#0D1E3A 100%)", borderRadius:10, padding:18, marginTop:16 }}>
-            <h4 className="sidebar-cta-title">Rank on Flipkart Faster — Free</h4>
+            <h4 className="sidebar-cta-title">Rank on Flipkart Faster Free</h4>
             <p className="sidebar-cta-body">Real-time Flipkart rank tracking &amp; AI keyword fixes for Amazon.in &amp; Flipkart.</p>
             <ul style={{ listStyle:"none", padding:0, margin:"0 0 14px" }}>
               {["Real-time Flipkart rank tracking","WhatsApp rank-drop alerts within 60 min","AI listing optimisation recommendations","From \u20b91,999/mo \u2014 or free forever"].map(f => (
@@ -762,7 +762,7 @@ export default function FlipkartKeywordResearchTool() {
         {/* MAIN */}
         <main style={{ minWidth:0 }}>
           <button className="mobile-toc-btn" onClick={() => setTocOpen(!tocOpen)}>
-            📋 Table of Contents <span>{tocOpen ? "▲" : "▼"}</span>
+            Table of Contents <span>{tocOpen ? "▲" : "▼"}</span>
           </button>
           <div className={`mobile-toc-panel${tocOpen ? " open" : ""}`}>
             {TOC.map(t => (
@@ -774,17 +774,17 @@ export default function FlipkartKeywordResearchTool() {
 
             {/* In Simple Terms */}
             <div className="box box-indigo" style={{ margin:"0 0 28px" }}>
-              <div className="box-label">💡 In Simple Terms</div>
-              <p>Instead of guessing which keywords belong in your Flipkart product title and attributes, a <strong>Flipkart keyword research tool</strong> tells you precisely which terms Flipkart buyers are searching right now — including the high-converting price-bracket and product-discovery terms your competitors rank for that you've never added to your listing.</p>
+              <div className="box-label">In Simple Terms</div>
+              <p>Instead of guessing which keywords belong in your Flipkart product title and attributes, a <strong>Flipkart keyword research tool</strong> tells you precisely which terms Flipkart buyers are searching right now including the high-converting price-bracket and product-discovery terms your competitors rank for that you've never added to your listing.</p>
             </div>
 
             {/* ── S1: What Is ── */}
             <h2 id="what-is">What Is a Flipkart Keyword Research Tool?</h2>
             <p>
-              A <strong>Flipkart keyword research tool</strong> is software that identifies the exact search terms Indian buyers type into Flipkart's search bar before purchasing — and reveals which of those terms your competitors are already ranking for that your listing is currently missing.
+              A <strong>Flipkart keyword research tool</strong> is software that identifies the exact search terms Indian buyers type into Flipkart's search bar before purchasing and reveals which of those terms your competitors are already ranking for that your listing is currently missing.
             </p>
             <p>
-              Unlike Amazon keyword tools, Flipkart-specific research accounts for the platform's unique search algorithm, attribute-based product discovery system, and the behavioural differences of Flipkart's 400+ million registered user base — including shorter search queries, stronger price sensitivity, and a higher proportion of mobile-first searches. Any effective{" "}
+              Unlike Amazon keyword tools, Flipkart-specific research accounts for the platform's unique search algorithm, attribute-based product discovery system, and the behavioural differences of Flipkart's 400+ million registered user base including shorter search queries, stronger price sensitivity, and a higher proportion of mobile-first searches. Any effective{" "}
               {/* ANCHOR: "Flipkart SEO optimization" → /flipkart-seo-optimization (secondary KW, first body mention per strategy) */}
               <a href="/flipkart-seo-optimization" className="al" title="Flipkart SEO optimization guide for Indian sellers">Flipkart SEO optimization</a>{" "}
               strategy must start with platform-native keyword data.
@@ -797,12 +797,12 @@ export default function FlipkartKeywordResearchTool() {
             <h2 id="algorithm">How Flipkart's Search Algorithm Works</h2>
             <p>
               {/* ANCHOR: "Flipkart search algorithm" → /flipkart-search-algorithm-india (secondary KW, section intro per strategy) */}
-              Flipkart's <a href="/flipkart-search-algorithm-india" className="al" title="How Flipkart's search algorithm ranks products in India">Flipkart search algorithm</a> — the <strong>Flipkart Product Relevance Engine</strong> — ranks listings based on keyword relevance signals, seller performance metrics, and buyer behaviour data. Unlike Amazon's A10 which is heavily keyword-density focused, Flipkart's algorithm places significant weight on product attribute completeness.
+              Flipkart's <a href="/flipkart-search-algorithm-india" className="al" title="How Flipkart's search algorithm ranks products in India">Flipkart search algorithm</a> the <strong>Flipkart Product Relevance Engine</strong> ranks listings based on keyword relevance signals, seller performance metrics, and buyer behaviour data. Unlike Amazon's A10 which is heavily keyword-density focused, Flipkart's algorithm places significant weight on product attribute completeness.
             </p>
 
             <div className="box box-indigo">
-              <div className="box-label">🤖 AI Overview Summary</div>
-              <p>Flipkart's ranking algorithm rewards attribute completeness and buyer engagement signals over raw keyword stuffing. Sellers who complete all product attributes AND optimise their title for high-volume buyer search terms consistently outrank competitors who focus only on keywords — even when those competitors have better reviews and lower prices.</p>
+              <div className="box-label">AI Overview Summary</div>
+              <p>Flipkart's ranking algorithm rewards attribute completeness and buyer engagement signals over raw keyword stuffing. Sellers who complete all product attributes AND optimise their title for high-volume buyer search terms consistently outrank competitors who focus only on keywords even when those competitors have better reviews and lower prices.</p>
             </div>
 
             <h3>Algorithm Factor Reference Table</h3>
@@ -832,7 +832,7 @@ export default function FlipkartKeywordResearchTool() {
             {/* ── S3: Why SEO ── */}
             <h2 id="why-seo">Why Flipkart SEO Optimization Is Critical for Indian Sellers</h2>
             <p>
-              Flipkart commands <strong>28–32% of India's e-commerce GMV</strong> — representing hundreds of crores in daily transaction volume. For most Indian D2C brands and marketplace sellers, Flipkart is either their primary revenue source or their second-largest channel. Yet the vast majority of Flipkart sellers are running their SEO strategy on guesswork.
+              Flipkart commands <strong>28–32% of India's e-commerce GMV</strong> representing hundreds of crores in daily transaction volume. For most Indian D2C brands and marketplace sellers, Flipkart is either their primary revenue source or their second-largest channel. Yet the vast majority of Flipkart sellers are running their SEO strategy on guesswork.
             </p>
 
             <h3>The Search Visibility Gap Compounds Silently</h3>
@@ -840,18 +840,18 @@ export default function FlipkartKeywordResearchTool() {
               Flipkart search rank positions are not visible to sellers without a dedicated{" "}
               {/* ANCHOR: "Flipkart rank tracking" → /flipkart-rank-tracking (secondary KW, Key Insight callout per strategy) */}
               <a href="/flipkart-rank-tracking" className="al" title="Real-time Flipkart rank tracking tool for Indian sellers">Flipkart rank tracking</a>{" "}
-              tool. Unlike Amazon Seller Central which shows basic keyword performance, Flipkart Seller Hub provides almost no organic keyword rank data. This means most Flipkart sellers have no idea which position they hold for their critical search terms — or when a competitor takes that position away from them.
+              tool. Unlike Amazon Seller Central which shows basic keyword performance, Flipkart Seller Hub provides almost no organic keyword rank data. This means most Flipkart sellers have no idea which position they hold for their critical search terms or when a competitor takes that position away from them.
             </p>
 
             <div className="box box-amber">
-              <div className="box-label">🏪 Real Seller: Jaipur Home Décor Brand</div>
-              <p>A Jaipur-based home décor brand was generating ₹3.8 lakh/month on Flipkart. Over 10 weeks, a competitor entered with a fully completed attribute listing and a title optimised for 'cotton cushion cover 16x16 set of 5' — the phrase driving 38% of the category's search volume. The Jaipur seller's organic traffic dropped 44% without a single price change. A Flipkart rank tracking tool would have alerted them after week 2.</p>
+              <div className="box-label">Real Seller: Jaipur Home Décor Brand</div>
+              <p>A Jaipur-based home décor brand was generating ₹3.8 lakh/month on Flipkart. Over 10 weeks, a competitor entered with a fully completed attribute listing and a title optimised for 'cotton cushion cover 16x16 set of 5' the phrase driving 38% of the category's search volume. The Jaipur seller's organic traffic dropped 44% without a single price change. A Flipkart rank tracking tool would have alerted them after week 2.</p>
             </div>
 
             <div className="box box-blue">
-              <div className="box-label">🔑 Key Insight</div>
+              <div className="box-label">Key Insight</div>
               <p>
-                Flipkart's search visibility is binary, not gradual. You're either in the Top 10 results — capturing 65% of clicks — or you're functionally invisible. A single rank change from P7 to P11 can reduce organic traffic by 40% overnight. This is why{" "}
+                Flipkart's search visibility is binary, not gradual. You're either in the Top 10 results capturing 65% of clicks or you're functionally invisible. A single rank change from P7 to P11 can reduce organic traffic by 40% overnight. This is why{" "}
                 {/* ANCHOR: second placement "Flipkart rank tracking" → /flipkart-rank-tracking (callout box = high-attention zone per strategy) */}
                 <a href="/flipkart-rank-tracking" className="al" title="Flipkart keyword rank tracking in real time">Flipkart rank tracking</a>{" "}
                 needs to run in real time, not weekly manual checks.
@@ -860,7 +860,7 @@ export default function FlipkartKeywordResearchTool() {
 
             <h3>Flipkart's Big Billion Days Algorithm Punishes Unprepared Listings</h3>
             <p>
-              During Big Billion Days, Flipkart's algorithm pre-ranks category pages 3–4 weeks before the event goes live. <strong>Listings not optimised for festive-intent keywords before October 1st are algorithmically suppressed during the event itself</strong> — the window to fix this closes before the revenue window opens.
+              During Big Billion Days, Flipkart's algorithm pre-ranks category pages 3–4 weeks before the event goes live. <strong>Listings not optimised for festive-intent keywords before October 1st are algorithmically suppressed during the event itself</strong> the window to fix this closes before the revenue window opens.
             </p>
 
             {/* ── S4: How It Works ── */}
@@ -874,9 +874,9 @@ export default function FlipkartKeywordResearchTool() {
 
             <div className="steps">
               {[
-                { n:1, t:"Connect Your Flipkart Seller Account",             d:"Link your Flipkart Seller Hub and add the FSNs you want to track. The tool begins pulling your current keyword rank positions across all tracked queries — no manual setup required." },
-                { n:2, t:"Competitor Keyword Discovery",                      d:"The AI identifies your top 5–10 Flipkart competitors by category and crawls every search term they rank for — including long-tail, price-bracket, and regional language variants. This forms the basis of your keyword gap report." },
-                { n:3, t:"Flipkart-Specific Search Volume & Intent Scoring",  d:"Each keyword is scored by Flipkart-native search volume — not Amazon.com data — weighted by competition density and buyer intent signal. Price-bracket modifiers are automatically flagged as high-priority product discovery terms." },
+                { n:1, t:"Connect Your Flipkart Seller Account",             d:"Link your Flipkart Seller Hub and add the FSNs you want to track. The tool begins pulling your current keyword rank positions across all tracked queries no manual setup required." },
+                { n:2, t:"Competitor Keyword Discovery",                      d:"The AI identifies your top 5–10 Flipkart competitors by category and crawls every search term they rank for including long-tail, price-bracket, and regional language variants. This forms the basis of your keyword gap report." },
+                { n:3, t:"Flipkart-Specific Search Volume & Intent Scoring",  d:"Each keyword is scored by Flipkart-native search volume not Amazon.com data weighted by competition density and buyer intent signal. Price-bracket modifiers are automatically flagged as high-priority product discovery terms." },
                 { n:4, t:"Real-Time Rank Tracking & WhatsApp Alert",          d:"You receive a WhatsApp alert the moment your Flipkart rank drops more than 3 positions on a tracked keyword, or when a competitor enters a keyword cluster you're currently winning." },
                 { n:5, t:"AI Listing & Attribute Optimisation Recommendation", d:"The platform delivers a concrete fix: 'Add cotton cushion cover 16x16 set of 5 to your Flipkart product title. Complete 4 missing product attributes in Seller Hub. Estimated rank improvement: P22 \u2192 P5. Monthly traffic gain: +620 clicks.'" },
               ].map(s => (
@@ -930,28 +930,28 @@ export default function FlipkartKeywordResearchTool() {
 
             <h3>1. Product Title Optimisation</h3>
             <p>
-              Flipkart titles have a 200-character limit — and the algorithm weights the first 60 characters most heavily. <strong>Your highest-volume primary keyword must appear in the first 5 words.</strong> Titles that front-load the category keyword, followed by the key attribute, followed by brand name consistently outperform brand-first title structures.
+              Flipkart titles have a 200-character limit and the algorithm weights the first 60 characters most heavily. <strong>Your highest-volume primary keyword must appear in the first 5 words.</strong> Titles that front-load the category keyword, followed by the key attribute, followed by brand name consistently outperform brand-first title structures.
             </p>
 
             <h3>2. Product Attribute Completeness</h3>
             <p>
-              This is the most underutilised ranking factor on Flipkart. Seller Hub provides 15–40 attribute fields per category — most sellers complete fewer than 40% of them. <strong>Every completed attribute is a potential keyword match surface</strong> for Flipkart's product discovery AI, even without that keyword appearing in your title.
+              This is the most underutilised ranking factor on Flipkart. Seller Hub provides 15–40 attribute fields per category most sellers complete fewer than 40% of them. <strong>Every completed attribute is a potential keyword match surface</strong> for Flipkart's product discovery AI, even without that keyword appearing in your title.
             </p>
 
             <div className="box box-teal">
-              <div className="box-label">💡 Quick Win</div>
+              <div className="box-label">Quick Win</div>
               <p>Open your Flipkart Seller Hub listing and count your unfilled attributes. For most Indian sellers, there are 8–15 incomplete attribute fields per FSN. Each one you complete potentially increases the number of search queries for which your product is eligible to appear.</p>
             </div>
 
             <h3>3. Seller Performance Score &amp; F-Assured Status</h3>
             <p>
-              Maintaining a fulfilment rate above 95%, return rate below 5%, and response time under 24 hours provides a baseline ranking boost. <strong>F-Assured status provides the single largest algorithmic ranking boost available on Flipkart</strong> — listings with F-Assured consistently rank 4–8 positions higher than equivalent non-F-Assured listings for the same keywords.
+              Maintaining a fulfilment rate above 95%, return rate below 5%, and response time under 24 hours provides a baseline ranking boost. <strong>F-Assured status provides the single largest algorithmic ranking boost available on Flipkart</strong> listings with F-Assured consistently rank 4–8 positions higher than equivalent non-F-Assured listings for the same keywords.
             </p>
 
             <div className="verdict-banner">
               <div style={{ fontSize:"clamp(18px,4vw,22px)", flexShrink:0 }}>🎯</div>
               <p style={{ margin:0, fontFamily:"'Lora',serif", fontSize:"clamp(13px,2vw,15px)", color:"#1E40AF", lineHeight:1.7 }} className="dark:text-blue-300">
-                Flipkart search visibility is the multiplier that determines whether your product quality and pricing actually get seen by buyers — or get redirected to a better-optimised competitor listing before they ever reach yours.
+                Flipkart search visibility is the multiplier that determines whether your product quality and pricing actually get seen by buyers or get redirected to a better-optimised competitor listing before they ever reach yours.
               </p>
             </div>
 
@@ -962,14 +962,14 @@ export default function FlipkartKeywordResearchTool() {
                 <div className="mistake-n">1</div>
                 <div className="mistake-body">
                   <strong>Using Amazon Keyword Data for Flipkart Listings</strong>
-                  <p>Amazon.in and Flipkart buyers have different search patterns. Flipkart queries are 2–4 words shorter, more price-bracket focused, and include Flipkart-specific modifiers. Optimising your Flipkart listing with Amazon keyword data means targeting the wrong search intent on the wrong platform — while the right Flipkart buyer terms go uncaptured.</p>
+                  <p>Amazon.in and Flipkart buyers have different search patterns. Flipkart queries are 2–4 words shorter, more price-bracket focused, and include Flipkart-specific modifiers. Optimising your Flipkart listing with Amazon keyword data means targeting the wrong search intent on the wrong platform while the right Flipkart buyer terms go uncaptured.</p>
                 </div>
               </div>
               <div className="mistake">
                 <div className="mistake-n">2</div>
                 <div className="mistake-body">
                   <strong>Ignoring Product Attribute Completeness</strong>
-                  <p>Flipkart's product discovery AI matches buyer queries to attribute fields — not just title keywords. A seller with a perfectly optimised title but 60% empty attribute fields is invisible to Flipkart's conversational search. Most Indian Flipkart sellers have never looked at their attribute completion rate.</p>
+                  <p>Flipkart's product discovery AI matches buyer queries to attribute fields not just title keywords. A seller with a perfectly optimised title but 60% empty attribute fields is invisible to Flipkart's conversational search. Most Indian Flipkart sellers have never looked at their attribute completion rate.</p>
                 </div>
               </div>
               <div className="mistake">
@@ -977,10 +977,10 @@ export default function FlipkartKeywordResearchTool() {
                 <div className="mistake-body">
                   <strong>Not Tracking Flipkart Rank Separately from Amazon</strong>
                   <p>
-                    Sellers who track only Amazon keyword ranks have no visibility into their Flipkart search performance. A keyword can drop from P4 to P18 on Flipkart while holding P3 on Amazon — and you'd never know until Flipkart orders decline. No global tool provides{" "}
+                    Sellers who track only Amazon keyword ranks have no visibility into their Flipkart search performance. A keyword can drop from P4 to P18 on Flipkart while holding P3 on Amazon and you'd never know until Flipkart orders decline. No global tool provides{" "}
                     {/* ANCHOR: "Flipkart rank tracking" → /flipkart-rank-tracking (Mistakes #3 second body placement per strategy) */}
                     <a href="/flipkart-rank-tracking" className="al" title="Flipkart keyword rank tracking — India-first tool">Flipkart rank tracking</a>
-                    {" "}— only India-first tools do.
+                    {" "} only India-first tools do.
                   </p>
                 </div>
               </div>
@@ -988,7 +988,7 @@ export default function FlipkartKeywordResearchTool() {
                 <div className="mistake-n">4</div>
                 <div className="mistake-body">
                   <strong>Missing the Pre-Festive Keyword Optimisation Window</strong>
-                  <p>Flipkart's Big Billion Days algorithm pre-ranks category pages 3–4 weeks before the event. Listing optimisation changes made during BBD week are too late — they take 14–21 days to influence rank. Sellers who update keywords and attributes in early September consistently outperform late optimisers.</p>
+                  <p>Flipkart's Big Billion Days algorithm pre-ranks category pages 3–4 weeks before the event. Listing optimisation changes made during BBD week are too late they take 14–21 days to influence rank. Sellers who update keywords and attributes in early September consistently outperform late optimisers.</p>
                 </div>
               </div>
               <div className="mistake">
@@ -1003,7 +1003,7 @@ export default function FlipkartKeywordResearchTool() {
             {/* Mid CTA */}
             <div className="mid-cta">
               <div>
-                <h3>Start Tracking Flipkart Keyword Ranks — Free</h3>
+                <h3>Start Tracking Flipkart Keyword Ranks Free</h3>
                 <p>Real-time Flipkart rank tracking, WhatsApp alerts, and AI listing fixes. Setup in under 30 minutes.</p>
               </div>
               <button onClick={() => setLocation("/login")} style={{ flexShrink:0, background:"#2874F0", color:"white", padding:"11px 22px", borderRadius:8, fontWeight:700, fontSize:"clamp(13px,2vw,14.5px)", whiteSpace:"nowrap" as const, cursor:"pointer", border:"none", fontFamily:"'Sora',sans-serif", width:"100%" }} className="sm:w-auto">Try Insydz Free →</button>
@@ -1012,12 +1012,12 @@ export default function FlipkartKeywordResearchTool() {
             {/* ── S8: Workflow ── */}
             <h2 id="workflow">Best Practices: Weekly Flipkart SEO Execution Model</h2>
             <p>
-              The most successful Flipkart sellers don't do keyword research in one-time sprints — they run a structured weekly rhythm that keeps their listings consistently competitive without manual effort.
+              The most successful Flipkart sellers don't do keyword research in one-time sprints they run a structured weekly rhythm that keeps their listings consistently competitive without manual effort.
             </p>
 
             <div className="weekly-grid">
               <div className="weekly-col">
-                <div className="weekly-col-head wh-daily">DAILY — AUTOMATED</div>
+                <div className="weekly-col-head wh-daily">DAILY AUTOMATED</div>
                 <div className="weekly-col-body">
                   <ul>
                     <li>Morning WhatsApp: top 5 Flipkart rank changes</li>
@@ -1028,7 +1028,7 @@ export default function FlipkartKeywordResearchTool() {
                 </div>
               </div>
               <div className="weekly-col">
-                <div className="weekly-col-head wh-weekly">WEEKLY — 30 MIN REVIEW</div>
+                <div className="weekly-col-head wh-weekly">WEEKLY 30 MIN REVIEW</div>
                 <div className="weekly-col-body">
                   <ul>
                     <li>Full keyword gap report — top 10 Flipkart gaps</li>
@@ -1040,7 +1040,7 @@ export default function FlipkartKeywordResearchTool() {
                 </div>
               </div>
               <div className="weekly-col">
-                <div className="weekly-col-head wh-monthly">MONTHLY — STRATEGIC</div>
+                <div className="weekly-col-head wh-monthly">MONTHLY STRATEGIC</div>
                 <div className="weekly-col-body">
                   <ul>
                     <li>BBD/GIF keyword coverage audit</li>
@@ -1055,10 +1055,10 @@ export default function FlipkartKeywordResearchTool() {
             {/* ── S9: Best Tools ── */}
             <h2 id="best-tools">Best Flipkart Keyword Research Tools in India (2026)</h2>
             <p>
-              Not all keyword research tools cover Flipkart — in fact, <strong>most don't cover it at all.</strong> For Indian sellers whose revenue depends on Flipkart, here's an honest comparison. Global tools like Helium 10 and Jungle Scout — reviewed in our{" "}
+              Not all keyword research tools cover Flipkart in fact, <strong>most don't cover it at all.</strong> For Indian sellers whose revenue depends on Flipkart, here's an honest comparison. Global tools like Helium 10 and Jungle Scout reviewed in our{" "}
               {/* ANCHOR: "Insydz vs Helium 10 comparison" → /compare/insydzvshelium (natural editorial, Related Guides cluster) */}
               <a href="/compare/insydzvshelium" className="al" title="Insydz vs Helium 10 for Indian sellers — full comparison">Insydz vs Helium 10 comparison</a>{" "}
-              — have zero Flipkart rank data.
+               have zero Flipkart rank data.
             </p>
 
             <div className="tbl-wrap">
@@ -1091,21 +1091,20 @@ export default function FlipkartKeywordResearchTool() {
             </div>
 
             <div className="box box-green">
-              <div className="box-label">✅ No Aggressive Pitch Here</div>
-              <p>If you're a Flipkart seller and you're not doing structured keyword research with a tool that actually has Flipkart data, you're optimising based on guesswork and Amazon assumptions. The question isn't whether you need a Flipkart-specific tool — it's which one fits your seller stage and budget. For most Indian SMB Flipkart sellers, that answer is clearly an India-first platform.</p>
+              <div className="box-label">No Aggressive Pitch Here</div>
+              <p>If you're a Flipkart seller and you're not doing structured keyword research with a tool that actually has Flipkart data, you're optimising based on guesswork and Amazon assumptions. The question isn't whether you need a Flipkart-specific tool it's which one fits your seller stage and budget. For most Indian SMB Flipkart sellers, that answer is clearly an India-first platform.</p>
             </div>
 
             <h3>Why India-First Platforms Win for Flipkart Sellers</h3>
             <div style={{ display:"flex", flexDirection:"column" as const, gap:8, margin:"14px 0 24px" }}>
               {[
-                { icon:"📊", t:"Real-time Flipkart Rank Tracking",          b:"Daily rank position data for every tracked keyword on Flipkart — with alerts the moment you drop more than 3 positions on a buy-intent term." },
-                { icon:"🔍", t:"AI Keyword Gap Detection",                   b:"Automatically surfaces the Flipkart search terms your top competitors rank for that your listing is currently missing — ranked by traffic and conversion impact." },
-                { icon:"📲", t:"WhatsApp Rank Drop Alerts",                  b:"Rank changes delivered via WhatsApp within 60 minutes — not buried in email dashboards sellers open three days later." },
-                { icon:"✍️", t:"AI Listing Optimisation Recommendations",    b:"Specific title and attribute fixes with estimated rank recovery: 'Add this keyword to position 4 of your title. Complete 3 missing attributes. Estimated improvement: P18 \u2192 P5.'" },
-                { icon:"🎉", t:"Festive Keyword Intelligence (BBD, GIF)",    b:"Pre-festive keyword tracking that flags the terms driving the highest search volume 6–8 weeks before Big Billion Days — so you're already ranked when the event opens." },
+                {t:"Real-time Flipkart Rank Tracking",          b:"Daily rank position data for every tracked keyword on Flipkart with alerts the moment you drop more than 3 positions on a buy-intent term." },
+                {t:"AI Keyword Gap Detection",                   b:"Automatically surfaces the Flipkart search terms your top competitors rank for that your listing is currently missing ranked by traffic and conversion impact." },
+                {t:"WhatsApp Rank Drop Alerts",                  b:"Rank changes delivered via WhatsApp within 60 minutes not buried in email dashboards sellers open three days later." },
+                {t:"AI Listing Optimisation Recommendations",    b:"Specific title and attribute fixes with estimated rank recovery: 'Add this keyword to position 4 of your title. Complete 3 missing attributes. Estimated improvement: P18 \u2192 P5.'" },
+                {t:"Festive Keyword Intelligence (BBD, GIF)",    b:"Pre-festive keyword tracking that flags the terms driving the highest search volume 6–8 weeks before Big Billion Days so you're already ranked when the event opens." },
               ].map(f => (
                 <div key={f.t} style={{ background:"#EFF6FF", border:"1px solid #BFDBFE", borderRadius:10, padding:"12px 14px", display:"flex", gap:10 }}>
-                  <span style={{ fontSize:"clamp(16px,3vw,20px)", flexShrink:0, marginTop:2 }}>{f.icon}</span>
                   <div>
                     <strong style={{ display:"block", fontSize:"clamp(12px,2vw,14px)", color:"#0A0F1A", marginBottom:2, fontFamily:"'Sora',sans-serif" }}>{f.t}</strong>
                     <p style={{ margin:0, fontSize:"clamp(11.5px,2vw,13.5px)", color:"#374151", lineHeight:1.6, fontFamily:"'Sora',sans-serif" }}>{f.b}</p>
@@ -1116,7 +1115,7 @@ export default function FlipkartKeywordResearchTool() {
 
             <div className="box box-orange">
               <div className="box-label">📌 Final Thought</div>
-              <p>Winning on Flipkart in 2026 isn't about having the best product or the lowest price — it's about being found first. <strong>Every week without Flipkart keyword research is a week of search visibility being silently captured by a competitor who understands the algorithm better than you do.</strong></p>
+              <p>Winning on Flipkart in 2026 isn't about having the best product or the lowest price it's about being found first. <strong>Every week without Flipkart keyword research is a week of search visibility being silently captured by a competitor who understands the algorithm better than you do.</strong></p>
             </div>
 
             {/* ── S10: FAQ ── */}
@@ -1171,7 +1170,7 @@ export default function FlipkartKeywordResearchTool() {
       <div className="fc-block">
         <div className="fc-inner">
           <h2>Every Week Without Flipkart Keyword Research Is a Week of Revenue Going to a Better-Optimised Competitor</h2>
-          <p>Insydz tracks your Flipkart rank positions in real time, alerts you via WhatsApp the moment you drop, and tells you exactly what to fix — in your title, attributes, and listing copy.</p>
+          <p>Insydz tracks your Flipkart rank positions in real time, alerts you via WhatsApp the moment you drop, and tells you exactly what to fix in your title, attributes, and listing copy.</p>
           <div className="fc-points">
             <div className="fc-pt">Forever free plan</div>
             <div className="fc-pt">No credit card</div>
@@ -1179,7 +1178,7 @@ export default function FlipkartKeywordResearchTool() {
             <div className="fc-pt">WhatsApp alerts in 60 min</div>
           </div>
           <button className="fc-btn" onClick={() => setLocation("/login")}>
-            → Start Free at insydz.com — See Your Flipkart Rank Dashboard in Minutes
+            → Start Free at insydz.com See Your Flipkart Rank Dashboard in Minutes
           </button>
           <p className="fc-sub">Forever free plan · No credit card · Real-time Flipkart rank tracking</p>
         </div>

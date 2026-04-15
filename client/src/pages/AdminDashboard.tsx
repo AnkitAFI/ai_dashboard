@@ -7,8 +7,8 @@ import {
   Wallet, IndianRupee,
 } from "lucide-react";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "https://api.insydz.com";
-const ADMIN_EMAIL  = import.meta.env.VITE_ADMIN_EMAIL || "syatharthdelhi@gmail.com";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || "syatharthdelhi@gmail.com";
 const TIER_PRICE: Record<string, number> = { free: 0, basic: 1999, premium: 2999 };
 
 const inr = (n: number) => "₹" + n.toLocaleString("en-IN");
@@ -27,13 +27,13 @@ interface UserRow {
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
-  const { user }        = useAuth();
-  const [stats,      setStats]      = useState<Stats | null>(null);
-  const [users,      setUsers]      = useState<UserRow[]>([]);
-  const [isLoading,  setIsLoading]  = useState(true);
-  const [search,     setSearch]     = useState("");
+  const { user } = useAuth();
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [users, setUsers] = useState<UserRow[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [search, setSearch] = useState("");
   const [filterTier, setFilterTier] = useState("all");
-  const [lastUpd,    setLastUpd]    = useState(new Date());
+  const [lastUpd, setLastUpd] = useState(new Date());
 
   useEffect(() => {
     if (!user) return;
@@ -44,22 +44,22 @@ export default function AdminDashboard() {
   const fetchStats = async () => {
     setIsLoading(true);
     try {
-      const res  = await fetch(`${API_BASE_URL}/api/admin/stats`, { credentials: "include" });
+      const res = await fetch(`${API_BASE_URL}/api/admin/stats`, { credentials: "include" });
       if (!res.ok) { setLocation("/dashboard"); return; }
       const data = await res.json();
       setStats(data.stats); setUsers(data.users); setLastUpd(new Date());
     } catch { setLocation("/dashboard"); }
-    finally  { setIsLoading(false); }
+    finally { setIsLoading(false); }
   };
 
-  const basicCount   = stats?.by_tier?.basic   ?? 0;
+  const basicCount = stats?.by_tier?.basic ?? 0;
   const premiumCount = stats?.by_tier?.premium ?? 0;
-  const freeCount    = stats?.by_tier?.free    ?? 0;
-  const tierTotal    = freeCount + basicCount + premiumCount;
-  const basicMRR     = basicCount   * TIER_PRICE.basic;
-  const premiumMRR   = premiumCount * TIER_PRICE.premium;
-  const totalMRR     = basicMRR + premiumMRR;
-  const paidUsers    = basicCount + premiumCount;
+  const freeCount = stats?.by_tier?.free ?? 0;
+  const tierTotal = freeCount + basicCount + premiumCount;
+  const basicMRR = basicCount * TIER_PRICE.basic;
+  const premiumMRR = premiumCount * TIER_PRICE.premium;
+  const totalMRR = basicMRR + premiumMRR;
+  const paidUsers = basicCount + premiumCount;
 
   const filtered = users.filter(u => {
     const q = search.toLowerCase();
@@ -72,162 +72,182 @@ export default function AdminDashboard() {
 
   // ── Loading ──────────────────────────────────────────────────────────────
   if (isLoading) return (
-    <div style={{ display:"flex", flexDirection:"column", alignItems:"center",
-      justifyContent:"center", minHeight:"100vh",
-      background:"#f8fafc", fontFamily:"Inter, sans-serif" }}>
-      <div style={{ width:38, height:38, borderRadius:"50%",
-        border:"3px solid #e2e8f0", borderTop:"3px solid #6366f1",
-        animation:"spin 0.8s linear infinite" }}/>
-      <p style={{ marginTop:14, color:"#94a3b8", fontSize:13,
-        letterSpacing:"0.06em" }}>Loading…</p>
+    <div style={{
+      display: "flex", flexDirection: "column", alignItems: "center",
+      justifyContent: "center", minHeight: "100vh",
+      background: "#f8fafc", fontFamily: "Inter, sans-serif"
+    }}>
+      <div style={{
+        width: 38, height: 38, borderRadius: "50%",
+        border: "3px solid #e2e8f0", borderTop: "3px solid #6366f1",
+        animation: "spin 0.8s linear infinite"
+      }} />
+      <p style={{
+        marginTop: 14, color: "#94a3b8", fontSize: 13,
+        letterSpacing: "0.06em"
+      }}>Loading…</p>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   );
 
   return (
-    <div style={{ minHeight:"100vh", background:"#f8fafc",
-      fontFamily:"Inter, -apple-system, sans-serif", color:"#1e293b" }}>
+    <div style={{
+      minHeight: "100vh", background: "#f8fafc",
+      fontFamily: "Inter, -apple-system, sans-serif", color: "#1e293b"
+    }}>
       <style>{CSS}</style>
 
       {/* ── HEADER ──────────────────────────────────────────────────────── */}
       <header style={{
-        background:"white", borderBottom:"1px solid #f1f5f9",
-        padding:"0 32px", height:60,
-        display:"flex", alignItems:"center", justifyContent:"space-between",
-        position:"sticky", top:0, zIndex:50,
-        boxShadow:"0 1px 8px rgba(0,0,0,0.06)",
+        background: "white", borderBottom: "1px solid #f1f5f9",
+        padding: "0 32px", height: 60,
+        display: "flex", alignItems: "center", justifyContent: "space-between",
+        position: "sticky", top: 0, zIndex: 50,
+        boxShadow: "0 1px 8px rgba(0,0,0,0.06)",
       }}>
         {/* Logo */}
-        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{
-            width:32, height:32, borderRadius:8,
-            background:"linear-gradient(135deg,#6366f1,#8b5cf6)",
-            display:"flex", alignItems:"center", justifyContent:"center",
+            width: 32, height: 32, borderRadius: 8,
+            background: "linear-gradient(135deg,#6366f1,#8b5cf6)",
+            display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <Crown size={15} color="white"/>
+            <Crown size={15} color="white" />
           </div>
           <div>
-            <p style={{ margin:0, fontSize:14, fontWeight:700, color:"#1e293b" }}>
+            <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "#1e293b" }}>
               Insydz
             </p>
-            <p style={{ margin:0, fontSize:9, color:"#94a3b8",
-              letterSpacing:"0.14em", textTransform:"uppercase" }}>
+            <p style={{
+              margin: 0, fontSize: 9, color: "#94a3b8",
+              letterSpacing: "0.14em", textTransform: "uppercase"
+            }}>
               Admin Panel
             </p>
           </div>
         </div>
 
         {/* Right */}
-        <div style={{ display:"flex", alignItems:"center", gap:14 }}>
-          <span style={{ fontSize:11, color:"#94a3b8" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <span style={{ fontSize: 11, color: "#94a3b8" }}>
             Updated {lastUpd.toLocaleTimeString("en-IN",
-              { hour:"2-digit", minute:"2-digit" })}
+              { hour: "2-digit", minute: "2-digit" })}
           </span>
           <button onClick={fetchStats} className="hdr-btn">
-            <RefreshCw size={13}/> Refresh
+            <RefreshCw size={13} /> Refresh
           </button>
-          <div style={{ display:"flex", alignItems:"center", gap:8,
-            padding:"5px 12px", background:"#f8fafc",
-            border:"1px solid #e2e8f0", borderRadius:8 }}>
-            <div style={{ width:7, height:7, borderRadius:"50%",
-              background:"#10b981" }}/>
-            <span style={{ fontSize:12, color:"#64748b" }}>{user?.email}</span>
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8,
+            padding: "5px 12px", background: "#f8fafc",
+            border: "1px solid #e2e8f0", borderRadius: 8
+          }}>
+            <div style={{
+              width: 7, height: 7, borderRadius: "50%",
+              background: "#10b981"
+            }} />
+            <span style={{ fontSize: 12, color: "#64748b" }}>{user?.email}</span>
           </div>
         </div>
       </header>
 
       {/* ── BODY ────────────────────────────────────────────────────────── */}
-      <main style={{ padding:"28px 32px 80px", maxWidth:1500, margin:"0 auto" }}>
+      <main style={{ padding: "28px 32px 80px", maxWidth: 1500, margin: "0 auto" }}>
 
         {/* Page title */}
-        <div className="fade-in" style={{ marginBottom:28 }}>
-          <h1 style={{ margin:0, fontSize:22, fontWeight:700, color:"#1e293b" }}>
+        <div className="fade-in" style={{ marginBottom: 28 }}>
+          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#1e293b" }}>
             Overview
           </h1>
-          <p style={{ margin:"4px 0 0", fontSize:13, color:"#94a3b8" }}>
+          <p style={{ margin: "4px 0 0", fontSize: 13, color: "#94a3b8" }}>
             Welcome back — here's what's happening today.
           </p>
         </div>
 
         {/* ── KPI CARDS ───────────────────────────────────────────────── */}
-        <div className="kpi-grid fade-in" style={{ animationDelay:"0.04s" }}>
+        <div className="kpi-grid fade-in" style={{ animationDelay: "0.04s" }}>
           {([
             {
-              label:"Total Users", value: stats?.total_users ?? 0,
-              sub:`+${stats?.recent_signups_7days ?? 0} this week`,
-              up:true, isRupee:false,
-              icon:<Users size={20}/>,
-              grad:"linear-gradient(135deg,#6366f1,#8b5cf6)",
-              glow:"#6366f133",
+              label: "Total Users", value: stats?.total_users ?? 0,
+              sub: `+${stats?.recent_signups_7days ?? 0} this week`,
+              up: true, isRupee: false,
+              icon: <Users size={20} />,
+              grad: "linear-gradient(135deg,#6366f1,#8b5cf6)",
+              glow: "#6366f133",
             },
             {
-              label:"New (7 Days)", value: stats?.recent_signups_7days ?? 0,
-              sub:"recent signups", up:true, isRupee:false,
-              icon:<TrendingUp size={20}/>,
-              grad:"linear-gradient(135deg,#06b6d4,#0284c7)",
-              glow:"#06b6d433",
+              label: "New (7 Days)", value: stats?.recent_signups_7days ?? 0,
+              sub: "recent signups", up: true, isRupee: false,
+              icon: <TrendingUp size={20} />,
+              grad: "linear-gradient(135deg,#06b6d4,#0284c7)",
+              glow: "#06b6d433",
             },
             {
-              label:"Verified", value: stats?.verified_users ?? 0,
-              sub:`${pct(stats?.verified_users??0, stats?.total_users??0)}% of total`,
-              up:true, isRupee:false,
-              icon:<ShieldCheck size={20}/>,
-              grad:"linear-gradient(135deg,#10b981,#059669)",
-              glow:"#10b98133",
+              label: "Verified", value: stats?.verified_users ?? 0,
+              sub: `${pct(stats?.verified_users ?? 0, stats?.total_users ?? 0)}% of total`,
+              up: true, isRupee: false,
+              icon: <ShieldCheck size={20} />,
+              grad: "linear-gradient(135deg,#10b981,#059669)",
+              glow: "#10b98133",
             },
             {
-              label:"Unverified", value: stats?.unverified_users ?? 0,
-              sub:"pending verification", up:false, isRupee:false,
-              icon:<ShieldOff size={20}/>,
-              grad:"linear-gradient(135deg,#f59e0b,#ef4444)",
-              glow:"#f59e0b33",
+              label: "Unverified", value: stats?.unverified_users ?? 0,
+              sub: "pending verification", up: false, isRupee: false,
+              icon: <ShieldOff size={20} />,
+              grad: "linear-gradient(135deg,#f59e0b,#ef4444)",
+              glow: "#f59e0b33",
             },
             {
-              label:"Monthly Revenue", value: totalMRR,
-              sub:`${paidUsers} paid users`, up:true, isRupee:true,
-              icon:<IndianRupee size={20}/>,
-              grad:"linear-gradient(135deg,#10b981,#059669)",
-              glow:"#10b98133",
+              label: "Monthly Revenue", value: totalMRR,
+              sub: `${paidUsers} paid users`, up: true, isRupee: true,
+              icon: <IndianRupee size={20} />,
+              grad: "linear-gradient(135deg,#10b981,#059669)",
+              glow: "#10b98133",
             },
             {
-              label:"Paid Users", value: paidUsers,
-              sub:`${pct(paidUsers, tierTotal)}% conversion`,
-              up:true, isRupee:false,
-              icon:<Wallet size={20}/>,
-              grad:"linear-gradient(135deg,#f59e0b,#f97316)",
-              glow:"#f59e0b33",
+              label: "Paid Users", value: paidUsers,
+              sub: `${pct(paidUsers, tierTotal)}% conversion`,
+              up: true, isRupee: false,
+              icon: <Wallet size={20} />,
+              grad: "linear-gradient(135deg,#f59e0b,#f97316)",
+              glow: "#f59e0b33",
             },
           ] as const).map((card, i) => (
             <div key={i} className="kpi-card"
-              style={{ animationDelay:`${i * 0.05}s` }}>
-              <div style={{ flex:1 }}>
-                <p style={{ margin:"0 0 10px", fontSize:11, fontWeight:600,
-                  color:"#94a3b8", textTransform:"uppercase",
-                  letterSpacing:"0.1em" }}>
+              style={{ animationDelay: `${i * 0.05}s` }}>
+              <div style={{ flex: 1 }}>
+                <p style={{
+                  margin: "0 0 10px", fontSize: 11, fontWeight: 600,
+                  color: "#94a3b8", textTransform: "uppercase",
+                  letterSpacing: "0.1em"
+                }}>
                   {card.label}
                 </p>
-                <p style={{ margin:"0 0 10px",
+                <p style={{
+                  margin: "0 0 10px",
                   fontSize: card.isRupee ? 22 : 30,
-                  fontWeight:700, color:"#1e293b", lineHeight:1 }}>
+                  fontWeight: 700, color: "#1e293b", lineHeight: 1
+                }}>
                   {card.isRupee
                     ? "₹" + card.value.toLocaleString("en-IN")
                     : card.value.toLocaleString("en-IN")}
                 </p>
-                <div style={{ display:"flex", alignItems:"center", gap:4,
-                  fontSize:12,
-                  color: card.up ? "#10b981" : "#ef4444" }}>
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 4,
+                  fontSize: 12,
+                  color: card.up ? "#10b981" : "#ef4444"
+                }}>
                   {card.up
-                    ? <ArrowUpRight size={13}/>
-                    : <ArrowDownRight size={13}/>}
+                    ? <ArrowUpRight size={13} />
+                    : <ArrowDownRight size={13} />}
                   <span>{card.sub}</span>
                 </div>
               </div>
               <div style={{
-                width:52, height:52, borderRadius:14, flexShrink:0,
-                background:card.grad,
-                display:"flex", alignItems:"center", justifyContent:"center",
-                color:"white",
-                boxShadow:`0 6px 18px ${card.glow}`,
+                width: 52, height: 52, borderRadius: 14, flexShrink: 0,
+                background: card.grad,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: "white",
+                boxShadow: `0 6px 18px ${card.glow}`,
               }}>
                 {card.icon}
               </div>
@@ -236,56 +256,78 @@ export default function AdminDashboard() {
         </div>
 
         {/* ── MIDDLE ROW ──────────────────────────────────────────────── */}
-        <div className="mid-grid fade-in" style={{ animationDelay:"0.18s" }}>
+        <div className="mid-grid fade-in" style={{ animationDelay: "0.18s" }}>
 
           {/* Tier Distribution */}
           <div className="panel">
             <PanelHead title="Tier Distribution"
-              sub="Users by subscription plan"/>
-            <div style={{ display:"flex", gap:12, marginBottom:20 }}>
+              sub="Users by subscription plan" />
+            <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
               {([
-                { label:"Free",    val:freeCount,    color:"#94a3b8",
-                  bg:"#f1f5f9",    border:"#e2e8f0" },
-                { label:"Basic",   val:basicCount,   color:"#6366f1",
-                  bg:"#ede9fe",    border:"#c4b5fd" },
-                { label:"Premium", val:premiumCount, color:"#f59e0b",
-                  bg:"#fef3c7",    border:"#fde68a" },
+                {
+                  label: "Free", val: freeCount, color: "#94a3b8",
+                  bg: "#f1f5f9", border: "#e2e8f0"
+                },
+                {
+                  label: "Basic", val: basicCount, color: "#6366f1",
+                  bg: "#ede9fe", border: "#c4b5fd"
+                },
+                {
+                  label: "Premium", val: premiumCount, color: "#f59e0b",
+                  bg: "#fef3c7", border: "#fde68a"
+                },
               ]).map(t => (
                 <div key={t.label} style={{
-                  flex:1, padding:"14px 16px",
-                  background:t.bg, border:`1px solid ${t.border}`,
-                  borderRadius:12,
+                  flex: 1, padding: "14px 16px",
+                  background: t.bg, border: `1px solid ${t.border}`,
+                  borderRadius: 12,
                 }}>
-                  <p style={{ margin:"0 0 6px", fontSize:10, fontWeight:600,
-                    color:t.color, letterSpacing:"0.1em",
-                    textTransform:"uppercase" }}>{t.label}</p>
-                  <p style={{ margin:"0 0 3px", fontSize:24,
-                    fontWeight:700, color:"#1e293b" }}>{t.val}</p>
-                  <p style={{ margin:0, fontSize:11, color:"#64748b" }}>
+                  <p style={{
+                    margin: "0 0 6px", fontSize: 10, fontWeight: 600,
+                    color: t.color, letterSpacing: "0.1em",
+                    textTransform: "uppercase"
+                  }}>{t.label}</p>
+                  <p style={{
+                    margin: "0 0 3px", fontSize: 24,
+                    fontWeight: 700, color: "#1e293b"
+                  }}>{t.val}</p>
+                  <p style={{ margin: 0, fontSize: 11, color: "#64748b" }}>
                     {pct(t.val, tierTotal)}% of users
                   </p>
                 </div>
               ))}
             </div>
             {/* Stacked bar */}
-            <div style={{ height:8, borderRadius:6,
-              display:"flex", overflow:"hidden", gap:2 }}>
-              <div style={{ width:`${pct(freeCount,    tierTotal)}%`,
-                background:"#94a3b8", transition:"width 0.8s ease",
-                borderRadius:"6px 0 0 6px" }}/>
-              <div style={{ width:`${pct(basicCount,   tierTotal)}%`,
-                background:"#6366f1", transition:"width 0.9s ease 0.05s" }}/>
-              <div style={{ width:`${pct(premiumCount, tierTotal)}%`,
-                background:"#f59e0b", transition:"width 1s ease 0.1s",
-                borderRadius:"0 6px 6px 0" }}/>
+            <div style={{
+              height: 8, borderRadius: 6,
+              display: "flex", overflow: "hidden", gap: 2
+            }}>
+              <div style={{
+                width: `${pct(freeCount, tierTotal)}%`,
+                background: "#94a3b8", transition: "width 0.8s ease",
+                borderRadius: "6px 0 0 6px"
+              }} />
+              <div style={{
+                width: `${pct(basicCount, tierTotal)}%`,
+                background: "#6366f1", transition: "width 0.9s ease 0.05s"
+              }} />
+              <div style={{
+                width: `${pct(premiumCount, tierTotal)}%`,
+                background: "#f59e0b", transition: "width 1s ease 0.1s",
+                borderRadius: "0 6px 6px 0"
+              }} />
             </div>
-            <div style={{ display:"flex", gap:16, marginTop:10 }}>
-              {([["#94a3b8","Free"],["#6366f1","Basic"],
-                ["#f59e0b","Premium"]] as const).map(([c,l]) => (
-                <div key={l} style={{ display:"flex", alignItems:"center",
-                  gap:6, fontSize:11, color:"#64748b" }}>
-                  <div style={{ width:8, height:8, borderRadius:2,
-                    background:c }}/>
+            <div style={{ display: "flex", gap: 16, marginTop: 10 }}>
+              {([["#94a3b8", "Free"], ["#6366f1", "Basic"],
+              ["#f59e0b", "Premium"]] as const).map(([c, l]) => (
+                <div key={l} style={{
+                  display: "flex", alignItems: "center",
+                  gap: 6, fontSize: 11, color: "#64748b"
+                }}>
+                  <div style={{
+                    width: 8, height: 8, borderRadius: 2,
+                    background: c
+                  }} />
                   {l}
                 </div>
               ))}
@@ -294,87 +336,119 @@ export default function AdminDashboard() {
 
           {/* Revenue */}
           <div className="panel">
-            <PanelHead title="Revenue" sub="Monthly & annual breakdown"/>
+            <PanelHead title="Revenue" sub="Monthly & annual breakdown" />
 
             <div style={{
-              background:"linear-gradient(135deg,#f0fdf4,#dcfce7)",
-              border:"1px solid #bbf7d0",
-              borderRadius:12, padding:"16px 18px", marginBottom:16,
+              background: "linear-gradient(135deg,#f0fdf4,#dcfce7)",
+              border: "1px solid #bbf7d0",
+              borderRadius: 12, padding: "16px 18px", marginBottom: 16,
             }}>
-              <p style={{ margin:"0 0 5px", fontSize:10, fontWeight:600,
-                color:"#16a34a", letterSpacing:"0.14em",
-                textTransform:"uppercase" }}>Monthly Recurring Revenue</p>
-              <p style={{ margin:0, fontSize:28, fontWeight:700,
-                color:"#15803d" }}>{inr(totalMRR)}</p>
+              <p style={{
+                margin: "0 0 5px", fontSize: 10, fontWeight: 600,
+                color: "#16a34a", letterSpacing: "0.14em",
+                textTransform: "uppercase"
+              }}>Monthly Recurring Revenue</p>
+              <p style={{
+                margin: 0, fontSize: 28, fontWeight: 700,
+                color: "#15803d"
+              }}>{inr(totalMRR)}</p>
             </div>
 
             {([
-              { label:"Basic",   count:basicCount,   mrr:basicMRR,
-                color:"#6366f1", bg:"#ede9fe" },
-              { label:"Premium", count:premiumCount, mrr:premiumMRR,
-                color:"#f59e0b", bg:"#fef3c7" },
+              {
+                label: "Basic", count: basicCount, mrr: basicMRR,
+                color: "#6366f1", bg: "#ede9fe"
+              },
+              {
+                label: "Premium", count: premiumCount, mrr: premiumMRR,
+                color: "#f59e0b", bg: "#fef3c7"
+              },
             ]).map((row, i, arr) => (
               <div key={row.label} style={{
-                display:"flex", justifyContent:"space-between",
-                alignItems:"center", padding:"11px 0",
-                borderBottom: i < arr.length-1
+                display: "flex", justifyContent: "space-between",
+                alignItems: "center", padding: "11px 0",
+                borderBottom: i < arr.length - 1
                   ? "1px solid #f1f5f9" : "none",
               }}>
-                <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-                  <div style={{ width:8, height:8, borderRadius:"50%",
-                    background:row.color }}/>
-                  <span style={{ fontSize:13, color:"#1e293b",
-                    fontWeight:500 }}>{row.label}</span>
-                  <span style={{ fontSize:11, color:"#94a3b8" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{
+                    width: 8, height: 8, borderRadius: "50%",
+                    background: row.color
+                  }} />
+                  <span style={{
+                    fontSize: 13, color: "#1e293b",
+                    fontWeight: 500
+                  }}>{row.label}</span>
+                  <span style={{ fontSize: 11, color: "#94a3b8" }}>
                     {row.count} × {inr(TIER_PRICE[row.label.toLowerCase()])}
                   </span>
                 </div>
-                <span style={{ fontSize:13, fontWeight:700,
-                  color:row.color }}>{inr(row.mrr)}</span>
+                <span style={{
+                  fontSize: 13, fontWeight: 700,
+                  color: row.color
+                }}>{inr(row.mrr)}</span>
               </div>
             ))}
 
-            <div style={{ display:"flex", justifyContent:"space-between",
-              alignItems:"center", paddingTop:12, marginTop:4,
-              borderTop:"1px solid #f1f5f9" }}>
-              <span style={{ fontSize:11, color:"#94a3b8",
-                fontWeight:600, textTransform:"uppercase",
-                letterSpacing:"0.1em" }}>ARR Projection</span>
-              <span style={{ fontSize:15, fontWeight:700,
-                color:"#1e293b" }}>{inr(totalMRR * 12)}</span>
+            <div style={{
+              display: "flex", justifyContent: "space-between",
+              alignItems: "center", paddingTop: 12, marginTop: 4,
+              borderTop: "1px solid #f1f5f9"
+            }}>
+              <span style={{
+                fontSize: 11, color: "#94a3b8",
+                fontWeight: 600, textTransform: "uppercase",
+                letterSpacing: "0.1em"
+              }}>ARR Projection</span>
+              <span style={{
+                fontSize: 15, fontWeight: 700,
+                color: "#1e293b"
+              }}>{inr(totalMRR * 12)}</span>
             </div>
           </div>
 
           {/* Quick Stats */}
           <div className="panel">
-            <PanelHead title="Quick Stats" sub="Key metrics at a glance"/>
+            <PanelHead title="Quick Stats" sub="Key metrics at a glance" />
             {([
-              { label:"Verification Rate",
-                value:`${pct(stats?.verified_users??0, stats?.total_users??0)}%`,
-                color:"#10b981" },
-              { label:"Paid Users",
-                value: paidUsers, color:"#6366f1" },
-              { label:"Free Users",
-                value: freeCount, color:"#94a3b8" },
-              { label:"Weekly Growth",
-                value:`+${stats?.recent_signups_7days ?? 0}`,
-                color:"#f59e0b" },
-              { label:"ARPU (Paid)",
+              {
+                label: "Verification Rate",
+                value: `${pct(stats?.verified_users ?? 0, stats?.total_users ?? 0)}%`,
+                color: "#10b981"
+              },
+              {
+                label: "Paid Users",
+                value: paidUsers, color: "#6366f1"
+              },
+              {
+                label: "Free Users",
+                value: freeCount, color: "#94a3b8"
+              },
+              {
+                label: "Weekly Growth",
+                value: `+${stats?.recent_signups_7days ?? 0}`,
+                color: "#f59e0b"
+              },
+              {
+                label: "ARPU (Paid)",
                 value: paidUsers
                   ? inr(Math.round(totalMRR / paidUsers)) : "—",
-                color:"#8b5cf6" },
+                color: "#8b5cf6"
+              },
             ]).map((item, i, arr) => (
               <div key={item.label} style={{
-                display:"flex", justifyContent:"space-between",
-                alignItems:"center", padding:"11px 0",
-                borderBottom: i < arr.length-1
+                display: "flex", justifyContent: "space-between",
+                alignItems: "center", padding: "11px 0",
+                borderBottom: i < arr.length - 1
                   ? "1px solid #f1f5f9" : "none",
               }}>
-                <span style={{ fontSize:13, color:"#64748b" }}>
+                <span style={{ fontSize: 13, color: "#64748b" }}>
                   {item.label}
                 </span>
-                <span style={{ fontSize:15, fontWeight:700,
-                  color:item.color }}>
+                <span style={{
+                  fontSize: 15, fontWeight: 700,
+                  color: item.color
+                }}>
                   {item.value}
                 </span>
               </div>
@@ -384,30 +458,36 @@ export default function AdminDashboard() {
 
         {/* ── USERS TABLE ─────────────────────────────────────────────── */}
         <div className="panel fade-in"
-          style={{ padding:0, animationDelay:"0.3s", overflow:"hidden" }}>
+          style={{ padding: 0, animationDelay: "0.3s", overflow: "hidden" }}>
 
           {/* Toolbar */}
-          <div style={{ padding:"18px 24px",
-            borderBottom:"1px solid #f1f5f9",
-            display:"flex", alignItems:"center",
-            justifyContent:"space-between", gap:14 }}>
+          <div style={{
+            padding: "18px 24px",
+            borderBottom: "1px solid #f1f5f9",
+            display: "flex", alignItems: "center",
+            justifyContent: "space-between", gap: 14
+          }}>
             <div>
-              <p style={{ margin:"0 0 2px", fontSize:15,
-                fontWeight:700, color:"#1e293b" }}>All Users</p>
-              <p style={{ margin:0, fontSize:12, color:"#94a3b8" }}>
+              <p style={{
+                margin: "0 0 2px", fontSize: 15,
+                fontWeight: 700, color: "#1e293b"
+              }}>All Users</p>
+              <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>
                 {filtered.length} of {users.length} users
               </p>
             </div>
-            <div style={{ display:"flex", gap:8 }}>
-              <div style={{ position:"relative" }}>
-                <Search size={12} style={{ position:"absolute", left:10,
-                  top:"50%", transform:"translateY(-50%)",
-                  color:"#94a3b8" }}/>
+            <div style={{ display: "flex", gap: 8 }}>
+              <div style={{ position: "relative" }}>
+                <Search size={12} style={{
+                  position: "absolute", left: 10,
+                  top: "50%", transform: "translateY(-50%)",
+                  color: "#94a3b8"
+                }} />
                 <input value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder="Search users..."
                   className="tbl-input"
-                  style={{ paddingLeft:28 }}/>
+                  style={{ paddingLeft: 28 }} />
               </div>
               <select value={filterTier}
                 onChange={e => setFilterTier(e.target.value)}
@@ -421,62 +501,72 @@ export default function AdminDashboard() {
           </div>
 
           {/* Table */}
-          <div style={{ overflowX:"auto" }}>
-            <table style={{ width:"100%", borderCollapse:"collapse" }}>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
-                <tr style={{ background:"#f8fafc" }}>
-                  {["User","Email","Tier","Status",
-                    "MRR Contribution","AI Used","Joined"].map(h => (
-                    <th key={h} style={{
-                      padding:"10px 18px", textAlign:"left",
-                      fontSize:10, fontWeight:600, color:"#94a3b8",
-                      textTransform:"uppercase", letterSpacing:"0.1em",
-                      whiteSpace:"nowrap",
-                      borderBottom:"1px solid #f1f5f9",
-                    }}>{h}</th>
-                  ))}
+                <tr style={{ background: "#f8fafc" }}>
+                  {["User", "Email", "Tier", "Status",
+                    "MRR Contribution", "AI Used", "Joined"].map(h => (
+                      <th key={h} style={{
+                        padding: "10px 18px", textAlign: "left",
+                        fontSize: 10, fontWeight: 600, color: "#94a3b8",
+                        textTransform: "uppercase", letterSpacing: "0.1em",
+                        whiteSpace: "nowrap",
+                        borderBottom: "1px solid #f1f5f9",
+                      }}>{h}</th>
+                    ))}
                 </tr>
               </thead>
               <tbody>
                 {filtered.length === 0 ? (
                   <tr><td colSpan={7} style={{
-                    padding:52, textAlign:"center",
-                    color:"#94a3b8", fontSize:14,
+                    padding: 52, textAlign: "center",
+                    color: "#94a3b8", fontSize: 14,
                   }}>No users found</td></tr>
                 ) : filtered.map(u => {
-                  const userMRR  = TIER_PRICE[u.subscription_tier] ?? 0;
-                  const hue      = (u.id * 47) % 360;
+                  const userMRR = TIER_PRICE[u.subscription_tier] ?? 0;
+                  const hue = (u.id * 47) % 360;
                   const tierMeta = {
-                    free:    { color:"#64748b", bg:"#f1f5f9",
-                               border:"#e2e8f0" },
-                    basic:   { color:"#6366f1", bg:"#ede9fe",
-                               border:"#c4b5fd" },
-                    premium: { color:"#f59e0b", bg:"#fef3c7",
-                               border:"#fde68a" },
+                    free: {
+                      color: "#64748b", bg: "#f1f5f9",
+                      border: "#e2e8f0"
+                    },
+                    basic: {
+                      color: "#6366f1", bg: "#ede9fe",
+                      border: "#c4b5fd"
+                    },
+                    premium: {
+                      color: "#f59e0b", bg: "#fef3c7",
+                      border: "#fde68a"
+                    },
                   }[u.subscription_tier];
 
                   return (
                     <tr key={u.id} className="tbl-row">
 
                       {/* Name */}
-                      <td style={{ padding:"12px 18px" }}>
-                        <div style={{ display:"flex",
-                          alignItems:"center", gap:10 }}>
+                      <td style={{ padding: "12px 18px" }}>
+                        <div style={{
+                          display: "flex",
+                          alignItems: "center", gap: 10
+                        }}>
                           <div style={{
-                            width:34, height:34, borderRadius:10,
-                            flexShrink:0,
-                            background:`hsl(${hue},60%,92%)`,
-                            border:`1px solid hsl(${hue},50%,82%)`,
-                            display:"flex", alignItems:"center",
-                            justifyContent:"center", fontSize:12,
-                            fontWeight:700,
-                            color:`hsl(${hue},55%,38%)`,
+                            width: 34, height: 34, borderRadius: 10,
+                            flexShrink: 0,
+                            background: `hsl(${hue},60%,92%)`,
+                            border: `1px solid hsl(${hue},50%,82%)`,
+                            display: "flex", alignItems: "center",
+                            justifyContent: "center", fontSize: 12,
+                            fontWeight: 700,
+                            color: `hsl(${hue},55%,38%)`,
                           }}>
                             {u.first_name?.[0]}{u.last_name?.[0]}
                           </div>
                           <div>
-                            <p style={{ margin:0, fontSize:13,
-                              fontWeight:600, color:"#1e293b" }}>
+                            <p style={{
+                              margin: 0, fontSize: 13,
+                              fontWeight: 600, color: "#1e293b"
+                            }}>
                               {u.first_name} {u.last_name}
                             </p>
                           </div>
@@ -484,67 +574,85 @@ export default function AdminDashboard() {
                       </td>
 
                       {/* Email */}
-                      <td style={{ padding:"12px 18px", fontSize:13,
-                        color:"#64748b" }}>{u.email}</td>
+                      <td style={{
+                        padding: "12px 18px", fontSize: 13,
+                        color: "#64748b"
+                      }}>{u.email}</td>
 
                       {/* Tier */}
-                      <td style={{ padding:"12px 18px" }}>
+                      <td style={{ padding: "12px 18px" }}>
                         <span style={{
-                          padding:"4px 10px", fontSize:11,
-                          fontWeight:600, borderRadius:6,
-                          textTransform:"capitalize",
-                          background:tierMeta.bg,
-                          color:tierMeta.color,
-                          border:`1px solid ${tierMeta.border}`,
+                          padding: "4px 10px", fontSize: 11,
+                          fontWeight: 600, borderRadius: 6,
+                          textTransform: "capitalize",
+                          background: tierMeta.bg,
+                          color: tierMeta.color,
+                          border: `1px solid ${tierMeta.border}`,
                         }}>
                           {u.subscription_tier}
                         </span>
                       </td>
 
                       {/* Status */}
-                      <td style={{ padding:"12px 18px" }}>
-                        <div style={{ display:"flex",
-                          alignItems:"center", gap:6 }}>
-                          <div style={{ width:7, height:7,
-                            borderRadius:"50%",
+                      <td style={{ padding: "12px 18px" }}>
+                        <div style={{
+                          display: "flex",
+                          alignItems: "center", gap: 6
+                        }}>
+                          <div style={{
+                            width: 7, height: 7,
+                            borderRadius: "50%",
                             background: u.is_verified
-                              ? "#10b981" : "#f59e0b" }}/>
-                          <span style={{ fontSize:12, fontWeight:500,
+                              ? "#10b981" : "#f59e0b"
+                          }} />
+                          <span style={{
+                            fontSize: 12, fontWeight: 500,
                             color: u.is_verified
-                              ? "#10b981" : "#f59e0b" }}>
+                              ? "#10b981" : "#f59e0b"
+                          }}>
                             {u.is_verified ? "Verified" : "Pending"}
                           </span>
                         </div>
                       </td>
 
                       {/* MRR */}
-                      <td style={{ padding:"12px 18px" }}>
+                      <td style={{ padding: "12px 18px" }}>
                         {userMRR > 0 ? (
-                          <span style={{ fontSize:13, fontWeight:700,
-                            color:"#6366f1" }}>
+                          <span style={{
+                            fontSize: 13, fontWeight: 700,
+                            color: "#6366f1"
+                          }}>
                             {inr(userMRR)}
-                            <span style={{ fontSize:11,
-                              color:"#94a3b8", fontWeight:400 }}>
+                            <span style={{
+                              fontSize: 11,
+                              color: "#94a3b8", fontWeight: 400
+                            }}>
                               /mo
                             </span>
                           </span>
                         ) : (
-                          <span style={{ color:"#cbd5e1",
-                            fontSize:13 }}>—</span>
+                          <span style={{
+                            color: "#cbd5e1",
+                            fontSize: 13
+                          }}>—</span>
                         )}
                       </td>
 
                       {/* AI Used */}
-                      <td style={{ padding:"12px 18px", fontSize:13,
-                        color:"#64748b" }}>
+                      <td style={{
+                        padding: "12px 18px", fontSize: 13,
+                        color: "#64748b"
+                      }}>
                         {u.ai_chat_used ?? 0}
                       </td>
 
                       {/* Joined */}
-                      <td style={{ padding:"12px 18px", fontSize:12,
-                        color:"#94a3b8", whiteSpace:"nowrap" }}>
+                      <td style={{
+                        padding: "12px 18px", fontSize: 12,
+                        color: "#94a3b8", whiteSpace: "nowrap"
+                      }}>
                         {new Date(u.created_at).toLocaleDateString("en-IN",
-                          { day:"numeric", month:"short", year:"numeric" })}
+                          { day: "numeric", month: "short", year: "numeric" })}
                       </td>
                     </tr>
                   );
@@ -554,16 +662,20 @@ export default function AdminDashboard() {
           </div>
 
           {/* Footer */}
-          <div style={{ padding:"12px 24px",
-            borderTop:"1px solid #f1f5f9",
-            display:"flex", justifyContent:"space-between",
-            alignItems:"center", background:"#f8fafc" }}>
-            <span style={{ fontSize:12, color:"#94a3b8" }}>
+          <div style={{
+            padding: "12px 24px",
+            borderTop: "1px solid #f1f5f9",
+            display: "flex", justifyContent: "space-between",
+            alignItems: "center", background: "#f8fafc"
+          }}>
+            <span style={{ fontSize: 12, color: "#94a3b8" }}>
               Showing {filtered.length} result
               {filtered.length !== 1 ? "s" : ""}
             </span>
-            <span style={{ fontSize:11, color:"#cbd5e1",
-              letterSpacing:"0.1em", textTransform:"uppercase" }}>
+            <span style={{
+              fontSize: 11, color: "#cbd5e1",
+              letterSpacing: "0.1em", textTransform: "uppercase"
+            }}>
               Insydz · Restricted Access
             </span>
           </div>
@@ -577,10 +689,12 @@ export default function AdminDashboard() {
 // ─── PanelHead ────────────────────────────────────────────────────────────────
 function PanelHead({ title, sub }: { title: string; sub: string }) {
   return (
-    <div style={{ marginBottom:18 }}>
-      <p style={{ margin:"0 0 2px", fontSize:15,
-        fontWeight:700, color:"#1e293b" }}>{title}</p>
-      <p style={{ margin:0, fontSize:12, color:"#94a3b8" }}>{sub}</p>
+    <div style={{ marginBottom: 18 }}>
+      <p style={{
+        margin: "0 0 2px", fontSize: 15,
+        fontWeight: 700, color: "#1e293b"
+      }}>{title}</p>
+      <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>{sub}</p>
     </div>
   );
 }

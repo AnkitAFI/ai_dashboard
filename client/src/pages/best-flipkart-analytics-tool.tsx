@@ -118,10 +118,10 @@ const TOC = [
 
 // ─── FAQs ─────────────────────────────────────────────────────────────────────
 const FAQS = [
-  { q: "What is the best Flipkart analytics tool for India?", a: "The best Flipkart analytics tool for Indian sellers is one built natively for Flipkart marketplace data — not adapted from an Amazon-focused global tool. Insydz is the only platform that provides simultaneous keyword rank tracking across Flipkart and Amazon.in, with WhatsApp alert delivery and AI-powered competitor insights covering the full Indian e-commerce landscape." },
-  { q: "How is Flipkart analytics different from Amazon.in analytics?", a: "Flipkart has a distinct search algorithm, unique buyer intent patterns — especially around price brackets and SmartBuy — and pricing dynamics that differ from Amazon.in. Tools built for Amazon.com or even Amazon.in often have zero Flipkart keyword coverage. Flipkart-specific analytics accounts for its own search volume data, category ranking logic, and SmartBuy badge behaviour." },
-  { q: "What is keyword gap analysis for Flipkart sellers?", a: "Keyword gap analysis identifies the high-volume Flipkart search terms your top competitors rank for — and your listing doesn't. This gap represents lost organic traffic and lost revenue. Closing the gap is the fastest route to organic rank improvement on Flipkart." },
-  { q: "Can I track competitor keywords on Flipkart?", a: "Yes — with India-first tools like Insydz. Global tools like Helium 10 and Jungle Scout have no Flipkart competitor keyword tracking. India-first platforms crawl your top 5–10 competitors' listings on Flipkart and surface which high-volume terms they rank for that you don't." },
+  { q: "What is the best Flipkart analytics tool for India?", a: "The best Flipkart analytics tool for Indian sellers is one built natively for Flipkart marketplace data not adapted from an Amazon-focused global tool. Insydz is the only platform that provides simultaneous keyword rank tracking across Flipkart and Amazon.in, with WhatsApp alert delivery and AI-powered competitor insights covering the full Indian e-commerce landscape." },
+  { q: "How is Flipkart analytics different from Amazon.in analytics?", a: "Flipkart has a distinct search algorithm, unique buyer intent patterns especially around price brackets and SmartBuy and pricing dynamics that differ from Amazon.in. Tools built for Amazon.com or even Amazon.in often have zero Flipkart keyword coverage. Flipkart-specific analytics accounts for its own search volume data, category ranking logic, and SmartBuy badge behaviour." },
+  { q: "What is keyword gap analysis for Flipkart sellers?", a: "Keyword gap analysis identifies the high-volume Flipkart search terms your top competitors rank for and your listing doesn't. This gap represents lost organic traffic and lost revenue. Closing the gap is the fastest route to organic rank improvement on Flipkart." },
+  { q: "Can I track competitor keywords on Flipkart?", a: "Yes with India-first tools like Insydz. Global tools like Helium 10 and Jungle Scout have no Flipkart competitor keyword tracking. India-first platforms crawl your top 5–10 competitors' listings on Flipkart and surface which high-volume terms they rank for that you don't." },
   { q: "How much do Flipkart analytics tools cost in India?", a: "Flipkart analytics tools range from free (basic, limited Flipkart data) to ₹4,000–8,000/month for global SaaS tools with no real Flipkart coverage, to ₹1,999–2,999/month for India-first AI platforms like Insydz that cover both Amazon.in and Flipkart natively with WhatsApp alerts included." },
   { q: "How often should I review my Flipkart analytics data?", a: "Best-performing Indian Flipkart sellers run a three-tier rhythm: daily automated WhatsApp digests (zero minutes of your time), a weekly 30-minute review of keyword gaps and competitor movements, and a monthly 45-minute strategic audit before festive seasons." },
   { q: "Does pricing automation work on Flipkart?", a: "Yes. Flipkart's SmartBuy badge and Featured Seller status are heavily influenced by competitive pricing. Pricing automation tools that monitor competitor prices on Flipkart in real time and trigger repricing rules can significantly improve SmartBuy badge win rate and overall category visibility." },
@@ -262,12 +262,12 @@ export default function BestFlipkartAnalyticsTool() {
   ];
 
   const features = [
-    { icon: "📊", title: "Full Flipkart Keyword Database",        body: "Rank positions tracked natively on Flipkart — not estimated from Amazon.in data. Flipkart keyword coverage is unique to India-first tools and is the foundational capability everything else is built on." },
-    { icon: "🔤", title: "Hindi and Hinglish Keyword Detection",  body: "Regional search terms, transliterated Hindi queries, and Hinglish product descriptors are surfaced and scored by conversion intent — not filtered out as noise the way global tools treat them." },
-    { icon: "💰", title: "Price-Bracket Keyword Intelligence",    body: "'Under 999', 'below 5000', 'best budget' modifiers are detected and scored for India-specific purchase intent on Flipkart — the highest-conversion keyword category most sellers miss entirely." },
-    { icon: "📱", title: "WhatsApp Rank Drop Alerts in 60 Min",   body: "Any rank drop of 3+ positions on a tracked Flipkart buy-intent keyword triggers a WhatsApp alert — with the affected FSN, the term, and a recommended listing fix." },
-    { icon: "🤖", title: "AI Listing Optimisation",               body: "For each keyword gap identified on Flipkart, the platform generates the exact text to add to your listing title, bullets, and description — no guesswork, no duplication." },
-    { icon: "🎉", title: "Festive Keyword Intelligence",          body: "Pre-festive keyword audits surface seasonal search terms specific to Big Billion Days, Great Indian Festival, and Diwali — 3 weeks before the revenue window opens." },
+    { title: "Full Flipkart Keyword Database",        body: "Rank positions tracked natively on Flipkart not estimated from Amazon.in data. Flipkart keyword coverage is unique to India-first tools and is the foundational capability everything else is built on." },
+    { title: "Hindi and Hinglish Keyword Detection",  body: "Regional search terms, transliterated Hindi queries, and Hinglish product descriptors are surfaced and scored by conversion intent not filtered out as noise the way global tools treat them." },
+    { title: "Price-Bracket Keyword Intelligence",    body: "'Under 999', 'below 5000', 'best budget' modifiers are detected and scored for India-specific purchase intent on Flipkart the highest-conversion keyword category most sellers miss entirely." },
+    { title: "WhatsApp Rank Drop Alerts in 60 Min",   body: "Any rank drop of 3+ positions on a tracked Flipkart buy-intent keyword triggers a WhatsApp alert — with the affected FSN, the term, and a recommended listing fix." },
+    { title: "AI Listing Optimisation",               body: "For each keyword gap identified on Flipkart, the platform generates the exact text to add to your listing title, bullets, and description no guesswork, no duplication." },
+    { title: "Festive Keyword Intelligence",          body: "Pre-festive keyword audits surface seasonal search terms specific to Big Billion Days, Great Indian Festival, and Diwali 3 weeks before the revenue window opens." },
   ];
 
   return (
@@ -681,7 +681,7 @@ export default function BestFlipkartAnalyticsTool() {
       </nav>
 
       {/* ── BREADCRUMB ─────────────────────────────────────────────────────────── */}
-      <div className="breadcrumb" style={{ marginTop: 64 }}>
+      <div className="breadcrumb" style={{ marginTop: 80 }}>
         <div className="breadcrumb-inner">
           <button onClick={() => setLocation("/")} style={{ color:"#64748B", fontWeight:500, background:"none", border:"none", cursor:"pointer", fontSize:"inherit" }}>Home</button>
           <span>›</span>
@@ -701,7 +701,7 @@ export default function BestFlipkartAnalyticsTool() {
           Best <span style={{ color:"#7C3AED" }}>Flipkart Analytics Tool</span> India: Complete Guide for Sellers (2026)
         </h1>
         <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2.5vw,17px)", color:"#475569", lineHeight:1.75, maxWidth:700, marginBottom:20 }} className="dark:text-gray-400">
-          Stop flying blind on Flipkart. The right analytics tool surfaces which competitor keywords are stealing your rank, which SKUs are losing the Buy Box, and exactly what to fix — before the next Big Billion Days window closes on you.
+          Stop flying blind on Flipkart. The right analytics tool surfaces which competitor keywords are stealing your rank, which SKUs are losing the Buy Box, and exactly what to fix before the next Big Billion Days window closes on you.
         </p>
         <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap", gap:"4px 14px", marginBottom:20 }}>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong style={{ color:"#0D1B2A" }}>Insydz Research Team</strong></div>
@@ -714,7 +714,7 @@ export default function BestFlipkartAnalyticsTool() {
         {/* Stat strip */}
         <div className="stat-strip" style={{ marginBottom:24 }}>
           {[
-            ["71%",    "Flipkart Purchases Start From a Search — Not a Homepage Browse"],
+            ["71%",    "Flipkart Purchases Start From a Search Not a Homepage Browse"],
             ["₹42K/mo","Avg. Monthly Revenue Lost to Poor Marketplace Visibility"],
             ["4–6×",   "Traffic Increase With Proper Competitor Keyword Tracking"],
             ["Top 3",  "Search Positions Capture 58% of All Flipkart Category Clicks"],
@@ -750,24 +750,24 @@ export default function BestFlipkartAnalyticsTool() {
               <div className="mc-value">P6 → P1</div>
               <div className="mc-sub">After backend keyword update</div>
             </div>
-            <div className="alert-pill">🚨 Rival ranking #1 for "mixer grinder under 3000" — fix now</div>
+            <div className="alert-pill">Rival ranking #1 for "mixer grinder under 3000" fix now</div>
           </div>
         </div>
         <p style={{ fontSize:"clamp(10px,2vw,12px)", color:"#94A3B8", textAlign:"center", margin:"6px 0 28px", fontStyle:"italic", fontFamily:"'Sora',sans-serif" }}>
-          Insydz Flipkart intelligence — surfaces competitor keyword gaps, rank positions, and pricing automation opportunities across Flipkart and Amazon.in simultaneously.
+          Insydz Flipkart intelligence surfaces competitor keyword gaps, rank positions, and pricing automation opportunities across Flipkart and Amazon.in simultaneously.
         </p>
       </div>
 
       {/* ── KEY TAKEAWAYS ─────────────────────────────────────────────────────── */}
       <div style={{ maxWidth:1240, margin:"0 auto", padding:"0 16px 28px" }} className="sm:px-5 lg:px-6">
         <div className="takeaway-box">
-          <h3>✅ Key Takeaways</h3>
+          <h3>Key Takeaways</h3>
           {[
-            "Most Flipkart sellers optimise with Amazon-centric tools — tools that have zero Flipkart keyword volume data, no SmartBuy badge logic, and no Flipkart-specific competitor tracking.",
-            "Competitor keyword gap analysis reveals which high-volume, buy-intent terms your top 3 Flipkart rivals rank for — and you don't. This gap is where your revenue is being lost silently.",
-            "Pricing automation on Flipkart is not optional for high-competition categories. The SmartBuy badge goes to the most competitive price — not the best-reviewed product.",
-            "Flipkart's search algorithm weighs listing quality differently from Amazon — title keyword density, bullet structure, and image count all influence rank in ways global tools don't model.",
-            "India-first platforms like Insydz track rank shifts on Flipkart and Amazon.in simultaneously — with WhatsApp alerts, not weekly email digests that arrive after the damage is done.",
+            "Most Flipkart sellers optimise with Amazon-centric tools tools that have zero Flipkart keyword volume data, no SmartBuy badge logic, and no Flipkart-specific competitor tracking.",
+            "Competitor keyword gap analysis reveals which high-volume, buy-intent terms your top 3 Flipkart rivals rank for and you don't. This gap is where your revenue is being lost silently.",
+            "Pricing automation on Flipkart is not optional for high-competition categories. The SmartBuy badge goes to the most competitive price not the best-reviewed product.",
+            "Flipkart's search algorithm weighs listing quality differently from Amazon title keyword density, bullet structure, and image count all influence rank in ways global tools don't model.",
+            "India-first platforms like Insydz track rank shifts on Flipkart and Amazon.in simultaneously with WhatsApp alerts, not weekly email digests that arrive after the damage is done.",
             "Combining Flipkart analytics with cross-platform pricing intelligence gives Indian sellers a complete, AI-powered view of marketplace performance.",
           ].map((t, i) => (
             <div className="takeaway-item" key={i}>
@@ -790,7 +790,7 @@ export default function BestFlipkartAnalyticsTool() {
             ))}
           </ul>
           <div style={{ background:"linear-gradient(160deg,#1E1040 0%,#2D1B69 100%)", borderRadius:10, padding:18, marginTop:16 }}>
-            <h4 className="sidebar-cta-title">Find Your Flipkart Gaps — Free</h4>
+            <h4 className="sidebar-cta-title">Find Your Flipkart Gaps Free</h4>
             <p className="sidebar-cta-body">AI-powered marketplace intelligence for Flipkart, Amazon.in &amp; WhatsApp alerts included.</p>
             <ul style={{ listStyle:"none", padding:0, margin:"0 0 14px" }}>
               {["Competitor keyword gap analysis","Rank tracking — Flipkart + Amazon","WhatsApp alerts on rank drops","Pricing automation dashboard"].map(f => (
@@ -802,7 +802,7 @@ export default function BestFlipkartAnalyticsTool() {
             <button onClick={() => setLocation("/login")} style={{ display:"block", background:"#7C3AED", color:"white", textAlign:"center", padding:10, borderRadius:8, fontWeight:700, fontSize:12.5, width:"100%", cursor:"pointer", border:"none", fontFamily:"'Sora',sans-serif" }}>
               Start Free →
             </button>
-            <p style={{ fontSize:11, color:"rgba(255,255,255,.4)", textAlign:"center", marginTop:8, fontFamily:"'Sora',sans-serif" }}>From ₹1,999/mo — or free forever</p>
+            <p style={{ fontSize:11, color:"rgba(255,255,255,.4)", textAlign:"center", marginTop:8, fontFamily:"'Sora',sans-serif" }}>From ₹1,999/mo or free forever</p>
           </div>
           <div style={{ background:"#F8FAFC", border:"1px solid #E2E8F0", borderRadius:10, padding:14, marginTop:14 }}>
             <h4 style={{ fontFamily:"'Sora',sans-serif", fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:1, color:"#94A3B8", marginBottom:10 }}>Share This Guide</h4>
@@ -818,7 +818,7 @@ export default function BestFlipkartAnalyticsTool() {
         <main style={{ minWidth:0 }}>
           {/* Mobile TOC */}
           <button className="mobile-toc-btn" onClick={() => setTocOpen(!tocOpen)}>
-            📋 Table of Contents <span>{tocOpen ? "▲" : "▼"}</span>
+            Table of Contents <span>{tocOpen ? "▲" : "▼"}</span>
           </button>
           <div className={`mobile-toc-panel${tocOpen ? " open" : ""}`}>
             {TOC.map(t => <button key={t.id} className="toc-link" style={{ display:"block", marginBottom:3 }} onClick={() => go(t.id)}>{t.label}</button>)}
@@ -828,39 +828,38 @@ export default function BestFlipkartAnalyticsTool() {
 
             {/* S1: What is */}
             <h2 id="what-is">What is a Flipkart Analytics Tool?</h2>
-            <p>A Flipkart analytics tool is software that tracks exactly what Indian buyers search for on Flipkart before they purchase — and reveals which of those terms your competitors rank for that your listing doesn't. This is called <strong>marketplace intelligence</strong>, and it's the fastest route to organic rank improvement available to any Flipkart seller.</p>
+            <p>A Flipkart analytics tool is software that tracks exactly what Indian buyers search for on Flipkart before they purchase and reveals which of those terms your competitors rank for that your listing doesn't. This is called <strong>marketplace intelligence</strong>, and it's the fastest route to organic rank improvement available to any Flipkart seller.</p>
             <p>Unlike generic seller dashboards built for Amazon.com or Shopify, Flipkart-native analytics accounts for India-specific search intent: regional language queries, price-bracket buying patterns, Flipkart's SmartBuy badge algorithm, and cross-platform rank correlation between Flipkart and Amazon.in.</p>
             <p>Here's the reality: <strong>Indian sellers on Flipkart collectively leave an estimated ₹600–900 crore in annual organic revenue on the table</strong> simply because their listings are not optimised for the search terms Indian buyers actually use on Flipkart.</p>
 
             <div className="box box-purple">
-              <div className="box-label">💡 In Simple Terms</div>
-              <p>Instead of guessing which keywords to put in your product title and Flipkart listing fields, a Flipkart analytics tool tells you precisely which terms drive actual sales on Flipkart right now — including the hidden buy-intent terms your top competitors are ranking for and you've never even thought of.</p>
+              <div className="box-label">In Simple Terms</div>
+              <p>Instead of guessing which keywords to put in your product title and Flipkart listing fields, a Flipkart analytics tool tells you precisely which terms drive actual sales on Flipkart right now including the hidden buy-intent terms your top competitors are ranking for and you've never even thought of.</p>
             </div>
 
             <div className="int-link">
-              <span style={{ fontSize:"1.1rem", flexShrink:0, marginTop:1 }}>🔗</span>
-              <p><strong>Part of the Flipkart Seller Guide Series:</strong> Read our complete <a href="/flipkart-seller-guide">Flipkart Seller Strategy pillar</a> to understand how analytics fits into your full growth stack — from listing optimisation to festive season planning.</p>
+              <p><strong>Part of the Flipkart Seller Guide Series:</strong> Read our complete <a href="/flipkart-seller-guide">Flipkart Seller Strategy pillar</a> to understand how analytics fits into your full growth stack from listing optimisation to festive season planning.</p>
             </div>
 
             {/* S2: Why Critical */}
             <h2 id="why-critical">Why Flipkart Analytics is Critical for Indian Sellers</h2>
             <h3>Flipkart's Search Behaviour is Distinctly Indian</h3>
-            <p>Flipkart's buyer base searches differently from Amazon.in — and drastically differently from Amazon.com. Buyers search in Hindi transliterations, use hyper-specific price brackets ("mixer grinder under 3000"), and respond to regional colloquialisms that have zero equivalent in Helium 10's global keyword database.</p>
+            <p>Flipkart's buyer base searches differently from Amazon.in and drastically differently from Amazon.com. Buyers search in Hindi transliterations, use hyper-specific price brackets ("mixer grinder under 3000"), and respond to regional colloquialisms that have zero equivalent in Helium 10's global keyword database.</p>
 
             <h3>The Ranking Gap is Silent and Compounding</h3>
             <p>Most Flipkart sellers do analytics once at launch and never revisit it. Meanwhile, their competitors are continuously adding new terms, capturing new search traffic, and rising in rank. By the time the revenue impact becomes visible in your seller dashboard, you've already lost 4–8 months of compounding organic traffic.</p>
 
             <div className="box box-amber">
-              <div className="box-label">🏪 Real Seller Example</div>
-              <p>A Jaipur-based kitchenware seller was doing ₹3.4 lakh/month on Flipkart. A competitor entered the same category and captured the "non-stick tawa for induction" keyword cluster — 22 related search terms — with a fully optimised listing. The seller's revenue dropped to ₹1.6 lakh within 6 weeks. The competitor wasn't cheaper or better reviewed — they were simply found first on 22 searches the original seller had never even tracked.</p>
+              <div className="box-label">Real Seller Example</div>
+              <p>A Jaipur-based kitchenware seller was doing ₹3.4 lakh/month on Flipkart. A competitor entered the same category and captured the "non-stick tawa for induction" keyword cluster 22 related search terms with a fully optimised listing. The seller's revenue dropped to ₹1.6 lakh within 6 weeks. The competitor wasn't cheaper or better reviewed they were simply found first on 22 searches the original seller had never even tracked.</p>
             </div>
 
             <h3>The Festive Season Window is Worth Months of Revenue</h3>
             <p>During Big Billion Days, Republic Day Sale, and Diwali, <strong>35–55% of annual Flipkart e-commerce revenue concentrates into just 3–6 days.</strong> Sellers who rank for festive search terms on Day 1 win disproportionately.</p>
 
             <div className="box box-green">
-              <div className="box-label">🤖 AI Overview Summary</div>
-              <p>Flipkart analytics tools help Indian sellers identify which search terms drive buyer traffic on Flipkart, reveal competitor keyword gaps, enable pricing automation for SmartBuy badge wins, and alert sellers to rank drops — especially critical for sellers managing 10–150 SKUs without a dedicated marketplace analyst.</p>
+              <div className="box-label">AI Overview Summary</div>
+              <p>Flipkart analytics tools help Indian sellers identify which search terms drive buyer traffic on Flipkart, reveal competitor keyword gaps, enable pricing automation for SmartBuy badge wins, and alert sellers to rank drops especially critical for sellers managing 10–150 SKUs without a dedicated marketplace analyst.</p>
             </div>
 
             
@@ -871,7 +870,7 @@ export default function BestFlipkartAnalyticsTool() {
             {/* Dashboard mockup */}
             <div className="dash-mock">
               <div className="dash-header">
-                Insydz — Flipkart Intelligence Dashboard
+                Insydz Flipkart Intelligence Dashboard
                 <span className="dash-badge-live">Live</span>
                 <span className="dash-badge-plat">Flipkart</span>
                 <span className="dash-badge-plat">Amazon.in</span>
@@ -892,7 +891,7 @@ export default function BestFlipkartAnalyticsTool() {
                   ))}
                 </div>
                 <div className="dash-alert">
-                  <span>⚠️ <strong>Keyword Alert:</strong> Competitor ranking #1 for "air fryer 4 litre under 4000" — you're at position #17. Recommend: Add to title + listing. Est. traffic gain: +280 clicks/month</span>
+                  <span>⚠️ <strong>Keyword Alert:</strong> Competitor ranking #1 for "air fryer 4 litre under 4000" you're at position #17. Recommend: Add to title + listing. Est. traffic gain: +280 clicks/month</span>
                   <button className="dash-fix-btn">Fix Now</button>
                 </div>
               </div>
@@ -900,11 +899,11 @@ export default function BestFlipkartAnalyticsTool() {
 
             <div className="steps">
               {[
-                { n:1, t:"Connect Your Flipkart Seller Account", d:"Link your Flipkart Seller Hub account and add the FSN IDs you want to track. The tool begins pulling your current keyword rank positions immediately — no manual setup or CSV uploads required." },
-                { n:2, t:"Competitor Keyword Crawling",           d:"The tool identifies your top 5–10 Flipkart competitors by category and crawls every keyword they rank for — including long-tail, buy-intent, price-bracket, and regional Hindi variants." },
-                { n:3, t:"Search Volume & Intent Scoring",        d:"Each keyword is scored by Flipkart monthly search volume, competition density, and buyer intent signal — separating high-value 'buy now' terms from low-value browsing terms." },
-                { n:4, t:"Pricing Automation & SmartBuy Alert",   d:"You receive a WhatsApp alert the moment a competitor undercuts you on a tracked SKU, or when a rival captures the SmartBuy badge — with a recommended repricing rule to reclaim it." },
-                { n:5, t:"AI Listing Optimisation Recommendation",d:"The platform delivers a concrete fix: 'Add air fryer 4 litre induction compatible to your Flipkart title. Estimated rank improvement: P17 → P4. Monthly traffic gain: +280 clicks.' Not data — decisions." },
+                { n:1, t:"Connect Your Flipkart Seller Account", d:"Link your Flipkart Seller Hub account and add the FSN IDs you want to track. The tool begins pulling your current keyword rank positions immediately no manual setup or CSV uploads required." },
+                { n:2, t:"Competitor Keyword Crawling",           d:"The tool identifies your top 5–10 Flipkart competitors by category and crawls every keyword they rank for including long-tail, buy-intent, price-bracket, and regional Hindi variants." },
+                { n:3, t:"Search Volume & Intent Scoring",        d:"Each keyword is scored by Flipkart monthly search volume, competition density, and buyer intent signal separating high-value 'buy now' terms from low-value browsing terms." },
+                { n:4, t:"Pricing Automation & SmartBuy Alert",   d:"You receive a WhatsApp alert the moment a competitor undercuts you on a tracked SKU, or when a rival captures the SmartBuy badge with a recommended repricing rule to reclaim it." },
+                { n:5, t:"AI Listing Optimisation Recommendation",d:"The platform delivers a concrete fix: 'Add air fryer 4 litre induction compatible to your Flipkart title. Estimated rank improvement: P17 → P4. Monthly traffic gain: +280 clicks.' Not data decisions." },
               ].map(s => (
                 <div className="step" key={s.n}>
                   <div className="step-n">{s.n}</div>
@@ -914,13 +913,13 @@ export default function BestFlipkartAnalyticsTool() {
             </div>
 
             <div className="box box-purple">
-              <div className="box-label">🔑 Key Insight</div>
-              <p>Flipkart analytics without ranking context is useless. Knowing a term has 18,000 monthly Flipkart searches means nothing if you're already ranking P2 for it. The gap — terms your competitors rank for and you don't — is where your Flipkart growth actually lives.</p>
+              <div className="box-label">Key Insight</div>
+              <p>Flipkart analytics without ranking context is useless. Knowing a term has 18,000 monthly Flipkart searches means nothing if you're already ranking P2 for it. The gap terms your competitors rank for and you don't is where your Flipkart growth actually lives.</p>
             </div>
 
             {/* S4: Types */}
             <h2 id="types">Types of Flipkart Data Indian Sellers Must Track</h2>
-            <p>Buy Intent Terms and Price Bracket Keywords deliver the highest conversion rates on Flipkart — yet are the most commonly missed by Indian sellers using global tools.</p>
+            <p>Buy Intent Terms and Price Bracket Keywords deliver the highest conversion rates on Flipkart yet are the most commonly missed by Indian sellers using global tools.</p>
 
             <div className="tbl-wrap">
               <table className="dt">
@@ -944,10 +943,10 @@ export default function BestFlipkartAnalyticsTool() {
             <h2 id="mistakes">5 Common Mistakes Indian Sellers Make With Flipkart Analytics</h2>
             <div className="mistakes">
               {[
-                { n:1, t:"Using Amazon.in Keyword Data for Flipkart Listings", p:"Amazon.in and Flipkart have completely different search indexes. A term with 40,000 monthly searches on Amazon.in may have 4,000 on Flipkart — and vice versa." },
-                { n:2, t:"Ignoring Pricing Automation — Losing the SmartBuy Badge Silently", p:"Flipkart's SmartBuy badge is the single highest-converting placement on any product search page. Sellers who lose this badge to a ₹50 price undercut and don't know within the hour are hemorrhaging conversions daily." },
-                { n:3, t:"Doing Analytics Once at Launch — Then Never Again", p:"Flipkart search trends shift festival to festival. A keyword strategy built in February is partially obsolete by Onam season. Sellers who don't continuously update their keyword sets lose ground silently." },
-                { n:4, t:"Tracking Rankings Only — Missing Competitor Keyword Movements", p:"Knowing you're ranked P8 for a term tells you where you are. Knowing your top competitor just started ranking P1 for a term you haven't added to your listing tells you where you're about to fall behind." },
+                { n:1, t:"Using Amazon.in Keyword Data for Flipkart Listings", p:"Amazon.in and Flipkart have completely different search indexes. A term with 40,000 monthly searches on Amazon.in may have 4,000 on Flipkart and vice versa." },
+                { n:2, t:"Ignoring Pricing Automation Losing the SmartBuy Badge Silently", p:"Flipkart's SmartBuy badge is the single highest-converting placement on any product search page. Sellers who lose this badge to a ₹50 price undercut and don't know within the hour are hemorrhaging conversions daily." },
+                { n:3, t:"Doing Analytics Once at Launch Then Never Again", p:"Flipkart search trends shift festival to festival. A keyword strategy built in February is partially obsolete by Onam season. Sellers who don't continuously update their keyword sets lose ground silently." },
+                { n:4, t:"Tracking Rankings Only Missing Competitor Keyword Movements", p:"Knowing you're ranked P8 for a term tells you where you are. Knowing your top competitor just started ranking P1 for a term you haven't added to your listing tells you where you're about to fall behind." },
                 { n:5, t:"Skipping Regional Language Keywords Entirely", p:"Hindi and Hinglish search queries on Flipkart are growing at over 28% year-on-year. Terms like 'sasta mobile under 8000' have high buy intent and very low competition from English-only optimised sellers." },
               ].map(m => (
                 <div className="mistake" key={m.n}>
@@ -972,38 +971,37 @@ export default function BestFlipkartAnalyticsTool() {
             </div>
 
             <div className="box box-red">
-              <div className="box-label">⚠️ Worth Noting</div>
+              <div className="box-label">Worth Noting</div>
               <p>Every week without structured Flipkart analytics is a week of organic traffic being silently redirected to a competitor who does it properly. A 3-month delay in adopting an analytics tool can translate to 8–12 months of catch-up time on rank recovery.</p>
             </div>
 
 
             {/* S7: Weekly model */}
             <h2 id="weekly-model">Best Practices: Weekly Execution Model for Flipkart Sellers</h2>
-            <p>The most successful Indian Flipkart sellers don't run analytics in one-time sprints — they run a structured weekly rhythm that keeps their listings consistently competitive without manual effort.</p>
+            <p>The most successful Indian Flipkart sellers don't run analytics in one-time sprints they run a structured weekly rhythm that keeps their listings consistently competitive without manual effort.</p>
 
             <div className="exec-block">
-              <h4><span className="exec-badge exec-d">D</span> Daily — Automated (0 Minutes of Your Time)</h4>
-              {["Morning WhatsApp digest: top 5 rank changes across tracked Flipkart FSNs","Act on Critical Rank Drop alerts — any position loss of 5+ spots on buy-intent keywords","Competitor new keyword entry alert — know when a rival starts ranking for a new term","SmartBuy badge status for top 10 SKUs — pricing position and visibility combined"].map((item, i) => <div className="exec-item" key={i}>{item}</div>)}
+              <h4><span className="exec-badge exec-d">D</span> Daily Automated (0 Minutes of Your Time)</h4>
+              {["Morning WhatsApp digest: top 5 rank changes across tracked Flipkart FSNs","Act on Critical Rank Drop alerts any position loss of 5+ spots on buy-intent keywords","Competitor new keyword entry alert know when a rival starts ranking for a new term","SmartBuy badge status for top 10 SKUs pricing position and visibility combined"].map((item, i) => <div className="exec-item" key={i}>{item}</div>)}
             </div>
             <div className="exec-block">
-              <h4><span className="exec-badge exec-w">W</span> Weekly — 30-Minute Review Session</h4>
-              {["Full keyword gap report — identify top 8 gaps between your rank and competitor rank on Flipkart","Update listing fields on 2–4 FSNs using AI-generated keyword recommendations","Check new buy-intent terms emerging in your Flipkart category this week","Review pricing automation rules — adjust floor/ceiling for 1–2 high-competition SKUs"].map((item, i) => <div className="exec-item" key={i}>{item}</div>)}
+              <h4><span className="exec-badge exec-w">W</span> Weekly 30-Minute Review Session</h4>
+              {["Full keyword gap report identify top 8 gaps between your rank and competitor rank on Flipkart","Update listing fields on 2–4 FSNs using AI-generated keyword recommendations","Check new buy-intent terms emerging in your Flipkart category this week","Review pricing automation rules adjust floor/ceiling for 1–2 high-competition SKUs"].map((item, i) => <div className="exec-item" key={i}>{item}</div>)}
             </div>
             <div className="exec-block">
-              <h4><span className="exec-badge exec-m">M</span> Monthly — Strategic Audit (45 Minutes)</h4>
-              {["Keyword coverage audit before festive season — are all seasonal terms in your Flipkart title?","New product gap analysis — which keyword clusters have high volume and low competition?","Revenue impact review — compare organic traffic before vs after last month's keyword updates","Competitor new product keyword sets — what terms are rivals' new Flipkart launches targeting?"].map((item, i) => <div className="exec-item" key={i}>{item}</div>)}
+              <h4><span className="exec-badge exec-m">M</span> Monthly Strategic Audit (45 Minutes)</h4>
+              {["Keyword coverage audit before festive season are all seasonal terms in your Flipkart title?","New product gap analysis — which keyword clusters have high volume and low competition?","Revenue impact review compare organic traffic before vs after last month's keyword updates","Competitor new product keyword sets what terms are rivals' new Flipkart launches targeting?"].map((item, i) => <div className="exec-item" key={i}>{item}</div>)}
             </div>
 
             <h3>Key Metrics to Track Monthly</h3>
             <div className="metrics">
               {[
-                { icon:"📊", t:"Keyword Gap Count",          d:"Number of high-volume terms competitors rank for on Flipkart that you don't. Target: reduce by 20% each month." },
-                { icon:"📈", t:"Average Flipkart Rank",       d:"Track your mean rank across your top 20 buy-intent Flipkart keywords. Direction matters more than absolute position." },
-                { icon:"🏷️", t:"SmartBuy Badge Win Rate",    d:"What % of your top SKUs hold the SmartBuy badge at any given time? Most competitive sellers target 60–80%." },
-                { icon:"🚀", t:"Traffic Recovery Rate",       d:"After listing keyword updates, track organic sessions per FSN over a 30-day recovery window to validate impact." },
+                { t:"Keyword Gap Count",          d:"Number of high-volume terms competitors rank for on Flipkart that you don't. Target: reduce by 20% each month." },
+                { t:"Average Flipkart Rank",       d:"Track your mean rank across your top 20 buy-intent Flipkart keywords. Direction matters more than absolute position." },
+                { t:"SmartBuy Badge Win Rate",    d:"What % of your top SKUs hold the SmartBuy badge at any given time? Most competitive sellers target 60–80%." },
+                { t:"Traffic Recovery Rate",       d:"After listing keyword updates, track organic sessions per FSN over a 30-day recovery window to validate impact." },
               ].map(m => (
                 <div className="metric" key={m.t}>
-                  <div className="metric-icon">{m.icon}</div>
                   <div><div className="metric-t">{m.t}</div><div className="metric-d">{m.d}</div></div>
                 </div>
               ))}
@@ -1012,7 +1010,7 @@ export default function BestFlipkartAnalyticsTool() {
             {/* Mid CTA */}
             <div className="mid-cta">
               <div>
-                <h3>Find Your Flipkart Keyword Gaps in Under 30 Minutes — Free</h3>
+                <h3>Find Your Flipkart Keyword Gaps in Under 30 Minutes Free</h3>
                 <p>Connect Flipkart Seller Hub &amp; Amazon.in. Get your first competitor keyword gap report today. WhatsApp rank alerts included.</p>
               </div>
               <button onClick={() => setLocation("/login")} style={{ flexShrink:0, background:"#7C3AED", color:"white", padding:"11px 22px", borderRadius:8, fontWeight:700, fontSize:"clamp(13px,2vw,14.5px)", whiteSpace:"nowrap", cursor:"pointer", border:"none", fontFamily:"'Sora',sans-serif", width:"100%" }} className="sm:w-auto">
@@ -1064,14 +1062,13 @@ export default function BestFlipkartAnalyticsTool() {
             <h3>What Makes an India-First Flipkart Analytics Tool Different</h3>
             {features.map((f, i) => (
               <div className="feat-highlight" key={i}>
-                <div className="feat-icon">{f.icon}</div>
                 <div><h4>{f.title}</h4><p>{f.body}</p></div>
               </div>
             ))}
 
             <div className="int-link">
               <span style={{ fontSize:"1.1rem", flexShrink:0, marginTop:1 }}>🔗</span>
-              <p>Thinking about Insydz vs Helium 10 for your India business? Read our detailed <a href="/insydz-vs-helium-10">Flipkart seller software comparison</a> — covering every feature that matters for Indian marketplace sellers.</p>
+              <p>Thinking about Insydz vs Helium 10 for your India business? Read our detailed <a href="/insydz-vs-helium-10">Flipkart seller software comparison</a> covering every feature that matters for Indian marketplace sellers.</p>
             </div>
 
             {/* S9: FAQ */}
@@ -1115,8 +1112,8 @@ export default function BestFlipkartAnalyticsTool() {
       {/* ── FINAL CTA ─────────────────────────────────────────────────────────── */}
       <div className="fc-block">
         <div className="fc-inner">
-          <h2>Winning on Flipkart in 2026 Isn't About the Best Product — It's About Being Found First.</h2>
-          <p>Insydz delivers AI-powered Flipkart marketplace intelligence built specifically for Indian sellers — with WhatsApp alerts and Flipkart tracking tools India's global competitors simply don't provide.</p>
+          <h2>Winning on Flipkart in 2026 Isn't About the Best Product It's About Being Found First.</h2>
+          <p>Insydz delivers AI-powered Flipkart marketplace intelligence built specifically for Indian sellers with WhatsApp alerts and Flipkart tracking tools India's global competitors simply don't provide.</p>
           <div className="fc-points">
             <div className="fc-pt">Forever free plan</div>
             <div className="fc-pt">No credit card needed</div>
@@ -1124,7 +1121,7 @@ export default function BestFlipkartAnalyticsTool() {
             <div className="fc-pt">WhatsApp rank alerts</div>
           </div>
           <button className="fc-btn" onClick={() => setLocation("/login")}>
-            → Start Free at insydz.com — Get Your Flipkart Gap Report Today
+            → Start Free at insydz.com Get Your Flipkart Gap Report Today
           </button>
           <p className="fc-sub">No setup required · Flipkart India &amp; Amazon.in supported · No credit card needed</p>
         </div>

@@ -827,7 +827,7 @@ export default function Pricing() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/login" className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-8 py-6 text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all w-full sm:w-auto inline-flex items-center justify-center">
-              👉 Start Free (No Credit Card)
+              Start Free (No Credit Card)
               <ArrowRight className="ml-2" />
             </Link>
             <Button
@@ -1157,7 +1157,7 @@ export default function Pricing() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link href="/login" className="bg-white text-orange-600 hover:bg-slate-100 px-8 py-6 text-lg rounded-full shadow-2xl w-full sm:w-auto font-bold inline-flex items-center justify-center">
-              👉 Start Free Now
+              Start Free Now
               <ArrowRight className="ml-2" />
             </Link>
 

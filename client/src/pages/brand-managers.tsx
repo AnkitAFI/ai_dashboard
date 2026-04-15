@@ -782,7 +782,7 @@ export default function BrandManagersPage() {
                 {[
                   "Executive summary reports generated weekly or monthly",
                   "Custom dashboard views tailored to leadership KPIs",
-                  "GMV trends, competitor benchmarks, and sentiment — in one view",
+                  "GMV trends, competitor benchmarks, and sentiment in one view",
                   "Shareable report links for cross-functional team alignment"
                 ].map((point, i) => (
                   <div key={i} className="flex items-start gap-2">

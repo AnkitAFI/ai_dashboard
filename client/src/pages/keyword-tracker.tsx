@@ -139,7 +139,7 @@ interface ProductDetail {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const API_BASE_URL = "https://api.insydz.com";
+const API_BASE_URL = "http://localhost:8000";
 
 function renderAnalysisField(value: any): string {
   if (typeof value === "string") return value;
@@ -301,7 +301,7 @@ export default function KeywordTracker() {
     try {
       const res = await fetch(`${API_BASE_URL}/keyword_tracker/rate_limit_status?user_email=${encodeURIComponent(userEmail)}`, { credentials: "include" });
       if (res.ok) setRateLimitStatus(await res.json());
-    } catch (e) {}
+    } catch (e) { }
   };
 
   const fetchProductDetail = async (productId: number) => {
@@ -479,7 +479,7 @@ export default function KeywordTracker() {
     try {
       const res = await fetch(`${API_BASE_URL}/keyword_tracker/competitor_chat/starters/${selectedProduct.id}?user_email=${encodeURIComponent(userEmail)}`, { credentials: "include" });
       if (res.ok) setChatStarters(await res.json());
-    } catch (e) {}
+    } catch (e) { }
   };
 
   const handleSendChat = async (message?: string) => {
@@ -663,7 +663,7 @@ export default function KeywordTracker() {
                 <Button onClick={handleFetchProducts} disabled={loading || !userEmail || (!!userId && !canTrack)} className={`w-full ${userId && !canTrack ? "bg-slate-300 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"}`}>
                   {loading ? <><Loader2 className="h-4 w-4 animate-spin mr-2" />Fetching Products & Reviews...</>
                     : userId && !canTrack ? <><Lock className="h-4 w-4 mr-2" />Limit Reached</>
-                    : <><Search className="h-4 w-4 mr-2" />Fetch Products & Reviews</>}
+                      : <><Search className="h-4 w-4 mr-2" />Fetch Products & Reviews</>}
                 </Button>
               </CardContent>
             </Card>
