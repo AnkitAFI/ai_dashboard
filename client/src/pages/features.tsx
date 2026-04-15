@@ -113,7 +113,6 @@ function PriceTrackingMock() {
         </div>
       ))}
       <div className="mt-2 sm:mt-3 p-2.5 sm:p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-xl flex items-center gap-2">
-        <span className="text-base sm:text-lg">💬</span>
         <span className="text-xs text-green-700 dark:text-green-400 font-medium">WhatsApp: Competitor A dropped ₹150. React now.</span>
       </div>
     </div>
@@ -147,7 +146,7 @@ function ReviewAnalyticsMock() {
       </div>
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl p-2.5 sm:p-3">
         <p className="text-xs font-semibold text-red-700 dark:text-red-400 mb-1">⚠ Top complaint (23 mentions)</p>
-        <p className="text-xs text-red-600 dark:text-red-300">"Packaging damaged during delivery" — fix to improve rating</p>
+        <p className="text-xs text-red-600 dark:text-red-300">"Packaging damaged during delivery" fix to improve rating</p>
       </div>
     </div>
   );
@@ -174,7 +173,7 @@ function PriceOptMock() {
         ))}
       </div>
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-2.5 sm:p-3">
-        <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">💡 AI: Drop ₹120 now — competitors are ₹1,249. Win more Buy Box without hurting margins.</p>
+        <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">AI: Drop ₹120 now — competitors are ₹1,249. Win more Buy Box without hurting margins.</p>
       </div>
     </div>
   );
@@ -242,9 +241,9 @@ function ProductResearchMock() {
 
 function AIMock() {
   const insights = [
-    { icon: "🎯", text: "Reduce price by ₹80 to recapture Buy Box — 3 competitors below you", tag: "Pricing", tagColor: "bg-orange-100 text-orange-700" },
-    { icon: "📦", text: "Improve packaging: 31 reviews mention damage in transit this month", tag: "Product", tagColor: "bg-red-100 text-red-700" },
-    { icon: "🔍", text: "You lost rank for 'wireless earbuds' — add keyword to title", tag: "SEO", tagColor: "bg-blue-100 text-blue-700" },
+    {  text: "Reduce price by ₹80 to recapture Buy Box 3 competitors below you", tag: "Pricing", tagColor: "bg-orange-100 text-orange-700" },
+    {  text: "Improve packaging: 31 reviews mention damage in transit this month", tag: "Product", tagColor: "bg-red-100 text-red-700" },
+    {  text: "You lost rank for 'wireless earbuds' add keyword to title", tag: "SEO", tagColor: "bg-blue-100 text-blue-700" },
   ];
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl border-2 border-gray-100 dark:border-gray-700 p-4 sm:p-5 shadow-lg">
@@ -256,7 +255,6 @@ function AIMock() {
         {insights.map((ins, i) => (
           <div key={i} className="p-2.5 sm:p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
             <div className="flex items-start gap-2">
-              <span className="text-sm sm:text-base">{ins.icon}</span>
               <div className="flex-1">
                 <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">{ins.text}</p>
                 <span className={`inline-block mt-1 sm:mt-1.5 text-xs font-semibold px-2 py-0.5 rounded-full ${ins.tagColor}`}>{ins.tag}</span>
@@ -276,9 +274,9 @@ function WhatsAppMock() {
     return () => clearInterval(t);
   }, []);
   const msgs = [
-    "🔔 Insydz Alert: Competitor A dropped price to ₹1,249 (-₹150)",
-    "📉 Buy Box at risk for ASIN B08X7GH21K — act within 2 hours",
-    "✅ You updated price to ₹1,269. Buy Box secured.",
+    "Insydz Alert: Competitor A dropped price to ₹1,249 (-₹150)",
+    "Buy Box at risk for ASIN B08X7GH21K — act within 2 hours",
+    "You updated price to ₹1,269. Buy Box secured.",
   ];
   return (
     <div className="bg-[#0b141a] rounded-2xl border-2 border-gray-700 p-4 sm:p-5 shadow-lg min-h-[180px] sm:min-h-[200px]">
@@ -333,7 +331,7 @@ function FestiveTrendMock() {
         ))}
       </div>
       <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-xl p-2.5 sm:p-3">
-        <p className="text-xs text-orange-700 dark:text-orange-300 font-medium">🎯 Stock up on earbuds now — Diwali demand peaks 12 days out. Competitors already raising prices.</p>
+        <p className="text-xs text-orange-700 dark:text-orange-300 font-medium">Stock up on earbuds now — Diwali demand peaks 12 days out. Competitors already raising prices.</p>
       </div>
     </div>
   );
@@ -415,7 +413,7 @@ function FeatureSection({ id, tag, tagColor, h2, desc, outcomes, howItWorks, sce
 
             <div className="flex flex-wrap gap-2 sm:gap-3">
               <Link href={route} className={`bg-gradient-to-r ${gradient} text-white font-bold px-5 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-lg hover:shadow-xl transition-all inline-flex items-center text-xs sm:text-sm`}>
-                View Feature →
+                View Feature
                 <ArrowRight className="ml-1 w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </Link>
               <a href="/signup" className="border-2 border-orange-300 text-orange-600 hover:bg-orange-50 font-semibold px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm inline-block">
@@ -568,10 +566,10 @@ export default function AllFeaturesPage() {
   const features: FeatureSectionProps[] = [
     {
       id: "price-tracking",
-      h2: "Competitor Price Tracking — React Before You Lose the Buy Box",
-      desc: "Track every competitor price movement across Amazon India and Flipkart in real time. Not once a day. Continuously. When a competitor drops their price by ₹150 at 11 PM, Insydz catches it, calculates the impact on your Buy Box position, and pings you on WhatsApp — before you wake up and before you lose sales.",
+      h2: "Competitor Price Tracking React Before You Lose the Buy Box",
+      desc: "Track every competitor price movement across Amazon India and Flipkart in real time. Not once a day. Continuously. When a competitor drops their price by ₹150 at 11 PM, Insydz catches it, calculates the impact on your Buy Box position, and pings you on WhatsApp before you wake up and before you lose sales.",
       outcomes: ["Real-time price change detection across unlimited competitors", "Floor price alerts so you never discount below your margin", "Buy Box win/loss tracking with actionable guidance", "Price history graphs to spot seasonal patterns"],
-      howItWorks: "Insydz monitors every competitor listing linked to your products 24/7. The moment a price drops beyond your threshold, you get an instant WhatsApp alert with the competitor name, ASIN, price change, and a recommended response — so you can act in minutes, not hours.",
+      howItWorks: "Insydz monitors every competitor listing linked to your products 24/7. The moment a price drops beyond your threshold, you get an instant WhatsApp alert with the competitor name, ASIN, price change, and a recommended response so you can act in minutes, not hours.",
       scenario: "A Bluetooth earbuds seller in Chennai tracks 8 competitors. When one drops to ₹1,249, Insydz sends a WhatsApp alert: 'Competitor A dropped ₹150. Your Buy Box is at risk. Suggested response: ₹1,279 (+12% sales, above floor price).' He acts in 8 minutes. Buy Box secured.",
       route: "/features/competitor-price-tracking-feature",
       mock: <PriceTrackingMock />,
@@ -581,11 +579,11 @@ export default function AllFeaturesPage() {
     },
     {
       id: "review-analytics",
-      h2: "Review Analytics — Analyze Amazon Reviews Automatically",
-      desc: "Most Indian sellers read reviews only when something goes wrong. By then, 30+ customers have already seen the complaints and chosen a competitor. Insydz automatically analyzes thousands of customer reviews across your listings to surface patterns, complaint clusters, and product improvement opportunities — before they tank your rating.",
-      outcomes: ["Automated theme detection: packaging complaints, size issues, delivery damage", "Sentiment tracking over time — are ratings improving or declining?", "Competitor review gaps: what customers love about rivals that you're missing", "Actionable fix suggestions tied to review patterns"],
-      howItWorks: "Insydz ingests all reviews for your products and competitors, runs sentiment analysis, clusters repeated complaints, and surfaces the top 3 things customers hate — and love. You get a weekly digest and real-time flag when a new complaint pattern emerges.",
-      scenario: "A kitchenware seller in Delhi notices her 4-star product keeps getting reviews mentioning 'handle broke after 2 weeks.' She didn't catch it for 6 weeks — 23 mentions went unaddressed. With Insydz review analytics, the complaint cluster surfaces in day 3, tagged and prioritized. She sources a better handle. Rating goes from 4.1 to 4.6 in 8 weeks.",
+      h2: "Review Analytics Analyze Amazon Reviews Automatically",
+      desc: "Most Indian sellers read reviews only when something goes wrong. By then, 30+ customers have already seen the complaints and chosen a competitor. Insydz automatically analyzes thousands of customer reviews across your listings to surface patterns, complaint clusters, and product improvement opportunities before they tank your rating.",
+      outcomes: ["Automated theme detection: packaging complaints, size issues, delivery damage", "Sentiment tracking over time are ratings improving or declining?", "Competitor review gaps: what customers love about rivals that you're missing", "Actionable fix suggestions tied to review patterns"],
+      howItWorks: "Insydz ingests all reviews for your products and competitors, runs sentiment analysis, clusters repeated complaints, and surfaces the top 3 things customers hate and love. You get a weekly digest and real-time flag when a new complaint pattern emerges.",
+      scenario: "A kitchenware seller in Delhi notices her 4-star product keeps getting reviews mentioning 'handle broke after 2 weeks.' She didn't catch it for 6 weeks 23 mentions went unaddressed. With Insydz review analytics, the complaint cluster surfaces in day 3, tagged and prioritized. She sources a better handle. Rating goes from 4.1 to 4.6 in 8 weeks.",
       route: "/features/review-analytics-feature",
       mock: <ReviewAnalyticsMock />,
       flip: true,
@@ -595,8 +593,8 @@ export default function AllFeaturesPage() {
     },
     {
       id: "price-optimization",
-      h2: "AI Price Optimization — Stop Guessing, Start Winning",
-      desc: "Pricing on Amazon India isn't about being the cheapest. It's about pricing at the exact point where you win the most sales without destroying your margin. Insydz uses competitor data, demand signals, and market trends to generate AI-backed pricing suggestions — specific to your product, your category, and your margin structure.",
+      h2: "AI Price Optimization Stop Guessing, Start Winning",
+      desc: "Pricing on Amazon India isn't about being the cheapest. It's about pricing at the exact point where you win the most sales without destroying your margin. Insydz uses competitor data, demand signals, and market trends to generate AI-backed pricing suggestions specific to your product, your category, and your margin structure.",
       outcomes: ["AI price suggestions updated in real time based on live competitor pricing", "Demand-adjusted recommendations during festive seasons and sales events", "Clear 'suggested vs floor' breakdowns in INR", "No more manual spreadsheet repricing"],
       howItWorks: "The AI analyses your current price, floor price, competitor landscape, and historical demand patterns to recommend an optimal price point. It factors in festive periods, competitor gaps, and Buy Box velocity — giving you one clear number with a reason.",
       scenario: "A fashion accessories seller in Mumbai is pricing at ₹1,399. Insydz's AI price engine shows: Suggested ₹1,279 (+12% projected sales), Floor ₹1,180 (minimum margin). It flags: 'Drop ₹120 now — 3 competitors are at ₹1,249. Win more Buy Box without hurting margins.' She makes the change. Sales jump 18% in 3 days.",
@@ -608,10 +606,10 @@ export default function AllFeaturesPage() {
     },
     {
       id: "keyword-tracking",
-      h2: "Keyword & Rank Tracking — Own the Search Results on Amazon & Flipkart",
-      desc: "If customers can't find your product, price and quality don't matter. Keyword rank on Amazon India and Flipkart is the invisible lever that controls your visibility — and most sellers have no idea where they stand. Insydz tracks your daily keyword rankings, shows you exactly what your competitors rank for, and recommends the actions that will improve your organic visibility.",
-      outcomes: ["Daily rank tracking for all target keywords on Amazon India & Flipkart", "Competitor keyword gap analysis — keywords they rank for that you don't", "Rank movement alerts: when you drop, Insydz tells you why and what to fix", "SEO action recommendations: title updates, backend keyword fixes, A+ content suggestions"],
-      howItWorks: "Enter your target keywords and competitor ASINs. Insydz tracks rank positions daily, shows movement trends, identifies keyword gaps your competitors exploit, and alerts you when you drop significantly — so you can update listings before traffic drops.",
+      h2: "Keyword & Rank Tracking Own the Search Results on Amazon & Flipkart",
+      desc: "If customers can't find your product, price and quality don't matter. Keyword rank on Amazon India and Flipkart is the invisible lever that controls your visibility and most sellers have no idea where they stand. Insydz tracks your daily keyword rankings, shows you exactly what your competitors rank for, and recommends the actions that will improve your organic visibility.",
+      outcomes: ["Daily rank tracking for all target keywords on Amazon India & Flipkart", "Competitor keyword gap analysis keywords they rank for that you don't", "Rank movement alerts: when you drop, Insydz tells you why and what to fix", "SEO action recommendations: title updates, backend keyword fixes, A+ content suggestions"],
+      howItWorks: "Enter your target keywords and competitor ASINs. Insydz tracks rank positions daily, shows movement trends, identifies keyword gaps your competitors exploit, and alerts you when you drop significantly so you can update listings before traffic drops.",
       scenario: "An electronics reseller in Hyderabad is losing rank for 'noise cancelling earbuds under 2000.' Insydz shows: Rank #12 → dropped 5 spots this week. Competitor A added this exact keyword to their title. Insydz recommends: 'Add to product title. Expected rank improvement: +4–6 positions.' He updates the title. Rank recovers in 11 days.",
       route: "/features/keyword-rank-tracking-feature",
       mock: <KeywordMock />,
@@ -623,10 +621,10 @@ export default function AllFeaturesPage() {
     {
       id: "product-research",
       h2: "Product Research — Find What Sells Before You Invest a Rupee",
-      desc: "The most expensive mistake in Indian e-commerce is sourcing the wrong product. A product that looks promising in a marketplace browse can have crushing competition, thin margins, and a 2.8-star review average — all invisible until after you've paid a manufacturer. Insydz's product research tool gives you an Opportunity Score for any product before you launch.",
-      outcomes: ["Opportunity Score out of 100 — combining demand, competition, and margin potential", "Search demand data: how many buyers are actively looking", "Competition level: how hard is it to rank and win sales in this category?", "Margin potential: can this product actually make money at current market prices?"],
-      howItWorks: "Search any category or keyword. Insydz scores each opportunity on demand volume, competition density, average margins, and review sentiment — giving you an Opportunity Score so you can compare and prioritize before committing inventory.",
-      scenario: "A new seller in Coimbatore is deciding between two product ideas. Product A: Score 87/100 — Search Demand 92%, Competition 34%, Margin Potential 78%. Product B: Score 41/100 — flooded category, thin margins. He goes with Product A. Sells ₹1.2L in the first month without any paid ads.",
+      desc: "The most expensive mistake in Indian e-commerce is sourcing the wrong product. A product that looks promising in a marketplace browse can have crushing competition, thin margins, and a 2.8-star review average all invisible until after you've paid a manufacturer. Insydz's product research tool gives you an Opportunity Score for any product before you launch.",
+      outcomes: ["Opportunity Score out of 100 combining demand, competition, and margin potential", "Search demand data: how many buyers are actively looking", "Competition level: how hard is it to rank and win sales in this category?", "Margin potential: can this product actually make money at current market prices?"],
+      howItWorks: "Search any category or keyword. Insydz scores each opportunity on demand volume, competition density, average margins, and review sentiment giving you an Opportunity Score so you can compare and prioritize before committing inventory.",
+      scenario: "A new seller in Coimbatore is deciding between two product ideas. Product A: Score 87/100 Search Demand 92%, Competition 34%, Margin Potential 78%. Product B: Score 41/100 flooded category, thin margins. He goes with Product A. Sells ₹1.2L in the first month without any paid ads.",
       route: "/features/product-research-feature",
       mock: <ProductResearchMock />,
       gradient: "from-yellow-500 to-orange-500",
@@ -635,11 +633,11 @@ export default function AllFeaturesPage() {
     },
     {
       id: "ai-recommendations",
-      h2: "AI Recommendations — Know Exactly What to Do Next",
+      h2: "AI Recommendations Know Exactly What to Do Next",
       desc: "Data without direction is noise. Most Amazon seller tools give you charts and leave you to figure out what to do. Insydz gives you a clear, prioritized action list every day — so you always know your next move. No dashboard fatigue. No missed alerts buried in a report. Just three things that will move your business forward today.",
       outcomes: ["Daily AI-generated action recommendations across pricing, SEO, and product quality", "Priority-ranked actions: highest-impact tasks surface first", "Cross-feature intelligence: one recommendation combines insights from price, review, and keyword data", "Clear next steps tied to specific products and listings"],
-      howItWorks: "Every morning, Insydz's AI synthesizes your price data, reviews, keyword movements, and competitor actions into a prioritized recommendation list. Each card explains what changed, why it matters, and exactly what you should do — in plain language.",
-      scenario: "A D2C skincare brand in Pune logs into Insydz. Three recommendations waiting: (1) Pricing — 'Reduce price by ₹80 to recapture Buy Box — 3 competitors are below you.' (2) Product — 'Improve packaging: 31 reviews mention damage in transit this month.' (3) SEO — 'You lost rank for wireless earbuds — add keyword to title.' Three actions. Twenty minutes. Done.",
+      howItWorks: "Every morning, Insydz's AI synthesizes your price data, reviews, keyword movements, and competitor actions into a prioritized recommendation list. Each card explains what changed, why it matters, and exactly what you should do in plain language.",
+      scenario: "A D2C skincare brand in Pune logs into Insydz. Three recommendations waiting: (1) Pricing 'Reduce price by ₹80 to recapture Buy Box — 3 competitors are below you.' (2) Product 'Improve packaging: 31 reviews mention damage in transit this month.' (3) SEO — 'You lost rank for wireless earbuds — add keyword to title.' Three actions. Twenty minutes. Done.",
       route: "/features/ai-recommendations-feature",
       mock: <AIMock />,
       flip: true,
@@ -651,10 +649,10 @@ export default function AllFeaturesPage() {
       id: "whatsapp-alerts",
       tag: "NEW",
       tagColor: "bg-green-100 text-green-700",
-      h2: "WhatsApp Alerts — Critical Seller Alerts, Delivered Where You Actually Are",
-      desc: "Indian sellers don't sit at a desktop refreshing dashboards. You're at a factory, at a warehouse, on a call, or managing a family business from a phone. That's why Insydz delivers all critical alerts directly to WhatsApp. When something changes that needs your attention — price drop, rank fall, review spike — you hear about it in seconds, not hours.",
+      h2: "WhatsApp Alerts Critical Seller Alerts, Delivered Where You Actually Are",
+      desc: "Indian sellers don't sit at a desktop refreshing dashboards. You're at a factory, at a warehouse, on a call, or managing a family business from a phone. That's why Insydz delivers all critical alerts directly to WhatsApp. When something changes that needs your attention — price drop, rank fall, review spike you hear about it in seconds, not hours.",
       outcomes: ["Instant WhatsApp notifications for price changes, Buy Box loss, and rank drops", "Formatted alerts with context: what happened, what's at risk, and what to do", "No more missed emails, ignored push notifications, or skipped dashboards", "Configurable alert types: choose what you want to be notified about"],
-      howItWorks: "Connect your WhatsApp number in one click. You choose which events trigger alerts — competitor price drops, Buy Box loss, ranking falls, review spikes. Each alert includes the context and a recommended action. No login required to act.",
+      howItWorks: "Connect your WhatsApp number in one click. You choose which events trigger alerts competitor price drops, Buy Box loss, ranking falls, review spikes. Each alert includes the context and a recommended action. No login required to act.",
       scenario: "It's 9:30 PM. A kitchenware seller from Rajkot is done for the day. His phone buzzes on WhatsApp: 'Insydz Alert: Competitor A dropped to ₹1,249 (−₹150). Buy Box at risk for ASIN B08X7GH21K — act within 2 hours.' He adjusts price from his phone. WhatsApp confirms: 'You updated to ₹1,269. Buy Box secured.' Total time: 4 minutes.",
       route: "/features/whatsapp-alerts-feature",
       mock: <WhatsAppMock />,
@@ -666,10 +664,10 @@ export default function AllFeaturesPage() {
       id: "festive-trend",
       tag: "Coming Soon 2026",
       tagColor: "bg-orange-100 text-orange-700",
-      h2: "Festive Trend Intelligence — Win Diwali Before It Starts",
-      desc: "Diwali, Big Billion Day, Navratri, and Republic Day Sale are the biggest revenue opportunities of the year for Indian sellers. Most miss them — not because they don't try, but because they start preparing too late. Insydz Festive Trend Intelligence gives you demand forecasts 12–15 days ahead of major festive events, so you can stock, price, and rank before the rush hits.",
-      outcomes: ["Festive demand forecast timelines: Diwali in 12 days — demand at 94%", "Category-specific product recommendations for pre-festive stocking", "Festive keyword identification: which search terms spike before each event", "Competitor festive pricing alerts: when rivals start raising prices pre-event"],
-      howItWorks: "Insydz tracks historical festive demand patterns across Amazon India and Flipkart, then forecasts demand curves for your category 30 days in advance. You get a countdown dashboard with recommended actions — stock levels, pricing moves, and keyword priorities — timed for maximum impact.",
+      h2: "Festive Trend Intelligence Win Diwali Before It Starts",
+      desc: "Diwali, Big Billion Day, Navratri, and Republic Day Sale are the biggest revenue opportunities of the year for Indian sellers. Most miss them not because they don't try, but because they start preparing too late. Insydz Festive Trend Intelligence gives you demand forecasts 12–15 days ahead of major festive events, so you can stock, price, and rank before the rush hits.",
+      outcomes: ["Festive demand forecast timelines: Diwali in 12 days demand at 94%", "Category-specific product recommendations for pre-festive stocking", "Festive keyword identification: which search terms spike before each event", "Competitor festive pricing alerts: when rivals start raising prices pre-event"],
+      howItWorks: "Insydz tracks historical festive demand patterns across Amazon India and Flipkart, then forecasts demand curves for your category 30 days in advance. You get a countdown dashboard with recommended actions stock levels, pricing moves, and keyword priorities timed for maximum impact.",
       scenario: "It's October 10th. Insydz alerts a home décor seller: 'Diwali demand peaks in 12 days. Earbuds and lighting accessories trending. 4 competitors already raising prices. Stock up. Update festive keywords now.' The seller acts immediately, optimizes listings, and captures early festive traffic while competitors are still reacting.",
       route: "/features/festive-trend-feature",
       mock: <FestiveTrendMock />,
@@ -688,17 +686,17 @@ export default function AllFeaturesPage() {
   ];
 
   const whyPoints = [
-    { icon: <Layers className="w-5 h-5 sm:w-6 sm:h-6" />, title: "No tool switching", desc: "Tool switching costs you time — you're spending 90 minutes a day managing dashboards instead of your business. All intelligence in one place." },
-    { icon: <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" />, title: "No data overload", desc: "Isolated tools don't talk to each other. Insydz surfaces actions, not raw numbers. You see what to do — not just what happened." },
+    { icon: <Layers className="w-5 h-5 sm:w-6 sm:h-6" />, title: "No tool switching", desc: "Tool switching costs you time you're spending 90 minutes a day managing dashboards instead of your business. All intelligence in one place." },
+    { icon: <RefreshCw className="w-5 h-5 sm:w-6 sm:h-6" />, title: "No data overload", desc: "Isolated tools don't talk to each other. Insydz surfaces actions, not raw numbers. You see what to do not just what happened." },
     { icon: <Target className="w-5 h-5 sm:w-6 sm:h-6" />, title: "Clear actions always", desc: "A chart showing keyword rank is not a recommendation. Every Insydz insight comes with an exact next step, not a chart to interpret." },
-    { icon: <Globe className="w-5 h-5 sm:w-6 sm:h-6" />, title: "Built for India", desc: "Amazon India and Flipkart — not a global tool retrofitted for Indian markets. INR pricing, Indian festive seasons, Indian competition patterns." },
+    { icon: <Globe className="w-5 h-5 sm:w-6 sm:h-6" />, title: "Built for India", desc: "Amazon India and Flipkart not a global tool retrofitted for Indian markets. INR pricing, Indian festive seasons, Indian competition patterns." },
   ];
 
   const sellerStages = [
-    { emoji: "🌱", title: "New Sellers", desc: "Starting on Amazon or Flipkart and not sure what products to sell or how to price them? Use Insydz's product research tool to identify high-demand, low-competition opportunities — before you spend a rupee on inventory.", cta: "Start Free →", ctaRoute: "/signup", gradient: "from-green-500 to-emerald-500" },
-    { emoji: "📈", title: "Growing Sellers", desc: "Already selling but feeling like competitors are always one step ahead? Insydz's competitor price tracking, WhatsApp alerts, and AI recommendations keep you ahead of price drops, rank changes, and review crises — automatically.", cta: "Try Growth Plan →", ctaRoute: "/pricing", gradient: "from-blue-500 to-cyan-500" },
-    { emoji: "🏷️", title: "D2C Brands", desc: "Building a brand on Amazon India or Flipkart? Review analytics helps you understand how customers actually experience your product. AI recommendations surface the product quality improvements and pricing adjustments that protect your brand rating.", cta: "Start Free →", ctaRoute: "/signup", gradient: "from-purple-500 to-pink-500" },
-    { emoji: "🏢", title: "Agencies & Brand Managers", desc: "Managing multiple seller accounts? Insydz gives you a single intelligence layer across all your clients — with daily AI recommendations, automated alerts, and clear reporting that makes client reviews faster and decisions sharper.", cta: "Book a Demo →", ctaRoute: "/about/contact-us", gradient: "from-orange-500 to-red-500" },
+    {  title: "New Sellers", desc: "Starting on Amazon or Flipkart and not sure what products to sell or how to price them? Use Insydz's product research tool to identify high-demand, low-competition opportunities before you spend a rupee on inventory.", cta: "Start Free →", ctaRoute: "/signup", gradient: "from-green-500 to-emerald-500" },
+    {  title: "Growing Sellers", desc: "Already selling but feeling like competitors are always one step ahead? Insydz's competitor price tracking, WhatsApp alerts, and AI recommendations keep you ahead of price drops, rank changes, and review crises automatically.", cta: "Try Growth Plan →", ctaRoute: "/pricing", gradient: "from-blue-500 to-cyan-500" },
+    {  title: "D2C Brands", desc: "Building a brand on Amazon India or Flipkart? Review analytics helps you understand how customers actually experience your product. AI recommendations surface the product quality improvements and pricing adjustments that protect your brand rating.", cta: "Start Free →", ctaRoute: "/signup", gradient: "from-purple-500 to-pink-500" },
+    {  title: "Agencies & Brand Managers", desc: "Managing multiple seller accounts? Insydz gives you a single intelligence layer across all your clients — with daily AI recommendations, automated alerts, and clear reporting that makes client reviews faster and decisions sharper.", cta: "Book a Demo →", ctaRoute: "/about/contact-us", gradient: "from-orange-500 to-red-500" },
   ];
 
   const roiRows = [
@@ -807,17 +805,17 @@ export default function AllFeaturesPage() {
               </h1>
 
               <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
-                Stop juggling 5 different dashboards to run your Amazon or Flipkart business. Insydz combines competitor tracking, review intelligence, keyword ranking, AI pricing, and WhatsApp alerts —
+                Stop juggling 5 different dashboards to run your Amazon or Flipkart business. Insydz combines competitor tracking, review intelligence, keyword ranking, AI pricing, and WhatsApp alerts
                 <span className="text-orange-700 font-semibold"> one connected platform for India's growing sellers.</span>
               </p>
 
               <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 leading-relaxed max-w-xl">
-                Whether you're selling electronics in Surat, apparel in Tirupur, or managing 30 brands from an agency in Bengaluru — Insydz gives you the intelligence to act first, price smarter, and sell more.
+                Whether you're selling electronics in Surat, apparel in Tirupur, or managing 30 brands from an agency in Bengaluru Insydz gives you the intelligence to act first, price smarter, and sell more.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full">
-                    <a href="/signup" className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-6 sm:px-8 py-4 sm:py-6 text-sm sm:text-base md:text-lg rounded-full shadow-2xl transition-all inline-flex items-center justify-center">
-                  👉 Start Free — No Credit Card Required
+                    <a href="/signup" className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-16 sm:px-8 py-3 sm:py-2 text-sm sm:text-base md:text-sm rounded-full shadow-2xl transition-all inline-flex items-center justify-center">
+                  Start Free — No Credit Card Required
                   <ArrowRight className="ml-2 w-4 h-4" />
                 </a>
                 <Button onClick={() => document.getElementById("price-tracking")?.scrollIntoView({ behavior: "smooth" })} size="lg" variant="outline" className="w-full sm:w-auto border-2 border-orange-600 text-orange-700 dark:text-orange-500 hover:bg-orange-50 font-semibold px-6 sm:px-8 py-4 sm:py-6 text-sm sm:text-base md:text-lg rounded-full">
@@ -873,11 +871,11 @@ export default function AllFeaturesPage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8 sm:mb-10">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-3 sm:mb-4">
-              Why Indian Sellers Lose Sales Every Day —{" "}
+              Why Indian Sellers Lose Sales Every Day{" "}
               <span className="text-orange-600">And Don't Know Why</span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-3xl mx-auto">
-              Most Amazon and Flipkart sellers in India are running blind. You check your sales, see a drop, and have no idea if a competitor undercut you by ₹80 last night — or if 23 customers complained about your packaging this month without you noticing.
+              Most Amazon and Flipkart sellers in India are running blind. You check your sales, see a drop, and have no idea if a competitor undercut you by ₹80 last night or if 23 customers complained about your packaging this month without you noticing.
             </p>
           </div>
 
@@ -885,7 +883,7 @@ export default function AllFeaturesPage() {
             <div className="bg-white dark:bg-gray-800 border-2 border-red-100 dark:border-red-900/30 rounded-2xl p-5 sm:p-6">
               <h3 className="font-black text-gray-900 dark:text-white text-sm sm:text-base md:text-lg mb-3 sm:mb-4">Here's what a typical Indian seller's day looks like:</h3>
               <div className="space-y-2 sm:space-y-3">
-                {["Manually checking competitor prices on different tabs", "Finding out your keyword ranking dropped — after your sales already fell", "Getting no alert when a rival steals your Buy Box", "Importing a product that already has 400 sellers and a 2.8-star rating", "Guessing festive season pricing instead of knowing demand 12 days out"].map((item, i) => (
+                {["Manually checking competitor prices on different tabs", "Finding out your keyword ranking dropped after your sales already fell", "Getting no alert when a rival steals your Buy Box", "Importing a product that already has 400 sellers and a 2.8-star rating", "Guessing festive season pricing instead of knowing demand 12 days out"].map((item, i) => (
                   <div key={i} className="flex items-start gap-2 sm:gap-3">
                     <span className="text-red-500 font-bold text-base sm:text-lg mt-0.5 flex-shrink-0">✗</span>
                     <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{item}</span>
@@ -897,9 +895,9 @@ export default function AllFeaturesPage() {
 
             <div className="bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-200 dark:border-orange-700 rounded-2xl p-5 sm:p-6 flex flex-col justify-between">
               <div>
-                <p className="text-xs font-bold text-orange-600 uppercase tracking-wide mb-2 sm:mb-3">📌 Real Scenario</p>
+                <p className="text-xs font-bold text-orange-600 uppercase tracking-wide mb-2 sm:mb-3">Real Scenario</p>
                 <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed italic">
-                  A home goods seller in Jaipur was pricing at ₹1,399 while two competitors had dropped to ₹1,249. He didn't know for 4 days. He lost the Buy Box, 60+ sales, and ₹7,200 in revenue — because he had no price tracking in place.
+                  A home goods seller in Jaipur was pricing at ₹1,399 while two competitors had dropped to ₹1,249. He didn't know for 4 days. He lost the Buy Box, 60+ sales, and ₹7,200 in revenue because he had no price tracking in place.
                 </p>
               </div>
               <div className="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-orange-200 dark:border-orange-700">
@@ -924,15 +922,14 @@ export default function AllFeaturesPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {[
-              { icon: "🚫", title: "No Flipkart support", desc: "India's #2 marketplace, completely ignored by global tools." },
-              { icon: "📵", title: "No WhatsApp alerts", desc: "Indian sellers don't live inside dashboards — they live on WhatsApp." },
-              { icon: "🎆", title: "No festive forecasting", desc: "Big Billion Day and Diwali aren't on their radar at all." },
-              { icon: "🇺🇸", title: "No Indian context", desc: "No INR examples, no Indian seller context, no localized guidance." },
-              { icon: "💸", title: "Wrong pricing calibration", desc: "Advice calibrated for $50 products, not ₹499–₹2,999 products." },
-              { icon: "🔧", title: "Adapted, not built", desc: "When a tool built for US sellers tries to help you — the logic simply doesn't translate." },
+              {  title: "No Flipkart support", desc: "India's #2 marketplace, completely ignored by global tools." },
+              {  title: "No WhatsApp alerts", desc: "Indian sellers don't live inside dashboards they live on WhatsApp." },
+              {  title: "No festive forecasting", desc: "Big Billion Day and Diwali aren't on their radar at all." },
+              {  title: "No Indian context", desc: "No INR examples, no Indian seller context, no localized guidance." },
+              {  title: "Wrong pricing calibration", desc: "Advice calibrated for $50 products, not ₹499–₹2,999 products." },
+              {  title: "Adapted, not built", desc: "When a tool built for US sellers tries to help you the logic simply doesn't translate." },
             ].map((p, i) => (
               <div key={i} className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-3 sm:p-4">
-                <span className="text-xl sm:text-2xl mb-1.5 sm:mb-2 block">{p.icon}</span>
                 <h3 className="font-bold text-gray-900 dark:text-white text-xs sm:text-sm mb-1">{p.title}</h3>
                 <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{p.desc}</p>
               </div>
@@ -954,18 +951,17 @@ export default function AllFeaturesPage() {
               <span className="text-orange-600">The India-First Intelligence Platform</span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Insydz isn't a collection of isolated reports. It's a connected intelligence system — where every data point talks to every other, and surfaces the one action you need to take right now.
+              Insydz isn't a collection of isolated reports. It's a connected intelligence system where every data point talks to every other, and surfaces the one action you need to take right now.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {[
-              { trigger: "A competitor drops their price", result: "Insydz flags it, calculates your margin floor, and sends a WhatsApp alert in seconds", icon: "💰" },
-              { trigger: "Your keyword rank slips", result: "Insydz recommends the exact SEO fix, not just a chart", icon: "🔍" },
-              { trigger: "A review spike hits your listing", result: "Insydz identifies the complaint pattern before it hits your rating", icon: "⭐" },
-              { trigger: "Diwali is 12 days away", result: "Insydz shows you which products to stock, price, and rank for festive keywords now", icon: "🎆" },
+              { trigger: "A competitor drops their price", result: "Insydz flags it, calculates your margin floor, and sends a WhatsApp alert in seconds" },
+              { trigger: "Your keyword rank slips", result: "Insydz recommends the exact SEO fix, not just a chart"},
+              { trigger: "A review spike hits your listing", result: "Insydz identifies the complaint pattern before it hits your rating" },
+              { trigger: "Diwali is 12 days away", result: "Insydz shows you which products to stock, price, and rank for festive keywords now" },
             ].map((item, i) => (
               <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl p-4 sm:p-5 hover:border-orange-400 transition-all">
-                <span className="text-xl sm:text-2xl mb-2 sm:mb-3 block">{item.icon}</span>
                 <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-0.5 sm:mb-1">When</p>
                 <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white mb-1.5 sm:mb-2">{item.trigger}</p>
                 <div className="flex items-start gap-1.5 sm:gap-2">
@@ -977,7 +973,7 @@ export default function AllFeaturesPage() {
           </div>
           <div className="bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-700 rounded-xl sm:rounded-2xl p-5 sm:p-6 text-center">
             <p className="text-green-700 dark:text-green-400 font-bold text-sm sm:text-base md:text-lg">
-              ✅ Sellers using Insydz report reacting to competitor price drops 4x faster — protecting Buy Box without panic-discounting.
+              Sellers using Insydz report reacting to competitor price drops 4x faster protecting Buy Box without panic-discounting.
             </p>
           </div>
         </div>
@@ -992,7 +988,7 @@ export default function AllFeaturesPage() {
               <span className="text-orange-600">One Intelligence System.</span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Each feature works together so you make faster, better decisions — without juggling multiple dashboards.
+              Each feature works together so you make faster, better decisions without juggling multiple dashboards.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -1027,10 +1023,10 @@ export default function AllFeaturesPage() {
           {(i === 1 || i === 3 || i === 5) && (
             <div className="py-8 sm:py-10 px-4 bg-gradient-to-r from-orange-500 to-red-500">
               <div className="max-w-2xl mx-auto text-center">
-                <p className="text-white font-black text-xl sm:text-2xl mb-1.5 sm:mb-2">Try all features free — no credit card required.</p>
+                <p className="text-white font-black text-xl sm:text-2xl mb-1.5 sm:mb-2">Try all features free no credit card required.</p>
                 <p className="text-orange-100 text-xs sm:text-sm mb-4 sm:mb-5">Start free and experience real insights on your own products.</p>
                 <a href="/signup" className="w-full sm:w-auto bg-white hover:bg-gray-100 text-orange-700 font-bold px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-xl text-sm sm:text-base inline-block text-center">
-                  👉 Start Free Today
+                  Start Free Today
                 </a>
               </div>
             </div>
@@ -1047,7 +1043,7 @@ export default function AllFeaturesPage() {
               <span className="text-orange-600">A Real Numbers Example</span>
             </h2>
             <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400">
-              Insydz doesn't just save you time. It prevents the specific, costly, invisible mistakes that bleed Indian sellers dry — month after month.
+              Insydz doesn't just save you time. It prevents the specific, costly, invisible mistakes that bleed Indian sellers dry month after month.
             </p>
           </div>
           <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl border-2 border-gray-200 dark:border-gray-700 overflow-x-auto shadow-lg">
@@ -1106,7 +1102,6 @@ export default function AllFeaturesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             {sellerStages.map((stage, i) => (
               <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl p-5 sm:p-6 hover:border-orange-400 hover:shadow-xl transition-all group hover:-translate-y-1 flex flex-col">
-                <div className="text-2xl sm:text-3xl mb-3 sm:mb-4">{stage.emoji}</div>
                 <h3 className="font-black text-gray-900 dark:text-white text-lg sm:text-xl mb-2 sm:mb-3">{stage.title}</h3>
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4 sm:mb-5 flex-1">{stage.desc}</p>
                 <a href={stage.ctaRoute} className={`w-full bg-gradient-to-r ${stage.gradient} text-white font-bold py-2 sm:py-2.5 rounded-full shadow-md hover:shadow-lg transition-all text-xs sm:text-sm block text-center`}>
@@ -1154,7 +1149,7 @@ export default function AllFeaturesPage() {
             Built for Indian E-commerce Sellers
           </h2>
           <p className="text-gray-500 dark:text-gray-400 leading-relaxed max-w-3xl mx-auto text-xs sm:text-sm md:text-base">
-            Insydz features are designed for Indian Amazon and Flipkart sellers who need competitor intelligence, pricing insights, review analytics, keyword tracking, and real-time alerts — without expensive global tools or hours of manual effort. Whether you're a solo seller managing 10 products or an agency running 50 accounts, Insydz gives you structured intelligence that drives real decisions — in INR, for Indian markets, with context that actually makes sense for your business.
+            Insydz features are designed for Indian Amazon and Flipkart sellers who need competitor intelligence, pricing insights, review analytics, keyword tracking, and real-time alerts without expensive global tools or hours of manual effort. Whether you're a solo seller managing 10 products or an agency running 50 accounts, Insydz gives you structured intelligence that drives real decisions in INR, for Indian markets, with context that actually makes sense for your business.
           </p>
         </div>
       </section>
@@ -1172,16 +1167,15 @@ export default function AllFeaturesPage() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto mb-6 sm:mb-8">
             {[
-              { emoji: "🚀", label: "For New Sellers", cta: "Start Free — See Your First Insights in 2 Minutes", route: "/signup", bg: "bg-white text-orange-700" },
-              { emoji: "📈", label: "For Growing Sellers", cta: "Try Growth Plan — React Faster, Sell More", route: "/pricing", bg: "bg-orange-700 text-white border-2 border-orange-400" },
-              { emoji: "🏢", label: "For Agencies", cta: "Book a Demo — See Insydz Across Multiple Accounts", route: "/about/contact-us", bg: "bg-white text-orange-700" },
+              { label: "For New Sellers", cta: "Start Free See Your First Insights in 2 Minutes", route: "/signup", bg: "bg-white text-orange-700" },
+              { label: "For Growing Sellers", cta: "Try Growth Plan React Faster, Sell More", route: "/pricing", bg: "bg-orange-700 text-white border-2 border-orange-400" },
+              { label: "For Agencies", cta: "Book a Demo See Insydz Across Multiple Accounts", route: "/about/contact-us", bg: "bg-white text-orange-700" },
             ].map((item, i) => (
               <a
                 key={i}
                 href={item.route}
                 className={`${item.bg} rounded-xl sm:rounded-2xl p-4 sm:p-5 text-left hover:scale-105 transition-all shadow-xl block`}
               >
-                <span className="text-xl sm:text-2xl block mb-1.5 sm:mb-2">{item.emoji}</span>
                 <p className="text-xs font-bold opacity-70 mb-0.5 sm:mb-1">{item.label}</p>
                 <p className="text-xs sm:text-sm font-black leading-snug">{item.cta} →</p>
               </a>
@@ -1315,7 +1309,7 @@ export default function AllFeaturesPage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

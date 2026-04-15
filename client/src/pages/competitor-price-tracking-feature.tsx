@@ -298,7 +298,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
     {
       title: "Panic discounting destroys margins",
       description:
-        "Without a floor price set in advance, sellers drop prices impulsively — sometimes below their own profit margin. A price tracking tool without margin protection isn't tracking, it's guessing.",
+        "Without a floor price set in advance, sellers drop prices impulsively sometimes below their own profit margin. A price tracking tool without margin protection isn't tracking, it's guessing.",
       icon: <DollarSign className="w-8 h-8" />,
       color: "from-orange-500 to-yellow-500",
     },
@@ -310,7 +310,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
       color: "from-yellow-500 to-orange-500",
     },
     {
-      title: "Email alerts you check tomorrow — not tonight",
+      title: "Email alerts you check tomorrow not tonight",
       description:
         "Most price tracking tools send email notifications. Indian sellers don't monitor business email around the clock. By the time you open that email, three competitors have already stolen the Buy Box back.",
       icon: <Shield className="w-8 h-8" />,
@@ -330,19 +330,19 @@ export default function CompetitorPriceTrackingFeaturePage() {
       num: "2",
       title: "WhatsApp, not email",
       description:
-        "Alerts go to WhatsApp — where you already are. Not an email dashboard you check twice a week.",
+        "Alerts go to WhatsApp where you already are. Not an email dashboard you check twice a week.",
     },
     {
       num: "3",
       title: "INR margin calculations",
       description:
-        "Every reprice suggestion accounts for Amazon.in fees, your purchase cost, GST, and your target margin — in rupees. No currency conversion.",
+        "Every reprice suggestion accounts for Amazon.in fees, your purchase cost, GST, and your target margin in rupees. No currency conversion.",
     },
     {
       num: "4",
       title: "Festive demand intelligence",
       description:
-        "Diwali, Big Billion Days, Great Indian Festival — pricing suggestions account for demand spikes, not just competitor moves. When demand is rising 4×, Insydz factors that into your reprice logic.",
+        "Diwali, Big Billion Days, Great Indian Festival pricing suggestions account for demand spikes, not just competitor moves. When demand is rising 4×, Insydz factors that into your reprice logic.",
     },
   ];
 
@@ -350,7 +350,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
   const testimonials = [
     {
       quote:
-        "I used to check competitor prices manually every morning. By the time I reacted, the damage was done. Insydz WhatsApp alerts changed everything — I now respond to price drops within minutes, not hours. The Buy Box protection alone paid for the tool 10x over in one sale season.",
+        "I used to check competitor prices manually every morning. By the time I reacted, the damage was done. Insydz WhatsApp alerts changed everything I now respond to price drops within minutes, not hours. The Buy Box protection alone paid for the tool 10x over in one sale season.",
       name: "Suresh R.",
       role: "Electronics seller, Bengaluru · Amazon India",
     },
@@ -401,7 +401,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
     {
       advantage: "No tool switching",
       meaning:
-        "Prices, reviews, keywords, AI recommendations — all in one place. One decision from one dashboard.",
+        "Prices, reviews, keywords, AI recommendations all in one place. One decision from one dashboard.",
     },
     {
       advantage: "No data overload",
@@ -411,12 +411,12 @@ export default function CompetitorPriceTrackingFeaturePage() {
     {
       advantage: "Clear actions always",
       meaning:
-        "Every insight comes with a recommended next step — not a chart to interpret at midnight.",
+        "Every insight comes with a recommended next step not a chart to interpret at midnight.",
     },
     {
       advantage: "Built for India",
       meaning:
-        "Amazon India and Flipkart — not a global tool retrofitted for Indian markets.",
+        "Amazon India and Flipkart not a global tool retrofitted for Indian markets.",
     },
   ];
 
@@ -851,7 +851,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
               {/* Hero body — competitor price tracking software keyword density target */}
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
                 Insydz <strong>competitor price tracking software</strong> monitors every competing
-                listing on Amazon India and Flipkart — in real time — and sends a WhatsApp alert
+                listing on Amazon India and Flipkart in real time and sends a WhatsApp alert
                 the moment a competitor undercuts you.{" "}
                 <span className="text-orange-700 font-semibold">
                   With a suggested reprice that protects your margins.
@@ -859,9 +859,9 @@ export default function CompetitorPriceTrackingFeaturePage() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <a href="/login" className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 py-6 text-lg rounded-full shadow-2xl transition-all inline-flex items-center">
-                  🚀 Start Free →
-                  <ArrowRight className="ml-2" />
+                <a href="/login" className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-16 py-3 text-lg rounded-full shadow-2xl transition-all inline-flex items-center gap-2">
+                  Start Free 
+                  <ArrowRight className="w-4 h-4" />
                 </a>
                 <Button
                   onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
@@ -890,9 +890,10 @@ export default function CompetitorPriceTrackingFeaturePage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between pb-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 className="font-bold text-gray-900 dark:text-white">Live Price Monitor</h3>
-                    <span className="text-xs bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-3 py-1 rounded-full font-semibold">
-                      Live
-                    </span>
+                    <span className="flex items-center gap-2 text-xs bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-3 py-1 rounded-full font-semibold">
+  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+  Live
+</span>
                   </div>
                   <div className="space-y-3">
                     {/* Competitor A — price dropped */}
@@ -905,7 +906,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
                           <span className="text-lg font-bold text-red-600">₹1,249</span>
                         </div>
                       </div>
-                      <p className="text-xs text-red-600 font-semibold">↓ ₹150 — Buy Box at risk!</p>
+                      <p className="text-xs text-red-600 font-semibold">↓ ₹150 Buy Box at risk!</p>
                     </div>
                     {/* Your product */}
                     <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-3">
@@ -930,19 +931,18 @@ export default function CompetitorPriceTrackingFeaturePage() {
                   <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-400 dark:border-green-600 rounded-2xl p-4 mt-4">
                     <div className="flex items-start gap-3">
                       <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Smartphone className="w-5 h-5 text-white" />
                       </div>
                       <div>
                         <p className="font-bold text-gray-900 dark:text-white text-sm">WhatsApp Alert</p>
                         <p className="text-xs text-gray-600 dark:text-gray-400">
-                          "Competitor A dropped ₹150. Suggested reprice: ₹1,279 — stay above your ₹1,180 floor. React now."
+                          "Competitor A dropped ₹150. Suggested reprice: ₹1,279 stay above your ₹1,180 floor. React now."
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="absolute -top-4 -right-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl px-4 py-2 shadow-xl">
-                  <p className="text-white font-bold text-sm">🔴 Live</p>
+                  <p className="text-white font-bold text-sm">Live</p>
                 </div>
               </div>
             </div>
@@ -957,7 +957,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
           <div className="text-center mb-10">
             <h2 className="text-3xl font-black text-white mb-3">Not Isolated Tools. One Intelligence System.</h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
-              Each signal connects — so a competitor price drop doesn't just trigger an alert, it triggers a
+              Each signal connects so a competitor price drop doesn't just trigger an alert, it triggers a
               margin-safe reprice suggestion, a WhatsApp notification, and a decision you can act on in seconds.
             </p>
           </div>
@@ -983,13 +983,13 @@ export default function CompetitorPriceTrackingFeaturePage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">
-              Why Indian Sellers Lose the Buy Box —
+              Why Indian Sellers Lose the Buy Box
               <br />
               <span className="text-red-600">Even With Good Products</span>
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
               The Buy Box doesn't reward the best product. It rewards the most competitive price, at the right moment.
-              Most Indian sellers find out they've lost it hours too late — after the damage is done.
+              Most Indian sellers find out they've lost it hours too late after the damage is done.
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
@@ -1006,7 +1006,6 @@ export default function CompetitorPriceTrackingFeaturePage() {
 
           {/* Stat callout */}
           <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-3xl p-8 text-center shadow-lg">
-            <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
             <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               Late price reactions cause <span className="text-red-600">20–40% revenue leakage</span>
             </p>
@@ -1028,7 +1027,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Automated Alerts</h3>
               <p className="text-gray-700 dark:text-gray-300 text-sm">
-                Insydz <a href="/use-cases/track-competitor-prices" className="text-orange-600 underline">tracks competitor prices on Amazon India</a> — instant WhatsApp notification, never miss a change
+                Insydz <a href="/use-cases/track-competitor-prices" className="text-orange-600 underline">tracks competitor prices on Amazon India</a> instant WhatsApp notification, never miss a change
               </p>
             </div>
           </div>
@@ -1042,19 +1041,19 @@ export default function CompetitorPriceTrackingFeaturePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-3xl lg:text-4xl font-black text-gray-900 dark:text-white">
-                Track Every Price Move — Before It Costs You the Sale
+                Track Every Price Move Before It Costs You the Sale
               </h2>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                 Insydz monitors competitor prices across Amazon India and Flipkart continuously.
-                The moment a competing listing drops below yours — or near your margin floor — you know
+                The moment a competing listing drops below yours or near your margin floor you know
                 about it. Not tomorrow. <span className="font-semibold text-orange-600">Now.</span>
               </p>
               <ul className="space-y-3">
                 {[
                   "Real-time price change detection on Amazon.in and Flipkart",
                   "Track up to 500 competitor ASINs simultaneously",
-                  "Price history chart — spot patterns before sale seasons",
-                  "Set margin floor — never reprice below your profit threshold",
+                  "Price history chart spot patterns before sale seasons",
+                  "Set margin floor never reprice below your profit threshold",
                 ].map((point, i) => (
                   <li key={i} className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
@@ -1066,14 +1065,14 @@ export default function CompetitorPriceTrackingFeaturePage() {
                 onClick={handleGetStarted}
                 className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 py-4 rounded-full shadow-xl group"
               >
-                👉 Track Your First Competitor Free
+                Track Your First Competitor Free
                 <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
 
             {/* Price History Widget */}
             <div className="bg-white dark:bg-gray-800 border-2 border-orange-200 dark:border-orange-700 rounded-3xl p-8 shadow-xl">
-              <h3 className="font-bold text-gray-900 dark:text-white mb-6">Price History — 30 Days</h3>
+              <h3 className="font-bold text-gray-900 dark:text-white mb-6">Price History 30 Days</h3>
               <div className="space-y-4">
                 {[
                   { label: "Competitor A price (30 days ago)", value: "₹1,399", color: "text-gray-700 dark:text-gray-300" },
@@ -1089,7 +1088,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
               </div>
               <div className="mt-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl p-4">
                 <p className="text-xs text-orange-700 dark:text-orange-400 font-medium">
-                  💡 AI: Drop ₹120 now — 3 competitors are at ₹1,249. Win more Buy Box without hurting margins.
+                  AI: Drop ₹120 now 3 competitors are at ₹1,249. Win more Buy Box without hurting margins.
                 </p>
               </div>
             </div>
@@ -1133,18 +1132,18 @@ export default function CompetitorPriceTrackingFeaturePage() {
 
             <div className="space-y-6">
               <h2 className="text-3xl lg:text-4xl font-black text-gray-900 dark:text-white">
-                The Alert That Gets Read — Not Filed
+                The Alert That Gets Read Not Filed
               </h2>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
                 Every price alert goes directly to your WhatsApp. Not an email digest. Not a notification
-                you'll see on Monday. A WhatsApp message within seconds of a price change — with the exact
+                you'll see on Monday. A WhatsApp message within seconds of a price change with the exact
                 reprice action already calculated for you.
               </p>
               <ul className="space-y-3">
                 {[
                   "Instant WhatsApp notification on every competitor price move",
-                  "Alert includes suggested reprice — not just raw data",
-                  "Margin floor embedded — never reprice into a loss",
+                  "Alert includes suggested reprice not just raw data",
+                  "Margin floor embedded never reprice into a loss",
                   "Acknowledge and act in under 2 minutes from anywhere",
                 ].map((point, i) => (
                   <li key={i} className="flex items-start gap-3">
@@ -1162,14 +1161,14 @@ export default function CompetitorPriceTrackingFeaturePage() {
       {/* ─── MID-PAGE CTA BANNER ─────────────────────────────────────────────── */}
       <section className="py-12 px-4 bg-gradient-to-r from-orange-500 to-red-500">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl font-black text-white mb-2">Try all features free — no credit card required.</h2>
+          <h2 className="text-2xl font-black text-white mb-2">Try all features free no credit card required.</h2>
           <p className="text-orange-100 mb-6">Start free and see real-time competitor price data on your own products.</p>
           <Button
             onClick={handleGetStarted}
             size="lg"
             className="bg-white text-orange-600 hover:bg-orange-50 font-bold px-10 py-5 rounded-full shadow-2xl"
           >
-            🚀 Start Free Today
+            Start Free Today
           </Button>
         </div>
       </section>
@@ -1182,14 +1181,14 @@ export default function CompetitorPriceTrackingFeaturePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-3xl lg:text-4xl font-black text-gray-900 dark:text-white">
-                Price to Win — Not to Panic
+                Price to Win Not to Panic
               </h2>
               <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                Most sellers reprice based on gut feel — dropping too far, too fast, and crushing margins.
+                Most sellers reprice based on gut feel dropping too far, too fast, and crushing margins.
                 Insydz's{" "}
                 <a href="/features/price-optimization" className="text-orange-600 underline">AI price optimization</a>{" "}
                 suggests the right price based on competitor moves, your margin floor, demand signals, and category
-                trends — so every reprice is a calculated decision, not a panic response.
+                trends so every reprice is a calculated decision, not a panic response.
               </p>
               <ul className="space-y-3">
                 {[
@@ -1246,7 +1245,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
               Most <strong>online price tracking software</strong> tells you what happened.
-              Insydz tells you what to do — before the Buy Box is gone.
+              Insydz tells you what to do before the Buy Box is gone.
             </p>
           </div>
 
@@ -1261,30 +1260,30 @@ export default function CompetitorPriceTrackingFeaturePage() {
                 <thead>
                   <tr className="bg-gray-100 dark:bg-gray-800">
                     <th className="px-5 py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">Scenario</th>
-                    <th className="px-5 py-3 text-center text-xs font-bold text-red-600 uppercase">Without Insydz</th>
-                    <th className="px-5 py-3 text-center text-xs font-bold text-green-600 uppercase">With Insydz</th>
+                    <th className="px-5 py-3 text-left text-xs font-bold text-red-600 uppercase">Without Insydz</th>
+                    <th className="px-5 py-3 text-left text-xs font-bold text-green-600 uppercase">With Insydz</th>
                   </tr>
                 </thead>
                 <tbody>
                   {[
-                    { scenario: "Competitor price drop", without: "11pm Day 1 — ₹1,099", with: "Detected at 11:03pm" },
-                    { scenario: "Alert received", without: "Email — seen at 9am next day", with: "WhatsApp at 11:03pm" },
+                    { scenario: "Competitor price drop", without: "11pm Day 1 ₹1,099", with: "Detected at 11:03pm" },
+                    { scenario: "Alert received", without: "Email seen at 9am next day", with: "WhatsApp at 11:03pm" },
                     { scenario: "Time to react", without: "10 hours lost", with: "4 minutes" },
                     { scenario: "Buy Box status", without: "Lost 10 hours of peak season traffic", with: "Retained all night" },
                     { scenario: "Big Billion Days revenue", without: "₹1.8L in missed sales", with: "₹4.2L captured" },
                     { scenario: "Ad spend to recover", without: "₹42,000 recovery campaign", with: "₹0" },
-                    { scenario: "Margin impact", without: "Panic discount below floor", with: "Repriced to ₹1,249 — 19% margin held" },
+                    { scenario: "Margin impact", without: "Panic discount below floor", with: "Repriced to ₹1,249 19% margin held" },
                   ].map((row, i) => (
                     <tr key={i} className="border-t border-gray-200 dark:border-gray-700">
                       <td className="px-5 py-3 text-sm font-medium text-gray-900 dark:text-white">{row.scenario}</td>
-                      <td className="px-5 py-3 text-center">
-                        <div className="flex items-center justify-center gap-1">
+                      <td className="px-5 py-3 text-left">
+                        <div className="flex items-left justify-left gap-1">
                           <X className="w-4 h-4 text-red-500 flex-shrink-0" />
                           <span className="text-xs text-gray-600 dark:text-gray-400">{row.without}</span>
                         </div>
                       </td>
-                      <td className="px-5 py-3 text-center bg-green-50 dark:bg-green-900/10">
-                        <div className="flex items-center justify-center gap-1">
+                      <td className="px-5 py-3 text-left bg-green-50 dark:bg-green-900/10">
+                        <div className="flex items-left justify-left gap-1">
                           <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
                           <span className="text-xs text-gray-900 dark:text-white font-medium">{row.with}</span>
                         </div>
@@ -1299,7 +1298,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
           {/* ROI Callout */}
           <div className="bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/20 dark:to-red-900/20 border-2 border-orange-400 rounded-3xl p-8 text-center">
             <p className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-              Vikram pays ₹1,999/month for Insydz. The single Big Billion Days intervention recovered ₹4.2L in revenue — a{" "}
+              Vikram pays ₹1,999/month for Insydz. The single Big Billion Days intervention recovered ₹4.2L in revenue a{" "}
               <span className="text-orange-600">210x return</span> on his monthly subscription.
             </p>
             <p className="text-gray-600 dark:text-gray-400 text-sm italic">
@@ -1320,7 +1319,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
             </h2>
             <p className="text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
               Global price tracking software is built for Amazon.com. Insydz is built for Amazon India
-              and Flipkart — with the Indian festive calendar, INR margin calculations, and WhatsApp
+              and Flipkart with the Indian festive calendar, INR margin calculations, and WhatsApp
               alerts baked in from day one.
             </p>
           </div>
@@ -1342,7 +1341,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
           <div className="bg-gray-900 dark:bg-gray-800 rounded-3xl p-8 text-center">
             <p className="text-gray-300 text-lg">
               <span className="text-orange-400 font-bold">What most price tracking tools don't tell you:</span>{" "}
-              Tracking is only half the job. The harder problem is knowing what price to reprice to — accounting for
+              Tracking is only half the job. The harder problem is knowing what price to reprice to accounting for
               your margin, the competitive position, and whether demand is rising or falling.
               Insydz does both. Global tools do one.
             </p>
@@ -1392,7 +1391,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
               <a href="/features/review-analytics" className="text-orange-600 underline">review analysis tool</a>,{" "}
               <a href="/use-cases/improve-seo" className="text-orange-600 underline">keyword rank tracking for Amazon India</a>, and{" "}
               <a href="/use-cases/avoid-stockouts" className="text-orange-600 underline">inventory management tool</a>{" "}
-              — so every decision is informed by the full picture.
+              so every decision is informed by the full picture.
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
@@ -1413,7 +1412,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-black text-gray-900 dark:text-white mb-4">
-              Competitor Price Tracking — FAQs
+              Competitor Price Tracking FAQs
             </h2>
             <p className="text-gray-600 dark:text-gray-400">
               All answers are structured for Google Featured Snippet extraction.
@@ -1459,29 +1458,29 @@ export default function CompetitorPriceTrackingFeaturePage() {
               <thead>
                 <tr className="bg-gray-100 dark:bg-gray-800">
                   <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Task</th>
-                  <th className="px-6 py-4 text-center text-sm font-bold text-gray-700 dark:text-gray-300">Manual Tracking</th>
-                  <th className="px-6 py-4 text-center text-sm font-bold text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20">With Insydz</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Manual Tracking</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20">With Insydz</th>
                 </tr>
               </thead>
               <tbody>
                 {[
                   { task: "Monitoring", manual: "Checking listings manually", insydz: "Automatic 24/7 tracking" },
-                  { task: "Response Time", manual: "Late reactions — hours later", insydz: "Instant WhatsApp alerts" },
+                  { task: "Response Time", manual: "Late reactions hours later", insydz: "Instant WhatsApp alerts" },
                   { task: "Data Management", manual: "Excel sheets & spreadsheets", insydz: "Live price dashboards" },
                   { task: "Decision Quality", manual: "Panic discounting", insydz: "Margin-safe AI reprice" },
-                  { task: "Flipkart Coverage", manual: "Manual — if at all", insydz: "Full dual-marketplace tracking" },
+                  { task: "Flipkart Coverage", manual: "Manual if at all", insydz: "Full dual-marketplace tracking" },
                   { task: "Time Investment", manual: "Hours wasted daily", insydz: "Minutes per day" },
                 ].map((row, i) => (
                   <tr key={i} className="border-t border-gray-200 dark:border-gray-700">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{row.task}</td>
-                    <td className="px-6 py-4 text-center">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-6 py-4 text-left">
+                      <div className="flex items-center justify-left gap-2">
                         <X className="w-5 h-5 text-red-500" />
                         <span className="text-sm text-gray-600 dark:text-gray-400">{row.manual}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-center bg-orange-50 dark:bg-orange-900/20">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-6 py-4 text-left bg-orange-50 dark:bg-orange-900/20">
+                      <div className="flex items-left justify-left gap-2">
                         <Check className="w-5 h-5 text-green-600" />
                         <span className="text-sm text-gray-900 dark:text-white font-medium">{row.insydz}</span>
                       </div>
@@ -1497,7 +1496,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
               size="lg"
               className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-10 py-6 text-lg rounded-full shadow-xl"
             >
-              👉 Switch to Smart Price Tracking
+              Switch to Smart Price Tracking
             </Button>
           </div>
         </div>
@@ -1513,7 +1512,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
               One Platform. All the Intelligence You Need.
             </h2>
             <p className="text-gray-600 dark:text-gray-400 text-lg">
-              Start free and experience real insights on your own products — no setup, no credit card.
+              Start free and experience real insights on your own products no setup, no credit card.
             </p>
           </div>
 
@@ -1528,7 +1527,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
               },
               {
                 icp: "Growing Seller",
-                headline: "Scaling to ₹5L+ monthly — protect every rupee",
+                headline: "Scaling to ₹5L+ monthly protect every rupee",
                 cta: "Try Growth Plan →",
                 action: () => setLocation("/pricing"),
                 style: "from-red-500 to-pink-500",
@@ -1617,7 +1616,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
               size="lg"
               className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-12 py-6 text-lg rounded-full shadow-2xl group"
             >
-              👉 Start Free Price Tracking
+              Start Free Price Tracking
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button
@@ -1751,7 +1750,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

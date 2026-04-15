@@ -265,12 +265,12 @@ export default function ReviewAnalyticsFeaturePage() {
     {
       icon: <Clock className="w-6 h-6 sm:w-8 sm:h-8" />,
       title: "Manually reading 1000s of reviews",
-      description: "Takes hours every week — and still only covers a fraction of reviews.",
+      description: "Takes hours every week and still only covers a fraction of reviews.",
     },
     {
       icon: <ThumbsDown className="w-6 h-6 sm:w-8 sm:h-8" />,
       title: "Negative trends are missed",
-      description: "Until the rating has already dropped — by which point the ranking damage is done.",
+      description: "Until the rating has already dropped by which point the ranking damage is done.",
     },
     {
       icon: <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8" />,
@@ -280,37 +280,37 @@ export default function ReviewAnalyticsFeaturePage() {
     {
       icon: <Star className="w-6 h-6 sm:w-8 sm:h-8" />,
       title: "Poor prioritization of improvements",
-      description: "Without data, sellers fix the last complaint they read — not the most impactful one.",
+      description: "Without data, sellers fix the last complaint they read not the most impactful one.",
     },
   ];
 
   const indiaPains = [
     {
-      title: "Most reviews are in Hindi — and most tools can't read them",
+      title: "Most reviews are in Hindi and most tools can't read them",
       description:
-        "60–70% of Amazon India reviews for mass-market products are written in Hindi or Hinglish. Tools built for Western markets process them incorrectly — or skip them entirely. That means the majority of your customer feedback is invisible.",
+        "60–70% of Amazon India reviews for mass-market products are written in Hindi or Hinglish. Tools built for Western markets process them incorrectly or skip them entirely. That means the majority of your customer feedback is invisible.",
     },
     {
       title: "By the time you notice the rating drop, you've already lost the ranking",
       description:
-        "Amazon India's ranking algorithm reacts to rating velocity — the speed of new reviews and sentiment shift. A wave of negative reviews during a sale event can drop your listing 10 positions before you've even opened the seller app.",
+        "Amazon India's ranking algorithm reacts to rating velocity the speed of new reviews and sentiment shift. A wave of negative reviews during a sale event can drop your listing 10 positions before you've even opened the seller app.",
     },
     {
       title: "Flipkart review data is almost never tracked",
       description:
-        "Most Amazon review analyzer tools only cover Amazon listings. Sellers running the same product on Flipkart get zero insight from reviews there — missing complaints that affect both platform rankings and product quality decisions.",
+        "Most Amazon review analyzer tools only cover Amazon listings. Sellers running the same product on Flipkart get zero insight from reviews there missing complaints that affect both platform rankings and product quality decisions.",
     },
     {
-      title: "You fix the wrong thing — because you can't see what's most complained about",
+      title: "You fix the wrong thing because you can't see what's most complained about",
       description:
-        "Without AI clustering, sellers act on the last review they read — not the most common complaint. A product with 43 packaging complaints and 8 size complaints gets a size fix. The packaging issue keeps bleeding 1-star reviews for another 3 months.",
+        "Without AI clustering, sellers act on the last review they read not the most common complaint. A product with 43 packaging complaints and 8 size complaints gets a size fix. The packaging issue keeps bleeding 1-star reviews for another 3 months.",
     },
   ];
 
   const indiaFirstFeatures = [
     {
-      feature: "Hindi + Hinglish review analysis — accurately",
-      meaning: "100% of your customer feedback read and understood — not skipped or approximated. No other Indian competitor offers this.",
+      feature: "Hindi + Hinglish review analysis accurately",
+      meaning: "100% of your customer feedback read and understood not skipped or approximated. No other Indian competitor offers this.",
     },
     {
       feature: "Amazon India + Flipkart in one view",
@@ -318,15 +318,15 @@ export default function ReviewAnalyticsFeaturePage() {
     },
     {
       feature: "WhatsApp alerts — not email digests",
-      meaning: "Review trend alerts arrive where you already are — on WhatsApp — so you act in real time, not after the damage.",
+      meaning: "Review trend alerts arrive where you already are on WhatsApp so you act in real time, not after the damage.",
     },
     {
       feature: "Ranked by revenue impact, not just frequency",
-      meaning: "Know which complaint to fix first based on its rating impact — not just how many times it appears.",
+      meaning: "Know which complaint to fix first based on its rating impact not just how many times it appears.",
     },
     {
       feature: "Competitor review benchmarking",
-      meaning: "See what customers complain about in competitor listings — and make your product the obvious fix before they do.",
+      meaning: "See what customers complain about in competitor listings and make your product the obvious fix before they do.",
     },
     {
       feature: "Tells you the fix, not just the problem",
@@ -337,7 +337,7 @@ export default function ReviewAnalyticsFeaturePage() {
   const testimonials = [
     {
       quote:
-        "I had 800+ reviews and was manually spot-checking maybe 30. Insydz showed me in 5 minutes that 41 reviews mentioned the same delivery damage issue — all in Hindi. Fixed the packaging, rating went from 3.8 to 4.2 in 8 weeks.",
+        "I had 800+ reviews and was manually spot-checking maybe 30. Insydz showed me in 5 minutes that 41 reviews mentioned the same delivery damage issue all in Hindi. Fixed the packaging, rating went from 3.8 to 4.2 in 8 weeks.",
       name: "Neha S.",
       role: "Home appliances seller, Delhi · Amazon India",
     },
@@ -349,7 +349,7 @@ export default function ReviewAnalyticsFeaturePage() {
     },
     {
       quote:
-        "Managing 14 seller accounts, review monitoring used to take 3 people half a day every week. Insydz replaced that entire process — it surfaces the top issue per account each Monday morning on WhatsApp. We now act on feedback in hours, not weeks.",
+        "Managing 14 seller accounts, review monitoring used to take 3 people half a day every week. Insydz replaced that entire process it surfaces the top issue per account each Monday morning on WhatsApp. We now act on feedback in hours, not weeks.",
       name: "Ananya K.",
       role: "E-commerce agency, Mumbai · 14 seller accounts",
     },
@@ -359,32 +359,32 @@ export default function ReviewAnalyticsFeaturePage() {
     {
       question: "How does AI analyze reviews?",
       answer:
-        "Insydz's AI reads every customer review on your Amazon India and Flipkart listings — in Hindi, Hinglish, and English. It uses natural language processing to classify each review as positive, neutral, or negative, extract main topics, and group similar complaints into ranked clusters. The AI then shows which issue has the highest impact on your star rating — so you know which fix to prioritize. Analysis runs automatically as new reviews appear, with no manual input required.",
+        "Insydz's AI reads every customer review on your Amazon India and Flipkart listings in Hindi, Hinglish, and English. It uses natural language processing to classify each review as positive, neutral, or negative, extract main topics, and group similar complaints into ranked clusters. The AI then shows which issue has the highest impact on your star rating — so you know which fix to prioritize. Analysis runs automatically as new reviews appear, with no manual input required.",
     },
     {
       question: "Can I track multiple products at once?",
       answer:
-        "Yes. Insydz tracks review analytics across all your products simultaneously — on both Amazon India and Flipkart. The free plan covers up to 25 products. Paid plans (₹1,999/month and ₹2,999/month) expand the product limit. The dashboard shows your full product catalogue sorted by sentiment score so you can see which listings need the most urgent attention at a glance.",
+        "Yes. Insydz tracks review analytics across all your products simultaneously on both Amazon India and Flipkart. The free plan covers up to 25 products. Paid plans (₹1,999/month and ₹2,999/month) expand the product limit. The dashboard shows your full product catalogue sorted by sentiment score so you can see which listings need the most urgent attention at a glance.",
     },
     {
       question: "Does it work for Amazon India & Flipkart?",
       answer:
-        "Yes — Insydz is one of the only review analytics tools that covers both Amazon India and Flipkart from a single dashboard. Most global review monitoring platforms cover Amazon.com only or don't support Flipkart at all. Insydz was built specifically for Indian marketplace sellers — with full support for both platforms, Hindi and Hinglish review analysis, and WhatsApp-based alerts.",
+        "Yes. Insydz is one of the only review analytics tools that covers both Amazon India and Flipkart from a single dashboard. Most global review monitoring platforms cover Amazon.com only or don't support Flipkart at all. Insydz was built specifically for Indian marketplace sellers with full support for both platforms, Hindi and Hinglish review analysis, and WhatsApp-based alerts.",
     },
     {
       question: "Can I get alerts for negative trends?",
       answer:
-        "Yes. Set thresholds for negative sentiment — for example, alert when a specific complaint appears more than 10 times in 7 days, or when star rating drops below 4.2. When a threshold is crossed, Insydz sends a WhatsApp notification with the specific complaint theme, its frequency, and a recommended action. This means you act on a review problem before it becomes a rating problem.",
+        "Yes. Set thresholds for negative sentiment for example, alert when a specific complaint appears more than 10 times in 7 days, or when star rating drops below 4.2. When a threshold is crossed, Insydz sends a WhatsApp notification with the specific complaint theme, its frequency, and a recommended action. This means you act on a review problem before it becomes a rating problem.",
     },
     {
       question: "Is there a free plan?",
       answer:
-        "Yes. Insydz has a permanent free plan — not a trial. It includes review sentiment analysis for up to 25 products, complaint clustering, and WhatsApp alerts. No credit card required, no expiry date. Paid plans start at ₹1,999/month and include unlimited products, competitor review analysis, and advanced trend reporting.",
+        "Yes. Insydz has a permanent free plan not a trial. It includes review sentiment analysis for up to 25 products, complaint clustering, and WhatsApp alerts. No credit card required, no expiry date. Paid plans start at ₹1,999/month and include unlimited products, competitor review analysis, and advanced trend reporting.",
     },
     {
       question: "Can I export insights?",
       answer:
-        "Yes. Review analytics reports — including complaint clusters, sentiment trends, and star rating breakdowns — can be exported as PDF or CSV from the Insydz dashboard. This is particularly useful for agencies sharing monthly review performance reports with seller clients, or for brand managers presenting customer feedback data to product teams.",
+        "Yes. Review analytics reports including complaint clusters, sentiment trends, and star rating breakdowns can be exported as PDF or CSV from the Insydz dashboard. This is particularly useful for agencies sharing monthly review performance reports with seller clients, or for brand managers presenting customer feedback data to product teams.",
     },
   ];
 
@@ -600,7 +600,7 @@ export default function ReviewAnalyticsFeaturePage() {
               </div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
-                Review Analytics —
+                Review Analytics 
                 <br />
                 <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                   Understand Customers
@@ -611,7 +611,7 @@ export default function ReviewAnalyticsFeaturePage() {
 
               <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
                 AI-powered <strong>review analytics software</strong> analyzes every customer review
-                across your Amazon India and Flipkart listings — in Hindi and English — to show you
+                across your Amazon India and Flipkart listings in Hindi and English to show you
                 what customers love, hate, and want fixed.{" "}
                 <span className="text-purple-700 dark:text-purple-400 font-semibold">
                   So you can act before ratings drop.
@@ -624,7 +624,7 @@ export default function ReviewAnalyticsFeaturePage() {
                   size="lg"
                   className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold px-6 sm:px-8 py-4 sm:py-6 text-sm sm:text-base md:text-lg rounded-full shadow-2xl hover:shadow-purple-500/50 transition-all group"
                 >
-                  🚀 Start Free Review Analysis
+                  Start Free Review Analysis
                   <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button
@@ -658,13 +658,12 @@ export default function ReviewAnalyticsFeaturePage() {
               {/* Sentiment scores */}
               <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-4 sm:mb-6">
                 {[
-                  { label: "Positive 👍", value: "68%", icon: <ThumbsUp className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 mx-auto" />, bg: "bg-green-50 dark:bg-green-900/20", border: "border-green-200 dark:border-green-700" },
-                  { label: "Neutral 🤍", value: "22%", icon: <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 mx-auto" />, bg: "bg-yellow-50 dark:bg-yellow-900/20", border: "border-yellow-200 dark:border-yellow-700" },
-                  { label: "Negative 👎", value: "10%", icon: <ThumbsDown className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 mx-auto" />, bg: "bg-red-50 dark:bg-red-900/20", border: "border-red-200 dark:border-red-700" },
+                  {  value: "68%", icon: <ThumbsUp className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 mx-auto" />, bg: "bg-green-50 dark:bg-green-900/20", border: "border-green-200 dark:border-green-700" },
+                  {  value: "22%", icon: <Heart className="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500 mx-auto" />, bg: "bg-yellow-50 dark:bg-yellow-900/20", border: "border-yellow-200 dark:border-yellow-700" },
+                  {  value: "10%", icon: <ThumbsDown className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 mx-auto" />, bg: "bg-red-50 dark:bg-red-900/20", border: "border-red-200 dark:border-red-700" },
                 ].map((s, i) => (
                   <div key={i} className={`text-center p-2 sm:p-4 ${s.bg} border ${s.border} rounded-xl`}>
                     {s.icon}
-                    <p className="mt-1 sm:mt-2 font-semibold text-gray-900 dark:text-white text-xs">{s.label}</p>
                     <p className="font-black text-base sm:text-xl text-gray-900 dark:text-white">{s.value}</p>
                   </div>
                 ))}
@@ -694,8 +693,8 @@ export default function ReviewAnalyticsFeaturePage() {
                 <div className="flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-bold text-red-700 dark:text-red-400 mb-1">Top Complaint — 23 mentions</p>
-                    <p className="text-xs text-gray-700 dark:text-gray-300">"Packaging damaged during delivery" — fix to improve rating</p>
+                    <p className="text-xs font-bold text-red-700 dark:text-red-400 mb-1">Top Complaint 23 mentions</p>
+                    <p className="text-xs text-gray-700 dark:text-gray-300">"Packaging damaged during delivery" fix to improve rating</p>
                   </div>
                 </div>
               </div>
@@ -730,12 +729,11 @@ export default function ReviewAnalyticsFeaturePage() {
 
           {/* Stat callout */}
           <div className="mt-8 sm:mt-12 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 border-2 border-purple-400 dark:border-purple-600 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-lg">
-            <AlertCircle className="w-10 h-10 sm:w-12 sm:h-12 text-purple-600 mx-auto mb-3 sm:mb-4" />
             <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">
               A 1-star rating drop on Amazon India can cost you{" "}
               <span className="text-purple-600">20–40% of organic traffic</span> overnight.
             </p>
-            <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400">Most sellers see the rating fall — but never find out which complaint caused it.</p>
+            <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400">Most sellers see the rating fall but never find out which complaint caused it.</p>
           </div>
         </div>
       </section>
@@ -748,7 +746,7 @@ export default function ReviewAnalyticsFeaturePage() {
               Built for Smart Review Intelligence
             </h2>
             <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Three capabilities that work together — so you always know what customers are saying,
+              Three capabilities that work together so you always know what customers are saying,
               which complaints matter most, and when to act.
             </p>
           </div>
@@ -756,21 +754,21 @@ export default function ReviewAnalyticsFeaturePage() {
             {[
               {
                 feature: "Real-Time Sentiment Analysis",
-                description: "AI reads every new review the moment it appears and updates your sentiment score — so negative trends surface in hours, not weeks.",
+                description: "AI reads every new review the moment it appears and updates your sentiment score so negative trends surface in hours, not weeks.",
                 benefit: "Identify negative trends immediately",
                 icon: <Eye className="w-6 h-6 sm:w-8 sm:h-8" />,
                 color: "from-purple-600 to-pink-600",
               },
               {
                 feature: "Customer Highlight Extraction",
-                description: "AI clusters thousands of reviews into the top 5 issues customers mention most — in Hindi and English — with verbatim quotes and frequency counts.",
+                description: "AI clusters thousands of reviews into the top 5 issues customers mention most in Hindi and English with verbatim quotes and frequency counts.",
                 benefit: "See key points at a glance",
                 icon: <Sparkles className="w-6 h-6 sm:w-8 sm:h-8" />,
                 color: "from-indigo-500 to-purple-500",
               },
               {
                 feature: "Automated WhatsApp Alerts",
-                description: "When a complaint theme crosses a threshold you set — say, 15 mentions in 7 days — you get a WhatsApp alert with the issue and recommended fix. Not an email. WhatsApp.",
+                description: "When a complaint theme crosses a threshold you set say, 15 mentions in 7 days you get a WhatsApp alert with the issue and recommended fix. Not an email. WhatsApp.",
                 benefit: "Never miss critical feedback",
                 icon: <Bell className="w-6 h-6 sm:w-8 sm:h-8" />,
                 color: "from-red-500 to-pink-500",
@@ -800,7 +798,7 @@ export default function ReviewAnalyticsFeaturePage() {
             </h2>
             <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
               A 1-star review drop on Amazon India can cost you 20–40% of organic traffic overnight.
-              Most sellers see the rating fall — but never find out which complaint caused it, because
+              Most sellers see the rating fall but never find out which complaint caused it, because
               reading 800 reviews manually isn't a business strategy.
             </p>
           </div>
@@ -828,19 +826,19 @@ export default function ReviewAnalyticsFeaturePage() {
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 items-center">
             <div className="space-y-4 sm:space-y-6">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white">
-                Know in Seconds If Customers Love or Hate Your Product — Across Every Review
+                Know in Seconds If Customers Love or Hate Your Product Across Every Review
               </h2>
               <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
                 Insydz's AI-powered <strong>sentiment analysis</strong> reads every customer review
                 on your Amazon India and Flipkart listings in real time. Positive, neutral, or
-                negative — with a live score that updates the moment new reviews appear.
+                negative with a live score that updates the moment new reviews appear.
                 No manual reading. No sampling.
               </p>
               <ul className="space-y-2 sm:space-y-3">
                 {[
-                  "Live sentiment score — updated with every new review",
+                  "Live sentiment score updated with every new review",
                   "Separate scores per product, per marketplace",
-                  "Trend graph — see if sentiment is improving or declining",
+                  "Trend graph see if sentiment is improving or declining",
                   "Alert when negative sentiment crosses your threshold",
                 ].map((point, i) => (
                   <li key={i} className="flex items-start gap-2 sm:gap-3">
@@ -878,8 +876,8 @@ export default function ReviewAnalyticsFeaturePage() {
                 ))}
               </div>
               <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-400 rounded-xl p-3 sm:p-4">
-                <p className="text-xs font-bold text-red-700 dark:text-red-400 mb-1">🚨 Top Complaint — 23 mentions</p>
-                <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">"Packaging damaged during delivery" — fix to improve rating</p>
+                <p className="text-xs font-bold text-red-700 dark:text-red-400 mb-1">Top Complaint 23 mentions</p>
+                <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">"Packaging damaged during delivery" fix to improve rating</p>
               </div>
             </div>
           </div>
@@ -892,7 +890,7 @@ export default function ReviewAnalyticsFeaturePage() {
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 items-center">
             {/* Left: Complaint Cluster Widget */}
             <div className="bg-gray-900 dark:bg-gray-800 rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-xl order-2 lg:order-1">
-              <h3 className="font-bold text-sm sm:text-base text-white mb-4 sm:mb-6">Complaint Clusters — Mixer Grinder</h3>
+              <h3 className="font-bold text-sm sm:text-base text-white mb-4 sm:mb-6">Complaint Clusters Mixer Grinder</h3>
               <div className="space-y-3 sm:space-y-4">
                 {[
                   {
@@ -940,26 +938,26 @@ export default function ReviewAnalyticsFeaturePage() {
               </div>
               <div className="mt-3 sm:mt-4 bg-purple-900/40 border border-purple-500 rounded-xl p-3 sm:p-4">
                 <p className="text-purple-300 text-xs font-semibold">
-                  💡 AI: Fix packaging first — 43 complaints, highest rating impact. Estimated rating recovery: +0.4★ over 60 days.
+                 AI: Fix packaging first 43 complaints, highest rating impact. Estimated rating recovery: +0.4★ over 60 days.
                 </p>
               </div>
             </div>
 
             <div className="space-y-4 sm:space-y-6 order-1 lg:order-2">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white">
-                Find the 3 Complaints Costing You 1-Star Reviews — Without Reading a Single Review
+                Find the 3 Complaints Costing You 1-Star Reviews Without Reading a Single Review
               </h2>
               <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
                 Most sellers read reviews one at a time. Insydz reads all of them at once and groups
-                similar complaints into clusters — ranked by how often they appear and how much
+                similar complaints into clusters ranked by how often they appear and how much
                 they're hurting your rating. Fix the top cluster first. Watch the star rating recover.
               </p>
               <ul className="space-y-2 sm:space-y-3">
                 {[
                   "AI clusters complaints and praise into named themes",
                   "Each cluster shows frequency, sentiment impact, and verbatim examples",
-                  "Clusters in Hindi and Hinglish — accurately, not approximated",
-                  "Competitor comparison — see what their customers complain about too",
+                  "Clusters in Hindi and Hinglish accurately, not approximated",
+                  "Competitor comparison see what their customers complain about too",
                 ].map((point, i) => (
                   <li key={i} className="flex items-start gap-2 sm:gap-3">
                     <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0 mt-0.5" />
@@ -971,7 +969,7 @@ export default function ReviewAnalyticsFeaturePage() {
                 onClick={handleGetStarted}
                 className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold px-6 sm:px-8 py-3 sm:py-4 text-sm sm:text-base rounded-full shadow-xl group"
               >
-                👉 See Your Complaint Clusters Free
+                See Your Complaint Clusters Free
                 <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
@@ -982,14 +980,14 @@ export default function ReviewAnalyticsFeaturePage() {
       {/* MID-PAGE CTA BANNER */}
       <section className="py-10 sm:py-12 px-4 bg-gradient-to-r from-purple-600 to-pink-600">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-black text-white mb-2">Try all features free — no credit card required.</h2>
+          <h2 className="text-lg sm:text-xl md:text-2xl font-black text-white mb-2">Try all features free no credit card required.</h2>
           <p className="text-xs sm:text-sm md:text-base text-purple-100 mb-4 sm:mb-6">Start free and experience real insights on your own products.</p>
           <Button
             onClick={handleGetStarted}
             size="lg"
             className="bg-white text-purple-700 hover:bg-purple-50 font-bold px-8 sm:px-10 py-4 sm:py-5 text-sm sm:text-base rounded-full shadow-2xl"
           >
-            🚀 Start Free Review Analysis
+            Start Free Review Analysis
           </Button>
         </div>
       </section>
@@ -1000,14 +998,14 @@ export default function ReviewAnalyticsFeaturePage() {
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 items-center">
             <div className="space-y-4 sm:space-y-6">
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white">
-                Get Alerted When Customer Feedback Hits a Danger Level — Before It Tanks Your Rating
+                Get Alerted When Customer Feedback Hits a Danger Level Before It Tanks Your Rating
               </h2>
               <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
                 Set thresholds for what matters: a complaint mentioned more than 10 times, negative
                 sentiment climbing above 15%, or your star rating dropping below 4.2. The moment it
                 happens, Insydz sends a{" "}
                 <a href="/features/whatsapp-alerts" className="text-purple-600 underline">WhatsApp review alert</a>{" "}
-                — with the specific complaint theme and a suggested action.
+                with the specific complaint theme and a suggested action.
               </p>
               <ul className="space-y-2 sm:space-y-3">
                 {[
@@ -1066,14 +1064,14 @@ export default function ReviewAnalyticsFeaturePage() {
             </h2>
             <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400">
               Most <strong>product review analytics software</strong> counts reviews. Insydz reads them
-              — in Hindi and English — and tells you exactly which fix will recover your rating the fastest.
+              in Hindi and English and tells you exactly which fix will recover your rating the fastest.
             </p>
           </div>
 
           <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl sm:rounded-3xl border-2 border-gray-200 dark:border-gray-700 overflow-hidden shadow-xl mb-6 sm:mb-8">
             <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-4 sm:px-6 py-3 sm:py-4">
               <h3 className="text-white font-bold text-sm sm:text-base md:text-lg">
-                Kavita's Mixer Grinder — The Complaint That Was Hiding in Hindi
+                Kavita's Mixer Grinder The Complaint That Was Hiding in Hindi
               </h3>
               <p className="text-purple-200 text-xs sm:text-sm">Kitchen Appliances, Amazon India + Flipkart</p>
             </div>
@@ -1082,29 +1080,29 @@ export default function ReviewAnalyticsFeaturePage() {
                 <thead>
                   <tr className="bg-gray-100 dark:bg-gray-800">
                     <th className="px-3 sm:px-5 py-2 sm:py-3 text-left text-xs font-bold text-gray-600 dark:text-gray-400 uppercase">Scenario</th>
-                    <th className="px-3 sm:px-5 py-2 sm:py-3 text-center text-xs font-bold text-red-600 uppercase">Without Insydz</th>
-                    <th className="px-3 sm:px-5 py-2 sm:py-3 text-center text-xs font-bold text-green-600 uppercase">With Insydz</th>
+                    <th className="px-3 sm:px-5 py-2 sm:py-3 text-left text-xs font-bold text-red-600 uppercase">Without Insydz</th>
+                    <th className="px-3 sm:px-5 py-2 sm:py-3 text-left text-xs font-bold text-green-600 uppercase">With Insydz</th>
                   </tr>
                 </thead>
                 <tbody>
                   {[
                     { scenario: "Situation", without: "Rating dropped 4.4★ → 3.9★ over 6 weeks. Sales down 35%.", with: "Same product, same situation" },
-                    { scenario: "What she saw", without: "Read 20 reviews manually — found motor noise complaints", with: "AI clustered 43 Hindi packaging complaints immediately" },
-                    { scenario: "Action taken", without: "Spent ₹35,000 sourcing quieter motor variant", with: "Changed to double-wall packaging — ₹18/unit extra" },
-                    { scenario: "Rating result", without: "Stayed at 3.9★ — wrong problem fixed", with: "Recovered to 4.3★ within 60 days" },
+                    { scenario: "What she saw", without: "Read 20 reviews manually found motor noise complaints", with: "AI clustered 43 Hindi packaging complaints immediately" },
+                    { scenario: "Action taken", without: "Spent ₹35,000 sourcing quieter motor variant", with: "Changed to double-wall packaging ₹18/unit extra" },
+                    { scenario: "Rating result", without: "Stayed at 3.9★ wrong problem fixed", with: "Recovered to 4.3★ within 60 days" },
                     { scenario: "Complaint volume", without: "Packaging complaints continued at 43/month", with: "Dropped to 3/month within 60 days" },
                     { scenario: "Revenue outcome", without: "Sales remained 35% below peak", with: "₹2.8L additional revenue in Q1" },
                   ].map((row, i) => (
                     <tr key={i} className="border-t border-gray-200 dark:border-gray-700">
                       <td className="px-3 sm:px-5 py-2 sm:py-3 text-xs sm:text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">{row.scenario}</td>
-                      <td className="px-3 sm:px-5 py-2 sm:py-3 text-center">
-                        <div className="flex items-start justify-center gap-1">
+                      <td className="px-3 sm:px-5 py-2 sm:py-3 text-left">
+                        <div className="flex items-start justify-left gap-1">
                           <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 flex-shrink-0 mt-0.5" />
                           <span className="text-xs text-gray-600 dark:text-gray-400 text-left">{row.without}</span>
                         </div>
                       </td>
-                      <td className="px-3 sm:px-5 py-2 sm:py-3 text-center bg-green-50 dark:bg-green-900/10">
-                        <div className="flex items-start justify-center gap-1">
+                      <td className="px-3 sm:px-5 py-2 sm:py-3 text-left bg-green-50 dark:bg-green-900/10">
+                        <div className="flex items-start justify-left gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600 flex-shrink-0 mt-0.5" />
                           <span className="text-xs text-gray-900 dark:text-white font-medium text-left">{row.with}</span>
                         </div>
@@ -1124,7 +1122,7 @@ export default function ReviewAnalyticsFeaturePage() {
               <span className="text-purple-600">140x return</span> on the cost of the fix.
             </p>
             <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm italic">
-              "She fixed the wrong thing for 6 weeks. The real complaint was written in Hindi — and every review analytics tool she'd tried had silently skipped it."
+              "She fixed the wrong thing for 6 weeks. The real complaint was written in Hindi and every review analytics tool she'd tried had silently skipped it."
             </p>
           </div>
         </div>
@@ -1139,7 +1137,7 @@ export default function ReviewAnalyticsFeaturePage() {
             </h2>
             <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
               Most <strong>online review monitoring platforms</strong> were built for English-language
-              markets. Insydz was built for India — where most product feedback isn't in English, and
+              markets. Insydz was built for India where most product feedback isn't in English, and
               where the platforms your customers use aren't covered by global tools.
             </p>
           </div>
@@ -1157,8 +1155,8 @@ export default function ReviewAnalyticsFeaturePage() {
           <div className="bg-gray-900 dark:bg-gray-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center">
             <p className="text-gray-300 text-xs sm:text-sm md:text-base lg:text-lg">
               <span className="text-purple-400 font-bold">What most Amazon review analyzer tools don't tell you:</span>{" "}
-              Review volume is not the metric to optimize. Rating velocity — how quickly sentiment is
-              shifting — is what determines your ranking position. Insydz tracks both, and alerts you on
+              Review volume is not the metric to optimize. Rating velocity how quickly sentiment is
+              shifting is what determines your ranking position. Insydz tracks both, and alerts you on
               the leading indicator before the trailing one (your star rating) takes the hit.
             </p>
           </div>
@@ -1197,7 +1195,7 @@ export default function ReviewAnalyticsFeaturePage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-3 sm:mb-4">
-              Review Analytics — FAQs
+              Review Analytics FAQs
             </h2>
             <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
               Each answer leads with a direct response for Google Featured Snippet and AI Overview extraction.
@@ -1261,19 +1259,29 @@ export default function ReviewAnalyticsFeaturePage() {
                 style: "from-indigo-600 to-purple-600",
               },
             ].map((card, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-5 sm:p-6 text-center hover:shadow-xl transition-all">
-                <div className={`inline-flex text-xs font-bold text-white bg-gradient-to-r ${card.style} px-3 py-1 rounded-full mb-3 sm:mb-4`}>
-                  {card.icp}
-                </div>
-                <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 sm:mb-5 leading-relaxed">{card.headline}</p>
-                <Button
-                  onClick={card.action}
-                  className={`w-full bg-gradient-to-r ${card.style} text-white font-bold rounded-full text-xs sm:text-sm py-2.5 sm:py-3`}
-                >
-                  {card.cta}
-                </Button>
-              </div>
-            ))}
+  <div
+    key={i}
+    className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-5 sm:p-6 text-center hover:shadow-xl transition-all flex flex-col items-center h-full"
+  >
+    <div
+      className={`inline-flex text-xs font-bold text-white bg-gradient-to-r ${card.style} px-3 py-1 rounded-full mb-3 sm:mb-4`}
+    >
+      {card.icp}
+    </div>
+
+    <p className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm mb-4 sm:mb-5 leading-relaxed flex-grow">
+      {card.headline}
+    </p>
+
+    <Button
+      onClick={card.action}
+      className={`w-full bg-gradient-to-r ${card.style} text-white font-bold rounded-full text-xs sm:text-sm py-2.5 sm:py-3 mt-auto`}
+    >
+      {card.cta}
+    </Button>
+  </div>
+))}
+            
           </div>
 
           {/* Trust strip */}
@@ -1422,7 +1430,7 @@ export default function ReviewAnalyticsFeaturePage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

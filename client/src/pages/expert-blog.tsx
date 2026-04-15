@@ -150,7 +150,7 @@ const articles: Article[] = [
    {
      id: "10",
      title: "Flipkart Keyword Research Tool & SEO Optimization Guide for Sellers (2026)",
-     excerpt: "Flipkart's search algorithm rewards listings that match buyer intent exactly — not just category keywords. Discover how India's top Flipkart sellers use AI-powered keyword research, rank tracking, and SEO optimization to dominate Flipkart search results and capture search visibility their competitors don't even know they're missing.",
+     excerpt: "Flipkart's search algorithm rewards listings that match buyer intent exactly not just category keywords. Discover how India's top Flipkart sellers use AI-powered keyword research, rank tracking, and SEO optimization to dominate Flipkart search results and capture search visibility their competitors don't even know they're missing.",
      category: "Flipkart SEO & Seller Strategy",
      readTime: "9 min read",
      image: "/01_hero_banner.png",
@@ -159,7 +159,7 @@ const articles: Article[] = [
    {
      id: "9",
      title: "Best Flipkart Analytics Tool India: Complete Guide for Sellers (2026)",
-     excerpt: "Stop flying blind on Flipkart. The right analytics tool surfaces which competitor keywords are stealing your rank, which SKUs are losing the Buy Box, and exactly what to fix — before the next Big Billion Days window closes on you.",
+     excerpt: "Stop flying blind on Flipkart. The right analytics tool surfaces which competitor keywords are stealing your rank, which SKUs are losing the Buy Box, and exactly what to fix before the next Big Billion Days window closes on you.",
      category: "Flipkart Seller Tools & Strategy",
      readTime: "9 min read",
      image: "/flipkart-analytics.png",
@@ -168,7 +168,7 @@ const articles: Article[] = [
    {
     id: "7",
     title: "Best Review Analysis Tools for Indian Sellers: Complete Guide (2026)",
-    excerpt: "Your customers are telling you exactly what to fix and why they're switching to a competitor — inside every review. Discover how India's top D2C brands use AI review intelligence to reduce returns and grow revenue.",
+    excerpt: "Your customers are telling you exactly what to fix and why they're switching to a competitor inside every review. Discover how India's top D2C brands use AI review intelligence to reduce returns and grow revenue.",
     category: "D2C Growth & Brand Intelligence",
     readTime: "14 min read",
     image: "/review-analysis-hero (1).png",
@@ -177,7 +177,7 @@ const articles: Article[] = [
   {
     id: "8",
     title: "Best Amazon Keyword Research Tool India: Complete Guide for Sellers (2026)",
-    excerpt: "Find buyer-intent keywords your competitors are ranking for on Amazon.in — and win the search result before they know you're there. India's definitive guide to keyword gap analysis, search volume tracking, and rank monitoring.",
+    excerpt: "Find buyer-intent keywords your competitors are ranking for on Amazon.in and win the search result before they know you're there. India's definitive guide to keyword gap analysis, search volume tracking, and rank monitoring.",
     category: "Seller Tools & Strategy",
     readTime: "6 min read",
     image: "/keyword-research-hero.png",
@@ -186,7 +186,7 @@ const articles: Article[] = [
   {
     id: "1",
     title: "Amazon Competitor Price Tracking Tool India: Complete Guide for Sellers (2026)",
-    excerpt: "Track competitor prices on Amazon.in, Flipkart in real time. Discover how Indian sellers use AI-powered tools to protect margins, win the Buy Box, and outsell rivals — with a complete 2026 playbook.",
+    excerpt: "Track competitor prices on Amazon.in, Flipkart in real time. Discover how Indian sellers use AI-powered tools to protect margins, win the Buy Box, and outsell rivals with a complete 2026 playbook.",
     category: "Seller Tools & Strategy",
     readTime: "8 min read",
     image: "/one.png", // ✅ only this article has the image
@@ -197,7 +197,7 @@ const articles: Article[] = [
   {
     id: "2",
     title: "Amazon SEO Tool India: Keyword Research & Rank Tracking Guide for Sellers (2026)",
-    excerpt: "Discover how an Amazon SEO tool built for India helps sellers rank higher, find buying keywords, and grow sales on Amazon.in — with India-specific keyword data, daily rank tracking, and AI-powered listing recommendations.",
+    excerpt: "Discover how an Amazon SEO tool built for India helps sellers rank higher, find buying keywords, and grow sales on Amazon.in with India-specific keyword data, daily rank tracking, and AI-powered listing recommendations.",
     category: "SEO & Keyword Intelligence",
     readTime: "12 min read",
     image: "/Amazon_SEO_Tool-Blog3_image1.png",
@@ -236,7 +236,7 @@ const articles: Article[] = [
   {
     id: "6",
     title: "AI Review Intelligence Tool for Amazon & Flipkart Sellers: The Complete Guide (2026)",
-    excerpt: "An Amazon review analysis tool reads every customer review on your listings and your competitors' listings — then tells you in plain language: what buyers consistently love, what they consistently complain about, which product features are causing returns, and what your rivals' customers wish was better. It turns 10,000 reviews you'd never have time to read into 5 specific actions you can take this week.",
+    excerpt: "An Amazon review analysis tool reads every customer review on your listings and your competitors' listings then tells you in plain language: what buyers consistently love, what they consistently complain about, which product features are causing returns, and what your rivals' customers wish was better. It turns 10,000 reviews you'd never have time to read into 5 specific actions you can take this week.",
     category: "Review Intelligence Pillar",
     readTime: "11 min read",
     image: "/eighteen.png",
@@ -1375,7 +1375,7 @@ export default function ExpertBlog() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

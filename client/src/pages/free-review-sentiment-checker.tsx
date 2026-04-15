@@ -150,27 +150,27 @@ export default function FreeReviewSentimentCheckerPage() {
     {
       id: 'faq-1',
       question: 'Is this review sentiment checker free?',
-      answer: "Yes. Insydz's Amazon review sentiment checker is completely free — no credit card required, no trial period, no expiry. Create a free account (60 seconds) and start analyzing immediately. The free tool provides an overall sentiment score, top complaint themes, top praise themes, and improvement opportunities for any Amazon India ASIN. Paid plans unlock daily monitoring, competitor comparison, and WhatsApp alerts when sentiment shifts negative.",
+      answer: "Yes. Insydz's Amazon review sentiment checker is completely free no credit card required, no trial period, no expiry. Create a free account (60 seconds) and start analyzing immediately. The free tool provides an overall sentiment score, top complaint themes, top praise themes, and improvement opportunities for any Amazon India ASIN. Paid plans unlock daily monitoring, competitor comparison, and WhatsApp alerts when sentiment shifts negative.",
     },
     {
       id: 'faq-2',
       question: 'Does it work for Amazon India only?',
-      answer: "The free review sentiment checker is calibrated specifically for Amazon India (amazon.in). It processes reviews written by Indian buyers — including Hindi, Hinglish, and regional language patterns — not just English reviews. Since 60–70% of Amazon India reviews are in Hindi, a tool that only reads English misses most of the buyer signal. The paid Insydz platform also covers Flipkart review sentiment analysis.",
+      answer: "The free review sentiment checker is calibrated specifically for Amazon India (amazon.in). It processes reviews written by Indian buyers including Hindi, Hinglish, and regional language patterns not just English reviews. Since 60–70% of Amazon India reviews are in Hindi, a tool that only reads English misses most of the buyer signal. The paid Insydz platform also covers Flipkart review sentiment analysis.",
     },
     {
       id: 'faq-3',
       question: 'How is sentiment calculated?',
-      answer: "Insydz uses AI to scan hundreds of buyer reviews and classify them by sentiment (positive, neutral, negative), theme (packaging, battery, build quality, delivery), and emotional tone. The sentiment score (0–100) represents weighted buyer sentiment across all reviews — not just star ratings. A product can have 70% 4-star reviews but score 45/100 if those reviews contain consistent specific complaints. Star ratings don't tell you why buyers are unhappy. Sentiment analysis does.",
+      answer: "Insydz uses AI to scan hundreds of buyer reviews and classify them by sentiment (positive, neutral, negative), theme (packaging, battery, build quality, delivery), and emotional tone. The sentiment score (0–100) represents weighted buyer sentiment across all reviews not just star ratings. A product can have 70% 4-star reviews but score 45/100 if those reviews contain consistent specific complaints. Star ratings don't tell you why buyers are unhappy. Sentiment analysis does.",
     },
     {
       id: 'faq-4',
       question: "Can I check a competitor's product reviews?",
-      answer: "Yes. The free Amazon review sentiment checker works on any Amazon India product ASIN — including competitor products. This is one of the most valuable use cases: paste a competitor's ASIN, see their top complaints, and understand exactly what their buyers are frustrated with. That's your product brief. Build something that fixes those issues and you enter the market with a clear, data-backed advantage over an established seller.",
+      answer: "Yes. The free Amazon review sentiment checker works on any Amazon India product ASIN including competitor products. This is one of the most valuable use cases: paste a competitor's ASIN, see their top complaints, and understand exactly what their buyers are frustrated with. That's your product brief. Build something that fixes those issues and you enter the market with a clear, data-backed advantage over an established seller.",
     },
     {
       id: 'faq-5',
       question: 'Is login required?',
-      answer: "Yes, a free Insydz account is required — just an email address, no credit card. Login saves your analysis history so you can compare sentiment across products and track changes over time. Your free account also unlocks basic versions of all Insydz features: product analysis, keyword monitoring, and price tracking — not just the sentiment checker.",
+      answer: "Yes, a free Insydz account is required just an email address, no credit card. Login saves your analysis history so you can compare sentiment across products and track changes over time. Your free account also unlocks basic versions of all Insydz features: product analysis, keyword monitoring, and price tracking not just the sentiment checker.",
     },
   ];
 
@@ -458,7 +458,7 @@ export default function FreeReviewSentimentCheckerPage() {
         </div>
         <div className="relative max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-white border border-purple-200 dark:bg-purple-900/30 dark:border-purple-700 rounded-full px-4 py-2 mb-6 shadow-sm">
-            <span className="text-sm font-semibold text-purple-700 dark:text-purple-400">🛠️ Free Tool · Built for Indian Sellers 🇮🇳</span>
+            <span className="text-sm font-semibold text-purple-700 dark:text-purple-400">Free Tool · Built for Indian Sellers 🇮🇳</span>
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white mb-5">
             Free Amazon Review
@@ -466,7 +466,7 @@ export default function FreeReviewSentimentCheckerPage() {
             <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">Sentiment Checker</span>
           </h1>
           <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Instantly understand what buyers love, hate, and complain about — for any Amazon India product. Improve your listing, fix product gaps, and outperform competitors before they fix theirs.
+            Instantly understand what buyers love, hate, and complain about for any Amazon India product. Improve your listing, fix product gaps, and outperform competitors before they fix theirs.
           </p>
 
           {/* LOGIN GATE */}
@@ -477,7 +477,7 @@ export default function FreeReviewSentimentCheckerPage() {
                 <div className="text-center">
                   <h2 className="text-2xl font-black text-gray-900 dark:text-white">Sign in to use this tool</h2>
                   <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm max-w-xs mx-auto leading-relaxed">
-                    Create a free Insydz account or log in to start checking review sentiment instantly. Reads Hindi and English reviews — free forever.
+                    Create a free Insydz account or log in to start checking review sentiment instantly. Reads Hindi and English reviews free forever.
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 w-full">
@@ -511,14 +511,14 @@ export default function FreeReviewSentimentCheckerPage() {
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 px-4 py-1.5 rounded-full mb-4">Tool Overview</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">What This Free Sentiment Checker <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">Shows You</span></h2>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Four layers of buyer review intelligence every Amazon India seller needs — before launching a product and after, to protect a listing that's already live.</p>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Four layers of buyer review intelligence every Amazon India seller needs before launching a product and after, to protect a listing that's already live.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
-              { icon: <Smile className="w-6 h-6" />, title: "Overall Sentiment Score", desc: "Positive, neutral, or negative — see the overall buyer mood at a glance. Scored 0–100 so you can benchmark against competitors and track change over time.", color: "text-green-500", bg: "bg-green-50 dark:bg-green-900/20", border: "hover:border-green-300" },
-              { icon: <ThumbsDown className="w-6 h-6" />, title: "Top Complaints", desc: "The most frequently raised issues across all recent buyer reviews — grouped by theme (packaging, battery, fit, delivery) so you know exactly what to fix first.", color: "text-red-500", bg: "bg-red-50 dark:bg-red-900/20", border: "hover:border-red-300" },
-              { icon: <ThumbsUp className="w-6 h-6" />, title: "What Buyers Praise", desc: "Understand what features and qualities buyers consistently love — so you can amplify these strengths in your listing copy, images, and A+ content.", color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20", border: "hover:border-blue-300" },
-              { icon: <Target className="w-6 h-6" />, title: "Improvement Opportunities", desc: "Review gaps that reveal where a better product could win the market. Specific, addressable issues — not vague feedback — that you can act on before your next inventory order.", color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-900/20", border: "hover:border-purple-300" },
+              { icon: <Smile className="w-6 h-6" />, title: "Overall Sentiment Score", desc: "Positive, neutral, or negative see the overall buyer mood at a glance. Scored 0–100 so you can benchmark against competitors and track change over time.", color: "text-green-500", bg: "bg-green-50 dark:bg-green-900/20", border: "hover:border-green-300" },
+              { icon: <ThumbsDown className="w-6 h-6" />, title: "Top Complaints", desc: "The most frequently raised issues across all recent buyer reviews grouped by theme (packaging, battery, fit, delivery) so you know exactly what to fix first.", color: "text-red-500", bg: "bg-red-50 dark:bg-red-900/20", border: "hover:border-red-300" },
+              { icon: <ThumbsUp className="w-6 h-6" />, title: "What Buyers Praise", desc: "Understand what features and qualities buyers consistently love so you can amplify these strengths in your listing copy, images, and A+ content.", color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20", border: "hover:border-blue-300" },
+              { icon: <Target className="w-6 h-6" />, title: "Improvement Opportunities", desc: "Review gaps that reveal where a better product could win the market. Specific, addressable issues not vague feedback that you can act on before your next inventory order.", color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-900/20", border: "hover:border-purple-300" },
             ].map((card, i) => (
               <div key={i} className={`bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-lg ${card.border} transition-all group relative overflow-hidden`}>
                 <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-purple-500 to-pink-500 scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></div>
@@ -539,7 +539,7 @@ export default function FreeReviewSentimentCheckerPage() {
           <div className="text-center max-w-2xl mx-auto mb-12">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 px-4 py-1.5 rounded-full mb-4">Why It Matters</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Why Review Sentiment Analysis Is <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">Critical</span></h2>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Reviews are the most honest signal in e-commerce. Most sellers ignore them — or read them too slowly to act. This tool surfaces what matters, instantly.</p>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Reviews are the most honest signal in e-commerce. Most sellers ignore them or read them too slowly to act. This tool surfaces what matters, instantly.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-10">
             {["Miss recurring complaints that damage conversions", "Launch products with known flaws buyers hate", "Ignore positive signals that should be in listings", "Lose to competitors who fixed the same issues"].map((reason, i) => (
@@ -574,15 +574,15 @@ export default function FreeReviewSentimentCheckerPage() {
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 px-4 py-1.5 rounded-full mb-4">How It Works</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">How It <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">Works</span></h2>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Three steps. Under two minutes. Paste any Amazon India product URL or ASIN — yours or a competitor's — and get a full sentiment breakdown instantly.</p>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Three steps. Under two minutes. Paste any Amazon India product URL or ASIN yours or a competitor's and get a full sentiment breakdown instantly.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
             <div className="hidden md:block absolute top-[52px] left-[calc(16.6%+28px)] right-[calc(16.6%+28px)] h-[2px] bg-gradient-to-r from-purple-500 to-pink-500 z-0"></div>
             {[
-              { step: "01", icon: <Search className="w-7 h-7" />, title: "Enter ASIN or Product Link", desc: "Paste any Amazon India product URL or ASIN. The AI review sentiment analyzer works on any publicly listed product — yours or a competitor's." },
-              { step: "02", icon: <MessageCircle className="w-7 h-7" />, title: "Insydz Processes Reviews", desc: "AI scans hundreds of buyer reviews — in Hindi and English — to extract sentiment, recurring themes, specific complaints and praise patterns." },
-              { step: "03", icon: <Zap className="w-7 h-7" />, title: "Get Instant Sentiment Insights", desc: "Receive a clear breakdown of sentiment score, top complaints, top praise, and improvement opportunities — in seconds." },
+              { step: "01", icon: <Search className="w-7 h-7" />, title: "Enter ASIN or Product Link", desc: "Paste any Amazon India product URL or ASIN. The AI review sentiment analyzer works on any publicly listed product yours or a competitor's." },
+              { step: "02", icon: <MessageCircle className="w-7 h-7" />, title: "Insydz Processes Reviews", desc: "AI scans hundreds of buyer reviews in Hindi and English to extract sentiment, recurring themes, specific complaints and praise patterns." },
+              { step: "03", icon: <Zap className="w-7 h-7" />, title: "Get Instant Sentiment Insights", desc: "Receive a clear breakdown of sentiment score, top complaints, top praise, and improvement opportunities in seconds." },
             ].map((s, i) => (
               <div key={i} className="relative z-10 bg-gray-50 dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg hover:border-purple-300 dark:hover:border-purple-700 transition-all hover:-translate-y-1">
                 <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 text-white font-black text-lg rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg">{s.step}</div>
@@ -609,7 +609,7 @@ export default function FreeReviewSentimentCheckerPage() {
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 px-4 py-1.5 rounded-full mb-4">Example Output</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Example Sentiment Analysis <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">Report</span></h2>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Here's what a real Amazon India sentiment report looks like — so you know exactly what you're getting before you sign in.</p>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Here's what a real Amazon India sentiment report looks like so you know exactly what you're getting before you sign in.</p>
           </div>
 
           {/* Report card */}
@@ -713,7 +713,7 @@ export default function FreeReviewSentimentCheckerPage() {
           {/* Upsell */}
           <div className="mt-14 bg-white dark:bg-gray-900 border-2 border-purple-200 dark:border-purple-900/50 rounded-3xl p-8 sm:p-12 max-w-xl mx-auto text-center shadow-lg">
             <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-3">Unlock the Full Review Intelligence Report</h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-7 max-w-sm mx-auto">Sign in to receive detailed complaint breakdown, feature sentiment map, and improvement opportunity score — and daily monitoring that alerts you when sentiment shifts negative.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-7 max-w-sm mx-auto">Sign in to receive detailed complaint breakdown, feature sentiment map, and improvement opportunity score and daily monitoring that alerts you when sentiment shifts negative.</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
                <a href="/login" className="px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-105">
                 <LogIn className="w-4 h-4" /> Log In to Access
@@ -734,17 +734,17 @@ export default function FreeReviewSentimentCheckerPage() {
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 px-4 py-1.5 rounded-full mb-4">Real Seller Story</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">What Most Review Tools <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">Don't Tell You</span></h2>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Most review tools show you star ratings and word clouds. Insydz's free Amazon review sentiment checker tells you exactly what to fix — and in which language Indian buyers are saying it.</p>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Most review tools show you star ratings and word clouds. Insydz's free Amazon review sentiment checker tells you exactly what to fix and in which language Indian buyers are saying it.</p>
           </div>
 
           <div className="rounded-3xl p-6 sm:p-10 text-white" style={{ background: 'linear-gradient(135deg, #1C1828, #2D1B5A)' }}>
-            <h3 className="font-black text-lg sm:text-xl mb-1" style={{ color: '#C4B5FD' }}>Pooja's ₹3.2L Recovery — Found in Reviews She Couldn't Read</h3>
+            <h3 className="font-black text-lg sm:text-xl mb-1" style={{ color: '#C4B5FD' }}>Pooja's ₹3.2L Recovery Found in Reviews She Couldn't Read</h3>
             <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.4)' }}>Kitchen appliances seller, Nagpur | Amazon India | Mixer grinder ₹1,899 | Rating fell 4.5★ → 3.8★ over 4 months</p>
 
             <div className="space-y-4">
               {[
-                { label: "The Problem", text: "Pooja's mixer grinder had been her top product for 14 months. Then the rating started slipping. She read the English reviews: \"motor noise acceptable,\" \"good performance\" — nothing obviously wrong. She spent ₹22,000 on new product photography and A+ content. Rating continued to fall. Sales down 41%." },
-                { label: "What the Sentiment Checker Found", text: "The free Amazon review sentiment checker processed 340 reviews — including 218 in Hindi. The top complaint theme: \"डिब्बा टूटा हुआ आया\" (box arrived broken) — mentioned in 47% of 1★ and 2★ reviews. The second: \"ढक्कन ठीक से बंद नहीं होता\" (lid doesn't close properly) — mentioned in 31%. Neither complaint appeared in the English reviews she'd been reading." },
+                { label: "The Problem", text: "Pooja's mixer grinder had been her top product for 14 months. Then the rating started slipping. She read the English reviews: \"motor noise acceptable,\" \"good performance\" nothing obviously wrong. She spent ₹22,000 on new product photography and A+ content. Rating continued to fall. Sales down 41%." },
+                { label: "What the Sentiment Checker Found", text: "The free Amazon review sentiment checker processed 340 reviews — including 218 in Hindi. The top complaint theme: \"डिब्बा टूटा हुआ आया\" (box arrived broken) mentioned in 47% of 1★ and 2★ reviews. The second: \"ढक्कन ठीक से बंद नहीं होता\" (lid doesn't close properly) mentioned in 31%. Neither complaint appeared in the English reviews she'd been reading." },
                 { label: "The Fix (₹14/unit)", text: "New packaging with internal foam insert: ₹11/unit. New lid quality check added to factory QC: ₹3/unit. Total cost: ₹14 per unit. Fix applied within 6 weeks of the next inventory order." },
                 { label: "The Outcome (90 days)", text: "Rating recovered from 3.8★ to 4.4★ in 90 days. New 1★ reviews down 78%. Sales recovered to previous levels plus 18% growth from improved ranking. Total revenue recovery + growth: ₹3.2L in 90 days." },
               ].map((item, i) => (
@@ -765,7 +765,7 @@ export default function FreeReviewSentimentCheckerPage() {
             </div>
 
             <div className="rounded-2xl p-5 mt-6 text-center text-sm leading-relaxed" style={{ background: 'rgba(124,58,237,0.12)', border: '1px solid rgba(124,58,237,0.2)', color: 'rgba(255,255,255,0.75)' }}>
-              The fix cost ₹14/unit. The problem was invisible until a free review sentiment checker read her Hindi reviews. <strong style={{ color: '#C4B5FD' }}>₹22,000 spent on photography fixed nothing. ₹14/unit fixed everything.</strong> The insight was in the reviews — just written in a language the seller couldn't read at scale.
+              The fix cost ₹14/unit. The problem was invisible until a free review sentiment checker read her Hindi reviews. <strong style={{ color: '#C4B5FD' }}>₹22,000 spent on photography fixed nothing. ₹14/unit fixed everything.</strong> The insight was in the reviews just written in a language the seller couldn't read at scale.
             </div>
           </div>
         </div>
@@ -778,7 +778,7 @@ export default function FreeReviewSentimentCheckerPage() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-block text-xs font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 px-4 py-1.5 rounded-full mb-4">Data Quality</div>
           <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Powered by <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">Real Review Data</span></h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">This is not surface-level star counting — it's deep review intelligence. The free review sentiment checker reads what buyers actually write, not just how many stars they clicked.</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">This is not surface-level star counting it's deep review intelligence. The free review sentiment checker reads what buyers actually write, not just how many stars they clicked.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-5">
             {["Processes hundreds of buyer reviews per product", "Detects themes, emotions & recurring patterns", "Handles English and Hindi language reviews", "Built for Amazon India marketplace dynamics"].map((point, i) => (
               <div key={i} className="flex items-center gap-3 bg-white dark:bg-gray-800 border border-green-100 dark:border-green-900/30 rounded-xl px-5 py-4 shadow-sm">
@@ -846,9 +846,8 @@ export default function FreeReviewSentimentCheckerPage() {
           <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Built for <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">Indian Marketplace Reality</span></h2>
           <p className="text-gray-500 dark:text-gray-400 mb-12 max-w-xl mx-auto leading-relaxed">Most sentiment tools are built for Western markets and ignore how Indian buyers actually write reviews. This one doesn't.</p>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-            {[{ icon: "🇮🇳", text: "Amazon India data focus" }, { icon: "💬", text: "Hindi + English review parsing" }, { icon: "📊", text: "Category-specific sentiment norms" }, { icon: "🔗", text: "Connected to full Insydz platform" }].map((item, i) => (
+            {[{  text: "Amazon India data focus" }, {  text: "Hindi + English review parsing" }, {  text: "Category-specific sentiment norms" }, {  text: "Connected to full Insydz platform" }].map((item, i) => (
               <div key={i} className="bg-white dark:bg-gray-800 border-2 border-purple-50 dark:border-purple-900/30 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-purple-200 dark:hover:border-purple-700 hover:-translate-y-1 transition-all">
-                <div className="text-3xl mb-3">{item.icon}</div>
                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{item.text}</p>
               </div>
             ))}
@@ -857,8 +856,8 @@ export default function FreeReviewSentimentCheckerPage() {
           {/* India explainer */}
           <div className="bg-purple-50 dark:bg-purple-900/20 border-2 border-purple-100 dark:border-purple-900/40 rounded-2xl p-6 sm:p-9 max-w-3xl mx-auto text-left">
             <p className="font-bold text-purple-600 dark:text-purple-400 mb-3 text-sm">What most tools don't tell you:</p>
-            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-3">60–70% of Amazon India reviews are written in Hindi. A free sentiment analysis tool that only reads English reviews is ignoring the majority of buyer feedback. Insydz is the only free Amazon review sentiment checker that processes both — so no complaint theme goes undetected, regardless of which language your buyers write in.</p>
-            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">This applies equally to Flipkart review sentiment analysis — where regional language reviews are even more common. The paid Insydz platform covers Flipkart review data for sellers operating across both marketplaces.</p>
+            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-3">60–70% of Amazon India reviews are written in Hindi. A free sentiment analysis tool that only reads English reviews is ignoring the majority of buyer feedback. Insydz is the only free Amazon review sentiment checker that processes both so no complaint theme goes undetected, regardless of which language your buyers write in.</p>
+            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">This applies equally to Flipkart review sentiment analysis where regional language reviews are even more common. The paid Insydz platform covers Flipkart review data for sellers operating across both marketplaces.</p>
           </div>
         </div>
       </section>
@@ -870,12 +869,12 @@ export default function FreeReviewSentimentCheckerPage() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 border border-purple-200 dark:border-purple-800 px-4 py-1.5 rounded-full mb-4">Free vs Paid</div>
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">What the Free Tool Shows — And <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">What Goes Deeper</span></h2>
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">What the Free Tool Shows And <span className="bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">What Goes Deeper</span></h2>
             <p className="text-gray-500 dark:text-gray-400 leading-relaxed">The free review sentiment checker is a powerful snapshot. Here's exactly what's included and what unlocks with a paid Insydz plan.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-8">
-              <h3 className="font-black text-gray-900 dark:text-white mb-6">✓ Free Forever — Included</h3>
+              <h3 className="font-black text-gray-900 dark:text-white mb-6">✓ Free Forever Included</h3>
               {["Overall sentiment score (0–100)", "Top 4 complaint themes with frequency %", "Top 4 praise themes with frequency %", "Star rating breakdown visual", "Primary improvement opportunity", "Hindi + English review processing", "Works on your products and competitor products", "Limited analyses per day"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
                   <div className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-2 shrink-0"></div>
@@ -884,8 +883,8 @@ export default function FreeReviewSentimentCheckerPage() {
               ))}
             </div>
             <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-8">
-              <h3 className="font-black text-gray-900 dark:text-white mb-6">🚀 Paid Plans — ₹1,999/month</h3>
-              {["Daily sentiment monitoring — see how your score moves over time", "WhatsApp alerts when a new 1★ or 2★ review arrives", "Full complaint breakdown — not just top 4, all recurring themes", "Competitor sentiment comparison — your score vs theirs side-by-side", "Review trend curves — sentiment over 30, 60, 90 days", "Feature-level sentiment map — which product features drive ratings up and down", "Unlimited analyses across your full product catalogue"].map((item, i) => (
+              <h3 className="font-black text-gray-900 dark:text-white mb-6">Paid Plans — ₹1,999/month</h3>
+              {["Daily sentiment monitoring see how your score moves over time", "WhatsApp alerts when a new 1★ or 2★ review arrives", "Full complaint breakdown not just top 4, all recurring themes", "Competitor sentiment comparison your score vs theirs side-by-side", "Review trend curves sentiment over 30, 60, 90 days", "Feature-level sentiment map which product features drive ratings up and down", "Unlimited analyses across your full product catalogue"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
                   <div className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-2 shrink-0"></div>
                   <span className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item}</span>
@@ -938,9 +937,9 @@ export default function FreeReviewSentimentCheckerPage() {
           {/* ICP Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl mx-auto mt-12">
             {[
-              { type: "New Seller", msg: "Analyze competitor reviews before you launch — understand what buyers hate so you can build something better from day one.", cta: "Start Free →", href: "/signup" },
-              { type: "Growing Seller", msg: "Diagnose why your rating is falling — get daily sentiment monitoring and WhatsApp alerts on the Growth Plan.", cta: "Try Growth Plan →", href: "/signup?plan=growth" },
-              { type: "Agency", msg: "Run sentiment audits across all your clients' listings — identify the fastest improvements to present at your next review.", cta: "Book Demo →", href: "/about/contact-us" },
+              { type: "New Seller", msg: "Analyze competitor reviews before you launch understand what buyers hate so you can build something better from day one.", cta: "Start Free →", href: "/signup" },
+              { type: "Growing Seller", msg: "Diagnose why your rating is falling get daily sentiment monitoring and WhatsApp alerts on the Growth Plan.", cta: "Try Growth Plan →", href: "/signup?plan=growth" },
+              { type: "Agency", msg: "Run sentiment audits across all your clients' listings identify the fastest improvements to present at your next review.", cta: "Book Demo →", href: "/about/contact-us" },
             ].map((icp, i) => (
               <div key={i} className="bg-white/12 border border-white/25 rounded-2xl p-6 text-left backdrop-blur-sm">
                 <p className="text-xs font-bold uppercase tracking-widest text-white/60 mb-2">{icp.type}</p>
@@ -955,7 +954,7 @@ export default function FreeReviewSentimentCheckerPage() {
       {/* ─── STICKY MOBILE CTA ─── */}
       <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white dark:bg-gray-900 border-t-2 border-purple-200 dark:border-purple-800 px-4 py-3 shadow-2xl">
         <button onClick={() => { if (!isLoggedIn) { setLocation('/login'); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); } }} className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2">
-          {isLoggedIn ? <><MessageCircle className="w-4 h-4" /> Check Review Sentiment — Free</> : <><LogIn className="w-4 h-4" /> Log In to Check Sentiment</>}
+          {isLoggedIn ? <><MessageCircle className="w-4 h-4" /> Check Review Sentiment Free</> : <><LogIn className="w-4 h-4" /> Log In to Check Sentiment</>}
         </button>
       </div>
 
@@ -1083,7 +1082,7 @@ export default function FreeReviewSentimentCheckerPage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

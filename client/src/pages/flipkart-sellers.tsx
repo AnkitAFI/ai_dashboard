@@ -755,7 +755,7 @@ export default function FlipkartSellersPage() {
               </h1>
 
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
-                Insydz is India's most powerful <strong>Flipkart seller analytics tool</strong> — built for full-time sellers doing ₹5L to ₹50L a month. Track competitors, decode reviews, and recover keyword rankings{" "}
+                Insydz is India's most powerful <strong>Flipkart seller analytics tool</strong> built for full-time sellers doing ₹5L to ₹50L a month. Track competitors, decode reviews, and recover keyword rankings{" "}
                 <span className="text-blue-700 font-semibold">with AI-powered insights built for the Indian market.</span>
               </p>
 
@@ -765,7 +765,7 @@ export default function FlipkartSellersPage() {
                   size="lg"
                   className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-8 py-6 text-lg rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all group"
                 >
-                  👉 Start Free for Flipkart Sellers
+                  Start Free for Flipkart Sellers
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button
@@ -786,7 +786,7 @@ export default function FlipkartSellersPage() {
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                   <CheckCircle2 className="w-5 h-5 text-green-600" />
-                  <span>WhatsApp instant alerts — not buried emails</span>
+                  <span>WhatsApp instant alerts not buried emails</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                   <CheckCircle2 className="w-5 h-5 text-green-600" />
@@ -865,7 +865,7 @@ export default function FlipkartSellersPage() {
               <span className="text-red-600">Leave Money on the Table</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Without real-time intelligence, you're flying blind. The Flipkart marketplace moves fast — competitor prices shift overnight, review scores drop silently, and rankings slip while you're busy managing operations.
+              Without real-time intelligence, you're flying blind. The Flipkart marketplace moves fast competitor prices shift overnight, review scores drop silently, and rankings slip while you're busy managing operations.
             </p>
           </div>
 
@@ -908,12 +908,12 @@ export default function FlipkartSellersPage() {
 
           {/* Highlight Box */}
           <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-3xl p-8 text-center shadow-lg">
-            <Lightbulb className="w-12 h-12 text-red-600 mx-auto mb-4" />
+            
             <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               Flipkart sellers lose <span className="text-red-600">15–30% of profit annually</span>
             </p>
             <p className="text-gray-700 dark:text-gray-300 text-lg">
-              due to delayed pricing decisions, untracked reviews, and poor keyword visibility — none of which your Flipkart Seller Hub shows you.
+              due to delayed pricing decisions, untracked reviews, and poor keyword visibility none of which your Flipkart Seller Hub shows you.
             </p>
           </div>
         </div>
@@ -929,7 +929,7 @@ export default function FlipkartSellersPage() {
               <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Insydz Shows Your Competitors'.</span>
             </h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-              Flipkart Seller Hub is great for tracking your own orders and returns. But it tells you nothing about what your competitors are doing — or why your ranking is falling. That intelligence gap is costing you lakhs every month.
+              Flipkart Seller Hub is great for tracking your own orders and returns. But it tells you nothing about what your competitors are doing or why your ranking is falling. That intelligence gap is costing you lakhs every month.
             </p>
           </div>
 
@@ -939,8 +939,8 @@ export default function FlipkartSellersPage() {
               <thead>
                 <tr className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
                   <th className="text-left px-6 py-4 font-bold text-base">Feature</th>
-                  <th className="px-6 py-4 font-bold text-base text-center">Insydz</th>
-                  <th className="px-6 py-4 font-bold text-base text-center">Flipkart Seller Hub</th>
+                  <th className="px-6 py-4 font-bold text-base text-left">Insydz</th>
+                  <th className="px-6 py-4 font-bold text-base text-left">Flipkart Seller Hub</th>
                 </tr>
               </thead>
               <tbody>
@@ -954,10 +954,10 @@ export default function FlipkartSellersPage() {
                 ].map((row, i) => (
                   <tr key={i} className={`border-t border-gray-200 dark:border-gray-700 ${i % 2 === 0 ? 'bg-white dark:bg-gray-950' : 'bg-gray-50 dark:bg-gray-900'}`}>
                     <td className="px-6 py-4 text-gray-700 dark:text-gray-300 font-medium">{row.feature}</td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-6 py-4 text-left">
                       <span className={`font-semibold ${row.insydz.startsWith('✓') ? 'text-green-600' : 'text-red-500'}`}>{row.insydz}</span>
                     </td>
-                    <td className="px-6 py-4 text-center">
+                    <td className="px-6 py-4 text-left">
                       <span className={`font-semibold ${row.hub.startsWith('✓') ? 'text-green-600' : row.hub.startsWith('⚠') ? 'text-yellow-600' : 'text-red-500'}`}>{row.hub}</span>
                     </td>
                   </tr>
@@ -982,13 +982,13 @@ export default function FlipkartSellersPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white">
-              Meet Insydz —
+              Meet Insydz 
               <br />
               Your <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Flipkart Intelligence Partner</span>
             </h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Insydz is not a reporting tool. It's an AI decision engine built specifically for Indian Flipkart sellers.{" "}
-              <span className="text-blue-700 font-semibold">We don't just track data — we tell you exactly what actions to take to win.</span>
+              <span className="text-blue-700 font-semibold">We don't just track data we tell you exactly what actions to take to win.</span>
             </p>
           </div>
 
@@ -1001,13 +1001,13 @@ export default function FlipkartSellersPage() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">1. Automated Competitor Monitoring</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Track 100+ competitors in your Flipkart category effortlessly. Insydz watches every price change, stock movement, and new seller entry — so your Flipkart seller dashboard always shows the full competitive picture.</p>
+                  <p className="text-gray-600 dark:text-gray-400">Track 100+ competitors in your Flipkart category effortlessly. Insydz watches every price change, stock movement, and new seller entry so your Flipkart seller dashboard always shows the full competitive picture.</p>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
                 {[
                   "Real-time competitor price drop detection on Flipkart",
-                  "Stock-out alerts — capitalise when rivals run dry",
+                  "Stock-out alerts capitalise when rivals run dry",
                   "New seller entry notifications in your category",
                   "Flipkart price history tracking for any product"
                 ].map((point, i) => (
@@ -1019,7 +1019,7 @@ export default function FlipkartSellersPage() {
               </div>
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-2xl p-4">
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  <span className="font-semibold text-blue-700 dark:text-blue-400">📌 Real scenario:</span> A seller in Pune was losing sales every Monday morning. Insydz revealed a competitor was running a Sunday night flash price drop. He set a WhatsApp alert threshold and now reprices before dawn. Sales rank recovered within a week.
+                  <span className="font-semibold text-blue-700 dark:text-blue-400">Real scenario:</span> A seller in Pune was losing sales every Monday morning. Insydz revealed a competitor was running a Sunday night flash price drop. He set a WhatsApp alert threshold and now reprices before dawn. Sales rank recovered within a week.
                 </p>
               </div>
             </div>
@@ -1032,7 +1032,7 @@ export default function FlipkartSellersPage() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">2. AI Review Intelligence</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Stop scrolling through hundreds of Flipkart reviews manually. Insydz's AI reads every review — yours and your competitors' — and tells you exactly what's hurting your rating and what's driving purchases.</p>
+                  <p className="text-gray-600 dark:text-gray-400">Stop scrolling through hundreds of Flipkart reviews manually. Insydz's AI reads every review yours and your competitors' and tells you exactly what's hurting your rating and what's driving purchases.</p>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
@@ -1050,7 +1050,7 @@ export default function FlipkartSellersPage() {
               </div>
               <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-2xl p-4">
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  <span className="font-semibold text-purple-700 dark:text-purple-400">📌 Real scenario:</span> 189 Flipkart reviews for a seller's LED bulbs mentioned 'box damaged in delivery.' Insydz flagged it. The seller upgraded packaging. Returns dropped 22% in 30 days and rating climbed from 3.8 to 4.3.
+                  <span className="font-semibold text-purple-700 dark:text-purple-400">Real scenario:</span> 189 Flipkart reviews for a seller's LED bulbs mentioned 'box damaged in delivery.' Insydz flagged it. The seller upgraded packaging. Returns dropped 22% in 30 days and rating climbed from 3.8 to 4.3.
                 </p>
               </div>
             </div>
@@ -1063,7 +1063,7 @@ export default function FlipkartSellersPage() {
                 </div>
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">3. Smart Pricing &amp; SEO Recommendations</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Flipkart performance analytics go beyond dashboards with Insydz. The AI calculates the exact price you should set — based on your margin floor, competitor moves, and keyword ranking impact — then guides your listing SEO to recover lost visibility.</p>
+                  <p className="text-gray-600 dark:text-gray-400">Flipkart performance analytics go beyond dashboards with Insydz. The AI calculates the exact price you should set based on your margin floor, competitor moves, and keyword ranking impact then guides your listing SEO to recover lost visibility.</p>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
@@ -1081,7 +1081,7 @@ export default function FlipkartSellersPage() {
               </div>
               <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-2xl p-4 mb-4">
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  <span className="font-semibold text-orange-700 dark:text-orange-400">📌 Real scenario:</span> A home décor seller's keyword 'led strip lights for bedroom' slipped from rank #6 to #24 on Flipkart. Insydz sent an alert with two specific fixes — a ₹60 price reduction and a title tweak. Rank recovered to #9 within 5 days.
+                  <span className="font-semibold text-orange-700 dark:text-orange-400">Real scenario:</span> A home décor seller's keyword 'led strip lights for bedroom' slipped from rank #6 to #24 on Flipkart. Insydz sent an alert with two specific fixes — a ₹60 price reduction and a title tweak. Rank recovered to #9 within 5 days.
                 </p>
               </div>
               <button
@@ -1099,8 +1099,8 @@ export default function FlipkartSellersPage() {
                   <Bell className="w-8 h-8" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">4. WhatsApp Alerts — Real-Time Notifications You'll Actually See</h3>
-                  <p className="text-gray-600 dark:text-gray-400">Indian sellers don't live in their email inbox. Insydz sends intelligence directly to your WhatsApp — so you act on Flipkart market changes in minutes, not days. Configure your thresholds and let Insydz guard your business around the clock.</p>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">4. WhatsApp Alerts Real-Time Notifications You'll Actually See</h3>
+                  <p className="text-gray-600 dark:text-gray-400">Indian sellers don't live in their email inbox. Insydz sends intelligence directly to your WhatsApp so you act on Flipkart market changes in minutes, not days. Configure your thresholds and let Insydz guard your business around the clock.</p>
                 </div>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 mb-6">
@@ -1118,7 +1118,7 @@ export default function FlipkartSellersPage() {
               </div>
               <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-2xl p-4">
                 <p className="text-sm text-gray-700 dark:text-gray-300">
-                  <span className="font-semibold text-green-700 dark:text-green-400">📌 Real scenario:</span> A Mumbai seller was travelling when a competitor slashed prices on Flipkart Big Billion Days eve. Insydz WhatsApp alert arrived within 90 seconds. He repriced from his phone. Saved an estimated ₹80,000 in potential lost sales that weekend.
+                  <span className="font-semibold text-green-700 dark:text-green-400">Real scenario:</span> A Mumbai seller was travelling when a competitor slashed prices on Flipkart Big Billion Days eve. Insydz WhatsApp alert arrived within 90 seconds. He repriced from his phone. Saved an estimated ₹80,000 in potential lost sales that weekend.
                 </p>
               </div>
             </div>
@@ -1195,7 +1195,7 @@ export default function FlipkartSellersPage() {
               size="lg"
               className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-4 sm:px-12 py-6 text-sm sm:text-lg rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all group w-full sm:w-auto"
             >
-              👉 Start Free &amp; Get Flipkart Insights
+              Start Free &amp; Get Flipkart Insights
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -1220,7 +1220,7 @@ export default function FlipkartSellersPage() {
             {/* Without Insydz */}
             <div className="bg-white dark:bg-gray-900 border-2 border-red-200 dark:border-red-800 rounded-3xl p-8 shadow-xl">
               <h3 className="text-xl font-black text-red-600 mb-6 flex items-center gap-2">
-                <AlertCircle className="w-6 h-6" />
+             
                 Without Insydz — Monthly Profit Leakage
               </h3>
               <div className="space-y-4">
@@ -1245,7 +1245,7 @@ export default function FlipkartSellersPage() {
             {/* With Insydz */}
             <div className="bg-white dark:bg-gray-900 border-2 border-green-200 dark:border-green-800 rounded-3xl p-8 shadow-xl">
               <h3 className="text-xl font-black text-green-600 mb-6 flex items-center gap-2">
-                <CheckCircle2 className="w-6 h-6" />
+                
                 With Insydz — Monthly Recovery
               </h3>
               <div className="space-y-4">
@@ -1325,7 +1325,7 @@ export default function FlipkartSellersPage() {
               Ready to Win on Flipkart?
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Join smart Flipkart sellers who use data, not guesswork, to grow their business — whatever stage you're at.
+              Join smart Flipkart sellers who use data, not guesswork, to grow their business whatever stage you're at.
             </p>
           </div>
 
@@ -1343,7 +1343,7 @@ export default function FlipkartSellersPage() {
                 onClick={handleGetStarted}
                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-full"
               >
-                Start Free — No Card Needed →
+                Start Free No Card Needed →
               </Button>
             </div>
 
@@ -1372,7 +1372,7 @@ export default function FlipkartSellersPage() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">For Agencies &amp; Brand Managers</h3>
               <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-6">
-                Managing multiple Flipkart brands? Multi-account tracking, portfolio-level intelligence, and white-label reporting — built for agencies and brand managers running Flipkart operations at scale.
+                Managing multiple Flipkart brands? Multi-account tracking, portfolio-level intelligence, and white-label reporting built for agencies and brand managers running Flipkart operations at scale.
               </p>
               <Button
                 onClick={() => setLocation('/solutions/ecommerce-agencies')}
@@ -1516,7 +1516,7 @@ export default function FlipkartSellersPage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

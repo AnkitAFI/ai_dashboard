@@ -166,7 +166,7 @@ const comparisonRows = [
 
 const roiWithout = [
   { label: "5 days out of stock during Big Billion Days (₹50K/day)", value: "−₹2,50,000" },
-  { label: "Keyword rank drops — page 1 #5 → page 4 in 7 days", value: "Rankings destroyed" },
+  { label: "Keyword rank drops page 1 #5 → page 4 in 7 days", value: "Rankings destroyed" },
   { label: "4–8 weeks to recover rank (weekly organic loss)", value: "−₹60,000/week" },
   { label: "Extra ad spend to rebuild ranking momentum (6 weeks)", value: "−₹45,000" },
   { label: "Permanent customer loss to competitors", value: "Long-term damage" },
@@ -175,7 +175,7 @@ const roiWithout = [
 const roiWith = [
   { label: "Competitor stockout signal detected 14 days before event", value: "14 days secured" },
   { label: "250 additional units sourced before demand spike", value: "Stock secured" },
-  { label: "Full 10-day event covered — zero stockout days", value: "0 days lost" },
+  { label: "Full 10-day event covered zero stockout days", value: "0 days lost" },
   { label: "Incremental revenue from additional units", value: "+₹5,20,000" },
   { label: "Keyword ranking maintained — no recovery spend needed", value: "+₹45,000 saved" },
 ];
@@ -184,17 +184,17 @@ const faqs = [
   {
     id: "faq-1",
     q: "How does Insydz predict when I will run out of stock?",
-    a: "Insydz combines current inventory level with real sales velocity (last 7, 14, and 30 days), accounts for velocity acceleration, and applies festive demand multipliers for Indian sale events. Your first WhatsApp alert fires when your projected stockout is 14 days away — early enough to reorder from most Indian suppliers before running out.",
+    a: "Insydz combines current inventory level with real sales velocity (last 7, 14, and 30 days), accounts for velocity acceleration, and applies festive demand multipliers for Indian sale events. Your first WhatsApp alert fires when your projected stockout is 14 days away early enough to reorder from most Indian suppliers before running out.",
   },
   {
     id: "faq-2",
     q: "What happens to my Amazon India ranking when I go out of stock?",
-    a: "Your listing becomes inactive — disappearing from search entirely. When you restock, Amazon treats it as a new listing. Rankings built over weeks can drop 5–15 positions immediately. Recovery takes 4–8 weeks and requires extra ad spend. Preventing stockouts is far more valuable than recovering from them.",
+    a: "Your listing becomes inactive disappearing from search entirely. When you restock, Amazon treats it as a new listing. Rankings built over weeks can drop 5–15 positions immediately. Recovery takes 4–8 weeks and requires extra ad spend. Preventing stockouts is far more valuable than recovering from them.",
   },
   {
     id: "faq-3",
     q: "Can Insydz monitor competitor stock levels on Amazon India and Flipkart?",
-    a: "Yes. Insydz monitors competitor stock status signals on both platforms — detecting when top rivals are running low or going out of stock. When a competitor stocks out, demand shifts to remaining sellers including you. Insydz alerts you to act and capture that demand before they restock.",
+    a: "Yes. Insydz monitors competitor stock status signals on both platforms detecting when top rivals are running low or going out of stock. When a competitor stocks out, demand shifts to remaining sellers including you. Insydz alerts you to act and capture that demand before they restock.",
   },
   {
     id: "faq-4",
@@ -204,12 +204,12 @@ const faqs = [
   {
     id: "faq-5",
     q: "How far in advance does Insydz alert me before a stockout?",
-    a: "First alert at 14 days remaining. Second critical alert at 7 days. Final urgent alert at 3 days. All customisable based on your supplier lead times — if your supplier needs 18 days, your first alert fires at 21 days.",
+    a: "First alert at 14 days remaining. Second critical alert at 7 days. Final urgent alert at 3 days. All customisable based on your supplier lead times if your supplier needs 18 days, your first alert fires at 21 days.",
   },
   {
     id: "faq-6",
     q: "Does Insydz work for and D2C sellers?",
-    a: "Yes. Insydz supports inventory tracking and stockout prediction across Amazon India, Flipkart from a single dashboard. D2C brands get a unified view of stock levels and projected stockout dates by product — so you can prioritise restocking for the channel with the highest velocity and most to lose.",
+    a: "Yes. Insydz supports inventory tracking and stockout prediction across Amazon India, Flipkart from a single dashboard. D2C brands get a unified view of stock levels and projected stockout dates by product so you can prioritise restocking for the channel with the highest velocity and most to lose.",
   },
 ];
 
@@ -217,7 +217,7 @@ const inventoryCapabilities = [
   {
     icon: <TrendingUp className="w-7 h-7" />,
     title: "Real-Time Sales Velocity Tracking",
-    desc: "Tracks how fast products are actually selling — updated continuously. When velocity accelerates, predicted stockout date adjusts automatically.",
+    desc: "Tracks how fast products are actually selling updated continuously. When velocity accelerates, predicted stockout date adjusts automatically.",
     linkLabel: "inventory management tool",
     color: "from-blue-500 to-cyan-500",
   },
@@ -231,28 +231,28 @@ const inventoryCapabilities = [
   {
     icon: <Eye className="w-7 h-7" />,
     title: "Competitor Stock Monitoring",
-    desc: "Monitors when top competitors are running low or going out of stock — a leading indicator that demand for your product is about to spike. Get ahead before you run out yourself.",
+    desc: "Monitors when top competitors are running low or going out of stock a leading indicator that demand for your product is about to spike. Get ahead before you run out yourself.",
     linkLabel: "competitor stock monitoring",
     color: "from-purple-500 to-pink-500",
   },
   {
     icon: <Flame className="w-7 h-7" />,
     title: "Festive Demand Intelligence",
-    desc: "India-specific festive demand multipliers for Diwali, Big Billion Days, Great Indian Festival, Navratri, and Republic Day Sales — applied automatically 4–6 weeks before each event.",
+    desc: "India-specific festive demand multipliers for Diwali, Big Billion Days, Great Indian Festival, Navratri, and Republic Day Sales applied automatically 4–6 weeks before each event.",
     linkLabel: "festive demand intelligence",
     color: "from-orange-500 to-yellow-500",
   },
   {
     icon: <BarChart3 className="w-7 h-7" />,
     title: "Inventory Management Analysis Dashboard",
-    desc: "Full portfolio view — sorted by urgency. Critical, healthy, and attention-needed products across Amazon India, Flipkart from one unified dashboard.",
+    desc: "Full portfolio view sorted by urgency. Critical, healthy, and attention-needed products across Amazon India, Flipkart from one unified dashboard.",
     linkLabel: "inventory tracker software dashboard",
     color: "from-green-500 to-emerald-500",
   },
   {
     icon: <Clock className="w-7 h-7" />,
     title: "Supplier Lead Time Planning",
-    desc: "Set your supplier lead time per product. Insydz back-calculates your reorder date automatically — so alerts fire when you need to act, not when it's already too late.",
+    desc: "Set your supplier lead time per product. Insydz back-calculates your reorder date automatically so alerts fire when you need to act, not when it's already too late.",
     linkLabel: "stock management tool",
     color: "from-indigo-500 to-blue-500",
   },
@@ -314,6 +314,10 @@ export default function AvoidStockoutsPage() {
   };
   const handleMenuItemClick = (item: MenuItemWithBadge) => {
     if (item.route) { setLocation(item.route); setActiveDropdown(null); setIsMenuOpen(false); }
+  };
+  const scrollToSection = (sectionId: string) => {
+    setLocation('/');
+    setTimeout(() => document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   };
 
   return (
@@ -606,7 +610,7 @@ export default function AvoidStockoutsPage() {
               </h1>
 
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
-                India's most powerful <strong>AI inventory management tool</strong> for Amazon, Flipkart sellers. Insydz predicts exactly when you'll run out of stock and alerts you before it's too late —
+                India's most powerful <strong>AI inventory management tool</strong> for Amazon, Flipkart sellers. Insydz predicts exactly when you'll run out of stock and alerts you before it's too late
                 <span className="text-red-700 dark:text-red-400 font-semibold"> so you never lose sales, rankings, or momentum to a stockout.</span>
               </p>
 
@@ -614,7 +618,7 @@ export default function AvoidStockoutsPage() {
                 <Button onClick={handleGetStarted} size="lg"
                   className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold px-8 py-6 text-lg rounded-full shadow-2xl hover:shadow-red-500/50 transition-all group"
                 >
-                  👉 Prevent Stockouts Free
+                   Prevent Stockouts Free
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
@@ -627,9 +631,9 @@ export default function AvoidStockoutsPage() {
 
               <div className="flex flex-wrap items-center gap-5 pt-2">
                 {[
-                  "Stockout prediction based on real sales velocity — not guesswork",
+                  "Stockout prediction based on real sales velocity not guesswork",
                   "WhatsApp alerts 14 days before you run out",
-                  "Amazon India, Flipkart — no credit card required",
+                  "Amazon India, Flipkart no credit card required",
                 ].map((t) => (
                   <div key={t} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                     <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" /><span>{t}</span>
@@ -719,7 +723,7 @@ export default function AvoidStockoutsPage() {
               {
                 icon: <TrendingDown className="w-8 h-8" />,
                 title: "Lost Sales & Revenue",
-                desc: "Every day out of stock is zero revenue on that product. A ₹50,000/month product loses ₹8,000–₹10,000 in direct sales for a 5-day stockout — before accounting for ranking damage.",
+                desc: "Every day out of stock is zero revenue on that product. A ₹50,000/month product loses ₹8,000–₹10,000 in direct sales for a 5-day stockout before accounting for ranking damage.",
                 color: "from-red-500 to-orange-500",
               },
               {
@@ -731,7 +735,7 @@ export default function AvoidStockoutsPage() {
               {
                 icon: <Users className="w-8 h-8" />,
                 title: "Customers Buy from Competitors",
-                desc: "Buyers don't wait. They buy from whoever is available. Once a customer orders from a competitor and has a good experience, you've lost that buyer — not just that order.",
+                desc: "Buyers don't wait. They buy from whoever is available. Once a customer orders from a competitor and has a good experience, you've lost that buyer not just that order.",
                 color: "from-yellow-500 to-red-500",
               },
             ].map((p, i) => (
@@ -748,7 +752,7 @@ export default function AvoidStockoutsPage() {
             <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">Keyword Ranking Timeline During a Stockout</h3>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {[
-                { stage: "Before Stockout", rank: "#5", status: "Page 1 — strong velocity", color: "bg-green-100 border-green-300 text-green-800" },
+                { stage: "Before Stockout", rank: "#5", status: "Page 1 strong velocity", color: "bg-green-100 border-green-300 text-green-800" },
                 { stage: "Day of Stockout", rank: "#18", status: "Listing becomes inactive", color: "bg-yellow-100 border-yellow-300 text-yellow-800" },
                 { stage: "Day 3 Out of Stock", rank: "#34", status: "Algorithm further demotes", color: "bg-orange-100 border-orange-300 text-orange-800" },
                 { stage: "Day 7+", rank: "Page 4+", status: "Virtually invisible", color: "bg-red-100 border-red-300 text-red-800" },
@@ -768,7 +772,7 @@ export default function AvoidStockoutsPage() {
               The most expensive stockout isn't the 3-day gap.
             </p>
             <p className="text-lg text-gray-600 dark:text-gray-400">
-              It's the <strong>6 weeks of rebuilding keyword rankings</strong> after you restock. For a seller at ₹3L/month revenue, one bad stockout during Big Billion Days can cost ₹60,000–₹90,000 in lost sales — then another ₹30,000–₹45,000 in additional ad spend. All for a restocking failure that cost ₹8,000 to prevent.
+              It's the <strong>6 weeks of rebuilding keyword rankings</strong> after you restock. For a seller at ₹3L/month revenue, one bad stockout during Big Billion Days can cost ₹60,000–₹90,000 in lost sales then another ₹30,000–₹45,000 in additional ad spend. All for a restocking failure that cost ₹8,000 to prevent.
             </p>
           </div>
         </div>
@@ -784,7 +788,7 @@ export default function AvoidStockoutsPage() {
               <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Always Fail at the Worst Moment</span>
             </h2>
             <p className="text-1xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Every Indian seller starts with a spreadsheet or a mental note. Here's exactly why that approach breaks down — always at the worst possible time, like the night before Diwali.
+              Every Indian seller starts with a spreadsheet or a mental note. Here's exactly why that approach breaks down always at the worst possible time, like the night before Diwali.
             </p>
           </div>
 
@@ -828,7 +832,7 @@ export default function AvoidStockoutsPage() {
           <div className="bg-white dark:bg-gray-800 border-l-4 border-red-500 rounded-r-2xl p-6 shadow-md">
             <p className="font-bold text-red-700 dark:text-red-400 mb-2">What most stock management tools don't tell you:</p>
             <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-              Most inventory tools show current stock levels with a simple reorder threshold. Insydz calculates days-of-stock remaining using real-time sales velocity — accounting for acceleration, competitor stockout signals, and Indian festive demand multipliers. The gap between <em>"you have 45 units"</em> and <em>"you have 7 days of stock before running out during Diwali week"</em> is the difference between a reorder and a crisis.
+              Most inventory tools show current stock levels with a simple reorder threshold. Insydz calculates days-of-stock remaining using real-time sales velocity accounting for acceleration, competitor stockout signals, and Indian festive demand multipliers. The gap between <em>"you have 45 units"</em> and <em>"you have 7 days of stock before running out during Diwali week"</em> is the difference between a reorder and a crisis.
             </p>
           </div>
         </div>
@@ -844,7 +848,7 @@ export default function AvoidStockoutsPage() {
               <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">with Insydz</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              From product connection to stockout prevention — automated, accurate, and delivered where you'll actually act on it.
+              From product connection to stockout prevention automated, accurate, and delivered where you'll actually act on it.
             </p>
           </div>
 
@@ -855,7 +859,7 @@ export default function AvoidStockoutsPage() {
                 {
                   step: 1,
                   title: "Connect Inventory",
-                  desc: "Link Amazon India, Flipkart inventory automatically. Insydz reads current stock levels and begins tracking real-time sales velocity across all products. Setup: under 5 minutes — no manual data entry.",
+                  desc: "Link Amazon India, Flipkart inventory automatically. Insydz reads current stock levels and begins tracking real-time sales velocity across all products. Setup: under 5 minutes no manual data entry.",
                   visual: <Package className="w-12 h-12 text-red-600 mx-auto" />,
                   bg: "bg-red-100 dark:bg-red-900/20",
                 },
@@ -879,15 +883,15 @@ export default function AvoidStockoutsPage() {
                     <div className="space-y-3 text-left">
                       <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg p-3">
                         <span className="text-red-600 font-bold text-sm">14 days</span>
-                        <span className="text-xs text-gray-700 dark:text-gray-300">— Early warning. Time to reorder.</span>
+                        <span className="text-xs text-gray-700 dark:text-gray-300"> Early warning. Time to reorder.</span>
                       </div>
                       <div className="flex items-center gap-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-300 dark:border-orange-700 rounded-lg p-3">
                         <span className="text-orange-600 font-bold text-sm">7 days</span>
-                        <span className="text-xs text-gray-700 dark:text-gray-300">— Low stock. Confirm order placed.</span>
+                        <span className="text-xs text-gray-700 dark:text-gray-300"> Low stock. Confirm order placed.</span>
                       </div>
                       <div className="flex items-center gap-2 bg-red-100 dark:bg-red-900/30 border-2 border-red-400 dark:border-red-600 rounded-lg p-3">
                         <span className="text-red-700 font-bold text-sm">3 days</span>
-                        <span className="text-xs text-gray-700 dark:text-gray-300">— Critical. Escalate immediately.</span>
+                        <span className="text-xs text-gray-700 dark:text-gray-300"> Critical. Escalate immediately.</span>
                       </div>
                       <p className="text-xs text-gray-500 text-center pt-1">Each alert includes stock level, velocity & AI reorder qty</p>
                     </div>
@@ -906,7 +910,7 @@ export default function AvoidStockoutsPage() {
             <Button onClick={handleGetStarted} size="lg"
               className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold px-12 py-6 text-lg rounded-full shadow-2xl hover:shadow-red-500/50 transition-all group"
             >
-              👉 Never Miss Sales Again
+              Never Miss Sales Again
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -943,7 +947,7 @@ export default function AvoidStockoutsPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">
-              How Insydz Is Different —
+              How Insydz Is Different
               <br />
               <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Built for Indian Festive Commerce</span>
             </h2>
@@ -967,17 +971,16 @@ export default function AvoidStockoutsPage() {
           {/* Real Seller Scenario */}
           <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-2 border-orange-300 dark:border-orange-700 rounded-3xl p-8 mb-12 shadow-lg">
             <div className="flex items-center gap-3 mb-6">
-              <span className="text-3xl">📌</span>
               <div>
                 <p className="text-sm font-bold text-orange-700 dark:text-orange-400 uppercase tracking-wider">Real Seller Scenario</p>
                 <p className="font-bold text-gray-900 dark:text-white">Electronics Seller, Bengaluru</p>
               </div>
             </div>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-              Vikram sells Bluetooth speakers on Amazon India. Going into October, he had stocked 400 units for Big Billion Days — based on last year's sales. He felt confident.
+              Vikram sells Bluetooth speakers on Amazon India. Going into October, he had stocked 400 units for Big Billion Days based on last year's sales. He felt confident.
             </p>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-              Two weeks before the event, Insydz flagged something he hadn't noticed: three of the top five competitors had already gone out of stock on their primary listings. Demand was being redistributed — his listing was seeing 2.3× normal velocity, and his 400 units were projected to last only 5 days into the 10-day sale event.
+              Two weeks before the event, Insydz flagged something he hadn't noticed: three of the top five competitors had already gone out of stock on their primary listings. Demand was being redistributed his listing was seeing 2.3× normal velocity, and his 400 units were projected to last only 5 days into the 10-day sale event.
             </p>
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
               With 14 days to spare, Vikram placed an urgent order for 250 additional units. They arrived 3 days before Big Billion Days. He sold through all 650 units across the full 10-day window. Without Insydz, he would have stocked out on day 6 and missed the back half entirely.
@@ -1000,13 +1003,13 @@ export default function AvoidStockoutsPage() {
           <div className="overflow-hidden rounded-2xl border-2 border-gray-200 dark:border-gray-700 shadow-xl">
             <div className="grid grid-cols-3">
               <div className="bg-gray-100 dark:bg-gray-800 px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700"><p className="font-bold text-gray-700 dark:text-gray-300 text-sm">Capability</p></div>
-              <div className="bg-gray-100 dark:bg-gray-800 px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700"><p className="font-bold text-gray-500 text-sm text-center">Manual Tracking</p></div>
-              <div className="bg-red-500 px-6 py-4 border-b-2 border-red-400"><p className="font-bold text-white text-sm text-center">✓ Insydz</p></div>
+              <div className="bg-gray-100 dark:bg-gray-800 px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700"><p className="font-bold text-gray-500 text-sm text-left">Manual Tracking</p></div>
+              <div className="bg-red-500 px-6 py-4 border-b-2 border-red-400"><p className="font-bold text-white text-sm text-left">✓ Insydz</p></div>
               {comparisonRows.map((row, i) => (
                 <>
                   <div key={`f-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}><p className="text-sm text-gray-700 dark:text-gray-300 font-medium">{row.feature}</p></div>
-                  <div key={`m-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 text-center ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}><p className="text-sm text-gray-500 flex items-center justify-center gap-1"><X className="w-3 h-3 text-red-500 flex-shrink-0" />{row.manual}</p></div>
-                  <div key={`s-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 === 0 ? "bg-red-50 dark:bg-red-900/10" : "bg-red-50/50 dark:bg-red-900/10"}`}><p className="text-sm text-red-700 dark:text-red-400 font-semibold flex items-center justify-center gap-1"><Check className="w-3 h-3 text-green-600 flex-shrink-0" />{row.insydz}</p></div>
+                  <div key={`m-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 text-center ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}><p className="text-sm text-gray-500 flex items-left justify-left gap-1"><X className="w-3 h-3 text-red-500 flex-shrink-0" />{row.manual}</p></div>
+                  <div key={`s-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 === 0 ? "bg-red-50 dark:bg-red-900/10" : "bg-red-50/50 dark:bg-red-900/10"}`}><p className="text-sm text-red-700 dark:text-red-400 font-semibold flex items-left justify-left gap-1"><Check className="w-3 h-3 text-green-600 flex-shrink-0" />{row.insydz}</p></div>
                 </>
               ))}
             </div>
@@ -1024,14 +1027,14 @@ export default function AvoidStockoutsPage() {
               <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Costs an Indian Seller</span>
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              A single stockout during a peak period — preventable with a 14-day advance alert — triggers a chain of costs most sellers never fully calculate.
+              A single stockout during a peak period preventable with a 14-day advance alert triggers a chain of costs most sellers never fully calculate.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 mb-8">
             <div className="rounded-2xl border-2 border-red-300 dark:border-red-700 overflow-hidden shadow-lg">
               <div className="bg-red-50 dark:bg-red-900/30 px-6 py-4">
-                <p className="font-bold text-red-700 dark:text-red-400 text-lg">❌ Without Insydz — Cost of One Festive Season Stockout</p>
+                <p className="font-bold text-red-700 dark:text-red-400 text-lg">Without Insydz Cost of One Festive Season Stockout</p>
               </div>
               <div className="bg-white dark:bg-gray-900">
                 {roiWithout.map((row, i) => (
@@ -1049,7 +1052,7 @@ export default function AvoidStockoutsPage() {
 
             <div className="rounded-2xl border-2 border-green-300 dark:border-green-700 overflow-hidden shadow-lg">
               <div className="bg-green-50 dark:bg-green-900/30 px-6 py-4">
-                <p className="font-bold text-green-700 dark:text-green-400 text-lg">✅ With Insydz — Same Festive Period, Stockout Prevented</p>
+                <p className="font-bold text-green-700 dark:text-green-400 text-lg">With Insydz Same Festive Period, Stockout Prevented</p>
               </div>
               <div className="bg-white dark:bg-gray-900">
                 {roiWith.map((row, i) => (
@@ -1068,7 +1071,7 @@ export default function AvoidStockoutsPage() {
 
           <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30 border-2 border-red-400 rounded-2xl p-6 text-center">
             <p className="text-2xl font-black text-gray-900 dark:text-white mb-2">₹12.3L swing on one event</p>
-            <p className="text-gray-600 dark:text-gray-400">Between a seller who had Insydz's 14-day advance warning and acted on it — versus one who discovered the stockout in real time. Same category, same product, same Big Billion Days. The difference: an <strong>inventory management tool</strong> that looks forward, not just backward.</p>
+            <p className="text-gray-600 dark:text-gray-400">Between a seller who had Insydz's 14-day advance warning and acted on it versus one who discovered the stockout in real time. Same category, same product, same Big Billion Days. The difference: an <strong>inventory management tool</strong> that looks forward, not just backward.</p>
           </div>
         </div>
       </section>
@@ -1081,15 +1084,15 @@ export default function AvoidStockoutsPage() {
             <br />
             <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Stay Ahead.</span>
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-10">Free Plan — ₹0 / Forever — No credit card required</p>
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-10">Free Plan — ₹0 / Forever No credit card required</p>
 
           <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-300 dark:border-red-700 rounded-3xl p-8 mb-8 text-left shadow-xl">
             <h3 className="font-bold text-gray-900 dark:text-white text-xl mb-6 text-center">Free Plan Includes:</h3>
             <div className="grid md:grid-cols-2 gap-4 mb-6">
               {[
                 "Inventory tracking (limited products) on Amazon India & Flipkart",
-                "Sales velocity monitoring — real-time",
-                "Stockout prediction — days remaining calculated live",
+                "Sales velocity monitoring real-time",
+                "Stockout prediction days remaining calculated live",
                 "Basic WhatsApp restock alerts",
                 "Inventory health dashboard",
               ].map((feature, i) => (
@@ -1109,7 +1112,7 @@ export default function AvoidStockoutsPage() {
           <Button onClick={handleGetStarted} size="lg"
             className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold px-12 py-6 text-lg rounded-full shadow-2xl group"
           >
-            👉 Prevent Stockouts Free
+            Prevent Stockouts Free
             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
         </div>
@@ -1124,29 +1127,25 @@ export default function AvoidStockoutsPage() {
           <div className="grid md:grid-cols-3 gap-6 mb-10">
             {[
               {
-                emoji: "🆕",
                 label: "New Sellers (Free Plan)",
-                desc: "Even with 2–3 products, the free plan shows how fast your inventory is moving and when to reorder — so you don't run out during your first festive season and lose the momentum you've built.",
-                cta: "Start Free — No Card Needed →",
+                desc: "Even with 2–3 products, the free plan shows how fast your inventory is moving and when to reorder so you don't run out during your first festive season and lose the momentum you've built.",
+                cta: "Start Free No Card Needed →",
                 action: handleGetStarted,
               },
               {
-                emoji: "📈",
                 label: "Growing Sellers (Growth Plan)",
                 desc: "At ₹5L+ monthly, one stockout during Big Billion Days or Diwali can cost more than a full month's profit. Growth Plan: full catalogue tracking, competitor stock alerts, festive demand intelligence, multi-tier WhatsApp alerts.",
                 cta: "Try Growth Plan →",
                 action: () => setLocation("/pricing"),
               },
               {
-                emoji: "🏢",
                 label: "D2C Brands / Agencies (Demo)",
-                desc: "Unified inventory intelligence across Amazon India, Flipkart — cross-channel stockout prioritisation, white-label inventory reports, API access for supply chain integrations.",
+                desc: "Unified inventory intelligence across Amazon India, Flipkart cross-channel stockout prioritisation, white-label inventory reports, API access for supply chain integrations.",
                 cta: "Book a Demo →",
                 action: () => setLocation("/demo"),
               },
             ].map((card, i) => (
               <div key={i} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-left">
-                <p className="text-2xl mb-2">{card.emoji}</p>
                 <p className="font-bold text-white mb-2">{card.label}</p>
                 <p className="text-white/80 text-sm mb-4">{card.desc}</p>
                 {card.cta === "Try Growth Plan →" ? (
@@ -1163,7 +1162,7 @@ export default function AvoidStockoutsPage() {
           <Button onClick={handleGetStarted} size="lg"
             className="bg-white hover:bg-gray-100 text-red-700 font-bold px-12 py-6 text-lg rounded-full shadow-2xl group"
           >
-            👉 Prevent Stockouts Free
+            Prevent Stockouts Free
             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
           <p className="text-white/80 mt-6 text-sm">✓ No credit card required  ✓ Setup in 5 minutes  ✓ Cancel anytime</p>
@@ -1174,7 +1173,7 @@ export default function AvoidStockoutsPage() {
       <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-3xl mx-auto">
           <h2 className="text-4xl lg:text-5xl font-black mb-4 text-center text-gray-900 dark:text-white">
-            Inventory Management — FAQs
+            Inventory Management FAQs
           </h2>
           <p className="text-center text-gray-500 mb-12 text-lg">Everything about AI-powered stockout prevention for Indian sellers</p>
 
@@ -1229,7 +1228,7 @@ export default function AvoidStockoutsPage() {
       {/* ── STICKY MOBILE CTA ─────────────────────────────────────────────────── */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-red-300 dark:border-red-700 p-4 shadow-2xl z-40">
         <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold py-4 rounded-full shadow-xl">
-          👉 Prevent Stockouts Free
+          Prevent Stockouts Free
         </Button>
       </div>
 
@@ -1357,7 +1356,7 @@ export default function AvoidStockoutsPage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

@@ -573,7 +573,7 @@ export default function AIRecommendationsFeaturePage() {
                 <span className="text-xs sm:text-sm font-medium text-pink-700">Feature Spotlight</span>
               </div>
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
-                AI Recommendations —
+                AI Recommendations
                 <br />
                 <span className="bg-gradient-to-r from-pink-600 via-rose-600 to-pink-700 bg-clip-text text-transparent">Get Smart Actions,</span>
                 <br />
@@ -581,11 +581,11 @@ export default function AIRecommendationsFeaturePage() {
               </h1>
               <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
                 AI analyzes your products and tells you exactly what to do next.
-                <span className="text-pink-700 font-semibold"> Pricing, keywords, inventory, listing optimization — all personalized to your business.</span>
+                <span className="text-pink-700 font-semibold"> Pricing, keywords, inventory, listing optimization all personalized to your business.</span>
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full">
                 <Button onClick={handleGetStarted} size="lg" className="w-full sm:w-auto bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-bold px-6 sm:px-8 py-4 sm:py-6 text-sm sm:text-base md:text-lg rounded-full shadow-2xl hover:shadow-pink-500/50 transition-all group">
-                  ✨ Get AI Recommendations Free
+                  Get AI Recommendations Free
                   <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} size="lg" variant="outline" className="w-full sm:w-auto border-2 border-pink-600 text-pink-700 dark:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 font-semibold px-6 sm:px-8 py-4 sm:py-6 text-sm sm:text-base md:text-lg rounded-full">
@@ -700,7 +700,6 @@ export default function AIRecommendationsFeaturePage() {
             ))}
           </div>
           <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-lg">
-            <AlertCircle className="w-10 h-10 sm:w-12 sm:h-12 text-red-600 mx-auto mb-3 sm:mb-4" />
             <p className="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-2">Sellers waste <span className="text-red-600">10+ hours weekly</span> analyzing data</p>
             <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-base md:text-lg">Instead of taking action that grows their business.</p>
           </div>
@@ -741,7 +740,7 @@ export default function AIRecommendationsFeaturePage() {
           <div className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-4 sm:mb-6 text-gray-900 dark:text-white">How AI Recommendations Work</h2>
             <p className="text-sm sm:text-base md:text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-              Insydz AI continuously analyzes your business and surfaces actionable recommendations —
+              Insydz AI continuously analyzes your business and surfaces actionable recommendations
               <span className="text-pink-700 font-semibold"> ranked by priority, with clear next steps.</span>
             </p>
           </div>
@@ -765,7 +764,7 @@ export default function AIRecommendationsFeaturePage() {
           </div>
           <div className="text-center mt-8 sm:mt-12">
             <Button onClick={handleGetStarted} size="lg" className="w-full sm:w-auto bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-bold px-8 sm:px-12 py-4 sm:py-6 text-sm sm:text-lg rounded-full shadow-2xl group">
-              ✨ Get Your First Recommendations Free
+              Get Your First Recommendations Free
               <ChevronRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -838,8 +837,8 @@ export default function AIRecommendationsFeaturePage() {
               <thead>
                 <tr className="bg-gray-100 dark:bg-gray-800">
                   <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-300">Aspect</th>
-                  <th className="px-4 sm:px-6 py-3 sm:py-4 text-center text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-300">Manual Analysis</th>
-                  <th className="px-4 sm:px-6 py-3 sm:py-4 text-center text-xs sm:text-sm font-bold text-pink-700 dark:text-pink-400 bg-pink-50 dark:bg-pink-900/20">AI Recommendations</th>
+                  <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-bold text-gray-700 dark:text-gray-300">Manual Analysis</th>
+                  <th className="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-bold text-pink-700 dark:text-pink-400 bg-pink-50 dark:bg-pink-900/20">AI Recommendations</th>
                 </tr>
               </thead>
               <tbody>
@@ -852,14 +851,14 @@ export default function AIRecommendationsFeaturePage() {
                 ].map((row, i) => (
                   <tr key={i} className="border-t border-gray-200 dark:border-gray-700">
                     <td className="px-4 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm font-medium text-gray-900 dark:text-white whitespace-nowrap">{row.aspect}</td>
-                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-center">
-                      <div className="flex items-center justify-center gap-1 sm:gap-2">
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-left">
+                      <div className="flex items-left justify-left gap-1 sm:gap-2">
                         <X className="w-4 h-4 sm:w-5 sm:h-5 text-red-500 flex-shrink-0" />
                         <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">{row.manual}</span>
                       </div>
                     </td>
-                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-center bg-pink-50 dark:bg-pink-900/20">
-                      <div className="flex items-center justify-center gap-1 sm:gap-2">
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-left bg-pink-50 dark:bg-pink-900/20">
+                      <div className="flex items-left justify-left gap-1 sm:gap-2">
                         <Check className="w-4 h-4 sm:w-5 sm:h-5 text-pink-600 flex-shrink-0" />
                         <span className="text-xs sm:text-sm text-gray-900 dark:text-white font-medium">{row.insydz}</span>
                       </div>
@@ -871,7 +870,7 @@ export default function AIRecommendationsFeaturePage() {
           </div>
           <div className="text-center mt-6 sm:mt-8">
             <Button onClick={handleGetStarted} size="lg" className="w-full sm:w-auto bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-bold px-8 sm:px-10 py-4 sm:py-6 text-sm sm:text-lg rounded-full shadow-xl">
-              ✨ Get AI-Powered Insights
+             Get AI-Powered Insights
             </Button>
           </div>
         </div>
@@ -906,7 +905,7 @@ export default function AIRecommendationsFeaturePage() {
             </div>
             <div className="text-center">
               <Button onClick={handleGetStarted} size="lg" className="w-full sm:w-auto bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-bold px-8 sm:px-12 py-4 sm:py-6 text-sm sm:text-lg rounded-full shadow-2xl">
-                ✨ Start Getting AI Recommendations Free
+                Start Getting AI Recommendations Free
               </Button>
             </div>
           </div>
@@ -956,7 +955,7 @@ export default function AIRecommendationsFeaturePage() {
       <section className="py-12 sm:py-16 md:py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">AI Recommendations – FAQs</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">AI Recommendations FAQs</h2>
           </div>
           <div className="space-y-3 sm:space-y-4">
             {faqs.map((faq, i) => (
@@ -1009,7 +1008,7 @@ export default function AIRecommendationsFeaturePage() {
           </h2>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Button onClick={handleGetStarted} size="lg" className="w-full sm:w-auto bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-bold px-8 sm:px-12 py-4 sm:py-6 text-sm sm:text-lg rounded-full shadow-2xl group">
-              ✨ Get AI Recommendations Free
+              Get AI Recommendations Free
               <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button onClick={() => setLocation("/")} size="lg" variant="outline" className="w-full sm:w-auto border-2 border-pink-600 text-pink-700 dark:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 font-semibold px-8 sm:px-12 py-4 sm:py-6 text-sm sm:text-lg rounded-full">
@@ -1022,7 +1021,7 @@ export default function AIRecommendationsFeaturePage() {
       {/* Sticky Mobile CTA */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-pink-300 dark:border-pink-700 p-3 sm:p-4 shadow-2xl z-40">
         <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-bold py-3 sm:py-4 rounded-full shadow-xl text-sm sm:text-base">
-          ✨ Get AI Recommendations Free
+          Get AI Recommendations Free
         </Button>
       </div>
 
@@ -1113,7 +1112,7 @@ export default function AIRecommendationsFeaturePage() {
             <div>
               <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Product</h4>
               <ul className="space-y-3">
-                <li><Link to="/features/competitor-price-tracking-feature" className="text-sm text-gray-400 hover:text-white transition-colors">Features</Link></li>
+                <li><Link to="/features" className="text-sm text-gray-400 hover:text-white transition-colors">Features</Link></li>
                 <li><Link to="/pricing" className="text-sm text-gray-400 hover:text-white transition-colors">Pricing</Link></li>
                 <li><Link to="/features/festive-trend-feature" className="text-sm text-gray-400 hover:text-white transition-colors">Festive Trends</Link></li>
                 <li><Link to="/compare/insydzvshelium" className="text-sm text-gray-400 hover:text-white transition-colors">Compare</Link></li>
@@ -1150,7 +1149,7 @@ export default function AIRecommendationsFeaturePage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

@@ -687,19 +687,19 @@ export default function FestiveTrendFeaturePage() {
               </div>
 
               <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
-                Festive Trend Intelligence —
+                Festive Trend Intelligence
                 <br />
                 <span className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 bg-clip-text text-transparent">Sell Before the Season Peaks</span>
               </h1>
 
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
-                India's first festive deal forecasting tool for Amazon & Flipkart sellers — predicting demand spikes for Diwali, Holi, Eid, and every major Indian festive season,{" "}
+                India's first festive deal forecasting tool for Amazon & Flipkart sellers predicting demand spikes for Diwali, Holi, Eid, and every major Indian festive season,{" "}
                 <span className="text-orange-700 dark:text-orange-400 font-semibold">4 to 8 weeks before the rush hits.</span>
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold px-8 py-6 text-lg rounded-full shadow-2xl cursor-default opacity-90">
-                  🚀 Join Waitlist — Coming 2026
+                Join Waitlist Coming 2026
                 </Button>
                 <Button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} size="lg" variant="outline" className="border-2 border-orange-500 text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold px-8 py-6 text-lg rounded-full">
                   See How It Works →
@@ -807,9 +807,8 @@ export default function FestiveTrendFeaturePage() {
           </div>
 
           <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-3xl p-8 text-center shadow-lg mb-12">
-            <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
             <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Indian e-commerce sellers lose <span className="text-red-600">lakhs in festive revenue</span></p>
-            <p className="text-gray-700 dark:text-gray-300 text-lg italic">Simply because they didn't prepare in time — not because they lacked the products. The seller who stocks up on Diwali lights in September wins. The one who orders in October scrambles.</p>
+            <p className="text-gray-700 dark:text-gray-300 text-lg italic">Simply because they didn't prepare in time not because they lacked the products. The seller who stocks up on Diwali lights in September wins. The one who orders in October scrambles.</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
@@ -818,13 +817,13 @@ export default function FestiveTrendFeaturePage() {
                 <div className="w-12 h-12 bg-red-500 rounded-full flex items-center justify-center"><X className="w-6 h-6 text-white" /></div>
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">Without Festive Trend Intelligence</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 italic">Reactive — always a step behind</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 italic">Reactive always a step behind</p>
                 </div>
               </div>
               <div className="space-y-3">
                 {[
-                  "Scramble to restock when demand spikes — stock already sold out",
-                  "Miss the keyword trend window — competitors already ranking",
+                  "Scramble to restock when demand spikes stock already sold out",
+                  "Miss the keyword trend window competitors already ranking",
                   "Lose sales to better-prepared sellers every single festival",
                   "Price too low during peak, leaving margin on the table",
                   "Guess which products to stock based on last year's memory",
@@ -841,12 +840,12 @@ export default function FestiveTrendFeaturePage() {
                 <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center"><Check className="w-6 h-6 text-white" /></div>
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">With Festive Trend Intelligence</h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 italic">Proactive — stocked, ranked, priced early</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 italic">Proactive stocked, ranked, priced early</p>
                 </div>
               </div>
               <div className="space-y-3">
                 {[
-                  "Know demand spikes 4–8 weeks early — stock before the rush",
+                  "Know demand spikes 4–8 weeks early stock before the rush",
                   "Rank for festive keywords before the season even starts",
                   "Never miss a peak sales window again",
                   "Set pricing windows at peak margins with AI guidance",
@@ -882,7 +881,7 @@ export default function FestiveTrendFeaturePage() {
                 <MapPin className="w-5 h-5 text-white" />
               </div>
               <div>
-                <p className="text-sm font-bold text-amber-700 dark:text-amber-400 mb-2">📌 Real scenario — Bengaluru apparel seller, Navratri 2023</p>
+                <p className="text-sm font-bold text-amber-700 dark:text-amber-400 mb-2">Real scenario — Bengaluru apparel seller, Navratri 2023</p>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                   She saw 'chaniya choli' trending on October 5th. By then, the top listings had been ranking for 6 weeks. Her product was buried on page 4. She ordered stock on October 8th — it arrived October 22nd. Navratri ended October 24th. She sold 11 units out of 200 in stock. Dead inventory worth <span className="font-bold text-red-600">₹1.1L</span>.
                 </p>
@@ -898,10 +897,10 @@ export default function FestiveTrendFeaturePage() {
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">Here's what global competitor tools like Helium 10 miss for Indian sellers:</h3>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
-                { icon: <X className="w-5 h-5" />, text: "No Diwali, Eid, Pongal, Onam, or Navratri demand forecasting — built for US holidays, not Indian festivals" },
-                { icon: <X className="w-5 h-5" />, text: "No Flipkart coverage — India's #2 marketplace is completely invisible to them" },
-                { icon: <X className="w-5 h-5" />, text: "No regional festival data — Pongal in Tamil Nadu, Onam in Kerala, Bihu in Assam — ignored entirely" },
-                { icon: <X className="w-5 h-5" />, text: "No advance warning — they show current trends, not what will spike 6 weeks from now" },
+                { icon: <X className="w-5 h-5" />, text: "No Diwali, Eid, Pongal, Onam, or Navratri demand forecasting built for US holidays, not Indian festivals" },
+                { icon: <X className="w-5 h-5" />, text: "No Flipkart coverage India's #2 marketplace is completely invisible to them" },
+                { icon: <X className="w-5 h-5" />, text: "No regional festival data Pongal in Tamil Nadu, Onam in Kerala, Bihu in Assam ignored entirely" },
+                { icon: <X className="w-5 h-5" />, text: "No advance warning they show current trends, not what will spike 6 weeks from now" },
                 { icon: <X className="w-5 h-5" />, text: "No INR-based pricing guidance for Indian festive windows" },
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
@@ -914,26 +913,26 @@ export default function FestiveTrendFeaturePage() {
 
           {/* Real ₹ numbers table */}
           <div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">What Advance Festive Intelligence Is Worth — Real ₹ Numbers</h3>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">What Advance Festive Intelligence Is Worth Real ₹ Numbers</h3>
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border-2 border-gray-200 dark:border-gray-700">
               <table className="w-full">
                 <thead>
                   <tr className="bg-gray-100 dark:bg-gray-700">
                     <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Situation (Without Insydz)</th>
-                    <th className="px-6 py-4 text-center text-sm font-bold text-red-600 dark:text-red-400">Monthly / Seasonal Impact</th>
+                    <th className="px-6 py-4 text-left text-sm font-bold text-red-600 dark:text-red-400">Monthly / Seasonal Impact</th>
                   </tr>
                 </thead>
                 <tbody>
                   {[
-                    { situation: "Seller stockouts during Diwali peak — couldn't restock in time", impact: "₹40,000–₹2,00,000 in missed peak-season sales" },
-                    { situation: "Wrong products ordered for festive season — slow-moving stock", impact: "₹30,000–₹1,50,000 in stranded inventory" },
-                    { situation: "Missed festive keyword ranking window — buried on page 3 during peak", impact: "~40–60% reduction in festive organic impressions" },
-                    { situation: "Priced too low during peak demand — sold out fast but left margin behind", impact: "₹15,000–₹80,000 in lost margin per season" },
-                    { situation: "Missed regional festival opportunity — Pongal, Onam, Bihu untapped", impact: "₹20,000–₹60,000 in untapped regional festive revenue" },
+                    { situation: "Seller stockouts during Diwali peak couldn't restock in time", impact: "₹40,000–₹2,00,000 in missed peak-season sales" },
+                    { situation: "Wrong products ordered for festive season slow-moving stock", impact: "₹30,000–₹1,50,000 in stranded inventory" },
+                    { situation: "Missed festive keyword ranking window buried on page 3 during peak", impact: "~40–60% reduction in festive organic impressions" },
+                    { situation: "Priced too low during peak demand sold out fast but left margin behind", impact: "₹15,000–₹80,000 in lost margin per season" },
+                    { situation: "Missed regional festival opportunity Pongal, Onam, Bihu untapped", impact: "₹20,000–₹60,000 in untapped regional festive revenue" },
                   ].map((row, i) => (
                     <tr key={i} className="border-t border-gray-200 dark:border-gray-700">
                       <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{row.situation}</td>
-                      <td className="px-6 py-4 text-center">
+                      <td className="px-6 py-4 text-left">
                         <span className="text-sm font-bold text-red-600 dark:text-red-400">{row.impact}</span>
                       </td>
                     </tr>
@@ -951,7 +950,7 @@ export default function FestiveTrendFeaturePage() {
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white">How Insydz Is Different: How Festive Trend Intelligence Will Work</h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-              Insydz tracks festive demand patterns across years of Indian marketplace data —
+              Insydz tracks festive demand patterns across years of Indian marketplace data
               <span className="text-orange-700 dark:text-orange-400 font-semibold"> and tells you exactly when and how to prepare, well before the season hits.</span>
             </p>
           </div>
@@ -963,30 +962,30 @@ export default function FestiveTrendFeaturePage() {
                   step: "1",
                   title: "AI Tracks Festive Demand Patterns",
                   detail: "Across years of Indian marketplace data on Amazon India & Flipkart, Insydz's AI builds category-level demand models for every major Indian festival — identifying when demand historically starts rising, peaks, and falls for your product type.",
-                  icon: <BarChart2 className="w-12 h-12" />
+                  icon: <BarChart2 className="w-12 h-12 " />
                 },
                 {
                   step: "2",
                   title: "Identifies Your Category Opportunities",
-                  detail: "Diwali lights, Holi colors, Eid apparel, Pongal gifting — Insydz maps demand signals to your specific category. Not generic top-line trends. Your product type, your festival, your window.",
+                  detail: "Diwali lights, Holi colors, Eid apparel, Pongal gifting Insydz maps demand signals to your specific category. Not generic top-line trends. Your product type, your festival, your window.",
                   icon: <CalendarDays className="w-12 h-12" />
                 },
                 {
                   step: "3",
                   title: "Sends Advance Alerts 4–8 Weeks Ahead",
-                  detail: "Before demand spikes, Insydz sends you actionable alerts — on WhatsApp and in-dashboard — telling you exactly what to stock, what keywords to optimize, and what pricing window is approaching. In time to act, not in time to regret.",
+                  detail: "Before demand spikes, Insydz sends you actionable alerts on WhatsApp and in-dashboard telling you exactly what to stock, what keywords to optimize, and what pricing window is approaching. In time to act, not in time to regret.",
                   icon: <Bell className="w-12 h-12" />
                 },
                 {
                   step: "4",
                   title: "You Prepare & Profit",
-                  detail: "Stock, price, and rank before competitors even notice the trend. This is the compounding advantage Indian sellers who use Insydz will build — every Diwali, every Big Billion Day, every festive season — year after year.",
+                  detail: "Stock, price, and rank before competitors even notice the trend. This is the compounding advantage Indian sellers who use Insydz will build every Diwali, every Big Billion Day, every festive season year after year.",
                   icon: <Gift className="w-12 h-12" />
                 },
               ].map((item, i) => (
                 <div key={i} className="bg-white dark:bg-gray-800 border-2 border-orange-300 dark:border-orange-700 rounded-2xl p-6 text-center relative z-10 shadow-lg hover:shadow-xl transition-all">
                   <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-amber-500 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-black text-white">{item.step}</div>
-                  <div className="bg-orange-100 dark:bg-orange-900/20 rounded-xl p-4 mb-4 text-orange-600 dark:text-orange-400">{item.icon}</div>
+                  <div className="bg-orange-100 dark:bg-orange-900/20 rounded-xl p-4 mb-4 text-orange-600 dark:text-orange-400 flex items-center justify-center">{item.icon}</div>
                   <p className="text-gray-900 dark:text-white font-semibold mb-2">{item.title}</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{item.detail}</p>
                 </div>
@@ -995,7 +994,7 @@ export default function FestiveTrendFeaturePage() {
           </div>
           <div className="text-center mt-12">
             <Button size="lg" className="bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold px-12 py-6 text-lg rounded-full shadow-2xl cursor-default opacity-90">
-              🚀 Coming Soon — Join the Waitlist
+            Coming Soon Join the Waitlist
             </Button>
           </div>
         </div>
@@ -1020,21 +1019,21 @@ export default function FestiveTrendFeaturePage() {
               {
                 icon: <Package />,
                 title: "Know Exactly How Much to Stock",
-                detail: "AI-driven inventory forecasts per category and per festival — so you order the right quantity. Not too little to miss peak demand. Not too much to get stuck with dead stock.",
+                detail: "AI-driven inventory forecasts per category and per festival so you order the right quantity. Not too little to miss peak demand. Not too much to get stuck with dead stock.",
                 outcome: "Optimal stock levels. No stockouts during Diwali. No post-festive inventory write-offs.",
                 color: "text-amber-600"
               },
               {
                 icon: <Search />,
                 title: "Rank for Festive Keywords Before Rivals",
-                detail: "Start listing optimization 6 weeks ahead — so your product is already ranking when buyer intent peaks. Not scrambling to rank when the festival is 3 days away.",
+                detail: "Start listing optimization 6 weeks ahead so your product is already ranking when buyer intent peaks. Not scrambling to rank when the festival is 3 days away.",
                 outcome: "Higher organic festive visibility. More sales without more ad spend.",
                 color: "text-green-600"
               },
               {
                 icon: <DollarSign />,
                 title: "Set Festive Pricing Windows Strategically",
-                detail: "Know exactly when to raise prices, when to hold, and when to run festive deals — backed by data, not gut feel. Priced too low during Diwali peak? That's margin left on the table.",
+                detail: "Know exactly when to raise prices, when to hold, and when to run festive deals backed by data, not gut feel. Priced too low during Diwali peak? That's margin left on the table.",
                 outcome: "Higher festive-season margins. No more underpricing during peak demand.",
                 color: "text-blue-600"
               },
@@ -1048,7 +1047,7 @@ export default function FestiveTrendFeaturePage() {
               {
                 icon: <Maximize2 />,
                 title: "Scale Festive Revenue Year Over Year",
-                detail: "Build a repeatable festive playbook — so every Diwali, every Big Billion Day, you sell smarter than the year before. By year three, you have an institutional advantage.",
+                detail: "Build a repeatable festive playbook so every Diwali, every Big Billion Day, you sell smarter than the year before. By year three, you have an institutional advantage.",
                 outcome: "Compounding festive revenue growth. A selling system, not a guessing game.",
                 color: "text-purple-600"
               },
@@ -1056,7 +1055,6 @@ export default function FestiveTrendFeaturePage() {
               <div key={i} className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:border-orange-400 hover:shadow-lg transition-all">
                 <div className="flex items-center justify-between mb-4">
                   <div className={`w-12 h-12 bg-orange-100 dark:bg-orange-900/20 rounded-xl flex items-center justify-center ${outcome.color}`}>{outcome.icon}</div>
-                  <ThumbsUp className="w-6 h-6 text-orange-400" />
                 </div>
                 <p className="text-gray-900 dark:text-white font-semibold leading-relaxed mb-2">{outcome.title}</p>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{outcome.detail}</p>
@@ -1074,43 +1072,43 @@ export default function FestiveTrendFeaturePage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-4">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">What Festive Trend Intelligence Will Cover</h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">A complete festive deal forecasting tool — purpose-built for the Indian marketplace calendar, not adapted from a global tool that doesn't know Pongal from Christmas.</p>
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">A complete festive deal forecasting tool purpose-built for the Indian marketplace calendar, not adapted from a global tool that doesn't know Pongal from Christmas.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
             {[
               {
                 feature: "Festival Calendar",
-                benefit: "Diwali, Holi, Eid, Navratri, Pongal, Onam, Dussehra, Bihu, Republic Day Sale & 10+ more — all mapped to your category",
+                benefit: "Diwali, Holi, Eid, Navratri, Pongal, Onam, Dussehra, Bihu, Republic Day Sale & 10+ more all mapped to your category",
                 icon: <CalendarDays className="w-8 h-8" />,
                 color: "from-orange-500 to-amber-500"
               },
               {
                 feature: "Demand Spike Forecasting",
-                benefit: "Category-level demand predictions delivered weeks in advance — specific to your product type, not just generic market trends",
+                benefit: "Category-level demand predictions delivered weeks in advance specific to your product type, not just generic market trends",
                 icon: <TrendingUp className="w-8 h-8" />,
                 color: "from-green-500 to-emerald-500"
               },
               {
                 feature: "Inventory Recommendations",
-                benefit: "Optimal stock levels before each festival — never run out at peak, never over-order for slow festivals",
+                benefit: "Optimal stock levels before each festival never run out at peak, never over-order for slow festivals",
                 icon: <Package className="w-8 h-8" />,
                 color: "from-blue-500 to-cyan-500"
               },
               {
                 feature: "Festive Keyword Alerts",
-                benefit: "Rising search terms specific to each festive season — know which keywords to add weeks before buyers start searching",
+                benefit: "Rising search terms specific to each festive season know which keywords to add weeks before buyers start searching",
                 icon: <Search className="w-8 h-8" />,
                 color: "from-purple-500 to-pink-500"
               },
               {
                 feature: "Pricing Window Signals",
-                benefit: "Best times to raise or lower prices during peak festive periods — maximise margins at demand spikes, stay competitive in slow windows",
+                benefit: "Best times to raise or lower prices during peak festive periods maximise margins at demand spikes, stay competitive in slow windows",
                 icon: <DollarSign className="w-8 h-8" />,
                 color: "from-yellow-500 to-orange-500"
               },
               {
                 feature: "Regional Festival Coverage",
-                benefit: "State-specific festive trends — Pongal in Tamil Nadu, Onam in Kerala, Bihu in Assam — hyperlocal demand intelligence",
+                benefit: "State-specific festive trends Pongal in Tamil Nadu, Onam in Kerala, Bihu in Assam hyperlocal demand intelligence",
                 icon: <Globe className="w-8 h-8" />,
                 color: "from-red-500 to-orange-500"
               },
@@ -1139,30 +1137,30 @@ export default function FestiveTrendFeaturePage() {
               <thead>
                 <tr className="bg-gray-100 dark:bg-gray-800">
                   <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Aspect</th>
-                  <th className="px-6 py-4 text-center text-sm font-bold text-gray-700 dark:text-gray-300">Without It</th>
-                  <th className="px-6 py-4 text-center text-sm font-bold text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20">With Festive Trend Intelligence</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Without It</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20">With Festive Trend Intelligence</th>
                 </tr>
               </thead>
               <tbody>
                 {[
-                  { aspect: "Preparation Time", manual: "React when demand spikes — already too late", insydz: "Prepare 4–8 weeks in advance" },
+                  { aspect: "Preparation Time", manual: "React when demand spikes already too late", insydz: "Prepare 4–8 weeks in advance" },
                   { aspect: "Inventory Planning", manual: "Guess based on last year's memory", insydz: "AI-predicted quantities per product, per festival" },
                   { aspect: "Keyword Strategy", manual: "Optimize during the festival — page rank already set", insydz: "Rank before the season starts" },
                   { aspect: "Pricing", manual: "React to competitor price changes during peak", insydz: "Set optimal price windows proactively" },
                   { aspect: "Category Discovery", manual: "Stick to known categories every season", insydz: "AI spots emerging festive trends early" },
-                  { aspect: "Regional Intelligence", manual: "No state-specific festive data", insydz: "Pongal, Onam, Bihu — region-level demand signals" },
-                  { aspect: "Platform Coverage", manual: "Amazon only, no Flipkart festive data", insydz: "Amazon India & Flipkart — both in one dashboard" },
+                  { aspect: "Regional Intelligence", manual: "No state-specific festive data", insydz: "Pongal, Onam, Bihu region-level demand signals" },
+                  { aspect: "Platform Coverage", manual: "Amazon only, no Flipkart festive data", insydz: "Amazon India & Flipkart both in one dashboard" },
                 ].map((row, i) => (
                   <tr key={i} className="border-t border-gray-200 dark:border-gray-700">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{row.aspect}</td>
-                    <td className="px-6 py-4 text-center">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-6 py-4 text-left">
+                      <div className="flex items-left justify-left gap-2">
                         <X className="w-5 h-5 text-red-500 flex-shrink-0" />
                         <span className="text-sm text-gray-600 dark:text-gray-400">{row.manual}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-center bg-orange-50 dark:bg-orange-900/20">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-6 py-4 text-left bg-orange-50 dark:bg-orange-900/20">
+                      <div className="flex items-left justify-left gap-2">
                         <Check className="w-5 h-5 text-orange-500 flex-shrink-0" />
                         <span className="text-sm text-gray-900 dark:text-white font-medium">{row.insydz}</span>
                       </div>
@@ -1174,7 +1172,7 @@ export default function FestiveTrendFeaturePage() {
           </div>
           <div className="text-center mt-8">
             <Button size="lg" className="bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold px-10 py-6 text-lg rounded-full shadow-xl cursor-default opacity-90">
-              🚀 Coming Soon — Join Waitlist
+             Coming Soon Join Waitlist
             </Button>
           </div>
         </div>
@@ -1189,7 +1187,7 @@ export default function FestiveTrendFeaturePage() {
             </div>
             <h2 className="text-4xl font-black text-gray-900 dark:text-white mb-4">This Feature Is Coming Soon</h2>
             <p className="text-gray-600 dark:text-gray-400 text-lg max-w-xl mx-auto mb-8">
-              Festive Trend Intelligence is currently in development and will be launching before 2026. Join the waitlist — be the first seller in India to get access the moment it goes live.
+              Festive Trend Intelligence is currently in development and will be launching before 2026. Join the waitlist be the first seller in India to get access the moment it goes live.
             </p>
             <div className="grid sm:grid-cols-3 gap-4 max-w-2xl mx-auto mb-8">
               {["Diwali, Holi, Eid & 15+ festivals", "4–8 weeks advance demand alerts", "Amazon India & Flipkart support"].map((item, i) => (
@@ -1260,7 +1258,7 @@ export default function FestiveTrendFeaturePage() {
       <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">Festive Trend Intelligence — Frequently Asked Questions</h2>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">Festive Trend Intelligence Frequently Asked Questions</h2>
           </div>
           <div className="space-y-4">
             {faqs.map((faq, i) => (
@@ -1309,43 +1307,49 @@ export default function FestiveTrendFeaturePage() {
             <br />
             <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">Closer Than You Think.</span>
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-12">This feature is coming soon — be ready to sell smarter this festive season. Join the waitlist today.</p>
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-12">This feature is coming soon be ready to sell smarter this festive season. Join the waitlist today.</p>
 
           <div className="grid md:grid-cols-3 gap-6 mb-12">
             {/* New Sellers */}
-            <div className="bg-white dark:bg-gray-800 border-2 border-orange-200 dark:border-orange-800 rounded-2xl p-8 text-left">
+            <div className="bg-white dark:bg-gray-800 border-2 border-orange-200 dark:border-orange-800 
+rounded-2xl p-8 text-left flex flex-col h-full">
               <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mb-4">
                 <Rocket className="w-6 h-6 text-orange-600" />
               </div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">For New Sellers</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Just starting out? Begin with free features today — price tracking, reviews, keywords. Upgrade when Festive Intelligence launches.</p>
-               <a href="/login" className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-full py-2 block text-center">
-                🚀 Start Free →
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Just starting out? Begin with free features today price tracking, reviews, keywords. Upgrade when Festive Intelligence launches.</p>
+               <a href="/login" className="w-full bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold rounded-full py-2 block text-center mt-auto">
+                Start Free →
               </a>
             </div>
 
             {/* Growing Sellers */}
-            <div className="bg-white dark:bg-gray-800 border-2 border-orange-400 dark:border-orange-600 rounded-2xl p-8 text-left shadow-xl">
+            <div className="bg-white dark:bg-gray-800 border-2 border-orange-200 dark:border-orange-800 
+rounded-2xl p-8 text-left flex flex-col h-full">
               <div className="w-12 h-12 bg-orange-500 rounded-xl flex items-center justify-center mb-4">
                 <TrendingUp className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">For Growing Sellers</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Missed last Diwali? Join the waitlist now. Be first to access Festive Intelligence — and prep for next Diwali with 8-week advance data.</p>
-              <div className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold py-2 rounded-full shadow-lg cursor-default">
-                📈 Join Waitlist — Coming 2026
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Missed last Diwali? Join the waitlist now. Be first to access Festive Intelligence and prep for next Diwali with 8-week advance data.</p>
+              <div className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 text-white font-bold py-2 rounded-full shadow-lg cursor-default mt-auto">
+                Join Waitlist Coming 2026
               </div>
             </div>
 
             {/* Agencies */}
-            <div className="bg-white dark:bg-gray-800 border-2 border-orange-200 dark:border-orange-800 rounded-2xl p-8 text-left">
+            <div className="bg-white dark:bg-gray-800 border-2 border-orange-200 dark:border-orange-800 
+rounded-2xl p-8 text-left flex flex-col h-full">
               <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center mb-4">
                 <Briefcase className="w-6 h-6 text-orange-600" />
               </div>
               <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">For Agencies & Brand Managers</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Managing multiple accounts? See how Festive Intelligence integrates across all your clients in one dashboard. Book a walkthrough with the Insydz team.</p>
-               <a href="/about/contact-us" className="w-full bg-white dark:bg-gray-700 border-2 border-orange-500 text-orange-700 dark:text-orange-400 font-bold rounded-full hover:bg-orange-50 py-2 block text-center">
-                🏢 Book a Demo →
-              </a>
+               <a
+  href="/about/contact-us"
+  className="w-full bg-white dark:bg-gray-700 border-2 border-orange-500 text-orange-700 dark:text-orange-400 font-bold rounded-full hover:bg-orange-50 py-2 block text-center mt-auto"
+>
+  Book a Demo →
+</a>
             </div>
           </div>
 
@@ -1491,7 +1495,7 @@ export default function FestiveTrendFeaturePage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

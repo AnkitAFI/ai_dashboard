@@ -85,27 +85,27 @@ const TOC = [
 const FAQS = [
   {
     q: "What is the best review analysis tool for Indian sellers?",
-    a: "For Indian D2C brands selling on Amazon.in, Flipkart, the best review analysis tool is one built specifically for Indian marketplace reviews — not adapted from a US-first social listening platform. The key differentiators are: native support for Amazon.in and Flipkart review APIs, Hindi and Hinglish sentiment processing, competitor ASIN review mining, and WhatsApp alert delivery. Insydz is built from the ground up for this use case, with a free plan that covers entry-level review intelligence and paid plans starting at ₹1,999/month.",
+    a: "For Indian D2C brands selling on Amazon.in, Flipkart, the best review analysis tool is one built specifically for Indian marketplace reviews not adapted from a US-first social listening platform. The key differentiators are: native support for Amazon.in and Flipkart review APIs, Hindi and Hinglish sentiment processing, competitor ASIN review mining, and WhatsApp alert delivery. Insydz is built from the ground up for this use case, with a free plan that covers entry-level review intelligence and paid plans starting at ₹1,999/month.",
   },
   {
     q: "How is Amazon sentiment analysis different from social media listening?",
-    a: "Social media listening tools track brand mentions on Twitter and Instagram. Amazon sentiment analysis processes structured product reviews — understanding specific complaints about packaging, product defects, delivery, sizing, and feature gaps. For Indian D2C sellers, product review sentiment is far more actionable than social mentions: it reflects buyers who have already purchased, experienced the product, and taken time to document what went wrong. Social listening captures brand perception; review analysis captures product reality.",
+    a: "Social media listening tools track brand mentions on Twitter and Instagram. Amazon sentiment analysis processes structured product reviews understanding specific complaints about packaging, product defects, delivery, sizing, and feature gaps. For Indian D2C sellers, product review sentiment is far more actionable than social mentions: it reflects buyers who have already purchased, experienced the product, and taken time to document what went wrong. Social listening captures brand perception; review analysis captures product reality.",
   },
   {
     q: "Can I analyse competitor reviews — not just my own products?",
-    a: "Yes — with India-first tools like Insydz. Competitor review mining allows you to add rival ASINs and automatically cluster their negative reviews into product gaps and complaint themes. This gives you a real-time feed of what your category's buyers wish was better — which directly informs your product sourcing, listing copy, and pricing strategy. Most Indian D2C brands that start using competitor review mining consistently cite it as the highest-ROI feature in their intelligence stack.",
+    a: "Yes. With India-first tools like Insydz. Competitor review mining allows you to add rival ASINs and automatically cluster their negative reviews into product gaps and complaint themes. This gives you a real-time feed of what your category's buyers wish was better which directly informs your product sourcing, listing copy, and pricing strategy. Most Indian D2C brands that start using competitor review mining consistently cite it as the highest-ROI feature in their intelligence stack.",
   },
   {
     q: "How quickly can review analysis improve my star rating?",
-    a: "Brands acting on AI-identified complaint clusters within 14 days typically see measurable rating improvement within 30–60 days, as new positive reviews from fixed-product buyers dilute the previously high negative cluster. Listing copy changes — updating titles and bullets to address common objections and mirror positive review language — show conversion rate lift within 2–4 weeks. Supply chain fixes (sourcing improvements, packaging upgrades) take 6–10 weeks to flow through to visible rating changes.",
+    a: "Brands acting on AI-identified complaint clusters within 14 days typically see measurable rating improvement within 30–60 days, as new positive reviews from fixed-product buyers dilute the previously high negative cluster. Listing copy changes — updating titles and bullets to address common objections and mirror positive review language show conversion rate lift within 2–4 weeks. Supply chain fixes (sourcing improvements, packaging upgrades) take 6–10 weeks to flow through to visible rating changes.",
   },
   {
-    q: "Does review analysis work for Flipkart — not just Amazon?",
-    a: "Yes — with the right tool. Brandwatch, Sprinklr, and most global sentiment tools have zero Flipkart review data. India-first platforms like Insydz track review sentiment across all three Indian marketplaces simultaneously. This matters because complaint patterns differ by platform: Flipkart buyers disproportionately flag delivery and packaging issues; Amazon.in buyers engage more with product specifications and feature accuracy.",
+    q: "Does review analysis work for Flipkart not just Amazon?",
+    a: "Yes. With the right tool. Brandwatch, Sprinklr, and most global sentiment tools have zero Flipkart review data. India-first platforms like Insydz track review sentiment across all three Indian marketplaces simultaneously. This matters because complaint patterns differ by platform: Flipkart buyers disproportionately flag delivery and packaging issues; Amazon.in buyers engage more with product specifications and feature accuracy.",
   },
   {
     q: "How much do review analysis tools cost for Indian D2C brands?",
-    a: "Global social listening tools (Brandwatch, Sprinklr) cost ₹15,000–40,000/month. Amazon Seller Central's built-in review tab is free but provides zero AI analysis. Insydz offers a free plan and paid plans from ₹1,999/month, covering full AI review analytics across Amazon.in, Flipkart — with competitor mining, WhatsApp alerts, and Hinglish sentiment processing included from the Starter tier.",
+    a: "Global social listening tools (Brandwatch, Sprinklr) cost ₹15,000–40,000/month. Amazon Seller Central's built-in review tab is free but provides zero AI analysis. Insydz offers a free plan and paid plans from ₹1,999/month, covering full AI review analytics across Amazon.in, Flipkart with competitor mining, WhatsApp alerts, and Hinglish sentiment processing included from the Starter tier.",
   },
 ];
 
@@ -572,7 +572,7 @@ export default function BestReviewAnalysisToolIndia() {
           Best <span style={{ color:"#16A34A" }}>Review Analysis Tools</span> for Indian Sellers: Complete Guide (2026)
         </h1>
         <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2vw,17px)", color:"#475569", lineHeight:1.65, maxWidth:760, marginBottom:16 }} className="dark:text-gray-400">
-          Your customers are telling you exactly what to fix and why they're switching to a competitor — inside every review. Discover how India's top D2C brands use AI review intelligence to reduce returns and grow revenue.
+          Your customers are telling you exactly what to fix and why they're switching to a competitor inside every review. Discover how India's top D2C brands use AI review intelligence to reduce returns and grow revenue.
         </p>
         <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong style={{ color:"#0D1B2A" }}>Insydz Research Team</strong></div>
@@ -587,7 +587,7 @@ export default function BestReviewAnalysisToolIndia() {
             ["18%",         "Return Rate Reduction with AI Review Analysis"],
             ["₹52,000/mo",  "Average Revenue Recovered in 90 Days"],
             ["91%",         "Indian Online Buyers Read Reviews Before Purchase"],
-            ["₹1,999/mo",   "Insydz Starter — Full Review Intelligence"],
+            ["₹1,999/mo",   "Insydz Starter Full Review Intelligence"],
           ].map(([num, lbl]) => (
             <div className="stat-item" key={num}>
               <span style={{ display:"block", fontSize:"clamp(20px,4vw,26px)", fontWeight:800, color:"#16A34A", fontFamily:"'Sora',sans-serif", lineHeight:1 }}>{num}</span>
@@ -601,23 +601,23 @@ export default function BestReviewAnalysisToolIndia() {
       <div style={{ maxWidth:1240, margin:"0 auto", padding:"0 16px" }} className="sm:px-5 lg:px-6">
         <ArticleImg
           src="/review-analysis-hero.png?v=2"
-          alt="Best review analysis tool for Indian sellers on Amazon.in and Flipkart — AI dashboard"
-          caption="Insydz AI review intelligence dashboard — automatically clusters complaints, surfaces competitor gaps, and delivers WhatsApp alerts across Amazon.in, Flipkart"
+          alt="Best review analysis tool for Indian sellers on Amazon.in and Flipkart AI dashboard"
+          caption="Insydz AI review intelligence dashboard automatically clusters complaints, surfaces competitor gaps, and delivers WhatsApp alerts across Amazon.in, Flipkart"
         />
       </div>
 
       {/* KEY TAKEAWAYS */}
       <div style={{ maxWidth:1240, margin:"0 auto", padding:"0 16px 28px" }} className="sm:px-5 lg:px-6">
         <div className="takeaway-box">
-          <h3>✅ Key Takeaways</h3>
+          <h3>Key Takeaways</h3>
           {[
             "Indian D2C brands implementing AI-powered review analysis reduce return rates by 18% and recover ₹52,000/month in lost revenue within 90 days of acting on the intelligence.",
-            "91% of Indian online buyers read product reviews before purchasing. Your review score is not a vanity metric — it is a direct conversion rate driver and ranking signal on both Amazon.in and Flipkart.",
+            "91% of Indian online buyers read product reviews before purchasing. Your review score is not a vanity metric it is a direct conversion rate driver and ranking signal on both Amazon.in and Flipkart.",
             "Amazon's A10 algorithm and Flipkart's ranking engine use review velocity and star rating as direct input signals. A single unresolved complaint cluster can depress your organic ranking for months.",
-            "The most sophisticated Indian D2C brands don't just analyse their own reviews — they mine competitor reviews to find exact product gaps and positioning opportunities the market hasn't filled yet.",
+            "The most sophisticated Indian D2C brands don't just analyse their own reviews they mine competitor reviews to find exact product gaps and positioning opportunities the market hasn't filled yet.",
             "During Big Billion Days and Great Indian Festival, review volume spikes 4–6× for most categories. An unresolved complaint cluster that generates 10 negative reviews per month generates 50–60 during festive season.",
-            "Global social listening tools (Brandwatch, Sprinklr) have zero Flipkart review data. India-first tools are not a nice-to-have — they are a requirement for accurate review intelligence.",
-            "The best review analysis tools for Indian sellers process Hindi, Hinglish, and English natively — not via forced translation that destroys sentiment accuracy before analysis even begins.",
+            "Global social listening tools (Brandwatch, Sprinklr) have zero Flipkart review data. India-first tools are not a nice-to-have they are a requirement for accurate review intelligence.",
+            "The best review analysis tools for Indian sellers process Hindi, Hinglish, and English natively not via forced translation that destroys sentiment accuracy before analysis even begins.",
           ].map(t => (
             <div className="takeaway-item" key={t}>
               <div className="takeaway-dot">✓</div>
@@ -639,7 +639,7 @@ export default function BestReviewAnalysisToolIndia() {
             ))}
           </ul>
           <div style={{ background:"linear-gradient(160deg,#0D1B2A 0%,#162B45 100%)", borderRadius:10, padding:18, marginTop:16 }}>
-            <h4 className="sidebar-cta-title">Start Free — See Your Review Intelligence</h4>
+            <h4 className="sidebar-cta-title">Start Free See Your Review Intelligence</h4>
             <p className="sidebar-cta-body">Amazon.in, Flipkart &amp;. Hindi + Hinglish + English. WhatsApp alerts included.</p>
             <ul style={{ listStyle:"none", padding:0, margin:"0 0 14px" }}>
               {["Competitor ASIN review mining","Hinglish + Hindi NLP processing","WhatsApp alerts for new clusters","Free plan — no credit card needed"].map(f => (
@@ -649,7 +649,7 @@ export default function BestReviewAnalysisToolIndia() {
               ))}
             </ul>
             <button onClick={() => setLocation("/login")} style={{ display:"block", background:"#16A34A", color:"white", textAlign:"center" as const, padding:10, borderRadius:8, fontWeight:700, fontSize:12.5, width:"100%", cursor:"pointer", border:"none", fontFamily:"'Sora',sans-serif" }}>
-              Start Free — No Card Needed
+              Start Free No Card Needed
             </button>
           </div>
           <div style={{ background:"#F8FAFC", border:"1px solid #E2E8F0", borderRadius:10, padding:14, marginTop:14 }}>
@@ -665,7 +665,7 @@ export default function BestReviewAnalysisToolIndia() {
         {/* MAIN */}
         <main style={{ minWidth:0 }}>
           <button className="mobile-toc-btn" onClick={() => setTocOpen(!tocOpen)}>
-            📋 Table of Contents <span>{tocOpen?"▲":"▼"}</span>
+            Table of Contents <span>{tocOpen?"▲":"▼"}</span>
           </button>
           <div className={`mobile-toc-panel${tocOpen?" open":""}`}>
             {TOC.map(t => (
@@ -676,30 +676,30 @@ export default function BestReviewAnalysisToolIndia() {
           <article className="article-body">
 
             <div className="box box-indigo" style={{ margin:"0 0 28px" }}>
-              <div className="box-label">💡 In Simple Terms</div>
-              <p>A review analysis tool for India is software that automatically reads, clusters, and scores every customer review across Amazon.in, Flipkart — then surfaces the exact product defects, listing gaps, and competitor weaknesses hiding in plain sight. It turns 10,000 reviews you'd never have time to read into 5 specific decisions you can act on this week.</p>
+              <div className="box-label">In Simple Terms</div>
+              <p>A review analysis tool for India is software that automatically reads, clusters, and scores every customer review across Amazon.in, Flipkart then surfaces the exact product defects, listing gaps, and competitor weaknesses hiding in plain sight. It turns 10,000 reviews you'd never have time to read into 5 specific decisions you can act on this week.</p>
             </div>
 
             <h2 id="what-is">What is a Review Analysis Tool for Indian Sellers?</h2>
-            <p>A review analysis tool for India is software that automatically reads, clusters, and scores every customer review across Amazon.in, Flipkart — surfacing the exact product and listing issues driving 1-star reviews before they compound into a rating drop that impacts your organic ranking and conversion rate.</p>
-            <p>Unlike generic social listening tools built for brand mentions on Twitter or Instagram, India-focused review analysis tools are designed for marketplace product reviews — the structured, purchase-verified feedback that directly influences your category ranking, buy box eligibility, and conversion rate on India's top e-commerce platforms.</p>
-            <p>Indian D2C brands on Amazon.in receive an average of <strong>80–400 new reviews per month per ASIN</strong>. At that volume, manual review reading captures less than 10% of the signal. AI review intelligence dashboards surface the exact product and listing issues driving 1-star reviews — before they compound into a rating drop that is expensive and slow to reverse.</p>
+            <p>A review analysis tool for India is software that automatically reads, clusters, and scores every customer review across Amazon.in, Flipkart surfacing the exact product and listing issues driving 1-star reviews before they compound into a rating drop that impacts your organic ranking and conversion rate.</p>
+            <p>Unlike generic social listening tools built for brand mentions on Twitter or Instagram, India-focused review analysis tools are designed for marketplace product reviews the structured, purchase-verified feedback that directly influences your category ranking, buy box eligibility, and conversion rate on India's top e-commerce platforms.</p>
+            <p>Indian D2C brands on Amazon.in receive an average of <strong>80–400 new reviews per month per ASIN</strong>. At that volume, manual review reading captures less than 10% of the signal. AI review intelligence dashboards surface the exact product and listing issues driving 1-star reviews before they compound into a rating drop that is expensive and slow to reverse.</p>
 
             <h2 id="why-critical">Why Review Analysis is Critical for Indian D2C Brands</h2>
             <h3>India's E-commerce Buyers Are the Most Review-Reliant in the World</h3>
             <p>A 2026 study found that <strong>91% of Indian online buyers read product reviews</strong> before purchasing — higher than the US (88%) and significantly higher than global averages. This makes your review score not a vanity metric, but a direct conversion rate driver and a primary trust signal for first-time buyers in a market where brand familiarity is still being established.</p>
 
             <h3>Rating Damage is Silent and Algorithmic</h3>
-            <p>Amazon's A10 algorithm and Flipkart's ranking engine both use review velocity and star rating as direct input signals. When your rating drops below 4.0, you don't just lose buyer trust — you lose organic rank, which reduces visibility, which reduces new sales, which reduces new reviews, which makes the rating harder to recover. A single unresolved complaint cluster can depress your organic ranking for 3 to 6 months before you even notice the connection.</p>
+            <p>Amazon's A10 algorithm and Flipkart's ranking engine both use review velocity and star rating as direct input signals. When your rating drops below 4.0, you don't just lose buyer trust you lose organic rank, which reduces visibility, which reduces new sales, which reduces new reviews, which makes the rating harder to recover. A single unresolved complaint cluster can depress your organic ranking for 3 to 6 months before you even notice the connection.</p>
 
             <div className="box box-amber">
-              <div className="box-label">📌 Real Brand: Mumbai Home Decor D2C Seller</div>
-              <p>A Mumbai-based D2C brand selling decorative lighting on Amazon.in and Flipkart was at 3.9 stars with 22% of their negative reviews citing 'bulb not included in box' — a listing clarity issue, not a product defect. After AI review analysis surfaced this cluster, they updated their listing title, added a packaging insert, and updated the main image to show the bulb separately. Within 45 days, their rating recovered to 4.3 stars. The fix cost ₹0 in product changes and 2 hours of listing work.</p>
+              <div className="box-label">Real Brand: Mumbai Home Decor D2C Seller</div>
+              <p>A Mumbai-based D2C brand selling decorative lighting on Amazon.in and Flipkart was at 3.9 stars with 22% of their negative reviews citing 'bulb not included in box' a listing clarity issue, not a product defect. After AI review analysis surfaced this cluster, they updated their listing title, added a packaging insert, and updated the main image to show the bulb separately. Within 45 days, their rating recovered to 4.3 stars. The fix cost ₹0 in product changes and 2 hours of listing work.</p>
               <p><strong>The revenue impact: conversion rate improved 14%, driving ₹68,000/month in incremental sales from the same organic traffic.</strong></p>
             </div>
 
             <h3>Competitor Review Mining is an Untapped Product Strategy</h3>
-            <p>The most sophisticated D2C brands in India aren't just analysing their own reviews — they're mining competitor reviews to find the exact product gaps and pain points their category's buyers wish were solved. If your top competitor has 400 reviews at 3.8 stars and 31% of negative reviews mention 'remote stops working after 2 months', that's not just their problem — that's your positioning opportunity. Put 'remote with 12-month replacement guarantee' in your listing title and see what happens to your conversion rate.</p>
+            <p>The most sophisticated D2C brands in India aren't just analysing their own reviews — they're mining competitor reviews to find the exact product gaps and pain points their category's buyers wish were solved. If your top competitor has 400 reviews at 3.8 stars and 31% of negative reviews mention 'remote stops working after 2 months', that's not just their problem that's your positioning opportunity. Put 'remote with 12-month replacement guarantee' in your listing title and see what happens to your conversion rate.</p>
 
             <h3>The Festive Season Amplifies Every Unresolved Review Cluster</h3>
             <p>During Big Billion Days and Great Indian Festival, review volume spikes <strong>4–6× for most categories</strong>. An unresolved complaint cluster that generates 10 negative reviews per month generates 50–60 during the festive surge. Brands that enter the festive season with known complaint clusters unresolved don't just lose the sale — they lose the rating permanently, because the festive review damage is harder to dilute with positive reviews in the slower post-festive months.</p>
@@ -707,7 +707,7 @@ export default function BestReviewAnalysisToolIndia() {
             <ArticleImg
               src="/review-analysis-india-platform.png"
               alt="Review analysis platform showing Amazon.in, Flipkart coverage for Indian sellers"
-              caption="India-first review intelligence covers all three major marketplaces — Amazon.in, Flipkart — with native Hindi and Hinglish NLP processing"
+              caption="India-first review intelligence covers all three major marketplaces Amazon.in, Flipkart with native Hindi and Hinglish NLP processing"
             />
 
             <h2 id="how-it-works">How Does AI Review Analysis Work?</h2>
@@ -715,11 +715,11 @@ export default function BestReviewAnalysisToolIndia() {
 
             <div className="steps">
               {[
-                { n:1, t:"Connect Your Product ASINs", d:"Link your Amazon.in, Flipkart product pages. The tool begins ingesting all historical reviews and sets up real-time monitoring for new reviews — yours and your competitor ASINs." },
-                { n:2, t:"NLP Analysis & Topic Clustering", d:"The AI engine reads every review and uses natural language processing to identify recurring themes — grouping semantically similar complaints and compliments into clusters like 'packaging damage', 'size inaccuracy', 'feature gap', and 'delivery issue'." },
-                { n:3, t:"Sentiment Scoring & Rating Breakdown", d:"Each cluster is scored by sentiment polarity and weighted by frequency and recency. The tool builds a real-time rating breakdown — showing exactly which complaint clusters are responsible for what percentage of your 1-star and 2-star reviews." },
-                { n:4, t:"WhatsApp Alert on New Complaint Clusters", d:"The moment a new negative theme appears in more than 3 reviews within a 48-hour window, you receive a WhatsApp alert with the complaint summary, affected ASINs, and a recommended action. For Indian sellers, WhatsApp delivery means action happens — not email digests that get read 3 days later." },
-                { n:5, t:"Actionable AI Recommendation", d:"The platform delivers specific decisions: 'Update listing bullet point 2 and add packaging insert — estimated rating improvement 0.3 stars in 60 days.' Not just data. Specific actions with projected outcomes." },
+                { n:1, t:"Connect Your Product ASINs", d:"Link your Amazon.in, Flipkart product pages. The tool begins ingesting all historical reviews and sets up real-time monitoring for new reviews yours and your competitor ASINs." },
+                { n:2, t:"NLP Analysis & Topic Clustering", d:"The AI engine reads every review and uses natural language processing to identify recurring themes grouping semantically similar complaints and compliments into clusters like 'packaging damage', 'size inaccuracy', 'feature gap', and 'delivery issue'." },
+                { n:3, t:"Sentiment Scoring & Rating Breakdown", d:"Each cluster is scored by sentiment polarity and weighted by frequency and recency. The tool builds a real-time rating breakdown showing exactly which complaint clusters are responsible for what percentage of your 1-star and 2-star reviews." },
+                { n:4, t:"WhatsApp Alert on New Complaint Clusters", d:"The moment a new negative theme appears in more than 3 reviews within a 48-hour window, you receive a WhatsApp alert with the complaint summary, affected ASINs, and a recommended action. For Indian sellers, WhatsApp delivery means action happens not email digests that get read 3 days later." },
+                { n:5, t:"Actionable AI Recommendation", d:"The platform delivers specific decisions: 'Update listing bullet point 2 and add packaging insert estimated rating improvement 0.3 stars in 60 days.' Not just data. Specific actions with projected outcomes." },
               ].map(s => (
                 <div className="step" key={s.n}>
                   <div className="step-n">{s.n}</div>
@@ -729,8 +729,8 @@ export default function BestReviewAnalysisToolIndia() {
             </div>
 
             <div className="box box-green">
-              <div className="box-label">⚡ The Core Insight</div>
-              <p>Reading reviews tells you what one buyer said. AI cluster analysis tells you that 31% of your negative reviews share the same root cause — and that fixing it will measurably improve your rating within 45 days. The difference is the difference between customer service and product strategy.</p>
+              <div className="box-label">The Core Insight</div>
+              <p>Reading reviews tells you what one buyer said. AI cluster analysis tells you that 31% of your negative reviews share the same root cause and that fixing it will measurably improve your rating within 45 days. The difference is the difference between customer service and product strategy.</p>
             </div>
 
             <h2 id="types">Types of Review Intelligence Indian Brands Must Track</h2>
@@ -738,8 +738,8 @@ export default function BestReviewAnalysisToolIndia() {
 
             <ArticleImg
               src="/review-intelligence-types.png"
-              alt="Types of review intelligence for Indian D2C brands — complaint clusters and signal taxonomy"
-              caption="Seven categories of review intelligence automatically detected by AI — each mapped to a specific product or listing action"
+              alt="Types of review intelligence for Indian D2C brands complaint clusters and signal taxonomy"
+              caption="Seven categories of review intelligence automatically detected by AI each mapped to a specific product or listing action"
             />
 
             <div className="tbl-wrap">
@@ -766,23 +766,23 @@ export default function BestReviewAnalysisToolIndia() {
             </div>
 
             <div className="box box-teal">
-              <div className="box-label">📊 India-First vs Global Tool Coverage</div>
-              <p>India-first tools provide full marketplace review intelligence across Amazon.in, Flipkart — global tools see only social media mentions, leaving the most purchase-verified, actionable customer intelligence completely invisible.</p>
+              <div className="box-label">India-First vs Global Tool Coverage</div>
+              <p>India-first tools provide full marketplace review intelligence across Amazon.in, Flipkart global tools see only social media mentions, leaving the most purchase-verified, actionable customer intelligence completely invisible.</p>
             </div>
 
             <h2 id="mistakes">5 Common Mistakes Indian D2C Brands Make with Review Analysis</h2>
-            <p>Each of these mistakes silently costs Indian D2C brands rating points — and therefore conversion rate and revenue — every week they go uncorrected.</p>
+            <p>Each of these mistakes silently costs Indian D2C brands rating points and therefore conversion rate and revenue — every week they go uncorrected.</p>
 
             <div className="mistakes">
               {[
                 { n:1, t:"Using the Star Average as a Health Metric",
-                  b:"A 4.1-star average is not a health signal. The real signal is the complaint cluster percentage and its trend direction. A product at 4.1 stars with 28% of negative reviews mentioning one fixable defect is a product with a solvable problem. A product at 4.1 stars with complaints spread across 12 unrelated issues needs a fundamentally different intervention — but you can't tell the difference from the number alone." },
+                  b:"A 4.1-star average is not a health signal. The real signal is the complaint cluster percentage and its trend direction. A product at 4.1 stars with 28% of negative reviews mentioning one fixable defect is a product with a solvable problem. A product at 4.1 stars with complaints spread across 12 unrelated issues needs a fundamentally different intervention but you can't tell the difference from the number alone." },
                 { n:2, t:"Only Analysing Their Own Reviews",
-                  b:"Your competitors' reviews are free product research that most Indian D2C brands are leaving entirely untapped. The reviews your rivals' buyers leave are telling the entire category exactly what problems the current product standard doesn't solve. Sellers who read those reviews systematically consistently find 2–3 differentiation angles their competitors haven't addressed — and put those angles directly in their listing title." },
+                  b:"Your competitors' reviews are free product research that most Indian D2C brands are leaving entirely untapped. The reviews your rivals' buyers leave are telling the entire category exactly what problems the current product standard doesn't solve. Sellers who read those reviews systematically consistently find 2–3 differentiation angles their competitors haven't addressed and put those angles directly in their listing title." },
                 { n:3, t:"Reacting to Individual Reviews Instead of Clusters",
                   b:"A single 1-star review saying 'charging cable too short' is noise. Twenty reviews in 60 days all citing 'cable length issue' is a product specification problem with a sourcing solution. Sellers who react to individual reviews spend energy on customer service responses. Sellers who detect clusters spend energy on root-cause fixes that eliminate the source of the negative reviews entirely." },
                 { n:4, t:"Treating Review Language as Separate From Listing Copy",
-                  b:"The exact words buyers use in 5-star reviews are the exact search terms their buying-intent peers will type into the Amazon search bar. Mining positive review language and putting it directly into your listing title, bullets, and A+ content is the highest-conversion listing optimisation available — and it's sitting in your own review section, unused." },
+                  b:"The exact words buyers use in 5-star reviews are the exact search terms their buying-intent peers will type into the Amazon search bar. Mining positive review language and putting it directly into your listing title, bullets, and A+ content is the highest-conversion listing optimisation available and it's sitting in your own review section, unused." },
                 { n:5, t:"Running a One-Time Audit Instead of Continuous Monitoring",
                   b:"Competitor listings change. New sellers enter with different defect patterns. Seasonal usage creates new complaint clusters: monsoon-related corrosion in electronics, AC compatibility issues in appliances, gifting suitability during Diwali season. A one-time audit gives you a snapshot. Continuous monitoring gives you a competitive radar that updates every 48 hours." },
               ].map(m => (
@@ -796,23 +796,23 @@ export default function BestReviewAnalysisToolIndia() {
             <ArticleImg
               src="/review-analysis-dashboard-clusters.png?v=2"
               alt="AI review complaint cluster dashboard for Indian D2C brands on Amazon.in and Flipkart"
-              caption="Complaint cluster breakdown by percentage — showing which issues are growing vs shrinking and their projected impact on star rating trajectory"
+              caption="Complaint cluster breakdown by percentage showing which issues are growing vs shrinking and their projected impact on star rating trajectory"
             />
 
             <div className="verdict-banner">
               <div style={{ fontSize:"clamp(18px,4vw,22px)", flexShrink:0 }}>🎯</div>
               <p style={{ margin:0, fontFamily:"'Lora',serif", fontSize:"clamp(13px,2vw,15px)", color:"#92400E", lineHeight:1.7 }} className="dark:text-amber-300">
-                Every week without review intelligence is a week of product and listing failures compounding silently — while a competitor who is reading the same market data is acting on it.
+                Every week without review intelligence is a week of product and listing failures compounding silently while a competitor who is reading the same market data is acting on it.
               </p>
             </div>
 
             <h2 id="best-practices">Best Practices for Indian D2C Brands: Weekly Execution Model</h2>
-            <p>The most successful Indian D2C brands on Amazon.in and Flipkart don't react to review damage — they run a structured weekly rhythm that catches complaint clusters before they reach critical mass. Daily automated alerts, weekly 30-minute reviews, and monthly strategic audits keep your review intelligence compounding — without requiring a full-time analyst.</p>
+            <p>The most successful Indian D2C brands on Amazon.in and Flipkart don't react to review damage they run a structured weekly rhythm that catches complaint clusters before they reach critical mass. Daily automated alerts, weekly 30-minute reviews, and monthly strategic audits keep your review intelligence compounding without requiring a full-time analyst.</p>
 
             <ArticleImg
               src="/review-weekly-execution-model.png"
               alt="Weekly review intelligence execution model for Indian D2C brands"
-              caption="The three-tier review intelligence cadence — daily alerts, weekly review, monthly strategic audit"
+              caption="The three-tier review intelligence cadence daily alerts, weekly review, monthly strategic audit"
             />
 
             <div style={{ display:"flex", flexDirection:"column" as const, gap:12, margin:"16px 0 24px" }}>
@@ -820,20 +820,20 @@ export default function BestReviewAnalysisToolIndia() {
                 { phase:"Daily (Automated — 0 Minutes of Your Time)", color:"#16A34A", items:[
                   "New 1-star and 2-star reviews flagged via WhatsApp within 60 minutes of posting",
                   "New complaint clusters detected when 3+ reviews cite the same issue within 48 hours",
-                  "Competitor review velocity alerts — if a rival accumulates reviews unusually fast, you know within 24 hours",
+                  "Competitor review velocity alerts if a rival accumulates reviews unusually fast, you know within 24 hours",
                   "Listing health score updates based on new review language vs your current listing copy alignment",
                 ]},
-                { phase:"Weekly (30 Minutes — Your Strategic Review Session)", color:"#4F46E5", items:[
+                { phase:"Weekly (30 Minutes Your Strategic Review Session)", color:"#4F46E5", items:[
                   "Review your weekly sentiment digest: which complaint category increased by more than 3 percentage points?",
                   "Check competitor review mining updates: have their top complaint clusters shifted?",
                   "Identify the one listing copy update that would address your highest-frequency complaint cluster",
                   "Update listing bullets with new positive review vocabulary that emerged this week",
                   "Flag any supply chain issues to your sourcing team based on durability or quality complaint trends",
                 ]},
-                { phase:"Monthly (45 Minutes — Strategic Brand Review)", color:"#DB2777", items:[
+                { phase:"Monthly (45 Minutes Strategic Brand Review)", color:"#DB2777", items:[
                   "Full competitor review landscape audit: which rivals have improved their complaint profiles? Which have new vulnerabilities?",
                   "Map your top 3 complaint clusters to specific product improvement briefs for your supplier",
-                  "Reconcile your listing copy against your current positive review language — update wherever buyer vocabulary has drifted",
+                  "Reconcile your listing copy against your current positive review language update wherever buyer vocabulary has drifted",
                   "Plan festive season listing updates: what did your category's reviews say after the last Diwali or Big Billion Days surge?",
                   "Set review velocity benchmarks for the next month based on historical category data",
                 ]},
@@ -873,7 +873,7 @@ export default function BestReviewAnalysisToolIndia() {
 
             <div className="mid-cta">
               <div>
-                <h3>Start Your Review Intelligence in 30 Minutes — Free</h3>
+                <h3>Start Your Review Intelligence in 30 Minutes Free</h3>
                 <p>Connect Amazon.in, Flipkart &amp;. Get your first complaint cluster report today. WhatsApp alerts included.</p>
               </div>
               <button onClick={() => setLocation("/login")} style={{ flexShrink:0, background:"#16A34A", color:"white", padding:"11px 22px", borderRadius:8, fontWeight:700, fontSize:"clamp(13px,2vw,14.5px)", whiteSpace:"nowrap" as const, cursor:"pointer", border:"none", fontFamily:"'Sora',sans-serif", width:"100%" }} className="sm:w-auto">Try Insydz Free →</button>
@@ -881,7 +881,7 @@ export default function BestReviewAnalysisToolIndia() {
 
             <h2 id="best-tools">Best Tools for Amazon Review Analysis in India (2026)</h2>
             <h3>Why Global Tools Fall Short for Indian Sellers</h3>
-            <p>Several established platforms offer review analysis as part of their broader e-commerce intelligence suites — Helium 10's Review Insights, Jungle Scout's Review Automation, and social listening platforms like Brandwatch and Sprinklr. For Indian D2C sellers, an honest assessment: none of them were built for the Indian marketplace. Their primary data infrastructure is Amazon.com, and their sentiment models are trained on English-language reviews. For sellers whose buyers write in Hindi, Hinglish, and English — and who need Flipkart coverage — these tools are fundamentally blind to a large portion of the most relevant market signal.</p>
+            <p>Several established platforms offer review analysis as part of their broader e-commerce intelligence suites Helium 10's Review Insights, Jungle Scout's Review Automation, and social listening platforms like Brandwatch and Sprinklr. For Indian D2C sellers, an honest assessment: none of them were built for the Indian marketplace. Their primary data infrastructure is Amazon.com, and their sentiment models are trained on English-language reviews. For sellers whose buyers write in Hindi, Hinglish, and English and who need Flipkart coverage these tools are fundamentally blind to a large portion of the most relevant market signal.</p>
 
             <div className="tbl-wrap">
               <table className="dt">
@@ -910,7 +910,7 @@ export default function BestReviewAnalysisToolIndia() {
               </table>
             </div>
 
-            <h3>Full Capability Comparison — India Market</h3>
+            <h3>Full Capability Comparison India Market</h3>
             <div className="tbl-wrap">
               <table className="dt">
                 <thead>
@@ -936,11 +936,11 @@ export default function BestReviewAnalysisToolIndia() {
 
             <div style={{ display:"flex", flexDirection:"column" as const, gap:8, margin:"14px 0 24px" }}>
               {[
-                { icon:"🗣️", title:"Native Hindi, Hinglish &amp; English NLP",              body:"Sentiment is scored in the language the review was written — not after force-translation. 'Bilkul bekaar hai' is classified as strongly negative with the same accuracy as 'completely useless'." },
+                { icon:"🗣️", title:"Native Hindi, Hinglish &amp; English NLP",              body:"Sentiment is scored in the language the review was written not after force-translation. 'Bilkul bekaar hai' is classified as strongly negative with the same accuracy as 'completely useless'." },
                 { icon:"🏪", title:"Amazon.in + Flipkart simultaneously",         body:"Platform-specific complaint patterns are tracked and surfaced separately. Flipkart buyers disproportionately flag delivery issues;. You see the full picture." },
-                { icon:"🔍", title:"Competitor ASIN review mining — automated",           body:"Add any competitor's ASIN and Insydz clusters their reviews with the same taxonomy as yours. You see their top complaint categories, positive themes, and feature gaps in real time." },
+                { icon:"🔍", title:"Competitor ASIN review mining automated",           body:"Add any competitor's ASIN and Insydz clusters their reviews with the same taxonomy as yours. You see their top complaint categories, positive themes, and feature gaps in real time." },
                 { icon:"📲", title:"WhatsApp-first alert delivery",                       body:"New complaint clusters and critical individual reviews reach you via WhatsApp within 60 minutes. For Indian SMB operators who check WhatsApp 50× a day, this is the difference between acting and archiving." },
-                { icon:"✍️", title:"AI listing copy recommendations",                    body:"Specific bullet point rewrites generated from your positive review clusters and your competitors' negative review language — the highest-conversion listing optimisation available." },
+                { icon:"✍️", title:"AI listing copy recommendations",                    body:"Specific bullet point rewrites generated from your positive review clusters and your competitors' negative review language the highest-conversion listing optimisation available." },
                 { icon:"🎉", title:"Festive season trend intelligence",                   body:"Pre-festive complaint pattern audits so you know exactly which issues to resolve before Big Billion Days and Great Indian Festival review volume spikes 4–6×." },
               ].map(f => (
                 <div key={f.title} style={{ background:"#F0FDF4", border:"1px solid #BBF7D0", borderRadius:10, padding:"12px 14px", display:"flex", gap:10 }}>
@@ -954,8 +954,8 @@ export default function BestReviewAnalysisToolIndia() {
             </div>
 
             <div className="box box-pink">
-              <div className="box-label">📌 The Honest Test</div>
-              <p>A review analysis tool is only as useful as the reviews it can actually read. For Indian D2C brands, that means native Amazon.in data, Flipkart coverage, and Hinglish NLP. Tools that don't pass this test aren't giving you Indian market intelligence — they're giving you a partial picture of a US market you're not competing in.</p>
+              <div className="box-label">The Honest Test</div>
+              <p>A review analysis tool is only as useful as the reviews it can actually read. For Indian D2C brands, that means native Amazon.in data, Flipkart coverage, and Hinglish NLP. Tools that don't pass this test aren't giving you Indian market intelligence they're giving you a partial picture of a US market you're not competing in.</p>
             </div>
 
             <h2 id="faq">Frequently Asked Questions</h2>
@@ -999,7 +999,7 @@ export default function BestReviewAnalysisToolIndia() {
       <div className="fc-block">
         <div className="fc-inner">
           <h2>Winning on Amazon India and Flipkart in 2026 Isn't About Having the Most Reviews.</h2>
-          <p>It's about understanding what those reviews are actually telling you — and acting on them faster than your competition. Insydz delivers AI review intelligence built specifically for Indian marketplace sellers, in Hindi, Hinglish, and English, via WhatsApp.</p>
+          <p>It's about understanding what those reviews are actually telling you and acting on them faster than your competition. Insydz delivers AI review intelligence built specifically for Indian marketplace sellers, in Hindi, Hinglish, and English, via WhatsApp.</p>
           <div className="fc-points">
             <div className="fc-pt">Forever free plan</div>
             <div className="fc-pt">No credit card needed</div>
@@ -1007,7 +1007,7 @@ export default function BestReviewAnalysisToolIndia() {
             <div className="fc-pt">WhatsApp alerts in 60 min</div>
           </div>
           <button className="fc-btn" onClick={() => setLocation("/login")}>
-            → Start Free at insydz.com — Get Your First Review Intelligence Report Today
+            → Start Free at insydz.com Get Your First Review Intelligence Report Today
           </button>
           <p className="fc-sub">No setup required · Amazon India, Flipkart &amp;· No credit card needed</p>
         </div>
@@ -1137,7 +1137,7 @@ export default function BestReviewAnalysisToolIndia() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

@@ -671,7 +671,7 @@ export default function ProductResearchFeaturePage() {
                 <span className="text-sm font-medium text-indigo-700">Feature Spotlight</span>
               </div>
               <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
-                AI Product Research —
+                AI Product Research
                 <br />
                 <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 bg-clip-text text-transparent">Find Winners</span>
                 <br />
@@ -683,7 +683,7 @@ export default function ProductResearchFeaturePage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold px-8 py-6 text-lg rounded-full shadow-2xl hover:shadow-indigo-500/50 transition-all group">
-                  💡 Discover Products Free
+                  Discover Products Free
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} size="lg" variant="outline" className="border-2 border-indigo-600 text-indigo-700 dark:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-semibold px-8 py-6 text-lg rounded-full">
@@ -801,7 +801,6 @@ export default function ProductResearchFeaturePage() {
             ))}
           </div>
           <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-3xl p-8 text-center shadow-lg">
-            <AlertCircle className="w-12 h-12 text-red-600 mx-auto mb-4" />
             <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2"><span className="text-red-600">70% of new products fail</span> in their first year</p>
             <p className="text-gray-700 dark:text-gray-300 text-lg">Because sellers pick products without data.</p>
           </div>
@@ -842,7 +841,7 @@ export default function ProductResearchFeaturePage() {
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white">How AI Product Research Works</h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto">
-              Insydz AI scans millions of products to find opportunities with high demand and low competition —
+              Insydz AI scans millions of products to find opportunities with high demand and low competition
               <span className="text-indigo-700 font-semibold"> so you launch products that actually sell.</span>
             </p>
           </div>
@@ -857,7 +856,7 @@ export default function ProductResearchFeaturePage() {
               ].map((item, i) => (
                 <div key={i} className="bg-white dark:bg-gray-800 border-2 border-indigo-300 dark:border-indigo-700 rounded-2xl p-6 text-center relative z-10 shadow-lg hover:shadow-xl transition-all">
                   <div className="w-12 h-12 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 text-lg font-black text-white">{item.step}</div>
-                  <div className="bg-indigo-100 dark:bg-indigo-900/20 rounded-xl p-4 mb-4 text-indigo-600">{item.icon}</div>
+                  <div className="bg-indigo-100 dark:bg-indigo-900/20 rounded-xl p-4 mb-4 text-indigo-600 flex items-center justify-center">{item.icon}</div>
                   <p className="text-gray-900 dark:text-white font-semibold mb-2">{item.title}</p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">{item.detail}</p>
                 </div>
@@ -866,7 +865,7 @@ export default function ProductResearchFeaturePage() {
           </div>
           <div className="text-center mt-12">
             <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold px-4 sm:px-12 py-6 text-sm sm:text-lg rounded-full shadow-2xl group w-full sm:w-auto">
-              💡 Find Your Next Product Free
+              Find Your Next Product Free
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -939,8 +938,8 @@ export default function ProductResearchFeaturePage() {
               <thead>
                 <tr className="bg-gray-100 dark:bg-gray-800">
                   <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Aspect</th>
-                  <th className="px-6 py-4 text-center text-sm font-bold text-gray-700 dark:text-gray-300">Manual Research</th>
-                  <th className="px-6 py-4 text-center text-sm font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20">AI Research</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-700 dark:text-gray-300">Manual Research</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20">AI Research</th>
                 </tr>
               </thead>
               <tbody>
@@ -953,14 +952,14 @@ export default function ProductResearchFeaturePage() {
                 ].map((row, i) => (
                   <tr key={i} className="border-t border-gray-200 dark:border-gray-700">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">{row.aspect}</td>
-                    <td className="px-6 py-4 text-center">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-6 py-4 text-left">
+                      <div className="flex items-left justify-left gap-2">
                         <X className="w-5 h-5 text-red-500" />
                         <span className="text-sm text-gray-600 dark:text-gray-400">{row.manual}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-center bg-indigo-50 dark:bg-indigo-900/20">
-                      <div className="flex items-center justify-center gap-2">
+                    <td className="px-6 py-4 text-left bg-indigo-50 dark:bg-indigo-900/20">
+                      <div className="flex items-left justify-left gap-2">
                         <Check className="w-5 h-5 text-indigo-600" />
                         <span className="text-sm text-gray-900 dark:text-white font-medium">{row.insydz}</span>
                       </div>
@@ -972,7 +971,7 @@ export default function ProductResearchFeaturePage() {
           </div>
           <div className="text-center mt-8">
             <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold px-10 py-6 text-lg rounded-full shadow-xl">
-              💡 Switch to AI Research
+              Switch to AI Research
             </Button>
           </div>
         </div>
@@ -1007,7 +1006,7 @@ export default function ProductResearchFeaturePage() {
             </div>
             <div className="text-center">
               <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold px-4 sm:px-12 py-6 text-sm sm:text-lg rounded-full shadow-2xl w-full sm:w-auto">
-                💡 Start Product Research Free
+                Start Product Research Free
               </Button>
             </div>
           </div>
@@ -1057,7 +1056,7 @@ export default function ProductResearchFeaturePage() {
       <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">Product Research – FAQs</h2>
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">Product Research FAQs</h2>
           </div>
           <div className="space-y-4">
             {faqs.map((faq, i) => (
@@ -1108,7 +1107,7 @@ export default function ProductResearchFeaturePage() {
           </h2>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold px-12 py-6 text-lg rounded-full shadow-2xl group">
-              💡 Start Product Research Free
+              Start Product Research Free
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button onClick={() => setLocation("/")} size="lg" variant="outline" className="border-2 border-indigo-600 text-indigo-700 dark:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-semibold px-12 py-6 text-lg rounded-full">
@@ -1121,7 +1120,7 @@ export default function ProductResearchFeaturePage() {
       {/* Sticky Mobile CTA */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-indigo-300 dark:border-indigo-700 p-4 shadow-2xl z-40">
         <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 rounded-full shadow-xl">
-          💡 Start Product Research Free
+          Start Product Research Free
         </Button>
       </div>
 
@@ -1233,7 +1232,7 @@ export default function ProductResearchFeaturePage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

@@ -149,27 +149,27 @@ export default function FreeCompetitorPriceCheckerPage() {
     {
       id: 'faq-1',
       question: 'Is this competitor price checker free?',
-      answer: "Yes. Insydz's Amazon competitor price checker is completely free — no credit card required, no trial period, no expiry. Create a free Insydz account (takes 60 seconds) and you can check competitor prices for any Amazon India product immediately. The free tool shows competitor price range (lowest, highest, average), active seller count, your price positioning relative to the market, and a Buy Box opportunity signal. Paid plans unlock daily price monitoring, WhatsApp alerts when a competitor drops price, historical trend data, and AI-powered repricing recommendations.",
+      answer: "Yes. Insydz's Amazon competitor price checker is completely free no credit card required, no trial period, no expiry. Create a free Insydz account (takes 60 seconds) and you can check competitor prices for any Amazon India product immediately. The free tool shows competitor price range (lowest, highest, average), active seller count, your price positioning relative to the market, and a Buy Box opportunity signal. Paid plans unlock daily price monitoring, WhatsApp alerts when a competitor drops price, historical trend data, and AI-powered repricing recommendations.",
     },
     {
       id: 'faq-2',
       question: 'Does it work for Amazon India only?',
-      answer: "The free competitor price checker is built and calibrated specifically for Amazon India (amazon.in). Pricing data, seller counts, and Buy Box dynamics all reflect the Indian marketplace — not Amazon.com data. Tools like Keepa and Helium 10 are built for Western markets and provide only partial Amazon India coverage. Insydz is built exclusively for Indian marketplace sellers — Amazon India, Flipkart, and Meesho.",
+      answer: "The free competitor price checker is built and calibrated specifically for Amazon India (amazon.in). Pricing data, seller counts, and Buy Box dynamics all reflect the Indian marketplace not Amazon.com data. Tools like Keepa and Helium 10 are built for Western markets and provide only partial Amazon India coverage. Insydz is built exclusively for Indian marketplace sellers Amazon India, Flipkart, and Meesho.",
     },
     {
       id: 'faq-3',
       question: 'How current is the pricing data?',
-      answer: "The free Amazon competitor price checker pulls current pricing from all active sellers on that ASIN at the time of your check — live market pricing, not estimates. The free tool gives you a point-in-time snapshot. Paid plans (₹1,999/month) add continuous monitoring — checking competitor prices regularly and sending WhatsApp alerts when a price drops below a threshold you set, so you can reprice before losing the Buy Box.",
+      answer: "The free Amazon competitor price checker pulls current pricing from all active sellers on that ASIN at the time of your check live market pricing, not estimates. The free tool gives you a point-in-time snapshot. Paid plans (₹1,999/month) add continuous monitoring checking competitor prices regularly and sending WhatsApp alerts when a price drops below a threshold you set, so you can reprice before losing the Buy Box.",
     },
     {
       id: 'faq-4',
       question: 'Can I check prices for competitor products too?',
-      answer: "Yes. The free competitor price checker works on any Amazon India product ASIN — including competitor products you don't sell. This is one of the most valuable pre-launch use cases: before entering a category, check exactly what price points competitors are clustered at, how many sellers are competing, and whether there's a price gap worth targeting. If 12 sellers are bunched between ₹599–₹649, there may be a margin opportunity at ₹749 for a better-spec product.",
+      answer: "Yes. The free competitor price checker works on any Amazon India product ASIN including competitor products you don't sell. This is one of the most valuable pre-launch use cases: before entering a category, check exactly what price points competitors are clustered at, how many sellers are competing, and whether there's a price gap worth targeting. If 12 sellers are bunched between ₹599–₹649, there may be a margin opportunity at ₹749 for a better-spec product.",
     },
     {
       id: 'faq-5',
       question: 'Is login required?',
-      answer: "Yes, a free Insydz account is required — just an email address, no credit card. Login saves your price check history so you can compare price snapshots across sessions and track categories over time. Your free account also unlocks basic versions of all Insydz features — review sentiment analysis, product research, and keyword rank checking — not just the competitor price checker.",
+      answer: "Yes, a free Insydz account is required just an email address, no credit card. Login saves your price check history so you can compare price snapshots across sessions and track categories over time. Your free account also unlocks basic versions of all Insydz features review sentiment analysis, product research, and keyword rank checking not just the competitor price checker.",
     },
   ];
 
@@ -479,7 +479,7 @@ export default function FreeCompetitorPriceCheckerPage() {
         </div>
         <div className="relative max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-white border border-teal-200 dark:bg-teal-900/30 dark:border-teal-700 rounded-full px-4 py-2 mb-6 shadow-sm">
-            <span className="text-sm font-semibold text-teal-700 dark:text-teal-400">🛠️ Free Tool · Built for Indian Sellers 🇮🇳</span>
+            <span className="text-sm font-semibold text-teal-700 dark:text-teal-400">Free Tool · Built for Indian Sellers 🇮🇳</span>
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white mb-5">
             Free Competitor Price Checker
@@ -487,7 +487,7 @@ export default function FreeCompetitorPriceCheckerPage() {
             <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">for Amazon India</span>
           </h1>
           <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Instantly see how competitors are pricing products in your category — so you can position smarter, win the Buy Box, and protect your margins on Amazon India.
+            Instantly see how competitors are pricing products in your category so you can position smarter, win the Buy Box, and protect your margins on Amazon India.
           </p>
 
           {/* LOGIN GATE */}
@@ -498,7 +498,7 @@ export default function FreeCompetitorPriceCheckerPage() {
                 <div className="text-center">
                   <h2 className="text-2xl font-black text-gray-900 dark:text-white">Sign in to use this tool</h2>
                   <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm max-w-xs mx-auto leading-relaxed">
-                    Create a free Insydz account or log in to start checking competitor prices instantly. Live Amazon India data — free forever.
+                    Create a free Insydz account or log in to start checking competitor prices instantly. Live Amazon India data free forever.
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 w-full">
@@ -532,13 +532,13 @@ export default function FreeCompetitorPriceCheckerPage() {
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">Tool Overview</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">What This Free Price Checker <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Shows You</span></h2>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Four pricing intelligence signals every Amazon India seller needs to stay competitive — whether setting a launch price, defending the Buy Box, or protecting margins during a festive sale.</p>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Four pricing intelligence signals every Amazon India seller needs to stay competitive whether setting a launch price, defending the Buy Box, or protecting margins during a festive sale.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
               { icon: <IndianRupee className="w-6 h-6" />, title: "Competitor Price Range", desc: "See the lowest, highest, and average ₹ pricing across all competing sellers on an ASIN. Know the full price battlefield before you set your own price.", color: "text-teal-500", bg: "bg-teal-50 dark:bg-teal-900/20", border: "hover:border-teal-300" },
               { icon: <Users className="w-6 h-6" />, title: "Seller Count", desc: "Know how many sellers are competing on this ASIN and at which price points. A category with 2 sellers is a different fight than one with 47.", color: "text-cyan-500", bg: "bg-cyan-50 dark:bg-cyan-900/20", border: "hover:border-cyan-300" },
-              { icon: <ArrowDownUp className="w-6 h-6" />, title: "Price Positioning", desc: "Understand where your price sits relative to the market — above, at, or below the Buy Box sweet spot. Are you leaving money on the table, or about to lose the Buy Box?", color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20", border: "hover:border-blue-300" },
+              { icon: <ArrowDownUp className="w-6 h-6" />, title: "Price Positioning", desc: "Understand where your price sits relative to the market above, at, or below the Buy Box sweet spot. Are you leaving money on the table, or about to lose the Buy Box?", color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20", border: "hover:border-blue-300" },
               { icon: <Target className="w-6 h-6" />, title: "Pricing Opportunity", desc: "Spot gaps where a smarter price could win more sales without sacrificing margin. The zone between the cheapest seller and what buyers actually pay tells you everything.", color: "text-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-900/20", border: "hover:border-indigo-300" },
             ].map((card, i) => (
               <div key={i} className={`bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-lg ${card.border} transition-all group relative overflow-hidden`}>
@@ -560,7 +560,7 @@ export default function FreeCompetitorPriceCheckerPage() {
           <div className="text-center max-w-2xl mx-auto mb-12">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">Why It Matters</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Why Competitor Price Tracking Is <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Critical</span></h2>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Price is one of the top factors in Amazon's Buy Box algorithm. Sellers who don't track competitor pricing consistently lose sales to better-positioned rivals — often without realising why.</p>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Price is one of the top factors in Amazon's Buy Box algorithm. Sellers who don't track competitor pricing consistently lose sales to better-positioned rivals often without realising why.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-10">
             {["Lose the Buy Box to lower-priced competitors", "Price too high and miss high-volume sales windows", "Price too low and erode all your profit margins", "Miss competitor price drops and promotions from rivals"].map((reason, i) => (
@@ -573,7 +573,7 @@ export default function FreeCompetitorPriceCheckerPage() {
           <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-100 dark:border-red-900/40 rounded-3xl p-8 sm:p-10 max-w-2xl mx-auto">
             <h3 className="text-xl font-black text-gray-900 dark:text-white mb-6 text-center">What Happens When You Ignore Competitor Pricing?</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
-              {["Competitors undercut you and take your sales", "Your listings stagnate with no Buy Box rotation", "You're last to know about aggressive price drops", "You reprice manually — too slow, too late"].map((item, i) => (
+              {["Competitors undercut you and take your sales", "Your listings stagnate with no Buy Box rotation", "You're last to know about aggressive price drops", "You reprice manually too slow, too late"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
                   <span className="text-sm text-gray-700 dark:text-gray-300">{item}</span>
@@ -593,14 +593,14 @@ export default function FreeCompetitorPriceCheckerPage() {
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">How It Works</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">How It <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Works</span></h2>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Three steps. Under two minutes. Paste any Amazon India product URL or ASIN — yours or a competitor's — and see the full price landscape instantly.</p>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Three steps. Under two minutes. Paste any Amazon India product URL or ASIN yours or a competitor's and see the full price landscape instantly.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
             <div className="hidden md:block absolute top-[52px] left-[calc(16.6%+28px)] right-[calc(16.6%+28px)] h-[2px] bg-gradient-to-r from-teal-500 to-cyan-500 z-0"></div>
             {[
-              { step: "01", icon: <Search className="w-7 h-7" />, title: "Enter ASIN or Product Link", desc: "Paste any Amazon India product URL or ASIN — yours or a competitor's listing. The free Amazon competitor price analyzer works on any publicly listed product." },
-              { step: "02", icon: <RefreshCw className="w-7 h-7" />, title: "Insydz Scans the Market", desc: "We pull current pricing from all sellers competing on that ASIN in real time — not stored estimates, not US Amazon data. Live Indian marketplace pricing." },
-              { step: "03", icon: <Zap className="w-7 h-7" />, title: "Get Instant Price Intelligence", desc: "See the full price landscape — lowest, highest, average, seller count, Buy Box win probability, and 30-day price trend — immediately." },
+              { step: "01", icon: <Search className="w-7 h-7" />, title: "Enter ASIN or Product Link", desc: "Paste any Amazon India product URL or ASIN yours or a competitor's listing. The free Amazon competitor price analyzer works on any publicly listed product." },
+              { step: "02", icon: <RefreshCw className="w-7 h-7" />, title: "Insydz Scans the Market", desc: "We pull current pricing from all sellers competing on that ASIN in real time not stored estimates, not US Amazon data. Live Indian marketplace pricing." },
+              { step: "03", icon: <Zap className="w-7 h-7" />, title: "Get Instant Price Intelligence", desc: "See the full price landscape lowest, highest, average, seller count, Buy Box win probability, and 30-day price trend immediately." },
             ].map((s, i) => (
               <div key={i} className="relative z-10 bg-gray-50 dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg hover:border-teal-300 dark:hover:border-teal-700 transition-all hover:-translate-y-1">
                 <div className="w-14 h-14 bg-gradient-to-br from-teal-500 to-cyan-500 text-white font-black text-lg rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg">{s.step}</div>
@@ -626,7 +626,7 @@ export default function FreeCompetitorPriceCheckerPage() {
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">Example Output</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Example Competitor Price <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Report</span></h2>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Here's what a real Amazon India price intelligence snapshot looks like — so you know exactly what you're getting before you sign in.</p>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Here's what a real Amazon India price intelligence snapshot looks like so you know exactly what you're getting before you sign in.</p>
           </div>
 
           <div className="bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-3xl overflow-hidden shadow-2xl">
@@ -657,7 +657,7 @@ export default function FreeCompetitorPriceCheckerPage() {
           <div className="mt-14">
             <div className="text-center mb-10">
               <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-3">Visual Price Landscape <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Snapshot</span></h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">See the full price spread across competitors at a glance — distribution, Buy Box zone, and trend direction.</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">See the full price spread across competitors at a glance distribution, Buy Box zone, and trend direction.</p>
             </div>
             <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-6 sm:p-9 shadow-lg">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -702,7 +702,7 @@ export default function FreeCompetitorPriceCheckerPage() {
           {/* Upsell */}
           <div className="mt-14 bg-white dark:bg-gray-900 border-2 border-teal-200 dark:border-teal-900/50 rounded-3xl p-8 sm:p-12 max-w-xl mx-auto text-center shadow-lg">
             <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-3">Unlock the Full Price Intelligence Report</h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-7 max-w-sm mx-auto">Sign in to access seller-level pricing breakdown, historical trend data, and Buy Box positioning insights — plus daily monitoring and WhatsApp alerts when a competitor drops price.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-7 max-w-sm mx-auto">Sign in to access seller-level pricing breakdown, historical trend data, and Buy Box positioning insights plus daily monitoring and WhatsApp alerts when a competitor drops price.</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
                <a href="/login" className="px-6 py-3 bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-105">
                 <LogIn className="w-4 h-4" /> Log In to Access
@@ -731,9 +731,9 @@ export default function FreeCompetitorPriceCheckerPage() {
             <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.4)' }}>Electronics accessories, Pune | Amazon India | Bluetooth speakers ₹1,199 | Big Billion Days week | 18 active competing sellers</p>
             <div className="space-y-4">
               {[
-                { label: "The Problem — Day Before Sale", text: "Suresh had been holding his Bluetooth speakers at ₹1,199 for 3 weeks — a price that had been earning him the Buy Box consistently. The day before Big Billion Days, he checked his dashboard and saw sales had dropped 60% in 4 hours. He didn't know why. He assumed it was site traffic. It wasn't." },
-                { label: "What the Price Checker Found", text: "The free Amazon competitor price checker showed 3 sellers had dropped to ₹999–₹1,049 in the same afternoon. Average market price had shifted from ₹1,165 to ₹1,042 in under 6 hours. His Buy Box win probability had fallen from 71% → 18%. The 30-day trend showed this was a coordinated pre-sale repricing pattern — other sellers preparing for the sale window. Without the price snapshot, he would have assumed the problem was his listing or ads." },
-                { label: "The Repricing Decision (14 minutes)", text: "Repriced to ₹1,079 — above the cheapest competitors, but at the Buy Box sweet spot for his stock level. Not the lowest price. Not a margin-destroying race to the bottom. The right price for the right moment. Buy Box recovered within 22 minutes of repricing." },
+                { label: "The Problem — Day Before Sale", text: "Suresh had been holding his Bluetooth speakers at ₹1,199 for 3 weeks a price that had been earning him the Buy Box consistently. The day before Big Billion Days, he checked his dashboard and saw sales had dropped 60% in 4 hours. He didn't know why. He assumed it was site traffic. It wasn't." },
+                { label: "What the Price Checker Found", text: "The free Amazon competitor price checker showed 3 sellers had dropped to ₹999–₹1,049 in the same afternoon. Average market price had shifted from ₹1,165 to ₹1,042 in under 6 hours. His Buy Box win probability had fallen from 71% → 18%. The 30-day trend showed this was a coordinated pre-sale repricing pattern other sellers preparing for the sale window. Without the price snapshot, he would have assumed the problem was his listing or ads." },
+                { label: "The Repricing Decision (14 minutes)", text: "Repriced to ₹1,079 above the cheapest competitors, but at the Buy Box sweet spot for his stock level. Not the lowest price. Not a margin-destroying race to the bottom. The right price for the right moment. Buy Box recovered within 22 minutes of repricing." },
                 { label: "The Outcome (Big Billion Days)", text: "Buy Box held for 83% of the 48-hour sale window. Total Big Billion Days revenue: ₹4.1L vs ₹1.3L in the previous year's equivalent period. The difference wasn't his product, his ads, or his reviews. It was knowing the Buy Box zone at the right moment and acting on it in 14 minutes." },
               ].map((item, i) => (
                 <div key={i} className="rounded-xl p-5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderLeft: '3px solid #0CCFB0' }}>
@@ -751,7 +751,7 @@ export default function FreeCompetitorPriceCheckerPage() {
               ))}
             </div>
             <div className="rounded-2xl p-5 mt-6 text-center text-sm leading-relaxed" style={{ background: 'rgba(12,207,176,0.08)', border: '1px solid rgba(12,207,176,0.18)', color: 'rgba(255,255,255,0.7)' }}>
-              The repricing decision cost nothing — just a free price check and 14 minutes. <strong style={{ color: '#5EEAD4' }}>The information gap cost him the Buy Box. Closing that gap with a single price snapshot recovered ₹2.8L in one sale window.</strong> The paid plan would have sent a WhatsApp alert the moment competitors dropped — before he even noticed the sales dip.
+              The repricing decision cost nothing just a free price check and 14 minutes. <strong style={{ color: '#5EEAD4' }}>The information gap cost him the Buy Box. Closing that gap with a single price snapshot recovered ₹2.8L in one sale window.</strong> The paid plan would have sent a WhatsApp alert the moment competitors dropped before he even noticed the sales dip.
             </div>
           </div>
         </div>
@@ -764,7 +764,7 @@ export default function FreeCompetitorPriceCheckerPage() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">Data Quality</div>
           <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Powered by Real Marketplace <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Pricing Data</span></h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">This is live market pricing — not estimated guesswork. The free Amazon competitor price checker pulls current data from all active sellers on an ASIN at the time of your check.</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">This is live market pricing not estimated guesswork. The free Amazon competitor price checker pulls current data from all active sellers on an ASIN at the time of your check.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-5">
             {["Tracks pricing across all active sellers per ASIN", "Monitors Buy Box price changes in near-real time", "Built for Amazon India ₹ pricing dynamics", "Benchmarks pricing against category averages"].map((point, i) => (
               <div key={i} className="flex items-center gap-3 bg-white dark:bg-gray-800 border border-green-100 dark:border-green-900/30 rounded-xl px-5 py-4 shadow-sm">
@@ -840,7 +840,7 @@ export default function FreeCompetitorPriceCheckerPage() {
           </div>
           <div className="bg-white dark:bg-gray-800 border-2 border-teal-100 dark:border-teal-900/40 rounded-2xl p-6 sm:p-9 max-w-3xl mx-auto text-left">
             <p className="font-bold text-teal-600 dark:text-teal-400 mb-3 text-sm">What most tools don't tell you:</p>
-            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-3">Keepa shows historical price charts. Helium 10 gives Buy Box estimates for Amazon.com. Neither is built for the specific pricing dynamics of Amazon India — where festive sale seasons (Diwali, Big Billion Days, Holi) create 48–72 hour repricing windows that can shift average category prices by 20–35% in hours. A free Amazon competitor price analysis tool built for India reads these patterns. A US-built tool doesn't.</p>
+            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-3">Keepa shows historical price charts. Helium 10 gives Buy Box estimates for Amazon.com. Neither is built for the specific pricing dynamics of Amazon India where festive sale seasons (Diwali, Big Billion Days, Holi) create 48–72 hour repricing windows that can shift average category prices by 20–35% in hours. A free Amazon competitor price analysis tool built for India reads these patterns. A US-built tool doesn't.</p>
             <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">This is also why the free Amazon price comparison tool matters most in the 48–72 hours before and during major sales: the Buy Box moves continuously, and sellers who check prices once a day are already behind.</p>
           </div>
         </div>
@@ -853,12 +853,12 @@ export default function FreeCompetitorPriceCheckerPage() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">Free vs Paid</div>
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">What the Free Tool Shows — And <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">What Goes Deeper</span></h2>
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">What the Free Tool Shows And <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">What Goes Deeper</span></h2>
             <p className="text-gray-500 dark:text-gray-400 leading-relaxed">The free competitor price checker is a powerful point-in-time snapshot. Here's exactly what's included and what unlocks with a paid Insydz plan.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-8">
-              <h3 className="font-black text-gray-900 dark:text-white mb-6">✓ Free Forever — Included</h3>
+              <h3 className="font-black text-gray-900 dark:text-white mb-6">✓ Free Forever Included</h3>
               {["Lowest, highest, and average competitor price in INR", "Active seller count on the ASIN", "Price distribution by price band (seller count at each price range)", "Buy Box win probability at current price", "30-day price trend direction", "Works on your products and competitor products", "Limited checks per day"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
                   <div className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-2 shrink-0"></div>
@@ -867,8 +867,8 @@ export default function FreeCompetitorPriceCheckerPage() {
               ))}
             </div>
             <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-8">
-              <h3 className="font-black text-gray-900 dark:text-white mb-6">🚀 Paid Plans — ₹1,999/month</h3>
-              {["Daily price monitoring across your full catalogue — automated, not manual", "WhatsApp alerts when a competitor drops price below your threshold", "Historical price trend data — 90 days of competitor pricing history", "Seller-level breakdown — see exactly which competitor is undercutting you", "Festive sale mode — heightened monitoring during Big Billion Days and Great Indian Festival", "AI repricing recommendations — suggested price to maximise Buy Box hold and margin", "Unlimited checks across all your ASINs"].map((item, i) => (
+              <h3 className="font-black text-gray-900 dark:text-white mb-6">Paid Plans — ₹1,999/month</h3>
+              {["Daily price monitoring across your full catalogue automated, not manual", "WhatsApp alerts when a competitor drops price below your threshold", "Historical price trend data 90 days of competitor pricing history", "Seller-level breakdown see exactly which competitor is undercutting you", "Festive sale mode heightened monitoring during Big Billion Days and Great Indian Festival", "AI repricing recommendations suggested price to maximise Buy Box hold and margin", "Unlimited checks across all your ASINs"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
                   <div className="w-1.5 h-1.5 rounded-full bg-teal-500 mt-2 shrink-0"></div>
                   <span className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item}</span>
@@ -921,9 +921,9 @@ export default function FreeCompetitorPriceCheckerPage() {
           {/* ICP Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl mx-auto mt-12">
             {[
-              { type: "New Seller", msg: "Set a launch price with data — check the Buy Box zone before you go live, not after your first week of zero sales.", cta: "Start Free →", href: "/signup" },
+              { type: "New Seller", msg: "Set a launch price with data check the Buy Box zone before you go live, not after your first week of zero sales.", cta: "Start Free →", href: "/signup" },
               { type: "Growing Seller", msg: "Stop repricing after losing sales. Get daily pricing alerts and WhatsApp notifications on the Growth Plan.", cta: "Try Growth Plan →", href: "/signup?plan=growth" },
-              { type: "Agency", msg: "Run live competitor price checks in client strategy sessions — show the Buy Box zone in real time before recommending a repricing strategy.", cta: "Book Demo →", href: "/about/contact-us" },
+              { type: "Agency", msg: "Run live competitor price checks in client strategy sessions show the Buy Box zone in real time before recommending a repricing strategy.", cta: "Book Demo →", href: "/about/contact-us" },
             ].map((icp, i) => (
               <div key={i} className="bg-white/15 border border-white/30 rounded-2xl p-6 text-left backdrop-blur-sm">
                 <p className="text-xs font-bold uppercase tracking-widest text-white/65 mb-2">{icp.type}</p>
@@ -938,7 +938,7 @@ export default function FreeCompetitorPriceCheckerPage() {
       {/* ─── STICKY MOBILE CTA ─── */}
       <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white dark:bg-gray-900 border-t-2 border-teal-200 dark:border-teal-800 px-4 py-3 shadow-2xl">
         <button onClick={() => { if (!isLoggedIn) { setLocation('/login'); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); } }} className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2">
-          {isLoggedIn ? <><TrendingDown className="w-4 h-4" /> Check Competitor Prices — Free</> : <><LogIn className="w-4 h-4" /> Log In to Check Prices</>}
+          {isLoggedIn ? <><TrendingDown className="w-4 h-4" /> Check Competitor Prices Free</> : <><LogIn className="w-4 h-4" /> Log In to Check Prices</>}
         </button>
       </div>
 
@@ -1066,7 +1066,7 @@ export default function FreeCompetitorPriceCheckerPage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

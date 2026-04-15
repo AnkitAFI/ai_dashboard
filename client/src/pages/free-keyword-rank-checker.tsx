@@ -307,27 +307,27 @@ export default function FreeKeywordRankCheckerPage() {
     {
       id: 'faq-1',
       question: 'Is this keyword rank checker free?',
-      answer: "Yes. Insydz's Amazon keyword rank checker is completely free — no credit card required, no trial period, no expiry. Create a free account (60 seconds) and start checking keyword rankings on Amazon India immediately. The free tool shows current rank position, rank movement week-over-week, search visibility score, and keyword opportunity signals. Paid plans (₹1,999/month) unlock daily tracking, WhatsApp alerts when a keyword drops, 90-day historical rank curves, and competitor keyword gap analysis.",
+      answer: "Yes. Insydz's Amazon keyword rank checker is completely free no credit card required, no trial period, no expiry. Create a free account (60 seconds) and start checking keyword rankings on Amazon India immediately. The free tool shows current rank position, rank movement week-over-week, search visibility score, and keyword opportunity signals. Paid plans (₹1,999/month) unlock daily tracking, WhatsApp alerts when a keyword drops, 90-day historical rank curves, and competitor keyword gap analysis.",
     },
     {
       id: 'faq-2',
       question: 'Does it work for Amazon India only?',
-      answer: "The free Amazon keyword rank checker is calibrated specifically for Amazon India (amazon.in) — it scans Amazon India's live organic search results, not Amazon.com data. This matters significantly: keyword rankings on Amazon India differ from Amazon.com because the search index, buyer behaviour, and A9 algorithm weights vary. A tool calibrated for Amazon.com gives you the wrong ranking data for your Amazon India listings. Insydz reads Amazon India's live search results directly — including Hindi and English keyword searches.",
+      answer: "The free Amazon keyword rank checker is calibrated specifically for Amazon India (amazon.in) it scans Amazon India's live organic search results, not Amazon.com data. This matters significantly: keyword rankings on Amazon India differ from Amazon.com because the search index, buyer behaviour, and A9 algorithm weights vary. A tool calibrated for Amazon.com gives you the wrong ranking data for your Amazon India listings. Insydz reads Amazon India's live search results directly including Hindi and English keyword searches.",
     },
     {
       id: 'faq-3',
       question: 'How accurate is the rank data?',
-      answer: "The free Amazon keyword rank checker scans Amazon India's live organic search results at the time of your check — it reads where your product actually appears in the results page. This is direct search result data, not estimated or modelled data. Position #14 means your product appears at result 14 on Amazon India for that keyword right now. Rank changes (e.g. ↑+6 from #20 to #14) reflect movement since the last check date.",
+      answer: "The free Amazon keyword rank checker scans Amazon India's live organic search results at the time of your check it reads where your product actually appears in the results page. This is direct search result data, not estimated or modelled data. Position #14 means your product appears at result 14 on Amazon India for that keyword right now. Rank changes (e.g. ↑+6 from #20 to #14) reflect movement since the last check date.",
     },
     {
       id: 'faq-4',
       question: 'Can I check rankings for competitor products?',
-      answer: "Yes. The free keyword rank checker works on any Amazon India product ASIN — including competitor products. Enter a competitor's ASIN and check what keywords they rank for and at what position. If a competitor ranks #3 for a 40,000/month search term, you know that keyword is worth targeting. If they rank #47 for a term buyers frequently use, you have a clear gap to build a listing around and potentially outrank them.",
+      answer: "Yes. The free keyword rank checker works on any Amazon India product ASIN including competitor products. Enter a competitor's ASIN and check what keywords they rank for and at what position. If a competitor ranks #3 for a 40,000/month search term, you know that keyword is worth targeting. If they rank #47 for a term buyers frequently use, you have a clear gap to build a listing around and potentially outrank them.",
     },
     {
       id: 'faq-5',
       question: 'Is login required?',
-      answer: "Yes, a free Insydz account is required — just an email address, no credit card. Login saves your rank check history so you can compare rankings across sessions and track keyword movement over time. Your free account also unlocks basic versions of all Insydz features — product analysis, competitor price checking, and review sentiment analysis — not just the keyword rank checker.",
+      answer: "Yes, a free Insydz account is required just an email address, no credit card. Login saves your rank check history so you can compare rankings across sessions and track keyword movement over time. Your free account also unlocks basic versions of all Insydz features product analysis, competitor price checking, and review sentiment analysis not just the keyword rank checker.",
     },
   ];
 
@@ -522,7 +522,7 @@ export default function FreeKeywordRankCheckerPage() {
         </div>
         <div className="relative max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-white border border-indigo-200 dark:bg-indigo-900/30 dark:border-indigo-700 rounded-full px-4 py-2 mb-6 shadow-sm">
-            <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-400">🛠️ Free Tool · NEW · Built for Indian Sellers 🇮🇳</span>
+            <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-400">Free Tool · NEW · Built for Indian Sellers 🇮🇳</span>
           </div>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white mb-5">
             Free Amazon Keyword
@@ -530,7 +530,7 @@ export default function FreeKeywordRankCheckerPage() {
             <span className="bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">Rank Checker for India</span>
           </h1>
           <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Instantly check where your product ranks for any keyword on Amazon India — so you can optimize your listing, close visibility gaps, and outrank competitors on the search results page.
+            Instantly check where your product ranks for any keyword on Amazon India so you can optimize your listing, close visibility gaps, and outrank competitors on the search results page.
           </p>
 
           {/* LOGIN GATE */}
@@ -541,7 +541,7 @@ export default function FreeKeywordRankCheckerPage() {
                 <div className="text-center">
                   <h2 className="text-2xl font-black text-gray-900 dark:text-white">Sign in to use this tool</h2>
                   <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm max-w-xs mx-auto leading-relaxed">
-                    Create a free Insydz account or log in to start checking keyword rankings on Amazon India instantly. Free forever — no credit card required.
+                    Create a free Insydz account or log in to start checking keyword rankings on Amazon India instantly. Free forever no credit card required.
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-3 w-full">
@@ -566,7 +566,7 @@ export default function FreeKeywordRankCheckerPage() {
                   {analyzing ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Checking Rank...</> : <><Search className="w-4 h-4" /> Check Keyword Rank</>}
                 </button>
               </div>
-              <p className="text-xs text-green-500 dark:text-green-400 mt-3 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Logged in — ready to check keyword rankings.</p>
+              <p className="text-xs text-green-500 dark:text-green-400 mt-3 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> Logged in ready to check keyword rankings.</p>
             </div>
           )}
         </div>
@@ -578,11 +578,11 @@ export default function FreeKeywordRankCheckerPage() {
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 px-4 py-1.5 rounded-full mb-4">Tool Overview</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">What This Free Rank Checker <span className="bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">Shows You</span></h2>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Four keyword intelligence signals that reveal your Amazon India search visibility — so you know exactly which listings to fix, which keywords to add, and which ranking wins to protect.</p>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Four keyword intelligence signals that reveal your Amazon India search visibility so you know exactly which listings to fix, which keywords to add, and which ranking wins to protect.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
-              { icon: <Hash className="w-6 h-6" />, title: "Current Keyword Rank", desc: "See exactly where your product appears in Amazon India search results for a keyword. Position #3 is very different from position #43 — and this tool shows you exactly which one you're at.", color: "text-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-900/20", border: "hover:border-indigo-300" },
+              { icon: <Hash className="w-6 h-6" />, title: "Current Keyword Rank", desc: "See exactly where your product appears in Amazon India search results for a keyword. Position #3 is very different from position #43 and this tool shows you exactly which one you're at.", color: "text-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-900/20", border: "hover:border-indigo-300" },
               { icon: <Search className="w-6 h-6" />, title: "Search Visibility Score", desc: "Understand how visible your product is for the keywords that matter most. A visibility score across your tracked keywords shows whether you're gaining or losing organic ground overall.", color: "text-violet-500", bg: "bg-violet-50 dark:bg-violet-900/20", border: "hover:border-violet-300" },
               { icon: <TrendingUp className="w-6 h-6" />, title: "Rank Movement", desc: "See if your ranking is improving, declining, or stable compared to last week. A keyword that slipped from #8 to #24 needs immediate attention. One that moved from #31 to #14 deserves to be protected.", color: "text-blue-500", bg: "bg-blue-50 dark:bg-blue-900/20", border: "hover:border-blue-300" },
               { icon: <Target className="w-6 h-6" />, title: "Keyword Opportunity", desc: "Discover high-traffic keywords where small rank improvements drive big results. Moving from page 2 to page 1 can multiply organic traffic by 8–10x on the same keyword.", color: "text-purple-500", bg: "bg-purple-50 dark:bg-purple-900/20", border: "hover:border-purple-300" },
@@ -641,15 +641,15 @@ export default function FreeKeywordRankCheckerPage() {
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 px-4 py-1.5 rounded-full mb-4">How It Works</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">How It <span className="bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">Works</span></h2>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Two inputs. Instant result. Provide the product ASIN and the keyword — and see exactly where your listing appears in Amazon India's organic search results right now.</p>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Two inputs. Instant result. Provide the product ASIN and the keyword and see exactly where your listing appears in Amazon India's organic search results right now.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
             <div className="hidden md:block absolute top-[52px] left-[calc(16.6%+28px)] right-[calc(16.6%+28px)] h-[2px] bg-gradient-to-r from-indigo-500 to-violet-500 z-0"></div>
             {[
-              { step: "01", icon: <Search className="w-7 h-7" />, title: "Enter ASIN + Keyword", desc: "Provide the product ASIN and the keyword you want to check rank for on Amazon India. Works on any ASIN — yours or a competitor's product." },
-              { step: "02", icon: <Hash className="w-7 h-7" />, title: "Insydz Scans Search Results", desc: "We scan Amazon India's live organic search results to find exactly where your product appears for that keyword — not estimated data, actual search position." },
-              { step: "03", icon: <Zap className="w-7 h-7" />, title: "Get Instant Rank Position", desc: "See the current rank, page position, and visibility score — instantly. Plus rank movement compared to last week so you know if you're climbing or slipping." },
+              { step: "01", icon: <Search className="w-7 h-7" />, title: "Enter ASIN + Keyword", desc: "Provide the product ASIN and the keyword you want to check rank for on Amazon India. Works on any ASIN yours or a competitor's product." },
+              { step: "02", icon: <Hash className="w-7 h-7" />, title: "Insydz Scans Search Results", desc: "We scan Amazon India's live organic search results to find exactly where your product appears for that keyword not estimated data, actual search position." },
+              { step: "03", icon: <Zap className="w-7 h-7" />, title: "Get Instant Rank Position", desc: "See the current rank, page position, and visibility score instantly. Plus rank movement compared to last week so you know if you're climbing or slipping." },
             ].map((s, i) => (
               <div key={i} className="relative z-10 bg-gray-50 dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl p-8 text-center shadow-sm hover:shadow-lg hover:border-indigo-300 dark:hover:border-indigo-700 transition-all hover:-translate-y-1">
                 <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-violet-500 text-white font-black text-lg rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg">{s.step}</div>
@@ -676,7 +676,7 @@ export default function FreeKeywordRankCheckerPage() {
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 px-4 py-1.5 rounded-full mb-4">Example Output</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Example Keyword Rank <span className="bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">Report</span></h2>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Here's what a real keyword rank snapshot looks like for an Amazon India product — so you know exactly what you'll receive before signing in.</p>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Here's what a real keyword rank snapshot looks like for an Amazon India product so you know exactly what you'll receive before signing in.</p>
           </div>
 
           {/* Report card */}
@@ -691,7 +691,7 @@ export default function FreeKeywordRankCheckerPage() {
             <div className="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-gray-100 dark:divide-gray-700">
               {[
                 { label: "Keyword", value: "steel water bottle", sub: "Search term checked", color: "text-indigo-500" },
-                { label: "Current Rank", value: "#14", sub: "Page 1 — position 14", color: "text-gray-900 dark:text-white" },
+                { label: "Current Rank", value: "#14", sub: "Page 1 position 14", color: "text-gray-900 dark:text-white" },
                 { label: "Rank Change", value: "↑ +6", sub: "Improved from #20 last week", color: "text-green-500" },
                 { label: "Visibility Score", value: "72 / 100", sub: "Above-average visibility", color: "text-orange-500" },
               ].map((m, i) => (
@@ -708,7 +708,7 @@ export default function FreeKeywordRankCheckerPage() {
           <div className="mt-14">
             <div className="text-center mb-10">
               <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-3">Visual Keyword Rank <span className="bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">Snapshot</span></h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">See rank position, movement, and opportunity across multiple keywords at once — so you can prioritise which keywords to work on first.</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">See rank position, movement, and opportunity across multiple keywords at once so you can prioritise which keywords to work on first.</p>
             </div>
             <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-6 sm:p-9 shadow-lg">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -775,7 +775,7 @@ export default function FreeKeywordRankCheckerPage() {
           {/* Upsell */}
           <div className="mt-14 bg-white dark:bg-gray-900 border-2 border-indigo-200 dark:border-indigo-900/50 rounded-3xl p-8 sm:p-12 max-w-xl mx-auto text-center shadow-lg">
             <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-3">Unlock the Full Keyword Intelligence Report</h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-7 max-w-sm mx-auto">Sign in to access multi-keyword rank tracking, historical trend data, and keyword opportunity scoring — plus daily rank monitoring and WhatsApp alerts when a keyword drops a page.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-7 max-w-sm mx-auto">Sign in to access multi-keyword rank tracking, historical trend data, and keyword opportunity scoring plus daily rank monitoring and WhatsApp alerts when a keyword drops a page.</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <a href="/login" className="px-6 py-3 bg-gradient-to-r from-indigo-500 to-violet-500 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-105">
                 <LogIn className="w-4 h-4" /> Log In to Access
@@ -796,19 +796,19 @@ export default function FreeKeywordRankCheckerPage() {
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 px-4 py-1.5 rounded-full mb-4">Real Seller Story</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">What Most Keyword Tools <span className="bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">Don't Tell You</span></h2>
-            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Most keyword tools show you search volume. A free Amazon keyword rank checker shows you something more useful: whether you're actually appearing when buyers search those terms — and which single listing edit caused you to disappear.</p>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Most keyword tools show you search volume. A free Amazon keyword rank checker shows you something more useful: whether you're actually appearing when buyers search those terms and which single listing edit caused you to disappear.</p>
           </div>
 
           <div className="rounded-3xl p-6 sm:p-10 text-white" style={{ background: 'linear-gradient(135deg, #1E1B4B, #2E1065)' }}>
-            <h3 className="font-black text-lg sm:text-xl mb-1" style={{ color: '#C4B5FD' }}>Priya's Invisible Product — Found by a Single Rank Check</h3>
+            <h3 className="font-black text-lg sm:text-xl mb-1" style={{ color: '#C4B5FD' }}>Priya's Invisible Product Found by a Single Rank Check</h3>
             <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.4)' }}>Kitchenware seller, Jaipur | Amazon India | Copper water bottle ₹649 | 3 months of declining sales | Ad spend increasing monthly</p>
 
             <div className="space-y-4">
               {[
                 { label: "The Problem", text: "Priya's copper water bottle had been her #2 revenue product for 8 months. In Month 9, sales started falling despite stable ad spend. By Month 11, she had doubled PPC bids and added a 15% discount. Sales continued to fall. Her Seller Central organic traffic report showed a 64% decline. She had no idea why." },
-                { label: "What the Rank Checker Found (6 minutes)", text: "The free Amazon keyword rank checker showed her product at #4 for \"copper water bottle\" — still strong. But for \"तांबे की बोतल\" (the Hindi search term, 28,000 searches/month on Amazon India), her product had fallen from #6 to #89. For \"copper bottle 1 litre\" (31,000/month), she had dropped from #9 to page 3. Both ranking collapses had happened within a 2-week window in Month 9 — the same window when she had edited the product title to improve English SEO." },
-                { label: "The Cause — A Title Edit That Removed Hindi Terms", text: "Her previous title had included \"तांबे की बोतल\" alongside English keywords. The title edit — made to improve English readability — had removed this entirely. Amazon India's A9 algorithm stopped indexing her for Hindi search terms within 10 days of the change. 59,000 monthly searches that previously found her product now couldn't." },
-                { label: "The Fix (48 Hours)", text: "Restored Hindi keywords to the product title and backend search terms. Within 48 hours, both Hindi keywords were re-indexed. Within 3 weeks, ranking had recovered to #7 for \"तांबे की बोतल\" and #11 for \"copper bottle 1 litre.\" Sales recovered to Month 8 levels within 5 weeks — without any increase in ad spend." },
+                { label: "What the Rank Checker Found (6 minutes)", text: "The free Amazon keyword rank checker showed her product at #4 for \"copper water bottle\" still strong. But for \"तांबे की बोतल\" (the Hindi search term, 28,000 searches/month on Amazon India), her product had fallen from #6 to #89. For \"copper bottle 1 litre\" (31,000/month), she had dropped from #9 to page 3. Both ranking collapses had happened within a 2-week window in Month 9 the same window when she had edited the product title to improve English SEO." },
+                { label: "The Cause A Title Edit That Removed Hindi Terms", text: "Her previous title had included \"तांबे की बोतल\" alongside English keywords. The title edit — made to improve English readability had removed this entirely. Amazon India's A9 algorithm stopped indexing her for Hindi search terms within 10 days of the change. 59,000 monthly searches that previously found her product now couldn't." },
+                { label: "The Fix (48 Hours)", text: "Restored Hindi keywords to the product title and backend search terms. Within 48 hours, both Hindi keywords were re-indexed. Within 3 weeks, ranking had recovered to #7 for \"तांबे की बोतल\" and #11 for \"copper bottle 1 litre.\" Sales recovered to Month 8 levels within 5 weeks without any increase in ad spend." },
               ].map((item, i) => (
                 <div key={i} className="rounded-xl p-5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderLeft: '3px solid #8B5CF6' }}>
                   <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: '#C4B5FD' }}>{item.label}</p>
@@ -831,7 +831,7 @@ export default function FreeKeywordRankCheckerPage() {
             </div>
 
             <div className="rounded-2xl p-5 mt-6 text-center text-sm leading-relaxed" style={{ background: 'rgba(139,92,246,0.1)', border: '1px solid rgba(139,92,246,0.2)', color: 'rgba(255,255,255,0.72)' }}>
-              <strong style={{ color: '#C4B5FD' }}>₹40,000 in extra ad spend over 2 months fixed nothing.</strong> A 6-minute rank check revealed the cause instantly. The fix cost nothing. The rank collapse started with a title edit that removed 59,000 monthly searches from finding her product — and no tool told her until she checked where she actually ranked.
+              <strong style={{ color: '#C4B5FD' }}>₹40,000 in extra ad spend over 2 months fixed nothing.</strong> A 6-minute rank check revealed the cause instantly. The fix cost nothing. The rank collapse started with a title edit that removed 59,000 monthly searches from finding her product and no tool told her until she checked where she actually ranked.
             </div>
           </div>
         </div>
@@ -844,7 +844,7 @@ export default function FreeKeywordRankCheckerPage() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-block text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 px-4 py-1.5 rounded-full mb-4">Data Quality</div>
           <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Powered by Real Amazon India <span className="bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">Search Data</span></h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">This is direct search result data — not keyword volume estimates. The free keyword rank checker reads Amazon India's live search results exactly as a buyer would see them.</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">This is direct search result data not keyword volume estimates. The free keyword rank checker reads Amazon India's live search results exactly as a buyer would see them.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-5">
             {["Scans live Amazon India organic search results", "Tracks rank for multiple keywords per product", "Detects rank movements week-over-week", "Built for Amazon India search algorithm behaviour"].map((point, i) => (
               <div key={i} className="flex items-center gap-3 bg-white dark:bg-gray-800 border border-green-100 dark:border-green-900/30 rounded-xl px-5 py-4 shadow-sm">
@@ -880,7 +880,7 @@ export default function FreeKeywordRankCheckerPage() {
                 <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center text-green-600 font-bold">✓</div>
                 <h3 className="font-black text-gray-900 dark:text-white text-lg">Best For</h3>
               </div>
-              {["Sellers optimizing listings for better organic visibility and reducing PPC dependency", "Brands tracking rank impact of listing changes — titles, bullets, backend keywords", "Agencies managing Amazon SEO for multiple seller accounts and need keyword performance proof", "New sellers validating keyword strategy before launch — checking what competitors actually rank for", "Sellers whose sales have dropped and want to diagnose whether keyword indexing is the cause"].map((item, i) => (
+              {["Sellers optimizing listings for better organic visibility and reducing PPC dependency", "Brands tracking rank impact of listing changes titles, bullets, backend keywords", "Agencies managing Amazon SEO for multiple seller accounts and need keyword performance proof", "New sellers validating keyword strategy before launch checking what competitors actually rank for", "Sellers whose sales have dropped and want to diagnose whether keyword indexing is the cause"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
                   <span className="text-green-500 font-bold mt-0.5 shrink-0">✓</span>
                   <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{item}</span>
@@ -892,7 +892,7 @@ export default function FreeKeywordRankCheckerPage() {
                 <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 font-bold">!</div>
                 <h3 className="font-black text-gray-900 dark:text-white text-lg">Not Ideal For</h3>
               </div>
-              {["Sellers doing only offline or non-Amazon retail", "Businesses selling on non-Indian Amazon marketplaces (US, UK, UAE) — different search index", "Sellers with brand-new listings with zero reviews — indexing takes time to stabilise"].map((item, i) => (
+              {["Sellers doing only offline or non-Amazon retail", "Businesses selling on non-Indian Amazon marketplaces (US, UK, UAE) different search index", "Sellers with brand-new listings with zero reviews indexing takes time to stabilise"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
                   <span className="text-gray-400 mt-0.5 shrink-0">○</span>
                   <span className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{item}</span>
@@ -910,11 +910,10 @@ export default function FreeKeywordRankCheckerPage() {
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-block text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 px-4 py-1.5 rounded-full mb-4">India-First Design</div>
           <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Built for <span className="bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">Indian Marketplace Reality</span></h2>
-          <p className="text-gray-500 dark:text-gray-400 mb-12 max-w-xl mx-auto leading-relaxed">Amazon India's A9 algorithm behaves differently from other marketplaces — and this tool is calibrated for it. Most keyword rank checkers read the wrong search index entirely.</p>
+          <p className="text-gray-500 dark:text-gray-400 mb-12 max-w-xl mx-auto leading-relaxed">Amazon India's A9 algorithm behaves differently from other marketplaces and this tool is calibrated for it. Most keyword rank checkers read the wrong search index entirely.</p>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-            {[{ icon: "🇮🇳", text: "Amazon India search index" }, { icon: "#️⃣", text: "Hindi + English keyword support" }, { icon: "📊", text: "Category-specific rank norms" }, { icon: "🔗", text: "Connected to full Insydz platform" }].map((item, i) => (
+            {[{ text: "Amazon India search index" }, { text: "Hindi + English keyword support" }, { text: "Category-specific rank norms" }, { text: "Connected to full Insydz platform" }].map((item, i) => (
               <div key={i} className="bg-white dark:bg-gray-800 border-2 border-indigo-50 dark:border-indigo-900/30 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-indigo-200 dark:hover:border-indigo-700 hover:-translate-y-1 transition-all">
-                <div className="text-3xl mb-3">{item.icon}</div>
                 <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{item.text}</p>
               </div>
             ))}
@@ -924,7 +923,7 @@ export default function FreeKeywordRankCheckerPage() {
           <div className="bg-white dark:bg-gray-800 border-2 border-indigo-100 dark:border-indigo-900/40 rounded-2xl p-6 sm:p-9 max-w-3xl mx-auto text-left">
             <p className="font-bold text-indigo-600 dark:text-indigo-400 mb-3 text-sm">What most keyword tools don't tell you:</p>
             <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-3">Helium 10's Keyword Tracker, SellerApp, and most keyword research tools for Amazon are calibrated for Amazon.com or give partial Amazon India data. More critically: none of them check Hindi keyword rankings. On Amazon India, searches like <strong className="text-gray-900 dark:text-white">«स्टील की बोतल»</strong>, <strong className="text-gray-900 dark:text-white">«ताँबे का बर्तन»</strong>, and <strong className="text-gray-900 dark:text-white">«1 लीटर बोतल»</strong> can represent 40–60% of category search volume for some products.</p>
-            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">A free Amazon keyword rank checker that only reads English results is blind to half the market — and blind to the exact mechanism behind Priya's ₹1.4L revenue loss. Amazon India's A9 algorithm weighs Hindi search terms, regional language terms, and transliterated searches differently from how Amazon.com handles language variations.</p>
+            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">A free Amazon keyword rank checker that only reads English results is blind to half the market and blind to the exact mechanism behind Priya's ₹1.4L revenue loss. Amazon India's A9 algorithm weighs Hindi search terms, regional language terms, and transliterated searches differently from how Amazon.com handles language variations.</p>
           </div>
         </div>
       </section>
@@ -936,12 +935,12 @@ export default function FreeKeywordRankCheckerPage() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14">
             <div className="inline-block text-xs font-bold uppercase tracking-widest text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800 px-4 py-1.5 rounded-full mb-4">Free vs Paid</div>
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">What the Free Tool Shows — And <span className="bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">What Goes Deeper</span></h2>
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">What the Free Tool Shows And <span className="bg-gradient-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">What Goes Deeper</span></h2>
             <p className="text-gray-500 dark:text-gray-400 leading-relaxed">The free Amazon keyword rank checker is a powerful diagnostic snapshot. Here's exactly what's included and what unlocks with a paid Insydz plan.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-8">
-              <h3 className="font-black text-gray-900 dark:text-white mb-6">✓ Free Forever — Included</h3>
+              <h3 className="font-black text-gray-900 dark:text-white mb-6">✓ Free Forever Included</h3>
               {["Current rank position for a keyword on Amazon India", "Page position (Page 1 / Page 2 / Page 3+)", "Rank movement week-over-week (improving / stable / declining)", "Search visibility score (0–100)", "Hindi + English keyword checking", "Works on your products and competitor products", "Limited checks per day"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
                   <div className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-2 shrink-0"></div>
@@ -950,8 +949,8 @@ export default function FreeKeywordRankCheckerPage() {
               ))}
             </div>
             <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-8">
-              <h3 className="font-black text-gray-900 dark:text-white mb-6">🚀 Paid Plans — ₹1,999/month</h3>
-              {["Daily rank tracking across all your keywords — automated, continuous", "WhatsApp alerts when a keyword drops a page or falls below a rank threshold", "90-day historical rank curves — see exactly when a rank change happened and correlate it to a listing edit", "Multi-keyword dashboard — track 20–50 keywords per product simultaneously", "Keyword opportunity scoring — identifies which keywords are easiest to move from page 2 to page 1", "Competitor keyword gap analysis — keywords your competitors rank for that you don't", "Unlimited checks across your full product catalogue"].map((item, i) => (
+              <h3 className="font-black text-gray-900 dark:text-white mb-6">Paid Plans — ₹1,999/month</h3>
+              {["Daily rank tracking across all your keywords automated, continuous", "WhatsApp alerts when a keyword drops a page or falls below a rank threshold", "90-day historical rank curves see exactly when a rank change happened and correlate it to a listing edit", "Multi-keyword dashboard track 20–50 keywords per product simultaneously", "Keyword opportunity scoring identifies which keywords are easiest to move from page 2 to page 1", "Competitor keyword gap analysis keywords your competitors rank for that you don't", "Unlimited checks across your full product catalogue"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
                   <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 shrink-0"></div>
                   <span className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item}</span>
@@ -996,7 +995,7 @@ export default function FreeKeywordRankCheckerPage() {
       <section className="py-24 px-4 bg-gradient-to-br from-indigo-500 to-violet-500">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl sm:text-5xl font-black mb-4 text-white">Stop Flying Blind. Know Where You Rank.</h2>
-          <p className="text-indigo-100 text-lg mb-10">One rank check today reveals exactly where your listing stands — and what to fix next.</p>
+          <p className="text-indigo-100 text-lg mb-10">One rank check today reveals exactly where your listing stands and what to fix next.</p>
           <button onClick={() => { if (!isLoggedIn) { setLocation('/login'); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); } }} className="bg-white text-indigo-600 font-black px-10 sm:px-14 py-5 rounded-full shadow-2xl hover:scale-105 transition-all text-lg inline-flex items-center gap-3">
             Check Keyword Rank Now <ArrowRight className="w-5 h-5" />
           </button>
@@ -1004,9 +1003,9 @@ export default function FreeKeywordRankCheckerPage() {
           {/* ICP Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl mx-auto mt-12">
             {[
-              { type: "New Seller", msg: "Validate your keyword strategy before launch — check what your top competitors actually rank for and build your listing around those gaps.", cta: "Start Free →", href: "/signup" },
-              { type: "Growing Seller", msg: "Stop guessing why sales dropped. Daily rank tracking with WhatsApp alerts tells you the moment a keyword slips — before the revenue impact hits.", cta: "Try Growth Plan →", href: "/signup?plan=growth" },
-              { type: "Agency", msg: "Show clients exactly how your listing work moves rankings — before and after keyword tracking data is the clearest proof of SEO impact.", cta: "Book Demo →", href: "/about/contact-us" },
+              { type: "New Seller", msg: "Validate your keyword strategy before launch check what your top competitors actually rank for and build your listing around those gaps.", cta: "Start Free →", href: "/signup" },
+              { type: "Growing Seller", msg: "Stop guessing why sales dropped. Daily rank tracking with WhatsApp alerts tells you the moment a keyword slips before the revenue impact hits.", cta: "Try Growth Plan →", href: "/signup?plan=growth" },
+              { type: "Agency", msg: "Show clients exactly how your listing work moves rankings before and after keyword tracking data is the clearest proof of SEO impact.", cta: "Book Demo →", href: "/about/contact-us" },
             ].map((icp, i) => (
               <div key={i} className="bg-white/12 border border-white/25 rounded-2xl p-6 text-left backdrop-blur-sm">
                 <p className="text-xs font-bold uppercase tracking-widest text-white/60 mb-2">{icp.type}</p>
@@ -1021,7 +1020,7 @@ export default function FreeKeywordRankCheckerPage() {
       {/* ─── STICKY MOBILE CTA ─── */}
       <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white dark:bg-gray-900 border-t-2 border-indigo-200 dark:border-indigo-800 px-4 py-3 shadow-2xl">
         <button onClick={() => { if (!isLoggedIn) { setLocation('/login'); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); } }} className="w-full bg-gradient-to-r from-indigo-500 to-violet-500 text-white font-bold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2">
-          {isLoggedIn ? <><Search className="w-4 h-4" /> Check Keyword Rank — Free</> : <><LogIn className="w-4 h-4" /> Log In to Check Keyword Rank</>}
+          {isLoggedIn ? <><Search className="w-4 h-4" /> Check Keyword Rank Free</> : <><LogIn className="w-4 h-4" /> Log In to Check Keyword Rank</>}
         </button>
       </div>
 
@@ -1149,7 +1148,7 @@ export default function FreeKeywordRankCheckerPage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

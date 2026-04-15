@@ -262,6 +262,10 @@ export default function InsydzVsHelium10India() {
       </a>
     );
   };
+  const scrollToSection = (sectionId: string) => {
+    setLocation('/');
+    setTimeout(() => document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+  };
 
   const DesktopDropdown = ({ label, menuKey, accent = "purple" }: { label: string; menuKey: keyof NavigationMenu; accent?: "purple" | "orange" }) => {
     const items = navigationMenu[menuKey];
@@ -569,22 +573,22 @@ export default function InsydzVsHelium10India() {
 
       {/* IMG 1 */}
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 24px" }}>
-        <ArticleImg src="/thirteen.png" alt="Insydz vs Helium 10 India comparison — platform coverage, pricing, and features" caption="Insydz vs Helium 10: India market coverage, pricing, and data accuracy side by side" />
+        <ArticleImg src="/thirteen.png" alt="Insydz vs Helium 10 India comparison platform coverage, pricing, and features" caption="Insydz vs Helium 10: India market coverage, pricing, and data accuracy side by side" />
       </div>
 
       {/* ══ KEY TAKEAWAYS ══ */}
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 24px 40px" }}>
         <div className="takeaway-box">
-          <h3>✅ Key Takeaways</h3>
+          <h3>Key Takeaways</h3>
           {[
             /* #2 — "Helium 10 is the industry-standard Amazon tool built for US sellers" → /compare/insydzvshelium */
             <span key="t0"><InLink to="/compare/insydzvshelium" color="#f97316">Helium 10 is the industry-standard Amazon tool built for US sellers</InLink>. For Indian sellers on Amazon.in, Flipkart, its data accuracy, platform coverage, and pricing create three compounding gaps.</span>,
             /* #3 — "market fit, not feature count" → /compare/insydzvshelium */
-            <span key="t1">The most important question isn't 'which tool has more features?' — it's about <InLink to="/compare/insydzvshelium" color="#f97316">market fit, not feature count</InLink>. For Indian sellers, Insydz wins this question decisively.</span>,
+            <span key="t1">The most important question isn't 'which tool has more features?' it's about <InLink to="/compare/insydzvshelium" color="#f97316">market fit, not feature count</InLink>. For Indian sellers, Insydz wins this question decisively.</span>,
             <span key="t2">Flipkart is not optional for most Indian growth sellers. A tool that ignores Flipkart is ignoring 25–50% of a typical Indian seller's revenue.</span>,
             <span key="t3">WhatsApp alerts vs. email alerts is a response time gap with a measurable rupee value. An 8-hour delayed Buy Box response costs a seller doing ₹2,000/day approximately ₹600–700 per hour.</span>,
-            <span key="t4">Hinglish keywords are not a nice-to-have — they represent how a massive segment of Indian buyers actually search. A tool that misses 'best mixer grinder under 3000' is missing category-defining behaviour.</span>,
-            <span key="t5">The pricing difference between Insydz Growth (₹1,499/month) and Helium 10 Platinum (₹6,500/month) is ₹60,012/year — for most Indian sellers, that's a month's net profit.</span>,
+            <span key="t4">Hinglish keywords are not a nice-to-have they represent how a massive segment of Indian buyers actually search. A tool that misses 'best mixer grinder under 3000' is missing category-defining behaviour.</span>,
+            <span key="t5">The pricing difference between Insydz Growth (₹1,499/month) and Helium 10 Platinum (₹6,500/month) is ₹60,012/year for most Indian sellers, that's a month's net profit.</span>,
             /* #4 — "test both tools on the same keywords, on the same products" → /compare/insydzvshelium */
             <span key="t6">The right approach: <InLink to="/compare/insydzvshelium" color="#f97316">test both tools on the same keywords, on the same products</InLink>, in the same week. The data quality gap will be self-evident.</span>,
           ].map((t, i) => (
@@ -618,7 +622,7 @@ export default function InsydzVsHelium10India() {
               ))}
             </ul>
             <button onClick={() => setLocation("/login")} style={{ display: "block", background: "#F97316", color: "white", textAlign: "center" as const, padding: 12, borderRadius: 8, fontWeight: 700, fontSize: 13.5, width: "100%", cursor: "pointer", border: "none", fontFamily: "'Sora',sans-serif" }}>
-              Start Free — No Card Needed
+              Start Free No Card Needed
             </button>
           </div>
           <div style={{ background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 10, padding: 18, marginTop: 20 }}>
@@ -646,12 +650,12 @@ export default function InsydzVsHelium10India() {
 
             {/* In Simple Terms */}
             <div className="box box-indigo" style={{ padding: "20px 22px", margin: "0 0 32px" }}>
-              <div className="box-label">💡 In Simple Terms</div>
+              <div className="box-label">In Simple Terms</div>
               <p>
                 {/* #2 alt — "Helium 10 is the industry-standard Amazon tool built for US sellers" → /compare/insydzvshelium */}
-                <InLink to="/compare/insydzvshelium" color="#4f46e5">Helium 10 is the industry-standard Amazon tool built for US sellers</InLink> — comprehensive, expensive, and calibrated for Amazon.com.{" "}
+                <InLink to="/compare/insydzvshelium" color="#4f46e5">Helium 10 is the industry-standard Amazon tool built for US sellers</InLink> comprehensive, expensive, and calibrated for Amazon.com.{" "}
                 {/* #15 — "Insydz is built ground-up for Indian sellers on Amazon.in, Flipkart" → /solutions/amazon-sellers */}
-                <InLink to="/solutions/amazon-sellers" color="#4f46e5">Insydz is built ground-up for Indian sellers on Amazon.in, Flipkart</InLink> — with India-specific keyword data, WhatsApp alerts, and INR pricing that fits Indian seller budgets. The question isn't which tool has more features. It's which tool gives you accurate data for the market you're actually selling in.
+                <InLink to="/solutions/amazon-sellers" color="#4f46e5">Insydz is built ground-up for Indian sellers on Amazon.in, Flipkart</InLink> with India-specific keyword data, WhatsApp alerts, and INR pricing that fits Indian seller budgets. The question isn't which tool has more features. It's which tool gives you accurate data for the market you're actually selling in.
               </p>
             </div>
 
@@ -662,7 +666,7 @@ export default function InsydzVsHelium10India() {
               India has over <strong>1.7 million active sellers</strong> on Amazon.in and Flipkart combined. The majority are running their businesses on gut feel, WhatsApp screenshots, and manual price checks. A growing segment has discovered that{" "}
               {/* #17 — "professional intelligence tools" → /features */}
               <InLink to="/features" color="#db2777">professional intelligence tools</InLink>{" "}
-              exist — and now faces the choice between globally-recognised names like Helium 10 or{" "}
+              exist and now faces the choice between globally-recognised names like Helium 10 or{" "}
               {/* #16 — "India-first platform" → /solutions/amazon-sellers */}
               <InLink to="/solutions/amazon-sellers" color="#db2777">India-first platforms</InLink>{" "}
               like Insydz.
@@ -673,12 +677,12 @@ export default function InsydzVsHelium10India() {
               <InLink to="/resources/expert-blog/amazon-seo-tool-india" color="#db2777">data-driven keyword tools consistently outrank those who don't, within 6–12 weeks</InLink>.{" "}
               {/* #19 — "sellers with competitor price tracking respond to market changes in under an hour" → /resources/expert-blog/amazon-competitor-price-tracking-tool */}
               <InLink to="/resources/expert-blog/amazon-competitor-price-tracking-tool" color="#db2777">Sellers with competitor price tracking respond to market changes in under an hour</InLink>{" "}
-              instead of a day. The tool you pick determines whether that advantage is calibrated for India — or for a market 12,000 kilometres away.
+              instead of a day. The tool you pick determines whether that advantage is calibrated for India or for a market 12,000 kilometres away.
             </p>
 
             {/* S2 */}
             <h2 id="gaps">Indian Sellers Have Three Problems Global Tools Don't Solve</h2>
-            <p>The issue isn't that Helium 10 is bad — it's that it was designed for a different seller in a different market. Three fundamental gaps persist regardless of which Helium 10 plan an Indian seller uses:</p>
+            <p>The issue isn't that Helium 10 is bad it's that it was designed for a different seller in a different market. Three fundamental gaps persist regardless of which Helium 10 plan an Indian seller uses:</p>
 
             <div style={{ display: "flex", flexDirection: "column" as const, gap: 12, margin: "20px 0 28px" }}>
               {[
@@ -686,7 +690,7 @@ export default function InsydzVsHelium10India() {
                   n: 1, color: "#EF4444", title: "Platform Gap",
                   body: (
                     <span>
-                      Amazon.in, Flipkart are the three marketplaces that matter for Indian sellers. Helium 10 supports Amazon exclusively — and even then, its data is optimised for Amazon.com, not Amazon.in. A seller doing ₹1.5 lakh/month on Flipkart gets zero intelligence from Helium 10 for that revenue stream.
+                      Amazon.in, Flipkart are the three marketplaces that matter for Indian sellers. Helium 10 supports Amazon exclusively and even then, its data is optimised for Amazon.com, not Amazon.in. A seller doing ₹1.5 lakh/month on Flipkart gets zero intelligence from Helium 10 for that revenue stream.
                     </span>
                   ),
                 },
@@ -694,7 +698,7 @@ export default function InsydzVsHelium10India() {
                   n: 2, color: "#F97316", title: "Data Gap",
                   body: (
                     <span>
-                      Helium 10's keyword databases are built primarily on Amazon.com search behaviour. Indian buyers search in Hinglish — 'best mobile under 15000', 'mixer grinder 750 watt', 'cricket bat for beginners' — patterns that US-trained keyword databases significantly underrepresent.
+                      Helium 10's keyword databases are built primarily on Amazon.com search behaviour. Indian buyers search in Hinglish 'best mobile under 15000', 'mixer grinder 750 watt', 'cricket bat for beginners' patterns that US-trained keyword databases significantly underrepresent.
                     </span>
                   ),
                 },
@@ -703,7 +707,7 @@ export default function InsydzVsHelium10India() {
                   body: (
                     <span>
                       {/* #6 — "Helium 10's plans start at ₹3,300/month (Starter) and climb to ₹8,300/month (Diamond)" → /compare/insydzvshelium */}
-                      <InLink to="/compare/insydzvshelium" color="#db2777">Helium 10's plans start at ₹3,300/month (Starter) and climb to ₹8,300/month (Diamond)</InLink> — before add-ons. For a seller doing ₹5 lakh/month with 15–20% margins, spending ₹8,000+/month on a single tool that doesn't cover Flipkart is a difficult calculus.
+                      <InLink to="/compare/insydzvshelium" color="#db2777">Helium 10's plans start at ₹3,300/month (Starter) and climb to ₹8,300/month (Diamond)</InLink> before add-ons. For a seller doing ₹5 lakh/month with 15–20% margins, spending ₹8,000+/month on a single tool that doesn't cover Flipkart is a difficult calculus.
                     </span>
                   ),
                 },
@@ -719,23 +723,23 @@ export default function InsydzVsHelium10India() {
             </div>
 
             <div className="box box-amber">
-              <div className="box-label">📌 Real Seller: Bengaluru Beauty Accessories Seller</div>
+              <div className="box-label">Real Seller: Bengaluru Beauty Accessories Seller</div>
               <p>A Bengaluru-based beauty accessories seller was on Helium 10's Platinum plan (₹6,500/month) for eight months. Her top keyword showed 45,000 monthly searches in Helium 10's database. Her actual Seller Central data showed 8,200 impressions/month for the same term on Amazon.in. She was optimising for a number that didn't exist in her market.</p>
               <p style={{ marginTop: 12 }}>
                 After switching to an India-first platform, she identified 11{" "}
                 {/* #31 — "Hinglish keyword variants her Helium 10 research had missed entirely" → /resources/expert-blog/amazon-seo-tool-india */}
                 <InLink to="/resources/expert-blog/amazon-seo-tool-india" color="#d97706">Hinglish keyword variants her Helium 10 research had missed entirely</InLink>{" "}
-                — including 'hair curler for beginners' and 'automatic hair curler under 500' — both high-intent, high-conversion terms with near-zero competition on Amazon.in. <strong>Her organic sales grew 44% in 7 weeks.</strong>
+                including 'hair curler for beginners' and 'automatic hair curler under 500' — both high-intent, high-conversion terms with near-zero competition on Amazon.in. <strong>Her organic sales grew 44% in 7 weeks.</strong>
               </p>
             </div>
 
             <div className="box box-indigo" style={{ padding: "20px 22px" }}>
-              <div className="box-label">🤖 AI Overview Summary</div>
+              <div className="box-label">AI Overview Summary</div>
               <p>
                 {/* #1 alt — "Insydz vs Helium 10 comparison for Indian sellers" → self */}
                 The <InLink to="/resources/expert-blog/insydz-vs-helium-10-india" color="#4f46e5">Insydz vs Helium 10 comparison for Indian sellers</InLink> comes down to{" "}
                 {/* #3 alt — "market fit, not feature count" → /compare/insydzvshelium */}
-                <InLink to="/compare/insydzvshelium" color="#4f46e5">market fit, not feature count</InLink>. Helium 10 offers a mature, comprehensive Amazon suite — but its data, pricing, and platform coverage are optimised for Amazon.com, not Amazon.in. Insydz is built specifically for India: Amazon.in keyword data including Hinglish patterns, Flipkart coverage, WhatsApp-first alerts, and pricing at 60–85% less than Helium 10.
+                <InLink to="/compare/insydzvshelium" color="#4f46e5">market fit, not feature count</InLink>. Helium 10 offers a mature, comprehensive Amazon suite but its data, pricing, and platform coverage are optimised for Amazon.com, not Amazon.in. Insydz is built specifically for India: Amazon.in keyword data including Hinglish patterns, Flipkart coverage, WhatsApp-first alerts, and pricing at 60–85% less than Helium 10.
               </p>
             </div>
 
@@ -744,7 +748,7 @@ export default function InsydzVsHelium10India() {
               {/* #5 — "Feature-by-Feature Comparison: Insydz vs Helium 10" → /compare/insydzvshelium */}
               <InLink to="/compare/insydzvshelium" color="#0d1b2a">Feature-by-Feature Comparison: Insydz vs Helium 10</InLink>
             </h2>
-            <p>The following comparison covers every major feature category relevant to Indian sellers. Note that "feature parity" is not the same as "data parity" — a feature that exists in both tools may perform very differently when tested against actual Amazon.in search behaviour.</p>
+            <p>The following comparison covers every major feature category relevant to Indian sellers. Note that "feature parity" is not the same as "data parity" a feature that exists in both tools may perform very differently when tested against actual Amazon.in search behaviour.</p>
 
             <div className="tbl-wrap">
               <table className="dt">
@@ -768,9 +772,9 @@ export default function InsydzVsHelium10India() {
             </div>
 
             <div className="box box-amber">
-              <div className="box-label">📊 Important Note on "Feature Parity"</div>
+              <div className="box-label">Important Note on "Feature Parity"</div>
               <p>
-                Both tools list "keyword research" and "rank tracking" as features. A surface comparison makes them look equivalent. They are not equivalent for Indian sellers — the data sources are fundamentally different. Always test keyword volume data against your own Seller Central impressions before trusting any tool's numbers for Amazon.in. If you want to see{" "}
+                Both tools list "keyword research" and "rank tracking" as features. A surface comparison makes them look equivalent. They are not equivalent for Indian sellers the data sources are fundamentally different. Always test keyword volume data against your own Seller Central impressions before trusting any tool's numbers for Amazon.in. If you want to see{" "}
                 {/* #37 — "competitor keyword gap analysis" → /features/keyword-rank-tracking */}
                 <InLink to="/features/keyword-rank-tracking-feature" color="#d97706">competitor keyword gap analysis</InLink>{" "}
                 done right for Amazon.in, the difference becomes immediately apparent.
@@ -779,7 +783,7 @@ export default function InsydzVsHelium10India() {
 
             {/* S4 — Helium 10 strengths */}
             <h2 id="helium-pros">Helium 10: What It Does Genuinely Well</h2>
-            <p>Before going further — Helium 10 earned its reputation for a reason. If you're selling on Amazon.com, or running a US-market operation from India, the platform is excellent. Here's what it does better than almost any alternative:</p>
+            <p>Before going further Helium 10 earned its reputation for a reason. If you're selling on Amazon.com, or running a US-market operation from India, the platform is excellent. Here's what it does better than almost any alternative:</p>
 
             <ArticleImg src="/fourteen.png" alt="India vs US market fit for Amazon seller tools" caption="Indian sellers need tools calibrated for Amazon.in, Flipkart — not Amazon.com" />
 
@@ -792,9 +796,9 @@ export default function InsydzVsHelium10India() {
                   tLink: "/compare/insydzvshelium",
                   d: "One of the most powerful reverse ASIN tools available. Enter a competitor's ASIN and it maps every keyword they rank for organically. For Amazon.com sellers, extraordinarily accurate.",
                 },
-                { icon: "🧲", t: "Magnet (Keyword Discovery)",    tLink: null, d: "Surfaces keyword ideas from a massive US database with strong search volume estimates. Provides a starting framework for Amazon.in — even if it misses Hinglish variants." },
-                { icon: "✍️", t: "Frankenstein + Scribbles",      tLink: null, d: "Listing builder tools that help structure product listings with keyword-optimised content — a genuine productivity tool for sellers managing large catalogues." },
-                { icon: "📦", t: "Black Box (Product Research)",  tLink: null, d: "Category-level demand data and competition analysis for sourcing decisions. For India-specific sourcing, data accuracy drops — but the workflow is solid." },
+                { icon: "🧲", t: "Magnet (Keyword Discovery)",    tLink: null, d: "Surfaces keyword ideas from a massive US database with strong search volume estimates. Provides a starting framework for Amazon.in even if it misses Hinglish variants." },
+                { icon: "✍️", t: "Frankenstein + Scribbles",      tLink: null, d: "Listing builder tools that help structure product listings with keyword-optimised content a genuine productivity tool for sellers managing large catalogues." },
+                { icon: "📦", t: "Black Box (Product Research)",  tLink: null, d: "Category-level demand data and competition analysis for sourcing decisions. For India-specific sourcing, data accuracy drops but the workflow is solid." },
                 { icon: "🔭", t: "Xray (Chrome Extension)",       tLink: null, d: "Browser extension that overlays competitor data on Amazon search results. Genuinely useful as a quick research layer for any marketplace." },
               ].map(f => (
                 <div key={f.t} style={{ background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 10, padding: "16px 18px", display: "flex", gap: 12 }}>
@@ -818,18 +822,18 @@ export default function InsydzVsHelium10India() {
 
             {/* S5 — Helium 10 gaps */}
             <h2 id="helium-gaps">Where Helium 10 Falls Short for Indian Sellers</h2>
-            <p>These aren't edge cases — they are the core operational realities of running an Amazon.in or Flipkart business in India. Each gap below represents a daily business decision that Helium 10 leaves underserved.</p>
+            <p>These aren't edge cases they are the core operational realities of running an Amazon.in or Flipkart business in India. Each gap below represents a daily business decision that Helium 10 leaves underserved.</p>
 
             <div className="mistakes">
               {[
                 {
                   n: 1, t: "Amazon.in Data Is an Afterthought, Not a Core Product",
-                  b: <span>Helium 10's keyword databases are built and calibrated on Amazon.com data. Amazon.in was added as an additional marketplace — but the data quality gap is significant. Search volumes for Indian keywords are often overstated, understated, or simply absent.</span>,
+                  b: <span>Helium 10's keyword databases are built and calibrated on Amazon.com data. Amazon.in was added as an additional marketplace but the data quality gap is significant. Search volumes for Indian keywords are often overstated, understated, or simply absent.</span>,
                 },
                 {
                   n: 2, t: "Flipkart Doesn't Exist in Helium 10's World",
                   b: <span>
-                    Flipkart is not a secondary platform in India — it is the primary platform for a large segment of tier-2 and tier-3 city buyers. A seller doing ₹8 lakh/month across Amazon.in and Flipkart who uses Helium 10 is running half their business completely blind. No keyword data. No price tracking. No rank monitoring.{" "}
+                    Flipkart is not a secondary platform in India it is the primary platform for a large segment of tier-2 and tier-3 city buyers. A seller doing ₹8 lakh/month across Amazon.in and Flipkart who uses Helium 10 is running half their business completely blind. No keyword data. No price tracking. No rank monitoring.{" "}
                     {/* #30 — "Flipkart keyword intelligence" → /resources/expert-blog/best-competitor-price-tracking-tools-india */}
                     <InLink to="/resources/expert-blog/amazon-competitor-price-tracking-tool" color="#64748b">Flipkart keyword intelligence</InLink>{" "}
                     matters as much as Amazon.in for most Indian sellers.
@@ -849,12 +853,12 @@ export default function InsydzVsHelium10India() {
                     {/* #7 — "Starter plan is ₹3,300/month, Platinum is ₹6,500/month, and Diamond is ₹8,300/month" → /pricing */}
                     <InLink to="/pricing" color="#64748b">Helium 10's Starter plan is ₹3,300/month, Platinum is ₹6,500/month, and Diamond is ₹8,300/month</InLink>. For a seller doing ₹5 lakh/month with a 20% margin (₹1 lakh net),{" "}
                     {/* #10 — "6.5% of their entire margin" → /pricing */}
-                    spending ₹6,500/month on one tool is <InLink to="/pricing" color="#64748b">6.5% of their entire margin</InLink> — before ads, warehouse costs, and platform fees.
+                    spending ₹6,500/month on one tool is <InLink to="/pricing" color="#64748b">6.5% of their entire margin</InLink> before ads, warehouse costs, and platform fees.
                   </span>,
                 },
                 {
                   n: 5, t: "Hinglish and Regional Search Patterns — Completely Missing",
-                  b: <span>Indian buyers search in a mix of English and Hindi — 'best juicer mixer grinder under 3000', 'pressure cooker induction base 5 litre', 'bedsheet king size cotton'. These Hinglish patterns are high-intent, high-conversion queries that Helium 10's US-trained database doesn't surface.</span>,
+                  b: <span>Indian buyers search in a mix of English and Hindi 'best juicer mixer grinder under 3000', 'pressure cooker induction base 5 litre', 'bedsheet king size cotton'. These Hinglish patterns are high-intent, high-conversion queries that Helium 10's US-trained database doesn't surface.</span>,
                 },
               ].map(m => (
                 <div className="mistake" key={m.n}>
@@ -872,7 +876,7 @@ export default function InsydzVsHelium10India() {
               <InLink to="/pricing" color="#db2777">Indian SMBs cannot justify ₹6,000+/month for a single tool</InLink>.
             </p>
 
-            <ArticleImg src="/fifteen.png" alt="Insydz India-first features — Hinglish keywords, WhatsApp alerts, multi-platform coverage" caption="Insydz is built ground-up for India — Hinglish keyword database, multi-platform coverage, and WhatsApp-first alerts" />
+            <ArticleImg src="/fifteen.png" alt="Insydz India-first features Hinglish keywords, WhatsApp alerts, multi-platform coverage" caption="Insydz is built ground-up for India Hinglish keyword database, multi-platform coverage, and WhatsApp-first alerts" />
 
             <div style={{ display: "flex", flexDirection: "column" as const, gap: 12, margin: "20px 0 28px" }}>
               {[
@@ -881,7 +885,7 @@ export default function InsydzVsHelium10India() {
                   /* #14 — "platform that covers Amazon.in natively" → /solutions/amazon-sellers */
                   title: "Amazon.in-Native Keyword Data",
                   titleLink: "/solutions/amazon-sellers",
-                  body: "Insydz's keyword database is built on actual Amazon.in search behaviour — not Amazon.com data retrofitted for India. Hinglish keywords, regional buying patterns, and India-specific search intent are surfaced as first-class data, not afterthoughts.",
+                  body: "Insydz's keyword database is built on actual Amazon.in search behaviour not Amazon.com data retrofitted for India. Hinglish keywords, regional buying patterns, and India-specific search intent are surfaced as first-class data, not afterthoughts.",
                 },
                 {
                   icon: "🛍️",
@@ -894,7 +898,7 @@ export default function InsydzVsHelium10India() {
                 },
                 { icon: "📲", title: "WhatsApp-First Alerts",                 titleLink: null, body: "Critical price changes, rank drops, and competitor stock-out opportunities are delivered via WhatsApp within 60 minutes. Not email. Not a dashboard you check once a day. A message that reaches you where you already are." },
                 { icon: "🤖", title: "AI Recommendations in Plain Language",  titleLink: null, body: "Rather than showing a dashboard of competitor data and leaving interpretation to the seller, Insydz provides specific, actionable recommendations: 'Competitor A dropped to ₹849 on Flipkart. Recommend adjusting to ₹869 — recovers Buy Box while protecting ₹42 more margin per unit.'" },
-                { icon: "🎉", title: "Festive Intelligence Built for India",  titleLink: null, body: "Diwali, Big Billion Days, the Great Indian Festival, Republic Day Sale — these seasonal peaks drive 3–5x normal demand. Insydz tracks festive demand trends so sellers can plan inventory, pricing, and keyword strategy 4–6 weeks ahead of each event." },
+                { icon: "🎉", title: "Festive Intelligence Built for India",  titleLink: null, body: "Diwali, Big Billion Days, the Great Indian Festival, Republic Day Sale these seasonal peaks drive 3–5x normal demand. Insydz tracks festive demand trends so sellers can plan inventory, pricing, and keyword strategy 4–6 weeks ahead of each event." },
                 {
                   icon: "💰",
                   /* #23 — "Pricing at ₹1,999–2,999/month — with a forever-free plan" → /pricing */
@@ -917,7 +921,7 @@ export default function InsydzVsHelium10India() {
             </div>
 
             <div className="box box-pink">
-              <div className="box-label">📌 No Aggressive Pitch Here</div>
+              <div className="box-label">No Aggressive Pitch Here</div>
               <p>If you sell exclusively on Amazon.com and your business is calibrated for the US market, Helium 10 is probably the right tool. If you're an Indian seller doing business on Amazon.in, Flipkart, the fit calculus is different.</p>
             </div>
 
@@ -969,13 +973,13 @@ export default function InsydzVsHelium10India() {
               represents <strong>3.25% of their total margin</strong>. The equivalent{" "}
               {/* #24 alt — "Growth plan at ₹1,499/month" → /pricing */}
               <InLink to="/pricing" color="#db2777">Insydz Growth plan at ₹1,499/month</InLink>{" "}
-              represents <strong>0.75% of the same margin</strong> — and covers Flipkart in addition to Amazon.in.
+              represents <strong>0.75% of the same margin</strong> and covers Flipkart in addition to Amazon.in.
             </p>
             <p>
               The{" "}
               {/* #8 alt — "₹5,001 monthly difference" → /pricing */}
               <InLink to="/pricing" color="#db2777">₹5,001 monthly difference</InLink>{" "}
-              buys three things: Flipkart intelligence, and WhatsApp alerts. For most Indian growth sellers, that's not a marginal upgrade — it's the core of their competitive intelligence.
+              buys three things: Flipkart intelligence, and WhatsApp alerts. For most Indian growth sellers, that's not a marginal upgrade it's the core of their competitive intelligence.
             </p>
 
             {/* S7 — Mistakes */}
@@ -984,15 +988,15 @@ export default function InsydzVsHelium10India() {
               {[
                 {
                   n: 1, t: "Choosing by Brand Recognition Instead of Market Fit",
-                  b: <span>Helium 10 is the most-referenced Amazon seller tool in YouTube tutorials and agency recommendations — but the vast majority of that content is produced for Amazon.com sellers. The right question isn't 'which tool is more famous?' — it's 'which tool has accurate data for Amazon.in and Flipkart?'</span>,
+                  b: <span>Helium 10 is the most-referenced Amazon seller tool in YouTube tutorials and agency recommendations but the vast majority of that content is produced for Amazon.com sellers. The right question isn't 'which tool is more famous?' it's 'which tool has accurate data for Amazon.in and Flipkart?'</span>,
                 },
                 {
                   n: 2, t: "Comparing Feature Lists Without Checking Data Sources",
                   b: <span>
-                    Both tools list 'keyword research' and 'rank tracking' as features. A feature comparison table will show them as equivalent. They are not — because the data sources are different. Helium 10's keyword volume for Amazon.in is an extrapolation from Amazon.com data.{" "}
+                    Both tools list 'keyword research' and 'rank tracking' as features. A feature comparison table will show them as equivalent. They are not because the data sources are different. Helium 10's keyword volume for Amazon.in is an extrapolation from Amazon.com data.{" "}
                     {/* #37 alt — "competitor keyword gap analysis" → /features/keyword-rank-tracking */}
                     Run a <InLink to="/features/keyword-rank-tracking-feature" color="#64748b">competitor keyword gap analysis</InLink>{" "}
-                    on the same product in both tools — the gap in Hinglish keyword coverage will be self-evident.
+                    on the same product in both tools the gap in Hinglish keyword coverage will be self-evident.
                   </span>,
                 },
                 {
@@ -1011,7 +1015,7 @@ export default function InsydzVsHelium10India() {
                     The best approach for sellers who are genuinely uncertain: test Insydz's{" "}
                     {/* #26 — "forever-free plan for sellers who want to start before committing" → /pricing */}
                     <InLink to="/pricing" color="#64748b">forever-free plan for sellers who want to start before committing</InLink>{" "}
-                    and Helium 10's trial simultaneously — on the same product and the same set of keywords — and compare data quality directly. The keyword volumes, Hinglish terms surfaced, and platform coverage will make the decision obvious within 2 weeks.
+                    and Helium 10's trial simultaneously — on the same product and the same set of keywords and compare data quality directly. The keyword volumes, Hinglish terms surfaced, and platform coverage will make the decision obvious within 2 weeks.
                   </span>,
                 },
               ].map(m => (
@@ -1024,7 +1028,7 @@ export default function InsydzVsHelium10India() {
 
             <div className="mid-cta">
               <div>
-                <h3>Compare Both Tools Free — No Risk</h3>
+                <h3>Compare Both Tools Free No Risk</h3>
                 <p>Insydz forever-free plan. Helium 10 30-day trial. Test on the same keywords. The data speaks.</p>
               </div>
               <button onClick={() => setLocation("/login")} style={{ flexShrink: 0, background: "#F97316", color: "white", padding: "12px 26px", borderRadius: 8, fontWeight: 700, fontSize: 14.5, whiteSpace: "nowrap" as const, cursor: "pointer", border: "none", fontFamily: "'Sora',sans-serif" }}>Try Insydz Free →</button>
@@ -1052,10 +1056,10 @@ export default function InsydzVsHelium10India() {
                 <h3 style={{ color: "#15803D" }}><span style={{ fontSize: 18 }}>🇮🇳</span> Choose Insydz if:</h3>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column" as const, gap: 6 }}>
                   {[
-                    "You sell on Amazon.in and Flipkart — and want one tool covering all three",
+                    "You sell on Amazon.in and Flipkart and want one tool covering all three",
                     "You're in the ₹2–30 lakh/month revenue range where tool cost is a real budget consideration",
                     "You need Hinglish keyword data that reflects how Indian buyers actually search",
-                    "You want alerts on WhatsApp — not dashboards you remember to check",
+                    "You want alerts on WhatsApp not dashboards you remember to check",
                     "You want to start with a free plan before committing any budget",
                     "You want AI recommendations in plain language, not just raw data to interpret yourself",
                   ].map(item => (
@@ -1067,7 +1071,7 @@ export default function InsydzVsHelium10India() {
               </div>
             </div>
 
-            <ArticleImg src="/seventeen.png" alt="How to evaluate Amazon tools for India — before signup, trial period, monthly ROI check" caption="A structured 3-phase evaluation framework for Indian sellers choosing between Amazon intelligence tools" />
+            <ArticleImg src="/seventeen.png" alt="How to evaluate Amazon tools for India before signup, trial period, monthly ROI check" caption="A structured 3-phase evaluation framework for Indian sellers choosing between Amazon intelligence tools" />
 
             <h3>
               {/* #20 — "How to Evaluate Any Amazon Tool for India" → /features */}
@@ -1081,7 +1085,7 @@ export default function InsydzVsHelium10India() {
                   phaseLink: "/features",
                   items: [
                     "List the 5 highest-volume keywords for your top product on Amazon.in and Flipkart separately",
-                    "Run both tools' keyword research on those same terms — compare search volumes against your Seller Central impressions data",
+                    "Run both tools' keyword research on those same terms compare search volumes against your Seller Central impressions data",
                     "Check whether the tool surfaces Hinglish variants of your keywords",
                     /* #22 alt inline text */
                     "Verify platform coverage: does the tool actually track your Flipkart listings or only Amazon.in?",
@@ -1091,7 +1095,7 @@ export default function InsydzVsHelium10India() {
                   phase: "First 2 Weeks (Trial Period)",
                   phaseLink: null,
                   items: [
-                    "Track rank for the same 10 keywords on both platforms simultaneously — compare accuracy",
+                    "Track rank for the same 10 keywords on both platforms simultaneously compare accuracy",
                     "Trigger a competitor price change test: manually lower a non-critical product's price by 10% and measure alert time",
                     "Compare keyword gap analysis results: which keywords does each tool identify that the other misses?",
                   ],
@@ -1101,10 +1105,10 @@ export default function InsydzVsHelium10India() {
                   phaseLink: null,
                   items: [
                     /* #25 — "tool cost as a percentage of net margin" → /pricing */
-                    "Calculate tool cost as a percentage of net margin (not revenue) — it should be under 2%",
+                    "Calculate tool cost as a percentage of net margin (not revenue) it should be under 2%",
                     /* #33 — "rank for more keywords" → /resources/expert-blog/amazon-seo-tool-india */
                     "Measure revenue impact: responding faster to competitor pricing? Ranking for more keywords? Organic traffic increasing?",
-                    "Track Flipkart revenue separately — if a tool doesn't cover it, that revenue stream is unoptimised by definition",
+                    "Track Flipkart revenue separately if a tool doesn't cover it, that revenue stream is unoptimised by definition",
                   ],
                 },
               ].map((section, si) => (
@@ -1121,7 +1125,7 @@ export default function InsydzVsHelium10India() {
                         <span style={{ color: "#F97316", fontWeight: 800, fontSize: 12, flexShrink: 0, marginTop: 2 }}>✓</span>
                         {/* #25 — link "tool cost as a percentage of net margin" */}
                         {ii === 0 && si === 2
-                          ? <span><InLink to="/pricing" color="#475569">Calculate tool cost as a percentage of net margin</InLink> (not revenue) — it should be under 2%</span>
+                          ? <span><InLink to="/pricing" color="#475569">Calculate tool cost as a percentage of net margin</InLink> (not revenue) it should be under 2%</span>
                           : item}
                       </li>
                     ))}
@@ -1143,7 +1147,7 @@ export default function InsydzVsHelium10India() {
                 {openFaq === 0 && (
                   <div className="faq-a">
                     <p>
-                      For most Indian sellers, Helium 10 is not worth the cost for Amazon.in. The platform's keyword data, search volume estimates, and product research metrics are calibrated primarily for Amazon.com, not Amazon.in. Indian sellers who test Helium 10's keyword volumes against their actual Seller Central impressions data consistently find significant discrepancies. Additionally, Helium 10 offers no Flipkart coverage — which is a fundamental gap for sellers who earn 25–50% of their revenue on those platforms. At{" "}
+                      For most Indian sellers, Helium 10 is not worth the cost for Amazon.in. The platform's keyword data, search volume estimates, and product research metrics are calibrated primarily for Amazon.com, not Amazon.in. Indian sellers who test Helium 10's keyword volumes against their actual Seller Central impressions data consistently find significant discrepancies. Additionally, Helium 10 offers no Flipkart coverage which is a fundamental gap for sellers who earn 25–50% of their revenue on those platforms. At{" "}
                       {/* #6 inline FAQ */}
                       <InLink to="/pricing" color="#64748b">₹3,300–8,300/month</InLink>, the cost-to-value ratio for India-market selling is difficult to justify when{" "}
                       {/* #13 — "India-first alternatives exist at ₹1,999–2,999/month" → /pricing */}
@@ -1162,7 +1166,7 @@ export default function InsydzVsHelium10India() {
                 {openFaq === 1 && (
                   <div className="faq-a">
                     <p>
-                      No. Helium 10 does not support Flipkart in any capacity — no keyword research, no rank tracking, no competitor price monitoring, no listing analytics. It is exclusively an Amazon tool, and within Amazon, its primary data quality is for Amazon.com rather than Amazon.in. Indian sellers who operate on Flipkart — which includes the majority of sellers with significant tier-2 and tier-3 city revenue — need a separate solution for Flipkart intelligence.{" "}
+                      No. Helium 10 does not support Flipkart in any capacity no keyword research, no rank tracking, no competitor price monitoring, no listing analytics. It is exclusively an Amazon tool, and within Amazon, its primary data quality is for Amazon.com rather than Amazon.in. Indian sellers who operate on Flipkart which includes the majority of sellers with significant tier-2 and tier-3 city revenue need a separate solution for Flipkart intelligence.{" "}
                       {/* #32 — "keyword research and price tracking across Amazon.in and Flipkart" → /resources/expert-blog/amazon-competitor-price-tracking-tool */}
                       <InLink to="/resources/expert-blog/amazon-competitor-price-tracking-tool" color="#64748b">Insydz covers keyword research and price tracking across Amazon.in and Flipkart</InLink>{" "}
                       within a single platform.
@@ -1204,7 +1208,7 @@ export default function InsydzVsHelium10India() {
                 </div>
                 {openFaq === 3 && (
                   <div className="faq-a">
-                    <p>Technically yes — some high-volume Indian sellers (₹50 lakh+/month) run both tools simultaneously, using Helium 10 for its Amazon.com database depth when researching global keyword trends and Insydz for India-specific intelligence, Flipkart tracking, and WhatsApp alerts. For sellers below ₹20–30 lakh/month, running both tools simultaneously adds ₹5,000–10,000/month in combined tool costs — difficult to justify when Insydz covers the India-market use cases comprehensively at a fraction of the cost.</p>
+                    <p>Technically yes some high-volume Indian sellers (₹50 lakh+/month) run both tools simultaneously, using Helium 10 for its Amazon.com database depth when researching global keyword trends and Insydz for India-specific intelligence, Flipkart tracking, and WhatsApp alerts. For sellers below ₹20–30 lakh/month, running both tools simultaneously adds ₹5,000–10,000/month in combined tool costs difficult to justify when Insydz covers the India-market use cases comprehensively at a fraction of the cost.</p>
                   </div>
                 )}
               </div>
@@ -1217,7 +1221,7 @@ export default function InsydzVsHelium10India() {
                 </div>
                 {openFaq === 4 && (
                   <div className="faq-a">
-                    <p>Insydz's keyword research is built on Amazon.in search behaviour — the actual queries Indian buyers enter on Amazon.in, including Hinglish variants and regional search patterns. Helium 10's keyword data for Amazon.in is largely extrapolated from its Amazon.com database, which means it misses significant Hinglish keyword volume and tends to produce inaccurate search volume estimates for Indian-specific queries. In direct tests on the same product category, Insydz typically surfaces 30–50% more India-relevant keyword variations than Helium 10 — particularly for Hinglish and regional search terms.</p>
+                    <p>Insydz's keyword research is built on Amazon.in search behaviour the actual queries Indian buyers enter on Amazon.in, including Hinglish variants and regional search patterns. Helium 10's keyword data for Amazon.in is largely extrapolated from its Amazon.com database, which means it misses significant Hinglish keyword volume and tends to produce inaccurate search volume estimates for Indian-specific queries. In direct tests on the same product category, Insydz typically surfaces 30–50% more India-relevant keyword variations than Helium 10 particularly for Hinglish and regional search terms.</p>
                   </div>
                 )}
               </div>
@@ -1234,7 +1238,7 @@ export default function InsydzVsHelium10India() {
                       Insydz offers a{" "}
                       {/* #26 alt — "forever-free plan" → /pricing */}
                       <InLink to="/pricing" color="#64748b">forever-free plan for sellers who want to start before committing</InLink>{" "}
-                      — no credit card required, no time limit — that gives Indian sellers entry-level access to{" "}
+                      no credit card required, no time limit — that gives Indian sellers entry-level access to{" "}
                       {/* #32 alt — "keyword research and price tracking across Amazon.in and Flipkart" → Blog 1 */}
                       <InLink to="/resources/expert-blog/amazon-competitor-price-tracking-tool" color="#64748b">keyword research and price tracking across Amazon.in and Flipkart</InLink>. Helium 10 offers a 30-day free trial on its paid plans. After the trial ends, Helium 10 requires a paid subscription starting at ₹3,300/month. For sellers who want to evaluate the tools before committing budget, Insydz's{" "}
                       {/* #28 alt — "no-time-limit free plan" */}
@@ -1274,7 +1278,7 @@ export default function InsydzVsHelium10India() {
       <div className="fc-block">
         <div className="fc-inner">
           <h2>The Right Tool Isn't the Most Expensive One. It's the Most Accurate One for Your Market.</h2>
-          <p>Every rupee you spend on a tool that returns inaccurate Amazon.in data, ignores Flipkart, and sends alerts to an email inbox you check twice a day is a rupee working against you — not for you.</p>
+          <p>Every rupee you spend on a tool that returns inaccurate Amazon.in data, ignores Flipkart, and sends alerts to an email inbox you check twice a day is a rupee working against you not for you.</p>
           <div className="fc-points">
             <div className="fc-pt">Forever free plan</div>
             <div className="fc-pt">No credit card required</div>
@@ -1282,7 +1286,7 @@ export default function InsydzVsHelium10India() {
             <div className="fc-pt">Amazon.in + Flipkart</div>
           </div>
           <button className="fc-btn" onClick={() => setLocation("/login")}>
-            Try Insydz Free at insydz.com — See Your Amazon.in Keyword Gaps in 5 Minutes
+            Try Insydz Free at insydz.com See Your Amazon.in Keyword Gaps in 5 Minutes
           </button>
           <p className="fc-sub">Forever free plan · No credit card · Cancel anytime</p>
         </div>
@@ -1412,7 +1416,7 @@ export default function InsydzVsHelium10India() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>

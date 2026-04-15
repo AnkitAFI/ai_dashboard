@@ -659,9 +659,9 @@ export default function ImproveSEOPage() {
               <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
                 Rank Higher on Amazon & Flipkart <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">With Smart SEO</span>
               </h1>
-              <p className="text-xl text-gray-700 dark:text-gray-300">Insydz shows you exactly which keywords to target, how to optimize listings, and where you rank — <span className="text-green-700 dark:text-green-400 font-semibold">so more customers find your products.</span></p>
-              <Link href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-lg rounded-full shadow-2xl inline-flex items-center w-full sm:w-auto justify-center">
-                  👉 Improve Your SEO Free <ArrowRight className="ml-2" />
+              <p className="text-xl text-gray-700 dark:text-gray-300">Insydz shows you exactly which keywords to target, how to optimize listings, and where you rank <span className="text-green-700 dark:text-green-400 font-semibold">so more customers find your products.</span></p>
+              <Link href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-6 sm:px-8 py-4 sm:py-3 text-sm sm:text-lg rounded-full shadow-2xl inline-flex items-center w-full sm:w-auto justify-center">
+                  Improve Your SEO Free <ArrowRight className="ml-2" />
               </Link>
             </div>
             <div className="bg-white dark:bg-gray-900 border-2 border-green-200 dark:border-green-800 rounded-3xl p-8 shadow-2xl">
@@ -727,7 +727,7 @@ export default function ImproveSEOPage() {
           </div>
           <div className="text-center mt-12">
             <Link href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-12 py-6 rounded-full shadow-2xl inline-flex items-center">
-              👉 Start Ranking Higher Free <ChevronRight className="ml-2" />
+              Start Ranking Higher Free <ChevronRight className="ml-2" />
             </Link>
           </div>
         </div>
@@ -738,7 +738,7 @@ export default function ImproveSEOPage() {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl font-black mb-6 text-gray-900 dark:text-white">Stop Being Invisible. <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">Get Found.</span></h2>
           <Link href="/login" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-12 py-6 rounded-full shadow-2xl inline-flex items-center">
-            👉 Improve SEO Free <ArrowRight className="ml-2" />
+            Improve SEO Free <ArrowRight className="ml-2" />
           </Link>
         </div>
       </section>
@@ -868,7 +868,7 @@ export default function ImproveSEOPage() {
           <div className="border-t border-white/10 pt-8">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
               <p className="text-gray-500 text-sm">
-                © 2025 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
+                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
               </p>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>
