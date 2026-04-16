@@ -264,7 +264,7 @@ class ProductTrackerAnalysis(Base):
 
 
 class TrackedProduct(Base):
-    __tablename__ = "tracked_products"  # matches your SQL table
+    __tablename__ = "tracked_products"
 
     id = Column(Integer, primary_key=True, index=True)
     seller_id = Column(String, index=True, nullable=False)
@@ -275,10 +275,55 @@ class TrackedProduct(Base):
     user_email = Column(String, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    review_comments = Column(Text, nullable=True)  # JSON array of comment strings
-    review_ratings = Column(Text, nullable=True) 
+    # ----------------------
+    # Product Data
+    # ----------------------
+    product_price = Column(String)
+    product_original_price = Column(String)
+    currency = Column(String)
+    product_star_rating = Column(String)
+    product_star_rating_numeric = Column(Float)
+    product_num_ratings = Column(Integer)
+    product_url = Column(String)
+    product_num_offers = Column(Integer)
+    product_minimum_offer_price = Column(String)
 
-    # Relationship to keyword history
+    is_best_seller           = Column(Boolean, default=False)
+    is_amazon_choice         = Column(Boolean, default=False)
+    is_prime                 = Column(Boolean, default=False)
+    climate_pledge_friendly  = Column(Boolean, default=False)
+
+    sales_volume = Column(String)
+    delivery = Column(String)
+    has_variations           = Column(Boolean, default=False)
+    unit_price               = Column(String, nullable=True)
+    unit_count               = Column(Integer, nullable=True)
+
+    # ----------------------
+    # Seller Profile
+    # ----------------------
+    seller_name = Column(String)
+    seller_logo = Column(String)
+    seller_link = Column(String)
+    store_link = Column(String)
+    seller_phone = Column(String)
+    business_name = Column(String)
+    business_address = Column(String)
+    seller_rating = Column(Float)
+    seller_ratings_total = Column(Integer)
+
+    # ----------------------
+    # Reviews
+    # ----------------------
+    review_comments = Column(Text)
+    review_ratings = Column(Text)
+    review_authors = Column(Text)
+    review_dates = Column(Text)
+    review_has_response = Column(Text)
+
+    # ----------------------
+    # Relationship
+    # ----------------------
     keywords = relationship(
         "KeywordRankHistory",
         back_populates="product",

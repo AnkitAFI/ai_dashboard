@@ -1136,7 +1136,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
               <div className="related-grid">
                 <Link to="/resources/expert-blog/flipkart-keyword-research-tool" className="rel-card" title="Flipkart keyword research tool — 2026 guide">
                   <div className="rel-thumb">
-                    <img src="/assets/images/blog/related-flipkart-keyword-tool.png" alt="Flipkart Keyword Research Tool guide" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                    <img src="/01_hero_banner.png" alt="Flipkart Keyword Research Tool guide" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                   </div>
                   <div className="rel-body">
                     <div className="rel-tag">Flipkart SEO</div>
@@ -1145,16 +1145,16 @@ export default function AmazonVsFlipkartIndiaSellers() {
                 </Link>
                 <Link to="/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers" className="rel-card" title="Review analysis tools for Indian sellers">
                   <div className="rel-thumb">
-                    <img src="/assets/images/blog/related-review-intelligence.png" alt="AI Review Intelligence Tool for Amazon and Flipkart" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                    <img src="/eighteen.png" alt="AI Review Intelligence Tool for Amazon and Flipkart" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                   </div>
                   <div className="rel-body">
                     <div className="rel-tag" style={{ color:"#10B981" }}>Review Intelligence</div>
                     <div className="rel-title">AI Review Intelligence Tool for Amazon &amp; Flipkart Sellers: The Complete Guide</div>
                   </div>
                 </Link>
-                <Link to="/compare/insydzvshelium" className="rel-card" title="Insydz vs Helium 10 for Indian sellers">
+                <Link to="/resources/expert-blog/insydz-vs-helium-10-india" className="rel-card" title="Insydz vs Helium 10 for Indian sellers">
                   <div className="rel-thumb">
-                    <img src="/assets/images/blog/related-insydz-vs-helium10.png" alt="Insydz vs Helium 10 comparison for Indian sellers" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                    <img src="/thirteen.png" alt="Insydz vs Helium 10 comparison for Indian sellers" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                   </div>
                   <div className="rel-body">
                     <div className="rel-tag">Compare</div>
@@ -1182,7 +1182,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
           <Link to="/login" className="fc-btn" style={{ display:"inline-block", textDecoration:"none" }}>
             → Stop Guessing. Start Knowing — insydz.com
           </Link>
-          <p className="fc-sub">Forever free plan · No setup required · Amazon India, Flipkart &amp; Meesho supported</p>
+          <p className="fc-sub">Forever free plan · No setup required · Amazon India, Flipkart &amp; supported</p>
         </div>
       </div>
 

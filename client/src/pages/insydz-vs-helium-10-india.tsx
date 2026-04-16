@@ -549,8 +549,8 @@ export default function InsydzVsHelium10India() {
         </div>
         <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(26px,3.8vw,40px)", fontWeight: 800, lineHeight: 1.18, color: "#0D1B2A", letterSpacing: "-.5px", marginBottom: 18, maxWidth: 820 }} className="dark:text-white">
           {/* Link #1 — self-referencing primary keyword */}
-          <InLink to="/resources/expert-blog/insydz-vs-helium-10-india" color="#4F46E5">Insydz vs Helium 10 comparison for Indian sellers:</InLink>{" "}
-          Which is the Right Amazon Intelligence Tool?
+          <InLink to="/resources/expert-blog/insydz-vs-helium-10-india" color="#4F46E5">Insydz vs Helium 10</InLink>{" "}
+           comparison for Indian sellers: Which is the Right Amazon Intelligence Tool?
         </h1>
         <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" as const, gap: "5px 18px", marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#64748B" }}><Users className="w-3.5 h-3.5" /><strong style={{ color: "#0D1B2A" }}>INSYDZ Research Team</strong></div>
@@ -653,7 +653,7 @@ export default function InsydzVsHelium10India() {
               <div className="box-label">In Simple Terms</div>
               <p>
                 {/* #2 alt — "Helium 10 is the industry-standard Amazon tool built for US sellers" → /compare/insydzvshelium */}
-                <InLink to="/compare/insydzvshelium" color="#4f46e5">Helium 10 is the industry-standard Amazon tool built for US sellers</InLink> comprehensive, expensive, and calibrated for Amazon.com.{" "}
+                Helium 10 is the industry-standard Amazon tool built for US sellers comprehensive, expensive, and calibrated for Amazon.com.{" "}
                 {/* #15 — "Insydz is built ground-up for Indian sellers on Amazon.in, Flipkart" → /solutions/amazon-sellers */}
                 <InLink to="/solutions/amazon-sellers" color="#4f46e5">Insydz is built ground-up for Indian sellers on Amazon.in, Flipkart</InLink> with India-specific keyword data, WhatsApp alerts, and INR pricing that fits Indian seller budgets. The question isn't which tool has more features. It's which tool gives you accurate data for the market you're actually selling in.
               </p>
@@ -674,10 +674,12 @@ export default function InsydzVsHelium10India() {
             <p>
               The stakes are real:{" "}
               {/* #18 — "data-driven keyword tools consistently outrank those who don't, within 6–12 weeks" → /resources/expert-blog/amazon-seo-tool-india */}
-              <InLink to="/resources/expert-blog/amazon-seo-tool-india" color="#db2777">data-driven keyword tools consistently outrank those who don't, within 6–12 weeks</InLink>.{" "}
+              <InLink to="/resources/expert-blog/amazon-seo-tool-india" color="#db2777">data-driven keyword tools</InLink>{" "}consistently outrank those who don't, within 6–12 weeks
               {/* #19 — "sellers with competitor price tracking respond to market changes in under an hour" → /resources/expert-blog/amazon-competitor-price-tracking-tool */}
-              <InLink to="/resources/expert-blog/amazon-competitor-price-tracking-tool" color="#db2777">Sellers with competitor price tracking respond to market changes in under an hour</InLink>{" "}
-              instead of a day. The tool you pick determines whether that advantage is calibrated for India or for a market 12,000 kilometres away.
+              . Sellers with {" "}
+              <InLink to="/resources/expert-blog/amazon-competitor-price-tracking-tool" color="#db2777">competitor price tracking</InLink>{" "}
+
+               respond to market changes in under an hour instead of a day. The tool you pick determines whether that advantage is calibrated for India or for a market 12,000 kilometres away.
             </p>
 
             {/* S2 */}
@@ -1014,8 +1016,8 @@ export default function InsydzVsHelium10India() {
                   b: <span>
                     The best approach for sellers who are genuinely uncertain: test Insydz's{" "}
                     {/* #26 — "forever-free plan for sellers who want to start before committing" → /pricing */}
-                    <InLink to="/pricing" color="#64748b">forever-free plan for sellers who want to start before committing</InLink>{" "}
-                    and Helium 10's trial simultaneously — on the same product and the same set of keywords and compare data quality directly. The keyword volumes, Hinglish terms surfaced, and platform coverage will make the decision obvious within 2 weeks.
+                    <InLink to="/pricing" color="#64748b">forever-free plan</InLink>{" "}
+                     for sellers who want to start before committin and Helium 10's trial simultaneously on the same product and the same set of keywords and compare data quality directly. The keyword volumes, Hinglish terms surfaced, and platform coverage will make the decision obvious within 2 weeks.
                   </span>,
                 },
               ].map(m => (

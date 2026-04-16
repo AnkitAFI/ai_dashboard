@@ -161,11 +161,11 @@ const TOC = [
 const FAQS = [
   {
     q: "Is manual price tracking still worth it for Indian ecommerce sellers in 2026?",
-    a: "Manual price tracking in Excel is still viable for sellers at the very early stage — 1–5 SKUs, low-competition categories, or pre-revenue validation. For any seller beyond that threshold, the true cost of manual tracking (labour time + delayed reaction revenue loss + data errors) typically exceeds ₹50,000/month — far more than the ₹1,999/month cost of AI-powered automation. The free tier on India-first platforms like Insydz removes the cost barrier entirely for small sellers.",
+    a: "Manual price tracking in Excel is still viable for sellers at the very early stage 1–5 SKUs, low-competition categories, or pre-revenue validation. For any seller beyond that threshold, the true cost of manual tracking (labour time + delayed reaction revenue loss + data errors) typically exceeds ₹50,000/month far more than the ₹1,999/month cost of AI-powered automation. The free tier on India-first platforms like Insydz removes the cost barrier entirely for small sellers.",
   },
   {
     q: "How does automated competitor tracking actually work for Amazon.in sellers?",
-    a: "Automated competitor tracking tools use crawlers or APIs to pull live price data from Amazon.in, Flipkart, and Meesho listings every 15–60 minutes. When a competitor price change exceeds your defined threshold, you receive an instant WhatsApp alert with the competitor's new price, your current price, and an AI-generated recommendation for the optimal price adjustment — including the exact margin impact of each option.",
+    a: "Automated competitor tracking tools use crawlers or APIs to pull live price data from Amazon.in, Flipkart, and Meesho listings every 15–60 minutes. When a competitor price change exceeds your defined threshold, you receive an instant WhatsApp alert with the competitor's new price, your current price, and an AI-generated recommendation for the optimal price adjustment including the exact margin impact of each option.",
   },
   {
     q: "What's the main difference between free tools and AI-powered price tracking tools?",
@@ -173,15 +173,15 @@ const FAQS = [
   },
   {
     q: "How quickly does automated tracking detect a competitor price change?",
-    a: "India-first AI platforms like Insydz detect competitor price changes within 15–60 minutes and send a WhatsApp alert within the same window. Manual Excel tracking has an average detection delay of 24–48 hours. That gap — between 1 hour and 48 hours — is the revenue window during which a competitor holds the Buy Box and captures your organic sales.",
+    a: "India-first AI platforms like Insydz detect competitor price changes within 15–60 minutes and send a WhatsApp alert within the same window. Manual Excel tracking has an average detection delay of 24–48 hours. That gap between 1 hour and 48 hours is the revenue window during which a competitor holds the Buy Box and captures your organic sales.",
   },
   {
     q: "Will automating price tracking lead to price wars with competitors?",
-    a: "This is a common concern — and it's backwards. Manual tracking actually causes more destructive price wars because sellers, when they finally discover a competitor's price drop after 24 hours, tend to panic and over-cut. AI-powered automation recommends the minimum adjustment needed to recover the Buy Box — usually a ₹10–50 reduction, not a 15% slash. Precision pricing prevents price wars. Reactive panic pricing causes them.",
+    a: "This is a common concern and it's backwards. Manual tracking actually causes more destructive price wars because sellers, when they finally discover a competitor's price drop after 24 hours, tend to panic and over-cut. AI-powered automation recommends the minimum adjustment needed to recover the Buy Box usually a ₹10–50 reduction, not a 15% slash. Precision pricing prevents price wars. Reactive panic pricing causes them.",
   },
   {
     q: "How much do automated competitor tracking tools cost for Indian sellers?",
-    a: "Pricing ranges from free (basic tools with Amazon-only, email-only alerts) to ₹1,999–2,999/month for full India-market AI platforms (Insydz), to ₹4,000–8,000/month for global tools that don't even cover Flipkart. For Indian sellers, India-first platforms offer the best price-to-capability ratio by a significant margin — and Insydz's free plan covers basic automated monitoring with WhatsApp alerts at no cost.",
+    a: "Pricing ranges from free (basic tools with Amazon-only, email-only alerts) to ₹1,999–2,999/month for full India-market AI platforms (Insydz), to ₹4,000–8,000/month for global tools that don't even cover Flipkart. For Indian sellers, India-first platforms offer the best price-to-capability ratio by a significant margin and Insydz's free plan covers basic automated monitoring with WhatsApp alerts at no cost.",
   },
 ];
 
@@ -212,11 +212,11 @@ const toolRows = [
 ];
 
 const signs = [
-  { t:"You're Discovering Price Changes Through Customer Complaints",      d:"If buyers are telling you 'I bought from Competitor X because they were cheaper' — the competitor changed their price days ago. By the time a customer tells you, you've already lost dozens of sales to that price gap. This is the most expensive early warning sign." },
-  { t:"Your Buy Box Win Rate Has Dropped Without an Obvious Reason",       d:"If your Buy Box percentage has fallen 10–20 points but your listing quality hasn't changed, a competitor almost certainly made a price move you didn't catch in time. Manual Excel monitoring doesn't track Buy Box win rate — it only captures the price you remembered to check that morning." },
-  { t:"You're Reactively Slashing Prices Instead of Precisely Adjusting", d:"Without real-time data and AI intelligence, most Indian sellers respond to perceived competitive pressure by cutting prices aggressively — destroying margins unnecessarily. AI price tracking tools calculate the minimum adjustment needed to stay competitive, which is almost always less than the instinctive panic cut." },
-  { t:"You Can't Scale Past 20 SKUs Without Hiring Someone for Price Tracking", d:"Manual tracking scales linearly with SKU count. At 20 SKUs, the daily price check becomes a 3–4 hour job. At 50 SKUs, it's a full-time role. Ecommerce automation in India means your price intelligence capacity should grow with your catalogue — not require headcount." },
-  { t:"You're Missing Overnight Price Changes Despite Daily Manual Checks",  d:"Most price wars happen at 10 PM. Competitors make moves knowing you won't notice until 9 AM — giving them a 10-hour window to capture your Buy Box while you sleep. Automated real-time alerts have no business hours." },
+  { t:"You're Discovering Price Changes Through Customer Complaints",      d:"If buyers are telling you 'I bought from Competitor X because they were cheaper' the competitor changed their price days ago. By the time a customer tells you, you've already lost dozens of sales to that price gap. This is the most expensive early warning sign." },
+  { t:"Your Buy Box Win Rate Has Dropped Without an Obvious Reason",       d:"If your Buy Box percentage has fallen 10–20 points but your listing quality hasn't changed, a competitor almost certainly made a price move you didn't catch in time. Manual Excel monitoring doesn't track Buy Box win rate it only captures the price you remembered to check that morning." },
+  { t:"You're Reactively Slashing Prices Instead of Precisely Adjusting", d:"Without real-time data and AI intelligence, most Indian sellers respond to perceived competitive pressure by cutting prices aggressively destroying margins unnecessarily. AI price tracking tools calculate the minimum adjustment needed to stay competitive, which is almost always less than the instinctive panic cut." },
+  { t:"You Can't Scale Past 20 SKUs Without Hiring Someone for Price Tracking", d:"Manual tracking scales linearly with SKU count. At 20 SKUs, the daily price check becomes a 3–4 hour job. At 50 SKUs, it's a full-time role. Ecommerce automation in India means your price intelligence capacity should grow with your catalogue not require headcount." },
+  { t:"You're Missing Overnight Price Changes Despite Daily Manual Checks",  d:"Most price wars happen at 10 PM. Competitors make moves knowing you won't notice until 9 AM giving them a 10-hour window to capture your Buy Box while you sleep. Automated real-time alerts have no business hours." },
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -750,7 +750,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
           <span style={{ color:"#0ABFA4" }}>What Works in 2026?</span>
         </h1>
         <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2vw,16px)", color:"#4B5568", lineHeight:1.75, maxWidth:620, marginBottom:18 }}>
-          Indian ecommerce sellers spend 3–5 hours daily tracking competitor prices in Excel — and still react 24 hours too late. Here's an honest, data-backed comparison of manual price tracking versus AI-powered automated competitor tracking, and exactly which approach works for Indian sellers at every growth stage.
+          Indian ecommerce sellers spend 3–5 hours daily tracking competitor prices in Excel and still react 24 hours too late. Here's an honest, data-backed comparison of manual price tracking versus AI-powered automated competitor tracking, and exactly which approach works for Indian sellers at every growth stage.
         </p>
         <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong style={{ color:"#0A0F1A" }}>INSYDZ Research Team</strong></div>
@@ -957,7 +957,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
 
             <h3>Data Accuracy: The Problem Nobody Talks About</h3>
             <p>
-              Manual data entry into Excel introduces errors at an average rate of 12–18% — meaning roughly 1 in 6 price entries in your spreadsheet is wrong. You're making pricing decisions based on a data set that is both <strong>24 hours stale AND 15% inaccurate.</strong> The combination of delay and inaccuracy is far more damaging to your competitive positioning than either problem alone.
+              Manual data entry into Excel introduces errors at an average rate of 12–18% meaning roughly 1 in 6 price entries in your spreadsheet is wrong. You're making pricing decisions based on a data set that is both <strong>24 hours stale AND 15% inaccurate.</strong> The combination of delay and inaccuracy is far more damaging to your competitive positioning than either problem alone.
             </p>
 
             <div className="box box-purple">
@@ -1050,13 +1050,12 @@ export default function ManualVsAutomatedCompetitorTracking() {
 
             <div className="when-grid">
               {[
-                { icon:"🛍️", t:"Very Early Stage (1–5 SKUs)",    d:"If you're testing your first products, a daily manual check takes 20–30 minutes and is a reasonable starting point before committing to tools." },
-                { icon:"💰", t:"Low-Competition Niche",            d:"If your category has 2–3 competitors who rarely change pricing, automation ROI is lower. Quarterly manual checks may suffice." },
-                { icon:"📦", t:"Pre-Revenue Validation",           d:"Use manual tracking for 30–60 days to understand your competitive landscape before investing in tools." },
-                { icon:"🧪", t:"Tool Evaluation Period",           d:"Before committing to any paid tool, run a 2-week parallel test: manual tracking alongside a free trial to verify the tool's value." },
+                { t:"Very Early Stage (1–5 SKUs)",    d:"If you're testing your first products, a daily manual check takes 20–30 minutes and is a reasonable starting point before committing to tools." },
+                { t:"Low-Competition Niche",            d:"If your category has 2–3 competitors who rarely change pricing, automation ROI is lower. Quarterly manual checks may suffice." },
+                { t:"Pre-Revenue Validation",           d:"Use manual tracking for 30–60 days to understand your competitive landscape before investing in tools." },
+                { t:"Tool Evaluation Period",           d:"Before committing to any paid tool, run a 2-week parallel test: manual tracking alongside a free trial to verify the tool's value." },
               ].map(w => (
                 <div className="when-card" key={w.t}>
-                  <div className="when-card-title">{w.icon} {w.t}</div>
                   <p>{w.d}</p>
                 </div>
               ))}
@@ -1149,10 +1148,10 @@ export default function ManualVsAutomatedCompetitorTracking() {
 
             <img
               src="/manual-vs-automated-execution-model.png"
-              alt="India-first platforms cover Amazon.in, Flipkart, and Meesho simultaneously with WhatsApp alerts — global tools cover none of these India-specific requirements"
+              alt="India-first platforms cover Amazon.in, Flipkart simultaneously with WhatsApp alerts global tools cover none of these India-specific requirements"
               style={{ width:"100%", borderRadius:12, marginBottom:8, display:"block" }}
             />
-            <p style={{ fontFamily:"'Sora',sans-serif", fontSize:12, color:"#94A3B8", fontStyle:"italic", textAlign:"center", marginBottom:24 }}>India-first platforms cover Amazon.in, Flipkart, and Meesho simultaneously with WhatsApp alerts and AI-powered buy intent data global tools cover none of these India-specific requirements.</p>
+            <p style={{ fontFamily:"'Sora',sans-serif", fontSize:12, color:"#94A3B8", fontStyle:"italic", textAlign:"center", marginBottom:24 }}>India-first platforms cover Amazon.in, Flipkart simultaneously with WhatsApp alerts and AI-powered buy intent data global tools cover none of these India-specific requirements.</p>
 
             <div className="tbl-wrap">
               <table className="dt">
@@ -1226,7 +1225,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
               Manual price tracking made sense when the only alternative was expensive US-built software that didn't understand Indian marketplaces, didn't support Flipkart, and sent alerts by email that nobody read in time. That world no longer exists.
             </p>
             <p>
-              India-first AI platforms now offer <strong>real-time alerts on WhatsApp, AI-powered margin-preserving recommendations, and full Amazon.in + Flipkart + Meesho coverage starting at ₹1,999/month or completely free.</strong> The cost of automation is now lower than the cost of one hour of manual tracking per day.
+              India-first AI platforms now offer <strong>real-time alerts on WhatsApp, AI-powered margin-preserving recommendations, and full Amazon.in + Flipkart coverage starting at ₹1,999/month or completely free.</strong> The cost of automation is now lower than the cost of one hour of manual tracking per day.
             </p>
 
             <div className="box box-orange">
@@ -1276,10 +1275,10 @@ export default function ManualVsAutomatedCompetitorTracking() {
       <div className="fc-block">
         <div className="fc-inner">
           <h2>Every Hour You Spend Manually Tracking Is an Hour a Competitor With Automation Is Winning Your Buy Box</h2>
-          <p>Insydz monitors competitor prices across Amazon.in, Flipkart, and Meesho in real time alerts you via WhatsApp within 60 minutes, and tells you exactly what price adjustment protects your margin.</p>
+          <p>Insydz monitors competitor prices across Amazon.in, Flipkart in real time alerts you via WhatsApp within 60 minutes, and tells you exactly what price adjustment protects your margin.</p>
           <img
             src="/assets/images/blog/manual-vs-automated-cta-banner.png"
-            alt="No setup required · Amazon India, Flipkart & Meesho supported · No credit card needed"
+            alt="No setup required · Amazon India, Flipkart supported · No credit card needed"
             style={{ width:"100%", maxWidth:560, margin:"0 auto 24px", borderRadius:12, display:"block" }}
           />
           <div className="fc-points">

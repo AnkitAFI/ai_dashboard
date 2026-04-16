@@ -32,7 +32,8 @@ import {
   Store,
   Zap,
   User,
-  Star
+  Star,
+  Calculator
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -75,6 +76,7 @@ const EXPLORER_SECTIONS: NavSection[] = [
     items: [
       { href: "/explorer/competitor-prices", label: "Competitor Prices", icon: Shield, badge: "NEW" },
       { href: "/explorer/review-analytics", label: "Review Analytics", icon: Users, badge: "NEW" },
+      { href: "/explorer/white-space-finder", label: "Opportunity Finder", icon: ShieldCheck, badge: "NEW" },
       { href: "/share-of-voice", label: "Market Visibility", icon: BarChart3 },
       { href: "/keyword-tracker", label: "Keyword Tracker", icon: History },
     ],
@@ -84,7 +86,7 @@ const EXPLORER_SECTIONS: NavSection[] = [
     icon: Tag,
     items: [
       { href: "/product-tracker", label: "Product Radar (AI)", icon: Target },
-      { href: "/explorer/price-optimizer", label: "Price Optimizer", icon: DollarSign, badge: "NEW" },
+      { href: "/explorer/profitability-optimizer", label: "Price Optimizer", icon: Calculator, badge: "NEW" },
       { href: "/explorer/ai-advisor", label: "AI Advisor", icon: Sparkles, badge: "AI" },
     ],
   },

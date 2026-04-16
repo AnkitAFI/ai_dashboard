@@ -53,7 +53,8 @@ import ReviewAnalysisGuideIndia from "@/pages/review-analysis-guide-india";
 import BestAmazonKeywordResearchToolIndia from "@/pages/best-amazon-keyword-research-tool-india";
 import BestFlipkartAnalyticsTool from "@/pages/best-flipkart-analytics-tool";
 import FlipkartKeywordResearchTool from "@/pages/flipkart-keyword-research-tool";
-
+import AmazonVsFlipkartIndiaSellers from "@/pages/amazon-vs-flipkart-india-seller";
+import ManualVsAutomatedCompetitorTracking from "@/pages/manual-vs-automated-competitor-tracking-tool";
 
 import Login from "@/pages/login";
 import Signup from "@/pages/signup";
@@ -78,6 +79,8 @@ import ProductTracker from "@/pages/product-tracker";
 import ProductTrackerHistory from "@/pages/ProductTrackerHistory";
 import ShareOfVoice from "@/pages/ShareOfVoice";
 import KeywordTracker from "@/pages/keyword-tracker";
+import ProfitabilityOptimizer from "@/pages/ProfitabilityOptimizer";
+import WhiteSpaceFinder from "@/pages/WhiteSpaceFinder";
 // ==================
 // Environment Config
 // ==================
@@ -345,6 +348,8 @@ function Router() {
       <Route path="/resources/expert-blog/best-amazon-keyword-research-tool-india" component={BestAmazonKeywordResearchToolIndia} />
       <Route path="/resources/expert-blog/best-flipkart-analytics-tool" component={BestFlipkartAnalyticsTool} />
       <Route path="/resources/expert-blog/flipkart-keyword-research-tool" component={FlipkartKeywordResearchTool} />
+      <Route path="/resources/expert-blog/amazon-vs-flipkart-india-seller" component={AmazonVsFlipkartIndiaSellers} />
+      <Route path="/resources/expert-blog/manual-vs-automated-competitor-tracking-tool" component={ManualVsAutomatedCompetitorTracking} />
 
       {/* Auth Pages (redirect to dashboard if already logged in) */}
       <PublicRoute path="/login" component={Login} />
@@ -382,8 +387,9 @@ function Router() {
       <ProtectedRoute path="/explorer/start-here" component={FeatureComingSoon} />
       <ProtectedRoute path="/explorer/product-research" component={FeatureComingSoon} />
       <ProtectedRoute path="/explorer/competitor-prices" component={FeatureComingSoon} />
+      <ProtectedRoute path="/explorer/white-space-finder" component={WhiteSpaceFinder} />
       <ProtectedRoute path="/explorer/review-analytics" component={FeatureComingSoon} />
-      <ProtectedRoute path="/explorer/price-optimizer" component={FeatureComingSoon} />
+      <ProtectedRoute path="/explorer/profitability-optimizer" component={ProfitabilityOptimizer} />
       <ProtectedRoute path="/explorer/ai-advisor" component={FeatureComingSoon} />
       <ProtectedRoute path="/explorer/whatsapp-alerts" component={FeatureComingSoon} />
       <ProtectedRoute path="/explorer/festive-trends" component={FeatureComingSoon} />

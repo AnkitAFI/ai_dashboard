@@ -5974,6 +5974,7 @@ def signup_user(user_data: schemas.UserCreate, response: Response, db: Session =
         
         # Send email FIRST, store OTP only if successful
         otp = generate_otp()
+        print(f"OTP for {user_data.email}: {otp}")
         email_sent = send_otp_email(user_data.email, otp)
         
         if not email_sent:
@@ -11338,6 +11339,2664 @@ def get_ai_insights(
     
 
 
+# import os
+# import json
+# import time
+# import math
+# import asyncio
+# import requests
+# import numpy as np
+# from io import BytesIO
+# from datetime import datetime, timedelta
+# from typing import List, Optional, Dict, Any
+# from pathlib import Path
+# from collections import defaultdict
+
+# from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks
+# from fastapi.responses import StreamingResponse
+# from pydantic import BaseModel
+# from sqlalchemy.orm import Session
+# from sqlalchemy import text
+# from apscheduler.schedulers.background import BackgroundScheduler
+# from apscheduler.triggers.cron import CronTrigger
+# from reportlab.lib.pagesizes import A4
+# from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+# from reportlab.lib.units import cm
+# from reportlab.lib import colors
+# from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+# from dotenv import load_dotenv
+
+# from app.models.legacy_models import TrackedProduct, KeywordRankHistory, User
+# from app.db.session import get_db, SessionLocal
+
+# # ─────────────────────────────────────────
+# # ENV + CONFIG
+# # ─────────────────────────────────────────
+# BASE_DIR = Path(__file__).resolve().parent
+# load_dotenv(dotenv_path=BASE_DIR / ".env", override=True)
+
+# RAPIDAPI_KEY  = os.environ.get("RAPIDAPI_KEY")
+# RAPIDAPI_HOST = os.environ.get("RAPIDAPI_HOST", "real-time-amazon-data.p.rapidapi.com")
+# AMAZON_API_URL         = "https://real-time-amazon-data.p.rapidapi.com/seller-products"
+# AMAZON_REVIEWS_API_URL = "https://real-time-amazon-data.p.rapidapi.com/seller-reviews"
+# AMAZON_SEARCH_API_URL  = "https://real-time-amazon-data.p.rapidapi.com/search"
+
+# HEADERS = {
+#     "X-RapidAPI-Key":  RAPIDAPI_KEY,
+#     "X-RapidAPI-Host": RAPIDAPI_HOST,
+# }
+
+# OLLAMA_BASE = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+# OLLAMA_MODEL = "llama3.2:3b"
+
+# # ─────────────────────────────────────────
+# # BREVO EMAIL CONFIG
+# # ─────────────────────────────────────────
+# BREVO_API_KEY     = os.environ.get("BREVO_API_KEY", "")
+# BREVO_SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", "noreply@insydz.com")
+# BREVO_SENDER_NAME  = os.environ.get("BREVO_SENDER_NAME", "Insydz")
+# BREVO_API_URL      = "https://api.brevo.com/v3/smtp/email"
+
+# # Marketplaces supported for cross-comparison
+# SUPPORTED_COUNTRIES = ["IN", "US", "UK", "DE", "AE"]
+
+# # Rate limit: max 4 manual rank-update calls per user per calendar day
+# RANK_UPDATE_DAILY_LIMIT = 4
+
+# # ─────────────────────────────────────────
+# # SUBSCRIPTION TIERS  (unchanged from original)
+# # ─────────────────────────────────────────
+# KEYWORD_TRACKER_LIMITS = {
+#     "free":       2,
+#     "basic":      10,
+#     "premium":    -1,
+#     "enterprise": -1,
+# }
+
+
+
+# # ─────────────────────────────────────────
+# # PYDANTIC MODELS
+# # ─────────────────────────────────────────
+
+# class ProductTrackRequest(BaseModel):
+#     seller_id: str
+#     asin: str
+#     product_title: str
+#     product_photo: str
+#     country: str = "IN"
+#     user_email: str
+
+
+# class TrackedProductResponse(BaseModel):
+#     id: int
+#     seller_id: str
+#     asin: str
+#     product_title: str
+#     product_photo: str
+#     country: str
+#     user_email: str
+#     review_comments: Optional[List[str]] = []
+#     review_ratings:  Optional[List[int]]  = []
+#     model_config = {"from_attributes": True}
+
+
+# class KeywordTrackRequest(BaseModel):
+#     tracked_product_id: int
+#     keywords: List[str]
+#     user_email: str
+
+
+# class KeywordRankResponse(BaseModel):
+#     keyword:    str
+#     rank:       Optional[int] = 0
+#     velocity:   Optional[float] = 0.0   # NEW: momentum score
+#     checked_at: datetime
+#     user_email: str
+#     model_config = {"from_attributes": True}
+
+
+# class AIAnalysisResponse(BaseModel):
+#     product_title:  str
+#     asin:           str
+#     total_keywords: int
+#     analysis:       dict
+
+
+# class UpdateRanksRequest(BaseModel):
+#     user_email: str
+
+
+# class UsageLimitsResponse(BaseModel):
+#     count:             int
+#     limit:             int
+#     remaining:         int
+#     subscription_tier: str
+
+
+# class CompetitorProduct(BaseModel):
+#     id:                           int
+#     asin:                         str
+#     category_id:                  Optional[int]
+#     category_name:                Optional[str]
+#     product_title:                str
+#     product_url:                  Optional[str]
+#     product_photo:                Optional[str]
+#     product_price:                Optional[str]
+#     product_price_numeric:        Optional[float]
+#     product_original_price:       Optional[str]
+#     product_original_price_numeric: Optional[float]
+#     product_star_rating:          Optional[str]
+#     product_star_rating_numeric:  Optional[float]
+#     product_num_ratings:          Optional[int]
+#     is_best_seller:               Optional[bool]
+#     is_amazon_choice:             Optional[bool]
+#     is_prime:                     Optional[bool]
+#     sales_volume:                 Optional[str]
+#     country:                      Optional[str]
+#     avg_price:                    Optional[float]
+#     min_price:                    Optional[float]
+#     max_price:                    Optional[float]
+#     avg_sales_volume:             Optional[float]
+#     min_sales_volume:             Optional[float]
+#     max_sales_volume:             Optional[float]
+
+
+# class ProductComparison(BaseModel):
+#     seller_product:     dict
+#     competitor_product: CompetitorProduct
+#     comparison_metrics: dict
+
+
+# class ComparisonResponse(BaseModel):
+#     seller_id:             str
+#     total_seller_products: int
+#     total_comparisons:     int
+#     comparisons:           List[ProductComparison]
+
+
+# class PriceAlertRequest(BaseModel):
+#     tracked_product_id: int
+#     user_email:         str
+#     threshold_percent:  float    # trigger when competitor is X% cheaper
+#     delivery_email:     str      # email to send the alert to
+
+
+# class CompetitorSnapshotDiff(BaseModel):
+#     asin:          str
+#     product_title: str
+#     changes:       List[dict]        # list of {field, old_value, new_value}
+#     detected_at:   datetime
+
+
+# # ─────────────────────────────────────────
+# # HELPERS — reviews, parsing
+# # ─────────────────────────────────────────
+
+# def parse_review_comments(comments_json: str) -> List[str]:
+#     if not comments_json:
+#         return []
+#     try:
+#         return json.loads(comments_json)
+#     except Exception:
+#         return []
+
+
+# def parse_review_ratings(ratings_json: str) -> List[int]:
+#     if not ratings_json:
+#         return []
+#     try:
+#         return json.loads(ratings_json)
+#     except Exception:
+#         return []
+
+
+# def fetch_seller_reviews(seller_id: str, country: str) -> tuple:
+#     try:
+#         resp = requests.get(
+#             AMAZON_REVIEWS_API_URL,
+#             headers=HEADERS,
+#             params={"seller_id": seller_id, "country": country, "page": 1},
+#             timeout=20,
+#         )
+#         resp.raise_for_status()
+#         data = resp.json()
+#         if data.get("status") != "OK":
+#             return [], []
+#         reviews = data.get("data", {}).get("seller_reviews", [])
+#         comments = [r.get("review_comment", "") for r in reviews]
+#         ratings  = [r.get("review_star_rating", 0) for r in reviews]
+#         return comments, ratings
+#     except Exception as e:
+#         print(f"[reviews] error: {e}")
+#         return [], []
+
+
+# # ─────────────────────────────────────────
+# # HELPERS — subscription limit (race-safe)
+# # ─────────────────────────────────────────
+
+# def check_keyword_tracker_limit(user_id: int, db: Session) -> dict:
+#     """
+#     Returns current usage. Does NOT increment — call increment_keyword_usage separately.
+#     Resets counter at month boundary.
+#     """
+#     row = db.execute(
+#         text("SELECT subscription_tier, COALESCE(keyword_tracker_used,0), keyword_tracker_month FROM users WHERE id=:uid"),
+#         {"uid": user_id},
+#     ).fetchone()
+#     if not row:
+#         raise HTTPException(status_code=404, detail="User not found")
+
+#     tier, used, tracked_month = row[0] or "free", row[1], row[2]
+#     current_month = datetime.utcnow().strftime("%Y-%m")
+
+#     if tracked_month != current_month:
+#         db.execute(
+#             text("UPDATE users SET keyword_tracker_used=0, keyword_tracker_month=:m WHERE id=:uid"),
+#             {"m": current_month, "uid": user_id},
+#         )
+#         db.commit()
+#         used = 0
+
+#     limit     = KEYWORD_TRACKER_LIMITS.get(tier.lower(), KEYWORD_TRACKER_LIMITS["free"])
+#     remaining = (limit - used) if limit != -1 else -1
+#     return {"count": used, "limit": limit, "remaining": remaining, "subscription_tier": tier}
+
+
+# def atomic_increment_usage(user_id: int, increment: int, db: Session) -> bool:
+#     """
+#     Atomically increments usage only if under the limit.
+#     Returns True if increment succeeded, False if limit would be exceeded.
+#     Uses SELECT FOR UPDATE to prevent race conditions.
+#     """
+#     row = db.execute(
+#         text("SELECT subscription_tier, COALESCE(keyword_tracker_used,0), keyword_tracker_month FROM users WHERE id=:uid FOR UPDATE"),
+#         {"uid": user_id},
+#     ).fetchone()
+#     if not row:
+#         return False
+
+#     tier, used, tracked_month = row[0] or "free", row[1], row[2]
+#     current_month = datetime.utcnow().strftime("%Y-%m")
+#     if tracked_month != current_month:
+#         used = 0
+
+#     limit = KEYWORD_TRACKER_LIMITS.get(tier.lower(), KEYWORD_TRACKER_LIMITS["free"])
+#     if limit != -1 and (used + increment) > limit:
+#         db.rollback()
+#         return False
+
+#     db.execute(
+#         text("UPDATE users SET keyword_tracker_used=COALESCE(keyword_tracker_used,0)+:inc, keyword_tracker_month=:m WHERE id=:uid"),
+#         {"inc": increment, "m": current_month, "uid": user_id},
+#     )
+#     db.commit()
+#     return True
+
+
+# # ─────────────────────────────────────────
+# # HELPERS — rank update rate limiting (4/day)
+# # ─────────────────────────────────────────
+
+# def check_rank_update_ratelimit(user_email: str, db: Session) -> dict:
+#     """
+#     Returns {allowed: bool, used: int, limit: int, resets_at: str}
+#     Requires rank_update_ratelimit table — run migrations.sql first.
+#     """
+#     today = datetime.utcnow().strftime("%Y-%m-%d")
+#     row = db.execute(
+#         text("SELECT call_count FROM rank_update_ratelimit WHERE user_email=:email AND update_date=:today"),
+#         {"email": user_email, "today": today},
+#     ).fetchone()
+#     used = row[0] if row else 0
+
+#     resets_at = (datetime.utcnow().replace(hour=0, minute=0, second=0) + timedelta(days=1)).isoformat() + "Z"
+#     return {
+#         "allowed":   used < RANK_UPDATE_DAILY_LIMIT,
+#         "used":      used,
+#         "limit":     RANK_UPDATE_DAILY_LIMIT,
+#         "resets_at": resets_at,
+#     }
+
+
+# def increment_rank_update_count(user_email: str, db: Session):
+#     today = datetime.utcnow().strftime("%Y-%m-%d")
+#     db.execute(
+#         text("""
+#             INSERT INTO rank_update_ratelimit (user_email, update_date, call_count)
+#             VALUES (:email, :today, 1)
+#             ON CONFLICT (user_email, update_date)
+#             DO UPDATE SET call_count = rank_update_ratelimit.call_count + 1
+#         """),
+#         {"email": user_email, "today": today},
+#     )
+#     db.commit()
+
+
+# # ─────────────────────────────────────────
+# # HELPERS — similarity + competitor matching
+# # ─────────────────────────────────────────
+
+# def calculate_similarity_score(title_a: str, title_b: str) -> float:
+#     words_a = set(title_a.lower().split())
+#     words_b = set(title_b.lower().split())
+#     if not words_a or not words_b:
+#         return 0.0
+#     return len(words_a & words_b) / len(words_a | words_b)
+
+
+# def find_competitor_matches(seller_product: dict, db: Session, country: str = "IN",
+#                              similarity_threshold: float = 0.3, max_matches: int = 5) -> List[CompetitorProduct]:
+#     seller_title = seller_product.get("product_title", "")
+#     search_terms = [w for w in seller_title.lower().split() if len(w) > 3][:4]
+#     if not search_terms:
+#         return []
+
+#     search_pattern = "%".join(search_terms)
+#     rows = db.execute(text("""
+#         SELECT id,asin,category_id,category_name,product_title,product_url,
+#                product_photo,product_price,product_price_numeric,product_original_price,
+#                product_original_price_numeric,product_star_rating,product_star_rating_numeric,
+#                product_num_ratings,is_best_seller,is_amazon_choice,is_prime,
+#                sales_volume,country,avg_price,min_price,max_price,
+#                avg_sales_volume,min_sales_volume,max_sales_volume
+#         FROM rapidapi_amazon_products
+#         WHERE country=:country
+#           AND LOWER(product_title) LIKE :pat
+#           AND asin != :seller_asin
+#         ORDER BY
+#             CASE WHEN is_best_seller THEN 1 WHEN is_amazon_choice THEN 2 ELSE 3 END,
+#             product_num_ratings DESC,
+#             product_star_rating_numeric DESC
+#         LIMIT :lim
+#     """), {"country": country, "pat": f"%{search_pattern}%",
+#            "seller_asin": seller_product.get("asin"), "lim": max_matches * 2}).fetchall()
+
+#     competitors = []
+#     for r in rows:
+#         if calculate_similarity_score(seller_title, r[4]) >= similarity_threshold:
+#             competitors.append(CompetitorProduct(
+#                 id=r[0], asin=r[1], category_id=r[2], category_name=r[3], product_title=r[4],
+#                 product_url=r[5], product_photo=r[6], product_price=r[7], product_price_numeric=r[8],
+#                 product_original_price=r[9], product_original_price_numeric=r[10],
+#                 product_star_rating=r[11], product_star_rating_numeric=r[12],
+#                 product_num_ratings=r[13], is_best_seller=r[14], is_amazon_choice=r[15],
+#                 is_prime=r[16], sales_volume=r[17], country=r[18],
+#                 avg_price=r[19], min_price=r[20], max_price=r[21],
+#                 avg_sales_volume=r[22], min_sales_volume=r[23], max_sales_volume=r[24],
+#             ))
+#     return competitors[:max_matches]
+
+
+# def generate_comparison_metrics(seller_product: dict, competitor: CompetitorProduct) -> dict:
+#     sp = seller_product.get("product_price_numeric", 0) or 0
+#     cp = competitor.product_price_numeric or 0
+#     sr = seller_product.get("product_star_rating_numeric", 0) or 0
+#     cr = competitor.product_star_rating_numeric or 0
+#     sn = seller_product.get("product_num_ratings", 0) or 0
+#     cn = competitor.product_num_ratings or 0
+
+#     price_diff = (sp - cp) if sp and cp else None
+#     price_pct  = ((sp - cp) / cp * 100) if sp and cp and cp > 0 else None
+#     rating_diff = (sr - cr) if sr and cr else None
+#     review_diff = (sn - cn) if sn and cn else None
+
+#     advantages, disadvantages = [], []
+#     if price_diff and price_diff < 0:
+#         advantages.append(f"Lower price by ₹{abs(price_diff):.2f} ({abs(price_pct):.1f}%)")
+#     elif price_diff and price_diff > 0:
+#         disadvantages.append(f"Higher price by ₹{price_diff:.2f} ({price_pct:.1f}%)")
+#     if rating_diff and rating_diff > 0:
+#         advantages.append(f"Better rating by {rating_diff:.1f} stars")
+#     elif rating_diff and rating_diff < 0:
+#         disadvantages.append(f"Lower rating by {abs(rating_diff):.1f} stars")
+#     if review_diff and review_diff > 0:
+#         advantages.append(f"More reviews (+{review_diff})")
+#     elif review_diff and review_diff < 0:
+#         disadvantages.append(f"Fewer reviews ({review_diff})")
+#     if competitor.is_best_seller and not seller_product.get("is_best_seller"):
+#         disadvantages.append("Competitor is Best Seller")
+#     elif seller_product.get("is_best_seller") and not competitor.is_best_seller:
+#         advantages.append("You are Best Seller")
+#     if competitor.is_amazon_choice and not seller_product.get("is_amazon_choice"):
+#         disadvantages.append("Competitor is Amazon's Choice")
+#     elif seller_product.get("is_amazon_choice") and not competitor.is_amazon_choice:
+#         advantages.append("You are Amazon's Choice")
+
+#     return {
+#         "price_comparison": {
+#             "seller_price": sp, "competitor_price": cp,
+#             "difference": price_diff, "difference_percent": price_pct,
+#             "is_cheaper": price_diff < 0 if price_diff is not None else None,
+#         },
+#         "rating_comparison": {
+#             "seller_rating": sr, "competitor_rating": cr,
+#             "difference": rating_diff,
+#             "is_better": rating_diff > 0 if rating_diff is not None else None,
+#         },
+#         "review_count_comparison": {
+#             "seller_reviews": sn, "competitor_reviews": cn,
+#             "difference": review_diff,
+#             "has_more": review_diff > 0 if review_diff is not None else None,
+#         },
+#         "badges": {
+#             "seller_best_seller": seller_product.get("is_best_seller", False),
+#             "competitor_best_seller": competitor.is_best_seller or False,
+#             "seller_amazon_choice": seller_product.get("is_amazon_choice", False),
+#             "competitor_amazon_choice": competitor.is_amazon_choice or False,
+#             "seller_prime": seller_product.get("is_prime", False),
+#             "competitor_prime": competitor.is_prime or False,
+#         },
+#         "competitive_advantages":    advantages,
+#         "competitive_disadvantages": disadvantages,
+#         "similarity_score": calculate_similarity_score(
+#             seller_product.get("product_title", ""),
+#             competitor.product_title,
+#         ),
+#     }
+
+
+# # ─────────────────────────────────────────
+# # HELPERS — rank velocity
+# # ─────────────────────────────────────────
+
+# def compute_velocity(ranks: list) -> float:
+#     """
+#     Positive = improving (rank number dropping).
+#     Negative = declining.
+#     Uses a weighted average of recent changes, heavier on latest.
+#     """
+#     if len(ranks) < 2:
+#         return 0.0
+#     deltas = []
+#     weights = []
+#     for i in range(len(ranks) - 1):
+#         prev = ranks[i + 1].get("rank", 0) or 0
+#         curr = ranks[i].get("rank", 0) or 0
+#         if prev and curr:
+#             days = max((datetime.fromisoformat(ranks[i]["checked_at"]) -
+#                         datetime.fromisoformat(ranks[i + 1]["checked_at"])).days, 1)
+#             deltas.append((prev - curr) / days)
+#             weights.append(1 / (i + 1))     # more recent = higher weight
+#     if not deltas:
+#         return 0.0
+#     total_w = sum(weights)
+#     return round(sum(d * w for d, w in zip(deltas, weights)) / total_w, 3)
+
+
+# # ─────────────────────────────────────────
+# # HELPERS — rank prediction (linear regression)
+# # ─────────────────────────────────────────
+
+# def predict_rank(rank_history: list) -> dict:
+#     """
+#     Simple linear regression on up to last 30 data points.
+#     Returns predicted rank at day +7 and +30 with confidence interval.
+#     """
+#     if len(rank_history) < 3:
+#         return {"predicted_7d": None, "predicted_30d": None, "confidence": "low",
+#                 "trend": "not_enough_data"}
+
+#     points = sorted(rank_history, key=lambda x: x["checked_at"])[-30:]
+#     base_ts = datetime.fromisoformat(points[0]["checked_at"]).timestamp()
+#     X = np.array([(datetime.fromisoformat(p["checked_at"]).timestamp() - base_ts) / 86400
+#                   for p in points])
+#     Y = np.array([p["rank"] for p in points if p["rank"]])
+
+#     if len(Y) < 3:
+#         return {"predicted_7d": None, "predicted_30d": None, "confidence": "low", "trend": "sparse"}
+
+#     coeffs = np.polyfit(X, Y, 1)
+#     poly   = np.poly1d(coeffs)
+
+#     last_day = X[-1]
+#     pred_7  = max(1, round(float(poly(last_day + 7))))
+#     pred_30 = max(1, round(float(poly(last_day + 30))))
+
+#     residuals = Y - poly(X)
+#     std_err   = float(np.std(residuals))
+#     r2        = float(1 - np.var(residuals) / (np.var(Y) + 1e-9))
+
+#     confidence = "high" if r2 > 0.75 else "medium" if r2 > 0.4 else "low"
+#     trend = "improving" if coeffs[0] < -0.3 else "declining" if coeffs[0] > 0.3 else "stable"
+
+#     return {
+#         "predicted_7d":        pred_7,
+#         "predicted_30d":       pred_30,
+#         "confidence":          confidence,
+#         "trend":               trend,
+#         "r2_score":            round(r2, 3),
+#         "std_error":           round(std_err, 2),
+#         "margin_7d":           round(std_err * 1.5),
+#         "margin_30d":          round(std_err * 2.5),
+#     }
+
+
+# # ─────────────────────────────────────────
+# # HELPERS — Ollama (llama3.2:3b) — human-like NLP
+# # ─────────────────────────────────────────
+
+# def _call_ollama(prompt: str, timeout: int = 90) -> str:
+#     """
+#     Raw call to Ollama. Returns the text response or raises.
+#     """
+#     resp = requests.post(
+#         f"{OLLAMA_BASE}/api/generate",
+#         json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": False},
+#         timeout=timeout,
+#     )
+#     resp.raise_for_status()
+#     return resp.json().get("response", "").strip()
+
+
+# def _call_ollama_json(prompt: str, timeout: int = 90) -> dict:
+#     """
+#     Calls Ollama expecting JSON back. Strips markdown fences, parses safely.
+#     """
+#     resp = requests.post(
+#         f"{OLLAMA_BASE}/api/generate",
+#         json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": False, "format": "json"},
+#         timeout=timeout,
+#     )
+#     resp.raise_for_status()
+#     raw = resp.json().get("response", "{}").strip()
+#     raw = raw.removeprefix("```json").removeprefix("```").removesuffix("```").strip()
+#     try:
+#         return json.loads(raw)
+#     except json.JSONDecodeError:
+#         return {}
+
+
+# SYSTEM_PERSONA = """You are Insydz, an elite Amazon marketplace strategist with 12 years of hands-on seller experience.
+# You speak like a real expert friend — direct, warm, specific, never robotic.
+# You use conversational language, occasional em-dashes, and short punchy sentences when making a point.
+# You never say "certainly", "absolutely", "great question", or use hollow filler phrases.
+# You back every claim with the actual data you've been given.
+# When something is bad, you say so clearly. When something is good, you celebrate it.
+# Your job is to help sellers actually win on Amazon — not to sound like an AI."""
+
+
+# def ai_keyword_analysis(product_title: str, asin: str, country: str,
+#                          rank_summary: list) -> dict:
+#     """
+#     Full AI keyword analysis — dynamic, data-driven, human-like.
+#     """
+#     trend_lines = "\n".join(
+#         f"  • '{r['keyword']}': rank {r['current_rank']} "
+#         f"({'↑ improved by ' + str(r['change']) if r['change'] > 0 else '↓ dropped by ' + str(abs(r['change'])) if r['change'] < 0 else '→ stable'}, "
+#         f"velocity trend: {r.get('trend','unknown')})"
+#         for r in rank_summary
+#     )
+
+#     prompt = f"""{SYSTEM_PERSONA}
+
+# You're analyzing this Amazon product:
+#   Product: {product_title}
+#   ASIN: {asin}
+#   Marketplace: {country}
+
+# Here's the live keyword ranking data:
+# {trend_lines}
+
+# Write a sharp, specific analysis. Respond ONLY in this exact JSON structure (no markdown, no preamble):
+# {{
+#   "opening": "A 2-3 sentence honest opener that names specific keywords and calls out what's actually happening — not generic praise.",
+#   "why_changed": "Explain WHY these specific ranks changed. Reference actual keywords, not vague market forces. Be a detective.",
+#   "immediate_actions": ["3-4 specific, implementable actions the seller can do this week. No fluff like 'optimize your listing'. Name the exact keyword, exact section, exact change."],
+#   "keyword_focus": "Which 1-2 keywords are the biggest opportunity right now and exactly why — based on the data above.",
+#   "prediction": "What will likely happen in the next 30 days if they do nothing. Be honest, not scary.",
+#   "roadmap": {{
+#     "week_1_2": "Specific actions, named keywords, exact listing sections to change.",
+#     "week_3_4": "What to do after the first changes take hold — what to monitor, what to test.",
+#     "month_2_3": "The bigger play — where this product can realistically be in 60-90 days if they execute."
+#   }},
+#   "closing_thought": "One honest, direct closing sentence — like what you'd tell a friend who asked you for real advice."
+# }}"""
+
+#     result = _call_ollama_json(prompt, timeout=120)
+#     if not result:
+#         result = {
+#             "opening": f"Looking at the keyword data for '{product_title}', there are clear patterns here worth acting on.",
+#             "why_changed": "Rank fluctuations are likely tied to competitor activity and listing freshness.",
+#             "immediate_actions": ["Review your top keyword's placement in the product title.", "Add backend search terms you're missing.", "Check if any competitor changed their price recently."],
+#             "keyword_focus": "Focus on the keyword with the most recent positive momentum.",
+#             "prediction": "Without changes, rankings will likely drift further as competitors iterate faster.",
+#             "roadmap": {"week_1_2": "Audit title and bullets.", "week_3_4": "Test a revised main image.", "month_2_3": "Launch a targeted PPC campaign on your best-performing keyword."},
+#             "closing_thought": "The data's telling you something — the question is whether you'll act on it this week or next month.",
+#         }
+#     return result
+
+
+# def ai_competitor_recommendation(seller_product: dict, comparisons: list) -> dict:
+#     """
+#     Competitor-aware AI recommendation — what should the seller actually do?
+#     """
+#     comp_lines = []
+#     for c in comparisons[:5]:
+#         m = c.get("comparison_metrics", {})
+#         price_c = m.get("price_comparison", {})
+#         rating_c = m.get("rating_comparison", {})
+#         comp_lines.append(
+#             f"  Competitor '{c['competitor_product'].get('product_title','?')[:60]}': "
+#             f"price={price_c.get('competitor_price','?')}, rating={rating_c.get('competitor_rating','?')}, "
+#             f"best_seller={c['competitor_product'].get('is_best_seller',False)}, "
+#             f"amazon_choice={c['competitor_product'].get('is_amazon_choice',False)}"
+#         )
+#     comp_text = "\n".join(comp_lines) if comp_lines else "  No competitors found."
+
+#     prompt = f"""{SYSTEM_PERSONA}
+
+# Seller's product:
+#   Title: {seller_product.get('product_title','?')}
+#   ASIN: {seller_product.get('asin','?')}
+#   Price: {seller_product.get('product_price_numeric','unknown')}
+#   Rating: {seller_product.get('product_star_rating_numeric','unknown')}
+#   Reviews: {seller_product.get('product_num_ratings','unknown')}
+#   Best Seller: {seller_product.get('is_best_seller',False)}
+#   Amazon Choice: {seller_product.get('is_amazon_choice',False)}
+
+# Top competitors in the same category:
+# {comp_text}
+
+# You're sitting across the table from this seller. Give them your real take.
+# Respond ONLY in this exact JSON structure:
+# {{
+#   "headline": "One punchy sentence that captures the seller's competitive position right now.",
+#   "where_you_stand": "2-3 sentences: honest assessment of their position vs the competition. Use the actual numbers.",
+#   "biggest_threat": "Which competitor is the real threat and why — specific, not generic.",
+#   "biggest_opportunity": "The one thing the data is screaming at you that the seller should exploit right now.",
+#   "price_strategy": "Specific price advice — should they cut, hold, or go premium? Why? What number?",
+#   "listing_fixes": ["2-3 specific listing changes based on what competitors are doing better"],
+#   "win_conditions": "What would it realistically take for this seller to outperform the top competitor in 90 days?",
+#   "action_this_week": "The single most impactful thing they can do in the next 7 days. One thing only."
+# }}"""
+
+#     result = _call_ollama_json(prompt, timeout=120)
+#     if not result:
+#         result = {
+#             "headline": "Your product has potential but is being outmaneuvered on key signals.",
+#             "where_you_stand": "The competition is running tighter on price and credibility signals like reviews.",
+#             "biggest_threat": "The best-seller badge holder in your category — they have pricing and social proof locked in.",
+#             "biggest_opportunity": "Your rating, if higher, is an untapped trust signal you should be leading with.",
+#             "price_strategy": "Hold your price but build value perception through images and A+ content first.",
+#             "listing_fixes": ["Update your main image to show product in use.", "Add a comparison table in A+ content.", "Include size/quantity callouts in bullet 1."],
+#             "win_conditions": "500+ reviews, a sub-10 keyword rank on your top term, and a PPC ACoS below 25%.",
+#             "action_this_week": "Rewrite your title to front-load your top keyword — this week, not next.",
+#         }
+#     return result
+
+
+# def ai_review_sentiment(comments: List[str], product_title: str) -> dict:
+#     """
+#     NLP sentiment breakdown by topic. Dynamic per product.
+#     """
+#     if not comments:
+#         return {"error": "No reviews to analyze", "topics": {}}
+
+#     sample = comments[:30]
+#     reviews_text = "\n".join(f"  - {c}" for c in sample if c.strip())
+
+#     prompt = f"""{SYSTEM_PERSONA}
+
+# Product: {product_title}
+
+# Customer reviews (sample of {len(sample)}):
+# {reviews_text}
+
+# Read these like a real person would. What are customers actually saying?
+# Respond ONLY in this JSON structure:
+# {{
+#   "overall_mood": "One honest sentence on the vibe of these reviews.",
+#   "score": <number 1-10 representing overall sentiment>,
+#   "topics": {{
+#     "quality":   {{"sentiment": "positive|neutral|negative", "score": <1-10>, "summary": "What customers specifically say about quality"}},
+#     "packaging": {{"sentiment": "positive|neutral|negative", "score": <1-10>, "summary": "What customers say about packaging"}},
+#     "value":     {{"sentiment": "positive|neutral|negative", "score": <1-10>, "summary": "Price vs value perception"}},
+#     "shipping":  {{"sentiment": "positive|neutral|negative", "score": <1-10>, "summary": "Delivery and fulfillment feedback"}},
+#     "support":   {{"sentiment": "positive|neutral|negative", "score": <1-10>, "summary": "Customer service mentions if any"}}
+#   }},
+#   "top_complaint": "The most repeated complaint, verbatim-style",
+#   "top_praise":    "The most repeated compliment, verbatim-style",
+#   "seller_action": "One specific change the seller could make based on these reviews that would directly address the biggest complaint."
+# }}"""
+
+#     result = _call_ollama_json(prompt, timeout=90)
+#     if not result:
+#         result = {
+#             "overall_mood": "Mixed reviews with room for improvement.",
+#             "score": 6,
+#             "topics": {
+#                 "quality":   {"sentiment": "neutral", "score": 6, "summary": "Customers find quality acceptable."},
+#                 "packaging": {"sentiment": "neutral", "score": 6, "summary": "Packaging mentioned occasionally."},
+#                 "value":     {"sentiment": "neutral", "score": 6, "summary": "Price perceived as fair."},
+#                 "shipping":  {"sentiment": "neutral", "score": 6, "summary": "Delivery timing varies."},
+#                 "support":   {"sentiment": "neutral", "score": 6, "summary": "Limited support mentions."},
+#             },
+#             "top_complaint": "Product description doesn't fully match the item received.",
+#             "top_praise":    "Fast delivery and good packaging.",
+#             "seller_action": "Align your listing description more closely with the actual product.",
+#         }
+#     return result
+
+
+# def ai_keyword_suggestions(product_title: str, asin: str, country: str) -> dict:
+#     """
+#     Suggest 15-20 high-intent keywords grouped by intent type.
+#     """
+#     prompt = f"""{SYSTEM_PERSONA}
+
+# Product title: "{product_title}"
+# ASIN: {asin}
+# Marketplace: Amazon {country}
+
+# Generate 15-20 high-intent Amazon search keywords a seller should track for this product.
+# Think like a buyer — what would someone type when they're ready to buy?
+# Group them by intent. Respond ONLY in this JSON:
+# {{
+#   "branded": ["keywords that include brand or product-specific terms"],
+#   "generic": ["broad category keywords buyers use"],
+#   "long_tail": ["specific 3-5 word phrases with clear purchase intent"],
+#   "problem_solving": ["keywords buyers use when searching by the problem the product solves"],
+#   "competitor_adjacent": ["terms buyers use when comparing similar products"],
+#   "reasoning": "One sentence on your keyword strategy for this specific product."
+# }}"""
+
+#     result = _call_ollama_json(prompt, timeout=90)
+#     if not result or "generic" not in result:
+#         result = {
+#             "branded": [],
+#             "generic": [product_title.split()[0] if product_title else "product"],
+#             "long_tail": [],
+#             "problem_solving": [],
+#             "competitor_adjacent": [],
+#             "reasoning": "Keyword suggestions could not be generated — please try again.",
+#         }
+#     return result
+
+
+# # ─────────────────────────────────────────
+# # HELPERS — price alert via Brevo email
+# # ─────────────────────────────────────────
+
+# def send_brevo_email(to_email: str, subject: str, html_body: str) -> bool:
+#     """
+#     Sends a transactional email via Brevo API.
+#     Returns True on success, False on failure.
+#     """
+#     if not BREVO_API_KEY:
+#         print("[brevo] BREVO_API_KEY not set — email not sent")
+#         return False
+
+#     payload = {
+#         "sender": {
+#             "name":  BREVO_SENDER_NAME,
+#             "email": BREVO_SENDER_EMAIL,
+#         },
+#         "to": [{"email": to_email}],
+#         "subject": subject,
+#         "htmlContent": html_body,
+#     }
+
+#     try:
+#         resp = requests.post(
+#             BREVO_API_URL,
+#             headers={
+#                 "accept":       "application/json",
+#                 "content-type": "application/json",
+#                 "api-key":      BREVO_API_KEY,
+#             },
+#             json=payload,
+#             timeout=15,
+#         )
+#         resp.raise_for_status()
+#         print(f"[brevo] email sent to {to_email} — subject: {subject}")
+#         return True
+#     except Exception as e:
+#         print(f"[brevo] failed to send email to {to_email}: {e}")
+#         return False
+
+
+# def _price_alert_email_html(
+#     product_title: str,
+#     asin: str,
+#     threshold_percent: float,
+#     triggered: list,
+# ) -> str:
+#     """
+#     Builds a clean HTML email body for price alerts.
+#     """
+#     rows = ""
+#     for item in triggered:
+#         rows += f"""
+#         <tr>
+#           <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:14px;color:#1a1a1a;">
+#             {item['competitor_title'][:70]}
+#           </td>
+#           <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:14px;color:#1a1a1a;text-align:center;">
+#             {item['competitor_asin']}
+#           </td>
+#           <td style="padding:10px 12px;border-bottom:1px solid #f0f0f0;font-size:14px;font-weight:600;color:#d94f3d;text-align:center;">
+#             ₹{item['competitor_price']}
+#           </td>
+#         </tr>"""
+
+#     return f"""
+# <!DOCTYPE html>
+# <html>
+# <head><meta charset="UTF-8"></head>
+# <body style="margin:0;padding:0;background:#f6f6f6;font-family:'Helvetica Neue',Arial,sans-serif;">
+#   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f6f6f6;padding:40px 0;">
+#     <tr><td align="center">
+#       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+
+#         <!-- Header -->
+#         <tr>
+#           <td style="background:#1a1a2e;padding:28px 32px;">
+#             <p style="margin:0;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">Insydz</p>
+#             <p style="margin:4px 0 0;font-size:13px;color:#9090b0;">Competitor Price Alert</p>
+#           </td>
+#         </tr>
+
+#         <!-- Body -->
+#         <tr>
+#           <td style="padding:32px;">
+#             <p style="margin:0 0 6px;font-size:16px;font-weight:600;color:#1a1a1a;">
+#               Price alert triggered for your product
+#             </p>
+#             <p style="margin:0 0 24px;font-size:14px;color:#555;">
+#               <strong>{product_title}</strong> &nbsp;·&nbsp; ASIN: {asin}
+#             </p>
+
+#             <p style="margin:0 0 12px;font-size:14px;color:#555;">
+#               The following competitors are priced more than
+#               <strong style="color:#d94f3d;">{threshold_percent}%</strong> below your listed price:
+#             </p>
+
+#             <!-- Competitor table -->
+#             <table width="100%" cellpadding="0" cellspacing="0"
+#                    style="border:1px solid #f0f0f0;border-radius:6px;overflow:hidden;">
+#               <tr style="background:#f8f8f8;">
+#                 <th style="padding:10px 12px;font-size:12px;font-weight:600;color:#888;text-align:left;border-bottom:1px solid #f0f0f0;">
+#                   COMPETITOR
+#                 </th>
+#                 <th style="padding:10px 12px;font-size:12px;font-weight:600;color:#888;text-align:center;border-bottom:1px solid #f0f0f0;">
+#                   ASIN
+#                 </th>
+#                 <th style="padding:10px 12px;font-size:12px;font-weight:600;color:#888;text-align:center;border-bottom:1px solid #f0f0f0;">
+#                   THEIR PRICE
+#                 </th>
+#               </tr>
+#               {rows}
+#             </table>
+
+#             <p style="margin:24px 0 0;font-size:13px;color:#888;line-height:1.6;">
+#               Log in to <a href="https://insydz.com" style="color:#1a1a2e;font-weight:600;">insydz.com</a>
+#               to review your pricing strategy and take action.
+#             </p>
+#           </td>
+#         </tr>
+
+#         <!-- Footer -->
+#         <tr>
+#           <td style="padding:20px 32px;background:#f8f8f8;border-top:1px solid #f0f0f0;">
+#             <p style="margin:0;font-size:12px;color:#aaa;text-align:center;">
+#               You're receiving this because you set up a price alert on Insydz.
+#               &nbsp;·&nbsp; <a href="https://insydz.com" style="color:#aaa;">Manage alerts</a>
+#             </p>
+#           </td>
+#         </tr>
+
+#       </table>
+#     </td></tr>
+#   </table>
+# </body>
+# </html>"""
+
+
+# def fire_price_alert(
+#     product_title: str,
+#     asin: str,
+#     threshold_percent: float,
+#     triggered: list,
+#     delivery_email: str,
+# ):
+#     """
+#     Sends a price alert email via Brevo.
+#     Called when competitors are found below the seller's threshold.
+#     """
+#     if not triggered:
+#         return
+
+#     subject   = f"[Insydz] Price alert — {len(triggered)} competitor(s) underpricing you"
+#     html_body = _price_alert_email_html(product_title, asin, threshold_percent, triggered)
+#     sent      = send_brevo_email(delivery_email, subject, html_body)
+
+#     if not sent:
+#         print(f"[price alert] email delivery failed for {delivery_email} — product {asin}")
+
+
+# def fire_competitor_change_alert(
+#     seller_email: str,
+#     seller_id: str,
+#     changes: list,
+# ):
+#     """
+#     Sends a daily competitor change digest email via Brevo.
+#     Called by the background scheduler when competitor snapshots show diffs.
+#     """
+#     if not changes:
+#         return
+
+#     rows = ""
+#     for c in changes[:10]:
+#         change_lines = "".join(
+#             f"<li style='font-size:13px;color:#555;margin-bottom:4px;'>"
+#             f"<strong>{ch['field'].replace('_',' ').title()}</strong>: "
+#             f"{ch['old_value']} → <strong>{ch['new_value']}</strong></li>"
+#             for ch in c.get("changes", [])
+#         )
+#         rows += f"""
+#         <tr>
+#           <td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;vertical-align:top;">
+#             <p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#1a1a1a;">
+#               {c.get('competitor_title','Unknown')[:65]}
+#             </p>
+#             <p style="margin:0 0 6px;font-size:12px;color:#aaa;">ASIN: {c.get('competitor_asin','?')}</p>
+#             <ul style="margin:0;padding-left:16px;">{change_lines}</ul>
+#           </td>
+#         </tr>"""
+
+#     html_body = f"""
+# <!DOCTYPE html>
+# <html>
+# <head><meta charset="UTF-8"></head>
+# <body style="margin:0;padding:0;background:#f6f6f6;font-family:'Helvetica Neue',Arial,sans-serif;">
+#   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f6f6f6;padding:40px 0;">
+#     <tr><td align="center">
+#       <table width="600" cellpadding="0" cellspacing="0"
+#              style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+#         <tr>
+#           <td style="background:#1a1a2e;padding:28px 32px;">
+#             <p style="margin:0;font-size:22px;font-weight:700;color:#ffffff;">Insydz</p>
+#             <p style="margin:4px 0 0;font-size:13px;color:#9090b0;">Daily Competitor Change Report</p>
+#           </td>
+#         </tr>
+#         <tr>
+#           <td style="padding:32px;">
+#             <p style="margin:0 0 20px;font-size:15px;color:#1a1a1a;">
+#               Here's what changed with your competitors in the last 24 hours:
+#             </p>
+#             <table width="100%" cellpadding="0" cellspacing="0"
+#                    style="border:1px solid #f0f0f0;border-radius:6px;overflow:hidden;">
+#               {rows}
+#             </table>
+#             <p style="margin:24px 0 0;font-size:13px;color:#888;line-height:1.6;">
+#               Log in to <a href="https://insydz.com" style="color:#1a1a2e;font-weight:600;">insydz.com</a>
+#               to take action on these changes.
+#             </p>
+#           </td>
+#         </tr>
+#         <tr>
+#           <td style="padding:20px 32px;background:#f8f8f8;border-top:1px solid #f0f0f0;">
+#             <p style="margin:0;font-size:12px;color:#aaa;text-align:center;">
+#               Insydz daily digest &nbsp;·&nbsp;
+#               <a href="https://insydz.com" style="color:#aaa;">Manage notifications</a>
+#             </p>
+#           </td>
+#         </tr>
+#       </table>
+#     </td></tr>
+#   </table>
+# </body>
+# </html>"""
+
+#     subject = f"[Insydz] {len(changes)} competitor change(s) detected today"
+#     send_brevo_email(seller_email, subject, html_body)
+
+
+# # ─────────────────────────────────────────
+# # PDF EXPORT HELPER
+# # ─────────────────────────────────────────
+
+# def generate_pdf_report(product: TrackedProductResponse, rank_history: list,
+#                          ai_analysis: dict, prediction: dict) -> BytesIO:
+#     buf    = BytesIO()
+#     doc    = SimpleDocTemplate(buf, pagesize=A4, leftMargin=2*cm, rightMargin=2*cm,
+#                                 topMargin=2*cm, bottomMargin=2*cm)
+#     styles = getSampleStyleSheet()
+#     story  = []
+
+#     title_style = ParagraphStyle("title", parent=styles["Title"], fontSize=18, spaceAfter=12)
+#     h2_style    = ParagraphStyle("h2", parent=styles["Heading2"], fontSize=13, spaceAfter=6)
+#     body_style  = ParagraphStyle("body", parent=styles["Normal"], fontSize=10, leading=14)
+
+#     story.append(Paragraph(f"Keyword Rank Report", title_style))
+#     story.append(Paragraph(f"{product.product_title}", h2_style))
+#     story.append(Paragraph(f"ASIN: {product.asin} | Country: {product.country} | Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}", body_style))
+#     story.append(Spacer(1, 0.4*cm))
+
+#     # Rank history table
+#     story.append(Paragraph("Keyword Rank History", h2_style))
+#     table_data = [["Keyword", "Rank", "Velocity", "Last Checked"]]
+#     for entry in rank_history[:20]:
+#         table_data.append([
+#             entry.get("keyword", ""),
+#             str(entry.get("rank", "-")),
+#             str(entry.get("velocity", "0")),
+#             entry.get("checked_at", "")[:16],
+#         ])
+#     t = Table(table_data, colWidths=[6*cm, 2.5*cm, 2.5*cm, 5*cm])
+#     t.setStyle(TableStyle([
+#         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#2563EB")),
+#         ("TEXTCOLOR",  (0, 0), (-1, 0), colors.white),
+#         ("FONTSIZE",   (0, 0), (-1, -1), 9),
+#         ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#F3F4F6")]),
+#         ("GRID", (0, 0), (-1, -1), 0.3, colors.HexColor("#E5E7EB")),
+#         ("PADDING", (0, 0), (-1, -1), 4),
+#     ]))
+#     story.append(t)
+#     story.append(Spacer(1, 0.4*cm))
+
+#     # Prediction
+#     if prediction.get("predicted_7d"):
+#         story.append(Paragraph("Rank Prediction", h2_style))
+#         story.append(Paragraph(
+#             f"7-day forecast: <b>#{prediction['predicted_7d']}</b> (±{prediction.get('margin_7d',0)}) | "
+#             f"30-day forecast: <b>#{prediction['predicted_30d']}</b> (±{prediction.get('margin_30d',0)}) | "
+#             f"Confidence: {prediction.get('confidence','low')} | Trend: {prediction.get('trend','unknown')}",
+#             body_style
+#         ))
+#         story.append(Spacer(1, 0.4*cm))
+
+#     # AI Analysis
+#     if ai_analysis:
+#         story.append(Paragraph("AI Strategic Analysis", h2_style))
+#         for key, label in [
+#             ("opening", "Overview"), ("why_changed", "Why Rankings Changed"),
+#             ("keyword_focus", "Focus Keywords"), ("prediction", "30-Day Outlook"),
+#         ]:
+#             if ai_analysis.get(key):
+#                 story.append(Paragraph(f"<b>{label}:</b> {ai_analysis[key]}", body_style))
+#                 story.append(Spacer(1, 0.2*cm))
+
+#         roadmap = ai_analysis.get("roadmap", {})
+#         if roadmap:
+#             story.append(Paragraph("Roadmap", h2_style))
+#             for phase, content in roadmap.items():
+#                 story.append(Paragraph(f"<b>{phase.replace('_', ' ').title()}:</b> {content}", body_style))
+#                 story.append(Spacer(1, 0.15*cm))
+
+#     doc.build(story)
+#     buf.seek(0)
+#     return buf
+
+
+# # ─────────────────────────────────────────
+# # APSCHEDULER — background auto-rank updates
+# # ─────────────────────────────────────────
+
+# def _background_rank_update_all():
+#     """Runs daily at 6 AM UTC. Updates ranks for all active tracked products."""
+#     db = SessionLocal()
+#     try:
+#         products = db.query(TrackedProduct).all()
+#         updated = 0
+#         for product in products:
+#             kws = db.query(KeywordRankHistory).filter(
+#                 KeywordRankHistory.tracked_product_id == product.id
+#             ).all()
+#             for kw in kws:
+#                 try:
+#                     # Real keyword rank check via search API
+#                     resp = requests.get(
+#                         AMAZON_SEARCH_API_URL,
+#                         headers=HEADERS,
+#                         params={"query": kw.keyword, "country": product.country,
+#                                 "page": "1", "sort_by": "RELEVANCE"},
+#                         timeout=20,
+#                     )
+#                     resp.raise_for_status()
+#                     results = resp.json().get("data", {}).get("products", [])
+#                     rank = next((i + 1 for i, p in enumerate(results) if p.get("asin") == product.asin), 0)
+#                     kw.rank       = rank
+#                     kw.checked_at = datetime.utcnow()
+#                     updated += 1
+#                 except Exception as e:
+#                     print(f"[scheduler] rank update error for {product.asin}/{kw.keyword}: {e}")
+#         db.commit()
+#         print(f"[scheduler] auto rank update complete — {updated} keywords updated")
+#     except Exception as e:
+#         print(f"[scheduler] fatal error: {e}")
+#     finally:
+#         db.close()
+
+
+# def _background_snapshot_competitors():
+#     """
+#     Runs daily at 7 AM UTC.
+#     1. Snapshots today's competitor data for every tracked product.
+#     2. Diffs against yesterday's snapshot.
+#     3. Emails each seller a change digest via Brevo if anything changed.
+#     """
+#     db = SessionLocal()
+#     try:
+#         today     = datetime.utcnow().strftime("%Y-%m-%d")
+#         yesterday = (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%d")
+
+#         sellers = db.execute(
+#             text("SELECT DISTINCT seller_id, user_email, country FROM tracked_products")
+#         ).fetchall()
+
+#         for seller_id, user_email, country in sellers:
+#             products = db.query(TrackedProduct).filter(
+#                 TrackedProduct.seller_id == seller_id,
+#                 TrackedProduct.user_email == user_email,
+#             ).all()
+
+#             all_changes_for_seller = []
+
+#             for product in products:
+#                 seller_dict = {
+#                     "asin": product.asin, "product_title": product.product_title,
+#                     "product_price_numeric": None, "product_star_rating_numeric": None,
+#                     "product_num_ratings": None,
+#                 }
+#                 competitors = find_competitor_matches(seller_dict, db, country=country, max_matches=5)
+#                 snapshot = [c.model_dump() for c in competitors]
+
+#                 # Save today's snapshot
+#                 db.execute(text("""
+#                     INSERT INTO competitor_snapshots (seller_id, user_email, asin, snapshot_date, snapshot_data)
+#                     VALUES (:sid, :email, :asin, :date, :data)
+#                     ON CONFLICT (asin, snapshot_date, user_email) DO UPDATE SET snapshot_data=:data
+#                 """), {"sid": seller_id, "email": user_email, "asin": product.asin,
+#                        "date": today, "data": json.dumps(snapshot)})
+
+#                 # Fetch yesterday's snapshot for diff
+#                 yesterday_row = db.execute(text("""
+#                     SELECT snapshot_data FROM competitor_snapshots
+#                     WHERE asin=:asin AND user_email=:email AND snapshot_date=:yesterday
+#                 """), {"asin": product.asin, "email": user_email, "yesterday": yesterday}).fetchone()
+
+#                 if not yesterday_row:
+#                     continue
+
+#                 yesterday_data = json.loads(yesterday_row[0]) if isinstance(yesterday_row[0], str) else (yesterday_row[0] or [])
+#                 yesterday_map  = {c["asin"]: c for c in yesterday_data}
+#                 today_map      = {c["asin"]: c for c in snapshot}
+
+#                 watch_fields = [
+#                     "product_price_numeric", "product_star_rating_numeric",
+#                     "product_num_ratings", "is_best_seller", "is_amazon_choice",
+#                 ]
+
+#                 for comp_asin, today_comp in today_map.items():
+#                     yesterday_comp = yesterday_map.get(comp_asin)
+#                     if not yesterday_comp:
+#                         continue
+#                     diffs = []
+#                     for field in watch_fields:
+#                         old_val = yesterday_comp.get(field)
+#                         new_val = today_comp.get(field)
+#                         if old_val != new_val and old_val is not None and new_val is not None:
+#                             diffs.append({"field": field, "old_value": old_val, "new_value": new_val})
+#                     if diffs:
+#                         all_changes_for_seller.append({
+#                             "seller_asin":      product.asin,
+#                             "competitor_asin":  comp_asin,
+#                             "competitor_title": today_comp.get("product_title", "Unknown"),
+#                             "changes":          diffs,
+#                         })
+
+#             db.commit()
+
+#             # Email the seller a digest if anything changed
+#             if all_changes_for_seller:
+#                 fire_competitor_change_alert(
+#                     seller_email=user_email,
+#                     seller_id=seller_id,
+#                     changes=all_changes_for_seller,
+#                 )
+
+#         print(f"[scheduler] competitor snapshot complete — {today}")
+#     except Exception as e:
+#         print(f"[scheduler] snapshot error: {e}")
+#     finally:
+#         db.close()
+
+
+# scheduler = BackgroundScheduler(timezone="UTC")
+# scheduler.add_job(_background_rank_update_all,    CronTrigger(hour=6, minute=0),  id="daily_rank_update")
+# scheduler.add_job(_background_snapshot_competitors, CronTrigger(hour=7, minute=0), id="daily_snapshots")
+# scheduler.start()
+
+
+# # ═══════════════════════════════════════════════════════
+# # API ENDPOINTS
+# # ═══════════════════════════════════════════════════════
+
+
+# # ─────────────────────────────────────────
+# # EXISTING ENDPOINTS (preserved + enhanced)
+# # ─────────────────────────────────────────
+
+# @router.get("/users/{user_id}/keyword-tracker-usage", response_model=UsageLimitsResponse)
+# def get_keyword_tracker_usage(user_id: int, db: Session = Depends(get_db)):
+#     """Current keyword tracker usage and limits for a user."""
+#     return UsageLimitsResponse(**check_keyword_tracker_limit(user_id, db))
+
+
+# @router.get("/keyword_tracker/fetch_and_store_products/{seller_id}", response_model=List[TrackedProductResponse])
+# def fetch_and_store_seller_products(
+#     seller_id: str, country: str = "IN", page: int = 1,
+#     user_email: str = None, user_id: int = None,
+#     db: Session = Depends(get_db),
+# ):
+#     """
+#     Fetch products from Amazon API + reviews.
+#     Stores comments and ratings in separate columns.
+#     Checks subscription limits before allowing (race-safe).
+#     """
+#     if not user_email:
+#         raise HTTPException(status_code=400, detail="user_email is required")
+
+#     print(f"[fetch] user_id={user_id}, user_email={user_email}, seller_id={seller_id}")
+
+#     try:
+#         resp = requests.get(AMAZON_API_URL, headers=HEADERS,
+#                             params={"seller_id": seller_id, "country": country,
+#                                     "page": page, "sort_by": "RELEVANCE"}, timeout=20)
+#         resp.raise_for_status()
+#         seller_products = resp.json().get("data", {}).get("seller_products", [])
+#         if not seller_products:
+#             return []
+
+#         # Find how many are truly new (not yet in DB)
+#         new_asins = []
+#         for item in seller_products:
+#             existing = db.query(TrackedProduct).filter(
+#                 TrackedProduct.seller_id == seller_id,
+#                 TrackedProduct.asin == item["asin"],
+#                 TrackedProduct.user_email == user_email,
+#             ).first()
+#             if not existing:
+#                 new_asins.append(item["asin"])
+
+#         # Atomic limit check only for genuinely new products
+#         if user_id and new_asins:
+#             ok = atomic_increment_usage(user_id, len(new_asins), db)
+#             if not ok:
+#                 usage = check_keyword_tracker_limit(user_id, db)
+#                 raise HTTPException(
+#                     status_code=403,
+#                     detail=(f"Keyword Tracker limit reached for {usage['subscription_tier'].upper()} plan. "
+#                             f"You've used all {usage['limit']} product trackings this month. Upgrade for more!"),
+#                 )
+
+#         comments, ratings = fetch_seller_reviews(seller_id, country)
+#         comments_json = json.dumps(comments) if comments else None
+#         ratings_json  = json.dumps(ratings)  if ratings  else None
+
+#         saved_products = []
+#         for item in seller_products:
+#             existing = db.query(TrackedProduct).filter(
+#                 TrackedProduct.seller_id == seller_id,
+#                 TrackedProduct.asin == item["asin"],
+#                 TrackedProduct.user_email == user_email,
+#             ).first()
+#             if existing:
+#                 existing.review_comments = comments_json
+#                 existing.review_ratings  = ratings_json
+#                 db.commit()
+#                 db.refresh(existing)
+#                 saved_products.append(existing)
+#             else:
+#                 new_product = TrackedProduct(
+#                     seller_id=seller_id, asin=item["asin"],
+#                     product_title=item["product_title"],
+#                     product_photo=item.get("product_photo", ""),
+#                     country=country, user_email=user_email,
+#                     review_comments=comments_json, review_ratings=ratings_json,
+#                 )
+#                 db.add(new_product)
+#                 db.commit()
+#                 db.refresh(new_product)
+#                 saved_products.append(new_product)
+
+#         return [
+#             TrackedProductResponse(
+#                 id=p.id, seller_id=p.seller_id, asin=p.asin,
+#                 product_title=p.product_title, product_photo=p.product_photo,
+#                 country=p.country, user_email=p.user_email,
+#                 review_comments=parse_review_comments(p.review_comments),
+#                 review_ratings=parse_review_ratings(p.review_ratings),
+#             )
+#             for p in saved_products
+#         ]
+
+#     except HTTPException:
+#         raise
+#     except requests.exceptions.RequestException as e:
+#         raise HTTPException(status_code=500, detail=f"RapidAPI request failed: {e}")
+#     except Exception as e:
+#         import traceback; traceback.print_exc()
+#         raise HTTPException(status_code=500, detail=f"Unexpected error: {e}")
+
+
+# @router.post("/keyword_tracker/track_keywords")
+# def track_keywords(req: KeywordTrackRequest, db: Session = Depends(get_db)):
+#     if not req.user_email:
+#         raise HTTPException(status_code=400, detail="user_email is required")
+
+#     product = db.query(TrackedProduct).filter(
+#         TrackedProduct.id == req.tracked_product_id,
+#         TrackedProduct.user_email == req.user_email,
+#     ).first()
+#     if not product:
+#         raise HTTPException(status_code=404, detail="Tracked product not found or doesn't belong to this user")
+
+#     added = 0
+#     for kw in req.keywords:
+#         existing = db.query(KeywordRankHistory).filter(
+#             KeywordRankHistory.tracked_product_id == req.tracked_product_id,
+#             KeywordRankHistory.keyword == kw,
+#             KeywordRankHistory.user_email == req.user_email,
+#         ).first()
+#         if not existing:
+#             db.add(KeywordRankHistory(
+#                 tracked_product_id=req.tracked_product_id,
+#                 keyword=kw, rank=0,
+#                 checked_at=datetime.utcnow(),
+#                 user_email=req.user_email,
+#             ))
+#             added += 1
+
+#     db.commit()
+#     return {"status": "ok", "message": f"Added {added} new keywords for {req.user_email}"}
+
+
+# @router.get("/keyword_tracker/tracked_products/{seller_id}", response_model=List[TrackedProductResponse])
+# def get_tracked_products(seller_id: str, user_email: str = None, db: Session = Depends(get_db)):
+#     query = db.query(TrackedProduct).filter(TrackedProduct.seller_id == seller_id)
+#     if user_email:
+#         query = query.filter(TrackedProduct.user_email == user_email)
+#     return [
+#         TrackedProductResponse(
+#             id=p.id, seller_id=p.seller_id, asin=p.asin,
+#             product_title=p.product_title, product_photo=p.product_photo,
+#             country=p.country, user_email=p.user_email,
+#             review_comments=parse_review_comments(p.review_comments),
+#             review_ratings=parse_review_ratings(p.review_ratings),
+#         )
+#         for p in query.all()
+#     ]
+
+
+# @router.get("/keyword_tracker/rank_history/{tracked_product_id}")
+# def get_rank_history(tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)):
+#     """
+#     Rank history enriched with velocity per keyword.
+#     """
+#     query = db.query(KeywordRankHistory).filter(
+#         KeywordRankHistory.tracked_product_id == tracked_product_id
+#     )
+#     if user_email:
+#         query = query.filter(KeywordRankHistory.user_email == user_email)
+#     history = query.order_by(KeywordRankHistory.keyword, KeywordRankHistory.checked_at.desc()).all()
+
+#     # Group by keyword, compute velocity
+#     by_kw: dict = defaultdict(list)
+#     for entry in history:
+#         by_kw[entry.keyword].append({
+#             "rank": entry.rank,
+#             "checked_at": entry.checked_at.isoformat(),
+#         })
+
+#     result = []
+#     for entry in history:
+#         kw_data = by_kw[entry.keyword]
+#         # velocity only meaningful for the latest entry per keyword
+#         v = compute_velocity(kw_data) if entry == history[0] or entry.keyword != getattr(history[history.index(entry)-1] if history.index(entry) > 0 else entry, 'keyword', None) else 0.0
+#         result.append({
+#             "keyword":    entry.keyword,
+#             "rank":       entry.rank,
+#             "velocity":   v,
+#             "checked_at": entry.checked_at.isoformat(),
+#             "user_email": entry.user_email,
+#         })
+#     return result
+
+
+# @router.post("/keyword_tracker/update_daily_ranks")
+# def update_daily_ranks(req: UpdateRanksRequest, db: Session = Depends(get_db)):
+#     """
+#     Manual rank update. Limited to 4 calls per user per calendar day.
+#     Uses keyword search (not seller listing) for accurate keyword-level ranks.
+#     """
+#     if not req.user_email:
+#         raise HTTPException(status_code=400, detail="user_email is required")
+
+#     # Rate limit check
+#     rl = check_rank_update_ratelimit(req.user_email, db)
+#     if not rl["allowed"]:
+#         raise HTTPException(
+#             status_code=429,
+#             detail=(f"You've used all {RANK_UPDATE_DAILY_LIMIT} manual rank updates for today. "
+#                     f"Resets at {rl['resets_at']}. Automated daily updates still run in the background."),
+#             headers={"X-RateLimit-Limit": str(rl["limit"]),
+#                      "X-RateLimit-Used": str(rl["used"]),
+#                      "X-RateLimit-ResetAt": rl["resets_at"]},
+#         )
+
+#     increment_rank_update_count(req.user_email, db)
+
+#     products = db.query(TrackedProduct).filter(TrackedProduct.user_email == req.user_email).all()
+#     if not products:
+#         return {"status": "success", "message": "No products found.", "updated_count": 0,
+#                 "rate_limit": rl}
+
+#     updated = 0
+#     for product in products:
+#         kw_entries = db.query(KeywordRankHistory).filter(
+#             KeywordRankHistory.tracked_product_id == product.id,
+#             KeywordRankHistory.user_email == req.user_email,
+#         ).all()
+
+#         for kw in kw_entries:
+#             try:
+#                 # FIXED: search by keyword, find ASIN rank in search results
+#                 resp = requests.get(
+#                     AMAZON_SEARCH_API_URL,
+#                     headers=HEADERS,
+#                     params={"query": kw.keyword, "country": product.country,
+#                             "page": "1", "sort_by": "RELEVANCE"},
+#                     timeout=20,
+#                 )
+#                 resp.raise_for_status()
+#                 results = resp.json().get("data", {}).get("products", [])
+#                 rank = next((i + 1 for i, p in enumerate(results) if p.get("asin") == product.asin), 0)
+#                 kw.rank       = rank
+#                 kw.checked_at = datetime.utcnow()
+#                 updated += 1
+#             except Exception as e:
+#                 print(f"[rank update] {product.asin}/{kw.keyword}: {e}")
+
+#     db.commit()
+
+#     new_rl = check_rank_update_ratelimit(req.user_email, db)
+#     return {
+#         "status":        "success",
+#         "message":       f"Updated {updated} keyword ranks.",
+#         "updated_count": updated,
+#         "rate_limit": {
+#             "used":       new_rl["used"],
+#             "limit":      new_rl["limit"],
+#             "remaining":  new_rl["limit"] - new_rl["used"],
+#             "resets_at":  new_rl["resets_at"],
+#         },
+#     }
+
+
+# # ─────────────────────────────────────────
+# # PRODUCT DETAIL — click on product → full picture
+# # ─────────────────────────────────────────
+
+# @router.get("/keyword_tracker/product_detail/{tracked_product_id}")
+# def get_product_detail(
+#     tracked_product_id: int,
+#     user_email: str = None,
+#     db: Session = Depends(get_db),
+# ):
+#     """
+#     Single endpoint powering the product detail page when a seller clicks a product.
+#     Returns:
+#       - product info
+#       - competitor list with comparison table
+#       - AI competitor recommendation
+#       - rank history with velocity
+#       - rank prediction
+#       - review sentiment breakdown
+#       - keyword suggestions
+#     """
+#     query = db.query(TrackedProduct).filter(TrackedProduct.id == tracked_product_id)
+#     if user_email:
+#         query = query.filter(TrackedProduct.user_email == user_email)
+#     product = query.first()
+#     if not product:
+#         raise HTTPException(status_code=404, detail="Product not found")
+
+#     # Rank history + velocity
+#     kw_history = db.query(KeywordRankHistory).filter(
+#         KeywordRankHistory.tracked_product_id == tracked_product_id
+#     )
+#     if user_email:
+#         kw_history = kw_history.filter(KeywordRankHistory.user_email == user_email)
+#     kw_history = kw_history.order_by(KeywordRankHistory.keyword, KeywordRankHistory.checked_at.desc()).all()
+
+#     by_kw: dict = defaultdict(list)
+#     for entry in kw_history:
+#         by_kw[entry.keyword].append({"rank": entry.rank, "checked_at": entry.checked_at.isoformat()})
+
+#     keyword_data = []
+#     for kw, ranks in by_kw.items():
+#         keyword_data.append({
+#             "keyword":      kw,
+#             "current_rank": ranks[0]["rank"] if ranks else 0,
+#             "history":      ranks,
+#             "velocity":     compute_velocity(ranks),
+#             "prediction":   predict_rank(ranks),
+#         })
+
+#     # Competitors
+#     seller_dict = {
+#         "asin": product.asin, "product_title": product.product_title,
+#         "product_price_numeric": None, "product_star_rating_numeric": None,
+#         "product_num_ratings": None, "is_best_seller": False,
+#         "is_amazon_choice": False, "is_prime": False,
+#     }
+#     competitors = find_competitor_matches(seller_dict, db, country=product.country, max_matches=5)
+#     comparisons = [
+#         {
+#             "competitor_product": c.model_dump(),
+#             "comparison_metrics": generate_comparison_metrics(seller_dict, c),
+#         }
+#         for c in competitors
+#     ]
+
+#     # AI recommendation (competitor-aware)
+#     ai_rec = ai_competitor_recommendation(seller_dict, comparisons)
+
+#     # Review sentiment
+#     comments = parse_review_comments(product.review_comments)
+#     sentiment = ai_review_sentiment(comments, product.product_title) if comments else {}
+
+#     # Keyword suggestions
+#     suggestions = ai_keyword_suggestions(product.product_title, product.asin, product.country)
+
+#     # Overall rank prediction (aggregate across keywords)
+#     all_rank_points = []
+#     for kw, ranks in by_kw.items():
+#         all_rank_points.extend(ranks)
+#     overall_prediction = predict_rank(sorted(all_rank_points, key=lambda x: x["checked_at"]))
+
+#     return {
+#         "product": {
+#             "id": product.id, "seller_id": product.seller_id, "asin": product.asin,
+#             "product_title": product.product_title, "product_photo": product.product_photo,
+#             "country": product.country, "user_email": product.user_email,
+#         },
+#         "keywords":                keyword_data,
+#         "competitors":             comparisons,
+#         "ai_recommendation":       ai_rec,
+#         "review_sentiment":        sentiment,
+#         "keyword_suggestions":     suggestions,
+#         "overall_rank_prediction": overall_prediction,
+#     }
+
+
+# # ─────────────────────────────────────────
+# # AI KEYWORD ANALYSIS ENDPOINT (enhanced)
+# # ─────────────────────────────────────────
+
+# @router.get("/keyword_tracker/ai_analysis/{tracked_product_id}", response_model=AIAnalysisResponse)
+# def get_ai_keyword_analysis(
+#     tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)
+# ):
+#     query = db.query(TrackedProduct).filter(TrackedProduct.id == tracked_product_id)
+#     if user_email:
+#         query = query.filter(TrackedProduct.user_email == user_email)
+#     product = query.first()
+#     if not product:
+#         raise HTTPException(status_code=404, detail="Tracked product not found")
+
+#     rank_query = db.query(KeywordRankHistory).filter(KeywordRankHistory.tracked_product_id == tracked_product_id)
+#     if user_email:
+#         rank_query = rank_query.filter(KeywordRankHistory.user_email == user_email)
+#     rank_history = rank_query.order_by(KeywordRankHistory.keyword, KeywordRankHistory.checked_at.desc()).all()
+#     if not rank_history:
+#         raise HTTPException(status_code=404, detail="No rank history found")
+
+#     by_kw: dict = defaultdict(list)
+#     for entry in rank_history:
+#         by_kw[entry.keyword].append({"rank": entry.rank, "checked_at": entry.checked_at.isoformat()})
+
+#     rank_summary = []
+#     for kw, ranks in by_kw.items():
+#         change = (ranks[1]["rank"] - ranks[0]["rank"]) if len(ranks) >= 2 else 0
+#         rank_summary.append({
+#             "keyword":       kw,
+#             "current_rank":  ranks[0]["rank"],
+#             "previous_rank": ranks[1]["rank"] if len(ranks) >= 2 else None,
+#             "change":        change,
+#             "trend":         "improved" if change > 0 else "declined" if change < 0 else "stable",
+#             "velocity":      compute_velocity(ranks),
+#         })
+
+#     analysis = ai_keyword_analysis(product.product_title, product.asin, product.country, rank_summary)
+#     return {"product_title": product.product_title, "asin": product.asin,
+#             "total_keywords": len(rank_summary), "analysis": analysis}
+
+
+# # ─────────────────────────────────────────
+# # NEW: KEYWORD SUGGESTIONS
+# # ─────────────────────────────────────────
+
+# @router.post("/keyword_tracker/suggest_keywords/{tracked_product_id}")
+# def suggest_keywords(
+#     tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)
+# ):
+#     """AI-powered keyword suggestions grouped by search intent."""
+#     query = db.query(TrackedProduct).filter(TrackedProduct.id == tracked_product_id)
+#     if user_email:
+#         query = query.filter(TrackedProduct.user_email == user_email)
+#     product = query.first()
+#     if not product:
+#         raise HTTPException(status_code=404, detail="Product not found")
+
+#     suggestions = ai_keyword_suggestions(product.product_title, product.asin, product.country)
+#     return {
+#         "product_title": product.product_title,
+#         "asin":          product.asin,
+#         "suggestions":   suggestions,
+#     }
+
+
+# # ─────────────────────────────────────────
+# # NEW: REVIEW SENTIMENT ANALYSIS
+# # ─────────────────────────────────────────
+
+# @router.get("/keyword_tracker/review_sentiment/{tracked_product_id}")
+# def get_review_sentiment(
+#     tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)
+# ):
+#     """NLP sentiment breakdown by topic (quality, packaging, value, shipping, support)."""
+#     query = db.query(TrackedProduct).filter(TrackedProduct.id == tracked_product_id)
+#     if user_email:
+#         query = query.filter(TrackedProduct.user_email == user_email)
+#     product = query.first()
+#     if not product:
+#         raise HTTPException(status_code=404, detail="Product not found")
+
+#     comments = parse_review_comments(product.review_comments)
+#     if not comments:
+#         return {"product_title": product.product_title, "asin": product.asin,
+#                 "sentiment": {"error": "No reviews available for analysis."}}
+
+#     sentiment = ai_review_sentiment(comments, product.product_title)
+#     return {"product_title": product.product_title, "asin": product.asin, "sentiment": sentiment}
+
+
+# # ─────────────────────────────────────────
+# # NEW: RANK PREDICTION
+# # ─────────────────────────────────────────
+
+# @router.get("/keyword_tracker/rank_prediction/{tracked_product_id}")
+# def get_rank_prediction(
+#     tracked_product_id: int, keyword: str = None,
+#     user_email: str = None, db: Session = Depends(get_db)
+# ):
+#     """
+#     Linear regression rank prediction.
+#     Pass ?keyword=... for single keyword. Omit for aggregate across all keywords.
+#     """
+#     query = db.query(KeywordRankHistory).filter(KeywordRankHistory.tracked_product_id == tracked_product_id)
+#     if user_email:
+#         query = query.filter(KeywordRankHistory.user_email == user_email)
+#     if keyword:
+#         query = query.filter(KeywordRankHistory.keyword == keyword)
+#     history = query.order_by(KeywordRankHistory.checked_at.asc()).all()
+
+#     if not history:
+#         raise HTTPException(status_code=404, detail="No rank history found")
+
+#     points = [{"rank": h.rank, "checked_at": h.checked_at.isoformat()} for h in history]
+#     prediction = predict_rank(points)
+#     return {"keyword": keyword or "aggregate", "prediction": prediction, "data_points": len(points)}
+
+
+# # ─────────────────────────────────────────
+# # NEW: PRICE ALERT
+# # ─────────────────────────────────────────
+
+# @router.post("/keyword_tracker/set_price_alert")
+# def set_price_alert(req: PriceAlertRequest, db: Session = Depends(get_db)):
+#     """
+#     Set a price alert threshold. When any competitor is cheaper by
+#     req.threshold_percent%, an email is sent to req.delivery_email via Brevo.
+#     Checks immediately on creation and stores config for future background checks.
+#     """
+#     query = db.query(TrackedProduct).filter(TrackedProduct.id == req.tracked_product_id)
+#     if req.user_email:
+#         query = query.filter(TrackedProduct.user_email == req.user_email)
+#     product = query.first()
+#     if not product:
+#         raise HTTPException(status_code=404, detail="Product not found")
+
+#     db.execute(text("""
+#         INSERT INTO price_alerts (tracked_product_id, user_email, threshold_percent, delivery_email)
+#         VALUES (:pid, :email, :thresh, :demail)
+#         ON CONFLICT DO NOTHING
+#     """), {"pid": req.tracked_product_id, "email": req.user_email,
+#            "thresh": req.threshold_percent, "demail": req.delivery_email})
+#     db.commit()
+
+#     # Immediate check on alert creation
+#     seller_dict = {"asin": product.asin, "product_title": product.product_title}
+#     competitors = find_competitor_matches(seller_dict, db, country=product.country, max_matches=5)
+#     triggered = []
+#     for comp in competitors:
+#         if comp.product_price_numeric:
+#             triggered.append({
+#                 "competitor_asin":  comp.asin,
+#                 "competitor_title": comp.product_title,
+#                 "competitor_price": comp.product_price_numeric,
+#                 "alert_threshold":  req.threshold_percent,
+#             })
+
+#     if triggered:
+#         fire_price_alert(
+#             product_title=product.product_title,
+#             asin=product.asin,
+#             threshold_percent=req.threshold_percent,
+#             triggered=triggered,
+#             delivery_email=req.delivery_email,
+#         )
+
+#     return {
+#         "status":          "alert_set",
+#         "product":         product.product_title,
+#         "threshold":       f"{req.threshold_percent}%",
+#         "alert_email":     req.delivery_email,
+#         "immediate_check": triggered,
+#         "email_sent":      len(triggered) > 0,
+#     }
+
+
+# # ─────────────────────────────────────────
+# # NEW: MULTI-MARKETPLACE COMPARISON
+# # ─────────────────────────────────────────
+
+# @router.get("/keyword_tracker/cross_market_comparison/{asin}")
+# async def cross_market_comparison(
+#     asin: str,
+#     countries: str = "IN,US,UK,DE",
+#     db: Session = Depends(get_db),
+# ):
+#     """
+#     Fetch the same ASIN across multiple marketplaces in parallel.
+#     Returns price, rating, rank, and badge comparison per country.
+#     """
+#     country_list = [c.strip().upper() for c in countries.split(",") if c.strip().upper() in SUPPORTED_COUNTRIES]
+#     if not country_list:
+#         raise HTTPException(status_code=400, detail=f"No valid countries. Supported: {SUPPORTED_COUNTRIES}")
+
+#     async def fetch_country(country: str) -> dict:
+#         loop = asyncio.get_event_loop()
+#         try:
+#             resp = await loop.run_in_executor(
+#                 None,
+#                 lambda: requests.get(
+#                     AMAZON_SEARCH_API_URL,
+#                     headers=HEADERS,
+#                     params={"query": asin, "country": country, "page": "1"},
+#                     timeout=20,
+#                 ),
+#             )
+#             resp.raise_for_status()
+#             products = resp.json().get("data", {}).get("products", [])
+#             match = next((p for p in products if p.get("asin") == asin), None)
+#             if match:
+#                 return {"country": country, "found": True, "data": match, "rank_in_search": next((i+1 for i, p in enumerate(products) if p.get("asin") == asin), None)}
+#             return {"country": country, "found": False, "data": None, "rank_in_search": None}
+#         except Exception as e:
+#             return {"country": country, "found": False, "error": str(e), "data": None}
+
+#     results = await asyncio.gather(*[fetch_country(c) for c in country_list])
+
+#     found_markets = [r for r in results if r.get("found")]
+#     if not found_markets:
+#         return {"asin": asin, "markets": results, "best_market": None, "insights": "Product not found in any requested marketplace."}
+
+#     best = max(found_markets, key=lambda r: r["data"].get("product_star_rating_numeric") or 0)
+
+#     # AI cross-market insight
+#     market_summary = "\n".join(
+#         f"  {r['country']}: price={r['data'].get('product_price','?')}, rating={r['data'].get('product_star_rating','?')}, rank={r.get('rank_in_search','?')}"
+#         for r in found_markets
+#     )
+#     prompt = f"""{SYSTEM_PERSONA}
+
+# Product ASIN {asin} across marketplaces:
+# {market_summary}
+
+# In 2-3 direct sentences, tell the seller: which market is performing best and why, and one specific action they should take based on this cross-market data."""
+#     try:
+#         insight = _call_ollama(prompt, timeout=60)
+#     except Exception:
+#         insight = "Cross-market data collected. Compare pricing and ratings per country to identify expansion opportunities."
+
+#     return {"asin": asin, "markets": results, "best_market": best.get("country"), "ai_insight": insight}
+
+
+# # ─────────────────────────────────────────
+# # NEW: COMPETITOR CHANGE ALERTS (diff)
+# # ─────────────────────────────────────────
+
+# @router.get("/keyword_tracker/competitor_changes/{seller_id}")
+# def get_competitor_changes(
+#     seller_id: str, user_email: str = None, db: Session = Depends(get_db)
+# ):
+#     """
+#     Diff today's competitor snapshot vs yesterday's.
+#     Returns detected changes in price, rating, badges.
+#     """
+#     today     = datetime.utcnow().strftime("%Y-%m-%d")
+#     yesterday = (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%d")
+
+#     query_params: dict = {"sid": seller_id, "today": today, "yesterday": yesterday}
+#     email_filter = "AND user_email = :email" if user_email else ""
+#     if user_email:
+#         query_params["email"] = user_email
+
+#     rows = db.execute(text(f"""
+#         SELECT t.asin, t.snapshot_date, t.snapshot_data
+#         FROM competitor_snapshots t
+#         WHERE t.seller_id = :sid
+#           AND t.snapshot_date IN (:today, :yesterday)
+#           {email_filter}
+#         ORDER BY t.asin, t.snapshot_date DESC
+#     """), query_params).fetchall()
+
+#     by_asin: dict = defaultdict(dict)
+#     for asin, date, data in rows:
+#         by_asin[asin][str(date)] = json.loads(data) if isinstance(data, str) else data
+
+#     changes = []
+#     watch_fields = ["product_price_numeric", "product_star_rating_numeric",
+#                     "product_num_ratings", "is_best_seller", "is_amazon_choice"]
+
+#     for asin, snapshots in by_asin.items():
+#         today_data     = snapshots.get(today, [])
+#         yesterday_data = snapshots.get(yesterday, [])
+#         if not today_data or not yesterday_data:
+#             continue
+
+#         today_map     = {c["asin"]: c for c in today_data}
+#         yesterday_map = {c["asin"]: c for c in yesterday_data}
+
+#         for comp_asin, today_comp in today_map.items():
+#             yesterday_comp = yesterday_map.get(comp_asin)
+#             if not yesterday_comp:
+#                 continue
+#             diffs = []
+#             for field in watch_fields:
+#                 old_val = yesterday_comp.get(field)
+#                 new_val = today_comp.get(field)
+#                 if old_val != new_val and old_val is not None and new_val is not None:
+#                     diffs.append({"field": field, "old_value": old_val, "new_value": new_val})
+#             if diffs:
+#                 changes.append({
+#                     "seller_asin":     asin,
+#                     "competitor_asin": comp_asin,
+#                     "competitor_title": today_comp.get("product_title", ""),
+#                     "changes":         diffs,
+#                     "detected_at":     today,
+#                 })
+
+#     return {
+#         "seller_id":     seller_id,
+#         "period":        f"{yesterday} → {today}",
+#         "total_changes": len(changes),
+#         "changes":       changes,
+#     }
+
+
+# # ─────────────────────────────────────────
+# # NEW: EXPORT (CSV + PDF)
+# # ─────────────────────────────────────────
+
+# @router.get("/keyword_tracker/export/{tracked_product_id}")
+# def export_report(
+#     tracked_product_id: int,
+#     format: str = "pdf",
+#     user_email: str = None,
+#     db: Session = Depends(get_db),
+# ):
+#     """
+#     Export rank history + AI analysis as PDF or CSV.
+#     ?format=pdf  (default)
+#     ?format=csv
+#     """
+#     query = db.query(TrackedProduct).filter(TrackedProduct.id == tracked_product_id)
+#     if user_email:
+#         query = query.filter(TrackedProduct.user_email == user_email)
+#     product = query.first()
+#     if not product:
+#         raise HTTPException(status_code=404, detail="Product not found")
+
+#     kw_query = db.query(KeywordRankHistory).filter(
+#         KeywordRankHistory.tracked_product_id == tracked_product_id
+#     )
+#     if user_email:
+#         kw_query = kw_query.filter(KeywordRankHistory.user_email == user_email)
+#     history = kw_query.order_by(KeywordRankHistory.keyword, KeywordRankHistory.checked_at.desc()).all()
+
+#     rank_history_dicts = [
+#         {"keyword": h.keyword, "rank": h.rank,
+#          "velocity": 0.0, "checked_at": h.checked_at.isoformat()}
+#         for h in history
+#     ]
+
+#     if format.lower() == "csv":
+#         import csv
+#         buf = BytesIO()
+#         import io
+#         text_buf = io.StringIO()
+#         writer = csv.DictWriter(text_buf, fieldnames=["keyword", "rank", "velocity", "checked_at"])
+#         writer.writeheader()
+#         writer.writerows(rank_history_dicts)
+#         csv_bytes = text_buf.getvalue().encode("utf-8")
+#         return StreamingResponse(
+#             BytesIO(csv_bytes),
+#             media_type="text/csv",
+#             headers={"Content-Disposition": f"attachment; filename={product.asin}_ranks.csv"},
+#         )
+
+#     # PDF
+#     by_kw: dict = defaultdict(list)
+#     for h in history:
+#         by_kw[h.keyword].append({"rank": h.rank, "checked_at": h.checked_at.isoformat()})
+
+#     rank_summary = [
+#         {
+#             "keyword": kw, "current_rank": ranks[0]["rank"],
+#             "previous_rank": ranks[1]["rank"] if len(ranks) > 1 else None,
+#             "change": (ranks[1]["rank"] - ranks[0]["rank"]) if len(ranks) > 1 else 0,
+#             "trend": "stable", "velocity": compute_velocity(ranks),
+#         }
+#         for kw, ranks in by_kw.items()
+#     ]
+
+#     ai_analysis = ai_keyword_analysis(product.product_title, product.asin, product.country, rank_summary)
+#     prediction  = predict_rank([{"rank": h.rank, "checked_at": h.checked_at.isoformat()} for h in history])
+
+#     product_resp = TrackedProductResponse(
+#         id=product.id, seller_id=product.seller_id, asin=product.asin,
+#         product_title=product.product_title, product_photo=product.product_photo,
+#         country=product.country, user_email=product.user_email,
+#     )
+#     pdf_buf = generate_pdf_report(product_resp, rank_history_dicts, ai_analysis, prediction)
+
+#     return StreamingResponse(
+#         pdf_buf,
+#         media_type="application/pdf",
+#         headers={"Content-Disposition": f"attachment; filename={product.asin}_report.pdf"},
+#     )
+
+
+# # ─────────────────────────────────────────
+# # NEW: RATE LIMIT STATUS
+# # ─────────────────────────────────────────
+
+# @router.get("/keyword_tracker/rate_limit_status")
+# def get_rate_limit_status(user_email: str, db: Session = Depends(get_db)):
+#     """Check remaining manual rank update calls for today."""
+#     rl = check_rank_update_ratelimit(user_email, db)
+#     return {
+#         "user_email": user_email,
+#         "rank_updates_used":      rl["used"],
+#         "rank_updates_limit":     rl["limit"],
+#         "rank_updates_remaining": rl["limit"] - rl["used"],
+#         "resets_at":              rl["resets_at"],
+#         "auto_update_schedule":   "Daily at 06:00 UTC (always runs)",
+#     }
+
+
+# # ─────────────────────────────────────────
+# # EXISTING: competitor comparison endpoints (preserved)
+# # ─────────────────────────────────────────
+
+# @router.get("/keyword_tracker/competitor_comparison/{seller_id}", response_model=ComparisonResponse)
+# def get_competitor_comparison(
+#     seller_id: str, country: str = "IN", user_email: str = None,
+#     max_competitors_per_product: int = 3, db: Session = Depends(get_db)
+# ):
+#     if not user_email:
+#         raise HTTPException(status_code=400, detail="user_email is required")
+#     products = db.query(TrackedProduct).filter(
+#         TrackedProduct.seller_id == seller_id,
+#         TrackedProduct.user_email == user_email,
+#         TrackedProduct.country == country,
+#     ).all()
+#     if not products:
+#         raise HTTPException(status_code=404, detail=f"No tracked products found for seller {seller_id}")
+
+#     all_comparisons = []
+#     for p in products:
+#         seller_dict = {
+#             "asin": p.asin, "product_title": p.product_title, "product_photo": p.product_photo,
+#             "country": p.country, "product_price_numeric": None,
+#             "product_star_rating_numeric": None, "product_num_ratings": None,
+#             "is_best_seller": False, "is_amazon_choice": False, "is_prime": False,
+#         }
+#         for comp in find_competitor_matches(seller_dict, db, country=country, max_matches=max_competitors_per_product):
+#             all_comparisons.append(ProductComparison(
+#                 seller_product=seller_dict, competitor_product=comp,
+#                 comparison_metrics=generate_comparison_metrics(seller_dict, comp),
+#             ))
+
+#     return ComparisonResponse(
+#         seller_id=seller_id, total_seller_products=len(products),
+#         total_comparisons=len(all_comparisons), comparisons=all_comparisons,
+#     )
+
+
+# @router.get("/keyword_tracker/fetch_and_compare/{seller_id}")
+# def fetch_products_with_comparison(
+#     seller_id: str, country: str = "IN", page: int = 1,
+#     user_email: str = None, user_id: int = None, db: Session = Depends(get_db)
+# ):
+#     if not user_email:
+#         raise HTTPException(status_code=400, detail="user_email is required")
+#     try:
+#         resp = requests.get(AMAZON_API_URL, headers=HEADERS,
+#                             params={"seller_id": seller_id, "country": country,
+#                                     "page": page, "sort_by": "RELEVANCE"}, timeout=20)
+#         resp.raise_for_status()
+#         seller_products = resp.json().get("data", {}).get("seller_products", [])
+#         if not seller_products:
+#             return {"products": [], "comparisons": []}
+
+#         comments, ratings = fetch_seller_reviews(seller_id, country)
+#         comments_json = json.dumps(comments) if comments else None
+#         ratings_json  = json.dumps(ratings)  if ratings  else None
+#         saved_products = []
+
+#         for item in seller_products:
+#             existing = db.query(TrackedProduct).filter(
+#                 TrackedProduct.seller_id == seller_id, TrackedProduct.asin == item["asin"],
+#                 TrackedProduct.user_email == user_email,
+#             ).first()
+#             if existing:
+#                 existing.review_comments = comments_json
+#                 existing.review_ratings  = ratings_json
+#                 db.commit(); db.refresh(existing)
+#                 saved_products.append(existing)
+#             else:
+#                 new_p = TrackedProduct(
+#                     seller_id=seller_id, asin=item["asin"], product_title=item["product_title"],
+#                     product_photo=item.get("product_photo", ""), country=country,
+#                     user_email=user_email, review_comments=comments_json, review_ratings=ratings_json,
+#                 )
+#                 db.add(new_p); db.commit(); db.refresh(new_p)
+#                 saved_products.append(new_p)
+
+#         all_comparisons = []
+#         for sp in seller_products:
+#             for comp in find_competitor_matches(sp, db, country=country, max_matches=3):
+#                 all_comparisons.append({
+#                     "seller_product":     {"asin": sp["asin"], "title": sp["product_title"], "photo": sp.get("product_photo")},
+#                     "competitor_product": comp.model_dump(),
+#                     "comparison_metrics": generate_comparison_metrics(sp, comp),
+#                 })
+
+#         return {
+#             "products": [
+#                 {"id": p.id, "seller_id": p.seller_id, "asin": p.asin,
+#                  "product_title": p.product_title, "product_photo": p.product_photo,
+#                  "country": p.country, "user_email": p.user_email,
+#                  "review_comments": parse_review_comments(p.review_comments),
+#                  "review_ratings":  parse_review_ratings(p.review_ratings)}
+#                 for p in saved_products
+#             ],
+#             "comparisons":       all_comparisons,
+#             "total_products":    len(saved_products),
+#             "total_comparisons": len(all_comparisons),
+#         }
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
+
+
+# # ═══════════════════════════════════════════════════════════════════
+# # COMPETITOR INTELLIGENCE CHAT
+# # A conversational AI endpoint — seller asks anything about their
+# # competitors. Past, present, future. Human-like, memory-aware,
+# # data-grounded. Feels like talking to a real strategist.
+# # ═══════════════════════════════════════════════════════════════════
+
+# # ─────────────────────────────────────────
+# # CHAT PERSONA — deeper than SYSTEM_PERSONA
+# # ─────────────────────────────────────────
+
+# CHAT_PERSONA = """You are Insydz — a sharp, experienced Amazon marketplace strategist who has helped hundreds of sellers compete and win.
+
+# Your personality:
+# - You speak like a real person, not a report generator. Conversational, direct, occasionally blunt.
+# - You never hedge everything. If the data says a competitor is crushing it, you say so.
+# - You remember what was said earlier in this conversation and refer back to it naturally.
+# - You ask one follow-up question when you need more context — but only one.
+# - You use "I", "you", "we" naturally. You're having a conversation, not writing a document.
+# - Short sentences when making a point. Longer ones when explaining nuance.
+# - You never use: "Certainly!", "Absolutely!", "Great question!", "Of course!", "As an AI..."
+# - When you don't know something from the data, you say "I don't have that data right now" — not "I cannot determine..."
+# - You occasionally say things like "Honestly,", "Here's the thing —", "Look,", "Real talk —" to sound human.
+# - Numbers matter. Always reference the actual figures you've been given.
+# - You give opinions. "I think they're about to drop their price" is better than "price changes are possible".
+
+# Your knowledge scope for this conversation:
+# - Everything about the seller's tracked product (title, ASIN, country, reviews, ratings)
+# - Full competitor list with prices, ratings, review counts, badges (best seller, amazon choice, prime)
+# - Keyword rank history with velocity and trends
+# - Competitor snapshot history (changes over time)
+# - Rank prediction data (7-day and 30-day forecasts)
+
+# Time awareness:
+# - "past" questions → use snapshot history, rank history, rating/price changes over time
+# - "present" questions → use current competitor data, current ranks, current badges
+# - "future" questions → use rank prediction, velocity trends, price patterns, your strategic judgment
+# - "what should I do" → give a direct action plan based on everything above
+
+# Never make up data. If a specific number isn't in the context, say so and reason from what you do have."""
+
+
+# # ─────────────────────────────────────────
+# # PYDANTIC MODELS FOR CHAT
+# # ─────────────────────────────────────────
+
+# class ChatMessage(BaseModel):
+#     role: str       # "user" or "assistant"
+#     content: str
+
+
+# class CompetitorChatRequest(BaseModel):
+#     tracked_product_id: int
+#     user_email:         str
+#     message:            str                          # current user message
+#     history:            Optional[List[ChatMessage]] = []   # prior turns
+
+
+# class CompetitorChatResponse(BaseModel):
+#     reply:              str
+#     context_used:       dict    # what data was loaded — helpful for frontend debug/display
+#     suggested_followups: List[str]   # 3 natural next questions the seller might want to ask
+
+
+# # ─────────────────────────────────────────
+# # HELPER — build rich context snapshot
+# # ─────────────────────────────────────────
+
+# def _build_competitor_context(
+#     product: TrackedProduct,
+#     db: Session,
+#     user_email: str,
+# ) -> dict:
+#     """
+#     Assembles everything known about a product and its competitors
+#     into a structured context dict for the AI.
+#     """
+
+#     # ── Keyword rank history ──
+#     kw_rows = db.execute(text("""
+#         SELECT keyword, rank, checked_at
+#         FROM keyword_rank_history
+#         WHERE tracked_product_id = :pid AND user_email = :email
+#         ORDER BY keyword, checked_at DESC
+#     """), {"pid": product.id, "email": user_email}).fetchall()
+
+#     by_kw: dict = defaultdict(list)
+#     for kw, rank, checked_at in kw_rows:
+#         by_kw[kw].append({"rank": rank, "checked_at": checked_at.isoformat()})
+
+#     keyword_summary = []
+#     for kw, ranks in by_kw.items():
+#         velocity = compute_velocity(ranks)
+#         change   = (ranks[1]["rank"] - ranks[0]["rank"]) if len(ranks) >= 2 else 0
+#         keyword_summary.append({
+#             "keyword":        kw,
+#             "current_rank":   ranks[0]["rank"] if ranks else 0,
+#             "previous_rank":  ranks[1]["rank"] if len(ranks) >= 2 else None,
+#             "change":         change,
+#             "velocity":       velocity,
+#             "trend":          "improving" if velocity > 0.3 else "declining" if velocity < -0.3 else "stable",
+#             "history_count":  len(ranks),
+#         })
+
+#     # Overall rank prediction
+#     all_points = [{"rank": r["rank"], "checked_at": r["checked_at"]}
+#                   for ranks in by_kw.values() for r in ranks]
+#     prediction = predict_rank(sorted(all_points, key=lambda x: x["checked_at"])) if all_points else {}
+
+#     # ── Live competitors ──
+#     seller_dict = {
+#         "asin":                      product.asin,
+#         "product_title":             product.product_title,
+#         "product_price_numeric":     None,
+#         "product_star_rating_numeric": None,
+#         "product_num_ratings":       None,
+#         "is_best_seller":            False,
+#         "is_amazon_choice":          False,
+#         "is_prime":                  False,
+#     }
+#     competitors = find_competitor_matches(seller_dict, db, country=product.country, max_matches=6)
+#     competitor_details = []
+#     for c in competitors:
+#         metrics = generate_comparison_metrics(seller_dict, c)
+#         competitor_details.append({
+#             "asin":             c.asin,
+#             "title":            c.product_title,
+#             "price":            c.product_price_numeric,
+#             "rating":           c.product_star_rating_numeric,
+#             "review_count":     c.product_num_ratings,
+#             "is_best_seller":   c.is_best_seller,
+#             "is_amazon_choice": c.is_amazon_choice,
+#             "is_prime":         c.is_prime,
+#             "sales_volume":     c.sales_volume,
+#             "advantages_over_you":    metrics.get("competitive_disadvantages", []),
+#             "your_advantages_over":   metrics.get("competitive_advantages", []),
+#             "price_diff_percent":     metrics.get("price_comparison", {}).get("difference_percent"),
+#             "rating_diff":            metrics.get("rating_comparison", {}).get("difference"),
+#         })
+
+#     # ── Snapshot history (competitor changes over time) ──
+#     snapshot_rows = db.execute(text("""
+#         SELECT snapshot_date, snapshot_data
+#         FROM competitor_snapshots
+#         WHERE asin = :asin AND user_email = :email
+#         ORDER BY snapshot_date DESC
+#         LIMIT 14
+#     """), {"asin": product.asin, "email": user_email}).fetchall()
+
+#     snapshot_timeline = []
+#     for snap_date, snap_data in snapshot_rows:
+#         data = json.loads(snap_data) if isinstance(snap_data, str) else (snap_data or [])
+#         snapshot_timeline.append({
+#             "date":        str(snap_date),
+#             "competitors": [
+#                 {
+#                     "asin":             c.get("asin"),
+#                     "title":            c.get("product_title", "")[:60],
+#                     "price":            c.get("product_price_numeric"),
+#                     "rating":           c.get("product_star_rating_numeric"),
+#                     "review_count":     c.get("product_num_ratings"),
+#                     "is_best_seller":   c.get("is_best_seller"),
+#                     "is_amazon_choice": c.get("is_amazon_choice"),
+#                 }
+#                 for c in data[:5]
+#             ],
+#         })
+
+#     # ── Review sentiment (from stored comments) ──
+#     comments = parse_review_comments(product.review_comments)
+#     ratings  = parse_review_ratings(product.review_ratings)
+#     avg_rating = round(sum(ratings) / len(ratings), 2) if ratings else None
+
+#     return {
+#         "product": {
+#             "id":            product.id,
+#             "asin":          product.asin,
+#             "title":         product.product_title,
+#             "country":       product.country,
+#             "seller_id":     product.seller_id,
+#             "avg_rating":    avg_rating,
+#             "review_count":  len(ratings),
+#             "sample_reviews": comments[:10],
+#         },
+#         "keywords":           keyword_summary,
+#         "rank_prediction":    prediction,
+#         "competitors":        competitor_details,
+#         "snapshot_timeline":  snapshot_timeline,
+#         "data_freshness": {
+#             "competitors_live":    len(competitor_details) > 0,
+#             "keyword_data_points": sum(k["history_count"] for k in keyword_summary),
+#             "snapshot_days":       len(snapshot_timeline),
+#         },
+#     }
+
+
+# def _format_context_for_prompt(ctx: dict) -> str:
+#     """
+#     Converts the context dict into a dense, readable text block
+#     that the AI can reason over naturally.
+#     """
+#     lines = []
+
+#     p = ctx["product"]
+#     lines.append(f"=== SELLER'S PRODUCT ===")
+#     lines.append(f"Title: {p['title']}")
+#     lines.append(f"ASIN: {p['asin']} | Country: {p['country']}")
+#     lines.append(f"Avg rating: {p['avg_rating'] or 'unknown'} | Reviews: {p['review_count']}")
+#     if p["sample_reviews"]:
+#         lines.append(f"Sample customer feedback: {' | '.join(p['sample_reviews'][:3])}")
+
+#     lines.append(f"\n=== KEYWORD RANKINGS ===")
+#     if ctx["keywords"]:
+#         for k in ctx["keywords"]:
+#             arrow = "↑" if k["trend"] == "improving" else "↓" if k["trend"] == "declining" else "→"
+#             lines.append(
+#                 f"  '{k['keyword']}': rank #{k['current_rank']} {arrow} "
+#                 f"(velocity: {k['velocity']:+.2f}, trend: {k['trend']}, "
+#                 f"prev rank: {k['previous_rank'] or 'N/A'})"
+#             )
+#     else:
+#         lines.append("  No keyword data available yet.")
+
+#     pred = ctx["rank_prediction"]
+#     if pred.get("predicted_7d"):
+#         lines.append(
+#             f"\n=== RANK FORECAST ===\n"
+#             f"  7-day: #{pred['predicted_7d']} (±{pred.get('margin_7d', '?')}) | "
+#             f"30-day: #{pred['predicted_30d']} (±{pred.get('margin_30d', '?')}) | "
+#             f"Trend: {pred.get('trend', 'unknown')} | Confidence: {pred.get('confidence', 'low')}"
+#         )
+
+#     lines.append(f"\n=== CURRENT COMPETITORS ({len(ctx['competitors'])} found) ===")
+#     for i, c in enumerate(ctx["competitors"], 1):
+#         badges = []
+#         if c["is_best_seller"]:   badges.append("BEST SELLER")
+#         if c["is_amazon_choice"]: badges.append("AMAZON'S CHOICE")
+#         if c["is_prime"]:         badges.append("PRIME")
+#         badge_str = f" [{', '.join(badges)}]" if badges else ""
+#         lines.append(
+#             f"  {i}. {c['title'][:55]}{badge_str}\n"
+#             f"     ASIN: {c['asin']} | Price: ₹{c['price'] or '?'} | "
+#             f"Rating: {c['rating'] or '?'} | Reviews: {c['review_count'] or '?'}\n"
+#             f"     Their edge over you: {', '.join(c['advantages_over_you']) or 'none identified'}\n"
+#             f"     Your edge over them: {', '.join(c['your_advantages_over']) or 'none identified'}"
+#         )
+
+#     if ctx["snapshot_timeline"]:
+#         lines.append(f"\n=== COMPETITOR HISTORY (last {len(ctx['snapshot_timeline'])} days) ===")
+#         for snap in ctx["snapshot_timeline"][:7]:
+#             comp_summary = ", ".join(
+#                 f"{c['title'][:30]} @₹{c['price'] or '?'} ★{c['rating'] or '?'}"
+#                 for c in snap["competitors"][:3]
+#             )
+#             lines.append(f"  {snap['date']}: {comp_summary}")
+#     else:
+#         lines.append("\n=== COMPETITOR HISTORY ===\n  No historical snapshots yet (scheduler runs daily).")
+
+#     return "\n".join(lines)
+
+
+# def _format_history_for_prompt(history: List[ChatMessage]) -> str:
+#     """Formats prior conversation turns into a readable block."""
+#     if not history:
+#         return ""
+#     lines = ["\n=== CONVERSATION SO FAR ==="]
+#     for msg in history[-10:]:   # last 10 turns max — keeps prompt lean
+#         prefix = "Seller" if msg.role == "user" else "Insydz"
+#         lines.append(f"{prefix}: {msg.content}")
+#     return "\n".join(lines)
+
+
+# def _generate_followup_suggestions(message: str, ctx: dict) -> List[str]:
+#     """
+#     Returns 3 natural follow-up questions based on what was just asked
+#     and what data is available. No AI call — pure logic, fast.
+#     """
+#     msg_lower = message.lower()
+#     has_history  = len(ctx["snapshot_timeline"]) > 0
+#     has_keywords = len(ctx["keywords"]) > 0
+#     has_comps    = len(ctx["competitors"]) > 0
+#     has_pred     = bool(ctx["rank_prediction"].get("predicted_7d"))
+
+#     suggestions = []
+
+#     # Context-aware suggestion pools
+#     if any(w in msg_lower for w in ["future", "predict", "forecast", "will", "going to"]):
+#         suggestions += [
+#             "Which keyword should I push hardest in the next 30 days?",
+#             "Is my price likely to become a problem against competitors?",
+#             "What's the biggest risk to my ranking in the next month?",
+#         ]
+#     elif any(w in msg_lower for w in ["past", "history", "before", "used to", "changed"]):
+#         suggestions += [
+#             "Have any competitors gained or lost badges recently?",
+#             "Which competitor has been most consistent over time?",
+#             "How has my keyword rank trended compared to 2 weeks ago?",
+#         ]
+#     elif any(w in msg_lower for w in ["price", "pricing", "cheaper", "expensive", "cost"]):
+#         suggestions += [
+#             "Should I lower my price or compete on quality signals instead?",
+#             "Which competitor is most vulnerable to a price undercut?",
+#             "What's the sweet spot price for my category right now?",
+#         ]
+#     elif any(w in msg_lower for w in ["review", "rating", "customer", "feedback"]):
+#         suggestions += [
+#             "What are customers complaining about most with my competitors?",
+#             "How can I use their negative reviews to improve my listing?",
+#             "Which competitor has the worst review quality despite high volume?",
+#         ]
+#     elif any(w in msg_lower for w in ["keyword", "rank", "search", "seo"]):
+#         suggestions += [
+#             "Which competitor is winning on my most important keyword?",
+#             "Are there keywords I should be tracking that I'm missing?",
+#             "What does my rank velocity tell you about the next 2 weeks?",
+#         ]
+#     else:
+#         # Generic but still contextual
+#         if has_comps:
+#             suggestions.append("Who is my most dangerous competitor right now and why?")
+#         if has_pred:
+#             suggestions.append("What does my rank prediction tell you about the next month?")
+#         if has_history:
+#             suggestions.append("Has anything changed with my competitors in the past week?")
+#         if has_keywords:
+#             suggestions.append("Which of my keywords has the best momentum right now?")
+#         suggestions.append("What's the one thing I should do this week to improve my position?")
+
+#     return suggestions[:3]
+
+
+# # ─────────────────────────────────────────
+# # THE CHAT ENDPOINT
+# # ─────────────────────────────────────────
+
+# @router.post("/keyword_tracker/competitor_chat", response_model=CompetitorChatResponse)
+# def competitor_chat(req: CompetitorChatRequest, db: Session = Depends(get_db)):
+#     """
+#     Conversational competitor intelligence chat.
+
+#     Send a message + optional conversation history.
+#     Returns Insydz's reply, the context she used, and 3 suggested follow-ups.
+
+#     The AI has full access to:
+#       - Seller's product data and reviews
+#       - All competitors with prices, ratings, badges
+#       - Keyword rank history and velocity
+#       - Competitor snapshot timeline (past changes)
+#       - Rank predictions (7d + 30d)
+
+#     Frontend usage:
+#       1. First message: send message + empty history []
+#       2. Each subsequent turn: append previous {role, content} pairs to history
+#       3. Display suggested_followups as quick-reply chips
+#     """
+#     if not req.user_email:
+#         raise HTTPException(status_code=400, detail="user_email is required")
+#     if not req.message.strip():
+#         raise HTTPException(status_code=400, detail="message cannot be empty")
+
+#     # ── Load product ──
+#     product = db.query(TrackedProduct).filter(
+#         TrackedProduct.id == req.tracked_product_id,
+#         TrackedProduct.user_email == req.user_email,
+#     ).first()
+#     if not product:
+#         raise HTTPException(status_code=404, detail="Product not found or doesn't belong to this user")
+
+#     # ── Build context ──
+#     ctx            = _build_competitor_context(product, db, req.user_email)
+#     context_text   = _format_context_for_prompt(ctx)
+#     history_text   = _format_history_for_prompt(req.history)
+
+#     # ── Detect intent for prompt shaping ──
+#     msg_lower = req.message.lower()
+#     time_hint = ""
+#     if any(w in msg_lower for w in ["future", "predict", "forecast", "will", "going to", "next month", "next week"]):
+#         time_hint = "\nThe seller is asking about the FUTURE. Lean on rank predictions, velocity trends, and your strategic judgment. Be specific about timeframes."
+#     elif any(w in msg_lower for w in ["past", "history", "before", "last week", "last month", "used to", "changed", "was"]):
+#         time_hint = "\nThe seller is asking about the PAST. Use the snapshot timeline and rank history. Call out specific dates and changes."
+#     elif any(w in msg_lower for w in ["now", "current", "today", "right now", "at the moment"]):
+#         time_hint = "\nThe seller is asking about the PRESENT. Focus on current competitor data, live ranks, and active badges."
+#     elif any(w in msg_lower for w in ["should", "do", "action", "help", "advice", "recommend", "strategy"]):
+#         time_hint = "\nThe seller wants actionable advice. Give them a direct, specific answer — not a list of options. Tell them exactly what to do."
+
+#     # ── Build the full prompt ──
+#     prompt = f"""{CHAT_PERSONA}
+# {time_hint}
+
+# {context_text}
+# {history_text}
+
+# === SELLER'S QUESTION ===
+# {req.message.strip()}
+
+# === YOUR REPLY ===
+# Respond as Insydz. Be conversational, specific, and use the actual data above.
+# - Keep your reply focused — 3 to 6 sentences for simple questions, a short structured answer for complex ones.
+# - Reference actual competitor names, prices, ratings, or keyword ranks from the data above.
+# - If the data doesn't support a confident answer, say what you do know and what you'd need to be certain.
+# - End with ONE natural follow-up question if it would genuinely help the seller — but only if it makes sense. Don't force it.
+# - Do NOT use markdown headers, bullet asterisks, or numbered lists unless the question specifically calls for a structured breakdown.
+# - Write as you'd speak to someone across a table."""
+
+#     # ── Call Ollama ──
+#     try:
+#         reply = _call_ollama(prompt, timeout=120)
+#         if not reply:
+#             reply = (
+#                 "I'm having a moment — Ollama didn't return a response. "
+#                 "Try asking again in a few seconds. "
+#                 "If it keeps happening, check that the model is loaded with `ollama run llama3.2:3b`."
+#             )
+#     except requests.exceptions.ConnectionError:
+#         reply = (
+#             "Can't reach Ollama right now. Make sure it's running on "
+#             f"{OLLAMA_BASE} with `ollama serve`. "
+#             "Once it's up, your question will work fine."
+#         )
+#     except requests.exceptions.Timeout:
+#         reply = (
+#             "That one took too long — the model timed out. "
+#             "Try a slightly shorter question, or check if the server is under load."
+#         )
+#     except Exception as e:
+#         reply = f"Something went wrong on my end: {str(e)}. Try again in a moment."
+
+#     # ── Suggested follow-ups ──
+#     followups = _generate_followup_suggestions(req.message, ctx)
+
+#     return CompetitorChatResponse(
+#         reply=reply,
+#         context_used={
+#             "product_asin":          ctx["product"]["asin"],
+#             "product_title":         ctx["product"]["title"],
+#             "competitors_loaded":    len(ctx["competitors"]),
+#             "keywords_loaded":       len(ctx["keywords"]),
+#             "snapshot_days":         ctx["data_freshness"]["snapshot_days"],
+#             "keyword_data_points":   ctx["data_freshness"]["keyword_data_points"],
+#             "rank_prediction_available": bool(ctx["rank_prediction"].get("predicted_7d")),
+#         },
+#         suggested_followups=followups,
+#     )
+
+
+# # ─────────────────────────────────────────
+# # CHAT STARTER — first message suggestions
+# # when seller opens the chat for the first time
+# # ─────────────────────────────────────────
+
+# @router.get("/keyword_tracker/competitor_chat/starters/{tracked_product_id}")
+# def get_chat_starters(
+#     tracked_product_id: int,
+#     user_email: str,
+#     db: Session = Depends(get_db),
+# ):
+#     """
+#     Returns contextual opening questions for the chat UI
+#     so sellers know what they can ask Insydz about.
+#     Generated based on what data is actually available for this product.
+#     """
+#     product = db.query(TrackedProduct).filter(
+#         TrackedProduct.id == tracked_product_id,
+#         TrackedProduct.user_email == user_email,
+#     ).first()
+#     if not product:
+#         raise HTTPException(status_code=404, detail="Product not found")
+
+#     has_keywords = db.execute(text(
+#         "SELECT COUNT(*) FROM keyword_rank_history WHERE tracked_product_id=:pid AND user_email=:email"
+#     ), {"pid": tracked_product_id, "email": user_email}).scalar() > 0
+
+#     has_snapshots = db.execute(text(
+#         "SELECT COUNT(*) FROM competitor_snapshots WHERE asin=:asin AND user_email=:email"
+#     ), {"asin": product.asin, "email": user_email}).scalar() > 0
+
+#     has_reviews = bool(parse_review_comments(product.review_comments))
+
+#     starters = [
+#         {
+#             "category": "Right now",
+#             "questions": [
+#                 "Who is my biggest competitor right now and what are they doing better than me?",
+#                 "Which competitor is most likely to steal my customers this week?",
+#                 "How does my price compare to the top 3 competitors today?",
+#             ],
+#         },
+#         {
+#             "category": "Looking back",
+#             "questions": [
+#                 "Have any competitors changed their price or rating recently?"
+#                 if has_snapshots else
+#                 "What's the competitive landscape in my category?",
+#                 "Which competitor has been most consistent over time?",
+#                 "Has my ranking been improving or declining over the past few weeks?",
+#             ],
+#         },
+#         {
+#             "category": "Looking ahead",
+#             "questions": [
+#                 "Where do you think my ranking will be in 30 days?",
+#                 "Which competitor do you think is about to make a move?",
+#                 "What should I do in the next 2 weeks to stay ahead?",
+#             ],
+#         },
+#     ]
+
+#     if has_keywords:
+#         starters.append({
+#             "category": "Keywords",
+#             "questions": [
+#                 "Which of my keywords has the best momentum right now?",
+#                 "Which keyword should I focus on to climb the fastest?",
+#                 "Are any of my keywords at risk of dropping out of the top 20?",
+#             ],
+#         })
+
+#     if has_reviews:
+#         starters.append({
+#             "category": "Reviews & sentiment",
+#             "questions": [
+#                 "What are customers saying about my competitors that I can learn from?",
+#                 "Which competitor has the worst review quality despite high volume?",
+#                 "How can I use competitor review weaknesses in my own listing?",
+#             ],
+#         })
+
+#     return {
+#         "product_title": product.product_title,
+#         "asin":          product.asin,
+#         "starters":      starters,
+#         "intro": (
+#             f"Hey — I'm Insydz. I've pulled up everything on your competitors "
+#             f"for '{product.product_title}'. "
+#             f"Ask me anything — past, present, or where things are headed. "
+#             f"What do you want to know?"
+#         ),
+#     }
+
 import os
 import json
 import time
@@ -11376,22 +14035,23 @@ load_dotenv(dotenv_path=BASE_DIR / ".env", override=True)
 
 RAPIDAPI_KEY  = os.environ.get("RAPIDAPI_KEY")
 RAPIDAPI_HOST = os.environ.get("RAPIDAPI_HOST", "real-time-amazon-data.p.rapidapi.com")
-AMAZON_API_URL         = "https://real-time-amazon-data.p.rapidapi.com/seller-products"
-AMAZON_REVIEWS_API_URL = "https://real-time-amazon-data.p.rapidapi.com/seller-reviews"
-AMAZON_SEARCH_API_URL  = "https://real-time-amazon-data.p.rapidapi.com/search"
+AMAZON_API_URL            = "https://real-time-amazon-data.p.rapidapi.com/seller-products"
+AMAZON_REVIEWS_API_URL    = "https://real-time-amazon-data.p.rapidapi.com/seller-reviews"
+AMAZON_SEARCH_API_URL     = "https://real-time-amazon-data.p.rapidapi.com/search"
+AMAZON_SELLER_PROFILE_URL = "https://real-time-amazon-data.p.rapidapi.com/seller-profile"   # NEW
 
 HEADERS = {
     "X-RapidAPI-Key":  RAPIDAPI_KEY,
     "X-RapidAPI-Host": RAPIDAPI_HOST,
 }
 
-OLLAMA_BASE = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_BASE  = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
 OLLAMA_MODEL = "llama3.2:3b"
 
 # ─────────────────────────────────────────
 # BREVO EMAIL CONFIG
 # ─────────────────────────────────────────
-BREVO_API_KEY     = os.environ.get("BREVO_API_KEY", "")
+BREVO_API_KEY      = os.environ.get("BREVO_API_KEY", "")
 BREVO_SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", "noreply@insydz.com")
 BREVO_SENDER_NAME  = os.environ.get("BREVO_SENDER_NAME", "Insydz")
 BREVO_API_URL      = "https://api.brevo.com/v3/smtp/email"
@@ -11403,7 +14063,7 @@ SUPPORTED_COUNTRIES = ["IN", "US", "UK", "DE", "AE"]
 RANK_UPDATE_DAILY_LIMIT = 4
 
 # ─────────────────────────────────────────
-# SUBSCRIPTION TIERS  (unchanged from original)
+# SUBSCRIPTION TIERS
 # ─────────────────────────────────────────
 KEYWORD_TRACKER_LIMITS = {
     "free":       2,
@@ -11413,43 +14073,74 @@ KEYWORD_TRACKER_LIMITS = {
 }
 
 
-
 # ─────────────────────────────────────────
 # PYDANTIC MODELS
 # ─────────────────────────────────────────
 
 class ProductTrackRequest(BaseModel):
-    seller_id: str
-    asin: str
+    seller_id:     str
+    asin:          str
     product_title: str
     product_photo: str
-    country: str = "IN"
-    user_email: str
+    country:       str = "IN"
+    user_email:    str
 
 
 class TrackedProductResponse(BaseModel):
-    id: int
-    seller_id: str
-    asin: str
+    id:            int
+    seller_id:     str
+    asin:          str
     product_title: str
     product_photo: str
-    country: str
-    user_email: str
-    review_comments: Optional[List[str]] = []
-    review_ratings:  Optional[List[int]]  = []
+    country:       str
+    user_email:    str
+    # ── Product listing fields (NEW) ──
+    product_price:               Optional[str]   = None
+    product_original_price:      Optional[str]   = None
+    currency:                    Optional[str]   = None
+    product_star_rating:         Optional[str]   = None
+    product_star_rating_numeric: Optional[float] = None
+    product_num_ratings:         Optional[int]   = None
+    product_url:                 Optional[str]   = None
+    product_num_offers:          Optional[int]   = None
+    product_minimum_offer_price: Optional[str]   = None
+    is_best_seller:              Optional[bool]  = False
+    is_amazon_choice:            Optional[bool]  = False
+    is_prime:                    Optional[bool]  = False
+    climate_pledge_friendly:     Optional[bool]  = False
+    sales_volume:                Optional[str]   = None
+    delivery:                    Optional[str]   = None
+    has_variations:              Optional[bool]  = False
+    unit_price:                  Optional[str]   = None
+    unit_count:                  Optional[int]   = None
+    # ── Seller profile fields ──
+    seller_name:          Optional[str]   = None
+    seller_logo:          Optional[str]   = None
+    seller_link:          Optional[str]   = None
+    store_link:           Optional[str]   = None
+    seller_phone:         Optional[str]   = None
+    business_name:        Optional[str]   = None
+    business_address:     Optional[str]   = None
+    seller_rating:        Optional[float] = None
+    seller_ratings_total: Optional[int]   = None
+    # ── Review fields ──
+    review_comments:     Optional[List[str]]  = []
+    review_ratings:      Optional[List[int]]  = []
+    review_authors:      Optional[List[str]]  = []
+    review_dates:        Optional[List[str]]  = []
+    review_has_response: Optional[List[bool]] = []
     model_config = {"from_attributes": True}
-
 
 class KeywordTrackRequest(BaseModel):
     tracked_product_id: int
-    keywords: List[str]
-    user_email: str
+    keywords:           List[str]
+    user_email:         str
 
 
 class KeywordRankResponse(BaseModel):
     keyword:    str
-    rank:       Optional[int] = 0
-    velocity:   Optional[float] = 0.0   # NEW: momentum score
+    rank:       Optional[int]   = 0
+    velocity:   Optional[float] = 0.0
     checked_at: datetime
     user_email: str
     model_config = {"from_attributes": True}
@@ -11474,31 +14165,31 @@ class UsageLimitsResponse(BaseModel):
 
 
 class CompetitorProduct(BaseModel):
-    id:                           int
-    asin:                         str
-    category_id:                  Optional[int]
-    category_name:                Optional[str]
-    product_title:                str
-    product_url:                  Optional[str]
-    product_photo:                Optional[str]
-    product_price:                Optional[str]
-    product_price_numeric:        Optional[float]
-    product_original_price:       Optional[str]
+    id:                             int
+    asin:                           str
+    category_id:                    Optional[int]
+    category_name:                  Optional[str]
+    product_title:                  str
+    product_url:                    Optional[str]
+    product_photo:                  Optional[str]
+    product_price:                  Optional[str]
+    product_price_numeric:          Optional[float]
+    product_original_price:         Optional[str]
     product_original_price_numeric: Optional[float]
-    product_star_rating:          Optional[str]
-    product_star_rating_numeric:  Optional[float]
-    product_num_ratings:          Optional[int]
-    is_best_seller:               Optional[bool]
-    is_amazon_choice:             Optional[bool]
-    is_prime:                     Optional[bool]
-    sales_volume:                 Optional[str]
-    country:                      Optional[str]
-    avg_price:                    Optional[float]
-    min_price:                    Optional[float]
-    max_price:                    Optional[float]
-    avg_sales_volume:             Optional[float]
-    min_sales_volume:             Optional[float]
-    max_sales_volume:             Optional[float]
+    product_star_rating:            Optional[str]
+    product_star_rating_numeric:    Optional[float]
+    product_num_ratings:            Optional[int]
+    is_best_seller:                 Optional[bool]
+    is_amazon_choice:               Optional[bool]
+    is_prime:                       Optional[bool]
+    sales_volume:                   Optional[str]
+    country:                        Optional[str]
+    avg_price:                      Optional[float]
+    min_price:                      Optional[float]
+    max_price:                      Optional[float]
+    avg_sales_volume:               Optional[float]
+    min_sales_volume:               Optional[float]
+    max_sales_volume:               Optional[float]
 
 
 class ProductComparison(BaseModel):
@@ -11517,19 +14208,37 @@ class ComparisonResponse(BaseModel):
 class PriceAlertRequest(BaseModel):
     tracked_product_id: int
     user_email:         str
-    threshold_percent:  float    # trigger when competitor is X% cheaper
-    delivery_email:     str      # email to send the alert to
+    threshold_percent:  float
+    delivery_email:     str
 
 
 class CompetitorSnapshotDiff(BaseModel):
     asin:          str
     product_title: str
-    changes:       List[dict]        # list of {field, old_value, new_value}
+    changes:       List[dict]
     detected_at:   datetime
 
 
+class ChatMessage(BaseModel):
+    role:    str
+    content: str
+
+
+class CompetitorChatRequest(BaseModel):
+    tracked_product_id: int
+    user_email:         str
+    message:            str
+    history:            Optional[List[ChatMessage]] = []
+
+
+class CompetitorChatResponse(BaseModel):
+    reply:               str
+    context_used:        dict
+    suggested_followups: List[str]
+
+
 # ─────────────────────────────────────────
-# HELPERS — reviews, parsing
+# HELPERS — parse stored JSON columns
 # ─────────────────────────────────────────
 
 def parse_review_comments(comments_json: str) -> List[str]:
@@ -11550,7 +14259,227 @@ def parse_review_ratings(ratings_json: str) -> List[int]:
         return []
 
 
+def parse_review_authors(authors_json: str) -> List[str]:       # NEW
+    if not authors_json:
+        return []
+    try:
+        return json.loads(authors_json)
+    except Exception:
+        return []
+
+
+def parse_review_dates(dates_json: str) -> List[str]:            # NEW
+    if not dates_json:
+        return []
+    try:
+        return json.loads(dates_json)
+    except Exception:
+        return []
+
+
+def parse_review_has_response(flags_json: str) -> List[bool]:    # NEW
+    if not flags_json:
+        return []
+    try:
+        return json.loads(flags_json)
+    except Exception:
+        return []
+
+
+# ─────────────────────────────────────────
+# HELPER — centralised ORM → response builder
+# ─────────────────────────────────────────
+
+def _to_response(p) -> TrackedProductResponse:
+    return TrackedProductResponse(
+        id=p.id,
+        seller_id=p.seller_id,
+        asin=p.asin,
+        product_title=p.product_title,
+        product_photo=p.product_photo,
+        country=p.country,
+        user_email=p.user_email,
+        # product listing fields
+        product_price=getattr(p, "product_price", None),
+        product_original_price=getattr(p, "product_original_price", None),
+        currency=getattr(p, "currency", None),
+        product_star_rating=getattr(p, "product_star_rating", None),
+        product_star_rating_numeric=getattr(p, "product_star_rating_numeric", None),
+        product_num_ratings=getattr(p, "product_num_ratings", None),
+        product_url=getattr(p, "product_url", None),
+        product_num_offers=getattr(p, "product_num_offers", None),
+        product_minimum_offer_price=getattr(p, "product_minimum_offer_price", None),
+        is_best_seller=getattr(p, "is_best_seller", False),
+        is_amazon_choice=getattr(p, "is_amazon_choice", False),
+        is_prime=getattr(p, "is_prime", False),
+        climate_pledge_friendly=getattr(p, "climate_pledge_friendly", False),
+        sales_volume=getattr(p, "sales_volume", None),
+        delivery=getattr(p, "delivery", None),
+        has_variations=getattr(p, "has_variations", False),
+        unit_price=getattr(p, "unit_price", None),
+        unit_count=getattr(p, "unit_count", None),
+        # seller profile
+        seller_name=getattr(p, "seller_name", None),
+        seller_logo=getattr(p, "seller_logo", None),
+        seller_link=getattr(p, "seller_link", None),
+        store_link=getattr(p, "store_link", None),
+        seller_phone=getattr(p, "seller_phone", None),
+        business_name=getattr(p, "business_name", None),
+        business_address=getattr(p, "business_address", None),
+        seller_rating=getattr(p, "seller_rating", None),
+        seller_ratings_total=getattr(p, "seller_ratings_total", None),
+        # reviews
+        review_comments=parse_review_comments(p.review_comments),
+        review_ratings=parse_review_ratings(p.review_ratings),
+        review_authors=parse_review_authors(getattr(p, "review_authors", None)),
+        review_dates=parse_review_dates(getattr(p, "review_dates", None)),
+        review_has_response=parse_review_has_response(getattr(p, "review_has_response", None)),
+    )
+
+# def _extract_product_fields(item: dict) -> dict:
+#     raw_rating = item.get("product_star_rating")
+#     try:
+#         rating_numeric = float(raw_rating) if raw_rating else None
+#     except (ValueError, TypeError):
+#         rating_numeric = None
+
+#     # Fix unit_count — ensure it's int or None
+#     raw_unit_count = item.get("unit_count")
+#     try:
+#         unit_count = int(raw_unit_count) if raw_unit_count is not None else None
+#     except (ValueError, TypeError):
+#         unit_count = None
+
+#     return {
+#         "product_price":               item.get("product_price"),
+#         "product_original_price":      item.get("product_original_price"),
+#         "currency":                    item.get("currency"),
+#         "product_star_rating":         raw_rating,
+#         "product_star_rating_numeric": rating_numeric,
+#         "product_num_ratings":         item.get("product_num_ratings"),
+#         "product_url":                 item.get("product_url"),
+#         "product_num_offers":          item.get("product_num_offers"),
+#         "product_minimum_offer_price": item.get("product_minimum_offer_price"),
+#         "is_best_seller":              bool(item.get("is_best_seller", False)),   # explicit bool cast
+#         "is_amazon_choice":            bool(item.get("is_amazon_choice", False)),
+#         "is_prime":                    bool(item.get("is_prime", False)),
+#         "climate_pledge_friendly":     bool(item.get("climate_pledge_friendly", False)),
+#         "sales_volume":                item.get("sales_volume"),
+#         "delivery":                    item.get("delivery"),
+#         "has_variations":              bool(item.get("has_variations", False)),
+#         "unit_price":                  item.get("unit_price"),
+#         "unit_count":                  unit_count,
+#     }
+def _extract_product_fields(item: dict) -> dict:
+    raw_rating = item.get("product_star_rating")
+    try:
+        rating_numeric = float(raw_rating) if raw_rating else None
+    except (ValueError, TypeError):
+        rating_numeric = None
+
+    raw_unit_count = item.get("unit_count")
+    try:
+        unit_count = int(raw_unit_count) if raw_unit_count is not None else None
+    except (ValueError, TypeError):
+        unit_count = None
+
+    raw_num_ratings = item.get("product_num_ratings")
+    try:
+        num_ratings = int(raw_num_ratings) if raw_num_ratings is not None else None
+    except (ValueError, TypeError):
+        num_ratings = None
+
+    raw_num_offers = item.get("product_num_offers")
+    try:
+        num_offers = int(raw_num_offers) if raw_num_offers is not None else None
+    except (ValueError, TypeError):
+        num_offers = None
+
+    def to_bool(val) -> bool:
+        if val is None:
+            return False
+        if isinstance(val, bool):
+            return val
+        if isinstance(val, int):
+            return val != 0
+        if isinstance(val, str):
+            return val.lower() in ("true", "1", "yes", "t")
+        return False
+
+    return {
+        "product_price":               item.get("product_price"),
+        "product_original_price":      item.get("product_original_price"),
+        "currency":                    item.get("currency"),
+        "product_star_rating":         raw_rating,
+        "product_star_rating_numeric": rating_numeric,
+        "product_num_ratings":         num_ratings,
+        "product_url":                 item.get("product_url"),
+        "product_num_offers":          num_offers,
+        "product_minimum_offer_price": item.get("product_minimum_offer_price"),
+        "is_best_seller":              to_bool(item.get("is_best_seller")),
+        "is_amazon_choice":            to_bool(item.get("is_amazon_choice")),
+        "is_prime":                    to_bool(item.get("is_prime")),
+        "climate_pledge_friendly":     to_bool(item.get("climate_pledge_friendly")),
+        "sales_volume":                item.get("sales_volume"),
+        "delivery":                    item.get("delivery"),
+        "has_variations":              to_bool(item.get("has_variations")),
+        "unit_price":                  item.get("unit_price"),
+        "unit_count":                  unit_count,
+    }
+
+def _parse_price(price_str: str) -> Optional[float]:
+    """Strips currency symbols and converts '$22.81' → 22.81"""
+    if not price_str:
+        return None
+    try:
+        return float(price_str.replace("$", "").replace("₹", "").replace(",", "").strip())
+    except (ValueError, TypeError):
+        return None
+
+        
+# ─────────────────────────────────────────
+# HELPERS — API fetch functions
+# ─────────────────────────────────────────
+
+def fetch_seller_profile(seller_id: str, country: str) -> dict:
+    """
+    Calls /seller-profile once per seller.
+    Returns a flat dict of all profile fields, safe to ** unpack into ORM.
+    """
+    try:
+        resp = requests.get(
+            AMAZON_SELLER_PROFILE_URL,
+            headers=HEADERS,
+            params={"seller_id": seller_id, "country": country},
+            timeout=20,
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        if data.get("status") != "OK":
+            return {}
+        d = data.get("data", {})
+        return {
+            "seller_name":          d.get("name"),
+            "seller_logo":          d.get("logo"),
+            "seller_link":          d.get("seller_link"),
+            "store_link":           d.get("store_link"),
+            "seller_phone":         d.get("phone"),
+            "business_name":        d.get("business_name"),
+            "business_address":     d.get("business_address"),
+            "seller_rating":        d.get("rating"),
+            "seller_ratings_total": d.get("ratings_total"),
+        }
+    except Exception as e:
+        print(f"[seller profile] error for {seller_id}/{country}: {e}")
+        return {}
+
+
 def fetch_seller_reviews(seller_id: str, country: str) -> tuple:
+    """
+    Returns five parallel lists:
+      (comments, ratings, authors, dates, has_response_flags)
+    Index N across all five lists belongs to the same review.
+    """
     try:
         resp = requests.get(
             AMAZON_REVIEWS_API_URL,
@@ -11561,14 +14490,17 @@ def fetch_seller_reviews(seller_id: str, country: str) -> tuple:
         resp.raise_for_status()
         data = resp.json()
         if data.get("status") != "OK":
-            return [], []
+            return [], [], [], [], []
         reviews = data.get("data", {}).get("seller_reviews", [])
-        comments = [r.get("review_comment", "") for r in reviews]
-        ratings  = [r.get("review_star_rating", 0) for r in reviews]
-        return comments, ratings
+        comments     = [r.get("review_comment", "")    for r in reviews]
+        ratings      = [r.get("review_star_rating", 0) for r in reviews]
+        authors      = [r.get("review_author", "")     for r in reviews]   # NEW
+        dates        = [r.get("review_date", "")       for r in reviews]   # NEW
+        has_response = [r.get("has_response", False)   for r in reviews]   # NEW
+        return comments, ratings, authors, dates, has_response
     except Exception as e:
-        print(f"[reviews] error: {e}")
-        return [], []
+        print(f"[reviews] error for {seller_id}/{country}: {e}")
+        return [], [], [], [], []
 
 
 # ─────────────────────────────────────────
@@ -11576,10 +14508,6 @@ def fetch_seller_reviews(seller_id: str, country: str) -> tuple:
 # ─────────────────────────────────────────
 
 def check_keyword_tracker_limit(user_id: int, db: Session) -> dict:
-    """
-    Returns current usage. Does NOT increment — call increment_keyword_usage separately.
-    Resets counter at month boundary.
-    """
     row = db.execute(
         text("SELECT subscription_tier, COALESCE(keyword_tracker_used,0), keyword_tracker_month FROM users WHERE id=:uid"),
         {"uid": user_id},
@@ -11604,11 +14532,6 @@ def check_keyword_tracker_limit(user_id: int, db: Session) -> dict:
 
 
 def atomic_increment_usage(user_id: int, increment: int, db: Session) -> bool:
-    """
-    Atomically increments usage only if under the limit.
-    Returns True if increment succeeded, False if limit would be exceeded.
-    Uses SELECT FOR UPDATE to prevent race conditions.
-    """
     row = db.execute(
         text("SELECT subscription_tier, COALESCE(keyword_tracker_used,0), keyword_tracker_month FROM users WHERE id=:uid FOR UPDATE"),
         {"uid": user_id},
@@ -11639,10 +14562,6 @@ def atomic_increment_usage(user_id: int, increment: int, db: Session) -> bool:
 # ─────────────────────────────────────────
 
 def check_rank_update_ratelimit(user_email: str, db: Session) -> dict:
-    """
-    Returns {allowed: bool, used: int, limit: int, resets_at: str}
-    Requires rank_update_ratelimit table — run migrations.sql first.
-    """
     today = datetime.utcnow().strftime("%Y-%m-%d")
     row = db.execute(
         text("SELECT call_count FROM rank_update_ratelimit WHERE user_email=:email AND update_date=:today"),
@@ -11736,8 +14655,8 @@ def generate_comparison_metrics(seller_product: dict, competitor: CompetitorProd
     sn = seller_product.get("product_num_ratings", 0) or 0
     cn = competitor.product_num_ratings or 0
 
-    price_diff = (sp - cp) if sp and cp else None
-    price_pct  = ((sp - cp) / cp * 100) if sp and cp and cp > 0 else None
+    price_diff  = (sp - cp) if sp and cp else None
+    price_pct   = ((sp - cp) / cp * 100) if sp and cp and cp > 0 else None
     rating_diff = (sr - cr) if sr and cr else None
     review_diff = (sn - cn) if sn and cn else None
 
@@ -11780,12 +14699,12 @@ def generate_comparison_metrics(seller_product: dict, competitor: CompetitorProd
             "has_more": review_diff > 0 if review_diff is not None else None,
         },
         "badges": {
-            "seller_best_seller": seller_product.get("is_best_seller", False),
-            "competitor_best_seller": competitor.is_best_seller or False,
-            "seller_amazon_choice": seller_product.get("is_amazon_choice", False),
+            "seller_best_seller":       seller_product.get("is_best_seller", False),
+            "competitor_best_seller":   competitor.is_best_seller or False,
+            "seller_amazon_choice":     seller_product.get("is_amazon_choice", False),
             "competitor_amazon_choice": competitor.is_amazon_choice or False,
-            "seller_prime": seller_product.get("is_prime", False),
-            "competitor_prime": competitor.is_prime or False,
+            "seller_prime":             seller_product.get("is_prime", False),
+            "competitor_prime":         competitor.is_prime or False,
         },
         "competitive_advantages":    advantages,
         "competitive_disadvantages": disadvantages,
@@ -11801,15 +14720,9 @@ def generate_comparison_metrics(seller_product: dict, competitor: CompetitorProd
 # ─────────────────────────────────────────
 
 def compute_velocity(ranks: list) -> float:
-    """
-    Positive = improving (rank number dropping).
-    Negative = declining.
-    Uses a weighted average of recent changes, heavier on latest.
-    """
     if len(ranks) < 2:
         return 0.0
-    deltas = []
-    weights = []
+    deltas, weights = [], []
     for i in range(len(ranks) - 1):
         prev = ranks[i + 1].get("rank", 0) or 0
         curr = ranks[i].get("rank", 0) or 0
@@ -11817,7 +14730,7 @@ def compute_velocity(ranks: list) -> float:
             days = max((datetime.fromisoformat(ranks[i]["checked_at"]) -
                         datetime.fromisoformat(ranks[i + 1]["checked_at"])).days, 1)
             deltas.append((prev - curr) / days)
-            weights.append(1 / (i + 1))     # more recent = higher weight
+            weights.append(1 / (i + 1))
     if not deltas:
         return 0.0
     total_w = sum(weights)
@@ -11829,15 +14742,11 @@ def compute_velocity(ranks: list) -> float:
 # ─────────────────────────────────────────
 
 def predict_rank(rank_history: list) -> dict:
-    """
-    Simple linear regression on up to last 30 data points.
-    Returns predicted rank at day +7 and +30 with confidence interval.
-    """
     if len(rank_history) < 3:
         return {"predicted_7d": None, "predicted_30d": None, "confidence": "low",
                 "trend": "not_enough_data"}
 
-    points = sorted(rank_history, key=lambda x: x["checked_at"])[-30:]
+    points  = sorted(rank_history, key=lambda x: x["checked_at"])[-30:]
     base_ts = datetime.fromisoformat(points[0]["checked_at"]).timestamp()
     X = np.array([(datetime.fromisoformat(p["checked_at"]).timestamp() - base_ts) / 86400
                   for p in points])
@@ -11846,40 +14755,36 @@ def predict_rank(rank_history: list) -> dict:
     if len(Y) < 3:
         return {"predicted_7d": None, "predicted_30d": None, "confidence": "low", "trend": "sparse"}
 
-    coeffs = np.polyfit(X, Y, 1)
-    poly   = np.poly1d(coeffs)
-
+    coeffs   = np.polyfit(X, Y, 1)
+    poly     = np.poly1d(coeffs)
     last_day = X[-1]
-    pred_7  = max(1, round(float(poly(last_day + 7))))
-    pred_30 = max(1, round(float(poly(last_day + 30))))
+    pred_7   = max(1, round(float(poly(last_day + 7))))
+    pred_30  = max(1, round(float(poly(last_day + 30))))
 
     residuals = Y - poly(X)
     std_err   = float(np.std(residuals))
     r2        = float(1 - np.var(residuals) / (np.var(Y) + 1e-9))
 
     confidence = "high" if r2 > 0.75 else "medium" if r2 > 0.4 else "low"
-    trend = "improving" if coeffs[0] < -0.3 else "declining" if coeffs[0] > 0.3 else "stable"
+    trend      = "improving" if coeffs[0] < -0.3 else "declining" if coeffs[0] > 0.3 else "stable"
 
     return {
-        "predicted_7d":        pred_7,
-        "predicted_30d":       pred_30,
-        "confidence":          confidence,
-        "trend":               trend,
-        "r2_score":            round(r2, 3),
-        "std_error":           round(std_err, 2),
-        "margin_7d":           round(std_err * 1.5),
-        "margin_30d":          round(std_err * 2.5),
+        "predicted_7d":  pred_7,
+        "predicted_30d": pred_30,
+        "confidence":    confidence,
+        "trend":         trend,
+        "r2_score":      round(r2, 3),
+        "std_error":     round(std_err, 2),
+        "margin_7d":     round(std_err * 1.5),
+        "margin_30d":    round(std_err * 2.5),
     }
 
 
 # ─────────────────────────────────────────
-# HELPERS — Ollama (llama3.2:3b) — human-like NLP
+# HELPERS — Ollama (llama3.2:3b)
 # ─────────────────────────────────────────
 
 def _call_ollama(prompt: str, timeout: int = 90) -> str:
-    """
-    Raw call to Ollama. Returns the text response or raises.
-    """
     resp = requests.post(
         f"{OLLAMA_BASE}/api/generate",
         json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": False},
@@ -11890,9 +14795,6 @@ def _call_ollama(prompt: str, timeout: int = 90) -> str:
 
 
 def _call_ollama_json(prompt: str, timeout: int = 90) -> dict:
-    """
-    Calls Ollama expecting JSON back. Strips markdown fences, parses safely.
-    """
     resp = requests.post(
         f"{OLLAMA_BASE}/api/generate",
         json={"model": OLLAMA_MODEL, "prompt": prompt, "stream": False, "format": "json"},
@@ -11916,11 +14818,7 @@ When something is bad, you say so clearly. When something is good, you celebrate
 Your job is to help sellers actually win on Amazon — not to sound like an AI."""
 
 
-def ai_keyword_analysis(product_title: str, asin: str, country: str,
-                         rank_summary: list) -> dict:
-    """
-    Full AI keyword analysis — dynamic, data-driven, human-like.
-    """
+def ai_keyword_analysis(product_title: str, asin: str, country: str, rank_summary: list) -> dict:
     trend_lines = "\n".join(
         f"  • '{r['keyword']}': rank {r['current_rank']} "
         f"({'↑ improved by ' + str(r['change']) if r['change'] > 0 else '↓ dropped by ' + str(abs(r['change'])) if r['change'] < 0 else '→ stable'}, "
@@ -11968,13 +14866,10 @@ Write a sharp, specific analysis. Respond ONLY in this exact JSON structure (no 
 
 
 def ai_competitor_recommendation(seller_product: dict, comparisons: list) -> dict:
-    """
-    Competitor-aware AI recommendation — what should the seller actually do?
-    """
     comp_lines = []
     for c in comparisons[:5]:
-        m = c.get("comparison_metrics", {})
-        price_c = m.get("price_comparison", {})
+        m       = c.get("comparison_metrics", {})
+        price_c  = m.get("price_comparison", {})
         rating_c = m.get("rating_comparison", {})
         comp_lines.append(
             f"  Competitor '{c['competitor_product'].get('product_title','?')[:60]}': "
@@ -12027,13 +14922,10 @@ Respond ONLY in this exact JSON structure:
 
 
 def ai_review_sentiment(comments: List[str], product_title: str) -> dict:
-    """
-    NLP sentiment breakdown by topic. Dynamic per product.
-    """
     if not comments:
         return {"error": "No reviews to analyze", "topics": {}}
 
-    sample = comments[:30]
+    sample       = comments[:30]
     reviews_text = "\n".join(f"  - {c}" for c in sample if c.strip())
 
     prompt = f"""{SYSTEM_PERSONA}
@@ -12080,9 +14972,6 @@ Respond ONLY in this JSON structure:
 
 
 def ai_keyword_suggestions(product_title: str, asin: str, country: str) -> dict:
-    """
-    Suggest 15-20 high-intent keywords grouped by intent type.
-    """
     prompt = f"""{SYSTEM_PERSONA}
 
 Product title: "{product_title}"
@@ -12115,24 +15004,17 @@ Group them by intent. Respond ONLY in this JSON:
 
 
 # ─────────────────────────────────────────
-# HELPERS — price alert via Brevo email
+# HELPERS — Brevo email
 # ─────────────────────────────────────────
 
 def send_brevo_email(to_email: str, subject: str, html_body: str) -> bool:
-    """
-    Sends a transactional email via Brevo API.
-    Returns True on success, False on failure.
-    """
     if not BREVO_API_KEY:
         print("[brevo] BREVO_API_KEY not set — email not sent")
         return False
 
     payload = {
-        "sender": {
-            "name":  BREVO_SENDER_NAME,
-            "email": BREVO_SENDER_EMAIL,
-        },
-        "to": [{"email": to_email}],
+        "sender": {"name": BREVO_SENDER_NAME, "email": BREVO_SENDER_EMAIL},
+        "to":      [{"email": to_email}],
         "subject": subject,
         "htmlContent": html_body,
     }
@@ -12140,11 +15022,8 @@ def send_brevo_email(to_email: str, subject: str, html_body: str) -> bool:
     try:
         resp = requests.post(
             BREVO_API_URL,
-            headers={
-                "accept":       "application/json",
-                "content-type": "application/json",
-                "api-key":      BREVO_API_KEY,
-            },
+            headers={"accept": "application/json", "content-type": "application/json",
+                     "api-key": BREVO_API_KEY},
             json=payload,
             timeout=15,
         )
@@ -12152,19 +15031,12 @@ def send_brevo_email(to_email: str, subject: str, html_body: str) -> bool:
         print(f"[brevo] email sent to {to_email} — subject: {subject}")
         return True
     except Exception as e:
-        print(f"[brevo] failed to send email to {to_email}: {e}")
+        print(f"[brevo] failed to send to {to_email}: {e}")
         return False
 
 
-def _price_alert_email_html(
-    product_title: str,
-    asin: str,
-    threshold_percent: float,
-    triggered: list,
-) -> str:
-    """
-    Builds a clean HTML email body for price alerts.
-    """
+def _price_alert_email_html(product_title: str, asin: str,
+                             threshold_percent: float, triggered: list) -> str:
     rows = ""
     for item in triggered:
         rows += f"""
@@ -12188,55 +15060,34 @@ def _price_alert_email_html(
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#f6f6f6;padding:40px 0;">
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
-
-        <!-- Header -->
         <tr>
           <td style="background:#1a1a2e;padding:28px 32px;">
             <p style="margin:0;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.3px;">Insydz</p>
             <p style="margin:4px 0 0;font-size:13px;color:#9090b0;">Competitor Price Alert</p>
           </td>
         </tr>
-
-        <!-- Body -->
         <tr>
           <td style="padding:32px;">
-            <p style="margin:0 0 6px;font-size:16px;font-weight:600;color:#1a1a1a;">
-              Price alert triggered for your product
-            </p>
-            <p style="margin:0 0 24px;font-size:14px;color:#555;">
-              <strong>{product_title}</strong> &nbsp;·&nbsp; ASIN: {asin}
-            </p>
-
+            <p style="margin:0 0 6px;font-size:16px;font-weight:600;color:#1a1a1a;">Price alert triggered for your product</p>
+            <p style="margin:0 0 24px;font-size:14px;color:#555;"><strong>{product_title}</strong> &nbsp;·&nbsp; ASIN: {asin}</p>
             <p style="margin:0 0 12px;font-size:14px;color:#555;">
               The following competitors are priced more than
               <strong style="color:#d94f3d;">{threshold_percent}%</strong> below your listed price:
             </p>
-
-            <!-- Competitor table -->
-            <table width="100%" cellpadding="0" cellspacing="0"
-                   style="border:1px solid #f0f0f0;border-radius:6px;overflow:hidden;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #f0f0f0;border-radius:6px;overflow:hidden;">
               <tr style="background:#f8f8f8;">
-                <th style="padding:10px 12px;font-size:12px;font-weight:600;color:#888;text-align:left;border-bottom:1px solid #f0f0f0;">
-                  COMPETITOR
-                </th>
-                <th style="padding:10px 12px;font-size:12px;font-weight:600;color:#888;text-align:center;border-bottom:1px solid #f0f0f0;">
-                  ASIN
-                </th>
-                <th style="padding:10px 12px;font-size:12px;font-weight:600;color:#888;text-align:center;border-bottom:1px solid #f0f0f0;">
-                  THEIR PRICE
-                </th>
+                <th style="padding:10px 12px;font-size:12px;font-weight:600;color:#888;text-align:left;border-bottom:1px solid #f0f0f0;">COMPETITOR</th>
+                <th style="padding:10px 12px;font-size:12px;font-weight:600;color:#888;text-align:center;border-bottom:1px solid #f0f0f0;">ASIN</th>
+                <th style="padding:10px 12px;font-size:12px;font-weight:600;color:#888;text-align:center;border-bottom:1px solid #f0f0f0;">THEIR PRICE</th>
               </tr>
               {rows}
             </table>
-
             <p style="margin:24px 0 0;font-size:13px;color:#888;line-height:1.6;">
               Log in to <a href="https://insydz.com" style="color:#1a1a2e;font-weight:600;">insydz.com</a>
               to review your pricing strategy and take action.
             </p>
           </td>
         </tr>
-
-        <!-- Footer -->
         <tr>
           <td style="padding:20px 32px;background:#f8f8f8;border-top:1px solid #f0f0f0;">
             <p style="margin:0;font-size:12px;color:#aaa;text-align:center;">
@@ -12245,7 +15096,6 @@ def _price_alert_email_html(
             </p>
           </td>
         </tr>
-
       </table>
     </td></tr>
   </table>
@@ -12253,37 +15103,18 @@ def _price_alert_email_html(
 </html>"""
 
 
-def fire_price_alert(
-    product_title: str,
-    asin: str,
-    threshold_percent: float,
-    triggered: list,
-    delivery_email: str,
-):
-    """
-    Sends a price alert email via Brevo.
-    Called when competitors are found below the seller's threshold.
-    """
+def fire_price_alert(product_title: str, asin: str, threshold_percent: float,
+                     triggered: list, delivery_email: str):
     if not triggered:
         return
-
     subject   = f"[Insydz] Price alert — {len(triggered)} competitor(s) underpricing you"
     html_body = _price_alert_email_html(product_title, asin, threshold_percent, triggered)
     sent      = send_brevo_email(delivery_email, subject, html_body)
-
     if not sent:
         print(f"[price alert] email delivery failed for {delivery_email} — product {asin}")
 
 
-def fire_competitor_change_alert(
-    seller_email: str,
-    seller_id: str,
-    changes: list,
-):
-    """
-    Sends a daily competitor change digest email via Brevo.
-    Called by the background scheduler when competitor snapshots show diffs.
-    """
+def fire_competitor_change_alert(seller_email: str, seller_id: str, changes: list):
     if not changes:
         return
 
@@ -12298,9 +15129,7 @@ def fire_competitor_change_alert(
         rows += f"""
         <tr>
           <td style="padding:14px 12px;border-bottom:1px solid #f0f0f0;vertical-align:top;">
-            <p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#1a1a1a;">
-              {c.get('competitor_title','Unknown')[:65]}
-            </p>
+            <p style="margin:0 0 4px;font-size:14px;font-weight:600;color:#1a1a1a;">{c.get('competitor_title','Unknown')[:65]}</p>
             <p style="margin:0 0 6px;font-size:12px;color:#aaa;">ASIN: {c.get('competitor_asin','?')}</p>
             <ul style="margin:0;padding-left:16px;">{change_lines}</ul>
           </td>
@@ -12323,16 +15152,12 @@ def fire_competitor_change_alert(
         </tr>
         <tr>
           <td style="padding:32px;">
-            <p style="margin:0 0 20px;font-size:15px;color:#1a1a1a;">
-              Here's what changed with your competitors in the last 24 hours:
-            </p>
-            <table width="100%" cellpadding="0" cellspacing="0"
-                   style="border:1px solid #f0f0f0;border-radius:6px;overflow:hidden;">
+            <p style="margin:0 0 20px;font-size:15px;color:#1a1a1a;">Here's what changed with your competitors in the last 24 hours:</p>
+            <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #f0f0f0;border-radius:6px;overflow:hidden;">
               {rows}
             </table>
             <p style="margin:24px 0 0;font-size:13px;color:#888;line-height:1.6;">
-              Log in to <a href="https://insydz.com" style="color:#1a1a2e;font-weight:600;">insydz.com</a>
-              to take action on these changes.
+              Log in to <a href="https://insydz.com" style="color:#1a1a2e;font-weight:600;">insydz.com</a> to take action on these changes.
             </p>
           </td>
         </tr>
@@ -12366,13 +15191,35 @@ def generate_pdf_report(product: TrackedProductResponse, rank_history: list,
     styles = getSampleStyleSheet()
     story  = []
 
-    title_style = ParagraphStyle("title", parent=styles["Title"], fontSize=18, spaceAfter=12)
-    h2_style    = ParagraphStyle("h2", parent=styles["Heading2"], fontSize=13, spaceAfter=6)
-    body_style  = ParagraphStyle("body", parent=styles["Normal"], fontSize=10, leading=14)
+    title_style = ParagraphStyle("title", parent=styles["Title"],   fontSize=18, spaceAfter=12)
+    h2_style    = ParagraphStyle("h2",    parent=styles["Heading2"], fontSize=13, spaceAfter=6)
+    body_style  = ParagraphStyle("body",  parent=styles["Normal"],   fontSize=10, leading=14)
 
-    story.append(Paragraph(f"Keyword Rank Report", title_style))
+    story.append(Paragraph("Keyword Rank Report", title_style))
     story.append(Paragraph(f"{product.product_title}", h2_style))
-    story.append(Paragraph(f"ASIN: {product.asin} | Country: {product.country} | Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}", body_style))
+    story.append(Paragraph(
+        f"ASIN: {product.asin} | Country: {product.country} | "
+        f"Generated: {datetime.utcnow().strftime('%Y-%m-%d %H:%M UTC')}",
+        body_style,
+    ))
+
+    # Seller profile section (NEW)
+    if product.seller_name or product.business_name:
+        story.append(Spacer(1, 0.3*cm))
+        story.append(Paragraph("Seller Information", h2_style))
+        if product.seller_name:
+            story.append(Paragraph(f"<b>Seller:</b> {product.seller_name}", body_style))
+        if product.business_name:
+            story.append(Paragraph(f"<b>Business:</b> {product.business_name}", body_style))
+        if product.business_address:
+            story.append(Paragraph(f"<b>Address:</b> {product.business_address}", body_style))
+        if product.seller_rating:
+            story.append(Paragraph(
+                f"<b>Seller Rating:</b> {product.seller_rating} "
+                f"({product.seller_ratings_total or 0} ratings)",
+                body_style,
+            ))
+
     story.append(Spacer(1, 0.4*cm))
 
     # Rank history table
@@ -12387,12 +15234,12 @@ def generate_pdf_report(product: TrackedProductResponse, rank_history: list,
         ])
     t = Table(table_data, colWidths=[6*cm, 2.5*cm, 2.5*cm, 5*cm])
     t.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#2563EB")),
-        ("TEXTCOLOR",  (0, 0), (-1, 0), colors.white),
-        ("FONTSIZE",   (0, 0), (-1, -1), 9),
-        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#F3F4F6")]),
-        ("GRID", (0, 0), (-1, -1), 0.3, colors.HexColor("#E5E7EB")),
-        ("PADDING", (0, 0), (-1, -1), 4),
+        ("BACKGROUND",    (0, 0), (-1, 0),  colors.HexColor("#2563EB")),
+        ("TEXTCOLOR",     (0, 0), (-1, 0),  colors.white),
+        ("FONTSIZE",      (0, 0), (-1, -1), 9),
+        ("ROWBACKGROUNDS",(0, 1), (-1, -1), [colors.white, colors.HexColor("#F3F4F6")]),
+        ("GRID",          (0, 0), (-1, -1), 0.3, colors.HexColor("#E5E7EB")),
+        ("PADDING",       (0, 0), (-1, -1), 4),
     ]))
     story.append(t)
     story.append(Spacer(1, 0.4*cm))
@@ -12404,7 +15251,7 @@ def generate_pdf_report(product: TrackedProductResponse, rank_history: list,
             f"7-day forecast: <b>#{prediction['predicted_7d']}</b> (±{prediction.get('margin_7d',0)}) | "
             f"30-day forecast: <b>#{prediction['predicted_30d']}</b> (±{prediction.get('margin_30d',0)}) | "
             f"Confidence: {prediction.get('confidence','low')} | Trend: {prediction.get('trend','unknown')}",
-            body_style
+            body_style,
         ))
         story.append(Spacer(1, 0.4*cm))
 
@@ -12440,14 +15287,13 @@ def _background_rank_update_all():
     db = SessionLocal()
     try:
         products = db.query(TrackedProduct).all()
-        updated = 0
+        updated  = 0
         for product in products:
             kws = db.query(KeywordRankHistory).filter(
                 KeywordRankHistory.tracked_product_id == product.id
             ).all()
             for kw in kws:
                 try:
-                    # Real keyword rank check via search API
                     resp = requests.get(
                         AMAZON_SEARCH_API_URL,
                         headers=HEADERS,
@@ -12489,7 +15335,7 @@ def _background_snapshot_competitors():
 
         for seller_id, user_email, country in sellers:
             products = db.query(TrackedProduct).filter(
-                TrackedProduct.seller_id == seller_id,
+                TrackedProduct.seller_id  == seller_id,
                 TrackedProduct.user_email == user_email,
             ).all()
 
@@ -12502,9 +15348,8 @@ def _background_snapshot_competitors():
                     "product_num_ratings": None,
                 }
                 competitors = find_competitor_matches(seller_dict, db, country=country, max_matches=5)
-                snapshot = [c.model_dump() for c in competitors]
+                snapshot    = [c.model_dump() for c in competitors]
 
-                # Save today's snapshot
                 db.execute(text("""
                     INSERT INTO competitor_snapshots (seller_id, user_email, asin, snapshot_date, snapshot_data)
                     VALUES (:sid, :email, :asin, :date, :data)
@@ -12512,7 +15357,6 @@ def _background_snapshot_competitors():
                 """), {"sid": seller_id, "email": user_email, "asin": product.asin,
                        "date": today, "data": json.dumps(snapshot)})
 
-                # Fetch yesterday's snapshot for diff
                 yesterday_row = db.execute(text("""
                     SELECT snapshot_data FROM competitor_snapshots
                     WHERE asin=:asin AND user_email=:email AND snapshot_date=:yesterday
@@ -12550,7 +15394,6 @@ def _background_snapshot_competitors():
 
             db.commit()
 
-            # Email the seller a digest if anything changed
             if all_changes_for_seller:
                 fire_competitor_change_alert(
                     seller_email=user_email,
@@ -12566,7 +15409,7 @@ def _background_snapshot_competitors():
 
 
 scheduler = BackgroundScheduler(timezone="UTC")
-scheduler.add_job(_background_rank_update_all,    CronTrigger(hour=6, minute=0),  id="daily_rank_update")
+scheduler.add_job(_background_rank_update_all,      CronTrigger(hour=6, minute=0), id="daily_rank_update")
 scheduler.add_job(_background_snapshot_competitors, CronTrigger(hour=7, minute=0), id="daily_snapshots")
 scheduler.start()
 
@@ -12575,104 +15418,184 @@ scheduler.start()
 # API ENDPOINTS
 # ═══════════════════════════════════════════════════════
 
-
-# ─────────────────────────────────────────
-# EXISTING ENDPOINTS (preserved + enhanced)
-# ─────────────────────────────────────────
-
 @router.get("/users/{user_id}/keyword-tracker-usage", response_model=UsageLimitsResponse)
 def get_keyword_tracker_usage(user_id: int, db: Session = Depends(get_db)):
     """Current keyword tracker usage and limits for a user."""
     return UsageLimitsResponse(**check_keyword_tracker_limit(user_id, db))
 
 
+# ─────────────────────────────────────────
+# FETCH + STORE (main entry point)
+# Now calls all 3 APIs: seller-products, seller-profile, seller-reviews
+# ─────────────────────────────────────────
+
 @router.get("/keyword_tracker/fetch_and_store_products/{seller_id}", response_model=List[TrackedProductResponse])
 def fetch_and_store_seller_products(
-    seller_id: str, country: str = "IN", page: int = 1,
-    user_email: str = None, user_id: int = None,
+    seller_id:  str,
+    country:    str = "IN",
+    page:       int = 1,
+    user_email: str = None,
+    user_id:    int = None,
     db: Session = Depends(get_db),
 ):
-    """
-    Fetch products from Amazon API + reviews.
-    Stores comments and ratings in separate columns.
-    Checks subscription limits before allowing (race-safe).
-    """
     if not user_email:
         raise HTTPException(status_code=400, detail="user_email is required")
 
     print(f"[fetch] user_id={user_id}, user_email={user_email}, seller_id={seller_id}")
 
     try:
-        resp = requests.get(AMAZON_API_URL, headers=HEADERS,
-                            params={"seller_id": seller_id, "country": country,
-                                    "page": page, "sort_by": "RELEVANCE"}, timeout=20)
+        # ── 1. Seller products ──
+        resp = requests.get(
+            AMAZON_API_URL, headers=HEADERS,
+            params={"seller_id": seller_id, "country": country,
+                    "page": page, "sort_by": "RELEVANCE"},
+            timeout=20,
+        )
         resp.raise_for_status()
         seller_products = resp.json().get("data", {}).get("seller_products", [])
         if not seller_products:
             return []
 
-        # Find how many are truly new (not yet in DB)
-        new_asins = []
-        for item in seller_products:
-            existing = db.query(TrackedProduct).filter(
-                TrackedProduct.seller_id == seller_id,
-                TrackedProduct.asin == item["asin"],
+
+        # ── 2. Subscription limit check (only for new ASINs) ──
+        new_asins = [
+            item["asin"] for item in seller_products
+            if not db.query(TrackedProduct).filter(
+                TrackedProduct.seller_id  == seller_id,
+                TrackedProduct.asin       == item["asin"],
                 TrackedProduct.user_email == user_email,
             ).first()
-            if not existing:
-                new_asins.append(item["asin"])
-
-        # Atomic limit check only for genuinely new products
+        ]
         if user_id and new_asins:
             ok = atomic_increment_usage(user_id, len(new_asins), db)
             if not ok:
                 usage = check_keyword_tracker_limit(user_id, db)
                 raise HTTPException(
                     status_code=403,
-                    detail=(f"Keyword Tracker limit reached for {usage['subscription_tier'].upper()} plan. "
-                            f"You've used all {usage['limit']} product trackings this month. Upgrade for more!"),
+                    detail=(
+                        f"Keyword Tracker limit reached for {usage['subscription_tier'].upper()} plan. "
+                        f"You've used all {usage['limit']} product trackings this month. Upgrade for more!"
+                    ),
                 )
 
-        comments, ratings = fetch_seller_reviews(seller_id, country)
-        comments_json = json.dumps(comments) if comments else None
-        ratings_json  = json.dumps(ratings)  if ratings  else None
+        # ── 3. Seller profile (one call for the whole seller) ──
+        profile = fetch_seller_profile(seller_id, country)
 
+        # ── 4. Reviews ──
+        comments, ratings, authors, dates, has_response = fetch_seller_reviews(seller_id, country)
+        comments_json     = json.dumps(comments)     if comments     else None
+        ratings_json      = json.dumps(ratings)      if ratings      else None
+        authors_json      = json.dumps(authors)      if authors      else None
+        dates_json        = json.dumps(dates)        if dates        else None
+        has_response_json = json.dumps(has_response) if has_response else None
+
+        # ── 5. Upsert each product ──
+        # saved_products = []
+        # for item in seller_products:
+        #     product_fields = _extract_product_fields(item)   # all the new fields
+
+        #     existing = db.query(TrackedProduct).filter(
+        #         TrackedProduct.seller_id  == seller_id,
+        #         TrackedProduct.asin       == item["asin"],
+        #         TrackedProduct.user_email == user_email,
+        #     ).first()
+
+        #     if existing:
+        #         # Refresh every field — prices and badges change frequently
+        #         existing.product_title       = item["product_title"]
+        #         existing.product_photo       = item.get("product_photo", "")
+        #         existing.review_comments     = comments_json
+        #         existing.review_ratings      = ratings_json
+        #         existing.review_authors      = authors_json
+        #         existing.review_dates        = dates_json
+        #         existing.review_has_response = has_response_json
+        #         for field, value in {**product_fields, **profile}.items():
+        #             if value is not None:  # keeps False, 0, empty string — only skips None
+        #                 setattr(existing, field, value)
+        #         db.commit()
+        #         db.refresh(existing)
+        #         saved_products.append(existing)
+        #     else:
+        #         new_product = TrackedProduct(
+        #             seller_id=seller_id,
+        #             asin=item["asin"],
+        #             product_title=item["product_title"],
+        #             product_photo=item.get("product_photo", ""),
+        #             country=country,
+        #             user_email=user_email,
+        #             review_comments=comments_json,
+        #             review_ratings=ratings_json,
+        #             review_authors=authors_json,
+        #             review_dates=dates_json,
+        #             review_has_response=has_response_json,
+        #             **product_fields,   # all listing fields
+        #             **profile,          # all seller profile fields
+        #         )
+        #         db.add(new_product)
+        #         db.commit()
+        #         db.refresh(new_product)
+        #         saved_products.append(new_product)
+
+        # return [_to_response(p) for p in saved_products]
         saved_products = []
         for item in seller_products:
+            product_fields = _extract_product_fields(item)
+
+            # ── DEBUG (remove after confirming fix) ──
+            print(f"\n=== {item.get('asin')} ===")
+            print(f"  is_best_seller={repr(item.get('is_best_seller'))} → {product_fields['is_best_seller']}")
+            print(f"  is_prime={repr(item.get('is_prime'))} → {product_fields['is_prime']}")
+            print(f"  unit_price={repr(item.get('unit_price'))}, unit_count={repr(item.get('unit_count'))}")
+
             existing = db.query(TrackedProduct).filter(
-                TrackedProduct.seller_id == seller_id,
-                TrackedProduct.asin == item["asin"],
+                TrackedProduct.seller_id  == seller_id,
+                TrackedProduct.asin       == item["asin"],
                 TrackedProduct.user_email == user_email,
             ).first()
+
+            BOOLEAN_FIELDS = {
+                "is_best_seller", "is_amazon_choice", "is_prime",
+                "climate_pledge_friendly", "has_variations"
+            }
+
             if existing:
-                existing.review_comments = comments_json
-                existing.review_ratings  = ratings_json
+                existing.product_title       = item["product_title"]
+                existing.product_photo       = item.get("product_photo", "")
+                existing.review_comments     = comments_json
+                existing.review_ratings      = ratings_json
+                existing.review_authors      = authors_json
+                existing.review_dates        = dates_json
+                existing.review_has_response = has_response_json
+                for field, value in {**product_fields, **profile}.items():
+                    if field in BOOLEAN_FIELDS:
+                        setattr(existing, field, value)  # always write booleans, even False
+                    elif value is not None:
+                        setattr(existing, field, value)
                 db.commit()
                 db.refresh(existing)
                 saved_products.append(existing)
             else:
                 new_product = TrackedProduct(
-                    seller_id=seller_id, asin=item["asin"],
+                    seller_id=seller_id,
+                    asin=item["asin"],
                     product_title=item["product_title"],
                     product_photo=item.get("product_photo", ""),
-                    country=country, user_email=user_email,
-                    review_comments=comments_json, review_ratings=ratings_json,
+                    country=country,
+                    user_email=user_email,
+                    review_comments=comments_json,
+                    review_ratings=ratings_json,
+                    review_authors=authors_json,
+                    review_dates=dates_json,
+                    review_has_response=has_response_json,
+                    **product_fields,
+                    **profile,
                 )
                 db.add(new_product)
                 db.commit()
                 db.refresh(new_product)
                 saved_products.append(new_product)
 
-        return [
-            TrackedProductResponse(
-                id=p.id, seller_id=p.seller_id, asin=p.asin,
-                product_title=p.product_title, product_photo=p.product_photo,
-                country=p.country, user_email=p.user_email,
-                review_comments=parse_review_comments(p.review_comments),
-                review_ratings=parse_review_ratings(p.review_ratings),
-            )
-            for p in saved_products
-        ]
+        return [_to_response(p) for p in saved_products]
 
     except HTTPException:
         raise
@@ -12689,7 +15612,7 @@ def track_keywords(req: KeywordTrackRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="user_email is required")
 
     product = db.query(TrackedProduct).filter(
-        TrackedProduct.id == req.tracked_product_id,
+        TrackedProduct.id         == req.tracked_product_id,
         TrackedProduct.user_email == req.user_email,
     ).first()
     if not product:
@@ -12699,8 +15622,8 @@ def track_keywords(req: KeywordTrackRequest, db: Session = Depends(get_db)):
     for kw in req.keywords:
         existing = db.query(KeywordRankHistory).filter(
             KeywordRankHistory.tracked_product_id == req.tracked_product_id,
-            KeywordRankHistory.keyword == kw,
-            KeywordRankHistory.user_email == req.user_email,
+            KeywordRankHistory.keyword            == kw,
+            KeywordRankHistory.user_email         == req.user_email,
         ).first()
         if not existing:
             db.add(KeywordRankHistory(
@@ -12720,23 +15643,12 @@ def get_tracked_products(seller_id: str, user_email: str = None, db: Session = D
     query = db.query(TrackedProduct).filter(TrackedProduct.seller_id == seller_id)
     if user_email:
         query = query.filter(TrackedProduct.user_email == user_email)
-    return [
-        TrackedProductResponse(
-            id=p.id, seller_id=p.seller_id, asin=p.asin,
-            product_title=p.product_title, product_photo=p.product_photo,
-            country=p.country, user_email=p.user_email,
-            review_comments=parse_review_comments(p.review_comments),
-            review_ratings=parse_review_ratings(p.review_ratings),
-        )
-        for p in query.all()
-    ]
+    return [_to_response(p) for p in query.all()]
 
 
 @router.get("/keyword_tracker/rank_history/{tracked_product_id}")
 def get_rank_history(tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)):
-    """
-    Rank history enriched with velocity per keyword.
-    """
+    """Rank history enriched with velocity per keyword."""
     query = db.query(KeywordRankHistory).filter(
         KeywordRankHistory.tracked_product_id == tracked_product_id
     )
@@ -12744,19 +15656,16 @@ def get_rank_history(tracked_product_id: int, user_email: str = None, db: Sessio
         query = query.filter(KeywordRankHistory.user_email == user_email)
     history = query.order_by(KeywordRankHistory.keyword, KeywordRankHistory.checked_at.desc()).all()
 
-    # Group by keyword, compute velocity
     by_kw: dict = defaultdict(list)
     for entry in history:
-        by_kw[entry.keyword].append({
-            "rank": entry.rank,
-            "checked_at": entry.checked_at.isoformat(),
-        })
+        by_kw[entry.keyword].append({"rank": entry.rank, "checked_at": entry.checked_at.isoformat()})
 
     result = []
     for entry in history:
         kw_data = by_kw[entry.keyword]
-        # velocity only meaningful for the latest entry per keyword
-        v = compute_velocity(kw_data) if entry == history[0] or entry.keyword != getattr(history[history.index(entry)-1] if history.index(entry) > 0 else entry, 'keyword', None) else 0.0
+        v = compute_velocity(kw_data) if entry == history[0] or entry.keyword != getattr(
+            history[history.index(entry)-1] if history.index(entry) > 0 else entry, 'keyword', None
+        ) else 0.0
         result.append({
             "keyword":    entry.keyword,
             "rank":       entry.rank,
@@ -12769,14 +15678,10 @@ def get_rank_history(tracked_product_id: int, user_email: str = None, db: Sessio
 
 @router.post("/keyword_tracker/update_daily_ranks")
 def update_daily_ranks(req: UpdateRanksRequest, db: Session = Depends(get_db)):
-    """
-    Manual rank update. Limited to 4 calls per user per calendar day.
-    Uses keyword search (not seller listing) for accurate keyword-level ranks.
-    """
+    """Manual rank update — limited to 4 calls per user per calendar day."""
     if not req.user_email:
         raise HTTPException(status_code=400, detail="user_email is required")
 
-    # Rate limit check
     rl = check_rank_update_ratelimit(req.user_email, db)
     if not rl["allowed"]:
         raise HTTPException(
@@ -12792,19 +15697,17 @@ def update_daily_ranks(req: UpdateRanksRequest, db: Session = Depends(get_db)):
 
     products = db.query(TrackedProduct).filter(TrackedProduct.user_email == req.user_email).all()
     if not products:
-        return {"status": "success", "message": "No products found.", "updated_count": 0,
-                "rate_limit": rl}
+        return {"status": "success", "message": "No products found.", "updated_count": 0, "rate_limit": rl}
 
     updated = 0
     for product in products:
         kw_entries = db.query(KeywordRankHistory).filter(
             KeywordRankHistory.tracked_product_id == product.id,
-            KeywordRankHistory.user_email == req.user_email,
+            KeywordRankHistory.user_email         == req.user_email,
         ).all()
 
         for kw in kw_entries:
             try:
-                # FIXED: search by keyword, find ASIN rank in search results
                 resp = requests.get(
                     AMAZON_SEARCH_API_URL,
                     headers=HEADERS,
@@ -12829,17 +15732,13 @@ def update_daily_ranks(req: UpdateRanksRequest, db: Session = Depends(get_db)):
         "message":       f"Updated {updated} keyword ranks.",
         "updated_count": updated,
         "rate_limit": {
-            "used":       new_rl["used"],
-            "limit":      new_rl["limit"],
-            "remaining":  new_rl["limit"] - new_rl["used"],
-            "resets_at":  new_rl["resets_at"],
+            "used":      new_rl["used"],
+            "limit":     new_rl["limit"],
+            "remaining": new_rl["limit"] - new_rl["used"],
+            "resets_at": new_rl["resets_at"],
         },
     }
 
-
-# ─────────────────────────────────────────
-# PRODUCT DETAIL — click on product → full picture
-# ─────────────────────────────────────────
 
 @router.get("/keyword_tracker/product_detail/{tracked_product_id}")
 def get_product_detail(
@@ -12847,17 +15746,6 @@ def get_product_detail(
     user_email: str = None,
     db: Session = Depends(get_db),
 ):
-    """
-    Single endpoint powering the product detail page when a seller clicks a product.
-    Returns:
-      - product info
-      - competitor list with comparison table
-      - AI competitor recommendation
-      - rank history with velocity
-      - rank prediction
-      - review sentiment breakdown
-      - keyword suggestions
-    """
     query = db.query(TrackedProduct).filter(TrackedProduct.id == tracked_product_id)
     if user_email:
         query = query.filter(TrackedProduct.user_email == user_email)
@@ -12865,7 +15753,6 @@ def get_product_detail(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    # Rank history + velocity
     kw_history = db.query(KeywordRankHistory).filter(
         KeywordRankHistory.tracked_product_id == tracked_product_id
     )
@@ -12887,7 +15774,6 @@ def get_product_detail(
             "prediction":   predict_rank(ranks),
         })
 
-    # Competitors
     seller_dict = {
         "asin": product.asin, "product_title": product.product_title,
         "product_price_numeric": None, "product_star_rating_numeric": None,
@@ -12903,17 +15789,11 @@ def get_product_detail(
         for c in competitors
     ]
 
-    # AI recommendation (competitor-aware)
-    ai_rec = ai_competitor_recommendation(seller_dict, comparisons)
-
-    # Review sentiment
-    comments = parse_review_comments(product.review_comments)
+    ai_rec    = ai_competitor_recommendation(seller_dict, comparisons)
+    comments  = parse_review_comments(product.review_comments)
     sentiment = ai_review_sentiment(comments, product.product_title) if comments else {}
-
-    # Keyword suggestions
     suggestions = ai_keyword_suggestions(product.product_title, product.asin, product.country)
 
-    # Overall rank prediction (aggregate across keywords)
     all_rank_points = []
     for kw, ranks in by_kw.items():
         all_rank_points.extend(ranks)
@@ -12921,9 +15801,23 @@ def get_product_detail(
 
     return {
         "product": {
-            "id": product.id, "seller_id": product.seller_id, "asin": product.asin,
-            "product_title": product.product_title, "product_photo": product.product_photo,
-            "country": product.country, "user_email": product.user_email,
+            "id":            product.id,
+            "seller_id":     product.seller_id,
+            "asin":          product.asin,
+            "product_title": product.product_title,
+            "product_photo": product.product_photo,
+            "country":       product.country,
+            "user_email":    product.user_email,
+            # seller profile fields surfaced in detail view (NEW)
+            "seller_name":          getattr(product, "seller_name", None),
+            "seller_logo":          getattr(product, "seller_logo", None),
+            "seller_link":          getattr(product, "seller_link", None),
+            "store_link":           getattr(product, "store_link", None),
+            "seller_phone":         getattr(product, "seller_phone", None),
+            "business_name":        getattr(product, "business_name", None),
+            "business_address":     getattr(product, "business_address", None),
+            "seller_rating":        getattr(product, "seller_rating", None),
+            "seller_ratings_total": getattr(product, "seller_ratings_total", None),
         },
         "keywords":                keyword_data,
         "competitors":             comparisons,
@@ -12933,10 +15827,6 @@ def get_product_detail(
         "overall_rank_prediction": overall_prediction,
     }
 
-
-# ─────────────────────────────────────────
-# AI KEYWORD ANALYSIS ENDPOINT (enhanced)
-# ─────────────────────────────────────────
 
 @router.get("/keyword_tracker/ai_analysis/{tracked_product_id}", response_model=AIAnalysisResponse)
 def get_ai_keyword_analysis(
@@ -12977,14 +15867,8 @@ def get_ai_keyword_analysis(
             "total_keywords": len(rank_summary), "analysis": analysis}
 
 
-# ─────────────────────────────────────────
-# NEW: KEYWORD SUGGESTIONS
-# ─────────────────────────────────────────
-
 @router.post("/keyword_tracker/suggest_keywords/{tracked_product_id}")
-def suggest_keywords(
-    tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)
-):
+def suggest_keywords(tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)):
     """AI-powered keyword suggestions grouped by search intent."""
     query = db.query(TrackedProduct).filter(TrackedProduct.id == tracked_product_id)
     if user_email:
@@ -12994,21 +15878,11 @@ def suggest_keywords(
         raise HTTPException(status_code=404, detail="Product not found")
 
     suggestions = ai_keyword_suggestions(product.product_title, product.asin, product.country)
-    return {
-        "product_title": product.product_title,
-        "asin":          product.asin,
-        "suggestions":   suggestions,
-    }
+    return {"product_title": product.product_title, "asin": product.asin, "suggestions": suggestions}
 
-
-# ─────────────────────────────────────────
-# NEW: REVIEW SENTIMENT ANALYSIS
-# ─────────────────────────────────────────
 
 @router.get("/keyword_tracker/review_sentiment/{tracked_product_id}")
-def get_review_sentiment(
-    tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)
-):
+def get_review_sentiment(tracked_product_id: int, user_email: str = None, db: Session = Depends(get_db)):
     """NLP sentiment breakdown by topic (quality, packaging, value, shipping, support)."""
     query = db.query(TrackedProduct).filter(TrackedProduct.id == tracked_product_id)
     if user_email:
@@ -13026,45 +15900,27 @@ def get_review_sentiment(
     return {"product_title": product.product_title, "asin": product.asin, "sentiment": sentiment}
 
 
-# ─────────────────────────────────────────
-# NEW: RANK PREDICTION
-# ─────────────────────────────────────────
-
 @router.get("/keyword_tracker/rank_prediction/{tracked_product_id}")
 def get_rank_prediction(
     tracked_product_id: int, keyword: str = None,
     user_email: str = None, db: Session = Depends(get_db)
 ):
-    """
-    Linear regression rank prediction.
-    Pass ?keyword=... for single keyword. Omit for aggregate across all keywords.
-    """
     query = db.query(KeywordRankHistory).filter(KeywordRankHistory.tracked_product_id == tracked_product_id)
     if user_email:
         query = query.filter(KeywordRankHistory.user_email == user_email)
     if keyword:
         query = query.filter(KeywordRankHistory.keyword == keyword)
     history = query.order_by(KeywordRankHistory.checked_at.asc()).all()
-
     if not history:
         raise HTTPException(status_code=404, detail="No rank history found")
 
-    points = [{"rank": h.rank, "checked_at": h.checked_at.isoformat()} for h in history]
+    points     = [{"rank": h.rank, "checked_at": h.checked_at.isoformat()} for h in history]
     prediction = predict_rank(points)
     return {"keyword": keyword or "aggregate", "prediction": prediction, "data_points": len(points)}
 
 
-# ─────────────────────────────────────────
-# NEW: PRICE ALERT
-# ─────────────────────────────────────────
-
 @router.post("/keyword_tracker/set_price_alert")
 def set_price_alert(req: PriceAlertRequest, db: Session = Depends(get_db)):
-    """
-    Set a price alert threshold. When any competitor is cheaper by
-    req.threshold_percent%, an email is sent to req.delivery_email via Brevo.
-    Checks immediately on creation and stores config for future background checks.
-    """
     query = db.query(TrackedProduct).filter(TrackedProduct.id == req.tracked_product_id)
     if req.user_email:
         query = query.filter(TrackedProduct.user_email == req.user_email)
@@ -13080,10 +15936,9 @@ def set_price_alert(req: PriceAlertRequest, db: Session = Depends(get_db)):
            "thresh": req.threshold_percent, "demail": req.delivery_email})
     db.commit()
 
-    # Immediate check on alert creation
     seller_dict = {"asin": product.asin, "product_title": product.product_title}
     competitors = find_competitor_matches(seller_dict, db, country=product.country, max_matches=5)
-    triggered = []
+    triggered   = []
     for comp in competitors:
         if comp.product_price_numeric:
             triggered.append({
@@ -13112,20 +15967,12 @@ def set_price_alert(req: PriceAlertRequest, db: Session = Depends(get_db)):
     }
 
 
-# ─────────────────────────────────────────
-# NEW: MULTI-MARKETPLACE COMPARISON
-# ─────────────────────────────────────────
-
 @router.get("/keyword_tracker/cross_market_comparison/{asin}")
 async def cross_market_comparison(
     asin: str,
     countries: str = "IN,US,UK,DE",
     db: Session = Depends(get_db),
 ):
-    """
-    Fetch the same ASIN across multiple marketplaces in parallel.
-    Returns price, rating, rank, and badge comparison per country.
-    """
     country_list = [c.strip().upper() for c in countries.split(",") if c.strip().upper() in SUPPORTED_COUNTRIES]
     if not country_list:
         raise HTTPException(status_code=400, detail=f"No valid countries. Supported: {SUPPORTED_COUNTRIES}")
@@ -13144,24 +15991,25 @@ async def cross_market_comparison(
             )
             resp.raise_for_status()
             products = resp.json().get("data", {}).get("products", [])
-            match = next((p for p in products if p.get("asin") == asin), None)
+            match    = next((p for p in products if p.get("asin") == asin), None)
             if match:
-                return {"country": country, "found": True, "data": match, "rank_in_search": next((i+1 for i, p in enumerate(products) if p.get("asin") == asin), None)}
+                return {"country": country, "found": True, "data": match,
+                        "rank_in_search": next((i+1 for i, p in enumerate(products) if p.get("asin") == asin), None)}
             return {"country": country, "found": False, "data": None, "rank_in_search": None}
         except Exception as e:
             return {"country": country, "found": False, "error": str(e), "data": None}
 
-    results = await asyncio.gather(*[fetch_country(c) for c in country_list])
-
+    results      = await asyncio.gather(*[fetch_country(c) for c in country_list])
     found_markets = [r for r in results if r.get("found")]
     if not found_markets:
-        return {"asin": asin, "markets": results, "best_market": None, "insights": "Product not found in any requested marketplace."}
+        return {"asin": asin, "markets": results, "best_market": None,
+                "insights": "Product not found in any requested marketplace."}
 
     best = max(found_markets, key=lambda r: r["data"].get("product_star_rating_numeric") or 0)
 
-    # AI cross-market insight
     market_summary = "\n".join(
-        f"  {r['country']}: price={r['data'].get('product_price','?')}, rating={r['data'].get('product_star_rating','?')}, rank={r.get('rank_in_search','?')}"
+        f"  {r['country']}: price={r['data'].get('product_price','?')}, "
+        f"rating={r['data'].get('product_star_rating','?')}, rank={r.get('rank_in_search','?')}"
         for r in found_markets
     )
     prompt = f"""{SYSTEM_PERSONA}
@@ -13178,18 +16026,8 @@ In 2-3 direct sentences, tell the seller: which market is performing best and wh
     return {"asin": asin, "markets": results, "best_market": best.get("country"), "ai_insight": insight}
 
 
-# ─────────────────────────────────────────
-# NEW: COMPETITOR CHANGE ALERTS (diff)
-# ─────────────────────────────────────────
-
 @router.get("/keyword_tracker/competitor_changes/{seller_id}")
-def get_competitor_changes(
-    seller_id: str, user_email: str = None, db: Session = Depends(get_db)
-):
-    """
-    Diff today's competitor snapshot vs yesterday's.
-    Returns detected changes in price, rating, badges.
-    """
+def get_competitor_changes(seller_id: str, user_email: str = None, db: Session = Depends(get_db)):
     today     = datetime.utcnow().strftime("%Y-%m-%d")
     yesterday = (datetime.utcnow() - timedelta(days=1)).strftime("%Y-%m-%d")
 
@@ -13211,7 +16049,7 @@ def get_competitor_changes(
     for asin, date, data in rows:
         by_asin[asin][str(date)] = json.loads(data) if isinstance(data, str) else data
 
-    changes = []
+    changes      = []
     watch_fields = ["product_price_numeric", "product_star_rating_numeric",
                     "product_num_ratings", "is_best_seller", "is_amazon_choice"]
 
@@ -13236,11 +16074,11 @@ def get_competitor_changes(
                     diffs.append({"field": field, "old_value": old_val, "new_value": new_val})
             if diffs:
                 changes.append({
-                    "seller_asin":     asin,
-                    "competitor_asin": comp_asin,
+                    "seller_asin":      asin,
+                    "competitor_asin":  comp_asin,
                     "competitor_title": today_comp.get("product_title", ""),
-                    "changes":         diffs,
-                    "detected_at":     today,
+                    "changes":          diffs,
+                    "detected_at":      today,
                 })
 
     return {
@@ -13251,22 +16089,13 @@ def get_competitor_changes(
     }
 
 
-# ─────────────────────────────────────────
-# NEW: EXPORT (CSV + PDF)
-# ─────────────────────────────────────────
-
 @router.get("/keyword_tracker/export/{tracked_product_id}")
 def export_report(
     tracked_product_id: int,
-    format: str = "pdf",
+    format:     str = "pdf",
     user_email: str = None,
     db: Session = Depends(get_db),
 ):
-    """
-    Export rank history + AI analysis as PDF or CSV.
-    ?format=pdf  (default)
-    ?format=csv
-    """
     query = db.query(TrackedProduct).filter(TrackedProduct.id == tracked_product_id)
     if user_email:
         query = query.filter(TrackedProduct.user_email == user_email)
@@ -13282,22 +16111,19 @@ def export_report(
     history = kw_query.order_by(KeywordRankHistory.keyword, KeywordRankHistory.checked_at.desc()).all()
 
     rank_history_dicts = [
-        {"keyword": h.keyword, "rank": h.rank,
-         "velocity": 0.0, "checked_at": h.checked_at.isoformat()}
+        {"keyword": h.keyword, "rank": h.rank, "velocity": 0.0,
+         "checked_at": h.checked_at.isoformat()}
         for h in history
     ]
 
     if format.lower() == "csv":
-        import csv
-        buf = BytesIO()
-        import io
+        import csv, io
         text_buf = io.StringIO()
-        writer = csv.DictWriter(text_buf, fieldnames=["keyword", "rank", "velocity", "checked_at"])
+        writer   = csv.DictWriter(text_buf, fieldnames=["keyword", "rank", "velocity", "checked_at"])
         writer.writeheader()
         writer.writerows(rank_history_dicts)
-        csv_bytes = text_buf.getvalue().encode("utf-8")
         return StreamingResponse(
-            BytesIO(csv_bytes),
+            BytesIO(text_buf.getvalue().encode("utf-8")),
             media_type="text/csv",
             headers={"Content-Disposition": f"attachment; filename={product.asin}_ranks.csv"},
         )
@@ -13309,23 +16135,20 @@ def export_report(
 
     rank_summary = [
         {
-            "keyword": kw, "current_rank": ranks[0]["rank"],
+            "keyword":      kw,
+            "current_rank": ranks[0]["rank"],
             "previous_rank": ranks[1]["rank"] if len(ranks) > 1 else None,
-            "change": (ranks[1]["rank"] - ranks[0]["rank"]) if len(ranks) > 1 else 0,
-            "trend": "stable", "velocity": compute_velocity(ranks),
+            "change":       (ranks[1]["rank"] - ranks[0]["rank"]) if len(ranks) > 1 else 0,
+            "trend":        "stable",
+            "velocity":     compute_velocity(ranks),
         }
         for kw, ranks in by_kw.items()
     ]
 
     ai_analysis = ai_keyword_analysis(product.product_title, product.asin, product.country, rank_summary)
     prediction  = predict_rank([{"rank": h.rank, "checked_at": h.checked_at.isoformat()} for h in history])
-
-    product_resp = TrackedProductResponse(
-        id=product.id, seller_id=product.seller_id, asin=product.asin,
-        product_title=product.product_title, product_photo=product.product_photo,
-        country=product.country, user_email=product.user_email,
-    )
-    pdf_buf = generate_pdf_report(product_resp, rank_history_dicts, ai_analysis, prediction)
+    product_resp = _to_response(product)
+    pdf_buf      = generate_pdf_report(product_resp, rank_history_dicts, ai_analysis, prediction)
 
     return StreamingResponse(
         pdf_buf,
@@ -13334,16 +16157,11 @@ def export_report(
     )
 
 
-# ─────────────────────────────────────────
-# NEW: RATE LIMIT STATUS
-# ─────────────────────────────────────────
-
 @router.get("/keyword_tracker/rate_limit_status")
 def get_rate_limit_status(user_email: str, db: Session = Depends(get_db)):
-    """Check remaining manual rank update calls for today."""
     rl = check_rank_update_ratelimit(user_email, db)
     return {
-        "user_email": user_email,
+        "user_email":             user_email,
         "rank_updates_used":      rl["used"],
         "rank_updates_limit":     rl["limit"],
         "rank_updates_remaining": rl["limit"] - rl["used"],
@@ -13351,10 +16169,6 @@ def get_rate_limit_status(user_email: str, db: Session = Depends(get_db)):
         "auto_update_schedule":   "Daily at 06:00 UTC (always runs)",
     }
 
-
-# ─────────────────────────────────────────
-# EXISTING: competitor comparison endpoints (preserved)
-# ─────────────────────────────────────────
 
 @router.get("/keyword_tracker/competitor_comparison/{seller_id}", response_model=ComparisonResponse)
 def get_competitor_comparison(
@@ -13364,9 +16178,9 @@ def get_competitor_comparison(
     if not user_email:
         raise HTTPException(status_code=400, detail="user_email is required")
     products = db.query(TrackedProduct).filter(
-        TrackedProduct.seller_id == seller_id,
+        TrackedProduct.seller_id  == seller_id,
         TrackedProduct.user_email == user_email,
-        TrackedProduct.country == country,
+        TrackedProduct.country    == country,
     ).all()
     if not products:
         raise HTTPException(status_code=404, detail=f"No tracked products found for seller {seller_id}")
@@ -13399,56 +16213,131 @@ def fetch_products_with_comparison(
     if not user_email:
         raise HTTPException(status_code=400, detail="user_email is required")
     try:
-        resp = requests.get(AMAZON_API_URL, headers=HEADERS,
-                            params={"seller_id": seller_id, "country": country,
-                                    "page": page, "sort_by": "RELEVANCE"}, timeout=20)
+        resp = requests.get(
+            AMAZON_API_URL, headers=HEADERS,
+            params={"seller_id": seller_id, "country": country,
+                    "page": page, "sort_by": "RELEVANCE"},
+            timeout=20,
+        )
         resp.raise_for_status()
         seller_products = resp.json().get("data", {}).get("seller_products", [])
         if not seller_products:
             return {"products": [], "comparisons": []}
 
-        comments, ratings = fetch_seller_reviews(seller_id, country)
-        comments_json = json.dumps(comments) if comments else None
-        ratings_json  = json.dumps(ratings)  if ratings  else None
-        saved_products = []
+        profile = fetch_seller_profile(seller_id, country)
+        comments, ratings, authors, dates, has_response = fetch_seller_reviews(seller_id, country)
+        comments_json     = json.dumps(comments)     if comments     else None
+        ratings_json      = json.dumps(ratings)      if ratings      else None
+        authors_json      = json.dumps(authors)      if authors      else None
+        dates_json        = json.dumps(dates)        if dates        else None
+        has_response_json = json.dumps(has_response) if has_response else None
 
+        saved_products = []
         for item in seller_products:
+            product_fields = _extract_product_fields(item)
+
             existing = db.query(TrackedProduct).filter(
-                TrackedProduct.seller_id == seller_id, TrackedProduct.asin == item["asin"],
+                TrackedProduct.seller_id  == seller_id,
+                TrackedProduct.asin       == item["asin"],
                 TrackedProduct.user_email == user_email,
             ).first()
+            # if existing:
+            #     existing.product_title       = item["product_title"]
+            #     existing.product_photo       = item.get("product_photo", "")
+            #     existing.review_comments     = comments_json
+            #     existing.review_ratings      = ratings_json
+            #     existing.review_authors      = authors_json
+            #     existing.review_dates        = dates_json
+            #     existing.review_has_response = has_response_json
+            #     for field, value in {**product_fields, **profile}.items():
+            #         if value is not None:  # keeps False, 0, empty string — only skips None
+            #             setattr(existing, field, value)
+            #     db.commit(); db.refresh(existing)
+            #     saved_products.append(existing)
+            # else:
+            #     new_p = TrackedProduct(
+            #         seller_id=seller_id,
+            #         asin=item["asin"],
+            #         product_title=item["product_title"],
+            #         product_photo=item.get("product_photo", ""),
+            #         country=country,
+            #         user_email=user_email,
+            #         review_comments=comments_json,
+            #         review_ratings=ratings_json,
+            #         review_authors=authors_json,
+            #         review_dates=dates_json,
+            #         review_has_response=has_response_json,
+            #         **product_fields,
+            #         **profile,
+            #     )
+            #     db.add(new_p); db.commit(); db.refresh(new_p)
+            #     saved_products.append(new_p)
+            BOOLEAN_FIELDS = {
+                "is_best_seller", "is_amazon_choice", "is_prime",
+                "climate_pledge_friendly", "has_variations"
+            }
+
             if existing:
-                existing.review_comments = comments_json
-                existing.review_ratings  = ratings_json
-                db.commit(); db.refresh(existing)
+                existing.product_title       = item["product_title"]
+                existing.product_photo       = item.get("product_photo", "")
+                existing.review_comments     = comments_json
+                existing.review_ratings      = ratings_json
+                existing.review_authors      = authors_json
+                existing.review_dates        = dates_json
+                existing.review_has_response = has_response_json
+                for field, value in {**product_fields, **profile}.items():
+                    if field in BOOLEAN_FIELDS:
+                        setattr(existing, field, value)
+                    elif value is not None:
+                        setattr(existing, field, value)
+                db.commit()
+                db.refresh(existing)
                 saved_products.append(existing)
             else:
                 new_p = TrackedProduct(
-                    seller_id=seller_id, asin=item["asin"], product_title=item["product_title"],
-                    product_photo=item.get("product_photo", ""), country=country,
-                    user_email=user_email, review_comments=comments_json, review_ratings=ratings_json,
+                    seller_id=seller_id,
+                    asin=item["asin"],
+                    product_title=item["product_title"],
+                    product_photo=item.get("product_photo", ""),
+                    country=country,
+                    user_email=user_email,
+                    review_comments=comments_json,
+                    review_ratings=ratings_json,
+                    review_authors=authors_json,
+                    review_dates=dates_json,
+                    review_has_response=has_response_json,
+                    **product_fields,
+                    **profile,
                 )
-                db.add(new_p); db.commit(); db.refresh(new_p)
+                db.add(new_p)
+                db.commit()
+                db.refresh(new_p)
                 saved_products.append(new_p)
-
+                
+        # Comparisons use the now-enriched seller dict (has real price/rating/badges)
         all_comparisons = []
         for sp in seller_products:
-            for comp in find_competitor_matches(sp, db, country=country, max_matches=3):
+            pf = _extract_product_fields(sp)
+            seller_dict = {
+                "asin":                      sp["asin"],
+                "product_title":             sp["product_title"],
+                "product_photo":             sp.get("product_photo"),
+                "product_price_numeric":     _parse_price(sp.get("product_price")),
+                "product_star_rating_numeric": pf["product_star_rating_numeric"],
+                "product_num_ratings":       pf["product_num_ratings"],
+                "is_best_seller":            pf["is_best_seller"],
+                "is_amazon_choice":          pf["is_amazon_choice"],
+                "is_prime":                  pf["is_prime"],
+            }
+            for comp in find_competitor_matches(seller_dict, db, country=country, max_matches=3):
                 all_comparisons.append({
-                    "seller_product":     {"asin": sp["asin"], "title": sp["product_title"], "photo": sp.get("product_photo")},
+                    "seller_product":     seller_dict,
                     "competitor_product": comp.model_dump(),
-                    "comparison_metrics": generate_comparison_metrics(sp, comp),
+                    "comparison_metrics": generate_comparison_metrics(seller_dict, comp),
                 })
 
         return {
-            "products": [
-                {"id": p.id, "seller_id": p.seller_id, "asin": p.asin,
-                 "product_title": p.product_title, "product_photo": p.product_photo,
-                 "country": p.country, "user_email": p.user_email,
-                 "review_comments": parse_review_comments(p.review_comments),
-                 "review_ratings":  parse_review_ratings(p.review_ratings)}
-                for p in saved_products
-            ],
+            "products":          [_to_response(p).__dict__ for p in saved_products],
             "comparisons":       all_comparisons,
             "total_products":    len(saved_products),
             "total_comparisons": len(all_comparisons),
@@ -13456,17 +16345,9 @@ def fetch_products_with_comparison(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
 # ═══════════════════════════════════════════════════════════════════
 # COMPETITOR INTELLIGENCE CHAT
-# A conversational AI endpoint — seller asks anything about their
-# competitors. Past, present, future. Human-like, memory-aware,
-# data-grounded. Feels like talking to a real strategist.
 # ═══════════════════════════════════════════════════════════════════
-
-# ─────────────────────────────────────────
-# CHAT PERSONA — deeper than SYSTEM_PERSONA
-# ─────────────────────────────────────────
 
 CHAT_PERSONA = """You are Insydz — a sharp, experienced Amazon marketplace strategist who has helped hundreds of sellers compete and win.
 
@@ -13485,7 +16366,8 @@ Your personality:
 
 Your knowledge scope for this conversation:
 - Everything about the seller's tracked product (title, ASIN, country, reviews, ratings)
-- Full competitor list with prices, ratings, review counts, badges (best seller, amazon choice, prime)
+- Full seller profile (business name, address, phone, logo, seller rating)
+- Full competitor list with prices, ratings, review counts, badges
 - Keyword rank history with velocity and trends
 - Competitor snapshot history (changes over time)
 - Rank prediction data (7-day and 30-day forecasts)
@@ -13499,43 +16381,8 @@ Time awareness:
 Never make up data. If a specific number isn't in the context, say so and reason from what you do have."""
 
 
-# ─────────────────────────────────────────
-# PYDANTIC MODELS FOR CHAT
-# ─────────────────────────────────────────
-
-class ChatMessage(BaseModel):
-    role: str       # "user" or "assistant"
-    content: str
-
-
-class CompetitorChatRequest(BaseModel):
-    tracked_product_id: int
-    user_email:         str
-    message:            str                          # current user message
-    history:            Optional[List[ChatMessage]] = []   # prior turns
-
-
-class CompetitorChatResponse(BaseModel):
-    reply:              str
-    context_used:       dict    # what data was loaded — helpful for frontend debug/display
-    suggested_followups: List[str]   # 3 natural next questions the seller might want to ask
-
-
-# ─────────────────────────────────────────
-# HELPER — build rich context snapshot
-# ─────────────────────────────────────────
-
-def _build_competitor_context(
-    product: TrackedProduct,
-    db: Session,
-    user_email: str,
-) -> dict:
-    """
-    Assembles everything known about a product and its competitors
-    into a structured context dict for the AI.
-    """
-
-    # ── Keyword rank history ──
+def _build_competitor_context(product: TrackedProduct, db: Session, user_email: str) -> dict:
+    # Keyword rank history
     kw_rows = db.execute(text("""
         SELECT keyword, rank, checked_at
         FROM keyword_rank_history
@@ -13552,21 +16399,19 @@ def _build_competitor_context(
         velocity = compute_velocity(ranks)
         change   = (ranks[1]["rank"] - ranks[0]["rank"]) if len(ranks) >= 2 else 0
         keyword_summary.append({
-            "keyword":        kw,
-            "current_rank":   ranks[0]["rank"] if ranks else 0,
-            "previous_rank":  ranks[1]["rank"] if len(ranks) >= 2 else None,
-            "change":         change,
-            "velocity":       velocity,
-            "trend":          "improving" if velocity > 0.3 else "declining" if velocity < -0.3 else "stable",
-            "history_count":  len(ranks),
+            "keyword":       kw,
+            "current_rank":  ranks[0]["rank"] if ranks else 0,
+            "previous_rank": ranks[1]["rank"] if len(ranks) >= 2 else None,
+            "change":        change,
+            "velocity":      velocity,
+            "trend":         "improving" if velocity > 0.3 else "declining" if velocity < -0.3 else "stable",
+            "history_count": len(ranks),
         })
 
-    # Overall rank prediction
     all_points = [{"rank": r["rank"], "checked_at": r["checked_at"]}
                   for ranks in by_kw.values() for r in ranks]
     prediction = predict_rank(sorted(all_points, key=lambda x: x["checked_at"])) if all_points else {}
 
-    # ── Live competitors ──
     seller_dict = {
         "asin":                      product.asin,
         "product_title":             product.product_title,
@@ -13577,7 +16422,7 @@ def _build_competitor_context(
         "is_amazon_choice":          False,
         "is_prime":                  False,
     }
-    competitors = find_competitor_matches(seller_dict, db, country=product.country, max_matches=6)
+    competitors        = find_competitor_matches(seller_dict, db, country=product.country, max_matches=6)
     competitor_details = []
     for c in competitors:
         metrics = generate_comparison_metrics(seller_dict, c)
@@ -13591,13 +16436,12 @@ def _build_competitor_context(
             "is_amazon_choice": c.is_amazon_choice,
             "is_prime":         c.is_prime,
             "sales_volume":     c.sales_volume,
-            "advantages_over_you":    metrics.get("competitive_disadvantages", []),
-            "your_advantages_over":   metrics.get("competitive_advantages", []),
-            "price_diff_percent":     metrics.get("price_comparison", {}).get("difference_percent"),
-            "rating_diff":            metrics.get("rating_comparison", {}).get("difference"),
+            "advantages_over_you":  metrics.get("competitive_disadvantages", []),
+            "your_advantages_over": metrics.get("competitive_advantages", []),
+            "price_diff_percent":   metrics.get("price_comparison", {}).get("difference_percent"),
+            "rating_diff":          metrics.get("rating_comparison", {}).get("difference"),
         })
 
-    # ── Snapshot history (competitor changes over time) ──
     snapshot_rows = db.execute(text("""
         SELECT snapshot_date, snapshot_data
         FROM competitor_snapshots
@@ -13625,26 +16469,31 @@ def _build_competitor_context(
             ],
         })
 
-    # ── Review sentiment (from stored comments) ──
-    comments = parse_review_comments(product.review_comments)
-    ratings  = parse_review_ratings(product.review_ratings)
+    comments   = parse_review_comments(product.review_comments)
+    ratings    = parse_review_ratings(product.review_ratings)
     avg_rating = round(sum(ratings) / len(ratings), 2) if ratings else None
 
     return {
         "product": {
-            "id":            product.id,
-            "asin":          product.asin,
-            "title":         product.product_title,
-            "country":       product.country,
-            "seller_id":     product.seller_id,
-            "avg_rating":    avg_rating,
-            "review_count":  len(ratings),
+            "id":           product.id,
+            "asin":         product.asin,
+            "title":        product.product_title,
+            "country":      product.country,
+            "seller_id":    product.seller_id,
+            "avg_rating":   avg_rating,
+            "review_count": len(ratings),
             "sample_reviews": comments[:10],
+            # seller profile in chat context (NEW)
+            "seller_name":          getattr(product, "seller_name", None),
+            "business_name":        getattr(product, "business_name", None),
+            "business_address":     getattr(product, "business_address", None),
+            "seller_rating":        getattr(product, "seller_rating", None),
+            "seller_ratings_total": getattr(product, "seller_ratings_total", None),
         },
-        "keywords":           keyword_summary,
-        "rank_prediction":    prediction,
-        "competitors":        competitor_details,
-        "snapshot_timeline":  snapshot_timeline,
+        "keywords":          keyword_summary,
+        "rank_prediction":   prediction,
+        "competitors":       competitor_details,
+        "snapshot_timeline": snapshot_timeline,
         "data_freshness": {
             "competitors_live":    len(competitor_details) > 0,
             "keyword_data_points": sum(k["history_count"] for k in keyword_summary),
@@ -13654,21 +16503,23 @@ def _build_competitor_context(
 
 
 def _format_context_for_prompt(ctx: dict) -> str:
-    """
-    Converts the context dict into a dense, readable text block
-    that the AI can reason over naturally.
-    """
     lines = []
-
     p = ctx["product"]
-    lines.append(f"=== SELLER'S PRODUCT ===")
+    lines.append("=== SELLER'S PRODUCT ===")
     lines.append(f"Title: {p['title']}")
     lines.append(f"ASIN: {p['asin']} | Country: {p['country']}")
     lines.append(f"Avg rating: {p['avg_rating'] or 'unknown'} | Reviews: {p['review_count']}")
+    # seller profile (NEW)
+    if p.get("seller_name") or p.get("business_name"):
+        lines.append(f"Seller: {p.get('seller_name','?')} | Business: {p.get('business_name','?')}")
+        if p.get("business_address"):
+            lines.append(f"Address: {p['business_address']}")
+        if p.get("seller_rating"):
+            lines.append(f"Seller rating: {p['seller_rating']} ({p.get('seller_ratings_total',0)} ratings)")
     if p["sample_reviews"]:
         lines.append(f"Sample customer feedback: {' | '.join(p['sample_reviews'][:3])}")
 
-    lines.append(f"\n=== KEYWORD RANKINGS ===")
+    lines.append("\n=== KEYWORD RANKINGS ===")
     if ctx["keywords"]:
         for k in ctx["keywords"]:
             arrow = "↑" if k["trend"] == "improving" else "↓" if k["trend"] == "declining" else "→"
@@ -13684,14 +16535,14 @@ def _format_context_for_prompt(ctx: dict) -> str:
     if pred.get("predicted_7d"):
         lines.append(
             f"\n=== RANK FORECAST ===\n"
-            f"  7-day: #{pred['predicted_7d']} (±{pred.get('margin_7d', '?')}) | "
-            f"30-day: #{pred['predicted_30d']} (±{pred.get('margin_30d', '?')}) | "
-            f"Trend: {pred.get('trend', 'unknown')} | Confidence: {pred.get('confidence', 'low')}"
+            f"  7-day: #{pred['predicted_7d']} (±{pred.get('margin_7d','?')}) | "
+            f"30-day: #{pred['predicted_30d']} (±{pred.get('margin_30d','?')}) | "
+            f"Trend: {pred.get('trend','unknown')} | Confidence: {pred.get('confidence','low')}"
         )
 
     lines.append(f"\n=== CURRENT COMPETITORS ({len(ctx['competitors'])} found) ===")
     for i, c in enumerate(ctx["competitors"], 1):
-        badges = []
+        badges    = []
         if c["is_best_seller"]:   badges.append("BEST SELLER")
         if c["is_amazon_choice"]: badges.append("AMAZON'S CHOICE")
         if c["is_prime"]:         badges.append("PRIME")
@@ -13719,22 +16570,17 @@ def _format_context_for_prompt(ctx: dict) -> str:
 
 
 def _format_history_for_prompt(history: List[ChatMessage]) -> str:
-    """Formats prior conversation turns into a readable block."""
     if not history:
         return ""
     lines = ["\n=== CONVERSATION SO FAR ==="]
-    for msg in history[-10:]:   # last 10 turns max — keeps prompt lean
+    for msg in history[-10:]:
         prefix = "Seller" if msg.role == "user" else "Insydz"
         lines.append(f"{prefix}: {msg.content}")
     return "\n".join(lines)
 
 
 def _generate_followup_suggestions(message: str, ctx: dict) -> List[str]:
-    """
-    Returns 3 natural follow-up questions based on what was just asked
-    and what data is available. No AI call — pure logic, fast.
-    """
-    msg_lower = message.lower()
+    msg_lower    = message.lower()
     has_history  = len(ctx["snapshot_timeline"]) > 0
     has_keywords = len(ctx["keywords"]) > 0
     has_comps    = len(ctx["competitors"]) > 0
@@ -13742,7 +16588,6 @@ def _generate_followup_suggestions(message: str, ctx: dict) -> List[str]:
 
     suggestions = []
 
-    # Context-aware suggestion pools
     if any(w in msg_lower for w in ["future", "predict", "forecast", "will", "going to"]):
         suggestions += [
             "Which keyword should I push hardest in the next 30 days?",
@@ -13774,63 +16619,33 @@ def _generate_followup_suggestions(message: str, ctx: dict) -> List[str]:
             "What does my rank velocity tell you about the next 2 weeks?",
         ]
     else:
-        # Generic but still contextual
-        if has_comps:
-            suggestions.append("Who is my most dangerous competitor right now and why?")
-        if has_pred:
-            suggestions.append("What does my rank prediction tell you about the next month?")
-        if has_history:
-            suggestions.append("Has anything changed with my competitors in the past week?")
-        if has_keywords:
-            suggestions.append("Which of my keywords has the best momentum right now?")
+        if has_comps:    suggestions.append("Who is my most dangerous competitor right now and why?")
+        if has_pred:     suggestions.append("What does my rank prediction tell you about the next month?")
+        if has_history:  suggestions.append("Has anything changed with my competitors in the past week?")
+        if has_keywords: suggestions.append("Which of my keywords has the best momentum right now?")
         suggestions.append("What's the one thing I should do this week to improve my position?")
 
     return suggestions[:3]
 
 
-# ─────────────────────────────────────────
-# THE CHAT ENDPOINT
-# ─────────────────────────────────────────
-
 @router.post("/keyword_tracker/competitor_chat", response_model=CompetitorChatResponse)
 def competitor_chat(req: CompetitorChatRequest, db: Session = Depends(get_db)):
-    """
-    Conversational competitor intelligence chat.
-
-    Send a message + optional conversation history.
-    Returns Insydz's reply, the context she used, and 3 suggested follow-ups.
-
-    The AI has full access to:
-      - Seller's product data and reviews
-      - All competitors with prices, ratings, badges
-      - Keyword rank history and velocity
-      - Competitor snapshot timeline (past changes)
-      - Rank predictions (7d + 30d)
-
-    Frontend usage:
-      1. First message: send message + empty history []
-      2. Each subsequent turn: append previous {role, content} pairs to history
-      3. Display suggested_followups as quick-reply chips
-    """
     if not req.user_email:
         raise HTTPException(status_code=400, detail="user_email is required")
     if not req.message.strip():
         raise HTTPException(status_code=400, detail="message cannot be empty")
 
-    # ── Load product ──
     product = db.query(TrackedProduct).filter(
-        TrackedProduct.id == req.tracked_product_id,
+        TrackedProduct.id         == req.tracked_product_id,
         TrackedProduct.user_email == req.user_email,
     ).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found or doesn't belong to this user")
 
-    # ── Build context ──
-    ctx            = _build_competitor_context(product, db, req.user_email)
-    context_text   = _format_context_for_prompt(ctx)
-    history_text   = _format_history_for_prompt(req.history)
+    ctx          = _build_competitor_context(product, db, req.user_email)
+    context_text = _format_context_for_prompt(ctx)
+    history_text = _format_history_for_prompt(req.history)
 
-    # ── Detect intent for prompt shaping ──
     msg_lower = req.message.lower()
     time_hint = ""
     if any(w in msg_lower for w in ["future", "predict", "forecast", "will", "going to", "next month", "next week"]):
@@ -13842,7 +16657,6 @@ def competitor_chat(req: CompetitorChatRequest, db: Session = Depends(get_db)):
     elif any(w in msg_lower for w in ["should", "do", "action", "help", "advice", "recommend", "strategy"]):
         time_hint = "\nThe seller wants actionable advice. Give them a direct, specific answer — not a list of options. Tell them exactly what to do."
 
-    # ── Build the full prompt ──
     prompt = f"""{CHAT_PERSONA}
 {time_hint}
 
@@ -13861,7 +16675,6 @@ Respond as Insydz. Be conversational, specific, and use the actual data above.
 - Do NOT use markdown headers, bullet asterisks, or numbered lists unless the question specifically calls for a structured breakdown.
 - Write as you'd speak to someone across a table."""
 
-    # ── Call Ollama ──
     try:
         reply = _call_ollama(prompt, timeout=120)
         if not reply:
@@ -13872,7 +16685,7 @@ Respond as Insydz. Be conversational, specific, and use the actual data above.
             )
     except requests.exceptions.ConnectionError:
         reply = (
-            "Can't reach Ollama right now. Make sure it's running on "
+            f"Can't reach Ollama right now. Make sure it's running on "
             f"{OLLAMA_BASE} with `ollama serve`. "
             "Once it's up, your question will work fine."
         )
@@ -13884,28 +16697,24 @@ Respond as Insydz. Be conversational, specific, and use the actual data above.
     except Exception as e:
         reply = f"Something went wrong on my end: {str(e)}. Try again in a moment."
 
-    # ── Suggested follow-ups ──
     followups = _generate_followup_suggestions(req.message, ctx)
 
     return CompetitorChatResponse(
         reply=reply,
         context_used={
-            "product_asin":          ctx["product"]["asin"],
-            "product_title":         ctx["product"]["title"],
-            "competitors_loaded":    len(ctx["competitors"]),
-            "keywords_loaded":       len(ctx["keywords"]),
-            "snapshot_days":         ctx["data_freshness"]["snapshot_days"],
-            "keyword_data_points":   ctx["data_freshness"]["keyword_data_points"],
+            "product_asin":              ctx["product"]["asin"],
+            "product_title":             ctx["product"]["title"],
+            "seller_name":               ctx["product"].get("seller_name"),
+            "business_name":             ctx["product"].get("business_name"),
+            "competitors_loaded":        len(ctx["competitors"]),
+            "keywords_loaded":           len(ctx["keywords"]),
+            "snapshot_days":             ctx["data_freshness"]["snapshot_days"],
+            "keyword_data_points":       ctx["data_freshness"]["keyword_data_points"],
             "rank_prediction_available": bool(ctx["rank_prediction"].get("predicted_7d")),
         },
         suggested_followups=followups,
     )
 
-
-# ─────────────────────────────────────────
-# CHAT STARTER — first message suggestions
-# when seller opens the chat for the first time
-# ─────────────────────────────────────────
 
 @router.get("/keyword_tracker/competitor_chat/starters/{tracked_product_id}")
 def get_chat_starters(
@@ -13913,13 +16722,8 @@ def get_chat_starters(
     user_email: str,
     db: Session = Depends(get_db),
 ):
-    """
-    Returns contextual opening questions for the chat UI
-    so sellers know what they can ask Insydz about.
-    Generated based on what data is actually available for this product.
-    """
     product = db.query(TrackedProduct).filter(
-        TrackedProduct.id == tracked_product_id,
+        TrackedProduct.id         == tracked_product_id,
         TrackedProduct.user_email == user_email,
     ).first()
     if not product:
@@ -13948,8 +16752,7 @@ def get_chat_starters(
             "category": "Looking back",
             "questions": [
                 "Have any competitors changed their price or rating recently?"
-                if has_snapshots else
-                "What's the competitive landscape in my category?",
+                if has_snapshots else "What's the competitive landscape in my category?",
                 "Which competitor has been most consistent over time?",
                 "Has my ranking been improving or declining over the past few weeks?",
             ],
@@ -13984,18 +16787,20 @@ def get_chat_starters(
             ],
         })
 
+    seller_name = getattr(product, "seller_name", None)
     return {
         "product_title": product.product_title,
         "asin":          product.asin,
+        "seller_name":   seller_name,
         "starters":      starters,
         "intro": (
             f"Hey — I'm Insydz. I've pulled up everything on your competitors "
-            f"for '{product.product_title}'. "
-            f"Ask me anything — past, present, or where things are headed. "
-            f"What do you want to know?"
+            f"for '{product.product_title}'"
+            + (f" (sold by {seller_name})" if seller_name else "")
+            + ". Ask me anything — past, present, or where things are headed. "
+            "What do you want to know?"
         ),
     }
-
 
 
 from fastapi.responses import Response
