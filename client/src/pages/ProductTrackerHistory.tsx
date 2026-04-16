@@ -89,7 +89,7 @@ export default function ProductTrackerHistory() {
       const response = await fetch(`http://localhost:8000/product-tracker/history?user_email=${email}&limit=50`);
       const data = await response.json();
       if (data.success) {
-        setHistory(data.data);
+        setHistory(data.data?.items || []);
       }
     } catch (error) {
       console.error("❌ Failed to fetch history:", error);
@@ -272,20 +272,25 @@ export default function ProductTrackerHistory() {
 
       {/* MAIN CONTENT */}
       <div className="lg:ml-64 transition-all min-h-screen">
-        {/* Header */}
-        <header className="bg-white/70 backdrop-blur-md border-b border-slate-200 px-6 py-4 sticky top-0 z-10">
-          <div className="flex items-center justify-between">
+        {/* Compact Header Consolidated */}
+        <header className="bg-white/80 backdrop-blur-xl border border-sky-100 shadow-xl rounded-2xl px-6 py-4 mb-6 flex flex-col md:flex-row items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6 transition-all duration-300">
+          <div className="flex items-center gap-4 w-full md:w-auto mb-4 md:mb-0">
             <div className="flex items-center gap-3">
-              <History className="h-8 w-8 text-purple-600" />
+              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl shadow-inner border border-purple-50">
+                <History className="h-6 w-6 text-purple-600" />
+              </div>
               <div>
-                <h2 className="text-2xl font-semibold text-slate-800">Analysis History</h2>
-                <p className="text-sm text-slate-500">Your past product analyses</p>
+                <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-900 to-pink-700 bg-clip-text text-transparent tracking-tight">Analysis History</h2>
+                <p className="text-slate-500 text-xs sm:text-sm font-medium">Your past product analyses</p>
               </div>
             </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
             <Button
               variant="outline"
               onClick={() => setLocation("/product-tracker")}
-              className="flex items-center gap-2"
+              className="w-full sm:w-auto flex items-center gap-2 border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs px-4 py-2 rounded-xl transition-all"
             >
               <ChevronLeft className="h-4 w-4" />
               Back to Tracker

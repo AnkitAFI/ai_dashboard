@@ -27,6 +27,7 @@ class UserRepository:
             "onboarding_goal": onboarding_data["onboarding_goal"],
             "onboarding_marketplace": onboarding_data["onboarding_marketplace"],
             "onboarding_details": onboarding_data["onboarding_details"],
+            "seller_id": onboarding_data.get("seller_id"),
             "onboarding_completed": True,
         })
         db.commit()

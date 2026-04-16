@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
@@ -49,14 +49,17 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 @router.post("/onboarding", response_model=UserOut)
 def update_onboarding(
     onboarding: OnboardingUpdate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     current_user = Depends(get_current_user)
 ):
     """
     Update onboarding information for the current user.
+    Triggers product ingestion in the background if seller_id is provided.
     """
     return user_service.update_onboarding(
         db, 
         current_user.id, 
-        onboarding.model_dump()
+        onboarding.model_dump(),
+        background_tasks
     )

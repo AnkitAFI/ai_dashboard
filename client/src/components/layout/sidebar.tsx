@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/App";
 import {
@@ -33,6 +32,8 @@ import {
   Zap,
   User,
   Star,
+  MessageSquare,
+  Bookmark,
   Calculator
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -58,7 +59,6 @@ const EXPLORER_SECTIONS: NavSection[] = [
     icon: Rocket,
     items: [
       { href: "/dashboard", label: "Dashboard", icon: Home },
-      { href: "/explorer/start-here", label: "Start Here Guide", icon: Rocket, badge: "NEW" },
     ],
   },
   {
@@ -67,15 +67,13 @@ const EXPLORER_SECTIONS: NavSection[] = [
     items: [
       { href: "/categories", label: "Browse Categories", icon: PieChart },
       { href: "/sales", label: "Top Selling Products", icon: TrendingUp },
-      { href: "/explorer/product-research", label: "Product Research", icon: Search, badge: "NEW" },
+      { href: "/explorer/opportunity-finder", label: "Opportunity Finder", icon: Compass, badge: "NEW" },
     ],
   },
   {
     label: "BEAT COMPETITION",
     icon: Sword,
     items: [
-      { href: "/explorer/competitor-prices", label: "Competitor Prices", icon: Shield, badge: "NEW" },
-      { href: "/explorer/review-analytics", label: "Review Analytics", icon: Users, badge: "NEW" },
       { href: "/explorer/white-space-finder", label: "Opportunity Finder", icon: ShieldCheck, badge: "NEW" },
       { href: "/share-of-voice", label: "Market Visibility", icon: BarChart3 },
       { href: "/keyword-tracker", label: "Keyword Tracker", icon: History },
@@ -94,18 +92,17 @@ const EXPLORER_SECTIONS: NavSection[] = [
     label: "TRACK & GROW",
     icon: Activity,
     items: [
-      { href: "/explorer/whatsapp-alerts", label: "WhatsApp Alerts", icon: Menu, badge: "NEW" },
-      { href: "/explorer/festive-trends", label: "Festive Trends", icon: TrendingUp, badge: "SOON", disabled: true },
-      { href: "/explorer/my-watchlist", label: "My Watchlist", icon: History, badge: "NEW" },
+      { href: "/explorer/whatsapp-alerts", label: "WhatsApp Alerts", icon: MessageSquare, badge: "NEW" },
+      { href: "/explorer/festive-trends", label: "Festive Trends", icon: Star, badge: "NEW", disabled: true },
+      { href: "/explorer/my-watchlist", label: "My Watchlist", icon: Bookmark, badge: "NEW" },
     ],
   },
   {
-    label: "USERS",
-    icon: Users,
+    label: "SETTINGS",
+    icon: Settings,
     items: [
       { href: "/subscription", label: "Subscription", icon: Crown },
       { href: "/about", label: "About", icon: Info },
-      { href: "/settings", label: "Settings", icon: Settings },
       { href: "/order-history", label: "Order History", icon: Receipt },
     ],
   },
@@ -125,37 +122,39 @@ const SELLER_SECTIONS: NavSection[] = [
     label: "COMPETITORS",
     icon: Users,
     items: [
+      { href: "/categories", label: "Browse Categories", icon: PieChart },
       { href: "/seller/price-comparison", label: "Price Comparison", icon: DollarSign, badge: "NEW" },
-      { href: "/seller/review-comparison", label: "Review Comparison", icon: Star, badge: "NEW" }, // Added Star icon below
+      { href: "/seller/review-comparison", label: "Review Comparison", icon: Star, badge: "NEW" },
       { href: "/seller/keyword-gap", label: "Keyword Gap Analysis", icon: History, badge: "NEW" },
+      { href: "/sales", label: "Top Selling Products", icon: TrendingUp },
+      { href: "/seller/competitor-analysis", label: "Competitor Analysis", icon: Shield, badge: "NEW" },
     ],
   },
   {
     label: "OPTIMIZE",
     icon: Zap,
     items: [
-      { href: "/seller/price-optimizer", label: "Price Optimizer", icon: TrendingUp, badge: "NEW" },
-      { href: "/seller/seo-optimizer", label: "SEO Optimizer", icon: Search, badge: "NEW" },
+      { href: "/seller/price-optimizer", label: "Price Optimizer", icon: TrendingUp },
+      { href: "/keyword-tracker", label: "Keyword Tracker", icon: History },
       { href: "/seller/ai-advisor", label: "AI Advisor", icon: Sparkles, badge: "NEW" },
     ],
   },
   {
-    label: "MONITOR",
+    label: "TRACK & GROW",
     icon: Activity,
     items: [
-      { href: "/keyword-tracker", label: "Rank Tracker", icon: History },
       { href: "/share-of-voice", label: "Market Visibility", icon: BarChart3 },
-      { href: "/seller/whatsapp-alerts", label: "WhatsApp Alerts", icon: Menu, badge: "NEW" },
-      { href: "/seller/festive-trends", label: "Festive Trends", icon: TrendingUp, badge: "SOON", disabled: true },
+      { href: "/seller/whatsapp-alerts", label: "WhatsApp Alerts", icon: MessageSquare, badge: "NEW" },
+      { href: "/seller/festive-trends", label: "Festive Trends", icon: Star, badge: "NEW", disabled: true },
+      { href: "/seller/rank-tracker", label: "Rank Tracker", icon: Target, badge: "NEW" },
     ],
   },
   {
-    label: "USERS",
-    icon: User,
+    label: "SETTINGS",
+    icon: Settings,
     items: [
       { href: "/subscription", label: "Subscription", icon: Crown },
       { href: "/about", label: "About", icon: Info },
-      { href: "/settings", label: "Settings", icon: Settings },
       { href: "/order-history", label: "Order History", icon: Receipt },
     ],
   },
@@ -201,28 +200,7 @@ export default function Sidebar() {
     }
   };
 
-  const getUserInitials = () => {
-    if (!user) return "U";
 
-    // Try firstName and lastName first
-    if (user.firstName || user.lastName) {
-      const first = user.firstName?.[0] || "";
-      const last = user.lastName?.[0] || "";
-      return `${first}${last}`.toUpperCase() || "U";
-    }
-
-    // Fallback to name field
-    if (user.name) {
-      const parts = user.name.split(" ");
-      if (parts.length >= 2) {
-        return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-      }
-      return user.name.substring(0, 2).toUpperCase();
-    }
-
-    // Final fallback
-    return "U";
-  };
 
   const getSubscriptionColor = (tier: string) => {
     switch (tier?.toLowerCase()) {
@@ -322,21 +300,27 @@ export default function Sidebar() {
         {/* Mode Toggle */}
         {!isCollapsed && (
           <div className="px-4 py-3">
-            <div className="bg-[#1e293b]/20 p-1.5 rounded-2xl flex items-center border border-white/10 backdrop-blur-md">
+            <div
+              className="relative p-1 rounded-full flex items-center"
+              style={{
+                background: 'linear-gradient(135deg, #00C6FF 0%, #0099FF 50%, #00D4AA 100%)',
+                boxShadow: '0 2px 10px rgba(0, 198, 255, 0.3)',
+              }}
+            >
               <button
                 onClick={() => {
                   setMode('explorer');
                   setLocation("/dashboard");
                 }}
                 className={cn(
-                  "flex-1 flex items-center justify-center py-2 px-3 rounded-xl text-[10px] font-bold transition-all duration-300",
+                  "flex-1 flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-bold transition-all duration-300 z-10 relative",
                   mode === 'explorer'
-                    ? "bg-[#F97316] text-white shadow-lg scale-[1.02]"
-                    : "text-slate-600 hover:text-[#003366] hover:bg-white/40"
+                    ? "bg-white text-[#003366] shadow-lg"
+                    : "bg-transparent text-white hover:text-white/90"
                 )}
               >
-                <Search className="w-4 h-4 mr-2" />
-                Explorer Mode
+                <Search className="w-3.5 h-3.5 mr-1.5" />
+                Explorer
               </button>
               <button
                 onClick={() => {
@@ -344,14 +328,14 @@ export default function Sidebar() {
                   setLocation("/dashboard");
                 }}
                 className={cn(
-                  "flex-1 flex items-center justify-center py-2 px-3 rounded-xl text-[10px] font-bold transition-all duration-300",
+                  "flex-1 flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-bold transition-all duration-300 z-10 relative",
                   mode === 'seller'
-                    ? "bg-[#F97316] text-white shadow-lg scale-[1.02]"
-                    : "text-slate-600 hover:text-[#003366] hover:bg-white/40"
+                    ? "bg-white text-[#003366] shadow-lg"
+                    : "bg-transparent text-white hover:text-white/90"
                 )}
               >
-                <BarChart3 className="w-4 h-4 mr-2" />
-                Seller Mode
+                <BarChart3 className="w-3.5 h-3.5 mr-1.5" />
+                Seller
               </button>
             </div>
           </div>
@@ -424,11 +408,11 @@ export default function Sidebar() {
             "flex items-center p-2 bg-white/70 rounded-xl shadow-sm",
             isCollapsed && "justify-center"
           )}>
-            <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white text-xs">
-                {getUserInitials()}
-              </AvatarFallback>
-            </Avatar>
+            <Link href="/settings">
+              <a className="flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-sm hover:scale-105 transition-transform">
+                <Settings className="h-4 w-4" />
+              </a>
+            </Link>
 
             {!isCollapsed && (
               <div className="flex-1 ml-2.5 min-w-0">

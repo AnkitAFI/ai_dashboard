@@ -645,73 +645,61 @@ export default function ShareOfVoice() {
       {/* ── Main ── */}
       <div className="flex-1 w-full lg:ml-64 min-h-screen flex flex-col">
 
-        {/* Header */}
-        <header className="bg-white/70 backdrop-blur-xl border border-sky-100 shadow-lg rounded-2xl px-6 sm:px-12 py-4 sm:py-6 mb-6 flex items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+        {/* Compact Header & Hero Consolidated */}
+        <header className="bg-white/80 backdrop-blur-xl border border-sky-100 shadow-xl rounded-2xl px-6 py-4 mb-6 flex flex-col md:flex-row items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6 transition-all duration-300">
+          <div className="flex items-center gap-4 w-full md:w-auto mb-4 md:mb-0">
             <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors">
               <span className="text-xl font-bold">☰</span>
             </button>
-            <div>
-              <h2 className="text-3xl font-bold text-sky-900">Market Visibility Score</h2>
-              <p className="text-slate-600 text-sm sm:text-base mt-1">Track your market share and competitor insights</p>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl shadow-inner">
+                <BarChart3 className="h-6 w-6 text-blue-500" />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-sky-900 to-blue-700 bg-clip-text text-transparent">Market Visibility Intelligence</h2>
+                <p className="text-slate-500 text-xs sm:text-sm font-medium">Analyze market share and competitor insights</p>
+              </div>
             </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+            {isLoading ? (
+              <p className="text-xs text-slate-400 animate-pulse">Checking session…</p>
+            ) : userEmail ? (
+              <div className="flex items-center gap-4 w-full sm:w-auto">
+                {usageLimits && (
+                  <div className="bg-white/50 rounded-xl p-6 px-4 border border-slate-200 shadow-sm flex-1 sm:flex-none min-w-[200px]">
+                    <div className="flex items-center justify-between gap-4 mb-1">
+                      <p className="text-[12px] text-slate-500 font-bold uppercase tracking-wider">SOV Usage</p>
+                      <Badge className="h-4 text-[12px] bg-blue-100 text-blue-800 border-none px-1.5">{usageLimits.subscription_tier.toUpperCase()}</Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${!canAnalyze ? "bg-red-500" : "bg-gradient-to-r from-blue-400 to-cyan-400"}`}
+                          style={{ width: usageLimits.limit === Infinity ? "100%" : `${Math.min((usageLimits.count / usageLimits.limit) * 100, 100)}%` }}
+                        />
+                      </div>
+                      <span className="text-[12px] font-bold text-slate-600">
+                        {usageLimits.count}/{usageLimits.limit === Infinity ? "∞" : usageLimits.limit}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {/* <div className="hidden sm:block text-right">
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Account</p>
+                  <p className="text-xs text-green-600 font-bold truncate max-w-[150px]">{userEmail}</p>
+                </div> */}
+              </div>
+            ) : (
+              <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 gap-1 text-[10px]">
+                <AlertCircle className="h-3 w-3" /> Guest Mode
+              </Badge>
+            )}
           </div>
         </header>
 
         <main className="px-4 sm:px-6 flex-1 overflow-y-auto pb-10 space-y-6">
-
-          {/* Hero */}
-          <div className="text-center space-y-4">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl mb-2 shadow-inner">
-              <BarChart3 className="h-10 w-10 text-blue-500" />
-            </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-              Market Share Intelligence
-            </h1>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-              Analyze your brand's market position, track competitors, and get a step-by-step launch action plan
-            </p>
-
-            {isLoading ? (
-              <p className="text-sm text-gray-500">Checking session…</p>
-            ) : userEmail ? (
-              <div className="space-y-2">
-                <p className="text-sm text-green-600 font-medium">✓ Logged in as: {userEmail}</p>
-                {usageLimits && (
-                  <div className="bg-white rounded-xl p-4 max-w-md mx-auto border border-slate-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-sm text-slate-600 font-medium">SOV Analyses This Month</p>
-                      <Badge className="bg-blue-100 text-blue-800">{usageLimits.subscription_tier.toUpperCase()}</Badge>
-                    </div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="flex-1 bg-slate-200 rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full transition-all ${!canAnalyze ? "bg-red-500" : "bg-gradient-to-r from-blue-500 to-cyan-500"}`}
-                          style={{ width: usageLimits.limit === Infinity ? "100%" : `${Math.min((usageLimits.count / usageLimits.limit) * 100, 100)}%` }}
-                        />
-                      </div>
-                      <span className="text-sm font-bold text-slate-700 shrink-0">
-                        {usageLimits.count} / {usageLimits.limit === Infinity ? "∞" : usageLimits.limit}
-                      </span>
-                    </div>
-                    {!canAnalyze && (
-                      <Alert className="border-red-300 bg-red-50 mt-2">
-                        <AlertCircle className="h-4 w-4 text-red-600" />
-                        <AlertDescription className="text-xs text-red-700">
-                          Limit reached! <a href="/subscription" className="underline font-semibold">Upgrade</a> for more.
-                        </AlertDescription>
-                      </Alert>
-                    )}
-                    {canAnalyze && usageLimits.remaining !== Infinity && usageLimits.remaining <= 2 && (
-                      <p className="text-xs text-orange-600 font-medium mt-1">⚠️ Only {usageLimits.remaining} analyses remaining</p>
-                    )}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-orange-600 font-medium">⚠️ Not logged in — analysis won't be tracked</p>
-            )}
-          </div>
 
           {/* Tab Navigation */}
           <Card className="bg-white/70 backdrop-blur-md border border-slate-200 rounded-2xl shadow-lg">

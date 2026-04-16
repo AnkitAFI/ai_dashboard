@@ -573,62 +573,60 @@ export default function KeywordTracker() {
       {/* MAIN CONTENT */}
       <div className="lg:ml-64 transition-all min-h-screen">
 
-        {/* Header */}
-        <header className="bg-white/70 backdrop-blur-md border-b border-slate-200 px-6 py-4 sticky top-0 z-10">
-          <div className="flex items-center gap-3">
-            <Target className="h-8 w-8 text-purple-600" />
-            <div>
-              <h2 className="text-2xl font-semibold text-slate-800">Keyword Rank Tracker</h2>
-              <p className="text-sm text-slate-500">Monitor your Amazon product rankings for specific keywords</p>
+        {/* Compact Header & Title Consolidated */}
+        <header className="bg-white/80 backdrop-blur-xl border border-sky-100 shadow-xl rounded-2xl px-6 py-4 mb-6 flex flex-col md:flex-row items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6 transition-all duration-300">
+          {/* <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200 px-6 py-4 sticky top-0 z-20 flex flex-col md:flex-row items-center justify-between transition-all duration-300"> */}
+          <div className="flex items-center gap-4 w-full md:w-auto mb-4 md:mb-0">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl shadow-inner">
+                <Target className="h-6 w-6 text-purple-600" />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-900 to-indigo-700 bg-clip-text text-transparent tracking-tight">Keyword Rank Intelligence</h2>
+                <p className="text-slate-500 text-xs sm:text-sm font-medium">Monitor Amazon rankings for specific keywords</p>
+              </div>
             </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+            {isLoading ? (
+              <p className="text-xs text-slate-400 animate-pulse font-medium">Checking session…</p>
+            ) : userEmail ? (
+              <div className="flex items-center gap-4 w-full sm:w-auto justify-end">
+                {usageLimits && (
+                  <div className="bg-white/50 rounded-xl p-6 px-4 border border-slate-200 shadow-sm flex-1 sm:flex-none min-w-[200px]">
+                    <div className="flex items-center justify-between gap-4 mb-1">
+                      <p className="text-[12px] text-slate-500 font-bold uppercase tracking-wider">Tracking Usage</p>
+                      <Badge className="h-4 text-[10px] bg-purple-100 text-purple-800 border-none px-1.5">{usageLimits.subscription_tier.toUpperCase()}</Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${!canTrack ? "bg-red-500" : "bg-gradient-to-r from-purple-400 to-pink-400"}`}
+                          style={{ width: `${Math.min((usageLimits.count / usageLimits.limit) * 100, 100)}%` }}
+                        />
+                      </div>
+                      <span className="text-[12px] font-bold text-slate-600">
+                        {usageLimits.count.toLocaleString()}/{usageLimits.limit === Infinity ? "∞" : usageLimits.limit.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {/* <div className="hidden sm:block text-right">
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Account</p>
+                  <p className="text-xs text-green-600 font-bold truncate max-w-[150px]">{userEmail}</p>
+                </div> */}
+              </div>
+            ) : (
+              <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 gap-1 text-[10px]">
+                <AlertCircle className="h-3 w-3" /> Guest Mode
+              </Badge>
+            )}
           </div>
         </header>
 
         <div className="p-6">
           <div className="max-w-7xl mx-auto space-y-6">
-
-            {/* Title */}
-            <div className="text-center space-y-4">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-500 via-pink-400 to-red-400 text-transparent bg-clip-text">
-                Track Your Keyword Rankings
-              </h1>
-              <p className="text-slate-500 text-lg">Monitor how your products rank for important search keywords on Amazon</p>
-
-              {isLoading ? (
-                <p className="text-sm text-gray-500 font-medium">Checking session...</p>
-              ) : userEmail ? (
-                <div className="space-y-2">
-                  <p className="text-sm text-green-600 font-medium">✓ Logged in as: {userEmail} (Product tracking will be saved)</p>
-                  {usageLimits && (
-                    <div className="bg-white rounded-xl p-4 max-w-md mx-auto border border-slate-200 shadow-sm">
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm text-slate-600 font-medium">Products Tracked This Month</p>
-                        <Badge className="bg-purple-100 text-purple-800">{usageLimits.subscription_tier.toUpperCase()}</Badge>
-                      </div>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex-1 bg-slate-200 rounded-full h-3 mr-3">
-                          <div className={`h-3 rounded-full transition-all ${!canTrack ? "bg-red-500" : "bg-gradient-to-r from-purple-500 to-pink-500"}`} style={{ width: `${Math.min((usageLimits.count / usageLimits.limit) * 100, 100)}%` }} />
-                        </div>
-                        <span className="text-sm font-bold text-slate-700">{usageLimits.count} / {usageLimits.limit.toLocaleString()}</span>
-                      </div>
-                      {!canTrack && (
-                        <Alert className="border-red-300 bg-red-50 mt-3">
-                          <AlertCircle className="h-4 w-4 text-red-600" />
-                          <AlertDescription className="text-xs text-red-700">
-                            Limit reached! <a href="/subscription" className="underline font-semibold">Upgrade</a> for more product trackings.
-                          </AlertDescription>
-                        </Alert>
-                      )}
-                      {canTrack && usageLimits.remaining <= 2 && (
-                        <p className="text-xs text-orange-600 font-medium mt-2">⚠️ Only {usageLimits.remaining} product trackings remaining</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <p className="text-sm text-orange-600 font-medium">⚠️ Not logged in — Please login to track products and keywords</p>
-              )}
-            </div>
 
             {/* Step 1: Fetch Products */}
             <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden backdrop-blur-md bg-white/80">

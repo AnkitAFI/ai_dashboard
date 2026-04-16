@@ -5,7 +5,9 @@ import MetricsCards from "@/components/dashboard/metrics-cards";
 import ChartsGrid from "@/components/dashboard/charts-grid";
 import ProductRankings from "@/components/dashboard/product-rankings";
 import AIRecommendations from "@/components/dashboard/ai-recommendations";
-import Chatbot from "@/components/chatbot/chatbot";
+import SellerDashboardView from "@/components/dashboard/SellerDashboardView";
+import SellerIdInput from "@/components/dashboard/SellerIdInput";
+
 import { Button } from "@/components/ui/button";
 import { Bell, Filter, Menu, X, TrendingDown, TrendingUp, Star, Package, AlertCircle, ExternalLink, Lock, Crown } from "lucide-react";
 import { FiltersProvider, useFilters } from "@/components/dashboard/FiltersContext";
@@ -66,6 +68,10 @@ function DashboardContent() {
   const [selectedAlert, setSelectedAlert] = useState<Notification | null>(null);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+
+  // Seller Mode state
+  const [sidebarMode, setSidebarMode] = useState<string>(localStorage.getItem("sidebar-mode") || "explorer");
+  const [localSellerId, setLocalSellerId] = useState<string | null>(null);
 
   // Subscription hooks
   const { limits, canAccessFeature, currentTier } = useSubscriptionLimits();
@@ -130,6 +136,23 @@ function DashboardContent() {
       setIsOnboardingOpen(true);
     }
   }, [user]);
+
+  // Listen for sidebar mode changes from localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setSidebarMode(localStorage.getItem("sidebar-mode") || "explorer");
+    };
+    window.addEventListener("storage", handleStorageChange);
+    // Also poll for changes (since same-tab storage events don't fire)
+    const interval = setInterval(() => {
+      const current = localStorage.getItem("sidebar-mode") || "explorer";
+      setSidebarMode(prev => prev !== current ? current : prev);
+    }, 500);
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   const handleOnboardingComplete = async (data: OnboardingData) => {
     try {
@@ -454,10 +477,25 @@ function DashboardContent() {
 
         {/* Main Content */}
         <main className="px-4 sm:px-6 space-y-4 sm:space-y-6 flex-1 overflow-y-auto pb-6">
-          <MetricsCards selectedSource={selectedSource} />
-          <ChartsGrid selectedSource={selectedSource} />
-          <AIRecommendations selectedSource={selectedSource} />
-          <ProductRankings selectedSource={selectedSource} />
+          {sidebarMode === "seller" ? (
+            // ── Seller Mode ──
+            (user?.seller_id || localSellerId) ? (
+              <SellerDashboardView />
+            ) : (
+              <SellerIdInput onSaved={(id) => {
+                setLocalSellerId(id);
+                refreshUser();
+              }} />
+            )
+          ) : (
+            // ── Explorer Mode (unchanged) ──
+            <>
+              <MetricsCards selectedSource={selectedSource} />
+              <ChartsGrid selectedSource={selectedSource} />
+              <AIRecommendations selectedSource={selectedSource} />
+              <ProductRankings selectedSource={selectedSource} />
+            </>
+          )}
 
           {/* Disclaimer */}
           <div className="mt-1 pt-1 border-t border-slate-100">
@@ -470,10 +508,7 @@ function DashboardContent() {
         </main>
       </div>
 
-      {/* Chatbot - Hidden on very small screens */}
-      <div className="hidden sm:block">
-        <Chatbot />
-      </div>
+
 
       {/* Alert Details Dialog */}
       <Dialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
@@ -630,9 +665,9 @@ function DashboardContent() {
           )}
         </DialogContent>
       </Dialog>
-      <OnboardingModal 
-        isOpen={isOnboardingOpen} 
-        onClose={() => setIsOnboardingOpen(false)} 
+      <OnboardingModal
+        isOpen={isOnboardingOpen}
+        onClose={() => setIsOnboardingOpen(false)}
         onComplete={handleOnboardingComplete}
       />
     </div>
