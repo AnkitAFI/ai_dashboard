@@ -27,11 +27,7 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
-const API_BASE = "https://api.insydz.com";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
+const API_BASE = "http://localhost:8000";
 
 interface PaymentOrder {
   id: number;
@@ -47,8 +43,6 @@ interface PaymentOrder {
   created_at: string;
   paid_at: string | null;
 }
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const STATUS_CONFIG: Record<
   string,
@@ -81,9 +75,9 @@ const STATUS_CONFIG: Record<
 };
 
 const PLAN_BADGE: Record<string, string> = {
-  free:       "bg-slate-100 text-slate-600",
-  basic:      "bg-sky-100 text-sky-700",
-  premium:    "bg-amber-100 text-amber-700",
+  free: "bg-slate-100 text-slate-600",
+  basic: "bg-sky-100 text-sky-700",
+  premium: "bg-amber-100 text-amber-700",
   enterprise: "bg-indigo-100 text-indigo-700",
 };
 
@@ -142,7 +136,7 @@ function EmptyState() {
   );
 }
 
-// ─── Order Detail Modal ───────────────────────────────────────────────────────
+// ─── Order Detail Modal
 
 function OrderDetailModal({
   order,
@@ -155,9 +149,9 @@ function OrderDetailModal({
 
   return (
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-         onClick={onClose}>
+      onClick={onClose}>
       <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-5"
-           onClick={(e) => e.stopPropagation()}>
+        onClick={(e) => e.stopPropagation()}>
 
         {/* Header */}
         <div className="flex items-start justify-between">
@@ -168,7 +162,7 @@ function OrderDetailModal({
             </p>
           </div>
           <button onClick={onClose}
-                  className="p-2 rounded-xl hover:bg-slate-100 transition-colors">
+            className="p-2 rounded-xl hover:bg-slate-100 transition-colors">
             <X className="h-5 w-5 text-slate-500" />
           </button>
         </div>
@@ -257,20 +251,18 @@ function OrderDetailModal({
   );
 }
 
-// ═════════════════════════════════════════════════════════════════════════════
 // MAIN PAGE
-// ═════════════════════════════════════════════════════════════════════════════
 
 export default function OrderHistory() {
   const { user, isLoading: authLoading } = useAuth();
 
-  const [orders, setOrders]             = useState<PaymentOrder[]>([]);
-  const [loading, setLoading]           = useState(true);
-  const [error, setError]               = useState<string | null>(null);
+  const [orders, setOrders] = useState<PaymentOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<PaymentOrder | null>(null);
 
-  // ── Fetch orders ──────────────────────────────────────────────────────────
+  // ── Fetch orders
 
   const fetchOrders = async () => {
     if (!user?.id) return;
@@ -297,7 +289,7 @@ export default function OrderHistory() {
     if (user) fetchOrders();
   }, [user]);
 
-  // ── Auth guards ───────────────────────────────────────────────────────────
+  // ── Auth guards
 
   if (authLoading) {
     return (
@@ -320,7 +312,7 @@ export default function OrderHistory() {
           </CardHeader>
           <CardContent>
             <Button onClick={() => (window.location.href = "/login")}
-                    className="w-full bg-sky-600 hover:bg-sky-700 text-white rounded-xl h-11 font-bold">
+              className="w-full bg-sky-600 hover:bg-sky-700 text-white rounded-xl h-11 font-bold">
               Go to Login
             </Button>
           </CardContent>
@@ -329,13 +321,13 @@ export default function OrderHistory() {
     );
   }
 
-  // ── Stats ─────────────────────────────────────────────────────────────────
+  // ── Stats
 
-  const totalPaid    = orders.filter((o) => o.status === "paid").reduce((s, o) => s + o.amount, 0);
-  const paidCount    = orders.filter((o) => o.status === "paid").length;
+  const totalPaid = orders.filter((o) => o.status === "paid").reduce((s, o) => s + o.amount, 0);
+  const paidCount = orders.filter((o) => o.status === "paid").length;
   const pendingCount = orders.filter((o) => o.status === "pending").length;
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  // ── Render
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100 flex flex-col lg:flex-row">
@@ -349,7 +341,7 @@ export default function OrderHistory() {
       {isMobileMenuOpen && (
         <>
           <div className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-               onClick={() => setIsMobileMenuOpen(false)} />
+            onClick={() => setIsMobileMenuOpen(false)} />
           <aside className="fixed inset-y-0 left-0 w-64 bg-white z-50 lg:hidden shadow-2xl">
             <div className="flex justify-end p-4">
               <button onClick={() => setIsMobileMenuOpen(false)}>
@@ -376,7 +368,7 @@ export default function OrderHistory() {
                            z-20 mx-0 sm:mx-6">
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <button onClick={() => setIsMobileMenuOpen(true)}
-                    className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors">
+              className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors">
               <Menu className="h-5 w-5 text-sky-900" />
             </button>
             <div>
@@ -437,7 +429,7 @@ export default function OrderHistory() {
                 },
               ].map((stat) => (
                 <Card key={stat.label}
-                      className={`${stat.bg} border-0 shadow-sm rounded-2xl`}>
+                  className={`${stat.bg} border-0 shadow-sm rounded-2xl`}>
                   <CardContent className="p-4 flex items-center gap-3">
                     <div className="w-9 h-9 rounded-xl bg-white shadow-sm flex items-center justify-center flex-shrink-0">
                       {stat.icon}

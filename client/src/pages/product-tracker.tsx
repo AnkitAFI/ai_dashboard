@@ -12,12 +12,9 @@ import {
   AlertTriangle, Lightbulb, Menu, X, ShoppingBag, CheckCircle2,
   XCircle, History, Crown, Lock, Shield, Clock, Activity,
   ChevronDown, ChevronUp, Zap, BarChart3,
+  AlertCircle,
 } from "lucide-react";
 import Sidebar from "@/components/layout/sidebar";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// TYPES  — aligned with the new ApiResponse envelope from fastapi_main_v2.py
-// ─────────────────────────────────────────────────────────────────────────────
 
 interface GapItem {
   gap_type: string;
@@ -125,43 +122,35 @@ interface UsageLimits {
   subscription_tier: string;
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
-
 const SOURCE_TYPE_LABELS: Record<string, { label: string; color: string }> = {
-  exact_match:       { label: "Exact Match",        color: "bg-green-100 text-green-800 border-green-300"   },
-  keyword_match:     { label: "Keyword Match",       color: "bg-blue-100 text-blue-800 border-blue-300"     },
-  broad_match:       { label: "Broad Match",         color: "bg-yellow-100 text-yellow-800 border-yellow-300"},
-  category_fallback: { label: "Category Fallback",   color: "bg-orange-100 text-orange-800 border-orange-300"},
-  no_data:           { label: "No Data",             color: "bg-red-100 text-red-800 border-red-300"        },
+  exact_match: { label: "Exact Match", color: "bg-green-100 text-green-800 border-green-300" },
+  keyword_match: { label: "Keyword Match", color: "bg-blue-100 text-blue-800 border-blue-300" },
+  broad_match: { label: "Broad Match", color: "bg-yellow-100 text-yellow-800 border-yellow-300" },
+  category_fallback: { label: "Category Fallback", color: "bg-orange-100 text-orange-800 border-orange-300" },
+  no_data: { label: "No Data", color: "bg-red-100 text-red-800 border-red-300" },
 };
 
 const TIER_LABELS: Record<string, string> = {
-  tier_1_exact:    "Tier 1 — Exact",
-  tier_2_keyword:  "Tier 2 — Keyword",
-  tier_3_broad:    "Tier 3 — Broad",
+  tier_1_exact: "Tier 1 — Exact",
+  tier_2_keyword: "Tier 2 — Keyword",
+  tier_3_broad: "Tier 3 — Broad",
   tier_4_category: "Tier 4 — Category",
-  no_data:         "No Data",
+  no_data: "No Data",
 };
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SUB-COMPONENTS
-// ─────────────────────────────────────────────────────────────────────────────
 
 /** Confidence score pill + expandable breakdown */
 function ConfidencePanel({ cs }: { cs: NonNullable<ApiResponse["confidence_score"]> }) {
   const [open, setOpen] = useState(false);
   const pct = Math.round(cs.score * 100);
   const barColor =
-    cs.label === "High"   ? "bg-green-500"  :
-    cs.label === "Medium" ? "bg-yellow-500" : "bg-red-500";
+    cs.label === "High" ? "bg-green-500" :
+      cs.label === "Medium" ? "bg-yellow-500" : "bg-red-500";
   const textColor =
-    cs.label === "High"   ? "text-green-700"  :
-    cs.label === "Medium" ? "text-yellow-700" : "text-red-700";
+    cs.label === "High" ? "text-green-700" :
+      cs.label === "Medium" ? "text-yellow-700" : "text-red-700";
   const bgColor =
-    cs.label === "High"   ? "bg-green-50 border-green-200"   :
-    cs.label === "Medium" ? "bg-yellow-50 border-yellow-200" : "bg-red-50 border-red-200";
+    cs.label === "High" ? "bg-green-50 border-green-200" :
+      cs.label === "Medium" ? "bg-yellow-50 border-yellow-200" : "bg-red-50 border-red-200";
 
   return (
     <div className={`rounded-xl border-2 p-4 ${bgColor}`}>
@@ -280,31 +269,27 @@ function FallbackBanner({ reason }: { reason: string }) {
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN COMPONENT
-// ─────────────────────────────────────────────────────────────────────────────
-
 export default function ProductTracker() {
   const { user, isLoading } = useAuth();
   const userEmail = user?.email || "";
-  const userId    = user?.id;
+  const userId = user?.id;
 
   const [productName, setProductName] = useState("");
-  const [category,    setCategory]    = useState("");
-  const [categories,  setCategories]  = useState<string[]>([]);
-  const [source,      setSource]      = useState("amazon");
-  const [baseCost,    setBaseCost]    = useState("");
-  const [loading,     setLoading]     = useState(false);
+  const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
+  const [source, setSource] = useState("amazon");
+  const [baseCost, setBaseCost] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // New: store the full ApiResponse, not just the inner data
   const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
   const result = apiResponse?.data ?? null;
 
-  const [isMobileMenuOpen,  setIsMobileMenuOpen]  = useState(false);
-  const [toasts,            setToasts]            = useState<Toast[]>([]);
-  const [usageLimits,       setUsageLimits]       = useState<UsageLimits | null>(null);
-  const [loadingUsage,      setLoadingUsage]      = useState(false);
-  const [showUpgradeModal,  setShowUpgradeModal]  = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+  const [usageLimits, setUsageLimits] = useState<UsageLimits | null>(null);
+  const [loadingUsage, setLoadingUsage] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const UNLIMITED = 1_000_000;
 
@@ -315,15 +300,15 @@ export default function ProductTracker() {
     if (!userId) return;
     setLoadingUsage(true);
     try {
-      const res  = await fetch(`https://api.insydz.com/users/${userId}/analysis-usage`, { credentials: "include" });
+      const res = await fetch(`http://localhost:8000/users/${userId}/analysis-usage`, { credentials: "include" });
       // New envelope: { success, data: { count, limit, remaining, subscription_tier, month } }
       const body = await res.json();
-      const d    = body.data ?? body; // graceful fallback if old endpoint
+      const d = body.data ?? body; // graceful fallback if old endpoint
       if (res.ok) {
         setUsageLimits({
-          count:             d.count,
-          limit:             d.limit    === -1 ? UNLIMITED : d.limit,
-          remaining:         d.remaining === -1 ? UNLIMITED : d.remaining,
+          count: d.count,
+          limit: d.limit === -1 ? UNLIMITED : d.limit,
+          remaining: d.remaining === -1 ? UNLIMITED : d.remaining,
           subscription_tier: d.subscription_tier,
         });
       }
@@ -341,7 +326,7 @@ export default function ProductTracker() {
   const getUpgradeMessage = () => {
     if (!usageLimits) return "";
     const tier = usageLimits.subscription_tier.toLowerCase();
-    if (tier === "free")  return "Upgrade to Basic for 20 analyses per month";
+    if (tier === "free") return "Upgrade to Basic for 20 analyses per month";
     if (tier === "basic") return "Upgrade to Premium for unlimited analyses";
     return "Upgrade for more features";
   };
@@ -349,7 +334,7 @@ export default function ProductTracker() {
   // ── Categories ────────────────────────────────────────────────────────────
   const fetchCategories = async (src: string) => {
     try {
-      const res  = await fetch(`https://api.insydz.com/categories?table=${src}`);
+      const res = await fetch(`http://localhost:8000/categories?table=${src}`);
       const data = await res.json();
       const cats = data.map((c: any) => c.category);
       setCategories(cats);
@@ -361,7 +346,7 @@ export default function ProductTracker() {
   };
   useEffect(() => { fetchCategories(source); }, [source]);
 
-  // ── Toasts ────────────────────────────────────────────────────────────────
+  // ── Toasts
   const showToast = (title: string, description: string, variant: "success" | "error" = "success") => {
     const id = Date.now();
     setToasts(prev => [...prev, { id, title, description, variant }]);
@@ -369,7 +354,7 @@ export default function ProductTracker() {
   };
   const removeToast = (id: number) => setToasts(prev => prev.filter(t => t.id !== id));
 
-  // ── Analyse ───────────────────────────────────────────────────────────────
+  // ── Analyse
   const handleAnalyze = async () => {
     if (userId && !canAnalyze) {
       setShowUpgradeModal(true);
@@ -396,14 +381,14 @@ export default function ProductTracker() {
     setApiResponse(null);
 
     try {
-      const res = await fetch("https://api.insydz.com/product-tracker/analyze", {
-        method:  "POST",
+      const res = await fetch("http://localhost:8000/product-tracker/analyze", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({
+        body: JSON.stringify({
           product_name: productName,
           category,
           source,
-          base_cost:  cost,
+          base_cost: cost,
           user_email: userEmail || null,
         }),
       });
@@ -435,17 +420,17 @@ export default function ProductTracker() {
     }
   };
 
-  // ── Colour helpers (unchanged) ────────────────────────────────────────────
+  // Colour helpers
   const getConfidenceBadgeColor = (c: string) =>
-    c === "High"     ? "bg-green-100 text-green-800 border-green-300"   :
-    c === "Medium"   ? "bg-yellow-100 text-yellow-800 border-yellow-300" :
-    c === "Critical" ? "bg-red-100 text-red-800 border-red-300"         :
-                       "bg-red-100 text-red-800 border-red-300";
+    c === "High" ? "bg-green-100 text-green-800 border-green-300" :
+      c === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-300" :
+        c === "Critical" ? "bg-red-100 text-red-800 border-red-300" :
+          "bg-red-100 text-red-800 border-red-300";
 
   const getDemandBadgeColor = (d: string) =>
-    d === "High"   ? "bg-emerald-100 text-emerald-800 border-emerald-300" :
-    d === "Medium" ? "bg-blue-100 text-blue-800 border-blue-300"          :
-                     "bg-slate-100 text-slate-800 border-slate-300";
+    d === "High" ? "bg-emerald-100 text-emerald-800 border-emerald-300" :
+      d === "Medium" ? "bg-blue-100 text-blue-800 border-blue-300" :
+        "bg-slate-100 text-slate-800 border-slate-300";
 
   const getSourceColor = (s: string) =>
     s.toLowerCase() === "amazon"
@@ -453,18 +438,15 @@ export default function ProductTracker() {
       : "bg-yellow-100 text-yellow-800 border-yellow-300";
 
   const getSeverityColor = (s: string) =>
-    s === "High"   ? "border-red-300 bg-red-50"       :
-    s === "Medium" ? "border-yellow-300 bg-yellow-50" :
-                     "border-slate-200 bg-slate-50";
+    s === "High" ? "border-red-300 bg-red-50" :
+      s === "Medium" ? "border-yellow-300 bg-yellow-50" :
+        "border-slate-200 bg-slate-50";
 
   const getSeverityBadgeColor = (s: string) =>
-    s === "High"   ? "bg-red-100 text-red-800 border-red-300"       :
-    s === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-300" :
-                     "bg-slate-100 text-slate-800 border-slate-300";
+    s === "High" ? "bg-red-100 text-red-800 border-red-300" :
+      s === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-300" :
+        "bg-slate-100 text-slate-800 border-slate-300";
 
-  // ──────────────────────────────────────────────────────────────────────────
-  // RENDER
-  // ──────────────────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#F8FBFF] via-[#ECF5FF] to-[#E0F2FE] overflow-x-hidden">
 
@@ -502,12 +484,11 @@ export default function ProductTracker() {
       {/* Toasts */}
       <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-md">
         {toasts.map(t => (
-          <div key={t.id} className={`flex items-start gap-3 p-4 rounded-lg shadow-lg border-2 backdrop-blur-md animate-in slide-in-from-right ${
-            t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
-          }`}>
+          <div key={t.id} className={`flex items-start gap-3 p-4 rounded-lg shadow-lg border-2 backdrop-blur-md animate-in slide-in-from-right ${t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
+            }`}>
             {t.variant === "success"
               ? <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
-              : <XCircle     className="h-5 w-5 text-red-600 mt-0.5" />}
+              : <XCircle className="h-5 w-5 text-red-600 mt-0.5" />}
             <div className="flex-1 min-w-0">
               <p className={`font-semibold text-sm ${t.variant === "success" ? "text-green-900" : "text-red-900"}`}>{t.title}</p>
               <p className={`text-sm mt-1 ${t.variant === "success" ? "text-green-700" : "text-red-700"}`}>{t.description}</p>
@@ -548,69 +529,59 @@ export default function ProductTracker() {
       {/* MAIN CONTENT */}
       <div className="lg:ml-64 transition-all min-h-screen">
 
-        {/* Header */}
-        <header className="bg-white/70 backdrop-blur-md border-b border-slate-200 px-6 py-4 sticky top-0 z-10">
-          <div className="flex items-center gap-3">
-            <Target className="h-8 w-8 text-blue-600" />
-            <div>
-              <h2 className="text-2xl font-semibold text-slate-800">Product Radar</h2>
-              <p className="text-sm text-slate-500">Analyse market opportunities for Amazon & Flipkart</p>
+        {/* Compact Header & Title Consolidated */}
+        <header className="bg-white/80 backdrop-blur-xl border border-sky-100 shadow-xl rounded-2xl px-6 py-4 mb-6 flex flex-col md:flex-row items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6 transition-all duration-300">
+          <div className="flex items-center gap-4 w-full md:w-auto mb-4 md:mb-0">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl shadow-inner border border-blue-50">
+                <ShoppingBag className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-900 to-cyan-700 bg-clip-text text-transparent tracking-tight">Product Radar Intelligence</h2>
+                <p className="text-slate-500 text-xs sm:text-sm font-medium">Analyse market opportunities for Amazon & Flipkart</p>
+              </div>
             </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+            {isLoading ? (
+              <p className="text-xs text-slate-400 animate-pulse font-medium">Checking session…</p>
+            ) : userEmail ? (
+              <div className="flex items-center gap-4 w-full sm:w-auto justify-end">
+                {usageLimits && (
+                  <div className="bg-white/50 rounded-xl p-6 px-4 border border-slate-200 shadow-sm flex-1 sm:flex-none min-w-[200px]">
+                    <div className="flex items-center justify-between gap-4 mb-1">
+                      <p className="text-[12px] text-slate-500 font-bold uppercase tracking-wider">Analysis Usage</p>
+                      <Badge className="h-4 text-[10px] bg-blue-100 text-blue-800 border-none px-1.5">{usageLimits.subscription_tier.toUpperCase()}</Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${!canAnalyze ? "bg-red-500" : "bg-gradient-to-r from-blue-400 to-cyan-400"}`}
+                          style={{ width: usageLimits.limit >= UNLIMITED ? "100%" : `${Math.min((usageLimits.count / usageLimits.limit) * 100, 100)}%` }}
+                        />
+                      </div>
+                      <span className="text-[14px] font-bold text-slate-600">
+                        {usageLimits.count.toLocaleString()}/{usageLimits.limit >= UNLIMITED ? "∞" : usageLimits.limit.toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {/* <div className="hidden sm:block text-right">
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Account</p>
+                  <p className="text-xs text-green-600 font-bold truncate max-w-[150px]">{userEmail}</p>
+                </div> */}
+              </div>
+            ) : (
+              <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 gap-1 text-[10px]">
+                <AlertCircle className="h-3 w-3" /> Guest Mode
+              </Badge>
+            )}
           </div>
         </header>
 
         <div className="p-6">
           <div className="max-w-7xl mx-auto space-y-6">
-
-            {/* Title */}
-            <div className="text-center space-y-4">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-                AI-Powered Market Intelligence
-              </h1>
-              <p className="text-slate-500 text-lg">
-                Instant insights on pricing, competition, and sales forecasts for Amazon & Flipkart
-              </p>
-
-              {isLoading ? (
-                <p className="text-sm text-gray-500 font-medium">Checking session…</p>
-              ) : userEmail ? (
-                <div className="space-y-2">
-                  <p className="text-sm text-green-600 font-medium">✓ Logged in as: {userEmail} (Analysis will be saved)</p>
-                  {usageLimits && (
-                    <div className="bg-white rounded-xl p-4 max-w-md mx-auto border border-slate-200 shadow-sm">
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm text-slate-600 font-medium">Analyses This Month</p>
-                        <Badge className="bg-blue-100 text-blue-800">{usageLimits.subscription_tier.toUpperCase()}</Badge>
-                      </div>
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex-1 bg-slate-200 rounded-full h-3 mr-3">
-                          <div
-                            className={`h-3 rounded-full transition-all ${!canAnalyze ? "bg-red-500" : "bg-gradient-to-r from-blue-500 to-cyan-500"}`}
-                            style={{ width: usageLimits.limit >= UNLIMITED ? "100%" : `${Math.min((usageLimits.count / usageLimits.limit) * 100, 100)}%` }}
-                          />
-                        </div>
-                        <span className="text-sm font-bold text-slate-700">
-                          {usageLimits.count} / {usageLimits.limit >= UNLIMITED ? "∞" : usageLimits.limit}
-                        </span>
-                      </div>
-                      {!canAnalyze && usageLimits.limit < UNLIMITED && (
-                        <Alert className="border-red-300 bg-red-50 mt-3">
-                          <AlertTriangle className="h-4 w-4 text-red-600" />
-                          <AlertDescription className="text-xs text-red-700">
-                            Limit reached! <a href="/subscription" className="underline font-semibold">Upgrade</a> for more analyses.
-                          </AlertDescription>
-                        </Alert>
-                      )}
-                      {canAnalyze && usageLimits.remaining < UNLIMITED && usageLimits.remaining <= 2 && (
-                        <p className="text-xs text-orange-600 font-medium mt-2">⚠️ Only {usageLimits.remaining} analyses remaining</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <p className="text-sm text-orange-600 font-medium">⚠️ Not logged in — analysis won't be saved and limits won't apply</p>
-              )}
-            </div>
 
             {/* Input Form */}
             <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden backdrop-blur-md bg-white/80">
@@ -733,8 +704,8 @@ export default function ProductTracker() {
                     apiResponse.warnings[0].includes("CRITICAL") || apiResponse.warnings[0].includes("DANGER")
                       ? "border-red-300 bg-red-50"
                       : apiResponse.warnings[0].includes("EXCELLENT") || apiResponse.warnings[0].includes("VIABLE")
-                      ? "border-green-300 bg-green-50"
-                      : "border-yellow-300 bg-yellow-50"
+                        ? "border-green-300 bg-green-50"
+                        : "border-yellow-300 bg-yellow-50"
                   }>
                     <AlertTriangle className="h-4 w-4" />
                     <AlertDescription>
@@ -937,12 +908,11 @@ export default function ProductTracker() {
                         </div>
                       </div>
                       <div className="mt-2">
-                        <Badge className={`text-base px-4 py-1 ${
-                          result.final_verdict.verdict_color === "green"  ? "bg-green-100 text-green-800 border-green-300"     :
-                          result.final_verdict.verdict_color === "blue"   ? "bg-blue-100 text-blue-800 border-blue-300"       :
-                          result.final_verdict.verdict_color === "orange" ? "bg-orange-100 text-orange-800 border-orange-300" :
-                                                                            "bg-red-100 text-red-800 border-red-300"
-                        }`}>
+                        <Badge className={`text-base px-4 py-1 ${result.final_verdict.verdict_color === "green" ? "bg-green-100 text-green-800 border-green-300" :
+                          result.final_verdict.verdict_color === "blue" ? "bg-blue-100 text-blue-800 border-blue-300" :
+                            result.final_verdict.verdict_color === "orange" ? "bg-orange-100 text-orange-800 border-orange-300" :
+                              "bg-red-100 text-red-800 border-red-300"
+                          }`}>
                           {result.final_verdict.verdict_label}
                         </Badge>
                       </div>

@@ -2,66 +2,14 @@ import { useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import Sidebar from "@/components/layout/sidebar";
 import { useAuth } from "@/App";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { TrendingUp, Target, BarChart3, Search, RefreshCw, AlertCircle, CheckCircle, Users, Award, Filter, ChevronLeft, ChevronRight, Lock, Crown, XCircle, X, Zap, ShieldCheck, Map, Layers, Star, ArrowRight, TrendingDown, Minus, } from "lucide-react";
 import {
-  TrendingUp,
-  Target,
-  BarChart3,
-  Search,
-  RefreshCw,
-  AlertCircle,
-  CheckCircle,
-  Users,
-  Award,
-  Filter,
-  ChevronLeft,
-  ChevronRight,
-  Lock,
-  Crown,
-  XCircle,
-  X,
-  Zap,
-  ShieldCheck,
-  Map,
-  Layers,
-  Star,
-  ArrowRight,
-  TrendingDown,
-  Minus,
-} from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  RadarChart,
-  Radar,
-  PolarGrid,
-  PolarAngleAxis,
-  ScatterChart,
-  Scatter,
-  ZAxis,
+  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis, ScatterChart, Scatter, ZAxis,
 } from "recharts";
-
-// ─── Interfaces ───────────────────────────────────────────────────────────────
 
 interface BrandShareData {
   brand: string;
@@ -139,7 +87,6 @@ interface UsageLimits {
   subscription_tier: string;
 }
 
-// New endpoint interfaces
 interface MarketConcentration {
   hhi_score: number;
   label: string;
@@ -265,8 +212,6 @@ interface MarketHealthResponse {
   listing_quality: ListingQualityBenchmark;
 }
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
 const COLORS = ["#3b82f6", "#ef4444", "#10b981", "#f59e0b", "#8b5cf6", "#ec4899", "#14b8a6", "#f97316"];
 
 const QUADRANT_COLORS: Record<string, string> = {
@@ -276,8 +221,6 @@ const QUADRANT_COLORS: Record<string, string> = {
   "Poor Value": "#94a3b8",
 };
 
-// ─── Custom Tooltip ───────────────────────────────────────────────────────────
-
 const CustomTooltipStyle = {
   backgroundColor: "rgba(255,255,255,0.97)",
   borderRadius: "12px",
@@ -286,8 +229,6 @@ const CustomTooltipStyle = {
   fontSize: 13,
   padding: "10px 16px",
 };
-
-// ─── Pagination Component ─────────────────────────────────────────────────────
 
 function Pagination({
   currentPage,
@@ -324,11 +265,10 @@ function Pagination({
         <button
           key={p}
           onClick={() => onPageChange(p)}
-          className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${
-            currentPage === p
-              ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-blue-500 shadow-sm"
-              : "border-slate-300 hover:bg-blue-50"
-          }`}
+          className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${currentPage === p
+            ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-blue-500 shadow-sm"
+            : "border-slate-300 hover:bg-blue-50"
+            }`}
         >
           {p}
         </button>
@@ -351,7 +291,7 @@ function Pagination({
   );
 }
 
-// ─── Score Ring Component ─────────────────────────────────────────────────────
+// Score Ring Component
 
 function ScoreRing({ score, color, size = 80 }: { score: number; color: string; size?: number }) {
   const r = (size - 12) / 2;
@@ -375,7 +315,7 @@ function ScoreRing({ score, color, size = 80 }: { score: number; color: string; 
   );
 }
 
-// ─── Opportunity Badge ────────────────────────────────────────────────────────
+// Opportunity Badge
 
 function OppBadge({ opp }: { opp: string }) {
   const map: Record<string, string> = {
@@ -391,7 +331,7 @@ function OppBadge({ opp }: { opp: string }) {
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
+//  Main Component
 
 export default function ShareOfVoice() {
   const { user, isLoading } = useAuth();
@@ -428,7 +368,7 @@ export default function ShareOfVoice() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const API_BASE_URL = "https://api.insydz.com/api";
+  const API_BASE_URL = "http://localhost:8000/api";
 
   useEffect(() => { if (userId) fetchUsageLimits(); }, [userId]);
   useEffect(() => { fetchCategories(); }, [marketplace]);
@@ -486,9 +426,8 @@ export default function ShareOfVoice() {
     setMarketHealth(null); setAiInsights(null);
 
     try {
-      const url = `${API_BASE_URL}/sov/category/${encodeURIComponent(selectedCategory)}?marketplace=${marketplace}${
-        yourBrand ? `&your_brand=${encodeURIComponent(yourBrand)}` : ""
-      }${userId ? `&user_id=${userId}` : ""}`;
+      const url = `${API_BASE_URL}/sov/category/${encodeURIComponent(selectedCategory)}?marketplace=${marketplace}${yourBrand ? `&your_brand=${encodeURIComponent(yourBrand)}` : ""
+        }${userId ? `&user_id=${userId}` : ""}`;
       const res = await axios.get(url);
 
       if (res.data.error) {
@@ -551,9 +490,8 @@ export default function ShareOfVoice() {
     if (!selectedCategory) return;
     setLoadingHealth(true);
     try {
-      const url = `${API_BASE_URL}/sov/market-health/${encodeURIComponent(selectedCategory)}?marketplace=${marketplace}${
-        yourBrand ? `&your_brand=${encodeURIComponent(yourBrand)}` : ""
-      }${userId ? `&user_id=${userId}` : ""}`;
+      const url = `${API_BASE_URL}/sov/market-health/${encodeURIComponent(selectedCategory)}?marketplace=${marketplace}${yourBrand ? `&your_brand=${encodeURIComponent(yourBrand)}` : ""
+        }${userId ? `&user_id=${userId}` : ""}`;
       const res = await axios.get(url);
       if (!res.data.error) setMarketHealth(res.data);
     } catch { /* silent */ } finally { setLoadingHealth(false); }
@@ -673,9 +611,8 @@ export default function ShareOfVoice() {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`flex items-start gap-3 p-4 rounded-xl shadow-lg border-2 backdrop-blur-md ${
-              t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
-            }`}
+            className={`flex items-start gap-3 p-4 rounded-xl shadow-lg border-2 backdrop-blur-md ${t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
+              }`}
           >
             {t.variant === "success" ? <CheckCircle className="h-5 w-5 text-green-600 shrink-0 mt-0.5" /> : <XCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />}
             <div className="flex-1 min-w-0">
@@ -708,73 +645,61 @@ export default function ShareOfVoice() {
       {/* ── Main ── */}
       <div className="flex-1 w-full lg:ml-64 min-h-screen flex flex-col">
 
-        {/* Header */}
-        <header className="bg-white/70 backdrop-blur-xl border border-sky-100 shadow-lg rounded-2xl px-6 sm:px-12 py-4 sm:py-6 mb-6 flex items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
+        {/* Compact Header & Hero Consolidated */}
+        <header className="bg-white/80 backdrop-blur-xl border border-sky-100 shadow-xl rounded-2xl px-6 py-4 mb-6 flex flex-col md:flex-row items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6 transition-all duration-300">
+          <div className="flex items-center gap-4 w-full md:w-auto mb-4 md:mb-0">
             <button onClick={() => setIsMobileMenuOpen(true)} className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors">
               <span className="text-xl font-bold">☰</span>
             </button>
-            <div>
-              <h2 className="text-3xl font-bold text-sky-900">Market Visibility Score</h2>
-              <p className="text-slate-600 text-sm sm:text-base mt-1">Track your market share and competitor insights</p>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-xl shadow-inner">
+                <BarChart3 className="h-6 w-6 text-blue-500" />
+              </div>
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-sky-900 to-blue-700 bg-clip-text text-transparent">Market Visibility Intelligence</h2>
+                <p className="text-slate-500 text-xs sm:text-sm font-medium">Analyze market share and competitor insights</p>
+              </div>
             </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+            {isLoading ? (
+              <p className="text-xs text-slate-400 animate-pulse">Checking session…</p>
+            ) : userEmail ? (
+              <div className="flex items-center gap-4 w-full sm:w-auto">
+                {usageLimits && (
+                  <div className="bg-white/50 rounded-xl p-6 px-4 border border-slate-200 shadow-sm flex-1 sm:flex-none min-w-[200px]">
+                    <div className="flex items-center justify-between gap-4 mb-1">
+                      <p className="text-[12px] text-slate-500 font-bold uppercase tracking-wider">SOV Usage</p>
+                      <Badge className="h-4 text-[12px] bg-blue-100 text-blue-800 border-none px-1.5">{usageLimits.subscription_tier.toUpperCase()}</Badge>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${!canAnalyze ? "bg-red-500" : "bg-gradient-to-r from-blue-400 to-cyan-400"}`}
+                          style={{ width: usageLimits.limit === Infinity ? "100%" : `${Math.min((usageLimits.count / usageLimits.limit) * 100, 100)}%` }}
+                        />
+                      </div>
+                      <span className="text-[12px] font-bold text-slate-600">
+                        {usageLimits.count}/{usageLimits.limit === Infinity ? "∞" : usageLimits.limit}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {/* <div className="hidden sm:block text-right">
+                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Account</p>
+                  <p className="text-xs text-green-600 font-bold truncate max-w-[150px]">{userEmail}</p>
+                </div> */}
+              </div>
+            ) : (
+              <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 gap-1 text-[10px]">
+                <AlertCircle className="h-3 w-3" /> Guest Mode
+              </Badge>
+            )}
           </div>
         </header>
 
         <main className="px-4 sm:px-6 flex-1 overflow-y-auto pb-10 space-y-6">
-
-          {/* Hero */}
-          <div className="text-center space-y-4">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl mb-2 shadow-inner">
-              <BarChart3 className="h-10 w-10 text-blue-500" />
-            </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-              Market Share Intelligence
-            </h1>
-            <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-              Analyze your brand's market position, track competitors, and get a step-by-step launch action plan
-            </p>
-
-            {isLoading ? (
-              <p className="text-sm text-gray-500">Checking session…</p>
-            ) : userEmail ? (
-              <div className="space-y-2">
-                <p className="text-sm text-green-600 font-medium">✓ Logged in as: {userEmail}</p>
-                {usageLimits && (
-                  <div className="bg-white rounded-xl p-4 max-w-md mx-auto border border-slate-200 shadow-sm">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-sm text-slate-600 font-medium">SOV Analyses This Month</p>
-                      <Badge className="bg-blue-100 text-blue-800">{usageLimits.subscription_tier.toUpperCase()}</Badge>
-                    </div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="flex-1 bg-slate-200 rounded-full h-2">
-                        <div
-                          className={`h-2 rounded-full transition-all ${!canAnalyze ? "bg-red-500" : "bg-gradient-to-r from-blue-500 to-cyan-500"}`}
-                          style={{ width: usageLimits.limit === Infinity ? "100%" : `${Math.min((usageLimits.count / usageLimits.limit) * 100, 100)}%` }}
-                        />
-                      </div>
-                      <span className="text-sm font-bold text-slate-700 shrink-0">
-                        {usageLimits.count} / {usageLimits.limit === Infinity ? "∞" : usageLimits.limit}
-                      </span>
-                    </div>
-                    {!canAnalyze && (
-                      <Alert className="border-red-300 bg-red-50 mt-2">
-                        <AlertCircle className="h-4 w-4 text-red-600" />
-                        <AlertDescription className="text-xs text-red-700">
-                          Limit reached! <a href="/subscription" className="underline font-semibold">Upgrade</a> for more.
-                        </AlertDescription>
-                      </Alert>
-                    )}
-                    {canAnalyze && usageLimits.remaining !== Infinity && usageLimits.remaining <= 2 && (
-                      <p className="text-xs text-orange-600 font-medium mt-1">⚠️ Only {usageLimits.remaining} analyses remaining</p>
-                    )}
-                  </div>
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-orange-600 font-medium">⚠️ Not logged in — analysis won't be tracked</p>
-            )}
-          </div>
 
           {/* Tab Navigation */}
           <Card className="bg-white/70 backdrop-blur-md border border-slate-200 rounded-2xl shadow-lg">
@@ -784,9 +709,8 @@ export default function ShareOfVoice() {
                   <button
                     key={tab}
                     onClick={() => { setActiveTab(tab); setCurrentPage(1); }}
-                    className={`flex-1 py-4 px-6 font-medium transition-all ${
-                      activeTab === tab ? "border-b-2 border-blue-500 text-blue-600 bg-blue-50/50" : "text-gray-600 hover:bg-gray-50"
-                    }`}
+                    className={`flex-1 py-4 px-6 font-medium transition-all ${activeTab === tab ? "border-b-2 border-blue-500 text-blue-600 bg-blue-50/50" : "text-gray-600 hover:bg-gray-50"
+                      }`}
                   >
                     <div className="flex items-center justify-center gap-2">
                       {tab === "category" ? <BarChart3 className="w-4 h-4" /> : <Search className="w-4 h-4" />}
@@ -848,13 +772,12 @@ export default function ShareOfVoice() {
                       <Button
                         onClick={analyzeCategorySov}
                         disabled={loading || (!!userId && !canAnalyze)}
-                        className={`w-full py-3 rounded-lg text-white font-medium flex items-center justify-center gap-2 ${
-                          userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
-                        }`}
+                        className={`w-full py-3 rounded-lg text-white font-medium flex items-center justify-center gap-2 ${userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
+                          }`}
                       >
                         {loading ? <><RefreshCw className="w-4 h-4 animate-spin" /> Analyzing…</>
                           : userId && !canAnalyze ? <><Lock className="w-4 h-4" /> Limit Reached</>
-                          : <><Search className="w-4 h-4" /> Analyze</>}
+                            : <><Search className="w-4 h-4" /> Analyze</>}
                       </Button>
                     </div>
                   </>
@@ -884,9 +807,8 @@ export default function ShareOfVoice() {
                       <Button
                         onClick={analyzeKeywordSov}
                         disabled={loading || (!!userId && !canAnalyze)}
-                        className={`mb-0 py-3 px-5 rounded-lg text-white font-medium flex items-center gap-2 ${
-                          userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
-                        }`}
+                        className={`mb-0 py-3 px-5 rounded-lg text-white font-medium flex items-center gap-2 ${userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
+                          }`}
                       >
                         {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                       </Button>
@@ -1024,10 +946,9 @@ export default function ShareOfVoice() {
                       </CardHeader>
                       <CardContent>
                         <div className="flex items-center gap-3 mb-2">
-                          <div className={`px-3 py-1 rounded-full text-sm font-bold ${
-                            marketHealth.trend.trend === "Growing" ? "bg-green-100 text-green-700" :
+                          <div className={`px-3 py-1 rounded-full text-sm font-bold ${marketHealth.trend.trend === "Growing" ? "bg-green-100 text-green-700" :
                             marketHealth.trend.trend === "Declining" ? "bg-red-100 text-red-700" : "bg-slate-100 text-slate-700"
-                          }`}>
+                            }`}>
                             {marketHealth.trend.trend === "Growing" ? "📈" : marketHealth.trend.trend === "Declining" ? "📉" : "➡️"} {marketHealth.trend.trend}
                           </div>
                           <span className={`text-lg font-black ${marketHealth.trend.growth_proxy_pct > 0 ? "text-green-600" : "text-red-600"}`}>
@@ -1231,8 +1152,8 @@ export default function ShareOfVoice() {
                           {marketHealth.all_price_gaps.map((g, i) => (
                             <Cell key={i} fill={
                               g.opportunity === "High" ? "#10b981" :
-                              g.opportunity === "Medium" ? "#f59e0b" :
-                              g.opportunity === "Low" ? "#3b82f6" : "#ef4444"
+                                g.opportunity === "Medium" ? "#f59e0b" :
+                                  g.opportunity === "Low" ? "#3b82f6" : "#ef4444"
                             } />
                           ))}
                         </Bar>
@@ -1361,17 +1282,15 @@ export default function ShareOfVoice() {
                     <div className="space-y-4">
                       {marketHealth.action_plan.steps.map((step) => (
                         <div key={step.step} className="flex gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-200 hover:bg-blue-50/30 transition-all">
-                          <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow ${
-                            step.priority === "Critical" ? "bg-red-500" : step.priority === "High" ? "bg-orange-500" : "bg-blue-500"
-                          }`}>
+                          <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow ${step.priority === "Critical" ? "bg-red-500" : step.priority === "High" ? "bg-orange-500" : "bg-blue-500"
+                            }`}>
                             {step.step}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap mb-1">
                               <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">{step.area}</span>
-                              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-                                step.priority === "Critical" ? "bg-red-100 text-red-700" : step.priority === "High" ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-600"
-                              }`}>{step.priority}</span>
+                              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${step.priority === "Critical" ? "bg-red-100 text-red-700" : step.priority === "High" ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-600"
+                                }`}>{step.priority}</span>
                               <span className="text-xs text-slate-400">{step.timeline}</span>
                             </div>
                             <p className="font-semibold text-slate-800 text-sm mb-1">{step.action}</p>
@@ -1448,10 +1367,9 @@ export default function ShareOfVoice() {
                       ))}
                     </div>
                     {marketHealth.listing_quality.your_brand_vs_median && (
-                      <div className={`mt-4 p-3 rounded-xl text-sm font-medium flex items-center gap-2 ${
-                        marketHealth.listing_quality.your_brand_vs_median === "Above" ? "bg-green-50 text-green-700" :
+                      <div className={`mt-4 p-3 rounded-xl text-sm font-medium flex items-center gap-2 ${marketHealth.listing_quality.your_brand_vs_median === "Above" ? "bg-green-50 text-green-700" :
                         marketHealth.listing_quality.your_brand_vs_median === "Below" ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
-                      }`}>
+                        }`}>
                         {marketHealth.listing_quality.your_brand_vs_median === "Above" ? "✅" : marketHealth.listing_quality.your_brand_vs_median === "Below" ? "⚠️" : "➡️"}
                         Your brand is <strong>&nbsp;{marketHealth.listing_quality.your_brand_vs_median}&nbsp;</strong> median review density
                         {marketHealth.listing_quality.your_brand_density && ` (${marketHealth.listing_quality.your_brand_density} reviews/product)`}
@@ -1493,9 +1411,8 @@ export default function ShareOfVoice() {
                             <tr key={idx} className={`border-b border-slate-100 transition-colors ${isYours ? "bg-blue-50 border-l-4 border-l-blue-500" : "hover:bg-slate-50"}`}>
                               <td className="p-3">
                                 <div className="flex items-center gap-2">
-                                  <span className={`w-6 h-6 rounded-md flex items-center justify-center text-white text-xs font-bold shrink-0 ${
-                                    rank === 1 ? "bg-yellow-400" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-orange-400" : "bg-blue-400"
-                                  }`}>{rank}</span>
+                                  <span className={`w-6 h-6 rounded-md flex items-center justify-center text-white text-xs font-bold shrink-0 ${rank === 1 ? "bg-yellow-400" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-orange-400" : "bg-blue-400"
+                                    }`}>{rank}</span>
                                   <span className="font-medium text-slate-800">{brand.brand}</span>
                                   {isYours && <span className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded font-semibold">You</span>}
                                 </div>
@@ -1662,15 +1579,13 @@ export default function ShareOfVoice() {
                             <div className="space-y-3">
                               {aiInsights.actionable_recommendations.map((rec: any, idx: number) => (
                                 <div key={idx} className="flex gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-orange-200 hover:bg-orange-50/30 transition-all">
-                                  <div className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-white font-black text-sm ${
-                                    rec.priority === "High" ? "bg-red-500" : rec.priority === "Medium" ? "bg-yellow-500" : "bg-blue-500"
-                                  }`}>{idx + 1}</div>
+                                  <div className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-white font-black text-sm ${rec.priority === "High" ? "bg-red-500" : rec.priority === "Medium" ? "bg-yellow-500" : "bg-blue-500"
+                                    }`}>{idx + 1}</div>
                                   <div className="flex-1 min-w-0">
                                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                                       <span className="font-bold text-slate-800 text-sm">{rec.type}</span>
-                                      <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
-                                        rec.priority === "High" ? "bg-red-100 text-red-700" : rec.priority === "Medium" ? "bg-yellow-100 text-yellow-700" : "bg-blue-100 text-blue-700"
-                                      }`}>{rec.priority}</span>
+                                      <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${rec.priority === "High" ? "bg-red-100 text-red-700" : rec.priority === "Medium" ? "bg-yellow-100 text-yellow-700" : "bg-blue-100 text-blue-700"
+                                        }`}>{rec.priority}</span>
                                     </div>
                                     <p className="text-xs text-slate-600">{rec.action}</p>
                                     <p className="text-xs text-emerald-600 font-medium mt-1">💡 {rec.impact}</p>
@@ -1828,9 +1743,8 @@ export default function ShareOfVoice() {
                           <CardContent className="p-5">
                             <div className="flex items-start justify-between mb-4">
                               <div className="flex items-center gap-3">
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow ${
-                                  rank === 1 ? "bg-yellow-400" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-orange-400" : "bg-blue-500"
-                                }`}>{rank}</div>
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow ${rank === 1 ? "bg-yellow-400" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-orange-400" : "bg-blue-500"
+                                  }`}>{rank}</div>
                                 <div>
                                   <h4 className="font-bold text-slate-800">{c.competitor_name}</h4>
                                   <p className="text-xs text-slate-500">{c.total_products} products</p>

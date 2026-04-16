@@ -1,0 +1,287 @@
+import os
+import requests
+import json
+import re
+from datetime import datetime
+from typing import List, Optional, Tuple, Any
+from sqlalchemy.orm import Session
+from sqlalchemy import text
+from fastapi import HTTPException
+from app.models import legacy_models as models
+from app.models.legacy_models import TrackedProduct, RapidapiAmazonProducts, User
+from dotenv import load_dotenv
+from pathlib import Path
+
+# ─────────────────────────────────────────
+# CONFIG & CONSTANTS
+# ─────────────────────────────────────────
+BASE_DIR = Path(__file__).resolve().parent.parent.parent # server_py/
+load_dotenv(dotenv_path=BASE_DIR / ".env", override=True)
+
+RAPIDAPI_KEY  = os.environ.get("RAPIDAPI_KEY")
+RAPIDAPI_HOST = os.environ.get("RAPIDAPI_HOST", "real-time-amazon-data.p.rapidapi.com")
+AMAZON_API_URL         = "https://real-time-amazon-data.p.rapidapi.com/seller-products"
+AMAZON_REVIEWS_API_URL = "https://real-time-amazon-data.p.rapidapi.com/seller-reviews"
+
+HEADERS = {
+    "X-RapidAPI-Key":  RAPIDAPI_KEY,
+    "X-RapidAPI-Host": RAPIDAPI_HOST,
+}
+
+KEYWORD_TRACKER_LIMITS = {
+    "free":       2,
+    "basic":      10,
+    "premium":    -1,
+    "enterprise": -1,
+}
+
+class SellerInboundService:
+    @staticmethod
+    def extract_numeric(val: Any) -> float:
+        if val is None:
+            return 0.0
+        if isinstance(val, (int, float)):
+            return float(val)
+        num_str = re.sub(r'[^\d.]', '', str(val))
+        try: 
+            return float(num_str) if num_str else 0.0
+        except (ValueError, TypeError): 
+            return 0.0
+
+    @staticmethod
+    def fetch_seller_reviews(seller_id: str, country: str) -> Tuple[List[str], List[int]]:
+        try:
+            resp = requests.get(
+                AMAZON_REVIEWS_API_URL,
+                headers=HEADERS,
+                params={"seller_id": seller_id, "country": country, "page": 1},
+                timeout=20,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+            if data.get("status") != "OK":
+                return [], []
+            reviews = data.get("data", {}).get("seller_reviews", [])
+            comments = [r.get("review_comment", "") for r in reviews]
+            ratings  = [r.get("review_star_rating", 0) for r in reviews]
+            return comments, ratings
+        except Exception as e:
+            print(f"[SellerInboundService][reviews] error: {e}")
+            return [], []
+
+    @staticmethod
+    def check_keyword_tracker_limit(user_id: int, db: Session) -> dict:
+        row = db.execute(
+            text("SELECT subscription_tier, COALESCE(keyword_tracker_used,0), keyword_tracker_month FROM users WHERE id=:uid"),
+            {"uid": user_id},
+        ).fetchone()
+        if not row:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        tier, used, tracked_month = row[0] or "free", row[1], row[2]
+        current_month = datetime.utcnow().strftime("%Y-%m")
+
+        if tracked_month != current_month:
+            db.execute(
+                text("UPDATE users SET keyword_tracker_used=0, keyword_tracker_month=:m WHERE id=:uid"),
+                {"m": current_month, "uid": user_id},
+            )
+            db.commit()
+            used = 0
+
+        limit     = KEYWORD_TRACKER_LIMITS.get(tier.lower(), KEYWORD_TRACKER_LIMITS["free"])
+        remaining = (limit - used) if limit != -1 else -1
+        return {"count": used, "limit": limit, "remaining": remaining, "subscription_tier": tier}
+
+    @staticmethod
+    def atomic_increment_usage(user_id: int, increment: int, db: Session) -> bool:
+        row = db.execute(
+            text("SELECT subscription_tier, COALESCE(keyword_tracker_used,0), keyword_tracker_month FROM users WHERE id=:uid FOR UPDATE"),
+            {"uid": user_id},
+        ).fetchone()
+        if not row:
+            return False
+
+        tier, used, tracked_month = row[0] or "free", row[1], row[2]
+        current_month = datetime.utcnow().strftime("%Y-%m")
+        if tracked_month != current_month:
+            used = 0
+
+        limit = KEYWORD_TRACKER_LIMITS.get(tier.lower(), KEYWORD_TRACKER_LIMITS["free"])
+        if limit != -1 and (used + increment) > limit:
+            db.rollback()
+            return False
+
+        db.execute(
+            text("UPDATE users SET keyword_tracker_used=COALESCE(keyword_tracker_used,0)+:inc, keyword_tracker_month=:m WHERE id=:uid"),
+            {"inc": increment, "m": current_month, "uid": user_id},
+        )
+        db.commit()
+        return True
+
+    def ingest_seller_data(
+        self,
+        db: Session,
+        seller_id: str,
+        user_email: str,
+        user_id: Optional[int] = None,
+        country: str = "US",
+        page: int = 1
+    ) -> List[TrackedProduct]:
+        """
+        Full orchestration of fetching seller products, reviews, 
+        checking limits, and migrating data to DB.
+        """
+        log_file = os.path.join(BASE_DIR, "ingestion_debug.log")
+        with open(log_file, "a") as f:
+            f.write(f"\n[{datetime.utcnow()}] [ingest] START: seller_id={seller_id}, user_email={user_email}, country={country}\n")
+        
+        # Update user status to SYNCING
+        if user_id:
+            db.query(User).filter(User.id == user_id).update({"seller_sync_status": "SYNCING"})
+            db.commit()
+        
+        try:
+            # 1. Fetch products from Amazon API
+            params = {"seller_id": seller_id, "country": country, "page": page, "sort_by": "RELEVANCE"}
+            
+            # Debugging info
+            print(f"\n[DEBUG] --- AMAZON API REQUEST ---")
+            print(f"[DEBUG] URL: {AMAZON_API_URL}")
+            print(f"[DEBUG] Params: {params}")
+            
+            resp = requests.get(
+                AMAZON_API_URL, 
+                headers=HEADERS,
+                params=params, 
+                timeout=20
+            )
+            
+            print(f"[DEBUG] Status: {resp.status_code}")
+            try:
+                resp_json = resp.json()
+                print(f"[DEBUG] Response: {json.dumps(resp_json, indent=2)}")
+                
+                with open(log_file, "a") as f:
+                    f.write(f"[{datetime.utcnow()}] [ingest] API RESPONSE: {json.dumps(resp_json)}\n")
+            except Exception as json_err:
+                print(f"[DEBUG] Failed to parse JSON: {json_err}")
+                print(f"[DEBUG] Raw Text: {resp.text}")
+
+            resp.raise_for_status()
+            seller_products = resp.json().get("data", {}).get("seller_products", [])
+            with open(log_file, "a") as f:
+                f.write(f"[{datetime.utcnow()}] [ingest] API SUCCESS: Found {len(seller_products)} products\n")
+
+            if not seller_products:
+                if user_id:
+                    db.query(User).filter(User.id == user_id).update({"seller_sync_status": "COMPLETED"})
+                    db.commit()
+                return []
+
+            # 2. Check which are new to the user
+            new_asins = []
+            for item in seller_products:
+                existing = db.query(TrackedProduct).filter(
+                    TrackedProduct.seller_id == seller_id,
+                    TrackedProduct.asin == item["asin"],
+                    TrackedProduct.user_email == user_email,
+                ).first()
+                if not existing:
+                    new_asins.append(item["asin"])
+
+            # 3. Handle limits if user_id provided
+            if user_id and new_asins:
+                ok = self.atomic_increment_usage(user_id, len(new_asins), db)
+                if not ok:
+                    usage = self.check_keyword_tracker_limit(user_id, db)
+                    # Bypass limit for development/debugging purposes as requested
+                    # if user_id:
+                    #     db.query(User).filter(User.id == user_id).update({"seller_sync_status": "FAILED"})
+                    #     db.commit()
+                    
+                    with open(log_file, "a") as f:
+                        f.write(f"[{datetime.utcnow()}] [ingest] LIMIT REACHED (BYPASSED): user_id={user_id}, usage={usage['count']}/{usage['limit']}\n")
+                    # return [] # Bypassed to allow all products to be stored
+
+            # 4. Fetch Reviews
+            comments, ratings = self.fetch_seller_reviews(seller_id, country)
+            comments_json = json.dumps(comments) if comments else None
+            ratings_json  = json.dumps(ratings)  if ratings  else None
+
+            saved_products = []
+            for item in seller_products:
+                asin = item.get("asin")
+                # A. Update/Create TrackedProduct
+                existing = db.query(TrackedProduct).filter(
+                    TrackedProduct.seller_id == seller_id,
+                    TrackedProduct.asin == asin,
+                    TrackedProduct.user_email == user_email,
+                ).first()
+                
+                if existing:
+                    existing.review_comments = comments_json
+                    existing.review_ratings  = ratings_json
+                    db.commit()
+                    db.refresh(existing)
+                    saved_products.append(existing)
+                else:
+                    new_tp = TrackedProduct(
+                        seller_id=seller_id, asin=asin,
+                        product_title=item.get("product_title", "Unknown"),
+                        product_photo=item.get("product_photo", ""),
+                        country=country, user_email=user_email,
+                        review_comments=comments_json, review_ratings=ratings_json,
+                    )
+                    print(f"[DEBUG] Storing new TrackedProduct: {asin}")
+                    db.add(new_tp)
+                    db.commit()
+                    db.refresh(new_tp)
+                    saved_products.append(new_tp)
+
+                # B. Update RapidapiAmazonProducts (Marketplace stats)
+                if asin:
+                    r_prod = db.query(RapidapiAmazonProducts).filter(RapidapiAmazonProducts.asin == asin).first()
+                    
+                    price_str = item.get("product_price", "")
+                    star_str = item.get("product_star_rating", "")
+                    num_ratings = item.get("product_num_ratings", 0)
+                    if isinstance(num_ratings, str):
+                        num_ratings = int(re.sub(r'[^\d]', '', num_ratings) or 0)
+
+                    data_dict = {
+                        "product_title": item.get("product_title", ""),
+                        "product_photo": item.get("product_photo", ""),
+                        "product_url": item.get("product_url", ""),
+                        "product_price": price_str,
+                        "product_price_numeric": self.extract_numeric(price_str),
+                        "product_star_rating": star_str,
+                        "product_star_rating_numeric": self.extract_numeric(star_str),
+                        "product_num_ratings": num_ratings,
+                        "is_prime": item.get("is_prime", False),
+                        "is_best_seller": item.get("is_best_seller", False),
+                    }
+
+                    if r_prod:
+                        for key, value in data_dict.items():
+                            setattr(r_prod, key, value)
+                    else:
+                        new_r_prod = RapidapiAmazonProducts(asin=asin, **data_dict)
+                        db.add(new_r_prod)
+                    
+                    db.commit()
+
+            # Final status update
+            if user_id:
+                db.query(User).filter(User.id == user_id).update({"seller_sync_status": "COMPLETED"})
+                db.commit()
+
+            return saved_products
+
+        except Exception as e:
+            with open(log_file, "a") as f:
+                f.write(f"[{datetime.utcnow()}] [ingest] CRITICAL ERROR: {str(e)}\n")
+            if user_id:
+                db.query(User).filter(User.id == user_id).update({"seller_sync_status": "FAILED"})
+                db.commit()
+            # Do not re-raise in background tasks to avoid console tracebacks
