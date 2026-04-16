@@ -217,7 +217,11 @@ function useStreamingChat() {
 // MAIN COMPONENT
 // ─────────────────────────────────────────────
 
-export default function Chatbot() {
+interface ChatbotProps {
+  variant?: "floating" | "fullscreen";
+}
+
+export default function Chatbot({ variant = "floating" }: ChatbotProps) {
   const { user } = useAuth();
   const { limits, currentTier } = useSubscriptionLimits();
   const { trackAIChatUsage, getAIUsage } = useSubscriptionSync();
@@ -225,7 +229,7 @@ export default function Chatbot() {
 
   const [aiUsage, setAiUsage] = useState({ used: 0, limit: 0 });
   const [isLoadingUsage, setIsLoadingUsage] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(variant === "fullscreen");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -237,6 +241,7 @@ export default function Chatbot() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const isFullScreen = variant === "fullscreen";
   const isAuthenticated = !!user;
   const isChatLocked = !isAuthenticated || (
     limits.maxAIChatMessagesPerMonth < UNLIMITED &&
@@ -246,7 +251,7 @@ export default function Chatbot() {
   const makeWelcomeMsg = (authed: boolean): ChatMessage => ({
     id: "welcome",
     message: authed
-      ? "👋 Hi! I'm your AI Assistant.\n\nSelect a data source below (Flipkart or Amazon), and ask me anything like:\n• What products are trending?\n• Which category has the best ratings?\n• Can I sell wireless earbuds under ₹1500?"
+      ? "👋 Hi! I'm your AI Assistant.\n\nSelect a data source below (Flipkart or Amazon), and ask me anything like:\n• What products are trending now?\n• Which category has the best ratings?\n• Can I sell wireless earbuds under ₹1500?"
       : "👋 Welcome! Please login to use the AI Assistant and get personalized insights.",
     isUser: false,
     timestamp: new Date(),
@@ -271,6 +276,11 @@ export default function Chatbot() {
   const scrollToBottom = () => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   useEffect(() => { scrollToBottom(); }, [messages, isTyping]);
   useEffect(() => { if (isOpen) setTimeout(() => inputRef.current?.focus(), 100); }, [isOpen]);
+
+  // Handle open state for fullscreen
+  useEffect(() => {
+    if (isFullScreen) setIsOpen(true);
+  }, [isFullScreen]);
 
   // ─────────────────────────────────────────
   // SEND
@@ -396,40 +406,49 @@ export default function Chatbot() {
   // RENDER
   // ─────────────────────────────────────────
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className={cn(
+      isFullScreen ? "w-full h-full flex flex-col" : "fixed bottom-4 right-4 z-50"
+    )}>
 
-      {/* Toggle Button */}
-      <div className="relative">
-        <Button
-          onClick={() => setIsOpen(!isOpen)}
-          className={cn(
-            "w-14 h-14 rounded-full text-white flex items-center justify-center",
-            "bg-gradient-to-r from-primary to-purple-600 hover:scale-105 transition-all shadow-lg",
-            isChatLocked && "opacity-75"
+      {/* Toggle Button - Only in floating mode */}
+      {!isFullScreen && (
+        <div className="relative">
+          <Button
+            onClick={() => setIsOpen(!isOpen)}
+            className={cn(
+              "w-14 h-14 rounded-full text-white flex items-center justify-center",
+              "bg-gradient-to-r from-primary to-purple-600 hover:scale-105 transition-all shadow-lg",
+              isChatLocked && "opacity-75"
+            )}
+          >
+            {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+          </Button>
+          {!isAuthenticated && !isOpen && (
+            <div className="absolute -top-1 -right-1 bg-gray-500 text-white rounded-full p-1">
+              <LogIn className="h-3 w-3" />
+            </div>
           )}
-        >
-          {isOpen ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
-        </Button>
-        {!isAuthenticated && !isOpen && (
-          <div className="absolute -top-1 -right-1 bg-gray-500 text-white rounded-full p-1">
-            <LogIn className="h-3 w-3" />
-          </div>
-        )}
-        {isAuthenticated && isChatLocked && !isOpen && (
-          <div className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1">
-            <Lock className="h-3 w-3" />
-          </div>
-        )}
-        {isAuthenticated && !isChatLocked && aiUsage.limit < UNLIMITED && !isOpen && (
-          <div className={cn("absolute -top-1 -right-1 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold", getUsageBadgeColor())}>
-            {aiUsage.limit - aiUsage.used}
-          </div>
-        )}
-      </div>
+          {isAuthenticated && isChatLocked && !isOpen && (
+            <div className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1">
+              <Lock className="h-3 w-3" />
+            </div>
+          )}
+          {isAuthenticated && !isChatLocked && aiUsage.limit < UNLIMITED && !isOpen && (
+            <div className={cn("absolute -top-1 -right-1 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold", getUsageBadgeColor())}>
+              {aiUsage.limit - aiUsage.used}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="absolute bottom-16 right-0 w-80 h-[28rem] shadow-2xl border border-gray-200 overflow-hidden flex flex-col rounded-2xl">
+        <Card className={cn(
+          "shadow-2xl border border-gray-200 overflow-hidden flex flex-col rounded-2xl transition-all duration-300",
+          isFullScreen 
+            ? "w-full flex-1 h-[calc(100vh-12rem)] min-h-[500px]" 
+            : "absolute bottom-16 right-0 w-80 h-[28rem]"
+        )}>
 
           {/* Header */}
           <CardHeader className="bg-gradient-to-r from-primary to-purple-600 text-white p-3 flex items-center justify-between">
@@ -440,7 +459,7 @@ export default function Chatbot() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col">
-                <CardTitle className="text-sm font-medium">Insydz Assistant</CardTitle>
+                <CardTitle className="text-sm font-medium">Insydz Advisor</CardTitle>
                 <Badge variant="secondary" className="text-xs bg-white/20 border-0 text-white">
                   {isTyping ? "thinking…" : isStreaming ? "typing…" : "AI Powered"}
                 </Badge>
@@ -452,9 +471,11 @@ export default function Chatbot() {
                   <RefreshCw className="h-3.5 w-3.5" />
                 </Button>
               )}
-              <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="text-white h-8 w-8 p-0">
-                <X className="h-4 w-4" />
-              </Button>
+              {!isFullScreen && (
+                <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="text-white h-8 w-8 p-0">
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           </CardHeader>
 
@@ -493,21 +514,23 @@ export default function Chatbot() {
           )}
 
           {/* Messages */}
-          <CardContent className="flex-1 flex flex-col overflow-hidden">
-            <ScrollArea className="flex-1 p-3" ref={scrollContainerRef}>
-              <div className="space-y-3">
+          <CardContent className="flex-1 flex flex-col overflow-hidden p-0 bg-white">
+            <ScrollArea className="flex-1 p-3 px-4" ref={scrollContainerRef}>
+              <div className="space-y-4 max-w-4xl mx-auto">
                 {messages.map((msg) => (
-                  <div key={msg.id} className={cn("flex", msg.isUser ? "justify-end" : "justify-start")}>
+                  <div key={msg.id} className={cn("flex", msg.isUser ? "justify-end" : "justify-start animate-in fade-in slide-in-from-bottom-2")}>
                     <div className={cn(
-                      "max-w-[75%] rounded-lg p-2 text-sm break-words whitespace-pre-wrap",
-                      msg.isUser ? "bg-primary text-white" : "bg-gray-100 text-gray-900"
+                      "max-w-[85%] rounded-2xl p-3 text-sm break-words shadow-sm",
+                      msg.isUser 
+                        ? "bg-primary text-white rounded-tr-none" 
+                        : "bg-slate-50 text-slate-800 border border-slate-100 rounded-tl-none"
                     )}>
-                      <p>
+                      <div className="whitespace-pre-wrap leading-relaxed">
                         {msg.message}
                         {msg.isStreaming && (
-                          <span className="inline-block w-0.5 h-3.5 bg-gray-500 ml-0.5 align-middle animate-pulse" />
+                          <span className="inline-block w-1.5 h-4 bg-primary ml-1 align-middle animate-pulse" />
                         )}
-                      </p>
+                      </div>
 
                       {/* Market Score Card */}
                       {!msg.isUser && msg.marketScore && !msg.isStreaming && (
@@ -516,16 +539,16 @@ export default function Chatbot() {
 
                       {/* Proactive insight badge */}
                       {msg.hasProactiveInsight && !msg.isStreaming && (
-                        <div className="mt-1.5 flex items-center gap-1 text-[11px] text-amber-600 font-medium">
-                          <Lightbulb className="h-3 w-3" />
-                          <span>Bonus insight included</span>
+                        <div className="mt-2 flex items-center gap-1.5 text-[11px] text-amber-600 font-semibold bg-amber-50 rounded-md p-1.5 border border-amber-100 transition-all hover:bg-amber-100">
+                          <Lightbulb className="h-3.5 w-3.5" />
+                          <span>AI Proactive Insight Included</span>
                         </div>
                       )}
 
                       {/* Mode badge */}
                       {!msg.isUser && msg.mode && !msg.isStreaming && MODE_LABELS[msg.mode] && (
-                        <div className="mt-1.5">
-                          <span className={cn("text-[10px] px-1.5 py-0.5 rounded-full font-medium", MODE_LABELS[msg.mode].color)}>
+                        <div className="mt-2">
+                          <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider", MODE_LABELS[msg.mode].color)}>
                             {MODE_LABELS[msg.mode].label}
                           </span>
                         </div>
@@ -533,36 +556,43 @@ export default function Chatbot() {
 
                       {/* Follow-up question chips */}
                       {!msg.isUser && msg.followupQuestions && msg.followupQuestions.length > 0 && !msg.isStreaming && (
-                        <div className="mt-2 space-y-1">
-                          <p className="text-[10px] text-gray-400 font-medium">Ask next:</p>
-                          {msg.followupQuestions.map((q) => (
-                            <button
-                              key={q}
-                              onClick={() => sendMessage(q)}
-                              disabled={isTyping || isStreaming || isChatLocked}
-                              className="block w-full text-left text-[11px] px-2 py-1.5 bg-white hover:bg-gray-50 border border-gray-200 hover:border-primary/40 rounded-md text-gray-700 transition-colors disabled:opacity-40"
-                            >
-                              {q}
-                            </button>
-                          ))}
+                        <div className="mt-3 space-y-2">
+                          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Suggested Actions:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {msg.followupQuestions.map((q) => (
+                              <button
+                                key={q}
+                                onClick={() => sendMessage(q)}
+                                disabled={isTyping || isStreaming || isChatLocked}
+                                className="text-left text-[11px] px-3 py-1.5 bg-white hover:bg-primary hover:text-white border border-slate-200 rounded-full transition-all duration-200 shadow-sm disabled:opacity-40"
+                              >
+                                {q}
+                              </button>
+                            ))}
+                          </div>
                         </div>
                       )}
 
-                      <p className="text-xs mt-1 opacity-70 text-right">{formatTime(msg.timestamp)}</p>
+                      <p className={cn(
+                        "text-[10px] mt-2 opacity-50 font-medium",
+                        msg.isUser ? "text-right" : "text-left"
+                      )}>
+                        {formatTime(msg.timestamp)}
+                      </p>
                     </div>
                   </div>
                 ))}
 
                 {/* Typing dots */}
                 {isTyping && (
-                  <div className="flex justify-start">
-                    <div className="bg-gray-100 rounded-lg p-2 flex items-center space-x-2">
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />
-                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
+                  <div className="flex justify-start animate-in fade-in">
+                    <div className="bg-slate-50 border border-slate-100 rounded-2xl rounded-tl-none p-3 flex items-center space-x-3">
+                      <div className="flex space-x-1.5">
+                        <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" />
+                        <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />
+                        <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }} />
                       </div>
-                      <span className="text-xs text-gray-500">AI is thinking...</span>
+                      <span className="text-xs text-slate-500 font-medium">Assistant is thinking...</span>
                     </div>
                   </div>
                 )}
@@ -572,78 +602,83 @@ export default function Chatbot() {
             </ScrollArea>
 
             {/* Input Section */}
-            <div className="border-t bg-background p-3 space-y-2">
-              <Select value={selectedSource} onValueChange={setSelectedSource} disabled={isChatLocked}>
-                <SelectTrigger className="w-full text-xs">
-                  <SelectValue placeholder="Select data source" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="flipkart">🛍 Flipkart</SelectItem>
-                  <SelectItem value="amazon">💬 Amazon</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="border-t bg-slate-50/50 p-4 space-y-3">
+              <div className="max-w-4xl mx-auto space-y-3">
+                <Select value={selectedSource} onValueChange={setSelectedSource} disabled={isChatLocked}>
+                  <SelectTrigger className="w-40 text-xs bg-white h-8">
+                    <SelectValue placeholder="Data Source" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                    <SelectItem value="flipkart">🛍 Flipkart Data</SelectItem>
+                    <SelectItem value="amazon">💬 Amazon Data</SelectItem>
+                  </SelectContent>
+                </Select>
 
-              <div className="flex space-x-2">
-                <Input
-                  ref={inputRef}
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && !isChatLocked && sendMessage()}
-                  placeholder={
-                    !isAuthenticated ? "Login to chat..."
-                      : isChatLocked ? "Upgrade to continue..."
-                        : "Ask about trends, prices, or reviews..."
-                  }
-                  className="flex-1 text-sm"
-                  disabled={isTyping || isStreaming || isChatLocked}
-                />
-                <Button
-                  onClick={() => isStreaming ? abort() : sendMessage()}
-                  disabled={isChatLocked || isTyping || (!inputMessage.trim() && !isStreaming)}
-                  size="sm"
-                  className={cn("px-3", isStreaming && "bg-red-500 hover:bg-red-600 border-0")}
-                >
-                  {!isAuthenticated ? <LogIn className="h-4 w-4" />
-                    : isChatLocked ? <Lock className="h-4 w-4" />
-                      : isTyping ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                        : isStreaming ? <X className="h-4 w-4" />
-                          : <Send className="h-4 w-4" />}
-                </Button>
+                <div className="flex space-x-2">
+                  <Input
+                    ref={inputRef}
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && !isChatLocked && sendMessage()}
+                    placeholder={
+                      !isAuthenticated ? "Please login to unlock AI Advisor..."
+                        : isChatLocked ? "Usage limit reached. Upgrade to continue..."
+                          : "Type your query here (e.g., 'What are the top electronics trending on Flipkart?')..."
+                    }
+                    className="flex-1 text-sm bg-white border-slate-200 focus:ring-primary h-11 rounded-xl shadow-sm"
+                    disabled={isTyping || isStreaming || isChatLocked}
+                  />
+                  <Button
+                    onClick={() => isStreaming ? abort() : sendMessage()}
+                    disabled={isChatLocked || isTyping || (!inputMessage.trim() && !isStreaming)}
+                    size="icon"
+                    className={cn(
+                      "h-11 w-11 rounded-xl shadow-md transition-all",
+                      isStreaming ? "bg-red-500 hover:bg-red-600" : "bg-primary hover:bg-primary/90"
+                    )}
+                  >
+                    {!isAuthenticated ? <LogIn className="h-5 w-5" />
+                      : isChatLocked ? <Lock className="h-5 w-5" />
+                        : isTyping ? <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                          : isStreaming ? <X className="h-5 w-5" />
+                            : <Send className="h-5 w-5" />}
+                  </Button>
+                </div>
+
+                {/* Quick actions for fullscreen */}
+                {messages.length === 1 && isAuthenticated && !isChatLocked && (
+                  <div className="flex flex-wrap gap-2 justify-center py-1">
+                    {QUICK_QUESTIONS.map((q) => (
+                      <button
+                        key={q}
+                        onClick={() => sendMessage(q)}
+                        className="flex items-center gap-1.5 text-[11px] px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-full text-slate-600 transition-all shadow-sm font-medium"
+                      >
+                        {getSuggestionIcon(q)}
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
 
-              {/* Quick question chips — first message only */}
-              {messages.length === 1 && isAuthenticated && !isChatLocked && (
-                <div className="flex flex-wrap gap-1">
-                  {QUICK_QUESTIONS.slice(0, 3).map((q) => (
-                    <button
-                      key={q}
-                      onClick={() => sendMessage(q)}
-                      className="flex items-center gap-1 text-[11px] px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-600 transition-colors"
-                    >
-                      {getSuggestionIcon(q)}
-                      {q}
-                    </button>
-                  ))}
-                </div>
-              )}
-
               {!isAuthenticated && (
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-lg p-2">
-                  <p className="text-xs text-blue-900 mb-2">🔒 Login to unlock AI-powered insights</p>
+                <div className="max-w-4xl mx-auto bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-100 rounded-xl p-3 flex items-center justify-between">
+                  <p className="text-xs text-blue-900 font-medium">🔒 Unlock real-time competitor insights with AI Advisor</p>
                   <a href="/login">
-                    <Button size="sm" className="w-full text-xs h-7">
-                      <LogIn className="h-3 w-3 mr-1" /> Login to Chat
+                    <Button size="sm" className="h-8 shadow-sm">
+                      <LogIn className="h-3.5 w-3.5 mr-2" /> Login
                     </Button>
                   </a>
                 </div>
               )}
 
               {isAuthenticated && isChatLocked && (
-                <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg p-2">
-                  <p className="text-xs text-orange-900 mb-2">🔒 You've used all {aiUsage.limit} free chats this month</p>
+                <div className="max-w-4xl mx-auto bg-gradient-to-r from-orange-50 to-red-50 border border-orange-100 rounded-xl p-3 flex items-center justify-between">
+                  <p className="text-xs text-orange-900 font-medium">⚠️ AI Chat usage limit ({aiUsage.limit}) reached for this month</p>
                   <a href="/subscription">
-                    <Button size="sm" className="w-full text-xs h-7">
-                      <Crown className="h-3 w-3 mr-1" /> Upgrade Plan
+                    <Button size="sm" className="bg-orange-600 hover:bg-orange-700 h-8 shadow-sm">
+                      <Crown className="h-3.5 w-3.5 mr-2" /> Upgrade
                     </Button>
                   </a>
                 </div>

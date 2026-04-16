@@ -14,13 +14,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { 
-  Search, 
-  BarChart3, 
-  Package, 
-  ShoppingCart, 
-  Globe, 
-  ArrowRight, 
+import {
+  Search,
+  BarChart3,
+  Package,
+  ShoppingCart,
+  Globe,
+  ArrowRight,
   ArrowLeft,
   CheckCircle2
 } from "lucide-react";
@@ -37,6 +37,7 @@ export interface OnboardingData {
   onboarding_goal: string;
   onboarding_marketplace: string;
   onboarding_details: string;
+  seller_id?: string;
 }
 
 const steps = [
@@ -63,13 +64,18 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
     onboarding_goal: "",
     onboarding_marketplace: "",
     onboarding_details: "",
+    seller_id: "",
   });
 
   const nextStep = () => setCurrentStep((prev) => Math.min(prev + 1, 3));
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
   const handleComplete = () => {
-    onComplete(formData);
+    const finalData = { ...formData };
+    if (formData.onboarding_goal === "existing_seller") {
+      finalData.seller_id = formData.onboarding_details;
+    }
+    onComplete(finalData);
   };
 
   const isStepValid = () => {
@@ -87,18 +93,18 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
           <div className="flex items-center justify-between mb-8">
             {steps.map((step) => (
               <div key={step.id} className="flex items-center flex-1 last:flex-none">
-                <div 
+                <div
                   className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300",
-                    currentStep >= step.id 
-                      ? "bg-amber-500 text-white" 
+                    currentStep >= step.id
+                      ? "bg-amber-500 text-white"
                       : "bg-slate-700 text-slate-400"
                   )}
                 >
                   {currentStep > step.id ? <CheckCircle2 className="w-5 h-5" /> : step.id}
                 </div>
                 {step.id < 3 && (
-                  <div 
+                  <div
                     className={cn(
                       "h-[2px] flex-1 mx-2 transition-all duration-500",
                       currentStep > step.id ? "bg-amber-500" : "bg-slate-700"
@@ -210,8 +216,8 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
                         What category are you thinking about?
                       </label>
                       <p className="text-sm text-slate-500">We'll show you the best opportunities there</p>
-                      <Select 
-                        value={formData.onboarding_details} 
+                      <Select
+                        value={formData.onboarding_details}
                         onValueChange={(val) => setFormData({ ...formData, onboarding_details: val })}
                       >
                         <SelectTrigger className="w-full h-12 rounded-xl border-slate-200">
@@ -225,7 +231,7 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
                           ))}
                         </SelectContent>
                       </Select>
-                      <button 
+                      <button
                         type="button"
                         onClick={() => setFormData({ ...formData, onboarding_details: "general" })}
                         className="text-sm text-sky-600 font-medium hover:underline"

@@ -7,3 +7,4 @@ from .rapidapi_flipkart_product_router import router as rapidapi_flipkart_produc
 from .analytics_router import router as analytics_router
 from .payment_order_router import router as payment_order_router
 from .legacy_router import router as legacy_router
+from .seller_router import router as seller_router

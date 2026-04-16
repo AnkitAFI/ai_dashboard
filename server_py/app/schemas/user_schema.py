@@ -25,6 +25,7 @@ class UserOut(BaseModel):
     onboarding_goal: Optional[str] = None
     onboarding_marketplace: Optional[str] = None
     onboarding_details: Optional[str] = None
+    seller_id: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -32,6 +33,7 @@ class OnboardingUpdate(BaseModel):
     onboarding_goal: str
     onboarding_marketplace: str
     onboarding_details: str
+    seller_id: Optional[str] = None
 
     
 class UserLogin(BaseModel):

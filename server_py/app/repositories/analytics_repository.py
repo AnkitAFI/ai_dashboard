@@ -46,7 +46,9 @@ class AnalyticsRepository:
                 product_review_count AS reviews, 
                 'flipkart' AS source
             FROM rapidapi_flipkart_products
-            WHERE product_price IS NOT NULL AND product_star_rating IS NOT NULL
+            WHERE product_price IS NOT NULL 
+              AND product_star_rating IS NOT NULL
+              AND category_name IS NOT NULL
 
             UNION ALL
 
@@ -60,6 +62,7 @@ class AnalyticsRepository:
             FROM rapidapi_amazon_products
             WHERE product_price_numeric IS NOT NULL 
               AND product_star_rating_numeric IS NOT NULL
+              AND category_name IS NOT NULL
         ) combined
         GROUP BY category, source
         ORDER BY total_reviews DESC

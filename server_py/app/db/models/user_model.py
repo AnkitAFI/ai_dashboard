@@ -45,6 +45,8 @@ class User(Base):
     onboarding_goal = Column(String(100), nullable=True)
     onboarding_marketplace = Column(String(100), nullable=True)
     onboarding_details = Column(String(500), nullable=True) # Seller ID or Category
+    seller_id = Column(String(100), nullable=True)
+    seller_sync_status = Column(String(20), default='IDLE') # IDLE, SYNCING, COMPLETED, FAILED
    
     def __repr__(self):
         return f"<User {self.email}>"

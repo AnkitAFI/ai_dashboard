@@ -245,7 +245,7 @@ class TopProductsResponse(BaseModel):
     top_products: List[Product]
 
 class CategoryAnalytics(BaseModel):
-    category: str
+    category: Optional[str]
     total_products: int
     avg_price: Optional[float]
     avg_rating: Optional[float]

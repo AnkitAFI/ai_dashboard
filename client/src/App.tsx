@@ -78,6 +78,8 @@ import ProductTracker from "@/pages/product-tracker";
 import ProductTrackerHistory from "@/pages/ProductTrackerHistory";
 import ShareOfVoice from "@/pages/ShareOfVoice";
 import KeywordTracker from "@/pages/keyword-tracker";
+import AiAdvisor from "@/pages/AiAdvisor";
+import SellerProducts from "@/pages/SellerProducts";
 // ==================
 // Environment Config
 // ==================
@@ -101,6 +103,9 @@ interface User {
   businessInterests?: string[];
   createdAt?: string;
   onboardingCompleted: boolean;
+  onboarding_marketplace: string | null;
+  onboarding_details: string | null;
+  seller_id: string | null;
 }
 
 interface AuthContextType {
@@ -161,6 +166,9 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
           businessInterests: data.business_interests,
           createdAt: data.created_at,
           onboardingCompleted: data.onboarding_completed,
+          onboarding_marketplace: data.onboarding_marketplace || null,
+          onboarding_details: data.onboarding_details || null,
+          seller_id: data.seller_id || null,
         });
       } else {
         setUser(null);
@@ -383,23 +391,26 @@ function Router() {
       <ProtectedRoute path="/explorer/product-research" component={FeatureComingSoon} />
       <ProtectedRoute path="/explorer/competitor-prices" component={FeatureComingSoon} />
       <ProtectedRoute path="/explorer/review-analytics" component={FeatureComingSoon} />
+      <ProtectedRoute path="/explorer/opportunity-finder" component={FeatureComingSoon} />
       <ProtectedRoute path="/explorer/price-optimizer" component={FeatureComingSoon} />
-      <ProtectedRoute path="/explorer/ai-advisor" component={FeatureComingSoon} />
+      <ProtectedRoute path="/explorer/ai-advisor" component={AiAdvisor} />
       <ProtectedRoute path="/explorer/whatsapp-alerts" component={FeatureComingSoon} />
       <ProtectedRoute path="/explorer/festive-trends" component={FeatureComingSoon} />
       <ProtectedRoute path="/explorer/my-watchlist" component={FeatureComingSoon} />
 
       {/* Seller Placeholder Routes */}
-      <ProtectedRoute path="/seller/my-products" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/my-products" component={SellerProducts} />
       <ProtectedRoute path="/seller/listing-audit" component={FeatureComingSoon} />
       <ProtectedRoute path="/seller/price-comparison" component={FeatureComingSoon} />
       <ProtectedRoute path="/seller/review-comparison" component={FeatureComingSoon} />
       <ProtectedRoute path="/seller/keyword-gap" component={FeatureComingSoon} />
       <ProtectedRoute path="/seller/price-optimizer" component={FeatureComingSoon} />
       <ProtectedRoute path="/seller/seo-optimizer" component={FeatureComingSoon} />
-      <ProtectedRoute path="/seller/ai-advisor" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/ai-advisor" component={AiAdvisor} />
       <ProtectedRoute path="/seller/whatsapp-alerts" component={FeatureComingSoon} />
       <ProtectedRoute path="/seller/festive-trends" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/competitor-analysis" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/rank-tracker" component={FeatureComingSoon} />
 
       {/* 404 Fallback */}
       <Route component={NotFound} />

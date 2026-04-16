@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text, inspect
 from typing import List, Optional, Dict, Any
 import subprocess, json
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 import uvicorn, hashlib
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
@@ -31,6 +31,7 @@ from app.db import session as database_config
 from app.db.session import get_db, engine
 from app.models.legacy_models import AmazonReview, Product, AmazonProductDetails, IndianProduct, User, ProductTrackerAnalysis, TrackedProduct, KeywordRankHistory, PaymentOrder, PriceAlert, RapidapiFlipkartProduct, RankUpdateRatelimit, Feedback, CompetitorSnapshot, TimeSeriesForcasting
 from app.core.security import verify_password, get_password_hash
+from app.services.inbound_service import SellerInboundService
 models.Base.metadata.create_all(bind=engine)
 # app = FastAPI(title="API", version="1.0.0")
 import os
@@ -941,7 +942,7 @@ def stream_ollama(prompt: str):
             except Exception:
                 continue
     except Exception as e:
-        yield f"\n[Stream error: {str(e)}]"
+        yield "\n\n⚠️ **AI Advisor is currently offline.**\n\nIt looks like the local AI engine (**Ollama**) is not running or accessible. \n\n**To fix this:**\n1. Ensure Ollama is installed and running on your machine.\n2. Make sure the model `llama3.2:3b` is downloaded (`ollama run llama3.2:3b`).\n3. Refresh this page and try again."
  
  
 # ──────────────────────────────────────────────────────────────────────
@@ -5358,6 +5359,7 @@ def send_otp_email(email: str, otp: str) -> bool:
         
         api_response = api_instance.send_transac_email(send_smtp_email)
         print(f"✅ OTP email sent to {email}")
+        print(otp)
         return True
         
     except ApiException as e:
@@ -6151,7 +6153,8 @@ def get_me(
         "onboarding_completed": current_user.onboarding_completed,
         "onboarding_goal": current_user.onboarding_goal,
         "onboarding_marketplace": current_user.onboarding_marketplace,
-        "onboarding_details": current_user.onboarding_details
+        "onboarding_details": current_user.onboarding_details,
+        "seller_id": current_user.seller_id
     }
 
 # ============================================
@@ -8411,7 +8414,38 @@ def get_analysis_details(
         return ApiResponse(
             success=True, request_id=getattr(raw_request.state, "request_id", ""),
             latency_ms=0, source_type="internal",
-            data={"id": analysis.id, "product_name": analysis.product_name, "category": analysis.category, "source": analysis.source, "base_cost": float(analysis.base_cost), "created_at": analysis.created_at.isoformat()},
+            data={
+                "id": analysis.id,
+                "product_name": analysis.product_name,
+                "category": analysis.category,
+                "source": analysis.source,
+                "base_cost": float(analysis.base_cost),
+                "pricing": {
+                    "recommended_price": float(analysis.recommended_price) if analysis.recommended_price else 0,
+                    "min_price": float(analysis.min_price) if analysis.min_price else 0,
+                    "max_price": float(analysis.max_price) if analysis.max_price else 0,
+                    "profit_margin": float(analysis.profit_margin) if analysis.profit_margin else 0,
+                    "confidence": analysis.pricing_confidence or "Medium"
+                },
+                "sales": {
+                    "estimated_monthly_sales": f"{analysis.estimated_monthly_sales_min}-{analysis.estimated_monthly_sales_max}" if analysis.estimated_monthly_sales_min else "N/A",
+                    "estimated_daily_sales": float(analysis.estimated_daily_sales) if analysis.estimated_daily_sales else 0,
+                    "market_demand": analysis.market_demand or "Medium"
+                },
+                "competition": {
+                    "total_competitors": analysis.total_competitors or 0,
+                    "avg_competitor_price": float(analysis.avg_competitor_price) if analysis.avg_competitor_price else 0,
+                    "avg_competitor_rating": float(analysis.avg_competitor_rating) if analysis.avg_competitor_rating else 0,
+                    "top_competitor": {
+                        "name": analysis.top_competitor_name,
+                        "price": float(analysis.top_competitor_price) if analysis.top_competitor_price else 0
+                    } if analysis.top_competitor_name else None
+                },
+                "location_insights": analysis.location_insights or [],
+                "ai_strategy": analysis.ai_strategy or "",
+                "warnings": analysis.warnings or [],
+                "created_at": analysis.created_at.isoformat()
+            },
         )
     except HTTPException:
         raise
@@ -11377,7 +11411,6 @@ load_dotenv(dotenv_path=BASE_DIR / ".env", override=True)
 RAPIDAPI_KEY  = os.environ.get("RAPIDAPI_KEY")
 RAPIDAPI_HOST = os.environ.get("RAPIDAPI_HOST", "real-time-amazon-data.p.rapidapi.com")
 AMAZON_API_URL         = "https://real-time-amazon-data.p.rapidapi.com/seller-products"
-AMAZON_REVIEWS_API_URL = "https://real-time-amazon-data.p.rapidapi.com/seller-reviews"
 AMAZON_SEARCH_API_URL  = "https://real-time-amazon-data.p.rapidapi.com/search"
 
 HEADERS = {
@@ -11385,7 +11418,8 @@ HEADERS = {
     "X-RapidAPI-Host": RAPIDAPI_HOST,
 }
 
-OLLAMA_BASE = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+# OLLAMA_BASE = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_BASE = "http://localhost:11434/"
 OLLAMA_MODEL = "llama3.2:3b"
 
 # ─────────────────────────────────────────
@@ -11405,12 +11439,6 @@ RANK_UPDATE_DAILY_LIMIT = 4
 # ─────────────────────────────────────────
 # SUBSCRIPTION TIERS  (unchanged from original)
 # ─────────────────────────────────────────
-KEYWORD_TRACKER_LIMITS = {
-    "free":       2,
-    "basic":      10,
-    "premium":    -1,
-    "enterprise": -1,
-}
 
 
 
@@ -11436,8 +11464,28 @@ class TrackedProductResponse(BaseModel):
     country: str
     user_email: str
     review_comments: Optional[List[str]] = []
-    review_ratings:  Optional[List[int]]  = []
+    review_ratings:  Optional[List[int]] = []
     model_config = {"from_attributes": True}
+
+    @field_validator("review_comments", mode="before")
+    @classmethod
+    def parse_comments(cls, v):
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except Exception:
+                return []
+        return v or []
+
+    @field_validator("review_ratings", mode="before")
+    @classmethod
+    def parse_ratings(cls, v):
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except Exception:
+                return []
+        return v or []
 
 
 class KeywordTrackRequest(BaseModel):
@@ -11550,88 +11598,6 @@ def parse_review_ratings(ratings_json: str) -> List[int]:
         return []
 
 
-def fetch_seller_reviews(seller_id: str, country: str) -> tuple:
-    try:
-        resp = requests.get(
-            AMAZON_REVIEWS_API_URL,
-            headers=HEADERS,
-            params={"seller_id": seller_id, "country": country, "page": 1},
-            timeout=20,
-        )
-        resp.raise_for_status()
-        data = resp.json()
-        if data.get("status") != "OK":
-            return [], []
-        reviews = data.get("data", {}).get("seller_reviews", [])
-        comments = [r.get("review_comment", "") for r in reviews]
-        ratings  = [r.get("review_star_rating", 0) for r in reviews]
-        return comments, ratings
-    except Exception as e:
-        print(f"[reviews] error: {e}")
-        return [], []
-
-
-# ─────────────────────────────────────────
-# HELPERS — subscription limit (race-safe)
-# ─────────────────────────────────────────
-
-def check_keyword_tracker_limit(user_id: int, db: Session) -> dict:
-    """
-    Returns current usage. Does NOT increment — call increment_keyword_usage separately.
-    Resets counter at month boundary.
-    """
-    row = db.execute(
-        text("SELECT subscription_tier, COALESCE(keyword_tracker_used,0), keyword_tracker_month FROM users WHERE id=:uid"),
-        {"uid": user_id},
-    ).fetchone()
-    if not row:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    tier, used, tracked_month = row[0] or "free", row[1], row[2]
-    current_month = datetime.utcnow().strftime("%Y-%m")
-
-    if tracked_month != current_month:
-        db.execute(
-            text("UPDATE users SET keyword_tracker_used=0, keyword_tracker_month=:m WHERE id=:uid"),
-            {"m": current_month, "uid": user_id},
-        )
-        db.commit()
-        used = 0
-
-    limit     = KEYWORD_TRACKER_LIMITS.get(tier.lower(), KEYWORD_TRACKER_LIMITS["free"])
-    remaining = (limit - used) if limit != -1 else -1
-    return {"count": used, "limit": limit, "remaining": remaining, "subscription_tier": tier}
-
-
-def atomic_increment_usage(user_id: int, increment: int, db: Session) -> bool:
-    """
-    Atomically increments usage only if under the limit.
-    Returns True if increment succeeded, False if limit would be exceeded.
-    Uses SELECT FOR UPDATE to prevent race conditions.
-    """
-    row = db.execute(
-        text("SELECT subscription_tier, COALESCE(keyword_tracker_used,0), keyword_tracker_month FROM users WHERE id=:uid FOR UPDATE"),
-        {"uid": user_id},
-    ).fetchone()
-    if not row:
-        return False
-
-    tier, used, tracked_month = row[0] or "free", row[1], row[2]
-    current_month = datetime.utcnow().strftime("%Y-%m")
-    if tracked_month != current_month:
-        used = 0
-
-    limit = KEYWORD_TRACKER_LIMITS.get(tier.lower(), KEYWORD_TRACKER_LIMITS["free"])
-    if limit != -1 and (used + increment) > limit:
-        db.rollback()
-        return False
-
-    db.execute(
-        text("UPDATE users SET keyword_tracker_used=COALESCE(keyword_tracker_used,0)+:inc, keyword_tracker_month=:m WHERE id=:uid"),
-        {"inc": increment, "m": current_month, "uid": user_id},
-    )
-    db.commit()
-    return True
 
 
 # ─────────────────────────────────────────
@@ -12583,104 +12549,38 @@ scheduler.start()
 @router.get("/users/{user_id}/keyword-tracker-usage", response_model=UsageLimitsResponse)
 def get_keyword_tracker_usage(user_id: int, db: Session = Depends(get_db)):
     """Current keyword tracker usage and limits for a user."""
-    return UsageLimitsResponse(**check_keyword_tracker_limit(user_id, db))
+    service = SellerInboundService()
+    return UsageLimitsResponse(**service.check_keyword_tracker_limit(user_id, db))
 
 
 @router.get("/keyword_tracker/fetch_and_store_products/{seller_id}", response_model=List[TrackedProductResponse])
 def fetch_and_store_seller_products(
-    seller_id: str, country: str = "IN", page: int = 1,
+    seller_id: str, country: str = "US", page: int = 1,
     user_email: str = None, user_id: int = None,
     db: Session = Depends(get_db),
 ):
     """
     Fetch products from Amazon API + reviews.
-    Stores comments and ratings in separate columns.
-    Checks subscription limits before allowing (race-safe).
+    Uses unified SellerInboundService for data migration.
     """
     if not user_email:
         raise HTTPException(status_code=400, detail="user_email is required")
 
-    print(f"[fetch] user_id={user_id}, user_email={user_email}, seller_id={seller_id}")
-
+    service = SellerInboundService()
     try:
-        resp = requests.get(AMAZON_API_URL, headers=HEADERS,
-                            params={"seller_id": seller_id, "country": country,
-                                    "page": page, "sort_by": "RELEVANCE"}, timeout=20)
-        resp.raise_for_status()
-        seller_products = resp.json().get("data", {}).get("seller_products", [])
-        if not seller_products:
-            return []
-
-        # Find how many are truly new (not yet in DB)
-        new_asins = []
-        for item in seller_products:
-            existing = db.query(TrackedProduct).filter(
-                TrackedProduct.seller_id == seller_id,
-                TrackedProduct.asin == item["asin"],
-                TrackedProduct.user_email == user_email,
-            ).first()
-            if not existing:
-                new_asins.append(item["asin"])
-
-        # Atomic limit check only for genuinely new products
-        if user_id and new_asins:
-            ok = atomic_increment_usage(user_id, len(new_asins), db)
-            if not ok:
-                usage = check_keyword_tracker_limit(user_id, db)
-                raise HTTPException(
-                    status_code=403,
-                    detail=(f"Keyword Tracker limit reached for {usage['subscription_tier'].upper()} plan. "
-                            f"You've used all {usage['limit']} product trackings this month. Upgrade for more!"),
-                )
-
-        comments, ratings = fetch_seller_reviews(seller_id, country)
-        comments_json = json.dumps(comments) if comments else None
-        ratings_json  = json.dumps(ratings)  if ratings  else None
-
-        saved_products = []
-        for item in seller_products:
-            existing = db.query(TrackedProduct).filter(
-                TrackedProduct.seller_id == seller_id,
-                TrackedProduct.asin == item["asin"],
-                TrackedProduct.user_email == user_email,
-            ).first()
-            if existing:
-                existing.review_comments = comments_json
-                existing.review_ratings  = ratings_json
-                db.commit()
-                db.refresh(existing)
-                saved_products.append(existing)
-            else:
-                new_product = TrackedProduct(
-                    seller_id=seller_id, asin=item["asin"],
-                    product_title=item["product_title"],
-                    product_photo=item.get("product_photo", ""),
-                    country=country, user_email=user_email,
-                    review_comments=comments_json, review_ratings=ratings_json,
-                )
-                db.add(new_product)
-                db.commit()
-                db.refresh(new_product)
-                saved_products.append(new_product)
-
-        return [
-            TrackedProductResponse(
-                id=p.id, seller_id=p.seller_id, asin=p.asin,
-                product_title=p.product_title, product_photo=p.product_photo,
-                country=p.country, user_email=p.user_email,
-                review_comments=parse_review_comments(p.review_comments),
-                review_ratings=parse_review_ratings(p.review_ratings),
-            )
-            for p in saved_products
-        ]
-
-    except HTTPException:
-        raise
-    except requests.exceptions.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"RapidAPI request failed: {e}")
+        return service.ingest_seller_data(
+            db=db, 
+            seller_id=seller_id, 
+            user_email=user_email, 
+            user_id=user_id, 
+            country=country, 
+            page=page
+        )
     except Exception as e:
-        import traceback; traceback.print_exc()
-        raise HTTPException(status_code=500, detail=f"Unexpected error: {e}")
+        if isinstance(e, HTTPException):
+            raise e
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 
 @router.post("/keyword_tracker/track_keywords")
@@ -13393,12 +13293,19 @@ def get_competitor_comparison(
 
 @router.get("/keyword_tracker/fetch_and_compare/{seller_id}")
 def fetch_products_with_comparison(
-    seller_id: str, country: str = "IN", page: int = 1,
+    seller_id: str, country: str = "US", page: int = 1,
     user_email: str = None, user_id: int = None, db: Session = Depends(get_db)
 ):
     if not user_email:
         raise HTTPException(status_code=400, detail="user_email is required")
+    
+    service = SellerInboundService()
     try:
+        # We can still use the service's helper functions directly if we want to keep the custom logic of this route
+        # Or we can just use ingest_seller_data if it fits. 
+        # This route seems to be very similar to fetch_and_store_seller_products but doesn't return the comparisons yet in this snippet.
+        # I'll use the service's helpers to maintain existing logic structure.
+        
         resp = requests.get(AMAZON_API_URL, headers=HEADERS,
                             params={"seller_id": seller_id, "country": country,
                                     "page": page, "sort_by": "RELEVANCE"}, timeout=20)
@@ -13407,7 +13314,7 @@ def fetch_products_with_comparison(
         if not seller_products:
             return {"products": [], "comparisons": []}
 
-        comments, ratings = fetch_seller_reviews(seller_id, country)
+        comments, ratings = service.fetch_seller_reviews(seller_id, country)
         comments_json = json.dumps(comments) if comments else None
         ratings_json  = json.dumps(ratings)  if ratings  else None
         saved_products = []

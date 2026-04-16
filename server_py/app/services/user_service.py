@@ -3,6 +3,7 @@ from fastapi import HTTPException
 from app.core.security import get_password_hash
 from app.schemas.user_schema import UserCreate
 from app.repositories.user_repository import UserRepository
+from app.services.inbound_service import SellerInboundService
 
 user_repo = UserRepository()
 
@@ -23,5 +24,38 @@ class UserService:
         
         return user_repo.create(db, user, hashed, interests)
 
-    def update_onboarding(self, db: Session, user_id: int, onboarding_data: dict):
-        return user_repo.update_onboarding(db, user_id, onboarding_data)
+    def update_onboarding(self, db: Session, user_id: int, onboarding_data: dict, background_tasks=None):
+        user = user_repo.update_onboarding(db, user_id, onboarding_data)
+        
+        seller_id = onboarding_data.get("seller_id")
+        
+        # Log for debugging
+        print(f"[UserService] update_onboarding: user_id={user_id}, goal={user.onboarding_goal}, seller_id={seller_id}")
+        
+        if seller_id and user:
+            # Use the marketplace selected during onboarding
+            # Prefer the one in onboarding_data as it's the most recent
+            country = onboarding_data.get("onboarding_marketplace") or user.onboarding_marketplace or "US"
+            
+            # Normalize common IDs to country codes
+            if country == "amazon_india": country = "IN"
+            
+            print(f"[UserService] Triggering ingestion for seller_id={seller_id} in country={country}")
+            
+            service = SellerInboundService()
+            if background_tasks:
+                background_tasks.add_task(
+                    service.ingest_seller_data,
+                    db=db,
+                    seller_id=seller_id,
+                    user_email=user.email,
+                    user_id=user.id,
+                    country=country
+                )
+            else:
+                # Async fallback
+                service.ingest_seller_data(db=db, seller_id=seller_id, user_email=user.email, user_id=user.id, country=country)
+        else:
+            print(f"[UserService] Skipping ingestion: seller_id={seller_id}, user={user is not None}")
+        
+        return user
