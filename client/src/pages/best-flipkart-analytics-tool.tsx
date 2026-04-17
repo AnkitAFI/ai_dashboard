@@ -570,21 +570,7 @@ export default function BestFlipkartAnalyticsTool() {
         .dark .rel-title { color:#f9fafb; }
 
         /* ── Final CTA ── */
-        .fc-block { background:linear-gradient(135deg,#4C1D95 0%,#7C3AED 50%,#C026D3 100%); padding:56px 16px; text-align:center; }
-        @media(min-width:640px){ .fc-block { padding:72px 24px; } }
-        .fc-inner { max-width:640px; margin:0 auto; }
-        .fc-inner h2 { font-family:'Sora',sans-serif; font-size:22px; font-weight:800; color:white; margin-bottom:12px; line-height:1.2; letter-spacing:-.4px; }
-        @media(min-width:640px){ .fc-inner h2 { font-size:28px; } }
-        @media(min-width:1024px){ .fc-inner h2 { font-size:34px; } }
-        .fc-inner p { color:rgba(255,255,255,.75); font-size:14px; max-width:520px; margin:0 auto 22px; line-height:1.7; font-family:'Lora',serif; }
-        @media(min-width:640px){ .fc-inner p { font-size:16px; margin:0 auto 28px; } }
-        .fc-points { display:flex; justify-content:center; flex-wrap:wrap; gap:6px 16px; margin-bottom:24px; }
-        .fc-pt { color:rgba(255,255,255,.85); font-size:12px; display:flex; align-items:center; gap:6px; font-family:'Sora',sans-serif; }
-        .fc-pt::before { content:'✓'; color:white; font-weight:800; }
-        .fc-btn { background:white; color:#7C3AED; padding:13px 28px; border-radius:10px; font-size:13px; font-weight:800; border:none; cursor:pointer; transition:transform .2s; width:100%; max-width:480px; font-family:'Sora',sans-serif; }
-        @media(min-width:640px){ .fc-btn { padding:16px 36px; font-size:15px; width:auto; } }
-        .fc-btn:hover { transform:translateY(-2px); }
-        .fc-sub { color:rgba(255,255,255,.5); font-size:11.5px; margin-top:12px; font-family:'Sora',sans-serif; }
+        .final-cta-block { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%); padding: clamp(48px,8vw,40px) 20px; text-align:center; margin:60px 0 0; }
 
         /* ── Breadcrumb ── */
         .breadcrumb { background:#F8FAFC; border-bottom:1px solid #E2E8F0; padding:8px 0; }
@@ -1110,21 +1096,30 @@ export default function BestFlipkartAnalyticsTool() {
       </div>
 
       {/* ── FINAL CTA ─────────────────────────────────────────────────────────── */}
-      <div className="fc-block">
-        <div className="fc-inner">
-          <h2>Winning on Flipkart in 2026 Isn't About the Best Product It's About Being Found First.</h2>
-          <p>Insydz delivers AI-powered Flipkart marketplace intelligence built specifically for Indian sellers with WhatsApp alerts and Flipkart tracking tools India's global competitors simply don't provide.</p>
-          <div className="fc-points">
-            <div className="fc-pt">Forever free plan</div>
-            <div className="fc-pt">No credit card needed</div>
-            <div className="fc-pt">Flipkart + Amazon.in</div>
-            <div className="fc-pt">WhatsApp rank alerts</div>
-          </div>
-          <button className="fc-btn" onClick={() => setLocation("/login")}>
-            → Start Free at insydz.com Get Your Flipkart Gap Report Today
-          </button>
-          <p className="fc-sub">No setup required · Flipkart India &amp; Amazon.in supported · No credit card needed</p>
+      <div className="final-cta-block">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+          Flipkart's Best Sellers Know Something You Don't — Yet.
+        </h2>
+        <p className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 24px" }}>
+          Insydz gives you the AI-powered rank tracking, keyword gaps, and WhatsApp alerts built exclusively for Flipkart India.
+        </p>
+        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px 20px", marginBottom: 20 }}>
+          {["Flipkart rank tracking", "WhatsApp gap alerts", "Amazon.in also covered", "Free forever"].map(t => (
+            <div key={t} className="text-blue-100" style={{ fontSize:"clamp(11px,2vw,13.5px)", display:"flex", alignItems:"center", gap:6, fontFamily:"'Sora',sans-serif" }}>
+              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+            </div>
+          ))}
         </div>
+        <button
+          onClick={() => setLocation("/login")}
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm sm:text-base px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-xl transition-all transform hover:scale-105"
+        >
+          <Zap className="w-5 h-5 flex-shrink-0 inline mr-2" />
+          Get My Flipkart Gap Report →
+        </button>
+        <p className="text-blue-200 text-xs mt-4">
+          No setup · Live in minutes · India-only intelligence
+        </p>
       </div>
 
             {/* Footer */}

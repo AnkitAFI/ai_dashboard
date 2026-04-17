@@ -789,17 +789,16 @@ export default function AmazonCompetitorPriceTrackingTool() {
         .hero-inner { max-width: 820px; margin: 0 auto; padding-bottom: 32px; }
 
         .final-cta-block {
-          background: linear-gradient(135deg,#111827,#1f2937);
-          border-radius: 20px;
-          padding: clamp(28px,5vw,56px) clamp(20px,5vw,48px);
-          text-align: center; margin: 48px 0 0;
+          background: linear-gradient(135deg,#3b82f6 0%,#2563eb 100%);
+          padding: clamp(48px,8vw,40px) 20px;
+          text-align: center; margin: 60px 0 0;
         }
         .final-cta-benefits {
           display: flex; justify-content: center;
           flex-wrap: wrap; gap: 8px 20px; margin-bottom: 28px;
         }
         .final-cta-benefit {
-          color: #cbd5e1; font-size: clamp(12px,1.4vw,13.5px);
+          font-size: clamp(12px,1.4vw,13.5px);
           display: flex; align-items: center; gap: 6px;
           font-family: 'Sora', sans-serif;
         }
@@ -2041,34 +2040,32 @@ export default function AmazonCompetitorPriceTrackingTool() {
               redirected to a competitor who does.</strong>
             </p>
 
-            {/* Final CTA */}
-            <div className="final-cta-block">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3">
-                Stop Guessing. Start Knowing.
-              </h2>
-              <p className="text-gray-400 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif" }}>
-                Every hour you wait is an hour a competitor is adjusting their price and taking your Buy Box. Insydz
-                gives Indian sellers on Amazon, Flipkart real-time price intelligence — with AI
-                recommendations delivered on WhatsApp.
-              </p>
-              <div className="final-cta-benefits">
-                {["No dashboards to learn", "No credit card needed", "WhatsApp alerts from day one", "Amazon.in + Flipkart"].map(t => (
-                  <div key={t} className="final-cta-benefit">
-                    <span style={{ color: "#f97316", fontWeight: 800 }}>✓</span> {t}
-                  </div>
-                ))}
-              </div>
-              <button className="final-cta-btn" onClick={() => setLocation("/login")}>
-                <Zap className="w-5 h-5" />
-                Try Insydz Free insydz.com
-              </button>
-              <p className="text-gray-500 text-xs mt-4">
-                No setup required · Amazon India, Flipkart &amp; supported
-              </p>
-            </div>
-
           </article>
         </main>
+      </div>
+
+      {/* Final CTA */}
+      <div className="final-cta-block">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+          Beat Your Competitors to Every Price Move.
+        </h2>
+        <p className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 24px" }}>
+          Insydz tracks Amazon.in competitor prices in real time and pushes Buy Box alerts to your WhatsApp — before you lose the sale.
+        </p>
+        <div className="final-cta-benefits">
+          {["Real-time price intelligence", "Buy Box protection alerts", "Amazon.in + Flipkart", "Free forever"].map(t => (
+            <div key={t} className="final-cta-benefit text-blue-100">
+              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+            </div>
+          ))}
+        </div>
+        <button className="final-cta-btn" onClick={() => setLocation("/login")}>
+          <Zap className="w-5 h-5 flex-shrink-0" />
+          Start Price Tracking Free →
+        </button>
+        <p className="text-blue-200 text-xs mt-4">
+          Live in under 30 min · WhatsApp alerts · No card needed
+        </p>
       </div>
 
             {/* Footer */}

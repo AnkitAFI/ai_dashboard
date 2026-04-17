@@ -414,7 +414,7 @@ export default function HowToRankPage1AmazonIndia() {
         .dark .related-title { color:#f9fafb; }
 
         /* Final CTA */
-        .final-cta-block { background:linear-gradient(135deg,#0d1b2a 0%,#4f46e5 100%); border-radius:20px; padding:clamp(32px,6vw,56px) clamp(24px,5vw,48px); text-align:center; margin:60px 0 0; }
+        .final-cta-block { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%); padding:clamp(48px,8vw,40px) 20px; text-align:center; margin:60px 0 0; }
 
         /* TOC link */
         .toc-link { display:block; font-size:12.5px; font-weight:500; color:#6b7280; padding:6px 10px; border-radius:8px; cursor:pointer; border:none; background:none; text-align:left; width:100%; transition:all .15s; margin-bottom:2px; line-height:1.4; border-left:2px solid transparent; }
@@ -440,14 +440,14 @@ export default function HowToRankPage1AmazonIndia() {
               </div>
             </div>
             <div className="hidden lg:flex items-center space-x-3" ref={dropdownRef}>
-              <DesktopDropdown label="Solutions"  menuKey="Solutions" />
-              <DesktopDropdown label="Use Cases"  menuKey="Use Cases" />
-              <DesktopDropdown label="Features"   menuKey="Features" />
+              <DesktopDropdown label="Solutions" menuKey="Solutions" />
+              <DesktopDropdown label="Use Cases" menuKey="Use Cases" />
+              <DesktopDropdown label="Features" menuKey="Features" />
               <button onClick={() => setLocation("/pricing")} onMouseEnter={() => setActiveDropdown(null)} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all">Pricing</button>
               <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
-              <DesktopDropdown label="Compare"    menuKey="Compare" />
-              <DesktopDropdown label="Resources"  menuKey="Resources" accent="orange" />
-              <DesktopDropdown label="About"      menuKey="About" />
+              <DesktopDropdown label="Compare" menuKey="Compare" />
+              <DesktopDropdown label="Resources" menuKey="Resources" accent="orange" />
+              <DesktopDropdown label="About" menuKey="About" />
               <Button onClick={() => setLocation("/login")} onMouseEnter={() => setActiveDropdown(null)} className="ml-2 text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">Login</Button>
               <button className="ml-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" onClick={() => setIsDarkMode(!isDarkMode)}>
                 {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-800" />}
@@ -464,7 +464,7 @@ export default function HowToRankPage1AmazonIndia() {
               <button onClick={() => { setLocation("/resources/expert-blog"); setIsMenuOpen(false); }} className="flex items-center gap-2 w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium">
                 <ArrowLeft className="w-4 h-4" /> Back to Blog
               </button>
-              {([["Solutions","Solutions","purple"],["Use Cases","Use Cases","purple"],["Features","Features","purple"],["Free Tools","Free Tools","purple"],["Compare","Compare","purple"],["Resources","Resources","orange"],["About","About","purple"]] as [string, keyof NavigationMenu, string][]).map(([label, key, accent]) => (
+              {([["Solutions", "Solutions", "purple"], ["Use Cases", "Use Cases", "purple"], ["Features", "Features", "purple"], ["Free Tools", "Free Tools", "purple"], ["Compare", "Compare", "purple"], ["Resources", "Resources", "orange"], ["About", "About", "purple"]] as [string, keyof NavigationMenu, string][]).map(([label, key, accent]) => (
                 <div key={label}>
                   <button onClick={() => toggleMobileMenu(label)} className={`flex items-center justify-between w-full px-4 py-2 rounded-lg font-medium ${accent === "orange" ? "text-orange-600 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20" : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"}`}>
                     {label}<ChevronDown className={`w-4 h-4 transition-transform ${mobileActiveMenu === label ? "rotate-180" : ""}`} />
@@ -536,10 +536,10 @@ export default function HowToRankPage1AmazonIndia() {
 
           <div className="stat-strip" style={{ width: "140%" }}>
             {[
-              ["70%",     "of Amazon.in clicks go to page 1 — page 2 gets just 15%"],
-              ["10x",     "more daily organic sales: page 1 vs page 3 for the same keyword"],
-              ["40%",     "more active Amazon.in sellers over the past 3 years"],
-              ["6–12 wks","to reach page 1 for primary keywords with optimised listing"],
+              ["70%", "of Amazon.in clicks go to page 1 — page 2 gets just 15%"],
+              ["10x", "more daily organic sales: page 1 vs page 3 for the same keyword"],
+              ["40%", "more active Amazon.in sellers over the past 3 years"],
+              ["6–12 wks", "to reach page 1 for primary keywords with optimised listing"],
             ].map(([num, lbl]) => (
               <div className="stat-item" key={num}>
                 <div className="text-2xl font-extrabold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">{num}</div>
@@ -918,9 +918,9 @@ export default function HowToRankPage1AmazonIndia() {
             <div className="metrics-grid">
               {[
                 { num: "Keyword Rank", lbl: "Track daily position for each target keyword not just overall BSR" },
-                { num: "CTR",          lbl: "Click-through rate in search low CTR signals weak main image or title" },
-                { num: "CVR",          lbl: "Conversion rate below 8% means your listing isn't convincing buyers" },
-                { num: "Organic Split",lbl: "% of sales from organic vs. paid growth in organic share signals healthy ranking" },
+                { num: "CTR", lbl: "Click-through rate in search low CTR signals weak main image or title" },
+                { num: "CVR", lbl: "Conversion rate below 8% means your listing isn't convincing buyers" },
+                { num: "Organic Split", lbl: "% of sales from organic vs. paid growth in organic share signals healthy ranking" },
               ].map(m => (
                 <div className="metric-card" key={m.num}>
                   <span className="metric-num">{m.num}</span>
@@ -992,7 +992,7 @@ export default function HowToRankPage1AmazonIndia() {
             <h2 style={{ marginTop: 56 }}>Related Guides for Indian Sellers</h2>
             <div className="related-grid">
               {[
-                { title: "Amazon SEO Tool India: Keyword Research & Rank Tracking Guide (2026)", tag: "SEO Tools",              bg: "linear-gradient(135deg,#F43F8F,#7C3AED)", emoji: "🔍", route: "/features/keyword-rank-tracking-feature" },
+                { title: "Amazon SEO Tool India: Keyword Research & Rank Tracking Guide (2026)", tag: "SEO Tools", bg: "linear-gradient(135deg,#F43F8F,#7C3AED)", emoji: "🔍", route: "/features/keyword-rank-tracking-feature" },
                 { title: "Best Competitor Price Tracking Tools for Indian Amazon & Flipkart Sellers (2026)", tag: "Pricing Strategy", bg: "linear-gradient(135deg,#F59E0B,#DC2626)", emoji: "💰", route: "/features/competitor-price-tracking-feature" },
                 { title: "How to Analyse Competitor Listings on Amazon India: A Data-Driven Framework", tag: "Competitor Intelligence", bg: "linear-gradient(135deg,#0D9488,#2563EB)", emoji: "📊", route: "/compare/insydzvshelium" },
               ].map(r => (
@@ -1008,35 +1008,33 @@ export default function HowToRankPage1AmazonIndia() {
               ))}
             </div>
 
-            {/* Final CTA */}
-            <div className="final-cta-block">
-              <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
-                Page 1 Isn't Luck. It's a System.
-              </h2>
-              <p className="text-gray-400 mb-8 text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 28px" }}>
-                Sellers who rank on page 1 of Amazon India aren't guessing which keywords to use they're using data.
-                They're tracking competitors. They're catching ranking drops before they lose revenue. Insydz gives you
-                the same intelligence, built specifically for Amazon.in and Flipkart.
-              </p>
-              <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "8px 28px", marginBottom: 28 }}>
-                {["India-specific keyword intelligence", "Daily rank tracking", "WhatsApp alerts", "Forever free plan"].map(t => (
-                  <div key={t} style={{ color: "#cbd5e1", fontSize: 13.5, display: "flex", alignItems: "center", gap: 7, fontFamily: "'Sora',sans-serif" }}>
-                    <span style={{ color: "#f97316", fontWeight: 800 }}>✓</span> {t}
-                  </div>
-                ))}
-              </div>
-              <button onClick={() => setLocation("/login")} className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-base px-10 py-4 rounded-full shadow-xl transition-all transform hover:scale-105">
-                <Zap className="w-5 h-5 inline mr-2" />
-                Find Your Keyword Gaps Free at insydz.com →
-              </button>
-              <p className="text-gray-500 text-xs mt-4">No credit card · No complex setup · Start climbing today</p>
-            </div>
-
           </article>
         </main>
       </div>
 
-            {/* Footer */}
+      {/* Final CTA */}
+      <div className="final-cta-block">
+        <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+          Page 1 Is a System. Insydz Runs It.
+        </h2>
+        <p className="text-blue-100 mb-8 text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 28px" }}>
+          Track your Amazon.in keyword ranks daily, catch drops instantly on WhatsApp, and close the gaps your competitors are exploiting.
+        </p>
+        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "8px 28px", marginBottom: 28 }}>
+          {["Daily rank tracking", "WhatsApp alerts", "India keyword data", "Free plan available"].map(t => (
+            <div key={t} className="text-blue-100" style={{ fontSize: 13.5, display: "flex", alignItems: "center", gap: 7, fontFamily: "'Sora',sans-serif" }}>
+              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+            </div>
+          ))}
+        </div>
+        <button onClick={() => setLocation("/login")} className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-base px-10 py-4 rounded-full shadow-xl transition-all transform hover:scale-105">
+          <Zap className="w-5 h-5 inline mr-2" />
+          Find My Keyword Gaps →
+        </button>
+        <p className="text-blue-200 text-xs mt-4">No setup · Amazon.in + Flipkart · Results in minutes</p>
+      </div>
+
+      {/* Footer */}
       <footer className="bg-[#0a0f1e] text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 

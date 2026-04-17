@@ -647,25 +647,7 @@ export default function BestAmazonKeywordResearchToolIndia() {
         .metric-d{font-size:11.5px;color:#64748B;line-height:1.5;font-family:'Sora',sans-serif}
         @media(min-width:640px){.metric-d{font-size:12.5px}}
 
-        .fc-block{background:linear-gradient(135deg,#7C3AED 0%,#DB2777 100%);padding:56px 16px;text-align:center}
-        @media(min-width:640px){.fc-block{padding:72px 24px}}
-        @media(min-width:1024px){.fc-block{padding:80px 24px}}
-        .fc-inner{max-width:640px;margin:0 auto}
-        .fc-inner h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:12px;line-height:1.2;letter-spacing:-.4px}
-        @media(min-width:640px){.fc-inner h2{font-size:28px;margin-bottom:14px}}
-        @media(min-width:1024px){.fc-inner h2{font-size:36px}}
-        .fc-inner p{color:rgba(255,255,255,.75);font-size:14px;max-width:520px;margin:0 auto 22px;line-height:1.7;font-family:'Lora',serif}
-        @media(min-width:640px){.fc-inner p{font-size:16px;margin:0 auto 28px}}
-        .fc-points{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-bottom:24px}
-        @media(min-width:640px){.fc-points{gap:8px 24px;margin-bottom:32px}}
-        .fc-pt{color:rgba(255,255,255,.85);font-size:12px;display:flex;align-items:center;gap:6px;font-family:'Sora',sans-serif}
-        @media(min-width:640px){.fc-pt{font-size:13.5px}}
-        .fc-pt::before{content:'✓';color:white;font-weight:800}
-        .fc-btn{background:white;color:#7C3AED;padding:13px 28px;border-radius:10px;font-size:13px;font-weight:800;border:none;cursor:pointer;transition:transform .2s;width:100%;max-width:480px}
-        @media(min-width:640px){.fc-btn{padding:16px 36px;font-size:15px;width:auto}}
-        .fc-btn:hover{transform:translateY(-2px)}
-        .fc-sub{color:rgba(255,255,255,.5);font-size:11.5px;margin-top:12px}
-        @media(min-width:640px){.fc-sub{font-size:12.5px;margin-top:14px}}
+        .final-cta-block { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%); padding: clamp(48px,8vw,40px) 20px; text-align:center; margin:60px 0 0; }
 
         .verdict-banner{background:linear-gradient(135deg,#F5F3FF 0%,#EDE9FE 100%);border:2px solid #DDD6FE;border-radius:12px;padding:16px;margin:22px 0;display:flex;gap:12px;align-items:flex-start}
         @media(min-width:640px){.verdict-banner{padding:22px 24px;margin:28px 0;gap:16px}}
@@ -1222,22 +1204,31 @@ export default function BestAmazonKeywordResearchToolIndia() {
         </main>
       </div>
 
-      {/* FINAL CTA */}
-      <div className="fc-block">
-        <div className="fc-inner">
-          <h2>Winning on Amazon India and Flipkart in 2026 Isn't About Having the Best Product.</h2>
-          <p>It's about being found first. Keyword research is the foundation of that visibility layer. Insydz delivers AI-powered keyword intelligence built specifically for Indian marketplace sellers with WhatsApp alerts and Flipkart coverage no global tool provides.</p>
-          <div className="fc-points">
-            <div className="fc-pt">Forever free plan</div>
-            <div className="fc-pt">No credit card needed</div>
-            <div className="fc-pt">Amazon.in + Flipkart</div>
-            <div className="fc-pt">WhatsApp rank alerts</div>
-          </div>
-          <button className="fc-btn" onClick={() => setLocation("/login")}>
-            → Start Free at insydz.com Get Your Keyword Gap Report Today
-          </button>
-          <p className="fc-sub">No setup required · Amazon India, Flipkart &amp;supported · No credit card needed</p>
+      {/* Final CTA */}
+      <div className="final-cta-block">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+          India's Smartest Amazon Keyword Tool.
+        </h2>
+        <p className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 24px" }}>
+          Find the exact keywords your competitors rank for on Amazon.in — with Hinglish data and Flipkart coverage no global tool provides.
+        </p>
+        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px 20px", marginBottom: 20 }}>
+          {["Hinglish keyword data", "Amazon.in + Flipkart", "WhatsApp rank alerts", "Free to start"].map(t => (
+            <div key={t} className="text-blue-100" style={{ fontSize:"clamp(11px,2vw,13.5px)", display:"flex", alignItems:"center", gap:6, fontFamily:"'Sora',sans-serif" }}>
+              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+            </div>
+          ))}
         </div>
+        <button
+          onClick={() => setLocation("/login")}
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm sm:text-base px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-xl transition-all transform hover:scale-105"
+        >
+          <Zap className="w-5 h-5 flex-shrink-0 inline mr-2" />
+          Get My Keyword Report Free →
+        </button>
+        <p className="text-blue-200 text-xs mt-4">
+          No setup · Results in 5 min · Amazon.in + Flipkart covered
+        </p>
       </div>
 
             {/* Footer */}
