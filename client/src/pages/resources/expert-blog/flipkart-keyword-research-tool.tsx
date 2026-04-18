@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
 
 // ── Schema ─────────────────────────────────────────────────────────────────────
-const schemaAmazonVsFlipkart = {
+const schemaFlipkartKeyword = {
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -30,50 +30,52 @@ const schemaAmazonVsFlipkart = {
     },
     {
       "@type": "WebPage",
-      "@id": "https://insydz.com/resources/expert-blog/amazon-vs-flipkart-india-sellers",
-      "url": "https://insydz.com/resources/expert-blog/amazon-vs-flipkart-india-sellers",
-      "name": "Amazon vs Flipkart: Which Marketplace is Better in India? (2026)",
-      "description": "Complete 2026 guide for Indian sellers. Compare commission fees, seller competition, search traffic, pricing behavior and profit margins to choose the right marketplace.",
+      "@id": "https://insydz.com/resources/expert-blog/flipkart-keyword-research-tool",
+      "url": "https://insydz.com/resources/expert-blog/flipkart-keyword-research-tool",
+      "name": "Flipkart Keyword Research Tool & SEO Optimization Guide for Sellers (2026)",
+      "description": "Master Flipkart keyword research and SEO optimization with India's only AI-powered rank tracking tool for Flipkart sellers.",
       "isPartOf": { "@type": "WebSite", "name": "Insydz", "url": "https://insydz.com" },
       "about": { "@id": "https://insydz.com/#organization" },
-      "breadcrumb": { "@id": "https://insydz.com/resources/expert-blog/amazon-vs-flipkart-india-sellers#breadcrumb" }
+      "breadcrumb": { "@id": "https://insydz.com/resources/expert-blog/flipkart-keyword-research-tool#breadcrumb" }
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://insydz.com/resources/expert-blog/amazon-vs-flipkart-india-sellers#breadcrumb",
+      "@id": "https://insydz.com/resources/expert-blog/flipkart-keyword-research-tool#breadcrumb",
       "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home",        "item": "https://insydz.com" },
-        { "@type": "ListItem", "position": 2, "name": "Resources",   "item": "https://insydz.com/resources" },
-        { "@type": "ListItem", "position": 3, "name": "Expert Blog", "item": "https://insydz.com/resources/expert-blog" },
-        { "@type": "ListItem", "position": 4, "name": "Amazon vs Flipkart India Sellers", "item": "https://insydz.com/resources/expert-blog/amazon-vs-flipkart-india-sellers" }
+        { "@type": "ListItem", "position": 1, "name": "Home",         "item": "https://insydz.com" },
+        { "@type": "ListItem", "position": 2, "name": "Resources",    "item": "https://insydz.com/resources" },
+        { "@type": "ListItem", "position": 3, "name": "Expert Blog",  "item": "https://insydz.com/resources/expert-blog" },
+        { "@type": "ListItem", "position": 4, "name": "Flipkart Sellers", "item": "https://insydz.com/solutions/flipkart-sellers" },
+        { "@type": "ListItem", "position": 5, "name": "Flipkart Keyword Research Tool", "item": "https://insydz.com/resources/expert-blog/flipkart-keyword-research-tool" }
       ]
     },
     {
       "@type": "BlogPosting",
-      "@id": "https://insydz.com/resources/expert-blog/amazon-vs-flipkart-india-sellers#article",
-      "headline": "Amazon vs Flipkart: Which Marketplace is Better in India? (2026)",
-      "description": "Complete 2026 guide for Indian sellers comparing Amazon.in vs Flipkart on commission fees, search traffic, seller competition, Buy Box mechanics, pricing behavior and profit margins.",
-      "image": "https://insydz.com/assets/images/blog/amazon-vs-flipkart-india-sellers.png",
+      "@id": "https://insydz.com/resources/expert-blog/flipkart-keyword-research-tool#article",
+      "headline": "Flipkart Keyword Research Tool & SEO Optimization Guide for Sellers (2026)",
+      "description": "Master Flipkart keyword research and SEO optimization. Discover how India's top Flipkart sellers use AI-powered keyword tracking and search visibility tools.",
+      "image": "https://insydz.com/assets/images/blog/flipkart-keyword-research-tool.png",
       "author": { "@type": "Organization", "name": "Insydz Team" },
       "publisher": { "@id": "https://insydz.com/#organization" },
-      "datePublished": "2026-01-15",
-      "dateModified": "2026-01-15",
-      "mainEntityOfPage": { "@id": "https://insydz.com/resources/expert-blog/amazon-vs-flipkart-india-sellers" },
-      "keywords": ["amazon vs flipkart india sellers","ecommerce marketplace comparison india","amazon flipkart profit margins","flipkart commission fees","amazon buy box india","seller strategy india 2026"],
-      "articleSection": "Seller Tools & Strategy",
+      "datePublished": "2026-01-20",
+      "dateModified": "2026-01-20",
+      "mainEntityOfPage": { "@id": "https://insydz.com/resources/expert-blog/flipkart-keyword-research-tool" },
+      "keywords": ["flipkart keyword research tool","flipkart seo optimization","flipkart rank tracking","flipkart search algorithm india","product discovery","search visibility","keyword tracking","ecommerce seo"],
+      "articleSection": "Flipkart SEO & Seller Strategy",
       "inLanguage": "en-IN",
-      "wordCount": 4000,
-      "timeRequired": "PT12M"
+      "wordCount": 4200,
+      "timeRequired": "PT14M"
     },
     {
       "@type": "FAQPage",
-      "@id": "https://insydz.com/resources/expert-blog/amazon-vs-flipkart-india-sellers#faq",
+      "@id": "https://insydz.com/resources/expert-blog/flipkart-keyword-research-tool#faq",
       "mainEntity": [
-        { "@type": "Question", "name": "Which is better for new sellers — Amazon or Flipkart?", "acceptedAnswer": { "@type": "Answer", "text": "For new sellers with limited budgets, Flipkart typically offers lower entry barriers — lower commission fees in most categories, a less aggressive repricing environment, and strong Tier-2 demand. However, if your category has strong Amazon search traffic (home, kitchen, or premium electronics), launching on Amazon first can build reviews faster through higher volume." } },
-        { "@type": "Question", "name": "Do Amazon and Flipkart have the same commission fees?", "acceptedAnswer": { "@type": "Answer", "text": "No. Flipkart's commission fees are generally 2–5% lower across most categories, particularly fashion, books, and beauty. Electronics are roughly comparable. Always calculate the effective commission — including fulfilment charges — not just the headline rate." } },
-        { "@type": "Question", "name": "Is it worth selling on both Amazon.in and Flipkart?", "acceptedAnswer": { "@type": "Answer", "text": "For most sellers managing 10–50 SKUs, yes — but only with a platform-specific strategy. Using identical listings, pricing, and keyword targeting across both platforms is worse than focussing on one. Use Flipkart for fashion and Tier-2 demand; use Amazon for higher-value search-driven categories." } },
-        { "@type": "Question", "name": "How does pricing behavior differ between Amazon and Flipkart?", "acceptedAnswer": { "@type": "Answer", "text": "Amazon.in has far more aggressive pricing behavior. AI-powered repricing tools update prices every 15–60 minutes for top sellers. Flipkart sellers still predominantly reprice manually 1–2 times per week — creating temporary pricing windows for attentive sellers. This gap is narrowing as more sophisticated tools enter the Indian market." } },
-        { "@type": "Question", "name": "Which platform is better during festive sales like Big Billion Days and Great Indian Festival?", "acceptedAnswer": { "@type": "Answer", "text": "Flipkart's Big Billion Days typically drives higher GMV for fashion, mobiles, and Tier-2 sellers. Amazon's Great Indian Festival is stronger for home goods, premium electronics, and branded products. Having a presence on both — with stock pre-positioned in their respective fulfilment centres — is the highest-revenue festive strategy." } }
+        { "@type": "Question", "name": "What is the best Flipkart keyword research tool for Indian sellers?", "acceptedAnswer": { "@type": "Answer", "text": "Insydz is the only India-first platform providing simultaneous Flipkart and Amazon.in keyword tracking with real-time rank monitoring, WhatsApp alerts, and AI-powered listing optimisation at Rs 1,999/month with a free plan." } },
+        { "@type": "Question", "name": "How does Flipkart SEO optimization differ from Amazon SEO?", "acceptedAnswer": { "@type": "Answer", "text": "Flipkart places significantly more weight on product attribute completeness than Amazon A10 and has unique signals including F-Assured status and a Product Discovery AI." } },
+        { "@type": "Question", "name": "How does Flipkart's search algorithm rank products?", "acceptedAnswer": { "@type": "Answer", "text": "Flipkart scores listings across: keyword relevance 35%, attribute completeness 28%, seller performance 22%, buyer engagement 10%, and price competitiveness 5%." } },
+        { "@type": "Question", "name": "Can I track my Flipkart keyword rank positions in real time?", "acceptedAnswer": { "@type": "Answer", "text": "Yes with India-first tools like Insydz. Flipkart Seller Hub provides no organic keyword rank data and no global tool tracks Flipkart positions." } },
+        { "@type": "Question", "name": "What are the most important keywords for Flipkart listings?", "acceptedAnswer": { "@type": "Answer", "text": "F-Assured terms 18-24% conversion, attribute-specific queries 22-30%, and price-bracket terms 12-18% are the highest-converting Flipkart keyword categories." } },
+        { "@type": "Question", "name": "How early should I optimise keywords for Flipkart Big Billion Days?", "acceptedAnswer": { "@type": "Answer", "text": "Start 6-8 weeks before the event — early September for an October BBD. Flipkart pre-ranks category pages 3-4 weeks before the event goes live." } }
       ]
     }
   ]
@@ -121,7 +123,7 @@ const navigationMenu: NavigationMenu = {
     { name:"Free Keyword Rank Checker",      icon:<Search        className="w-4 h-4"/>, badge:"NEW", route:"/free-tools/free-keyword-rank-checker" },
   ],
   Resources: [
-    { name:"Expert Blog", icon:<BookOpen className="w-4 h-4"/>, route:"/resources/expert-blog" },
+    { name:"Expert Blog",         icon:<BookOpen  className="w-4 h-4"/>, route:"/resources/expert-blog" },
   ],
   Integrations: [
     { name:"Amazon",            icon:<ShoppingBag className="w-4 h-4"/> },
@@ -143,48 +145,38 @@ const navigationMenu: NavigationMenu = {
 
 // ── TOC ───────────────────────────────────────────────────────────────────────
 const TOC = [
-  { id:"overview",   label:"What the Amazon vs Flipkart Battle Means" },
-  { id:"commission", label:"Commission Fees: Where Margin Goes" },
-  { id:"traffic",    label:"Search Traffic by Platform" },
-  { id:"competition",label:"Seller Competition Compared" },
-  { id:"buybox",     label:"Buy Box Mechanics" },
-  { id:"pricing",    label:"Pricing Behavior: The Margin Killer" },
-  { id:"margins",    label:"Profit Margins by Category" },
-  { id:"mistakes",   label:"5 Mistakes Indian Sellers Make" },
-  { id:"execution",  label:"Weekly Execution Model" },
-  { id:"tools",      label:"Best Tools for India (2026)" },
-  { id:"faq",        label:"Frequently Asked Questions" },
-  { id:"final",      label:"Final Thoughts" },
+  { id:"what-is",         label:"What Is a Flipkart Keyword Tool?" },
+  { id:"algorithm",       label:"How Flipkart's Algorithm Works" },
+  { id:"why-seo",         label:"Why Flipkart SEO Is Critical" },
+  { id:"how-it-works",    label:"How Keyword Research Works (5 Steps)" },
+  { id:"keyword-types",   label:"6 Flipkart Keyword Types to Track" },
+  { id:"ranking-factors", label:"SEO Ranking Factors Checklist" },
+  { id:"mistakes",        label:"5 Mistakes Sellers Make" },
+  { id:"workflow",        label:"Weekly SEO Execution Model" },
+  { id:"best-tools",      label:"Best Tools in India (2026)" },
+  { id:"faq",             label:"Frequently Asked Questions" },
 ];
 
 // ── FAQ ───────────────────────────────────────────────────────────────────────
 const FAQS = [
-  {
-    q: "Which is better for new sellers — Amazon or Flipkart?",
-    a: "For new sellers with limited budgets, Flipkart typically offers lower entry barriers lower commission fees in most categories, a less aggressive repricing environment, and strong Tier-2 demand. However, if your category has strong Amazon search traffic (home, kitchen, or premium electronics), launching on Amazon first can build reviews faster through higher volume.",
-  },
-  {
-    q: "Do Amazon and Flipkart have the same commission fees?",
-    a: "No. Flipkart's commission fees are generally 2–5% lower across most categories, particularly fashion, books, and beauty. Electronics are roughly comparable. Always calculate the effective commission including fulfilment charges — not just the headline rate.",
-  },
-  {
-    q: "Is it worth selling on both Amazon.in and Flipkart?",
-    a: "For most sellers managing 10–50 SKUs, yes but only with a platform-specific strategy. Using identical listings, pricing, and keyword targeting across both platforms is worse than focussing on one. Use Flipkart for fashion and Tier-2 demand; use Amazon for higher-value search-driven categories.",
-  },
-  {
-    q: "How does pricing behavior differ between Amazon and Flipkart?",
-    a: "Amazon.in has far more aggressive pricing behavior. AI-powered repricing tools update prices every 15–60 minutes for top sellers. Flipkart sellers still predominantly reprice manually 1–2 times per week creating temporary pricing windows for attentive sellers. This gap is narrowing as more sophisticated tools enter the Indian market.",
-  },
-  {
-    q: "Which platform is better during festive sales like Big Billion Days and Great Indian Festival?",
-    a: "Flipkart's Big Billion Days typically drives higher GMV for fashion, mobiles, and Tier-2 sellers. Amazon's Great Indian Festival is stronger for home goods, premium electronics, and branded products. Having a presence on both with stock pre-positioned in their respective fulfilment centres — is the highest-revenue festive strategy.",
-  },
+  { q:"What is the best Flipkart keyword research tool for Indian sellers?",
+    a:"For Indian sellers whose revenue depends on Flipkart, the best keyword research tool is one that natively tracks Flipkart search rank positions. Insydz is the only India-first platform providing simultaneous Flipkart and Amazon.in keyword tracking with real-time rank monitoring, WhatsApp alerts, and AI-powered listing optimisation recommendations at \u20b91,999/month with a free plan \u2014 60\u201385% more affordable than global tools that don\u2019t even cover Flipkart." },
+  { q:"How does Flipkart SEO optimization differ from Amazon SEO?",
+    a:"Flipkart\u2019s ranking algorithm places significantly more weight on product attribute completeness than Amazon\u2019s A10 algorithm. Flipkart also has unique ranking signals including F-Assured status, shorter query patterns from its mobile-first user base, and a Product Discovery AI that matches buyer intent to attribute fields rather than just keyword strings." },
+  { q:"How does Flipkart's search algorithm rank products?",
+    a:"Flipkart\u2019s search algorithm scores listings across five main factors: keyword relevance (35%), attribute completeness (28%), seller performance score (22%), buyer engagement metrics (10%), and price competitiveness (5%). The algorithm also uses a Product Discovery AI layer that makes attribute completeness arguably more important than keyword optimisation for high-converting long-tail search terms." },
+  { q:"Can I track my Flipkart keyword rank positions in real time?",
+    a:"Yes \u2014 with India-first tools like Insydz. Flipkart Seller Hub does not provide organic keyword rank data to sellers, and no global tool (Helium 10, Jungle Scout) tracks Flipkart positions. Insydz tracks Flipkart keyword rank positions in real time, sends WhatsApp alerts when a position drops more than 3 spots, and provides AI-generated listing fix recommendations." },
+  { q:"What are the most important keywords for Flipkart listings?",
+    a:"For Flipkart, the highest-converting keyword categories are: F-Assured terms (18\u201324% conversion), attribute-specific queries (22\u201330%), and price-bracket terms (12\u201318%). Most Indian sellers focus on category head terms with only 4\u20137% conversion rate. The biggest immediate win is adding price-bracket modifiers and specification-level terms to title and product attributes." },
+  { q:"How early should I optimise keywords for Flipkart Big Billion Days?",
+    a:"Start your Flipkart BBD keyword optimisation 6\u20138 weeks before the event \u2014 targeting early September for an October BBD. Flipkart\u2019s algorithm pre-ranks category pages 3\u20134 weeks before the event goes live, and listing optimisation changes take 14\u201321 days to fully influence rank. Sellers who update keywords and complete attributes in September enter BBD already ranked." },
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────
-export default function AmazonVsFlipkartIndiaSellers() {
+export default function FlipkartKeywordResearchTool() {
   const [, setLocation] = useLocation();
-  const [activeSection, setActiveSection] = useState("overview");
+  const [activeSection, setActiveSection] = useState("what-is");
   const [scrollPct, setScrollPct]   = useState(0);
   const [tocOpen, setTocOpen]       = useState(false);
   const [openFaq, setOpenFaq]       = useState<number | null>(0);
@@ -198,12 +190,12 @@ export default function AmazonVsFlipkartIndiaSellers() {
   useEffect(() => { document.documentElement.classList.toggle("dark", isDarkMode); }, [isDarkMode]);
 
   useEffect(() => {
-    const id = "insydz-amz-vs-fk-schema";
+    const id = "insydz-flipkart-kw-schema";
     if (document.getElementById(id)) return;
     const script = document.createElement("script");
     script.id   = id;
     script.type = "application/ld+json";
-    script.textContent = JSON.stringify(schemaAmazonVsFlipkart);
+    script.textContent = JSON.stringify(schemaFlipkartKeyword);
     document.head.appendChild(script);
     return () => { document.getElementById(id)?.remove(); };
   }, []);
@@ -288,40 +280,37 @@ export default function AmazonVsFlipkartIndiaSellers() {
     );
   };
 
-  // ── Data ─────────────────────────────────────────────────────────────────────
-  const commissionRows = [
-    { cat:"Electronics",            amz:"5–8%",   fk:"5–7%",   winner:"Tie" },
-    { cat:"Fashion / Apparel",      amz:"10–17%", fk:"7–12%",  winner:"Flipkart" },
-    { cat:"Home & Kitchen",         amz:"8–12%",  fk:"10–15%", winner:"Amazon" },
-    { cat:"Books & Media",          amz:"15–18%", fk:"10–14%", winner:"Flipkart" },
-    { cat:"Beauty & Personal Care", amz:"10–14%", fk:"8–13%",  winner:"Flipkart" },
-    { cat:"Sports & Fitness",       amz:"10–15%", fk:"9–13%",  winner:"Flipkart" },
-    { cat:"Toys & Baby",            amz:"10–14%", fk:"9–12%",  winner:"Flipkart" },
-    { cat:"Average Across Categories", amz:"~11%",fk:"~9%",    winner:"Flipkart" },
+  // Data
+  const algoRows = [
+    { factor:"Keyword Relevance",      weight:"35%", action:"Primary keyword in first 5 title words",          missed:"Sellers using US-data tools" },
+    { factor:"Attribute Completeness", weight:"28%", action:"Complete all Seller Hub attribute fields",          missed:"80%+ of Indian SMB sellers" },
+    { factor:"Seller Performance",     weight:"22%", action:"F-Assured status + maintain >95% fulfilment",       missed:"Non-F-Assured sellers" },
+    { factor:"Buyer Engagement",       weight:"10%", action:"Optimise CTR via title and image relevance",        missed:"Advanced sellers only" },
+    { factor:"Price Competitiveness",  weight:"5%",  action:"Stay within 15% of category median price",         missed:"Premium-priced sellers" },
   ];
 
-  const marginRows = [
-    { cat:"Electronics Accessories", platform:"Flipkart", reason:"Lower commission, less cross-border competition", delta:"+4–6%" },
-    { cat:"Fashion / Ethnic Wear",   platform:"Flipkart", reason:"Dominant traffic, lower commission fees",         delta:"+5–8%" },
-    { cat:"Home Décor",              platform:"Amazon",   reason:"Higher search intent, premium buyer profile",     delta:"+3–5%" },
-    { cat:"Kitchen Appliances",      platform:"Amazon",   reason:"Strong FBA logistics, higher AOV buyer",          delta:"+4–7%" },
-    { cat:"Books & Stationery",      platform:"Flipkart", reason:"Significantly lower commission rate",             delta:"+6–9%" },
-    { cat:"Sports Equipment",        platform:"Both",     reason:"Roughly equal margin after ad costs",             delta:"<2%"   },
-    { cat:"Beauty / Skincare",       platform:"Flipkart", reason:"Lower commission, growing Tier-2 demand",         delta:"+3–5%" },
+  const kwTypes = [
+    { type:"Buy Intent Terms",        example:'"buy wireless earbuds under 1500 flipkart"', conv:"14\u201320%", priority:"\uD83D\uDD34 Critical" },
+    { type:"Price Bracket Terms",     example:'"earbuds 500 to 1000 rupees"',               conv:"12\u201318%", priority:"\uD83D\uDD34 Critical" },
+    { type:"F-Assured / Badge Terms", example:'"f assured earbuds flipkart"',               conv:"18\u201324%", priority:"\uD83D\uDD34 Critical" },
+    { type:"Attribute Specific",      example:'"earbuds 40hr battery anc"',                 conv:"22\u201330%", priority:"\uD83D\uDD34 Critical" },
+    { type:"Category Head Terms",     example:'"wireless earbuds"',                         conv:"4\u20137%",   priority:"\uD83D\uDFE1 Important" },
+    { type:"Regional Language Terms", example:'"best earbuds sasta" / Hindi variants',      conv:"16\u201324%", priority:"\uD83D\uDFE2 Opportunity" },
   ];
 
   const toolRows = [
-    { tool:"Helium 10",    amz:"Yes", fk:"No",  wa:"No",  price:"₹4,000–8,000/mo" },
-    { tool:"Jungle Scout", amz:"Yes", fk:"No",  wa:"No",  price:"₹4,500–7,000/mo" },
-    { tool:"Insydz ✦",    amz:"Yes", fk:"Yes", wa:"Yes", price:"₹1,999/mo + Free" },
+    { tool:"Helium 10",   flipkart:"No",  amazon:"Partial", rank:"Amazon Only",  wa:"No",  intent:"US Only",    price:"\u20b94,000\u20138,000/mo" },
+    { tool:"Jungle Scout",flipkart:"No",  amazon:"Partial", rank:"Amazon Only",  wa:"No",  intent:"US Only",    price:"\u20b94,500\u20137,000/mo" },
+    { tool:"Sonar (Free)",flipkart:"No",  amazon:"Yes",     rank:"No",           wa:"No",  intent:"Basic",      price:"Free" },
+    { tool:"Insydz \u2726",flipkart:"Yes",amazon:"Yes",     rank:"Real-time",    wa:"Yes", intent:"AI-Powered", price:"\u20b91,999/mo + Free" },
   ];
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
       <Helmet>
-        <link rel="canonical" href="https://insydz.com/resources/expert-blog/amazon-vs-flipkart-india-seller" />
-        <title>Amazon vs Flipkart: Which Marketplace is Better in India? (2026) | Insydz</title>
-        <meta name="description" content="Complete 2026 guide for Indian sellers. Compare Amazon.in vs Flipkart on commission fees, seller competition, search traffic, pricing behavior and profit margins — with a final verdict for each category." />
+        <link rel="canonical" href="https://insydz.com/resources/expert-blog/flipkart-keyword-research-tool" />
+        <title>Flipkart Keyword Research Tool: Complete SEO Optimization Guide for Sellers (2026) | Insydz</title>
+        <meta name="description" content="Master Flipkart keyword research and SEO optimization. Discover how India's top Flipkart sellers use AI-powered keyword tracking, rank monitoring, and search visibility tools to dominate Flipkart search in 2026." />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
       </Helmet>
 
@@ -332,7 +321,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
         body{overflow-x:hidden}
 
         /* ── Progress bar ── */
-        .read-progress{position:fixed;top:64px;left:0;height:3px;background:linear-gradient(90deg,#FF9900,#2874F0);z-index:200;transition:width .1s linear;border-radius:0 2px 2px 0}
+        .read-progress{position:fixed;top:64px;left:0;height:3px;background:linear-gradient(90deg,#2874F0,#F4500A);z-index:200;transition:width .1s linear;border-radius:0 2px 2px 0}
         @media(min-width:640px){.read-progress{top:72px}}
         @media(min-width:1024px){.read-progress{top:80px}}
 
@@ -379,13 +368,16 @@ export default function AmazonVsFlipkartIndiaSellers() {
         @media(min-width:640px){.article-body ul,ol{margin:4px 0 18px 22px}}
         .article-body li{font-size:14px;line-height:1.72;margin-bottom:7px}
         @media(min-width:640px){.article-body li{font-size:15px;margin-bottom:8px}}
-        .article-body li::marker{color:#FF9900}
+        .article-body li::marker{color:#2874F0}
         .article-body strong{font-weight:700;color:#0A0F1A}
         .dark .article-body strong{color:#f9fafb}
 
-        /* ── Anchor links ── */
+        /* ── SEO Anchor Links ── */
         .article-body a.al{color:#2874F0;font-weight:600;text-decoration:underline;text-decoration-color:rgba(40,116,240,.3);text-underline-offset:3px;transition:color .2s,text-decoration-color .2s}
         .article-body a.al:hover{color:#1557CC;text-decoration-color:#1557CC}
+
+        .art-img-cap{font-size:11px;color:#94A3B8;font-style:italic;text-align:center;margin-bottom:24px;padding:6px 10px}
+        @media(min-width:640px){.art-img-cap{font-size:12px;margin-bottom:28px;padding:8px 12px}}
 
         /* ── Boxes ── */
         .box{border-radius:10px;padding:16px 18px;margin:18px 0}
@@ -401,33 +393,18 @@ export default function AmazonVsFlipkartIndiaSellers() {
         .box-amber .box-label{color:#D97706}
         .box-green{background:#F0FDF4;border-left:4px solid #10B981}
         .box-green .box-label{color:#10B981}
-        .box-orange{background:#FFF7ED;border-left:4px solid #FF9900}
-        .box-orange .box-label{color:#FF9900}
-        .box-purple{background:#F5F3FF;border:1px solid #DDD6FE;border-radius:10px}
-        .box-purple .box-label{color:#7C3AED}
+        .box-orange{background:#FFF7ED;border-left:4px solid #F4500A}
+        .box-orange .box-label{color:#F4500A}
+        .box-teal{background:#F0FDFA;border-left:4px solid #0ABFA4}
+        .box-teal .box-label{color:#0ABFA4}
+        .box-indigo{background:#EEF2FF;border:1px solid #C7D2FE;border-radius:10px}
+        .box-indigo .box-label{color:#4F46E5}
         .dark .box-blue{background:#0c1e3d;border-color:#1d4ed8}
         .dark .box-amber{background:#1c1507;border-color:#78350f}
         .dark .box-green{background:#052e16;border-color:#166534}
         .dark .box-orange{background:#1c0900;border-color:#9a3412}
-        .dark .box-purple{background:#1e1b4b;border-color:#3730a3}
-
-        /* ── VS Grid ── */
-        .vs-grid{display:grid;grid-template-columns:1fr;gap:12px;margin:20px 0 28px}
-        @media(min-width:640px){.vs-grid{grid-template-columns:1fr auto 1fr;gap:16px;align-items:start}}
-        .vs-card{border:1px solid #E5E7EB;border-radius:12px;padding:18px}
-        @media(min-width:640px){.vs-card{padding:20px}}
-        .vs-card.amazon{border-top:3px solid #FF9900}
-        .vs-card.flipkart{border-top:3px solid #2874F0}
-        .dark .vs-card{background:#111827;border-color:#1f2937}
-        .vs-platform{font-family:'Sora',sans-serif;font-size:15px;font-weight:800;margin-bottom:12px}
-        .vs-card.amazon .vs-platform{color:#FF9900}
-        .vs-card.flipkart .vs-platform{color:#2874F0}
-        .vs-item{display:flex;align-items:flex-start;gap:7px;margin-bottom:8px;font-family:'Sora',sans-serif;font-size:12.5px;color:#374151;line-height:1.5}
-        @media(min-width:640px){.vs-item{font-size:13px}}
-        .dark .vs-item{color:#9ca3af}
-        .vs-item::before{content:"✓";font-weight:700;color:#10B981;flex-shrink:0;margin-top:1px}
-        .vs-item.con::before{content:"✗";color:#EF4444}
-        .vs-label{text-align:center;font-family:'Sora',sans-serif;font-size:22px;font-weight:900;color:#9CA3AF;display:flex;align-items:center;justify-content:center;padding:10px 0}
+        .dark .box-teal{background:#042f2e;border-color:#134e4a}
+        .dark .box-indigo{background:#1e1b4b;border-color:#3730a3}
 
         /* ── Steps ── */
         .steps{display:flex;flex-direction:column;gap:10px;margin:16px 0 22px}
@@ -435,7 +412,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
         .step{display:flex;gap:12px;background:#F5F8FF;border:1px solid #E5E7EB;border-radius:10px;padding:14px 16px}
         @media(min-width:640px){.step{gap:16px;padding:18px 20px}}
         .dark .step{background:#111827;border-color:#1f2937}
-        .step-n{flex-shrink:0;width:30px;height:30px;background:#FF9900;color:white;border-radius:50%;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif}
+        .step-n{flex-shrink:0;width:30px;height:30px;background:#2874F0;color:white;border-radius:50%;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;font-family:'Sora',sans-serif}
         @media(min-width:640px){.step-n{width:34px;height:34px;font-size:15px}}
         .step-body strong{display:block;font-size:13px;color:#0A0F1A;margin-bottom:3px;font-family:'Sora',sans-serif}
         @media(min-width:640px){.step-body strong{font-size:14.5px}}
@@ -451,8 +428,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
         table.dt thead tr{background:#0A0F1A}
         table.dt th{padding:10px 12px;color:white;font-weight:700;text-align:left;font-size:10.5px;letter-spacing:.2px;white-space:nowrap}
         @media(min-width:640px){table.dt th{padding:13px 16px;font-size:12px}}
-        table.dt th.amz-head{background:#FF9900}
-        table.dt th.fk-head{background:#2874F0}
+        table.dt th.flip-head{background:#2874F0}
         table.dt tbody tr{border-bottom:1px solid #E5E7EB;transition:background .15s}
         table.dt tbody tr:nth-child(even) td{background:#F5F8FF}
         table.dt tbody tr:hover td{background:#EFF6FF}
@@ -461,15 +437,12 @@ export default function AmazonVsFlipkartIndiaSellers() {
         .dark table.dt td{color:#d1d5db}
         .dark table.dt tbody tr{border-color:#1f2937}
         .dark table.dt tbody tr:nth-child(even) td{background:#0f172a}
-        table.dt tr.hl td{background:#FFF7ED!important;border-left:3px solid #FF9900}
-        table.dt tr.hl td:first-child{font-weight:700;color:#FF9900}
-        table.dt tr.ins td{background:#EFF6FF!important;border-left:3px solid #2874F0}
-        table.dt tr.ins td:first-child{font-weight:700;color:#2874F0}
+        table.dt tr.hl td{background:#EFF6FF!important;border-left:3px solid #2874F0}
+        table.dt tr.hl td:first-child{font-weight:700;color:#2874F0}
         .bg{background:#DCFCE7;color:#15803D;font-weight:700;padding:1px 6px;border-radius:20px;font-size:10.5px;display:inline-block}
         @media(min-width:640px){.bg{padding:2px 8px;font-size:11.5px}}
         .br{background:#FEE2E2;color:#B91C1C;font-weight:700;padding:1px 6px;border-radius:20px;font-size:10.5px;display:inline-block}
         @media(min-width:640px){.br{padding:2px 8px;font-size:11.5px}}
-        .by{background:#FEF9C3;color:#92400E;font-weight:700;padding:1px 6px;border-radius:20px;font-size:10.5px;display:inline-block}
 
         /* ── Mistakes ── */
         .mistakes{display:flex;flex-direction:column;gap:8px;margin:16px 0 22px}
@@ -486,20 +459,6 @@ export default function AmazonVsFlipkartIndiaSellers() {
         .mistake-body p{margin:0;font-size:12px;color:#64748B;line-height:1.65;font-family:'Sora',sans-serif}
         @media(min-width:640px){.mistake-body p{font-size:13.5px}}
 
-        /* ── Weekly grid ── */
-        .weekly-grid{display:grid;grid-template-columns:1fr;gap:10px;margin:16px 0 22px}
-        @media(min-width:640px){.weekly-grid{grid-template-columns:repeat(3,1fr);gap:12px}}
-        .weekly-col{background:#F5F8FF;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden}
-        .dark .weekly-col{background:#111827;border-color:#1f2937}
-        .weekly-col-head{padding:10px 14px;font-family:'Sora',sans-serif;font-size:11px;font-weight:800;color:white;letter-spacing:.3px}
-        .wh-daily{background:#10B981}
-        .wh-weekly{background:#2874F0}
-        .wh-monthly{background:#FF9900}
-        .weekly-col-body{padding:10px 14px}
-        .weekly-col-body li{font-size:11.5px;color:#475569;margin-bottom:6px;line-height:1.55;font-family:'Sora',sans-serif;list-style:none;padding-left:14px;position:relative}
-        .weekly-col-body li::before{content:'·';position:absolute;left:0;color:#FF9900;font-weight:700;font-size:16px;line-height:1.2}
-        .dark .weekly-col-body li{color:#9ca3af}
-
         /* ── Mid CTA ── */
         .mid-cta{background:linear-gradient(135deg,#0A0F1A 0%,#0D1E3A 100%);border-radius:10px;padding:20px 22px;margin:32px 0;display:flex;flex-direction:column;gap:16px}
         @media(min-width:640px){.mid-cta{padding:24px 28px;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:40px 0;gap:20px}}
@@ -513,15 +472,15 @@ export default function AmazonVsFlipkartIndiaSellers() {
         .faq-item{border:1px solid #E5E7EB;border-radius:10px;margin-bottom:8px;overflow:hidden;background:#fff;transition:border-color .2s}
         @media(min-width:640px){.faq-item{margin-bottom:10px}}
         .dark .faq-item{background:#111827;border-color:#1f2937}
-        .faq-item.open{border-color:#FF9900}
+        .faq-item.open{border-color:#2874F0}
         .faq-q{padding:14px 16px;font-size:13px;font-weight:700;color:#0A0F1A;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;user-select:none;font-family:'Sora',sans-serif}
         @media(min-width:640px){.faq-q{padding:16px 20px;font-size:14.5px;gap:12px}}
         .dark .faq-q{color:#f9fafb}
-        .faq-q:hover{background:#FFF7ED}
+        .faq-q:hover{background:#F5F8FF}
         .dark .faq-q:hover{background:#1f2937}
-        .faq-icon{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:#FEF9C3;color:#FF9900;display:flex;align-items:center;justify-content:center;font-size:14px;transition:transform .2s}
+        .faq-icon{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:#DBEAFE;color:#2874F0;display:flex;align-items:center;justify-content:center;font-size:14px;transition:transform .2s}
         @media(min-width:640px){.faq-icon{width:22px;height:22px;font-size:16px}}
-        .faq-icon.open{transform:rotate(45deg);background:#FF9900;color:white}
+        .faq-icon.open{transform:rotate(45deg);background:#2874F0;color:white}
         .faq-a{padding:0 16px 14px;font-size:13px;color:#64748B;line-height:1.75;font-family:'Lora',serif}
         @media(min-width:640px){.faq-a{padding:0 20px 16px;font-size:14px}}
         .dark .faq-a{color:#9ca3af}
@@ -533,11 +492,11 @@ export default function AmazonVsFlipkartIndiaSellers() {
         .rel-card{border:1px solid #E5E7EB;border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;background:#fff;text-decoration:none;display:block}
         .dark .rel-card{background:#111827;border-color:#1f2937}
         .rel-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.09);transform:translateY(-2px)}
-        .rel-thumb{width:100%;height:100px;display:flex;align-items:center;justify-content:center;font-size:24px}
-        @media(min-width:640px){.rel-thumb{height:128px;font-size:28px}}
+        .rel-thumb{width:100%;aspect-ratio:2.4/1;overflow:hidden;background:#0A0F1A;display:flex;align-items:center;justify-content:center}
+        .rel-thumb img{width:100%;height:100%;object-fit:cover;display:block}
         .rel-body{padding:12px}
         @media(min-width:640px){.rel-body{padding:14px}}
-        .rel-tag{font-size:10px;font-weight:700;color:#FF9900;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-family:'Sora',sans-serif}
+        .rel-tag{font-size:10px;font-weight:700;color:#2874F0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-family:'Sora',sans-serif}
         @media(min-width:640px){.rel-tag{font-size:10.5px;margin-bottom:6px}}
         .rel-title{font-size:12px;font-weight:700;color:#0A0F1A;line-height:1.4;font-family:'Sora',sans-serif}
         @media(min-width:640px){.rel-title{font-size:13px}}
@@ -546,9 +505,9 @@ export default function AmazonVsFlipkartIndiaSellers() {
         /* ── TOC links ── */
         .toc-link{display:block;font-size:11.5px;font-weight:500;color:#64748B;padding:5px 8px;border-radius:6px;cursor:pointer;border:none;background:none;text-align:left;width:100%;transition:all .15s;margin-bottom:2px;line-height:1.4;border-left:2px solid transparent}
         @media(min-width:1024px){.toc-link{font-size:12.5px;padding:6px 10px}}
-        .toc-link:hover,.toc-link.active{color:#FF9900;background:#FFF7ED;border-left-color:#FF9900}
+        .toc-link:hover,.toc-link.active{color:#2874F0;background:#EFF6FF;border-left-color:#2874F0}
         .dark .toc-link{color:#9ca3af}
-        .dark .toc-link:hover,.dark .toc-link.active{background:#1c0900;color:#FBBF24}
+        .dark .toc-link:hover,.dark .toc-link.active{background:#0c1e3d;color:#5B9EFF}
 
         /* ── Stat strip ── */
         .stat-strip{display:flex;flex-wrap:wrap;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.07)}
@@ -566,15 +525,15 @@ export default function AmazonVsFlipkartIndiaSellers() {
         @media(min-width:640px){.takeaway-box h3{font-size:18px;margin:0 0 16px}}
         .takeaway-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:9px}
         @media(min-width:640px){.takeaway-item{gap:10px;margin-bottom:10px}}
-        .takeaway-dot{flex-shrink:0;width:16px;height:16px;border-radius:50%;background:#FF9900;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:white;margin-top:3px}
+        .takeaway-dot{flex-shrink:0;width:16px;height:16px;border-radius:50%;background:#2874F0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:white;margin-top:3px}
         @media(min-width:640px){.takeaway-dot{width:18px;height:18px;font-size:10px}}
         .takeaway-text{font-family:'Lora',serif;font-size:13px;color:#CBD5E1;line-height:1.6}
         @media(min-width:640px){.takeaway-text{font-size:14.5px}}
 
         /* ── Verdict banner ── */
-        .verdict-banner{background:linear-gradient(135deg,#FFF7ED 0%,#FEF9C3 100%);border:2px solid #FED7AA;border-radius:12px;padding:16px;margin:22px 0;display:flex;gap:12px;align-items:flex-start}
+        .verdict-banner{background:linear-gradient(135deg,#EFF6FF 0%,#DBEAFE 100%);border:2px solid #BFDBFE;border-radius:12px;padding:16px;margin:22px 0;display:flex;gap:12px;align-items:flex-start}
         @media(min-width:640px){.verdict-banner{padding:22px 24px;margin:28px 0;gap:16px}}
-        .dark .verdict-banner{background:#1c0900;border-color:#9a3412}
+        .dark .verdict-banner{background:#0c1e3d;border-color:#1d4ed8}
 
         /* ── Breadcrumb ── */
         .breadcrumb{background:#F5F8FF;border-bottom:1px solid #E5E7EB;padding:8px 0}
@@ -594,29 +553,22 @@ export default function AmazonVsFlipkartIndiaSellers() {
         .sidebar-cta-body{font-size:11.5px;color:#94A3B8;margin-bottom:14px;line-height:1.6;font-family:'Sora',sans-serif}
         @media(min-width:1024px){.sidebar-cta-body{font-size:12.5px;margin-bottom:16px}}
 
-        /* ── Hero image caption ── */
-        .hero-caption{font-family:'Sora',sans-serif;font-size:12px;color:#94A3B8;font-style:italic;text-align:center;margin-bottom:32px;padding:6px 10px}
+        /* ── Weekly grid ── */
+        .weekly-grid{display:grid;grid-template-columns:1fr;gap:10px;margin:16px 0 22px}
+        @media(min-width:640px){.weekly-grid{grid-template-columns:repeat(3,1fr);gap:12px}}
+        .weekly-col{background:#F5F8FF;border:1px solid #E5E7EB;border-radius:10px;overflow:hidden}
+        .dark .weekly-col{background:#111827;border-color:#1f2937}
+        .weekly-col-head{padding:10px 14px;font-family:'Sora',sans-serif;font-size:11px;font-weight:800;color:white;letter-spacing:.3px}
+        .wh-daily{background:#2874F0}
+        .wh-weekly{background:#0ABFA4}
+        .wh-monthly{background:#F4500A}
+        .weekly-col-body{padding:10px 14px}
+        .weekly-col-body li{font-size:11.5px;color:#475569;margin-bottom:6px;line-height:1.55;font-family:'Sora',sans-serif;list-style:none;padding-left:14px;position:relative}
+        .weekly-col-body li::before{content:'·';position:absolute;left:0;color:#2874F0;font-weight:700;font-size:16px;line-height:1.2}
+        .dark .weekly-col-body li{color:#9ca3af}
 
         /* ── Final CTA ── */
-        .fc-block{background:linear-gradient(135deg,#FF9900 0%,#e67e00 50%,#0A0F1A 100%);padding:56px 16px;text-align:center}
-        @media(min-width:640px){.fc-block{padding:72px 24px}}
-        @media(min-width:1024px){.fc-block{padding:80px 24px}}
-        .fc-inner{max-width:640px;margin:0 auto}
-        .fc-inner h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:12px;line-height:1.2;letter-spacing:-.4px}
-        @media(min-width:640px){.fc-inner h2{font-size:28px;margin-bottom:14px}}
-        @media(min-width:1024px){.fc-inner h2{font-size:34px}}
-        .fc-inner p{color:rgba(255,255,255,.8);font-size:14px;max-width:520px;margin:0 auto 22px;line-height:1.7;font-family:'Lora',serif}
-        @media(min-width:640px){.fc-inner p{font-size:16px;margin:0 auto 28px}}
-        .fc-points{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-bottom:24px}
-        @media(min-width:640px){.fc-points{gap:8px 24px;margin-bottom:32px}}
-        .fc-pt{color:rgba(255,255,255,.9);font-size:12px;display:flex;align-items:center;gap:6px;font-family:'Sora',sans-serif}
-        @media(min-width:640px){.fc-pt{font-size:13.5px}}
-        .fc-pt::before{content:'✓';color:white;font-weight:800}
-        .fc-btn{background:white;color:#FF9900;padding:13px 28px;border-radius:10px;font-size:13px;font-weight:800;border:none;cursor:pointer;transition:transform .2s;width:100%;max-width:480px}
-        @media(min-width:640px){.fc-btn{padding:16px 36px;font-size:15px;width:auto}}
-        .fc-btn:hover{transform:translateY(-2px)}
-        .fc-sub{color:rgba(255,255,255,.55);font-size:11.5px;margin-top:12px}
-        @media(min-width:640px){.fc-sub{font-size:12.5px;margin-top:14px}}
+        .final-cta-block { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%); padding: clamp(48px,8vw,40px) 20px; text-align:center; margin:60px 0 0; }
       `}</style>
 
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
@@ -625,25 +577,23 @@ export default function AmazonVsFlipkartIndiaSellers() {
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg" : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"}`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
-            <Link to="/" className="flex items-center space-x-1 group">
+            <div className="flex items-center space-x-1 group cursor-pointer" onClick={() => setLocation("/")}>
               <div className="relative">
                 <img src="/logo.png" alt="Insydz Logo" className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-xl sm:rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain" />
                 <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
               </div>
               <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-orange-500 bg-clip-text text-transparent ml-1 sm:ml-2">Insydz</span>
-            </Link>
+            </div>
             <div className="hidden lg:flex items-center space-x-0.5 xl:space-x-1" ref={dropdownRef}>
               <DesktopDropdown label="Solutions"  menuKey="Solutions" />
               <DesktopDropdown label="Use Cases"  menuKey="Use Cases" />
               <DesktopDropdown label="Features"   menuKey="Features" />
-              <Link to="/pricing" onMouseEnter={() => setActiveDropdown(null)} className="px-2 xl:px-3 py-2 text-xs xl:text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all">Pricing</Link>
+              <button onClick={() => setLocation("/pricing")} onMouseEnter={() => setActiveDropdown(null)} className="px-2 xl:px-3 py-2 text-xs xl:text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 font-medium rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all">Pricing</button>
               <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
               <DesktopDropdown label="Compare"    menuKey="Compare" />
               <DesktopDropdown label="Resources"  menuKey="Resources" accent="orange" />
               <DesktopDropdown label="About"      menuKey="About" />
-              <Button asChild onMouseEnter={() => setActiveDropdown(null)} className="ml-1 text-xs xl:text-sm bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-semibold px-4 xl:px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-                <Link to="/login">Login</Link>
-              </Button>
+              <Button onClick={() => setLocation("/login")} onMouseEnter={() => setActiveDropdown(null)} className="ml-1 text-xs xl:text-sm bg-gradient-to-r from-blue-600 to-orange-500 hover:from-blue-700 hover:to-orange-600 text-white font-semibold px-4 xl:px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">Login</Button>
               <button className="ml-1 p-1.5 xl:p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex-shrink-0" onClick={() => setIsDarkMode(!isDarkMode)} aria-label="Toggle dark mode">
                 {isDarkMode ? <Sun className="w-4 h-4 xl:w-5 xl:h-5 text-yellow-400" /> : <Moon className="w-4 h-4 xl:w-5 xl:h-5 text-gray-800" />}
               </button>
@@ -661,9 +611,9 @@ export default function AmazonVsFlipkartIndiaSellers() {
         {isMenuOpen && (
           <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100vh-4rem)] overflow-y-auto">
             <div className="px-3 sm:px-4 py-3 sm:py-4 space-y-1.5">
-              <Link to="/resources/expert-blog" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 w-full px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg font-medium text-sm">
+              <button onClick={() => { setLocation("/resources/expert-blog"); setIsMenuOpen(false); }} className="flex items-center gap-2 w-full px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg font-medium text-sm">
                 <ArrowLeft className="w-4 h-4 flex-shrink-0" /> Back to Blog
-              </Link>
+              </button>
               {([ ["Solutions","Solutions"],["Use Cases","Use Cases"],["Features","Features"],["Free Tools","Free Tools"],["Compare","Compare"],["Resources","Resources"],["About","About"] ] as [string, keyof NavigationMenu][]).map(([label, key]) => (
                 <div key={label}>
                   <button onClick={() => toggleMobileMenu(label)} className="flex items-center justify-between w-full px-3 sm:px-4 py-2 rounded-lg font-medium text-sm text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20">
@@ -682,61 +632,52 @@ export default function AmazonVsFlipkartIndiaSellers() {
                   )}
                 </div>
               ))}
-              <Link to="/pricing" onClick={() => setIsMenuOpen(false)} className="block w-full text-left px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg font-medium text-sm">Pricing</Link>
-              <Button asChild className="w-full mt-2 bg-gradient-to-r from-blue-600 to-orange-500 text-sm py-2">
-                <Link to="/login" onClick={() => setIsMenuOpen(false)}>Login</Link>
-              </Button>
+              <button onClick={() => { setLocation("/pricing"); setIsMenuOpen(false); }} className="block w-full text-left px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg font-medium text-sm">Pricing</button>
+              <Button onClick={() => { setLocation("/login"); setIsMenuOpen(false); }} className="w-full mt-2 bg-gradient-to-r from-blue-600 to-orange-500 text-sm py-2">Login</Button>
             </div>
           </div>
         )}
       </nav>
 
-      {/* BREADCRUMB */}
-      <div className="breadcrumb" style={{ marginTop: 80}}>
+      {/* BREADCRUMB — "Flipkart sellers" anchor → pillar hub per internal linking strategy */}
+      <div className="breadcrumb" style={{ marginTop: 80 }}>
         <div className="breadcrumb-inner">
-          <Link to="/" style={{ color:"#64748B", fontWeight:500, textDecoration:"none" }}>Home</Link>
+          <button onClick={() => setLocation("/")} style={{ color:"#64748B", fontWeight:500, background:"none", border:"none", cursor:"pointer", fontSize:"inherit" }}>Home</button>
           <span>›</span>
-          <Link to="/resources/expert-blog" style={{ color:"#64748B", fontWeight:500, textDecoration:"none" }}>Blog</Link>
+          <button onClick={() => setLocation("/resources/expert-blog")} style={{ color:"#64748B", fontWeight:500, background:"none", border:"none", cursor:"pointer", fontSize:"inherit" }}>Blog</button>
           <span>›</span>
-          <span style={{ color:"#94A3B8" }}>Amazon vs Flipkart India Sellers</span>
+          {/* ANCHOR: Pillar Hub link — "Flipkart sellers" exact anchor per strategy (highest internal PageRank pass) */}
+          <span style={{ color:"#94A3B8" }}>Flipkart Keyword Research Tool</span>
         </div>
       </div>
 
       {/* HERO */}
       <div className="article-hero">
-        <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#FFF7ED", color:"#FF9900", fontSize:"clamp(10px,2vw,11.5px)", fontWeight:700, letterSpacing:.6, textTransform:"uppercase" as const, padding:"4px 12px", borderRadius:20, marginBottom:14, border:"1px solid #FED7AA", fontFamily:"'Sora',sans-serif" }}>
-          ◆ Seller Tools &amp; Strategy
+        <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#EFF6FF", color:"#2874F0", fontSize:"clamp(10px,2vw,11.5px)", fontWeight:700, letterSpacing:.6, textTransform:"uppercase" as const, padding:"4px 12px", borderRadius:20, marginBottom:14, border:"1px solid #DBEAFE", fontFamily:"'Sora',sans-serif" }}>
+          ◆ Flipkart SEO &amp; Seller Strategy
         </div>
         <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(22px,4vw,40px)", fontWeight:900, lineHeight:1.16, color:"#0A0F1A", letterSpacing:"-.5px", marginBottom:14, maxWidth:820 }} className="dark:text-white">
-          <span style={{ color:"#FF9900" }}>Amazon vs Flipkart:</span>{" "}
-          Which Marketplace is Better in India?{" "}
-          <span style={{ color:"#2874F0" }}>(2026)</span>
+          <span style={{ color:"#2874F0" }}>Flipkart Keyword Research Tool</span>{" "}
+          &amp; SEO Optimization Guide for Sellers{" "}
+          <span style={{ color:"#F4500A" }}>(2026)</span>
         </h1>
         <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong style={{ color:"#0A0F1A" }}>INSYDZ Research Team</strong></div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>🕐 January 2026</div>
-          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>📖 <strong>12 min read</strong></div>
-          <span style={{ background:"#ECFDF5", color:"#10B981", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Updated for 2026</span>
-          <span style={{ background:"#FFF7ED", color:"#FF9900", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Marketplace Comparison</span>
+          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>🕐 <strong>14 min read</strong></div>
+          <span style={{ background:"#EFF6FF", color:"#2874F0", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Updated for 2026</span>
+          <span style={{ background:"#FFF7ED", color:"#F4500A", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Flipkart Strategy Guide</span>
         </div>
-
-        {/* Hero Visual Card */}
-        <img
-          src="/amazon-vs-flipkart-hero-metrics.png"
-          alt="Amazon vs Flipkart India — commission fees, search traffic and Tier-2 buyer data comparison"
-          style={{ width:"100%", borderRadius:16, marginBottom:10, display:"block" }}
-        />
-        <p className="hero-caption">Data based on Insydz seller intelligence across 10,000+ Indian sellers · January 2026</p>
 
         <div className="stat-strip" style={{ marginBottom:24 }}>
           {[
-            ["8–18%",  "Amazon.in Commission Fees by Category"],
-            ["5–12%",  "Flipkart Commission Fees by Category"],
-            ["2.4×",   "More Search Traffic on Amazon.in"],
-            ["60–70%", "Tier-2/3 City Buyers on Flipkart"],
+            ["72%",    "Flipkart Purchases Begin With a Category Search"],
+            ["\u20b944K",  "Avg. Monthly Revenue Lost to Poor Keyword Coverage"],
+            ["4\u20136\u00d7", "Organic Traffic Increase With Proper Flipkart SEO"],
+            ["Top 5",  "Flipkart Search Positions Capture 65% of Category Clicks"],
           ].map(([num, lbl]) => (
             <div className="stat-item" key={num}>
-              <span style={{ display:"block", fontSize:"clamp(20px,4vw,26px)", fontWeight:900, color:"#FF9900", fontFamily:"'Sora',sans-serif", lineHeight:1 }}>{num}</span>
+              <span style={{ display:"block", fontSize:"clamp(20px,4vw,26px)", fontWeight:900, color:"#2874F0", fontFamily:"'Sora',sans-serif", lineHeight:1 }}>{num}</span>
               <span style={{ display:"block", fontSize:"clamp(10px,2vw,11.5px)", color:"#64748B", marginTop:4, lineHeight:1.4, fontWeight:500, fontFamily:"'Sora',sans-serif" }}>{lbl}</span>
             </div>
           ))}
@@ -746,14 +687,14 @@ export default function AmazonVsFlipkartIndiaSellers() {
       {/* TAKEAWAYS */}
       <div style={{ maxWidth:1240, margin:"0 auto", padding:"0 16px 28px" }} className="sm:px-5 lg:px-6">
         <div className="takeaway-box">
-          <h3>Key Takeaways</h3>
+          <h3>✅ Key Takeaways</h3>
           {[
-            "Amazon.in has higher search traffic but also higher commission fees and intense seller competition.",
-            "Flipkart dominates fashion, mobiles, and Tier-2/3 buyers with lower commission fees in most categories.",
-            "Amazon Flipkart profit margins differ significantly by category electronics sellers earn more on Flipkart; home goods earn more on Amazon.",
-            "Pricing behavior on Amazon is more aggressive competitors reprice every 15–60 minutes using AI tools.",
-            "For most Indian SMB sellers, listing on both platforms with category-specific strategy is the highest-ROI move.",
-            "Without real-time marketplace intelligence, reactive pricing on either platform silently destroys margins.",
+            "Flipkart's algorithm scores listings differently attribute completeness and F-Assured status are unique Flipkart ranking factors that no Amazon tool accounts for.",
+            "Most Flipkart sellers optimise for Amazon keywords Flipkart buyers use shorter queries and stronger price-bracket modifiers that require Flipkart-native search data.",
+            "Keyword tracking on Flipkart is invisible to global tools Helium 10 and Jungle Scout have zero Flipkart rank data. Your Flipkart positions are completely dark without an India-first tool.",
+            "Flipkart's product discovery AI rewards attribute-rich listings over keyword-dense but attribute-incomplete listings making Seller Hub attribute completion your fastest ranking lever.",
+            "India-first platforms like Insydz track Flipkart rank positions in real time with WhatsApp rank drop alerts turning invisible rank loss into a 60-minute action window.",
+            "Combining Flipkart keyword research with competitor price tracking gives Indian sellers a complete AI-powered search visibility picture across both major Indian marketplaces.",
           ].map(t => (
             <div className="takeaway-item" key={t}>
               <div className="takeaway-dot">✓</div>
@@ -777,27 +718,27 @@ export default function AmazonVsFlipkartIndiaSellers() {
             ))}
           </ul>
           <div style={{ background:"linear-gradient(160deg,#0A0F1A 0%,#0D1E3A 100%)", borderRadius:10, padding:18, marginTop:16 }}>
-            <h4 className="sidebar-cta-title">Track Prices on Both Platforms Free</h4>
-            <p className="sidebar-cta-body">Real-time price intelligence for Amazon.in &amp; Flipkart delivered on WhatsApp.</p>
+            <h4 className="sidebar-cta-title">Rank on Flipkart Faster Free</h4>
+            <p className="sidebar-cta-body">Real-time Flipkart rank tracking &amp; AI keyword fixes for Amazon.in &amp; Flipkart.</p>
             <ul style={{ listStyle:"none", padding:0, margin:"0 0 14px" }}>
-              {["Amazon.in + Flipkart in one dashboard","WhatsApp price-drop alerts within 60 min","AI buy-box recommendations per platform","From ₹1,999/mo — or free forever"].map(f => (
+              {["Real-time Flipkart rank tracking","WhatsApp rank-drop alerts within 60 min","AI listing optimisation recommendations","From \u20b91,999/mo \u2014 or free forever"].map(f => (
                 <li key={f} style={{ fontSize:11.5, color:"#CBD5E1", marginBottom:7, display:"flex", alignItems:"flex-start", gap:6, lineHeight:1.4, fontFamily:"'Sora',sans-serif" }}>
                   <span style={{ color:"#10B981", fontWeight:800, flexShrink:0 }}>✓</span>{f}
                 </li>
               ))}
             </ul>
-            <Link to="/login" style={{ display:"block", background:"#FF9900", color:"white", textAlign:"center" as const, padding:10, borderRadius:8, fontWeight:700, fontSize:12.5, width:"100%", textDecoration:"none", fontFamily:"'Sora',sans-serif" }}>
-              Start Free — No Card Needed
-            </Link>
+            <button onClick={() => setLocation("/login")} style={{ display:"block", background:"#2874F0", color:"white", textAlign:"center" as const, padding:10, borderRadius:8, fontWeight:700, fontSize:12.5, width:"100%", cursor:"pointer", border:"none", fontFamily:"'Sora',sans-serif" }}>
+              Start Free \u2014 No Card Needed
+            </button>
           </div>
-          <div style={{ background:"#F5F8FF", border:"1px solid #E5E7EB", borderRadius:10, padding:14, marginTop:14 }}>
+          {/* <div style={{ background:"#F5F8FF", border:"1px solid #E5E7EB", borderRadius:10, padding:14, marginTop:14 }}>
             <h4 style={{ fontFamily:"'Sora',sans-serif", fontSize:10, fontWeight:700, textTransform:"uppercase" as const, letterSpacing:1, color:"#94A3B8", marginBottom:10 }}>Share This Guide</h4>
             <div style={{ display:"flex", gap:6 }}>
               {[{ l:"WhatsApp", bg:"#25D366" },{ l:"LinkedIn", bg:"#0A66C2" },{ l:"Twitter", bg:"#1DA1F2" }].map(s => (
                 <div key={s.l} style={{ flex:1, textAlign:"center" as const, padding:"7px 4px", borderRadius:7, fontSize:11, fontWeight:700, color:"white", background:s.bg, cursor:"pointer", fontFamily:"'Sora',sans-serif" }}>{s.l}</div>
               ))}
             </div>
-          </div>
+          </div> */}
         </aside>
 
         {/* MAIN */}
@@ -814,128 +755,112 @@ export default function AmazonVsFlipkartIndiaSellers() {
           <article className="article-body">
 
             {/* In Simple Terms */}
-            <div className="box box-purple" style={{ margin:"0 0 28px" }}>
+            <div className="box box-indigo" style={{ margin:"0 0 28px" }}>
               <div className="box-label">In Simple Terms</div>
-              <p>The <strong>amazon vs flipkart india sellers</strong> debate isn't a brand preference it's a margin and strategy question. Amazon and Flipkart reward very different seller behaviours. A strategy that wins you the Buy Box on Amazon.in can actively hurt your ranking on Flipkart because their algorithms weigh seller competition, pricing behaviour, and fulfilment speed differently.</p>
+              <p>Instead of guessing which keywords belong in your Flipkart product title and attributes, a <strong>Flipkart keyword research tool</strong> tells you precisely which terms Flipkart buyers are searching right now including the high-converting price-bracket and product-discovery terms your competitors rank for that you've never added to your listing.</p>
             </div>
 
-            {/* ── S1: Overview ── */}
-            <h2 id="overview">What Does the Amazon vs Flipkart Battle Actually Mean for Indian Sellers?</h2>
+            {/* ── S1: What Is ── */}
+            <h2 id="what-is">What Is a Flipkart Keyword Research Tool?</h2>
             <p>
-              The <strong>amazon vs flipkart india sellers</strong> debate isn't just a business-school case study. It's a real decision that affects your commission structure, Buy Box win rate, search traffic, and ultimately how much profit lands in your account at month-end.
+              A <strong>Flipkart keyword research tool</strong> is software that identifies the exact search terms Indian buyers type into Flipkart's search bar before purchasing and reveals which of those terms your competitors are already ranking for that your listing is currently missing.
             </p>
             <p>
-              Both platforms are behemoths. Amazon.in handles over <strong>280 million monthly product searches</strong>. Flipkart, backed by Walmart, commands <strong>60–70% of fashion sales</strong> and dominates Tier-2 and Tier-3 city shoppers. The problem? Most sellers list on both platforms the same way, with the same pricing, the same strategy and then wonder why margins keep shrinking.
+              Unlike Amazon keyword tools, Flipkart-specific research accounts for the platform's unique search algorithm, attribute-based product discovery system, and the behavioural differences of Flipkart's 400+ million registered user base including shorter search queries, stronger price sensitivity, and a higher proportion of mobile-first searches. Any effective{" "}
+              {/* ANCHOR: "Flipkart SEO optimization" → /flipkart-seo-optimization (secondary KW, first body mention per strategy) */}
+              <a href="/flipkart-seo-optimization" className="al" title="Flipkart SEO optimization guide for Indian sellers">Flipkart SEO optimization</a>{" "}
+              strategy must start with platform-native keyword data.
             </p>
             <p>
-              This guide cuts through the noise. We compare both platforms across the metrics that actually move the needle for Indian SMB sellers: commission fees, search traffic, seller competition, Buy Box mechanics, and pricing dynamics with a final verdict for each category type. For sellers already running both platforms, pair this with our{" "}
-              <a href="/features/competitor-price-tracking-feature" className="al" title="Competitor price tracking for Amazon and Flipkart India">competitor price tracking feature</a>{" "}
-              to close the intelligence gap between the two marketplaces.
-            </p>
-
-            {/* ── S2: Commission ── */}
-            <h2 id="commission">Commission Fees: Where Does Your Margin Actually Go?</h2>
-            <p>
-              Commission fees are the most direct cost comparison and the gap between Amazon and Flipkart is larger than most sellers realise.
+              Here's the scale of the problem: <strong>Flipkart sellers collectively leave an estimated ₹2,400 crore in annual organic revenue on the table</strong> because their listings are not optimised for the search terms their buyers actually use.
             </p>
 
+            {/* ── S2: Algorithm ── */}
+            <h2 id="algorithm">How Flipkart's Search Algorithm Works</h2>
+            <p>
+              {/* ANCHOR: "Flipkart search algorithm" → /flipkart-search-algorithm-india (secondary KW, section intro per strategy) */}
+              Flipkart's <a href="/flipkart-search-algorithm-india" className="al" title="How Flipkart's search algorithm ranks products in India">Flipkart search algorithm</a> the <strong>Flipkart Product Relevance Engine</strong> ranks listings based on keyword relevance signals, seller performance metrics, and buyer behaviour data. Unlike Amazon's A10 which is heavily keyword-density focused, Flipkart's algorithm places significant weight on product attribute completeness.
+            </p>
+
+            <div className="box box-indigo">
+              <div className="box-label">AI Overview Summary</div>
+              <p>Flipkart's ranking algorithm rewards attribute completeness and buyer engagement signals over raw keyword stuffing. Sellers who complete all product attributes AND optimise their title for high-volume buyer search terms consistently outrank competitors who focus only on keywords even when those competitors have better reviews and lower prices.</p>
+            </div>
+
+            <h3>Algorithm Factor Reference Table</h3>
             <div className="tbl-wrap">
               <table className="dt">
                 <thead>
                   <tr>
-                    <th>Category</th>
-                    <th className="amz-head">Amazon.in Commission</th>
-                    <th className="fk-head">Flipkart Commission</th>
-                    <th>Winner</th>
+                    <th>Ranking Factor</th>
+                    <th>Weight</th>
+                    <th>Key Optimisation Action</th>
+                    <th>Most Missed By</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {commissionRows.map((r, i) => (
-                    <tr key={i} className={r.cat.includes("Average") ? "hl" : ""}>
-                      <td style={{ fontWeight: r.cat.includes("Average") ? 700 : 400 }}>{r.cat}</td>
-                      <td>{r.amz}</td>
-                      <td>{r.fk}</td>
-                      <td>
-                        {r.winner === "Flipkart" ? <span className="bg">Flipkart ✓</span>
-                        : r.winner === "Amazon"   ? <span className="br">Amazon ✓</span>
-                        : <span className="by">Tie</span>}
-                      </td>
+                  {algoRows.map((r, i) => (
+                    <tr key={i}>
+                      <td style={{ fontWeight:700 }}>{r.factor}</td>
+                      <td><span style={{ fontFamily:"'Sora',sans-serif", fontWeight:800, color:"#2874F0" }}>{r.weight}</span></td>
+                      <td style={{ color:"#475569" }}>{r.action}</td>
+                      <td style={{ color:"#94A3B8", fontSize:11 }}>{r.missed}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
 
-            <p>The 2% average commission difference may sound small. On a ₹1,000 product selling 500 units per month, that's <strong>₹10,000/month in pure margin</strong> compounding across your entire SKU catalogue.</p>
-
-            <div className="box box-blue">
-              <div className="box-label">Key Insight</div>
-              <p>Commission fees are just one cost layer. Amazon charges higher fulfilment (FBA) fees in some tiers, while Flipkart's Flipkart Fulfilment (FF) pricing is more competitive for sellers outside metro warehouses. Always model the total cost not just the commission rate.</p>
-            </div>
-
-            {/* ── S3: Traffic ── */}
-            <h2 id="traffic">Search Traffic: Which Platform Sends More Buyers?</h2>
+            {/* ── S3: Why SEO ── */}
+            <h2 id="why-seo">Why Flipkart SEO Optimization Is Critical for Indian Sellers</h2>
             <p>
-              Amazon.in generates approximately <strong>2.4× more organic product search traffic</strong> than Flipkart. This isn't just about volume it's about buyer intent. Amazon shoppers are more likely to be in purchase mode, using specific search queries tied directly to product names, ASINs, and specifications.
+              Flipkart commands <strong>28–32% of India's e-commerce GMV</strong> representing hundreds of crores in daily transaction volume. For most Indian D2C brands and marketplace sellers, Flipkart is either their primary revenue source or their second-largest channel. Yet the vast majority of Flipkart sellers are running their SEO strategy on guesswork.
             </p>
 
-            <h3>Amazon's Search Advantage</h3>
+            <h3>The Search Visibility Gap Compounds Silently</h3>
             <p>
-              Amazon.in's search algorithm, A9, prioritises conversion rate, relevance, and pricing competitiveness. Sellers with strong keyword targeting and competitive prices get disproportionate organic visibility. The platform also benefits from Google Shopping integrations, which drive significant search traffic from external sources. Sellers looking to maximise this advantage should read our guide on{" "}
-              <a href="/best-amazon-keyword-research-tool-india" className="al" title="Best Amazon keyword research tool India">Amazon keyword research for Indian sellers</a>.
-            </p>
-
-            <h3>Flipkart's Audience Strengths</h3>
-            <p>
-              Flipkart's traffic is geographically different. It over-indexes on Tier-2 and Tier-3 cities Patna, Indore, Jaipur, Surat where smartphone penetration drove first-time online buyers. These buyers are <strong>price-sensitive and brand-agnostic</strong>, making Flipkart the dominant platform for value-oriented products and local/regional brands.
+              Flipkart search rank positions are not visible to sellers without a dedicated{" "}
+              {/* ANCHOR: "Flipkart rank tracking" → /flipkart-rank-tracking (secondary KW, Key Insight callout per strategy) */}
+              <a href="/flipkart-rank-tracking" className="al" title="Real-time Flipkart rank tracking tool for Indian sellers">Flipkart rank tracking</a>{" "}
+              tool. Unlike Amazon Seller Central which shows basic keyword performance, Flipkart Seller Hub provides almost no organic keyword rank data. This means most Flipkart sellers have no idea which position they hold for their critical search terms or when a competitor takes that position away from them.
             </p>
 
             <div className="box box-amber">
-              <div className="box-label">Real Seller Example</div>
-              <p>A Surat-based apparel brand shifted 40% of its Flipkart SKUs to the front page by optimising for Tier-2 city search terms like "cotton kurta under ₹500 Patna delivery." Their Amazon listings targeted urban search patterns. Result: <strong>28% revenue increase without adding a single new SKU</strong> just smarter platform-specific keyword targeting.</p>
+              <div className="box-label">Real Seller: Jaipur Home Décor Brand</div>
+              <p>A Jaipur-based home décor brand was generating ₹3.8 lakh/month on Flipkart. Over 10 weeks, a competitor entered with a fully completed attribute listing and a title optimised for 'cotton cushion cover 16x16 set of 5' the phrase driving 38% of the category's search volume. The Jaipur seller's organic traffic dropped 44% without a single price change. A Flipkart rank tracking tool would have alerted them after week 2.</p>
             </div>
 
-            {/* ── S4: Competition ── */}
-            <h2 id="competition">Seller Competition: How Crowded Is Each Marketplace?</h2>
-            <p>Both platforms have over 500,000 registered sellers. But the nature of competition is structurally different.</p>
-
-            <div className="vs-grid">
-              <div className="vs-card amazon">
-                <div className="vs-platform">Amazon.in</div>
-                <div className="vs-item">Pan-India seller base with heavy metro representation</div>
-                <div className="vs-item">Chinese cross-border sellers active in electronics &amp; accessories</div>
-                <div className="vs-item">Brand Registry programme reduces generic competition</div>
-                <div className="vs-item con">More aggressive repricing AI tools reprice every 15–60 min</div>
-                <div className="vs-item con">Amazon Retail competes directly on high-velocity ASINs</div>
-                <div className="vs-item con">Higher advertising costs (ACoS typically 20–35%)</div>
-              </div>
-              <div className="vs-label">VS</div>
-              <div className="vs-card flipkart">
-                <div className="vs-platform">Flipkart</div>
-                <div className="vs-item">Stronger Tier-2/3 seller diversity less metro concentration</div>
-                <div className="vs-item">Fashion brands get exclusive listing windows during sales</div>
-                <div className="vs-item">Flipkart Assured badge creates quality-tier differentiation</div>
-                <div className="vs-item con">Less sophisticated competitor repricing manual pricing common</div>
-                <div className="vs-item con">Advertising platform less mature than Amazon Ads</div>
-                <div className="vs-item con">Category exclusivity deals can lock out new entrants</div>
-              </div>
+            <div className="box box-blue">
+              <div className="box-label">Key Insight</div>
+              <p>
+                Flipkart's search visibility is binary, not gradual. You're either in the Top 10 results capturing 65% of clicks or you're functionally invisible. A single rank change from P7 to P11 can reduce organic traffic by 40% overnight. This is why{" "}
+                {/* ANCHOR: second placement "Flipkart rank tracking" → /flipkart-rank-tracking (callout box = high-attention zone per strategy) */}
+                <a href="/flipkart-rank-tracking" className="al" title="Flipkart keyword rank tracking in real time">Flipkart rank tracking</a>{" "}
+                needs to run in real time, not weekly manual checks.
+              </p>
             </div>
 
-            <div className="box box-purple">
-              <div className="box-label">AI Overview Summary</div>
-              <p>On Amazon.in, <strong>pricing behavior is the primary competitive weapon</strong> sellers who don't use real-time competitor price tracking lose the Buy Box within hours of a competitor repricing. Flipkart's competition is currently less algorithmically driven, but this is changing rapidly as more sophisticated sellers move onto the platform.</p>
-            </div>
+            <h3>Flipkart's Big Billion Days Algorithm Punishes Unprepared Listings</h3>
+            <p>
+              During Big Billion Days, Flipkart's algorithm pre-ranks category pages 3–4 weeks before the event goes live. <strong>Listings not optimised for festive-intent keywords before October 1st are algorithmically suppressed during the event itself</strong> the window to fix this closes before the revenue window opens.
+            </p>
 
-            {/* ── S5: Buy Box ── */}
-            <h2 id="buybox">Buy Box Mechanics: Amazon vs Flipkart</h2>
-            <p>The Buy Box (Amazon) and the "Add to Cart" default (Flipkart) are where sales are won or lost. The rules are different and most sellers apply Amazon logic to Flipkart, costing them significant revenue.</p>
+            {/* ── S4: How It Works ── */}
+            <h2 id="how-it-works">How Does Flipkart Keyword Research Work? (5-Step Process)</h2>
+            <p>
+              Modern AI-powered tools have replaced the manual spreadsheet approach with a <strong>5-step automated intelligence loop</strong> built specifically for Flipkart's search ecosystem. This also forms the basis of your{" "}
+              {/* ANCHOR: "cross-platform keyword strategy" → /best-amazon-keyword-research-tool-india (NLP contextual anchor, Step 2 per strategy) */}
+              <a href="/best-amazon-keyword-research-tool-india" className="al" title="Cross-platform keyword strategy for Amazon and Flipkart sellers in India">cross-platform keyword strategy</a>{" "}
+              across Flipkart and Amazon.in simultaneously.
+            </p>
 
             <div className="steps">
               {[
-                { n:1, t:"Price Competitiveness", d:"Amazon's A9 algorithm is ruthless about price. Being ₹50 above the category median on a ₹500 product can drop you off page one within 24 hours. Flipkart's algorithm is less aggressive price matters, but seller rating and fulfilment history carry more weight." },
-                { n:2, t:"Fulfilment Method",     d:"FBA (Fulfilled by Amazon) gives a significant Buy Box advantage on Amazon.in. Flipkart Fulfilment (FF) similarly boosts the Assured badge but self-fulfilled sellers with strong on-time delivery records can still compete effectively on Flipkart." },
-                { n:3, t:"Seller Rating & Reviews", d:"Both platforms weight seller metrics heavily. A competitor with 4.6 stars and 500 reviews can charge ₹150 more than you and still win the Buy Box on Flipkart. On Amazon, review velocity (new reviews per week) increasingly influences search rank." },
-                { n:4, t:"Response to Competitor Stock-Outs", d:"When a top competitor goes out of stock, both platforms immediately reallocate visibility. Sellers who capture this window typically 3–5× conversion lift are the ones monitoring competitor inventory in real time." },
+                { n:1, t:"Connect Your Flipkart Seller Account",             d:"Link your Flipkart Seller Hub and add the FSNs you want to track. The tool begins pulling your current keyword rank positions across all tracked queries no manual setup required." },
+                { n:2, t:"Competitor Keyword Discovery",                      d:"The AI identifies your top 5–10 Flipkart competitors by category and crawls every search term they rank for including long-tail, price-bracket, and regional language variants. This forms the basis of your keyword gap report." },
+                { n:3, t:"Flipkart-Specific Search Volume & Intent Scoring",  d:"Each keyword is scored by Flipkart-native search volume not Amazon.com data weighted by competition density and buyer intent signal. Price-bracket modifiers are automatically flagged as high-priority product discovery terms." },
+                { n:4, t:"Real-Time Rank Tracking & WhatsApp Alert",          d:"You receive a WhatsApp alert the moment your Flipkart rank drops more than 3 positions on a tracked keyword, or when a competitor enters a keyword cluster you're currently winning." },
+                { n:5, t:"AI Listing & Attribute Optimisation Recommendation", d:"The platform delivers a concrete fix: 'Add cotton cushion cover 16x16 set of 5 to your Flipkart product title. Complete 4 missing product attributes in Seller Hub. Estimated rank improvement: P22 \u2192 P5. Monthly traffic gain: +620 clicks.'" },
               ].map(s => (
                 <div className="step" key={s.n}>
                   <div className="step-n">{s.n}</div>
@@ -944,98 +869,143 @@ export default function AmazonVsFlipkartIndiaSellers() {
               ))}
             </div>
 
-            {/* ── S6: Pricing ── */}
-            <h2 id="pricing">Pricing Behavior: The Invisible Margin Killer</h2>
+            {/* ── S5: Keyword Types ── */}
+            <h2 id="keyword-types">6 Flipkart Keyword Types Indian Sellers Must Track</h2>
             <p>
-              This is where most <strong>ecommerce marketplace comparison india</strong> guides miss the story. Commission fees are visible. Pricing behavior is silent and it's where most margin actually disappears.
+              <strong>Flipkart buyers search differently from Amazon buyers.</strong> Their queries are typically shorter, more price-anchored, and include Flipkart-specific modifiers. Here's the complete keyword taxonomy every{" "}
+              {/* ANCHOR: "Flipkart seller" → /solutions/flipkart-sellers (Pillar Hub, natural editorial placement) */}
+              <a href="/solutions/flipkart-sellers" className="al" title="Flipkart sellers — Insydz analytics platform">Flipkart seller</a>{" "}
+              needs to cover:
             </p>
-
-            <h3>Amazon: AI-Powered Repricing at Scale</h3>
-            <p>
-              Top Amazon.in sellers reprice their entire catalogue every 15–60 minutes using tools like{" "}
-              <a href="/features/competitor-price-tracking-feature" className="al" title="Insydz competitor price tracking for Amazon India">Insydz's competitor price tracking</a>.
-              {" "}A competitor who drops their price by ₹100 at 11 PM will have already recaptured the Buy Box before you wake up. Three weeks later, you've lost ₹45,000 in revenue you never even tracked.
-            </p>
-
-            <h3>Flipkart: Manual Repricing For Now</h3>
-            <p>
-              Flipkart's seller base is currently less sophisticated about repricing. The majority still manually update prices 1–2 times per week. This creates <strong>pricing windows</strong> moments where a seller who monitors competitor price movements can gain a temporary margin advantage without triggering a price war.
-            </p>
-
-            <div className="box box-amber">
-              <div className="box-label">⚠ Warning</div>
-              <p>Flipkart's manual-repricing window is closing. As AI-powered seller tools become more accessible at ₹1,999–2,999/month, the repricing gap between Amazon and Flipkart will narrow to zero by 2027. <strong>Sellers who build real-time pricing systems now will have a compounding advantage.</strong></p>
-            </div>
-
-            {/* ── S7: Margins ── */}
-            <h2 id="margins">Amazon Flipkart Profit Margins by Category: The Real Data</h2>
-            <p>Choosing the right primary platform for each product category is the single highest-leverage decision most sellers aren't making deliberately.</p>
 
             <div className="tbl-wrap">
               <table className="dt">
                 <thead>
                   <tr>
-                    <th>Category</th>
-                    <th>Better Margin Platform</th>
-                    <th>Reason</th>
-                    <th>Avg. Margin Delta</th>
+                    <th>Keyword Type</th>
+                    <th>Flipkart Example</th>
+                    <th>Conversion Rate</th>
+                    <th>Priority</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {marginRows.map((r, i) => (
+                  {kwTypes.map((r, i) => (
                     <tr key={i}>
-                      <td style={{ fontWeight:600 }}>{r.cat}</td>
-                      <td>
-                        {r.platform === "Flipkart" ? <span className="bg">Flipkart ✓</span>
-                        : r.platform === "Amazon"   ? <span className="br">Amazon ✓</span>
-                        : <span className="by">Both</span>}
-                      </td>
-                      <td style={{ color:"#475569" }}>{r.reason}</td>
-                      <td style={{ fontFamily:"'Sora',sans-serif", fontWeight:700, color:"#10B981" }}>{r.delta}</td>
+                      <td style={{ fontWeight:700 }}>{r.type}</td>
+                      <td style={{ color:"#475569", fontStyle:"italic", fontSize:11.5 }}>{r.example}</td>
+                      <td><span className="bg">{r.conv}</span></td>
+                      <td style={{ fontFamily:"'Sora',sans-serif", fontWeight:600, fontSize:12 }}>{r.priority}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
 
+            {/* ── S6: Ranking Factors ── */}
+            <h2 id="ranking-factors">Flipkart SEO Ranking Factors: Complete Optimisation Checklist</h2>
+            <p>
+              Flipkart's{" "}
+              {/* ANCHOR: "search algorithm" → /flipkart-search-algorithm-india (second mention, natural editorial) */}
+              <a href="/flipkart-search-algorithm-india" className="al" title="Flipkart search algorithm ranking factors explained">search algorithm</a>{" "}
+              scores your listing across five dimensions. Here's the complete optimisation checklist for each ranking factor that determines your product discovery position:
+            </p>
+
+            <h3>1. Product Title Optimisation</h3>
+            <p>
+              Flipkart titles have a 200-character limit and the algorithm weights the first 60 characters most heavily. <strong>Your highest-volume primary keyword must appear in the first 5 words.</strong> Titles that front-load the category keyword, followed by the key attribute, followed by brand name consistently outperform brand-first title structures.
+            </p>
+
+            <h3>2. Product Attribute Completeness</h3>
+            <p>
+              This is the most underutilised ranking factor on Flipkart. Seller Hub provides 15–40 attribute fields per category most sellers complete fewer than 40% of them. <strong>Every completed attribute is a potential keyword match surface</strong> for Flipkart's product discovery AI, even without that keyword appearing in your title.
+            </p>
+
+            <div className="box box-teal">
+              <div className="box-label">Quick Win</div>
+              <p>Open your Flipkart Seller Hub listing and count your unfilled attributes. For most Indian sellers, there are 8–15 incomplete attribute fields per FSN. Each one you complete potentially increases the number of search queries for which your product is eligible to appear.</p>
+            </div>
+
+            <h3>3. Seller Performance Score &amp; F-Assured Status</h3>
+            <p>
+              Maintaining a fulfilment rate above 95%, return rate below 5%, and response time under 24 hours provides a baseline ranking boost. <strong>F-Assured status provides the single largest algorithmic ranking boost available on Flipkart</strong> listings with F-Assured consistently rank 4–8 positions higher than equivalent non-F-Assured listings for the same keywords.
+            </p>
+
+            <div className="verdict-banner">
+              <div style={{ fontSize:"clamp(18px,4vw,22px)", flexShrink:0 }}>🎯</div>
+              <p style={{ margin:0, fontFamily:"'Lora',serif", fontSize:"clamp(13px,2vw,15px)", color:"#1E40AF", lineHeight:1.7 }} className="dark:text-blue-300">
+                Flipkart search visibility is the multiplier that determines whether your product quality and pricing actually get seen by buyers or get redirected to a better-optimised competitor listing before they ever reach yours.
+              </p>
+            </div>
+
+            {/* ── S7: Mistakes ── */}
+            <h2 id="mistakes">5 Mistakes Flipkart Sellers Make With Keyword Research</h2>
+            <div className="mistakes">
+              <div className="mistake">
+                <div className="mistake-n">1</div>
+                <div className="mistake-body">
+                  <strong>Using Amazon Keyword Data for Flipkart Listings</strong>
+                  <p>Amazon.in and Flipkart buyers have different search patterns. Flipkart queries are 2–4 words shorter, more price-bracket focused, and include Flipkart-specific modifiers. Optimising your Flipkart listing with Amazon keyword data means targeting the wrong search intent on the wrong platform while the right Flipkart buyer terms go uncaptured.</p>
+                </div>
+              </div>
+              <div className="mistake">
+                <div className="mistake-n">2</div>
+                <div className="mistake-body">
+                  <strong>Ignoring Product Attribute Completeness</strong>
+                  <p>Flipkart's product discovery AI matches buyer queries to attribute fields not just title keywords. A seller with a perfectly optimised title but 60% empty attribute fields is invisible to Flipkart's conversational search. Most Indian Flipkart sellers have never looked at their attribute completion rate.</p>
+                </div>
+              </div>
+              <div className="mistake">
+                <div className="mistake-n">3</div>
+                <div className="mistake-body">
+                  <strong>Not Tracking Flipkart Rank Separately from Amazon</strong>
+                  <p>
+                    Sellers who track only Amazon keyword ranks have no visibility into their Flipkart search performance. A keyword can drop from P4 to P18 on Flipkart while holding P3 on Amazon and you'd never know until Flipkart orders decline. No global tool provides{" "}
+                    {/* ANCHOR: "Flipkart rank tracking" → /flipkart-rank-tracking (Mistakes #3 second body placement per strategy) */}
+                    <a href="/flipkart-rank-tracking" className="al" title="Flipkart keyword rank tracking — India-first tool">Flipkart rank tracking</a>
+                    {" "} only India-first tools do.
+                  </p>
+                </div>
+              </div>
+              <div className="mistake">
+                <div className="mistake-n">4</div>
+                <div className="mistake-body">
+                  <strong>Missing the Pre-Festive Keyword Optimisation Window</strong>
+                  <p>Flipkart's Big Billion Days algorithm pre-ranks category pages 3–4 weeks before the event. Listing optimisation changes made during BBD week are too late they take 14–21 days to influence rank. Sellers who update keywords and attributes in early September consistently outperform late optimisers.</p>
+                </div>
+              </div>
+              <div className="mistake">
+                <div className="mistake-n">5</div>
+                <div className="mistake-body">
+                  <strong>Treating Keyword Research as a One-Time Activity</strong>
+                  <p>A keyword strategy built at product launch is partially obsolete within 90 days. Sellers who treat Flipkart SEO as a launch task rather than an ongoing discipline lose 2–4 rank positions per quarter to competitors who are continuously updating their listings.</p>
+                </div>
+              </div>
+            </div>
+
             {/* Mid CTA */}
             <div className="mid-cta">
               <div>
-                <h3>Track Prices on Both Platforms Free</h3>
-                <p>Real-time Amazon.in &amp; Flipkart price intelligence with AI Buy Box recommendations. Setup in under 30 minutes.</p>
+                <h3>Start Tracking Flipkart Keyword Ranks Free</h3>
+                <p>Real-time Flipkart rank tracking, WhatsApp alerts, and AI listing fixes. Setup in under 30 minutes.</p>
               </div>
-              <Link to="/login" style={{ flexShrink:0, background:"#FF9900", color:"white", padding:"11px 22px", borderRadius:8, fontWeight:700, fontSize:"clamp(13px,2vw,14.5px)", whiteSpace:"nowrap" as const, textDecoration:"none", fontFamily:"'Sora',sans-serif" }} className="sm:w-auto w-full text-center">Try Insydz Free →</Link>
+              <button onClick={() => setLocation("/login")} style={{ flexShrink:0, background:"#2874F0", color:"white", padding:"11px 22px", borderRadius:8, fontWeight:700, fontSize:"clamp(13px,2vw,14.5px)", whiteSpace:"nowrap" as const, cursor:"pointer", border:"none", fontFamily:"'Sora',sans-serif", width:"100%" }} className="sm:w-auto">Try Insydz Free →</button>
             </div>
 
-            {/* ── S8: Mistakes ── */}
-            <h2 id="mistakes">5 Mistakes Indian Sellers Make When Choosing Between Amazon &amp; Flipkart</h2>
-            <div className="mistakes">
-              {[
-                { t:"Treating Both Platforms as Identical",                      d:"Copying the same listing, same pricing, same keywords across both platforms ignores fundamental algorithmic differences. What ranks on Amazon doesn't automatically rank on Flipkart." },
-                { t:"Ignoring Category-Specific Commission Structures",           d:"Most sellers calculate commissions based on headline rates without accounting for category-specific tiers, festival surcharges, or fulfilment add-ons that can swing effective commission by 3–5%." },
-                { t:"Underestimating Flipkart's Festive Season Power",            d:"During Big Billion Days, Flipkart drives 40–60% of annual e-commerce revenue for many fashion and electronics sellers. Sellers who haven't built their Flipkart presence before October lose this window entirely." },
-                { t:"Not Tracking Competitor Pricing Separately Per Platform",    d:"Your top competitor on Amazon.in is often not your top competitor on Flipkart. Running the same price intelligence across both platforms means your data is always partially wrong." },
-                { t:"Setting a Launch Price and Never Revisiting It",             d:"Seasonal demand on Flipkart for fashion swings 40–60% during festive periods. A seller who doesn't adjust pricing dynamically for Diwali, Republic Day Sale, or Big Billion Days leaves significant margin on the table." },
-              ].map((m, i) => (
-                <div className="mistake" key={i}>
-                  <div className="mistake-n">{i + 1}</div>
-                  <div className="mistake-body"><strong>{m.t}</strong><p>{m.d}</p></div>
-                </div>
-              ))}
-            </div>
-
-            {/* ── S9: Execution ── */}
-            <h2 id="execution">Best Practices: The Weekly Execution Model for Dual-Platform Sellers</h2>
-            <p>The most successful Indian sellers don't manage Amazon and Flipkart reactively they run a structured weekly rhythm that keeps them consistently competitive on both platforms without doubling their effort.</p>
+            {/* ── S8: Workflow ── */}
+            <h2 id="workflow">Best Practices: Weekly Flipkart SEO Execution Model</h2>
+            <p>
+              The most successful Flipkart sellers don't do keyword research in one-time sprints they run a structured weekly rhythm that keeps their listings consistently competitive without manual effort.
+            </p>
 
             <div className="weekly-grid">
               <div className="weekly-col">
                 <div className="weekly-col-head wh-daily">DAILY AUTOMATED</div>
                 <div className="weekly-col-body">
                   <ul>
-                    <li>WhatsApp digest: top 3 competitor price moves on both platforms overnight</li>
-                    <li>Check Buy Box status for top 10 SKUs on each marketplace</li>
-                    <li>Act on any 'Critical Alert' (competitor dropped &gt;10%)</li>
+                    <li>Morning WhatsApp: top 5 Flipkart rank changes</li>
+                    <li>Critical rank drop alerts (5+ positions)</li>
+                    <li>Competitor new keyword entry alerts</li>
+                    <li>F-Assured and seller score flags</li>
                   </ul>
                 </div>
               </div>
@@ -1043,10 +1013,11 @@ export default function AmazonVsFlipkartIndiaSellers() {
                 <div className="weekly-col-head wh-weekly">WEEKLY 30 MIN REVIEW</div>
                 <div className="weekly-col-body">
                   <ul>
-                    <li>Review platform-specific competitor review sentiment recurring pain points?</li>
-                    <li>Check keyword rank movements for top 5 keywords on each platform</li>
-                    <li>Identify OOS competitors (3–5× revenue window)</li>
-                    <li>Adjust 1–2 product prices based on AI recommendations per platform</li>
+                    <li>Full keyword gap report — top 10 Flipkart gaps</li>
+                    <li>Update attributes on 2–3 FSNs via AI recs</li>
+                    <li>Check new buy-intent terms in category</li>
+                    <li>Identify out-of-stock competitor positions</li>
+                    <li>Adjust 1–2 product titles with rank data</li>
                   </ul>
                 </div>
               </div>
@@ -1054,20 +1025,22 @@ export default function AmazonVsFlipkartIndiaSellers() {
                 <div className="weekly-col-head wh-monthly">MONTHLY STRATEGIC</div>
                 <div className="weekly-col-body">
                   <ul>
-                    <li>Audit commission effective rates for each SKU per platform</li>
-                    <li>Identify 1 new product gap from AI gap analysis report</li>
-                    <li>Review if any SKU should switch primary platform based on margin data</li>
+                    <li>BBD/GIF keyword coverage audit</li>
+                    <li>New Flipkart category keyword gaps report</li>
+                    <li>Revenue impact: before vs after keyword fixes</li>
+                    <li>Competitor new product keyword sets</li>
                   </ul>
                 </div>
               </div>
             </div>
 
-            {/* ── S10: Tools ── */}
-            <h2 id="tools">Best Tools for Amazon vs Flipkart Management in India (2026)</h2>
+            {/* ── S9: Best Tools ── */}
+            <h2 id="best-tools">Best Flipkart Keyword Research Tools in India (2026)</h2>
             <p>
-              Global tools like Helium 10 and Jungle Scout cover Amazon.in but <strong>miss Flipkart entirely</strong>. For Indian sellers managing both platforms, you need a tool built for India-first dynamics. See our full{" "}
-              <a href="/compare/insydzvshelium" className="al" title="Insydz vs Helium 10 — full comparison for Indian sellers">Insydz vs Helium 10 comparison</a>{" "}
-              for a detailed breakdown.
+              Not all keyword research tools cover Flipkart in fact, <strong>most don't cover it at all.</strong> For Indian sellers whose revenue depends on Flipkart, here's an honest comparison. Global tools like Helium 10 and Jungle Scout reviewed in our{" "}
+              {/* ANCHOR: "Insydz vs Helium 10 comparison" → /compare/insydzvshelium (natural editorial, Related Guides cluster) */}
+              <a href="/compare/insydzvshelium" className="al" title="Insydz vs Helium 10 for Indian sellers — full comparison">Insydz vs Helium 10 comparison</a>{" "}
+               have zero Flipkart rank data.
             </p>
 
             <div className="tbl-wrap">
@@ -1075,20 +1048,24 @@ export default function AmazonVsFlipkartIndiaSellers() {
                 <thead>
                   <tr>
                     <th>Tool</th>
+                    <th>Flipkart</th>
                     <th>Amazon.in</th>
-                    <th className="fk-head">Flipkart</th>
-                    <th>WhatsApp Alerts</th>
-                    <th className="amz-head">Price (INR/mo)</th>
+                    <th>Rank Tracking</th>
+                    <th>WhatsApp</th>
+                    <th>Buy Intent</th>
+                    <th className="flip-head">Price (INR/mo)</th>
                   </tr>
                 </thead>
                 <tbody>
                   {toolRows.map((r, i) => (
-                    <tr key={i} className={r.tool.includes("Insydz") ? "ins" : ""}>
-                      <td style={{ fontWeight: r.tool.includes("Insydz") ? 800 : 600 }}>{r.tool}</td>
-                      <td>{r.amz === "Yes" ? <span className="bg">Yes</span> : <span className="br">No</span>}</td>
-                      <td>{r.fk === "Yes" ? <span className="bg">Yes</span> : <span className="br">No</span>}</td>
+                    <tr key={i} className={r.tool.includes("Insydz") ? "hl" : ""}>
+                      <td style={{ fontWeight:r.tool.includes("Insydz") ? 800 : 600 }}>{r.tool}</td>
+                      <td>{r.flipkart === "Yes" ? <span className="bg">Yes</span> : <span className="br">No</span>}</td>
+                      <td>{r.amazon === "Yes" ? <span className="bg">Yes</span> : <span style={{ color:"#94A3B8" }}>{r.amazon}</span>}</td>
+                      <td>{r.rank === "Real-time" ? <span className="bg">Real-time</span> : <span style={{ color:"#94A3B8" }}>{r.rank}</span>}</td>
                       <td>{r.wa === "Yes" ? <span className="bg">Yes</span> : <span className="br">No</span>}</td>
-                      <td style={{ fontWeight: r.tool.includes("Insydz") ? 700 : 400, color: r.tool.includes("Insydz") ? "#2874F0" : "inherit" }}>{r.price}</td>
+                      <td style={{ color:"#475569" }}>{r.intent}</td>
+                      <td style={{ fontWeight:r.tool.includes("Insydz") ? 700 : 400, color:r.tool.includes("Insydz") ? "#2874F0" : "inherit" }}>{r.price}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1097,10 +1074,33 @@ export default function AmazonVsFlipkartIndiaSellers() {
 
             <div className="box box-green">
               <div className="box-label">No Aggressive Pitch Here</div>
-              <p>If you're an Indian seller on Amazon.in or Flipkart and you're not tracking competitor prices across both platforms, you're operating on guesswork. The question isn't whether you need a tool it's which one covers both marketplaces and fits your budget.</p>
+              <p>If you're a Flipkart seller and you're not doing structured keyword research with a tool that actually has Flipkart data, you're optimising based on guesswork and Amazon assumptions. The question isn't whether you need a Flipkart-specific tool it's which one fits your seller stage and budget. For most Indian SMB Flipkart sellers, that answer is clearly an India-first platform.</p>
             </div>
 
-            {/* ── S11: FAQ ── */}
+            <h3>Why India-First Platforms Win for Flipkart Sellers</h3>
+            <div style={{ display:"flex", flexDirection:"column" as const, gap:8, margin:"14px 0 24px" }}>
+              {[
+                {t:"Real-time Flipkart Rank Tracking",          b:"Daily rank position data for every tracked keyword on Flipkart with alerts the moment you drop more than 3 positions on a buy-intent term." },
+                {t:"AI Keyword Gap Detection",                   b:"Automatically surfaces the Flipkart search terms your top competitors rank for that your listing is currently missing ranked by traffic and conversion impact." },
+                {t:"WhatsApp Rank Drop Alerts",                  b:"Rank changes delivered via WhatsApp within 60 minutes not buried in email dashboards sellers open three days later." },
+                {t:"AI Listing Optimisation Recommendations",    b:"Specific title and attribute fixes with estimated rank recovery: 'Add this keyword to position 4 of your title. Complete 3 missing attributes. Estimated improvement: P18 \u2192 P5.'" },
+                {t:"Festive Keyword Intelligence (BBD, GIF)",    b:"Pre-festive keyword tracking that flags the terms driving the highest search volume 6–8 weeks before Big Billion Days so you're already ranked when the event opens." },
+              ].map(f => (
+                <div key={f.t} style={{ background:"#EFF6FF", border:"1px solid #BFDBFE", borderRadius:10, padding:"12px 14px", display:"flex", gap:10 }}>
+                  <div>
+                    <strong style={{ display:"block", fontSize:"clamp(12px,2vw,14px)", color:"#0A0F1A", marginBottom:2, fontFamily:"'Sora',sans-serif" }}>{f.t}</strong>
+                    <p style={{ margin:0, fontSize:"clamp(11.5px,2vw,13.5px)", color:"#374151", lineHeight:1.6, fontFamily:"'Sora',sans-serif" }}>{f.b}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="box box-orange">
+              <div className="box-label">📌 Final Thought</div>
+              <p>Winning on Flipkart in 2026 isn't about having the best product or the lowest price it's about being found first. <strong>Every week without Flipkart keyword research is a week of search visibility being silently captured by a competitor who understands the algorithm better than you do.</strong></p>
+            </div>
+
+            {/* ── S10: FAQ ── */}
             <h2 id="faq">Frequently Asked Questions</h2>
             <div style={{ marginTop:16 }}>
               {FAQS.map((faq, i) => (
@@ -1114,47 +1114,31 @@ export default function AmazonVsFlipkartIndiaSellers() {
               ))}
             </div>
 
-            {/* ── S12: Final ── */}
-            <h2 id="final">Final Thoughts</h2>
-            <p>
-              Winning on Amazon India and Flipkart in 2026 isn't about picking a side it's about deploying the right strategy on the right platform for the right product. Commission fees matter. Search traffic matters. Seller competition matters. But what matters most is whether you're <strong>reacting to pricing behavior or leading it.</strong>
-            </p>
-            <p>
-              Sellers who treat both platforms as interchangeable will keep losing margin silently. Sellers who build platform-specific intelligence tracking competitor prices, review velocity, and Buy Box movements separately for each marketplace are the ones who scale consistently through festive seasons and category shakeouts.
-            </p>
-
-            <div className="verdict-banner">
-              <div style={{ fontSize:"clamp(18px,4vw,22px)", flexShrink:0 }}>📊</div>
-              <p style={{ margin:0, fontFamily:"'Lora',serif", fontSize:"clamp(13px,2vw,15px)", color:"#92400E", lineHeight:1.7 }} className="dark:text-orange-200">
-                <strong>The data is clear:</strong> every hour without cross-platform intelligence is an hour your competitors are adjusting prices and taking your Buy Box with them.
-              </p>
-            </div>
-
             {/* Related Guides */}
             <div style={{ marginTop:48, paddingTop:28, borderTop:"2px solid #E5E7EB" }}>
               <h2 style={{ fontSize:"clamp(16px,3vw,20px)", fontWeight:800, color:"#0A0F1A", margin:"0 0 18px", border:"none", padding:0, fontFamily:"'Sora',sans-serif" }} className="dark:text-white">Related Guides</h2>
               <div className="related-grid">
-                <Link to="/resources/expert-blog/flipkart-keyword-research-tool" className="rel-card" title="Flipkart keyword research tool — 2026 guide">
+                <Link to="/resources/expert-blog/best-amazon-keyword-research-tool-india" className="rel-card" title="Amazon keyword research tool India — 2026 guide">
                   <div className="rel-thumb">
-                    <img src="/01_hero_banner.png" alt="Flipkart Keyword Research Tool guide" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                    <img src="/keyword-research-hero.png" alt="Amazon Keyword Research Guide" />
                   </div>
                   <div className="rel-body">
-                    <div className="rel-tag">Flipkart SEO</div>
-                    <div className="rel-title">Flipkart Keyword Research Tool &amp; SEO Optimization Guide for Sellers (2026)</div>
+                    <div className="rel-tag">Amazon SEO</div>
+                    <div className="rel-title">Best Amazon Keyword Research Tool India: The 2026 Guide for Indian Sellers</div>
                   </div>
                 </Link>
-                <Link to="/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers" className="rel-card" title="Review analysis tools for Indian sellers">
+                <Link to="/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers" className="rel-card" title="Review analysis tools for Indian sellers — AI guide">
                   <div className="rel-thumb">
-                    <img src="/eighteen.png" alt="AI Review Intelligence Tool for Amazon and Flipkart" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                    <img src="/eighteen.png" alt="AI Review Intelligence Guide" />
                   </div>
                   <div className="rel-body">
-                    <div className="rel-tag" style={{ color:"#10B981" }}>Review Intelligence</div>
+                    <div className="rel-tag">Review Analysis</div>
                     <div className="rel-title">AI Review Intelligence Tool for Amazon &amp; Flipkart Sellers: The Complete Guide</div>
                   </div>
                 </Link>
-                <Link to="/resources/expert-blog/insydz-vs-helium-10-india" className="rel-card" title="Insydz vs Helium 10 for Indian sellers">
+                <Link to="/resources/expert-blog/insydz-vs-helium-10-india" className="rel-card" title="Insydz vs Helium 10 for Indian sellers — full comparison">
                   <div className="rel-thumb">
-                    <img src="/thirteen.png" alt="Insydz vs Helium 10 comparison for Indian sellers" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                    <img src="/thirteen.png" alt="Insydz vs Helium 10 comparison" />
                   </div>
                   <div className="rel-body">
                     <div className="rel-tag">Compare</div>
@@ -1169,24 +1153,33 @@ export default function AmazonVsFlipkartIndiaSellers() {
       </div>
 
       {/* FINAL CTA */}
-      <div className="fc-block">
-        <div className="fc-inner">
-          <h2>Every Hour Without Cross-Platform Intelligence Is an Hour Your Competitors Are Taking Your Buy Box</h2>
-          <p>Insydz tracks competitor prices across Amazon.in and Flipkart in real time alerts you via WhatsApp the moment a rival reprices, and tells you exactly how to respond to protect your margin.</p>
-          <div className="fc-points">
-            <div className="fc-pt">Forever free plan</div>
-            <div className="fc-pt">No credit card</div>
-            <div className="fc-pt">Amazon.in + Flipkart</div>
-            <div className="fc-pt">WhatsApp alerts in 60 min</div>
-          </div>
-          <Link to="/login" className="fc-btn" style={{ display:"inline-block", textDecoration:"none" }}>
-            → Stop Guessing. Start Knowing — insydz.com
-          </Link>
-          <p className="fc-sub">Forever free plan · No setup required · Amazon India, Flipkart &amp; supported</p>
+      <div className="final-cta-block">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+          Know Which Flipkart Keywords Win. Start Today.
+        </h2>
+        <p className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 24px" }}>
+          Insydz shows your Flipkart keyword rankings in real time — and WhatsApps you the exact fixes the moment you drop.
+        </p>
+        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px 20px", marginBottom: 20 }}>
+          {["Flipkart keyword intelligence", "Real-time rank drops", "WhatsApp in 60 min", "Free to start"].map(t => (
+            <div key={t} className="text-blue-100" style={{ fontSize:"clamp(11px,2vw,13.5px)", display:"flex", alignItems:"center", gap:6, fontFamily:"'Sora',sans-serif" }}>
+              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+            </div>
+          ))}
         </div>
+        <button
+          onClick={() => setLocation("/login")}
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm sm:text-base px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-xl transition-all transform hover:scale-105"
+        >
+          <Zap className="w-5 h-5 flex-shrink-0 inline mr-2" />
+          See My Flipkart Rankings →
+        </button>
+        <p className="text-blue-200 text-xs mt-4">
+          Amazon.in also covered · Hinglish data · No card required
+        </p>
       </div>
 
-      {/* Footer */}
+            {/* Footer */}
       <footer className="bg-[#0a0f1e] text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 

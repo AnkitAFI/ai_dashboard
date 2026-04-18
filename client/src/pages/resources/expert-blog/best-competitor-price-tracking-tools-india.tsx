@@ -680,7 +680,8 @@ export default function BestCompetitorPriceTrackingToolsIndia() {
         .dark .rel-card { background: #111827; border-color: #1f2937; }
         .rel-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.09); transform: translateY(-2px); }
         @media(hover:none) { .rel-card:hover { transform: none; } }
-        .rel-thumb { width: 100%; height: clamp(90px,15vw,128px); display: flex; align-items: center; justify-content: center; font-size: clamp(22px,3vw,28px); }
+        .rel-thumb { width: 100%; aspect-ratio: 2.4 / 1; overflow: hidden; background: #0A0F1A; display: flex; align-items: center; justify-content: center; }
+        .rel-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .rel-body { padding: 12px 14px; }
         .rel-tag { font-size: 10.5px; font-weight: 700; color: #F97316; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; font-family: 'Sora',sans-serif; }
         .rel-title { font-size: clamp(12px,1.3vw,13px); font-weight: 700; color: #0D1B2A; line-height: 1.4; font-family: 'Sora',sans-serif; }
@@ -1048,14 +1049,14 @@ export default function BestCompetitorPriceTrackingToolsIndia() {
               Start Free — No Card Needed
             </button>
           </div>
-          <div className="sidebar-share">
+          {/* <div className="sidebar-share">
             <h4 style={{ fontFamily: "'Sora',sans-serif", fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, color: "#94A3B8", marginBottom: 12 }}>Share This Guide</h4>
             <div style={{ display: "flex", gap: 8 }}>
               {[{ l: "WhatsApp", bg: "#25D366" }, { l: "LinkedIn", bg: "#0A66C2" }, { l: "Twitter", bg: "#1DA1F2" }].map(s => (
                 <div key={s.l} style={{ flex: 1, textAlign: "center", padding: "9px 4px", borderRadius: 7, fontSize: 11.5, fontWeight: 700, color: "white", background: s.bg, cursor: "pointer", fontFamily: "'Sora',sans-serif", minHeight: 36 }}>{s.l}</div>
               ))}
             </div>
-          </div>
+          </div> */}
         </aside>
 
         {/* MAIN */}
@@ -1273,12 +1274,14 @@ export default function BestCompetitorPriceTrackingToolsIndia() {
               <h2 style={{ fontSize: "clamp(17px,2.2vw,20px)", fontWeight: 800, color: "#0D1B2A", margin: "0 0 20px", border: "none", padding: 0, fontFamily: "'Sora',sans-serif" }} className="dark:text-white">Related Guides</h2>
               <div className="related-grid">
                 {[
-                  { t: "Amazon Competitor Price Tracking Tool India: Complete Guide (2026)", tag: "Price Tracking", bg: "linear-gradient(135deg,#F97316,#EA580C)", em: "📊", r: "/features/competitor-price-tracking-feature" },
-                  { t: "Flipkart Price Tracker: Monitor & Beat Competitor Prices in 2026", tag: "Flipkart Sellers", bg: "linear-gradient(135deg,#0D9488,#0891B2)", em: "🛍️", r: "/solutions/flipkart-sellers" },
-                  { t: "How to Win the Amazon Buy Box Consistently as an Indian Seller", tag: "Buy Box Strategy", bg: "linear-gradient(135deg,#4F46E5,#7C3AED)", em: "🏆", r: "/use-cases/track-competitor-prices" },
+                  { t: "Amazon Competitor Price Tracking Tool India: Complete Guide (2026)", tag: "Price Tracking", imgSrc: "/one.png", r: "/features/competitor-price-tracking-feature" },
+                  { t: "Flipkart Price Tracker: Monitor & Beat Competitor Prices in 2026", tag: "Flipkart Sellers", imgSrc: "/01_hero_banner.png", r: "/solutions/flipkart-sellers" },
+                  { t: "How to Win the Amazon Buy Box Consistently as an Indian Seller", tag: "Buy Box Strategy", imgSrc: "/three.png", r: "/use-cases/track-competitor-prices" },
                 ].map(rc => (
                   <div key={rc.t} className="rel-card" onClick={() => setLocation(rc.r)}>
-                    <div className="rel-thumb" style={{ background: rc.bg }}><span>{rc.em}</span></div>
+                    <div className="rel-thumb">
+                      <img src={rc.imgSrc} alt={rc.t} />
+                    </div>
                     <div className="rel-body">
                       <div className="rel-tag">{rc.tag}</div>
                       <div className="rel-title">{rc.t}</div>

@@ -389,8 +389,8 @@ export default function BestReviewAnalysisToolIndia() {
         .rel-card{border:1px solid #E2E8F0;border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;background:#fff}
         .dark .rel-card{background:#111827;border-color:#1f2937}
         .rel-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.09);transform:translateY(-2px)}
-        .rel-thumb{width:100%;height:100px;display:flex;align-items:center;justify-content:center;font-size:24px}
-        @media(min-width:640px){.rel-thumb{height:128px;font-size:28px}}
+        .rel-thumb { width: 100%; aspect-ratio: 2.4 / 1; overflow: hidden; background: #0A0F1A; display: flex; align-items: center; justify-content: center; }
+        .rel-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .rel-body{padding:12px}
         @media(min-width:640px){.rel-body{padding:14px}}
         .rel-tag{font-size:10px;font-weight:700;color:#F97316;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-family:'Sora',sans-serif}
@@ -634,14 +634,14 @@ export default function BestReviewAnalysisToolIndia() {
               Start Free No Card Needed
             </button>
           </div>
-          <div style={{ background:"#F8FAFC", border:"1px solid #E2E8F0", borderRadius:10, padding:14, marginTop:14 }}>
+          {/* <div style={{ background:"#F8FAFC", border:"1px solid #E2E8F0", borderRadius:10, padding:14, marginTop:14 }}>
             <h4 style={{ fontFamily:"'Sora',sans-serif", fontSize:10, fontWeight:700, textTransform:"uppercase" as const, letterSpacing:1, color:"#94A3B8", marginBottom:10 }}>Share This Guide</h4>
             <div style={{ display:"flex", gap:6 }}>
               {[{l:"WhatsApp",bg:"#25D366"},{l:"LinkedIn",bg:"#0A66C2"},{l:"Twitter",bg:"#1DA1F2"}].map(s => (
                 <div key={s.l} style={{ flex:1, textAlign:"center" as const, padding:"7px 4px", borderRadius:7, fontSize:11, fontWeight:700, color:"white", background:s.bg, cursor:"pointer", fontFamily:"'Sora',sans-serif" }}>{s.l}</div>
               ))}
             </div>
-          </div>
+          </div> */}
         </aside>
 
         {/* MAIN */}
@@ -958,12 +958,14 @@ export default function BestReviewAnalysisToolIndia() {
               <h2 style={{ fontSize:"clamp(16px,3vw,20px)", fontWeight:800, color:"#0D1B2A", margin:"0 0 18px", border:"none", padding:0, fontFamily:"'Sora',sans-serif" }} className="dark:text-white">Related Guides</h2>
               <div className="related-grid">
                 {[
-                  { t:"AI Review Intelligence Tool for Amazon & Flipkart Sellers: Complete Guide", tag:"Review Intelligence", bg:"linear-gradient(135deg,#16A34A,#15803D)", em:"💬", r:"/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers" },
-                  { t:"Insydz vs Helium 10: Which is the Right Tool for Indian Sellers?",           tag:"Compare",            bg:"linear-gradient(135deg,#4F46E5,#7C3AED)", em:"⚔️", r:"/compare/insydzvshelium" },
-                  { t:"Amazon SEO Tool India: The Complete 2026 Guide for Indian Sellers",          tag:"SEO Guide",          bg:"linear-gradient(135deg,#0D9488,#0891B2)", em:"🔍", r:"/use-cases/improve-seo" },
+                  { t: "AI Review Intelligence Tool for Amazon & Flipkart Sellers: Complete Guide", tag: "Review Intelligence", imgSrc: "/eighteen.png", r: "/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers" },
+                  { t: "Insydz vs Helium 10: Which is the Right Tool for Indian Sellers?",           tag: "Compare",            imgSrc: "/thirteen.png", r: "/compare/insydzvshelium" },
+                  { t: "Amazon SEO Tool India: The Complete 2026 Guide for Indian Sellers",          tag: "SEO Guide",          imgSrc: "/one.png", r: "/use-cases/improve-seo" },
                 ].map(rc => (
                   <div key={rc.t} className="rel-card" onClick={() => setLocation(rc.r)}>
-                    <div className="rel-thumb" style={{ background:rc.bg }}><span>{rc.em}</span></div>
+                    <div className="rel-thumb">
+                      <img src={rc.imgSrc} alt={rc.t} />
+                    </div>
                     <div className="rel-body">
                       <div className="rel-tag">{rc.tag}</div>
                       <div className="rel-title">{rc.t}</div>

@@ -625,14 +625,14 @@ export default function InsydzVsHelium10India() {
               Start Free No Card Needed
             </button>
           </div>
-          <div style={{ background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 10, padding: 18, marginTop: 20 }}>
+          {/* <div style={{ background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 10, padding: 18, marginTop: 20 }}>
             <h4 style={{ fontFamily: "'Sora',sans-serif", fontSize: 11, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: 1, color: "#94A3B8", marginBottom: 12 }}>Share This Guide</h4>
             <div style={{ display: "flex", gap: 8 }}>
               {([{ l: "WhatsApp", bg: "#25D366" }, { l: "LinkedIn", bg: "#0A66C2" }, { l: "Twitter", bg: "#1DA1F2" }] as { l: string; bg: string }[]).map(s => (
                 <div key={s.l} style={{ flex: 1, textAlign: "center" as const, padding: "9px 6px", borderRadius: 7, fontSize: 12, fontWeight: 700, color: "white", background: s.bg, cursor: "pointer", fontFamily: "'Sora',sans-serif" }}>{s.l}</div>
               ))}
             </div>
-          </div>
+          </div> */}
         </aside>
 
         {/* MAIN */}

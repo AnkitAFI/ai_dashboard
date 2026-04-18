@@ -562,7 +562,8 @@ export default function BestFlipkartAnalyticsTool() {
         .rel-card { border:1px solid #E2E8F0; border-radius:10px; overflow:hidden; cursor:pointer; transition:box-shadow .2s,transform .2s; background:#fff; }
         .dark .rel-card { background:#111827; border-color:#1f2937; }
         .rel-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.09); transform:translateY(-2px); }
-        .rel-thumb { width:100%; height:100px; display:flex; align-items:center; justify-content:center; font-size:24px; }
+        .rel-thumb { width:100%; aspect-ratio:2.4/1; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+        .rel-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
         .rel-body { padding:12px; }
         .rel-tag { font-size:10px; font-weight:700; color:#7C3AED; text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px; font-family:'Sora',sans-serif; }
         .rel-title { font-size:12px; font-weight:700; color:#0D1B2A; line-height:1.4; font-family:'Sora',sans-serif; }
@@ -790,14 +791,14 @@ export default function BestFlipkartAnalyticsTool() {
             </button>
             <p style={{ fontSize:11, color:"rgba(255,255,255,.4)", textAlign:"center", marginTop:8, fontFamily:"'Sora',sans-serif" }}>From ₹1,999/mo or free forever</p>
           </div>
-          <div style={{ background:"#F8FAFC", border:"1px solid #E2E8F0", borderRadius:10, padding:14, marginTop:14 }}>
+          {/* <div style={{ background:"#F8FAFC", border:"1px solid #E2E8F0", borderRadius:10, padding:14, marginTop:14 }}>
             <h4 style={{ fontFamily:"'Sora',sans-serif", fontSize:10, fontWeight:700, textTransform:"uppercase", letterSpacing:1, color:"#94A3B8", marginBottom:10 }}>Share This Guide</h4>
             <div style={{ display:"flex", gap:6 }}>
               {[{l:"WhatsApp",bg:"#25D366"},{l:"LinkedIn",bg:"#0A66C2"},{l:"Twitter",bg:"#1DA1F2"}].map(s => (
                 <div key={s.l} style={{ flex:1, textAlign:"center", padding:"7px 4px", borderRadius:7, fontSize:11, fontWeight:700, color:"white", background:s.bg, cursor:"pointer", fontFamily:"'Sora',sans-serif" }}>{s.l}</div>
               ))}
             </div>
-          </div>
+          </div> */}
         </aside>
 
         {/* MAIN */}
@@ -1075,19 +1076,33 @@ export default function BestFlipkartAnalyticsTool() {
             <div style={{ marginTop:48, paddingTop:28, borderTop:"2px solid #E2E8F0" }}>
               <h2 style={{ fontSize:"clamp(16px,3vw,20px)", fontWeight:800, color:"#0D1B2A", margin:"0 0 18px", border:"none", padding:0, fontFamily:"'Sora',sans-serif" }} className="dark:text-white">Related Guides</h2>
               <div className="related-grid">
-                {[
-                  { t:"Flipkart Keyword Research for Indian Sellers: Complete 2026 Guide", tag:"Keyword Research", bg:"linear-gradient(135deg,#10B981,#059669)", em:"🔍", r:"/flipkart-keyword-research" },
-                  { t:"Insydz vs Helium 10: Which is the Right Tool for Indian Sellers?",  tag:"Compare",         bg:"linear-gradient(135deg,#7C3AED,#6D28D9)", em:"⚖️", r:"/compare/insydzvshelium" },
-                  { t:"Flipkart Pricing Automation: How to Win the SmartBuy Badge in 2026",tag:"Pricing Strategy", bg:"linear-gradient(135deg,#F97316,#EA580C)", em:"💰", r:"/flipkart-pricing-strategy" },
-                ].map(rc => (
-                  <div key={rc.t} className="rel-card" onClick={() => setLocation(rc.r)}>
-                    <div className="rel-thumb" style={{ background:rc.bg }}>{rc.em}</div>
-                    <div className="rel-body">
-                      <div className="rel-tag">{rc.tag}</div>
-                      <div className="rel-title">{rc.t}</div>
-                    </div>
+                <Link to="/resources/expert-blog/flipkart-keyword-research-tool" className="rel-card" title="Flipkart keyword research for Indian sellers">
+                  <div className="rel-thumb">
+                    <img src="/01_hero_banner.png" alt="Flipkart Keyword Research Guide" />
                   </div>
-                ))}
+                  <div className="rel-body">
+                    <div className="rel-tag">Keyword Research</div>
+                    <div className="rel-title">Flipkart Keyword Research for Indian Sellers: Complete 2026 Guide</div>
+                  </div>
+                </Link>
+                <Link to="/resources/expert-blog/insydz-vs-helium-10-india" className="rel-card" title="Insydz vs Helium 10 for Indian sellers">
+                  <div className="rel-thumb">
+                    <img src="/thirteen.png" alt="Insydz vs Helium 10 comparison" />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Compare</div>
+                    <div className="rel-title">Insydz vs Helium 10: Which is the Right Tool for Indian Sellers?</div>
+                  </div>
+                </Link>
+                <Link to="/resources/expert-blog/amazon-competitor-price-tracking-tool" className="rel-card" title="Flipkart pricing automation strategy">
+                  <div className="rel-thumb">
+                    <img src="/one.png" alt="Flipkart Pricing Automation Strategy" />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Pricing Strategy</div>
+                    <div className="rel-title">Flipkart Pricing Automation: How to Win the SmartBuy Badge in 2026</div>
+                  </div>
+                </Link>
               </div>
             </div>
 

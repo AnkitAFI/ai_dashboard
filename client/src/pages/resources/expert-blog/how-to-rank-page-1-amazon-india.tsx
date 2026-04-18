@@ -407,7 +407,8 @@ export default function HowToRankPage1AmazonIndia() {
         .related-card { background:#fff; border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; cursor:pointer; transition:all .2s; }
         .dark .related-card { background:#111827; border-color:#1f2937; }
         .related-card:hover { border-color:#f97316; box-shadow:0 4px 16px rgba(249,115,22,.12); transform:translateY(-2px); }
-        .related-thumb { width:100%; height:110px; display:flex; align-items:center; justify-content:center; }
+        .related-thumb { width:100%; aspect-ratio:2.4/1; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+        .related-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
         .related-body { padding:14px; }
         .related-tag { font-size:10.5px; font-weight:700; color:#f97316; text-transform:uppercase; letter-spacing:.5px; margin-bottom:6px; }
         .related-title { font-size:13px; font-weight:700; color:#0d1b2a; line-height:1.4; font-family:'Sora',sans-serif; }
@@ -992,13 +993,13 @@ export default function HowToRankPage1AmazonIndia() {
             <h2 style={{ marginTop: 56 }}>Related Guides for Indian Sellers</h2>
             <div className="related-grid">
               {[
-                { title: "Amazon SEO Tool India: Keyword Research & Rank Tracking Guide (2026)", tag: "SEO Tools", bg: "linear-gradient(135deg,#F43F8F,#7C3AED)", emoji: "🔍", route: "/features/keyword-rank-tracking-feature" },
-                { title: "Best Competitor Price Tracking Tools for Indian Amazon & Flipkart Sellers (2026)", tag: "Pricing Strategy", bg: "linear-gradient(135deg,#F59E0B,#DC2626)", emoji: "💰", route: "/features/competitor-price-tracking-feature" },
-                { title: "How to Analyse Competitor Listings on Amazon India: A Data-Driven Framework", tag: "Competitor Intelligence", bg: "linear-gradient(135deg,#0D9488,#2563EB)", emoji: "📊", route: "/compare/insydzvshelium" },
+                { title: "Amazon SEO Tool India: Keyword Research & Rank Tracking Guide (2026)", tag: "SEO Tools", image: "/Amazon_SEO_Tool-Blog3_image1.png", route: "/features/keyword-rank-tracking-feature" },
+                { title: "Best Competitor Price Tracking Tools for Indian Amazon & Flipkart Sellers (2026)", tag: "Pricing Strategy", image: "/Best_Price_Tracer-blog2_image1.png?v=1", route: "/features/competitor-price-tracking-feature" },
+                { title: "How to Analyse Competitor Listings on Amazon India: A Data-Driven Framework", tag: "Competitor Intelligence", image: "/thirteen.png", route: "/compare/insydzvshelium" },
               ].map(r => (
                 <div key={r.title} className="related-card" onClick={() => setLocation(r.route)}>
-                  <div className="related-thumb" style={{ background: r.bg }}>
-                    <span style={{ fontSize: 28 }}>{r.emoji}</span>
+                  <div className="related-thumb">
+                    <img src={r.image} alt={r.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   </div>
                   <div className="related-body">
                     <div className="related-tag">{r.tag}</div>

@@ -696,15 +696,22 @@ export default function AmazonCompetitorPriceTrackingTool() {
           grid-template-columns: repeat(2,1fr);
           gap: 14px; margin-top: 16px;
         }
+        @media(min-width:768px){ .related-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
         @media(max-width:600px){ .related-grid { grid-template-columns: 1fr; } }
         .related-card {
           background: #fff; border: 1px solid #e5e7eb;
-          border-radius: 14px; padding: 16px; cursor: pointer;
+          border-radius: 14px; overflow: hidden; cursor: pointer;
           transition: all .2s; touch-action: manipulation;
         }
         .dark .related-card { background: #111827; border-color: #1f2937; }
         .related-card:hover { border-color: #f97316; box-shadow: 0 4px 16px rgba(249,115,22,.12); transform: translateY(-2px); }
-        @media(hover:none){ .related-card:hover { transform: none; } }
+        .related-thumb { width:100%; aspect-ratio:2.4 / 1; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+        .related-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+        .related-body { padding: 12px; }
+        .related-tag { font-size: 10px; font-weight: 700; color: #f97316; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+        .related-title { font-size: 13px; font-weight: 700; color: #0d1b2a; line-height: 1.4; font-family: 'Sora', sans-serif; margin-bottom: 8px; }
+        .dark .related-title { color: #f9fafb; }
+        .related-meta { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #94a3b8; }
 
         .faq-item {
           border: 1px solid #e5e7eb; border-radius: 12px;
@@ -1890,44 +1897,6 @@ export default function AmazonCompetitorPriceTrackingTool() {
 
             <ArticleImg {...IMAGES.warehouse} />
 
-            {/* ── Related Guides ──────────────────────────────────────── */}
-            <h2 style={{ marginTop: 40 }}>Related Guides</h2>
-            <div className="related-grid">
-              {[
-                {
-                  title: "Flipkart Price Tracker: Monitor & Beat Competitor Prices in 2026",
-                  tag: "Flipkart Sellers",
-                  time: "10 min",
-                  route: "/resources/expert-blog/flipkart-price-tracker-monitor-beat-competitor-prices-2026",
-                },
-                {
-                  title: "How to Win the Amazon Buy Box Consistently as an Indian Seller",
-                  tag: "Buy Box Strategy",
-                  time: "11 min",
-                  route: "/use-cases/track-competitor-prices",
-                },
-                {
-                  title: "Amazon Keyword Research India: Step-by-Step Guide for 2026",
-                  tag: "Keyword Research",
-                  time: "12 min",
-                  route: "/features/keyword-rank-tracking-feature",
-                },
-                {
-                  title: "Review Analytics: Turn Customer Feedback into Competitive Edge",
-                  tag: "Review Intelligence",
-                  time: "9 min",
-                  route: "/features/review-analytics-feature",
-                },
-              ].map(r => (
-                <div className="related-card" key={r.title} onClick={() => setLocation(r.route)}>
-                  <div className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-1.5">{r.tag}</div>
-                  <div className="font-bold text-gray-900 dark:text-white text-sm leading-snug mb-2">{r.title}</div>
-                  <div className="flex items-center gap-1 text-xs text-gray-400">
-                    <Clock className="w-3 h-3" /> {r.time}
-                  </div>
-                </div>
-              ))}
-            </div>
 
             {/* ── FAQ ─────────────────────────────────────────────────── */}
             <h2 id="faq">Frequently Asked Questions</h2>
@@ -2039,6 +2008,54 @@ export default function AmazonCompetitorPriceTrackingTool() {
               <strong>The data is clear: every hour without price tracking is an hour of revenue being silently
               redirected to a competitor who does.</strong>
             </p>
+
+            {/* ── Related Guides ──────────────────────────────────────── */}
+            <h2 style={{ marginTop: 60 }}>Related Guides</h2>
+            <div className="related-grid">
+              {[
+                {
+                  title: "Flipkart Price Tracker: Monitor & Beat Competitor Prices in 2026",
+                  tag: "Flipkart Sellers",
+                  time: "10 min",
+                  imgSrc: "/01_hero_banner.png",
+                  route: "/resources/expert-blog/flipkart-price-tracker-monitor-beat-competitor-prices-2026",
+                },
+                {
+                  title: "How to Win the Amazon Buy Box Consistently as an Indian Seller",
+                  tag: "Buy Box Strategy",
+                  time: "11 min",
+                  imgSrc: "/three.png",
+                  route: "/use-cases/track-competitor-prices",
+                },
+                {
+                  title: "Amazon Keyword Research India: Step-by-Step Guide for 2026",
+                  tag: "Keyword Research",
+                  time: "12 min",
+                  imgSrc: "/keyword-research-hero.png",
+                  route: "/features/keyword-rank-tracking-feature",
+                },
+                {
+                  title: "Review Analytics: Turn Customer Feedback into Competitive Edge",
+                  tag: "Review Intelligence",
+                  time: "9 min",
+                  imgSrc: "/eighteen.png",
+                  route: "/features/review-analytics-feature",
+                },
+              ].map(r => (
+                <div className="related-card" key={r.title} onClick={() => setLocation(r.route)}>
+                  <div className="related-thumb">
+                    <img src={r.imgSrc} alt={r.title} />
+                  </div>
+                  <div className="related-body">
+                    <div className="related-tag">{r.tag}</div>
+                    <div className="related-title">{r.title}</div>
+                    <div className="related-meta">
+                      <Clock className="w-3 h-3" /> {r.time}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
 
           </article>
         </main>

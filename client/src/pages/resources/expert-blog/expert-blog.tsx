@@ -981,15 +981,14 @@ export default function ExpertBlog() {
               <div className="grid md:grid-cols-2 gap-0 md:h-[500px]">
 
                 {/* Featured image */}
-                <div className="relative overflow-hidden bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+                <div className="blog-card-thumb h-full">
                   {featuredArticle.image ? (
                     <img
                       src={featuredArticle.image}
                       alt={featuredArticle.title}
-                      className="w-full h-auto object-cover rounded-none"
                     />
                   ) : (
-                    <div className="flex items-center justify-center h-64">
+                    <div className="flex items-center justify-center p-8">
                       <BarChart3 className="w-32 h-32 text-orange-300 dark:text-orange-900 opacity-20" />
                     </div>
                   )}
@@ -1044,17 +1043,16 @@ export default function ExpertBlog() {
                   <div
                     className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800 transform hover:-translate-y-2 cursor-pointer flex flex-col h-full"
                   >
-                    {/* Popular card image — fixed height for equal cards */}
-                    <div className="relative overflow-hidden flex-shrink-0">
+                    {/* Popular card image — standardized ratio */}
+                    <div className="blog-card-thumb">
                       {article.image ? (
                         <img
                           src={article.image}
                           alt={article.title}
-                          className="w-full h-auto"
                         />
                       ) : (
-                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-800 dark:to-gray-900">
-                          <BarChart3 className="w-20 h-20 text-orange-200 dark:text-orange-900 opacity-30 group-hover:scale-110 transition-transform" />
+                        <div className="flex items-center justify-center p-4">
+                          <BarChart3 className="w-20 h-20 text-orange-200 dark:text-orange-900 opacity-30" />
                         </div>
                       )}
                       <div className="absolute top-3 right-3">
@@ -1098,17 +1096,16 @@ export default function ExpertBlog() {
                 <div
                   className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800 transform hover:-translate-y-2 cursor-pointer flex flex-col h-full"
                 >
-                  {/* Latest grid image — fixed height for equal cards */}
-                  <div className="relative overflow-hidden flex-shrink-0">
+                  {/* Latest grid image — standardized ratio */}
+                  <div className="blog-card-thumb">
                     {article.image ? (
                       <img
                         src={article.image}
                         alt={article.title}
-                        className="w-full h-auto"
                       />
                     ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-800 dark:to-gray-900">
-                        <BarChart3 className="w-24 h-24 text-orange-200 dark:text-orange-900 opacity-30 group-hover:scale-110 transition-transform" />
+                      <div className="flex items-center justify-center p-4">
+                        <BarChart3 className="w-24 h-24 text-orange-200 dark:text-orange-900 opacity-30" />
                       </div>
                     )}
                   </div>
@@ -1407,6 +1404,8 @@ export default function ExpertBlog() {
         .delay-1000 {
           animation-delay: 1s;
         }
+        .blog-card-thumb { width:100%; aspect-ratio:2.4 / 1; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+        .blog-card-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
       `}</style>
     </div>
   );

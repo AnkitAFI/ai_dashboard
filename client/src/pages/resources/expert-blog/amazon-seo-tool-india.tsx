@@ -350,7 +350,7 @@ export default function AmazonSeoToolIndia() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors" style={{ overflowX: "hidden" }}>
+    <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
       <Helmet>
         <link rel="canonical" href="https://insydz.com/resources/expert-blog/amazon-seo-tool-india" />
         <title>Amazon SEO Tool India: Keyword Research &amp; Rank Tracking | Insydz</title>
@@ -370,7 +370,7 @@ export default function AmazonSeoToolIndia() {
         @media(min-width:640px){ .read-progress { top:72px; } }
         @media(min-width:1024px){ .read-progress { top:80px; } }
 
-        .article-layout { max-width:1200px; margin:0 auto; padding:24px 16px 60px; display:grid; grid-template-columns:1fr; gap:0; }
+        .article-layout { max-width:1200px; margin:0 auto; padding:24px 16px 60px; display:grid; grid-template-columns:1fr; gap:0; align-items: start; }
         @media(min-width:768px){ .article-layout { padding:36px 20px 70px; grid-template-columns:200px 1fr; gap:28px; } }
         @media(min-width:1024px){ .article-layout { padding:48px 24px 80px; grid-template-columns:220px 1fr; gap:36px; } }
         @media(min-width:1280px){ .article-layout { grid-template-columns:240px 1fr; gap:48px; } }
@@ -507,8 +507,8 @@ export default function AmazonSeoToolIndia() {
         .related-card { background:#fff; border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; cursor:pointer; transition:all .2s; }
         .dark .related-card { background:#111827; border-color:#1f2937; }
         .related-card:hover { border-color:#f97316; box-shadow:0 4px 16px rgba(249,115,22,.12); transform:translateY(-2px); }
-        .related-thumb { width:100%; height:90px; display:flex; align-items:center; justify-content:center; }
-        @media(min-width:640px){ .related-thumb { height:110px; } }
+        .related-thumb { width:100%; aspect-ratio:2.4 / 1; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+        .related-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
         .related-body { padding:12px; }
         @media(min-width:640px){ .related-body { padding:14px; } }
         .related-tag { font-size:10px; font-weight:700; color:#f97316; text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px; }
@@ -1325,25 +1325,25 @@ export default function AmazonSeoToolIndia() {
                 {
                   cardTitle: "Amazon Competitor Price Tracking Tool India: Complete Guide (2026)",
                   tag: "Price Tracking",
-                  bg: "linear-gradient(135deg,#F97316,#EA580C)",
+                  imgSrc: "/one.png",
                   route: "/resources/expert-blog/amazon-competitor-price-tracking-tool",
                 },
                 {
                   cardTitle: "Best Competitor Price Tracking Tools for Indian Sellers: 2026 Guide",
                   tag: "Tool Comparison",
-                  bg: "linear-gradient(135deg,#0D9488,#0891B2)",
+                  imgSrc: "/thirteen.png",
                   route: "/compare/insydzvshelium",
                 },
                 {
                   cardTitle: "How to Win the Amazon Buy Box in India: Seller's Pricing Guide",
                   tag: "Buy Box Strategy",
-                  bg: "linear-gradient(135deg,#4F46E5,#7C3AED)",
+                  imgSrc: "/three.png",
                   route: "/use-cases/track-competitor-prices",
                 },
-              ] as { cardTitle: string; tag: string; bg: string; route: string }[]).map(r => (
+              ] as { cardTitle: string; tag: string; imgSrc: string; route: string }[]).map(r => (
                 <div key={r.cardTitle} className="related-card" onClick={() => setLocation(r.route)}>
-                  <div className="related-thumb" style={{ background: r.bg }}>
-                    <span style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(11px,2vw,13px)", fontWeight: 900, color: "white", textAlign: "center", padding: "10px 14px", lineHeight: 1.3 }}>{r.tag}</span>
+                  <div className="related-thumb">
+                    <img src={r.imgSrc} alt={r.cardTitle} />
                   </div>
                   <div className="related-body">
                     <div className="related-tag">{r.tag}</div>
