@@ -1,32 +1,32 @@
 import { useAuth } from '@/App';
 import { useSubscriptionLimits } from './useSubscriptionLimits';
- 
-const API_BASE_URL = "https://api.insydz.com";
- 
+
+const API_BASE_URL = "http://localhost:8000";
+
 interface SubscriptionUpdatePayload {
   user_id: number;
   subscription_tier: string;
   ai_chat_used?: number;
   ai_chat_month?: string;
 }
- 
+
 export function useSubscriptionSync() {
   const { user, refreshUser } = useAuth();
   const { currentTier, limits } = useSubscriptionLimits();
- 
+
   // ✅ Update subscription tier in database and refresh auth context
   const updateSubscriptionInDB = async (tier: string) => {
     if (!user?.id) {
       console.warn('No user ID available for subscription update');
       throw new Error('User not logged in');
     }
- 
+
     try {
       const payload: SubscriptionUpdatePayload = {
         user_id: user.id,
         subscription_tier: tier,
       };
- 
+
       const response = await fetch(`${API_BASE_URL}/users/${user.id}/subscription`, {
         method: 'PATCH',
         credentials: 'include',
@@ -35,32 +35,32 @@ export function useSubscriptionSync() {
         },
         body: JSON.stringify(payload),
       });
- 
+
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Backend error:', errorText);
         throw new Error(`Failed to update subscription: ${response.statusText}`);
       }
- 
+
       const data = await response.json();
- 
+
       // ✅ Only here we refresh the auth context
       await refreshUser();
- 
+
       return data;
     } catch (error) {
       console.error('❌ Failed to sync subscription to database:', error);
       throw error;
     }
   };
- 
+
   // ✅ Track AI chat usage WITHOUT refreshing auth context
   const trackAIChatUsage = async () => {
     if (!user?.id) return;
- 
+
     try {
       const currentMonth = new Date().toISOString().slice(0, 7);
- 
+
       const response = await fetch(`${API_BASE_URL}/users/${user.id}/ai-usage`, {
         method: 'POST',
         credentials: 'include',
@@ -71,11 +71,11 @@ export function useSubscriptionSync() {
           month: currentMonth,
         }),
       });
- 
+
       if (!response.ok) {
         throw new Error(`Failed to track AI usage: ${response.statusText}`);
       }
- 
+
       const data = await response.json();
       return data;
     } catch (error) {
@@ -83,7 +83,7 @@ export function useSubscriptionSync() {
       throw error;
     }
   };
- 
+
   // ✅ Get current AI usage for the month WITHOUT refreshing auth context
   const getAIUsage = async (): Promise<{ used: number; limit: number; month: string }> => {
     if (!user?.id) {
@@ -93,13 +93,13 @@ export function useSubscriptionSync() {
         month: ''
       };
     }
- 
+
     try {
       const response = await fetch(`${API_BASE_URL}/users/${user.id}/ai-usage`, {
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
       });
- 
+
       if (!response.ok) {
         return {
           used: user.aiChatUsed || 0,
@@ -107,7 +107,7 @@ export function useSubscriptionSync() {
           month: user.aiChatMonth || new Date().toISOString().slice(0, 7)
         };
       }
- 
+
       const data = await response.json();
       return {
         used: data.ai_chat_used || 0,
@@ -123,32 +123,32 @@ export function useSubscriptionSync() {
       };
     }
   };
- 
+
   // ✅ Check if user can use AI features
   const canUseAIFeature = async (): Promise<boolean> => {
     if (!user) return false;
- 
+
     const usage = await getAIUsage();
     if (limits.maxAIChatMessagesPerMonth === Infinity) return true;
     return usage.used < usage.limit;
   };
- 
+
   // ✅ Get remaining AI messages
   const getRemainingAIMessages = async (): Promise<number> => {
     if (!user) return 0;
- 
+
     const usage = await getAIUsage();
     if (limits.maxAIChatMessagesPerMonth === Infinity) return Infinity;
     return Math.max(0, usage.limit - usage.used);
   };
- 
+
   // ✅ Check if user has reached AI limit
   const hasReachedAILimit = async (): Promise<boolean> => {
     if (!user) return true;
     const canUse = await canUseAIFeature();
     return !canUse;
   };
- 
+
   return {
     updateSubscriptionInDB,
     trackAIChatUsage,
