@@ -1,5 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env
+load_dotenv()
+
 from app.api.v1.api import api_router
 from app.api.v1.routes.legacy_router import router as legacy_router
 from app.db.session import engine
