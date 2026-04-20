@@ -580,9 +580,8 @@ export default function ManualVsAutomatedCompetitorTracking() {
         .rel-card{border:1px solid #E5E7EB;border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;background:#fff;text-decoration:none;display:block}
         .dark .rel-card{background:#111827;border-color:#1f2937}
         .rel-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.09);transform:translateY(-2px)}
-        .rel-thumb{width:100%;height:100px;overflow:hidden}
-        @media(min-width:640px){.rel-thumb{height:128px}}
-        .rel-thumb img{width:100%;height:100%;object-fit:cover}
+        .rel-thumb{width:100%;aspect-ratio:2.4/1;overflow:hidden;background:#0A0F1A;display:flex;align-items:center;justify-content:center}
+        .rel-thumb img{width:100%;height:100%;object-fit:cover;display:block}
         .rel-body{padding:12px}
         @media(min-width:640px){.rel-body{padding:14px}}
         .rel-tag{font-size:10px;font-weight:700;color:#F4500A;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-family:'Sora',sans-serif}
@@ -636,8 +635,8 @@ export default function ManualVsAutomatedCompetitorTracking() {
         @media(min-width:1024px){.article-hero{padding:48px 24px 0}}
 
         /* final CTA */
-        .fc-block{background:linear-gradient(135deg,#F4500A 0%,#D03D00 50%,#0A0F1A 100%);padding:56px 16px;text-align:center}
-        @media(min-width:640px){.fc-block{padding:72px 24px}}
+        .fc-block{background:linear-gradient(135deg,#F4500A 0%,#D03D00 50%,#0A0F1A 100%);padding:56px 12px;text-align:center}
+        @media(min-width:640px){.fc-block{padding:36px 12px}}
         .fc-inner{max-width:640px;margin:0 auto}
         .fc-inner h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:12px;line-height:1.2;letter-spacing:-.4px}
         @media(min-width:640px){.fc-inner h2{font-size:28px}}
@@ -831,14 +830,14 @@ export default function ManualVsAutomatedCompetitorTracking() {
               Start Free No Card Needed
             </Link>
           </div>
-          <div style={{ background:"#F5F8FF", border:"1px solid #E5E7EB", borderRadius:10, padding:14, marginTop:14 }}>
+          {/* <div style={{ background:"#F5F8FF", border:"1px solid #E5E7EB", borderRadius:10, padding:14, marginTop:14 }}>
             <h4 style={{ fontFamily:"'Sora',sans-serif", fontSize:10, fontWeight:700, textTransform:"uppercase" as const, letterSpacing:1, color:"#94A3B8", marginBottom:10 }}>Share This Guide</h4>
             <div style={{ display:"flex", gap:6 }}>
               {[{ l:"WhatsApp", bg:"#25D366" },{ l:"LinkedIn", bg:"#0A66C2" },{ l:"Twitter", bg:"#1DA1F2" }].map(s => (
                 <div key={s.l} style={{ flex:1, textAlign:"center" as const, padding:"7px 4px", borderRadius:7, fontSize:11, fontWeight:700, color:"white", background:s.bg, cursor:"pointer", fontFamily:"'Sora',sans-serif" }}>{s.l}</div>
               ))}
             </div>
-          </div>
+          </div> */}
         </aside>
 
         {/* MAIN */}
@@ -1239,7 +1238,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
               <div className="related-grid">
                 <Link to="/resources/expert-blog/amazon-vs-flipkart-india-sellers" className="rel-card" title="Amazon vs Flipkart India sellers guide 2026">
                   <div className="rel-thumb">
-                    <img src="/assets/images/blog/related-amazon-vs-flipkart.png" alt="Amazon vs Flipkart India sellers 2026" />
+                    <img src="/amazon-vs-flipkart-hero-metrics.png" alt="Amazon vs Flipkart India sellers 2026" />
                   </div>
                   <div className="rel-body">
                     <div className="rel-tag">Marketplace Strategy</div>
@@ -1248,7 +1247,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
                 </Link>
                 <Link to="/resources/expert-blog/flipkart-keyword-research-tool" className="rel-card" title="Flipkart keyword research tool guide 2026">
                   <div className="rel-thumb">
-                    <img src="/assets/images/blog/related-flipkart-keyword-tool.png" alt="Flipkart Keyword Research Tool guide" />
+                    <img src="/01_hero_banner.png" alt="Flipkart Keyword Research Tool guide" />
                   </div>
                   <div className="rel-body">
                     <div className="rel-tag" style={{ color:"#2874F0" }}>Flipkart SEO</div>
@@ -1257,7 +1256,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
                 </Link>
                 <Link to="/compare/insydzvshelium" className="rel-card" title="Insydz vs Helium 10 for Indian sellers">
                   <div className="rel-thumb">
-                    <img src="/assets/images/blog/related-insydz-vs-helium10.png" alt="Insydz vs Helium 10 comparison for Indian sellers" />
+                    <img src="/thirteen.png" alt="Insydz vs Helium 10 comparison for Indian sellers" />
                   </div>
                   <div className="rel-body">
                     <div className="rel-tag">Compare</div>
@@ -1276,11 +1275,11 @@ export default function ManualVsAutomatedCompetitorTracking() {
         <div className="fc-inner">
           <h2>Every Hour You Spend Manually Tracking Is an Hour a Competitor With Automation Is Winning Your Buy Box</h2>
           <p>Insydz monitors competitor prices across Amazon.in, Flipkart in real time alerts you via WhatsApp within 60 minutes, and tells you exactly what price adjustment protects your margin.</p>
-          <img
+          {/* <img
             src="/assets/images/blog/manual-vs-automated-cta-banner.png"
             alt="No setup required · Amazon India, Flipkart supported · No credit card needed"
             style={{ width:"100%", maxWidth:560, margin:"0 auto 24px", borderRadius:12, display:"block" }}
-          />
+          /> */}
           <div className="fc-points">
             <div className="fc-pt">Forever free plan</div>
             <div className="fc-pt">No credit card</div>

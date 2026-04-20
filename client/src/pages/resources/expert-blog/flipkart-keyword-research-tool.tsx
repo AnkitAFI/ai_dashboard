@@ -492,8 +492,8 @@ export default function FlipkartKeywordResearchTool() {
         .rel-card{border:1px solid #E5E7EB;border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;background:#fff;text-decoration:none;display:block}
         .dark .rel-card{background:#111827;border-color:#1f2937}
         .rel-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.09);transform:translateY(-2px)}
-        .rel-thumb{width:100%;height:100px;display:flex;align-items:center;justify-content:center;font-size:24px}
-        @media(min-width:640px){.rel-thumb{height:128px;font-size:28px}}
+        .rel-thumb{width:100%;aspect-ratio:2.4/1;overflow:hidden;background:#0A0F1A;display:flex;align-items:center;justify-content:center}
+        .rel-thumb img{width:100%;height:100%;object-fit:cover;display:block}
         .rel-body{padding:12px}
         @media(min-width:640px){.rel-body{padding:14px}}
         .rel-tag{font-size:10px;font-weight:700;color:#2874F0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-family:'Sora',sans-serif}
@@ -568,25 +568,7 @@ export default function FlipkartKeywordResearchTool() {
         .dark .weekly-col-body li{color:#9ca3af}
 
         /* ── Final CTA ── */
-        .fc-block{background:linear-gradient(135deg,#2874F0 0%,#1557CC 60%,#0A0F1A 100%);padding:56px 16px;text-align:center}
-        @media(min-width:640px){.fc-block{padding:72px 24px}}
-        @media(min-width:1024px){.fc-block{padding:80px 24px}}
-        .fc-inner{max-width:640px;margin:0 auto}
-        .fc-inner h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:12px;line-height:1.2;letter-spacing:-.4px}
-        @media(min-width:640px){.fc-inner h2{font-size:28px;margin-bottom:14px}}
-        @media(min-width:1024px){.fc-inner h2{font-size:34px}}
-        .fc-inner p{color:rgba(255,255,255,.75);font-size:14px;max-width:520px;margin:0 auto 22px;line-height:1.7;font-family:'Lora',serif}
-        @media(min-width:640px){.fc-inner p{font-size:16px;margin:0 auto 28px}}
-        .fc-points{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-bottom:24px}
-        @media(min-width:640px){.fc-points{gap:8px 24px;margin-bottom:32px}}
-        .fc-pt{color:rgba(255,255,255,.85);font-size:12px;display:flex;align-items:center;gap:6px;font-family:'Sora',sans-serif}
-        @media(min-width:640px){.fc-pt{font-size:13.5px}}
-        .fc-pt::before{content:'✓';color:white;font-weight:800}
-        .fc-btn{background:white;color:#2874F0;padding:13px 28px;border-radius:10px;font-size:13px;font-weight:800;border:none;cursor:pointer;transition:transform .2s;width:100%;max-width:480px}
-        @media(min-width:640px){.fc-btn{padding:16px 36px;font-size:15px;width:auto}}
-        .fc-btn:hover{transform:translateY(-2px)}
-        .fc-sub{color:rgba(255,255,255,.5);font-size:11.5px;margin-top:12px}
-        @media(min-width:640px){.fc-sub{font-size:12.5px;margin-top:14px}}
+        .final-cta-block { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%); padding: clamp(48px,8vw,40px) 20px; text-align:center; margin:60px 0 0; }
       `}</style>
 
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
@@ -749,14 +731,14 @@ export default function FlipkartKeywordResearchTool() {
               Start Free \u2014 No Card Needed
             </button>
           </div>
-          <div style={{ background:"#F5F8FF", border:"1px solid #E5E7EB", borderRadius:10, padding:14, marginTop:14 }}>
+          {/* <div style={{ background:"#F5F8FF", border:"1px solid #E5E7EB", borderRadius:10, padding:14, marginTop:14 }}>
             <h4 style={{ fontFamily:"'Sora',sans-serif", fontSize:10, fontWeight:700, textTransform:"uppercase" as const, letterSpacing:1, color:"#94A3B8", marginBottom:10 }}>Share This Guide</h4>
             <div style={{ display:"flex", gap:6 }}>
               {[{ l:"WhatsApp", bg:"#25D366" },{ l:"LinkedIn", bg:"#0A66C2" },{ l:"Twitter", bg:"#1DA1F2" }].map(s => (
                 <div key={s.l} style={{ flex:1, textAlign:"center" as const, padding:"7px 4px", borderRadius:7, fontSize:11, fontWeight:700, color:"white", background:s.bg, cursor:"pointer", fontFamily:"'Sora',sans-serif" }}>{s.l}</div>
               ))}
             </div>
-          </div>
+          </div> */}
         </aside>
 
         {/* MAIN */}
@@ -1136,29 +1118,33 @@ export default function FlipkartKeywordResearchTool() {
             <div style={{ marginTop:48, paddingTop:28, borderTop:"2px solid #E5E7EB" }}>
               <h2 style={{ fontSize:"clamp(16px,3vw,20px)", fontWeight:800, color:"#0A0F1A", margin:"0 0 18px", border:"none", padding:0, fontFamily:"'Sora',sans-serif" }} className="dark:text-white">Related Guides</h2>
               <div className="related-grid">
-                {/* ANCHOR: NLP → /best-amazon-keyword-research-tool-india (Related Guide card per strategy) */}
-                <a href="/best-amazon-keyword-research-tool-india" className="rel-card" title="Amazon keyword research tool India — 2026 guide">
-                  <div className="rel-thumb" style={{ background:"linear-gradient(135deg,#2874F0,#1557CC)" }}><span>🔍</span></div>
+                <Link to="/resources/expert-blog/best-amazon-keyword-research-tool-india" className="rel-card" title="Amazon keyword research tool India — 2026 guide">
+                  <div className="rel-thumb">
+                    <img src="/keyword-research-hero.png" alt="Amazon Keyword Research Guide" />
+                  </div>
                   <div className="rel-body">
                     <div className="rel-tag">Amazon SEO</div>
                     <div className="rel-title">Best Amazon Keyword Research Tool India: The 2026 Guide for Indian Sellers</div>
                   </div>
-                </a>
-                {/* ANCHOR: NLP → /best-review-analysis-tool-india ("review analysis tools for Indian sellers" per strategy) */}
-                <a href="/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers" className="rel-card" title="Review analysis tools for Indian sellers — AI guide">
-                  <div className="rel-thumb" style={{ background:"linear-gradient(135deg,#0ABFA4,#059669)" }}><span>⭐</span></div>
+                </Link>
+                <Link to="/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers" className="rel-card" title="Review analysis tools for Indian sellers — AI guide">
+                  <div className="rel-thumb">
+                    <img src="/eighteen.png" alt="AI Review Intelligence Guide" />
+                  </div>
                   <div className="rel-body">
                     <div className="rel-tag">Review Analysis</div>
                     <div className="rel-title">AI Review Intelligence Tool for Amazon &amp; Flipkart Sellers: The Complete Guide</div>
                   </div>
-                </a>
-                <a href="/compare/insydzvshelium" className="rel-card" title="Insydz vs Helium 10 for Indian sellers — full comparison">
-                  <div className="rel-thumb" style={{ background:"linear-gradient(135deg,#F4500A,#DC2626)" }}><span>⚔️</span></div>
+                </Link>
+                <Link to="/resources/expert-blog/insydz-vs-helium-10-india" className="rel-card" title="Insydz vs Helium 10 for Indian sellers — full comparison">
+                  <div className="rel-thumb">
+                    <img src="/thirteen.png" alt="Insydz vs Helium 10 comparison" />
+                  </div>
                   <div className="rel-body">
                     <div className="rel-tag">Compare</div>
                     <div className="rel-title">Insydz vs Helium 10: Which Is the Right Tool for Indian Sellers?</div>
                   </div>
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -1167,21 +1153,30 @@ export default function FlipkartKeywordResearchTool() {
       </div>
 
       {/* FINAL CTA */}
-      <div className="fc-block">
-        <div className="fc-inner">
-          <h2>Every Week Without Flipkart Keyword Research Is a Week of Revenue Going to a Better-Optimised Competitor</h2>
-          <p>Insydz tracks your Flipkart rank positions in real time, alerts you via WhatsApp the moment you drop, and tells you exactly what to fix in your title, attributes, and listing copy.</p>
-          <div className="fc-points">
-            <div className="fc-pt">Forever free plan</div>
-            <div className="fc-pt">No credit card</div>
-            <div className="fc-pt">Flipkart + Amazon.in</div>
-            <div className="fc-pt">WhatsApp alerts in 60 min</div>
-          </div>
-          <button className="fc-btn" onClick={() => setLocation("/login")}>
-            → Start Free at insydz.com See Your Flipkart Rank Dashboard in Minutes
-          </button>
-          <p className="fc-sub">Forever free plan · No credit card · Real-time Flipkart rank tracking</p>
+      <div className="final-cta-block">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+          Know Which Flipkart Keywords Win. Start Today.
+        </h2>
+        <p className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 24px" }}>
+          Insydz shows your Flipkart keyword rankings in real time — and WhatsApps you the exact fixes the moment you drop.
+        </p>
+        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px 20px", marginBottom: 20 }}>
+          {["Flipkart keyword intelligence", "Real-time rank drops", "WhatsApp in 60 min", "Free to start"].map(t => (
+            <div key={t} className="text-blue-100" style={{ fontSize:"clamp(11px,2vw,13.5px)", display:"flex", alignItems:"center", gap:6, fontFamily:"'Sora',sans-serif" }}>
+              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+            </div>
+          ))}
         </div>
+        <button
+          onClick={() => setLocation("/login")}
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm sm:text-base px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-xl transition-all transform hover:scale-105"
+        >
+          <Zap className="w-5 h-5 flex-shrink-0 inline mr-2" />
+          See My Flipkart Rankings →
+        </button>
+        <p className="text-blue-200 text-xs mt-4">
+          Amazon.in also covered · Hinglish data · No card required
+        </p>
       </div>
 
             {/* Footer */}

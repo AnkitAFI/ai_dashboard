@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocation, Link } from "wouter";
-import { 
-  Search, 
-  Clock, 
-  ArrowRight, 
-  TrendingUp, 
-  Target, 
-  DollarSign, 
+import {
+  Search,
+  Clock,
+  ArrowRight,
+  TrendingUp,
+  Target,
+  DollarSign,
   BarChart3,
   MessageCircle,
   Package,
@@ -113,7 +113,7 @@ const navigationMenu: NavigationMenu = {
 };
 
 // Types
-type BlogCategory = 
+type BlogCategory =
   | "All Articles"
   | "Competitor Tracking"
   | "Seller Tools & Strategy"
@@ -169,25 +169,25 @@ const articles: Article[] = [
     featured: true,
     popular: true
   },
-   {
-     id: "10",
-     title: "Flipkart Keyword Research Tool & SEO Optimization Guide for Sellers (2026)",
-     excerpt: "Flipkart's search algorithm rewards listings that match buyer intent exactly not just category keywords. Discover how India's top Flipkart sellers use AI-powered keyword research, rank tracking, and SEO optimization to dominate Flipkart search results and capture search visibility their competitors don't even know they're missing.",
-     category: "Flipkart SEO & Seller Strategy",
-     readTime: "9 min read",
-     image: "/01_hero_banner.png",
-     route: "/resources/expert-blog/flipkart-keyword-research-tool"
-   },
-   {
-     id: "9",
-     title: "Best Flipkart Analytics Tool India: Complete Guide for Sellers (2026)",
-     excerpt: "Stop flying blind on Flipkart. The right analytics tool surfaces which competitor keywords are stealing your rank, which SKUs are losing the Buy Box, and exactly what to fix before the next Big Billion Days window closes on you.",
-     category: "Flipkart Seller Tools & Strategy",
-     readTime: "9 min read",
-     image: "/flipkart-analytics.png",
-     route: "/resources/expert-blog/best-flipkart-analytics-tool"
-   },
-   {
+  {
+    id: "10",
+    title: "Flipkart Keyword Research Tool & SEO Optimization Guide for Sellers (2026)",
+    excerpt: "Flipkart's search algorithm rewards listings that match buyer intent exactly not just category keywords. Discover how India's top Flipkart sellers use AI-powered keyword research, rank tracking, and SEO optimization to dominate Flipkart search results and capture search visibility their competitors don't even know they're missing.",
+    category: "Flipkart SEO & Seller Strategy",
+    readTime: "9 min read",
+    image: "/01_hero_banner.png",
+    route: "/resources/expert-blog/flipkart-keyword-research-tool"
+  },
+  {
+    id: "9",
+    title: "Best Flipkart Analytics Tool India: Complete Guide for Sellers (2026)",
+    excerpt: "Stop flying blind on Flipkart. The right analytics tool surfaces which competitor keywords are stealing your rank, which SKUs are losing the Buy Box, and exactly what to fix before the next Big Billion Days window closes on you.",
+    category: "Flipkart Seller Tools & Strategy",
+    readTime: "9 min read",
+    image: "/flipkart-analytics.png",
+    route: "/resources/expert-blog/best-flipkart-analytics-tool"
+  },
+  {
     id: "7",
     title: "Best Review Analysis Tools for Indian Sellers: Complete Guide (2026)",
     excerpt: "Your customers are telling you exactly what to fix and why they're switching to a competitor inside every review. Discover how India's top D2C brands use AI review intelligence to reduce returns and grow revenue.",
@@ -360,8 +360,8 @@ export default function ExpertBlog() {
     "Platform Updates"
   ];
 
-  const filteredArticles = selectedCategory === "All Articles" 
-    ? articles 
+  const filteredArticles = selectedCategory === "All Articles"
+    ? articles
     : articles.filter(article => article.category === selectedCategory);
 
   const featuredArticle = articles.find(a => a.featured);
@@ -399,22 +399,21 @@ export default function ExpertBlog() {
     <div className="min-h-screen bg-white dark:bg-gray-950">
       {/* Navigation */}
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg"
-            : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"
-        }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+          ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg"
+          : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"
+          }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             {/* Logo and Back Button */}
             <div className="flex items-center space-x-3">
-              
+
               <div className="flex items-center space-x-1 group cursor-pointer" onClick={() => setLocation('/')}>
                 <div className="relative">
-                  <img 
-                    src="/logo.png" 
-                    alt="Insydz Logo" 
+                  <img
+                    src="/logo.png"
+                    alt="Insydz Logo"
                     className="w-12 h-12 rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain"
                   />
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse"></div>
@@ -438,7 +437,7 @@ export default function ExpertBlog() {
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'Solutions' ? 'rotate-180' : ''}`} />
                 </button>
                 {activeDropdown === 'Solutions' && (
-                  <div 
+                  <div
                     onMouseLeave={() => setActiveDropdown(null)}
                     className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
                   >
@@ -470,7 +469,7 @@ export default function ExpertBlog() {
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'Use Cases' ? 'rotate-180' : ''}`} />
                 </button>
                 {activeDropdown === 'Use Cases' && (
-                  <div 
+                  <div
                     onMouseLeave={() => setActiveDropdown(null)}
                     className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
                   >
@@ -502,7 +501,7 @@ export default function ExpertBlog() {
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'Features' ? 'rotate-180' : ''}`} />
                 </button>
                 {activeDropdown === 'Features' && (
-                  <div 
+                  <div
                     onMouseLeave={() => setActiveDropdown(null)}
                     className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
                   >
@@ -529,8 +528,8 @@ export default function ExpertBlog() {
                 )}
               </div>
 
-              <button 
-                onClick={() => setLocation('/pricing')}  
+              <button
+                onClick={() => setLocation('/pricing')}
                 className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all"
               >
                 Pricing
@@ -546,7 +545,7 @@ export default function ExpertBlog() {
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'Free Tools' ? 'rotate-180' : ''}`} />
                 </button>
                 {activeDropdown === 'Free Tools' && (
-                  <div 
+                  <div
                     onMouseLeave={() => setActiveDropdown(null)}
                     className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
                   >
@@ -583,7 +582,7 @@ export default function ExpertBlog() {
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'Compare' ? 'rotate-180' : ''}`} />
                 </button>
                 {activeDropdown === 'Compare' && (
-                  <div 
+                  <div
                     onMouseLeave={() => setActiveDropdown(null)}
                     className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
                   >
@@ -615,7 +614,7 @@ export default function ExpertBlog() {
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'Resources' ? 'rotate-180' : ''}`} />
                 </button>
                 {activeDropdown === 'Resources' && (
-                  <div 
+                  <div
                     onMouseLeave={() => setActiveDropdown(null)}
                     className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
                   >
@@ -647,7 +646,7 @@ export default function ExpertBlog() {
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'About' ? 'rotate-180' : ''}`} />
                 </button>
                 {activeDropdown === 'About' && (
-                  <div 
+                  <div
                     onMouseLeave={() => setActiveDropdown(null)}
                     className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
                   >
@@ -677,12 +676,12 @@ export default function ExpertBlog() {
               <Button onClick={() => setLocation('/login')} className="ml-2 text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
                 Login
               </Button>
-              
-              <button 
+
+              <button
                 className="ml-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
                 onClick={() => setIsDarkMode(!isDarkMode)}
               >
-                {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400"/> : <Moon className="w-5 h-5 text-gray-800"/>}
+                {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-800" />}
               </button>
             </div>
 
@@ -704,7 +703,7 @@ export default function ExpertBlog() {
 
               {/* Mobile Solutions */}
               <div>
-                <button 
+                <button
                   onClick={() => toggleMobileMenu('Solutions')}
                   className="flex items-center justify-between w-full px-4 py-2 text-orange-600 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg font-semibold"
                 >
@@ -714,8 +713,8 @@ export default function ExpertBlog() {
                 {mobileActiveMenu === 'Solutions' && (
                   <div className="ml-4 mt-2 space-y-1">
                     {navigationMenu.Solutions.map((item, i) => (
-                      <button 
-                        key={i} 
+                      <button
+                        key={i}
                         onClick={() => handleMenuItemClick(item)}
                         className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg"
                       >
@@ -729,7 +728,7 @@ export default function ExpertBlog() {
 
               {/* Mobile Use Cases */}
               <div>
-                <button 
+                <button
                   onClick={() => toggleMobileMenu('Use Cases')}
                   className="flex items-center justify-between w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium"
                 >
@@ -739,8 +738,8 @@ export default function ExpertBlog() {
                 {mobileActiveMenu === 'Use Cases' && (
                   <div className="ml-4 mt-2 space-y-1">
                     {navigationMenu["Use Cases"].map((item, i) => (
-                      <button 
-                        key={i} 
+                      <button
+                        key={i}
                         onClick={() => handleMenuItemClick(item)}
                         className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg"
                       >
@@ -754,7 +753,7 @@ export default function ExpertBlog() {
 
               {/* Mobile Features */}
               <div>
-                <button 
+                <button
                   onClick={() => toggleMobileMenu('Features')}
                   className="flex items-center justify-between w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium"
                 >
@@ -764,8 +763,8 @@ export default function ExpertBlog() {
                 {mobileActiveMenu === 'Features' && (
                   <div className="ml-4 mt-2 space-y-1">
                     {navigationMenu.Features.map((item, i) => (
-                      <button 
-                        key={i} 
+                      <button
+                        key={i}
                         onClick={() => handleMenuItemClick(item)}
                         className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg"
                       >
@@ -784,7 +783,7 @@ export default function ExpertBlog() {
 
               {/* Mobile Free Tools */}
               <div>
-                <button 
+                <button
                   onClick={() => toggleMobileMenu('Free Tools')}
                   className="flex items-center justify-between w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium"
                 >
@@ -794,8 +793,8 @@ export default function ExpertBlog() {
                 {mobileActiveMenu === 'Free Tools' && (
                   <div className="ml-4 mt-2 space-y-1">
                     {navigationMenu["Free Tools"].map((item, i) => (
-                      <button 
-                        key={i} 
+                      <button
+                        key={i}
                         onClick={() => handleMenuItemClick(item)}
                         className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg"
                       >
@@ -810,7 +809,7 @@ export default function ExpertBlog() {
 
               {/* Mobile Compare */}
               <div>
-                <button 
+                <button
                   onClick={() => toggleMobileMenu('Compare')}
                   className="flex items-center justify-between w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium"
                 >
@@ -820,8 +819,8 @@ export default function ExpertBlog() {
                 {mobileActiveMenu === 'Compare' && (
                   <div className="ml-4 mt-2 space-y-1">
                     {navigationMenu.Compare.map((item, i) => (
-                      <button 
-                        key={i} 
+                      <button
+                        key={i}
                         onClick={() => handleMenuItemClick(item)}
                         className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg"
                       >
@@ -835,7 +834,7 @@ export default function ExpertBlog() {
 
               {/* Mobile Resources */}
               <div>
-                <button 
+                <button
                   onClick={() => toggleMobileMenu('Resources')}
                   className="flex items-center justify-between w-full px-4 py-2 text-orange-600 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg font-semibold"
                 >
@@ -845,8 +844,8 @@ export default function ExpertBlog() {
                 {mobileActiveMenu === 'Resources' && (
                   <div className="ml-4 mt-2 space-y-1">
                     {navigationMenu.Resources.map((item, i) => (
-                      <button 
-                        key={i} 
+                      <button
+                        key={i}
                         onClick={() => handleMenuItemClick(item)}
                         className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg"
                       >
@@ -860,7 +859,7 @@ export default function ExpertBlog() {
 
               {/* Mobile About */}
               <div>
-                <button 
+                <button
                   onClick={() => toggleMobileMenu('About')}
                   className="flex items-center justify-between w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium"
                 >
@@ -870,8 +869,8 @@ export default function ExpertBlog() {
                 {mobileActiveMenu === 'About' && (
                   <div className="ml-4 mt-2 space-y-1">
                     {navigationMenu.About.map((item, i) => (
-                      <button 
-                        key={i} 
+                      <button
+                        key={i}
                         onClick={() => handleMenuItemClick(item)}
                         className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg"
                       >
@@ -887,12 +886,12 @@ export default function ExpertBlog() {
               <Button onClick={() => { setLocation('/login'); setIsMenuOpen(false); }} className="w-full mt-2 bg-gradient-to-r from-pink-500 to-rose-500">
                 Login
               </Button>
-              
-              <button 
+
+              <button
                 className="mt-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors w-full flex justify-center items-center"
                 onClick={() => setIsDarkMode(!isDarkMode)}
               >
-                {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400"/> : <Moon className="w-5 h-5 text-gray-800"/>}
+                {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-800" />}
               </button>
             </div>
           </div>
@@ -902,14 +901,14 @@ export default function ExpertBlog() {
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMDEwIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-40"></div>
-        
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold mb-6 shadow-lg">
               <Zap className="w-4 h-4" />
               <span>E-commerce Intelligence Hub</span>
             </div>
-            
+
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
               <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent">
                 E-commerce Intelligence &
@@ -919,13 +918,13 @@ export default function ExpertBlog() {
                 Seller Growth Insights
               </span>
             </h1>
-            
+
             <p className="text-xl text-gray-600 dark:text-gray-400 mb-10 leading-relaxed max-w-3xl mx-auto">
               Actionable strategies, data-backed guides, and marketplace insights for Amazon and Flipkart sellers in India.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button 
+              <Button
                 onClick={() => setLocation('/login')}
                 size="lg"
                 className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-8 py-6 text-lg rounded-full shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
@@ -933,8 +932,8 @@ export default function ExpertBlog() {
                 <Zap className="w-5 h-5 mr-2" />
                 Start Free with Insydz
               </Button>
-              
-              <Button 
+
+              <Button
                 onClick={() => window.scrollTo({ top: 600, behavior: 'smooth' })}
                 variant="outline"
                 size="lg"
@@ -957,11 +956,10 @@ export default function ExpertBlog() {
                 <button
                   key={category}
                   onClick={() => handleCategoryClick(category)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                    selectedCategory === category
-                      ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
-                      : 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800'
-                  }`}
+                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${selectedCategory === category
+                    ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
+                    : 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800'
+                    }`}
                 >
                   {category}
                 </button>
@@ -973,70 +971,49 @@ export default function ExpertBlog() {
 
       {/* ===================== FEATURED ARTICLE ===================== */}
       {featuredArticle && selectedCategory === "All Articles" && (
-        <section className="py-16 bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-900 dark:to-gray-800">
+        <section className="py-10 bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-900 dark:to-gray-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-3 mb-8">
               <div className="w-1 h-8 bg-gradient-to-b from-orange-500 to-red-500 rounded-full"></div>
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Featured Insight</h2>
             </div>
             <div onClick={() => setLocation(featuredArticle.route)} className="bg-white dark:bg-gray-950 rounded-3xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
-  <div className="grid md:grid-cols-2 gap-0 md:h-[500px]">
+              <div className="grid md:grid-cols-2 gap-0 md:h-[500px]">
 
-    {/* Featured image */}
-    <div className="relative overflow-hidden bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-      {featuredArticle.image ? (
-        <img
-          src={featuredArticle.image}
-          alt={featuredArticle.title}
-          className="w-full h-auto object-cover rounded-none"
-        />
-      ) : (
-        <div className="flex items-center justify-center h-64">
-          <BarChart3 className="w-32 h-32 text-orange-300 dark:text-orange-900 opacity-20" />
-        </div>
-      )}
-    </div>
-    
-    <div className="p-8 md:p-12 flex flex-col justify-center">
-            
-            {/* <div className="bg-white dark:bg-gray-950 rounded-3xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1">
-              <div className="grid md:grid-cols-2 gap-0">
-
-                {/* Featured image — shows three.png if set, else gradient placeholder */}
-                {/* <div className="relative overflow-hidden h-full min-h-[300px]">
+                {/* Featured image */}
+                <div className="blog-card-thumb h-full">
                   {featuredArticle.image ? (
                     <img
                       src={featuredArticle.image}
                       alt={featuredArticle.title}
-                      className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="flex items-center justify-center p-8">
                       <BarChart3 className="w-32 h-32 text-orange-300 dark:text-orange-900 opacity-20" />
                     </div>
                   )}
                 </div>
-                
-                <div className="p-8 md:p-12 flex flex-col justify-center"> */} 
+
+                <div className="p-8 md:p-12 flex flex-col justify-center">
                   <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-xs font-semibold mb-4 w-fit">
                     {featuredArticle.category}
                   </div>
-                  
+
                   <h3 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white leading-tight">
                     {featuredArticle.title}
                   </h3>
-                  
+
                   <p className="text-lg text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
                     {featuredArticle.excerpt}
                   </p>
-                  
+
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-gray-500 dark:text-gray-500">
                       <Clock className="w-4 h-4" />
                       <span className="text-sm font-medium">{featuredArticle.readTime}</span>
                     </div>
-                    
-                    <Button 
+
+                    <Button
                       onClick={() => setLocation(featuredArticle.route)}
                       className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold rounded-full group"
                     >
@@ -1053,50 +1030,49 @@ export default function ExpertBlog() {
 
       {/* ===================== POPULAR ARTICLES ===================== */}
       {selectedCategory === "All Articles" && (
-        <section className="py-16 bg-white dark:bg-gray-950">
+        <section className="py-14 bg-white dark:bg-gray-950">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center gap-3 mb-10">
+            <div className="flex items-center gap-3 mb-8">
               <div className="w-1 h-8 bg-gradient-to-b from-orange-500 to-red-500 rounded-full"></div>
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Most Read by Indian Sellers</h2>
             </div>
-            
+
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {popularArticles.map((article) => (
                 <Link key={article.id} href={article.route}>
-                <div 
-                  className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800 transform hover:-translate-y-2 cursor-pointer"
-                >
-                  {/* Popular card image — shows three.png if set, else gradient placeholder */}
-                  <div className="relative overflow-hidden">
-                    {article.image ? (
-                      <img
-                        src={article.image}
-                        alt={article.title}
-                        className="w-full h-auto"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <BarChart3 className="w-20 h-20 text-orange-200 dark:text-orange-900 opacity-30 group-hover:scale-110 transition-transform" />
+                  <div
+                    className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800 transform hover:-translate-y-2 cursor-pointer flex flex-col h-full"
+                  >
+                    {/* Popular card image — standardized ratio */}
+                    <div className="blog-card-thumb">
+                      {article.image ? (
+                        <img
+                          src={article.image}
+                          alt={article.title}
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center p-4">
+                          <BarChart3 className="w-20 h-20 text-orange-200 dark:text-orange-900 opacity-30" />
+                        </div>
+                      )}
+                      <div className="absolute top-3 right-3">
+                        <span className="bg-white/90 dark:bg-gray-950/90 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                          {article.category}
+                        </span>
                       </div>
-                    )}
-                    <div className="absolute top-3 right-3">
-                      <span className="bg-white/90 dark:bg-gray-950/90 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
-                        {article.category}
-                      </span>
+                    </div>
+
+                    <div className="p-6 flex flex-col flex-grow">
+                      <h3 className="text-lg font-bold mb-3 text-gray-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-500 transition-colors flex-grow">
+                        {article.title}
+                      </h3>
+
+                      <div className="flex items-center gap-2 text-gray-500 dark:text-gray-500 mt-auto">
+                        <Clock className="w-4 h-4" />
+                        <span className="text-sm font-medium">{article.readTime}</span>
+                      </div>
                     </div>
                   </div>
-                  
-                  <div className="p-6">
-                    <h3 className="text-lg font-bold mb-3 text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-500 transition-colors">
-                      {article.title}
-                    </h3>
-                    
-                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-500">
-                      <Clock className="w-4 h-4" />
-                      <span className="text-sm font-medium">{article.readTime}</span>
-                    </div>
-                  </div>
-                </div>
                 </Link>
               ))}
             </div>
@@ -1104,9 +1080,97 @@ export default function ExpertBlog() {
         </section>
       )}
 
+      {/* ===================== LATEST ARTICLES GRID ===================== */}
+      <section className="py-10 bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-1 h-8 bg-gradient-to-b from-orange-500 to-red-500 rounded-full"></div>
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+              {selectedCategory === "All Articles" ? "Latest Insights" : selectedCategory}
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {latestArticles.map((article) => (
+              <Link key={article.id} href={article.route}>
+                <div
+                  className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800 transform hover:-translate-y-2 cursor-pointer flex flex-col h-full"
+                >
+                  {/* Latest grid image — standardized ratio */}
+                  <div className="blog-card-thumb">
+                    {article.image ? (
+                      <img
+                        src={article.image}
+                        alt={article.title}
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center p-4">
+                        <BarChart3 className="w-24 h-24 text-orange-200 dark:text-orange-900 opacity-30" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="p-6 flex flex-col flex-grow">
+                    <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-400 px-3 py-1 rounded-full text-xs font-semibold mb-4">
+                      {article.category}
+                    </div>
+
+                    <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-500 transition-colors">
+                      {article.title}
+                    </h3>
+
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-3 flex-grow">
+                      {article.excerpt}
+                    </p>
+
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-800 mt-auto">
+                      <div className="flex items-center gap-2 text-gray-500 dark:text-gray-500">
+                        <Clock className="w-4 h-4" />
+                        <span className="text-sm font-medium">{article.readTime}</span>
+                      </div>
+
+                      <Link href={article.route}>
+                        <div className="flex items-center text-orange-600 dark:text-orange-500 font-semibold text-sm group-hover:gap-2 gap-1 transition-all">
+                          <span>Read More</span>
+                          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        </div>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
+      {/* India-First Authority Section */}
+      {/* <section className="py-16 bg-white dark:bg-gray-950">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-400 px-4 py-2 rounded-full text-sm font-semibold mb-6">
+            <CheckCircle2 className="w-4 h-4" />
+            <span>Built for Indian Marketplace Reality</span>
+          </div>
+
+          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-gray-900 dark:text-white leading-tight sm:whitespace-nowrap">
+            Intelligence Rooted in Real Indian <br className="block sm:hidden" />
+            E-commerce Data
+          </h2>
+
+          <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
+            INSYDZ content is based on real seller data from Amazon and Flipkart. We focus on pricing behavior, review patterns, ranking shifts, and seasonal demand in Indian e-commerce.
+          </p>
+
+          <p className="text-xl font-semibold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
+            Not generic global advice. Real Indian marketplace intelligence.
+          </p>
+        </div>
+      </section> */}
+
       {/* Problem-Based Content Block */}
       {selectedCategory === "All Articles" && (
-        <section className="py-16 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
+        <section className="py-8 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
@@ -1116,7 +1180,7 @@ export default function ExpertBlog() {
                 Jump straight to the insights you need for your specific challenge
               </p>
             </div>
-            
+
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {problemBlocks.map((block, index) => (
                 <button
@@ -1127,15 +1191,15 @@ export default function ExpertBlog() {
                   <div className={`w-14 h-14 bg-gradient-to-br ${block.color} rounded-xl flex items-center justify-center mb-6 text-white group-hover:scale-110 transition-transform shadow-lg`}>
                     {block.icon}
                   </div>
-                  
+
                   <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
                     {block.title}
                   </h3>
-                  
+
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                     {block.description}
                   </p>
-                  
+
                   <div className="flex items-center text-orange-600 dark:text-orange-500 font-semibold text-sm group-hover:gap-2 gap-1 transition-all">
                     <span>Explore</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -1147,109 +1211,20 @@ export default function ExpertBlog() {
         </section>
       )}
 
-      {/* ===================== LATEST ARTICLES GRID ===================== */}
-      <section className="py-16 bg-white dark:bg-gray-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3 mb-10">
-            <div className="w-1 h-8 bg-gradient-to-b from-orange-500 to-red-500 rounded-full"></div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
-              {selectedCategory === "All Articles" ? "Latest Insights" : selectedCategory}
-            </h2>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {latestArticles.map((article) => (
-              <Link key={article.id} href={article.route}>
-<div 
-  className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800 transform hover:-translate-y-2 cursor-pointer"
->
-                {/* Latest grid image — shows three.png if set, else gradient placeholder */}
-                <div className="relative overflow-hidden">
-                  {article.image ? (
-                    <img
-                      src={article.image}
-                      alt={article.title}
-                      className="w-full h-auto"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <BarChart3 className="w-24 h-24 text-orange-200 dark:text-orange-900 opacity-30 group-hover:scale-110 transition-transform" />
-                    </div>
-                  )}
-                </div>
-                
-                <div className="p-6">
-                  <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-400 px-3 py-1 rounded-full text-xs font-semibold mb-4">
-                    {article.category}
-                  </div>
-                  
-                  <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-500 transition-colors">
-                    {article.title}
-                  </h3>
-                  
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
-                    {article.excerpt}
-                  </p>
-                  
-                  <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-800">
-                    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-500">
-                      <Clock className="w-4 h-4" />
-                      <span className="text-sm font-medium">{article.readTime}</span>
-                    </div>
-
-                   <Link href={article.route}>  
-                    <div className="flex items-center text-orange-600 dark:text-orange-500 font-semibold text-sm group-hover:gap-2 gap-1 transition-all">
-                      <span>Read More</span>
-                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-
-      {/* India-First Authority Section */}
-      <section className="py-16 bg-white dark:bg-gray-950">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-400 px-4 py-2 rounded-full text-sm font-semibold mb-6">
-            <CheckCircle2 className="w-4 h-4" />
-            <span>Built for Indian Marketplace Reality</span>
-          </div>
-          
-          <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-gray-900 dark:text-white leading-tight sm:whitespace-nowrap">
-  Intelligence Rooted in Real Indian <br className="block sm:hidden" />
-  E-commerce Data
-</h2>
-        
-          <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed mb-8">
-            INSYDZ content is based on real seller data from Amazon and Flipkart. We focus on pricing behavior, review patterns, ranking shifts, and seasonal demand in Indian e-commerce.
-          </p>
-          
-          <p className="text-xl font-semibold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-            Not generic global advice. Real Indian marketplace intelligence.
-          </p>
-        </div>
-      </section>
-
       {/* Free Plan CTA */}
-      <section className="py-20 bg-gradient-to-r from-orange-500 to-red-500 relative overflow-hidden">
+      <section className="py-10 bg-gradient-to-r from-orange-500 to-red-500 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZjIwIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-40"></div>
-        
+
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
             Learn. Apply. Grow.
           </h2>
-          
+
           <p className="text-xl text-white/90 mb-8 leading-relaxed">
             Every strategy you read here can be tested inside Insydz using your real product data.
           </p>
-          
-          <Button 
+
+          <Button
             onClick={() => setLocation('/login')}
             size="lg"
             className="bg-white text-orange-600 hover:bg-gray-100 font-bold px-10 py-6 text-lg rounded-full shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105"
@@ -1257,7 +1232,7 @@ export default function ExpertBlog() {
             <Zap className="w-5 h-5 mr-2" />
             Start Free
           </Button>
-          
+
           <p className="text-sm text-white/80 mt-4">
             No credit card required
           </p>
@@ -1265,15 +1240,15 @@ export default function ExpertBlog() {
       </section>
 
       {/* SEO Support Text */}
-      <section className="py-8 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
+      {/* <section className="py-8 bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <p className="text-sm text-gray-600 dark:text-gray-400 text-center leading-relaxed">
             INSYDZ blog covers Amazon seller strategies, Flipkart SEO techniques, competitor price tracking, product research insights, review analysis, festive demand trends, and pricing optimization for Indian e-commerce sellers.
           </p>
         </div>
-      </section>
-      
-            {/* Footer */}
+      </section> */}
+
+      {/* Footer */}
       <footer className="bg-[#0a0f1e] text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
@@ -1429,6 +1404,8 @@ export default function ExpertBlog() {
         .delay-1000 {
           animation-delay: 1s;
         }
+        .blog-card-thumb { width:100%; aspect-ratio:2.4 / 1; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+        .blog-card-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
       `}</style>
     </div>
   );

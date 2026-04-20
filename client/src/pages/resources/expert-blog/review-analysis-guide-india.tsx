@@ -389,8 +389,8 @@ export default function BestReviewAnalysisToolIndia() {
         .rel-card{border:1px solid #E2E8F0;border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;background:#fff}
         .dark .rel-card{background:#111827;border-color:#1f2937}
         .rel-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.09);transform:translateY(-2px)}
-        .rel-thumb{width:100%;height:100px;display:flex;align-items:center;justify-content:center;font-size:24px}
-        @media(min-width:640px){.rel-thumb{height:128px;font-size:28px}}
+        .rel-thumb { width: 100%; aspect-ratio: 2.4 / 1; overflow: hidden; background: #0A0F1A; display: flex; align-items: center; justify-content: center; }
+        .rel-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .rel-body{padding:12px}
         @media(min-width:640px){.rel-body{padding:14px}}
         .rel-tag{font-size:10px;font-weight:700;color:#F97316;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-family:'Sora',sans-serif}
@@ -438,25 +438,7 @@ export default function BestReviewAnalysisToolIndia() {
         .metric-d{font-size:11.5px;color:#64748B;line-height:1.5;font-family:'Sora',sans-serif}
         @media(min-width:640px){.metric-d{font-size:12.5px}}
 
-        .fc-block{background:linear-gradient(135deg,#DB2777 0%,#7C3AED 100%);padding:56px 16px;text-align:center}
-        @media(min-width:640px){.fc-block{padding:72px 24px}}
-        @media(min-width:1024px){.fc-block{padding:80px 24px}}
-        .fc-inner{max-width:640px;margin:0 auto}
-        .fc-inner h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:12px;line-height:1.2;letter-spacing:-.4px}
-        @media(min-width:640px){.fc-inner h2{font-size:28px;margin-bottom:14px}}
-        @media(min-width:1024px){.fc-inner h2{font-size:36px}}
-        .fc-inner p{color:rgba(255,255,255,.75);font-size:14px;max-width:520px;margin:0 auto 22px;line-height:1.7;font-family:'Lora',serif}
-        @media(min-width:640px){.fc-inner p{font-size:16px;margin:0 auto 28px}}
-        .fc-points{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-bottom:24px}
-        @media(min-width:640px){.fc-points{gap:8px 24px;margin-bottom:32px}}
-        .fc-pt{color:rgba(255,255,255,.85);font-size:12px;display:flex;align-items:center;gap:6px;font-family:'Sora',sans-serif}
-        @media(min-width:640px){.fc-pt{font-size:13.5px}}
-        .fc-pt::before{content:'✓';color:white;font-weight:800}
-        .fc-btn{background:white;color:#DB2777;padding:13px 28px;border-radius:10px;font-size:13px;font-weight:800;border:none;cursor:pointer;transition:transform .2s;width:100%;max-width:480px}
-        @media(min-width:640px){.fc-btn{padding:16px 36px;font-size:15px;width:auto}}
-        .fc-btn:hover{transform:translateY(-2px)}
-        .fc-sub{color:rgba(255,255,255,.5);font-size:11.5px;margin-top:12px}
-        @media(min-width:640px){.fc-sub{font-size:12.5px;margin-top:14px}}
+        .final-cta-block { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%); padding: clamp(48px,8vw,40px) 20px; text-align:center; margin:60px 0 0; }
 
         .verdict-banner{background:linear-gradient(135deg,#FFF7ED 0%,#FFEDD5 100%);border:2px solid #FED7AA;border-radius:12px;padding:16px;margin:22px 0;display:flex;gap:12px;align-items:flex-start}
         @media(min-width:640px){.verdict-banner{padding:22px 24px;margin:28px 0;gap:16px}}
@@ -652,14 +634,14 @@ export default function BestReviewAnalysisToolIndia() {
               Start Free No Card Needed
             </button>
           </div>
-          <div style={{ background:"#F8FAFC", border:"1px solid #E2E8F0", borderRadius:10, padding:14, marginTop:14 }}>
+          {/* <div style={{ background:"#F8FAFC", border:"1px solid #E2E8F0", borderRadius:10, padding:14, marginTop:14 }}>
             <h4 style={{ fontFamily:"'Sora',sans-serif", fontSize:10, fontWeight:700, textTransform:"uppercase" as const, letterSpacing:1, color:"#94A3B8", marginBottom:10 }}>Share This Guide</h4>
             <div style={{ display:"flex", gap:6 }}>
               {[{l:"WhatsApp",bg:"#25D366"},{l:"LinkedIn",bg:"#0A66C2"},{l:"Twitter",bg:"#1DA1F2"}].map(s => (
                 <div key={s.l} style={{ flex:1, textAlign:"center" as const, padding:"7px 4px", borderRadius:7, fontSize:11, fontWeight:700, color:"white", background:s.bg, cursor:"pointer", fontFamily:"'Sora',sans-serif" }}>{s.l}</div>
               ))}
             </div>
-          </div>
+          </div> */}
         </aside>
 
         {/* MAIN */}
@@ -976,12 +958,14 @@ export default function BestReviewAnalysisToolIndia() {
               <h2 style={{ fontSize:"clamp(16px,3vw,20px)", fontWeight:800, color:"#0D1B2A", margin:"0 0 18px", border:"none", padding:0, fontFamily:"'Sora',sans-serif" }} className="dark:text-white">Related Guides</h2>
               <div className="related-grid">
                 {[
-                  { t:"AI Review Intelligence Tool for Amazon & Flipkart Sellers: Complete Guide", tag:"Review Intelligence", bg:"linear-gradient(135deg,#16A34A,#15803D)", em:"💬", r:"/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers" },
-                  { t:"Insydz vs Helium 10: Which is the Right Tool for Indian Sellers?",           tag:"Compare",            bg:"linear-gradient(135deg,#4F46E5,#7C3AED)", em:"⚔️", r:"/compare/insydzvshelium" },
-                  { t:"Amazon SEO Tool India: The Complete 2026 Guide for Indian Sellers",          tag:"SEO Guide",          bg:"linear-gradient(135deg,#0D9488,#0891B2)", em:"🔍", r:"/use-cases/improve-seo" },
+                  { t: "AI Review Intelligence Tool for Amazon & Flipkart Sellers: Complete Guide", tag: "Review Intelligence", imgSrc: "/eighteen.png", r: "/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers" },
+                  { t: "Insydz vs Helium 10: Which is the Right Tool for Indian Sellers?",           tag: "Compare",            imgSrc: "/thirteen.png", r: "/compare/insydzvshelium" },
+                  { t: "Amazon SEO Tool India: The Complete 2026 Guide for Indian Sellers",          tag: "SEO Guide",          imgSrc: "/one.png", r: "/use-cases/improve-seo" },
                 ].map(rc => (
                   <div key={rc.t} className="rel-card" onClick={() => setLocation(rc.r)}>
-                    <div className="rel-thumb" style={{ background:rc.bg }}><span>{rc.em}</span></div>
+                    <div className="rel-thumb">
+                      <img src={rc.imgSrc} alt={rc.t} />
+                    </div>
                     <div className="rel-body">
                       <div className="rel-tag">{rc.tag}</div>
                       <div className="rel-title">{rc.t}</div>
@@ -995,22 +979,31 @@ export default function BestReviewAnalysisToolIndia() {
         </main>
       </div>
 
-      {/* FINAL CTA */}
-      <div className="fc-block">
-        <div className="fc-inner">
-          <h2>Winning on Amazon India and Flipkart in 2026 Isn't About Having the Most Reviews.</h2>
-          <p>It's about understanding what those reviews are actually telling you and acting on them faster than your competition. Insydz delivers AI review intelligence built specifically for Indian marketplace sellers, in Hindi, Hinglish, and English, via WhatsApp.</p>
-          <div className="fc-points">
-            <div className="fc-pt">Forever free plan</div>
-            <div className="fc-pt">No credit card needed</div>
-            <div className="fc-pt">Hindi + Hinglish + English</div>
-            <div className="fc-pt">WhatsApp alerts in 60 min</div>
-          </div>
-          <button className="fc-btn" onClick={() => setLocation("/login")}>
-            → Start Free at insydz.com Get Your First Review Intelligence Report Today
-          </button>
-          <p className="fc-sub">No setup required · Amazon India, Flipkart &amp;· No credit card needed</p>
+      {/* Final CTA */}
+      <div className="final-cta-block">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+          Your Reviews Are Telling You Something. Are You Listening?
+        </h2>
+        <p className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 24px" }}>
+          Insydz analyses thousands of reviews in Hindi, Hinglish &amp; English — and tells you exactly what to fix, via WhatsApp.
+        </p>
+        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px 20px", marginBottom: 20 }}>
+          {["Hindi + Hinglish support", "AI review intelligence", "WhatsApp alerts in 60 min", "Free forever"].map(t => (
+            <div key={t} className="text-blue-100" style={{ fontSize:"clamp(11px,2vw,13.5px)", display:"flex", alignItems:"center", gap:6, fontFamily:"'Sora',sans-serif" }}>
+              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+            </div>
+          ))}
         </div>
+        <button
+          onClick={() => setLocation("/login")}
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm sm:text-base px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-xl transition-all transform hover:scale-105"
+        >
+          <Zap className="w-5 h-5 flex-shrink-0 inline mr-2" />
+          Get My Review Report Free →
+        </button>
+        <p className="text-blue-200 text-xs mt-4">
+          Amazon.in + Flipkart · No setup · No card needed
+        </p>
       </div>
 
             {/* Footer */}

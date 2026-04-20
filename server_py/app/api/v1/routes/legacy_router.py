@@ -67,10 +67,9 @@ OLLAMA_API_URL = "http://127.0.0.1:11434"  # Ollama HTTP API
 MAX_DATA_CHARS = 1500
 MODEL_NAME = "llama3.2:3b"
 
-from dotenv import load_dotenv
 from pathlib import Path
 _base_dir = Path(__file__).resolve().parent
-load_dotenv(dotenv_path=_base_dir / ".env", override=True)
+# Environment variables loaded in main.py
 
 # Redis client
 redis_host = os.environ.get("REDIS_HOST", "localhost")

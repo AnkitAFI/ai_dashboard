@@ -533,8 +533,8 @@ export default function AmazonVsFlipkartIndiaSellers() {
         .rel-card{border:1px solid #E5E7EB;border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;background:#fff;text-decoration:none;display:block}
         .dark .rel-card{background:#111827;border-color:#1f2937}
         .rel-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.09);transform:translateY(-2px)}
-        .rel-thumb{width:100%;height:100px;display:flex;align-items:center;justify-content:center;font-size:24px}
-        @media(min-width:640px){.rel-thumb{height:128px;font-size:28px}}
+        .rel-thumb{width:100%;aspect-ratio:2.4/1;overflow:hidden;background:#0A0F1A;display:flex;align-items:center;justify-content:center}
+        .rel-thumb img{width:100%;height:100%;object-fit:cover;display:block}
         .rel-body{padding:12px}
         @media(min-width:640px){.rel-body{padding:14px}}
         .rel-tag{font-size:10px;font-weight:700;color:#FF9900;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-family:'Sora',sans-serif}
@@ -598,9 +598,9 @@ export default function AmazonVsFlipkartIndiaSellers() {
         .hero-caption{font-family:'Sora',sans-serif;font-size:12px;color:#94A3B8;font-style:italic;text-align:center;margin-bottom:32px;padding:6px 10px}
 
         /* ── Final CTA ── */
-        .fc-block{background:linear-gradient(135deg,#FF9900 0%,#e67e00 50%,#0A0F1A 100%);padding:56px 16px;text-align:center}
-        @media(min-width:640px){.fc-block{padding:72px 24px}}
-        @media(min-width:1024px){.fc-block{padding:80px 24px}}
+        .fc-block{background:linear-gradient(135deg,#FF9900 0%,#e67e00 50%,#0A0F1A 100%);padding:56px 12px;text-align:center}
+        @media(min-width:640px){.fc-block{padding:36px 12px}}
+        @media(min-width:1024px){.fc-block{padding:36px 12px}}
         .fc-inner{max-width:640px;margin:0 auto}
         .fc-inner h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:12px;line-height:1.2;letter-spacing:-.4px}
         @media(min-width:640px){.fc-inner h2{font-size:28px;margin-bottom:14px}}
@@ -790,14 +790,14 @@ export default function AmazonVsFlipkartIndiaSellers() {
               Start Free — No Card Needed
             </Link>
           </div>
-          <div style={{ background:"#F5F8FF", border:"1px solid #E5E7EB", borderRadius:10, padding:14, marginTop:14 }}>
+          {/* <div style={{ background:"#F5F8FF", border:"1px solid #E5E7EB", borderRadius:10, padding:14, marginTop:14 }}>
             <h4 style={{ fontFamily:"'Sora',sans-serif", fontSize:10, fontWeight:700, textTransform:"uppercase" as const, letterSpacing:1, color:"#94A3B8", marginBottom:10 }}>Share This Guide</h4>
             <div style={{ display:"flex", gap:6 }}>
               {[{ l:"WhatsApp", bg:"#25D366" },{ l:"LinkedIn", bg:"#0A66C2" },{ l:"Twitter", bg:"#1DA1F2" }].map(s => (
                 <div key={s.l} style={{ flex:1, textAlign:"center" as const, padding:"7px 4px", borderRadius:7, fontSize:11, fontWeight:700, color:"white", background:s.bg, cursor:"pointer", fontFamily:"'Sora',sans-serif" }}>{s.l}</div>
               ))}
             </div>
-          </div>
+          </div> */}
         </aside>
 
         {/* MAIN */}
@@ -1136,7 +1136,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
               <div className="related-grid">
                 <Link to="/resources/expert-blog/flipkart-keyword-research-tool" className="rel-card" title="Flipkart keyword research tool — 2026 guide">
                   <div className="rel-thumb">
-                    <img src="/01_hero_banner.png" alt="Flipkart Keyword Research Tool guide" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                    <img src="/01_hero_banner.png" alt="Flipkart Keyword Research Tool guide" />
                   </div>
                   <div className="rel-body">
                     <div className="rel-tag">Flipkart SEO</div>
@@ -1145,7 +1145,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
                 </Link>
                 <Link to="/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers" className="rel-card" title="Review analysis tools for Indian sellers">
                   <div className="rel-thumb">
-                    <img src="/eighteen.png" alt="AI Review Intelligence Tool for Amazon and Flipkart" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                    <img src="/eighteen.png" alt="AI Review Intelligence Tool for Amazon and Flipkart" />
                   </div>
                   <div className="rel-body">
                     <div className="rel-tag" style={{ color:"#10B981" }}>Review Intelligence</div>
@@ -1154,7 +1154,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
                 </Link>
                 <Link to="/resources/expert-blog/insydz-vs-helium-10-india" className="rel-card" title="Insydz vs Helium 10 for Indian sellers">
                   <div className="rel-thumb">
-                    <img src="/thirteen.png" alt="Insydz vs Helium 10 comparison for Indian sellers" style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                    <img src="/thirteen.png" alt="Insydz vs Helium 10 comparison for Indian sellers" />
                   </div>
                   <div className="rel-body">
                     <div className="rel-tag">Compare</div>

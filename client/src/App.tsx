@@ -7,83 +7,116 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useState, useEffect, createContext, useContext } from "react";
 import ScrollToTop from "@/components/ScrollToTop";
 
-// Pages
-import Landing from "@/pages/landing";
-import PrivacyPolicy from "@/pages/privacy-policy";
-import TermsOfService from "@/pages/terms-service";
-import AmazonSellersPage from "@/pages/amazon-sellers";
-import FlipkartSellersPage from "@/pages/flipkart-sellers";
-import BrandManagersPage from "@/pages/brand-managers";
-import EcommerceAgenciesPage from "@/pages/ecommerce-agencies";
-import TrackCompetitorPricesPage from "@/pages/track-competitor-prices";
-import FindProfitableProductsPage from "@/pages/find-profitable-products";
-import AnalyzeCustomerReviewsPage from "@/pages/analyze-customer-reviews";
-import ImproveSEOPage from "@/pages/improve-seo";
-import AvoidStockoutsPage from "@/pages/avoid-stockouts";
-import CompetitorPriceTrackingFeaturePage from "@/pages/competitor-price-tracking-feature";
-import ReviewAnalyticsFeaturePage from "@/pages/review-analytics-feature";
-import PriceOptimizationFeaturePage from "@/pages/price-optimization-feature";
-import KeywordRankTrackingFeaturePage from "@/pages/keyword-rank-tracking-feature";
-import ProductResearchFeaturePage from "@/pages/product-research-feature";
-import AIRecommendationsFeaturePage from "@/pages/ai-recommendations-feature";
-import WhatsAppAlertsFeaturePage from "@/pages/whatsapp-alerts-feature";
-import UseCasesPage from "@/pages/use-cases";
-import SolutionsPage from "@/pages/solutions";
-import Pricing from "@/pages/pricing";
-import InsydzVsHeliumPage from "@/pages/insydzvshelium";
-import InsydzVsJungleScoutPage from "@/pages/insydzvsjunglescout";
-import InsydzVsViralLaunchPage from "@/pages/insydzvsvirallaunch";
-import ExpertBlog from "@/pages/expert-blog";
-import FreeAmazonProductAnalyzerPage from "@/pages/free-amazon-product-analyzer";
-import FreeReviewSentimentCheckerPage from "@/pages/free-review-sentiment-checker";
-import FreeKeywordRankCheckerPage from "@/pages/free-keyword-rank-checker";
-import FreeCompetitorPriceCheckerPage from "@/pages/free-competitor-price-checker";
-import FestiveTrendFeaturePage from "@/pages/festive-trend-feature";
-import OurVisionPage from "@/pages/our-vision";
-import ContactUsPage from "@/pages/contact-us";
-import CareersPage from "@/pages/careers";
-import AllFeaturesPage from "@/pages/features";
-import AmazonCompetitorPriceTrackingTool from "@/pages/amazon-competitor-price-tracking-tool";
-import AmazonSeoToolIndia from "@/pages/amazon-seo-tool-india";
-import HowToRankPage1AmazonIndia from "@/pages/how-to-rank-page-1-amazon-india";
-import BestCompetitorPriceTrackingToolsIndia from "@/pages/best-competitor-price-tracking-tools-india";
-import InsydzVsHelium10India from "@/pages/insydz-vs-helium-10-india";
-import AmazonReviewAnalysisToolIndia from "@/pages/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers";
-import ReviewAnalysisGuideIndia from "@/pages/review-analysis-guide-india";
-import BestAmazonKeywordResearchToolIndia from "@/pages/best-amazon-keyword-research-tool-india";
-import BestFlipkartAnalyticsTool from "@/pages/best-flipkart-analytics-tool";
-import FlipkartKeywordResearchTool from "@/pages/flipkart-keyword-research-tool";
-import AmazonVsFlipkartIndiaSellers from "@/pages/amazon-vs-flipkart-india-seller";
-import ManualVsAutomatedCompetitorTracking from "@/pages/manual-vs-automated-competitor-tracking-tool";
+// ==================
+// Pages — Shared / Top-level
+// ==================
+import Landing from "@/pages/shared/landing";
+import Pricing from "@/pages/shared/pricing";
+import NotFound from "@/pages/shared/not-found";
+import FeatureComingSoon from "@/pages/shared/FeatureComingSoon";
 
-import Login from "@/pages/login";
-import Signup from "@/pages/signup";
-import Dashboard from "@/pages/dashboard";
-import FeatureComingSoon from "@/pages/FeatureComingSoon";
-import Subscription from "@/pages/subscription";
-import About from "@/pages/about";
-import Settings from "@/pages/settings";
-import NotFound from "@/pages/not-found";
-import OrderHistory from "@/pages/OrderHistory";
-import VerifyEmail from "@/pages/VerifyEmail";
-import AdminDashboard from "@/pages/AdminDashboard";
+// ==================
+// Pages — Legal
+// ==================
+import PrivacyPolicy from "@/pages/legal/privacy-policy";
+import TermsOfService from "@/pages/legal/terms-service";
+
+import AmazonSellersPage from "@/pages/solutions/amazon-sellers";
+import FlipkartSellersPage from "@/pages/solutions/flipkart-sellers";
+import BrandManagersPage from "@/pages/solutions/brand-managers";
+import EcommerceAgenciesPage from "@/pages/solutions/ecommerce-agencies";
+import SolutionsPage from "@/pages/solutions/solutions";
+
+// ==================
+// Pages — Use Cases
+// ==================
+import UseCasesPage from "@/pages/use-cases/use-cases";
+import TrackCompetitorPricesPage from "@/pages/use-cases/track-competitor-prices";
+import FindProfitableProductsPage from "@/pages/use-cases/find-profitable-products";
+import AnalyzeCustomerReviewsPage from "@/pages/use-cases/analyze-customer-reviews";
+import ImproveSEOPage from "@/pages/use-cases/improve-seo";
+import AvoidStockoutsPage from "@/pages/use-cases/avoid-stockouts";
+
+// ==================
+// Pages — Features
+// ==================
+import AllFeaturesPage from "@/pages/features/features";
+import CompetitorPriceTrackingFeaturePage from "@/pages/features/competitor-price-tracking-feature";
+import ReviewAnalyticsFeaturePage from "@/pages/features/review-analytics-feature";
+import PriceOptimizationFeaturePage from "@/pages/features/price-optimization-feature";
+import KeywordRankTrackingFeaturePage from "@/pages/features/keyword-rank-tracking-feature";
+import ProductResearchFeaturePage from "@/pages/features/product-research-feature";
+import AIRecommendationsFeaturePage from "@/pages/features/ai-recommendations-feature";
+import WhatsAppAlertsFeaturePage from "@/pages/features/whatsapp-alerts-feature";
+import FestiveTrendFeaturePage from "@/pages/features/festive-trend-feature";
+
+// ==================
+// Pages — Compare
+// ==================
+import InsydzVsHeliumPage from "@/pages/compare/insydzvshelium";
+import InsydzVsJungleScoutPage from "@/pages/compare/insydzvsjunglescout";
+import InsydzVsViralLaunchPage from "@/pages/compare/insydzvsvirallaunch";
+
+// ==================
+// Pages — Free Tools
+// ==================
+import FreeAmazonProductAnalyzerPage from "@/pages/free-tools/free-amazon-product-analyzer";
+import FreeReviewSentimentCheckerPage from "@/pages/free-tools/free-review-sentiment-checker";
+import FreeKeywordRankCheckerPage from "@/pages/free-tools/free-keyword-rank-checker";
+import FreeCompetitorPriceCheckerPage from "@/pages/free-tools/free-competitor-price-checker";
+
+// ==================
+// Pages — About
+// ==================
+import About from "@/pages/about/about";
+import OurVisionPage from "@/pages/about/our-vision";
+import ContactUsPage from "@/pages/about/contact-us";
+import CareersPage from "@/pages/about/careers";
+
+// ==================
+// Pages — Resources / Expert Blog
+// ==================
+import ExpertBlog from "@/pages/resources/expert-blog/expert-blog";
+import AmazonCompetitorPriceTrackingTool from "@/pages/resources/expert-blog/amazon-competitor-price-tracking-tool";
+import AmazonSeoToolIndia from "@/pages/resources/expert-blog/amazon-seo-tool-india";
+import HowToRankPage1AmazonIndia from "@/pages/resources/expert-blog/how-to-rank-page-1-amazon-india";
+import BestCompetitorPriceTrackingToolsIndia from "@/pages/resources/expert-blog/best-competitor-price-tracking-tools-india";
+import InsydzVsHelium10India from "@/pages/resources/expert-blog/insydz-vs-helium-10-india";
+import AmazonReviewAnalysisToolIndia from "@/pages/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers";
+import ReviewAnalysisGuideIndia from "@/pages/resources/expert-blog/review-analysis-guide-india";
+import BestAmazonKeywordResearchToolIndia from "@/pages/resources/expert-blog/best-amazon-keyword-research-tool-india";
+import BestFlipkartAnalyticsTool from "@/pages/resources/expert-blog/best-flipkart-analytics-tool";
+import FlipkartKeywordResearchTool from "@/pages/resources/expert-blog/flipkart-keyword-research-tool";
+import AmazonVsFlipkartIndiaSellers from "@/pages/resources/expert-blog/amazon-vs-flipkart-india-seller";
+import ManualVsAutomatedCompetitorTracking from "@/pages/resources/expert-blog/manual-vs-automated-competitor-tracking-tool";
+
+
 
 // Analytics Pages
-import Sales from "@/pages/sales";
-import Overview from "@/pages/overview";
-import Categories from "@/pages/categories";
-import CategoryProducts from "@/pages/category-products";
-import ProductDetails from "@/pages/product-details";
-import SentimentProducts from "@/pages/sentiment-products";
-import ProductTracker from "@/pages/product-tracker";
-import ProductTrackerHistory from "@/pages/ProductTrackerHistory";
-import ShareOfVoice from "@/pages/ShareOfVoice";
-import KeywordTracker from "@/pages/keyword-tracker";
-import ProfitabilityOptimizer from "@/pages/ProfitabilityOptimizer";
-import WhiteSpaceFinder from "@/pages/WhiteSpaceFinder";
-import AiAdvisor from "@/pages/AiAdvisor";
-import SellerProducts from "@/pages/SellerProducts";
-import MyWatchlist from "@/pages/Mywatchlist";
+
+import Login from "./pages/auth/login";
+import Signup from "./pages/auth/signup";
+import Dashboard from "./pages/dashboard/dashboard";
+import MyWatchlist from "./pages/Mywatchlist";
+import VerifyEmail from "./pages/auth/VerifyEmail";
+import Sales from "./pages/dashboard/sales";
+import Overview from "./pages/dashboard/overview";
+import Categories from "./pages/dashboard/categories";
+import CategoryProducts from "./pages/dashboard/category-products";
+import ProductDetails from "./pages/dashboard/product-details";
+import ProductTracker from "./pages/dashboard/product-tracker";
+import ProductTrackerHistory from "./pages/dashboard/ProductTrackerHistory";
+import SentimentProductsPage from "./pages/dashboard/sentiment-products";
+import Subscription from "./pages/dashboard/subscription";
+import { Settings } from "lucide-react";
+import ShareOfVoice from "./pages/dashboard/ShareOfVoice";
+import KeywordTracker from "./pages/dashboard/keyword-tracker";
+import OrderHistory from "./pages/dashboard/OrderHistory";
+import AdminDashboard from "./pages/dashboard/AdminDashboard";
+import WhiteSpaceFinder from "./pages/dashboard/WhiteSpaceFinder";
+import ProfitabilityOptimizer from "./pages/dashboard/ProfitabilityOptimizer";
+import AiAdvisor from "./pages/dashboard/AiAdvisor";
+import SellerProducts from "./pages/dashboard/SellerProducts";
 // ==================
 // Environment Config
 // ==================
@@ -383,7 +416,7 @@ function Router() {
       />
       <ProtectedRoute
         path="/sentiment-products/:source/:sentiment"
-        component={SentimentProducts}
+        component={SentimentProductsPage}
       />
       <ProtectedRoute path="/subscription" component={Subscription} />
       <ProtectedRoute path="/settings" component={Settings} />

@@ -696,15 +696,22 @@ export default function AmazonCompetitorPriceTrackingTool() {
           grid-template-columns: repeat(2,1fr);
           gap: 14px; margin-top: 16px;
         }
+        @media(min-width:768px){ .related-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
         @media(max-width:600px){ .related-grid { grid-template-columns: 1fr; } }
         .related-card {
           background: #fff; border: 1px solid #e5e7eb;
-          border-radius: 14px; padding: 16px; cursor: pointer;
+          border-radius: 14px; overflow: hidden; cursor: pointer;
           transition: all .2s; touch-action: manipulation;
         }
         .dark .related-card { background: #111827; border-color: #1f2937; }
         .related-card:hover { border-color: #f97316; box-shadow: 0 4px 16px rgba(249,115,22,.12); transform: translateY(-2px); }
-        @media(hover:none){ .related-card:hover { transform: none; } }
+        .related-thumb { width:100%; aspect-ratio:2.4 / 1; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+        .related-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+        .related-body { padding: 12px; }
+        .related-tag { font-size: 10px; font-weight: 700; color: #f97316; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+        .related-title { font-size: 13px; font-weight: 700; color: #0d1b2a; line-height: 1.4; font-family: 'Sora', sans-serif; margin-bottom: 8px; }
+        .dark .related-title { color: #f9fafb; }
+        .related-meta { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #94a3b8; }
 
         .faq-item {
           border: 1px solid #e5e7eb; border-radius: 12px;
@@ -789,17 +796,16 @@ export default function AmazonCompetitorPriceTrackingTool() {
         .hero-inner { max-width: 820px; margin: 0 auto; padding-bottom: 32px; }
 
         .final-cta-block {
-          background: linear-gradient(135deg,#111827,#1f2937);
-          border-radius: 20px;
-          padding: clamp(28px,5vw,56px) clamp(20px,5vw,48px);
-          text-align: center; margin: 48px 0 0;
+          background: linear-gradient(135deg,#3b82f6 0%,#2563eb 100%);
+          padding: clamp(48px,8vw,40px) 20px;
+          text-align: center; margin: 60px 0 0;
         }
         .final-cta-benefits {
           display: flex; justify-content: center;
           flex-wrap: wrap; gap: 8px 20px; margin-bottom: 28px;
         }
         .final-cta-benefit {
-          color: #cbd5e1; font-size: clamp(12px,1.4vw,13.5px);
+          font-size: clamp(12px,1.4vw,13.5px);
           display: flex; align-items: center; gap: 6px;
           font-family: 'Sora', sans-serif;
         }
@@ -1891,44 +1897,6 @@ export default function AmazonCompetitorPriceTrackingTool() {
 
             <ArticleImg {...IMAGES.warehouse} />
 
-            {/* ── Related Guides ──────────────────────────────────────── */}
-            <h2 style={{ marginTop: 40 }}>Related Guides</h2>
-            <div className="related-grid">
-              {[
-                {
-                  title: "Flipkart Price Tracker: Monitor & Beat Competitor Prices in 2026",
-                  tag: "Flipkart Sellers",
-                  time: "10 min",
-                  route: "/resources/expert-blog/flipkart-price-tracker-monitor-beat-competitor-prices-2026",
-                },
-                {
-                  title: "How to Win the Amazon Buy Box Consistently as an Indian Seller",
-                  tag: "Buy Box Strategy",
-                  time: "11 min",
-                  route: "/use-cases/track-competitor-prices",
-                },
-                {
-                  title: "Amazon Keyword Research India: Step-by-Step Guide for 2026",
-                  tag: "Keyword Research",
-                  time: "12 min",
-                  route: "/features/keyword-rank-tracking-feature",
-                },
-                {
-                  title: "Review Analytics: Turn Customer Feedback into Competitive Edge",
-                  tag: "Review Intelligence",
-                  time: "9 min",
-                  route: "/features/review-analytics-feature",
-                },
-              ].map(r => (
-                <div className="related-card" key={r.title} onClick={() => setLocation(r.route)}>
-                  <div className="text-xs font-bold uppercase tracking-wider text-orange-500 mb-1.5">{r.tag}</div>
-                  <div className="font-bold text-gray-900 dark:text-white text-sm leading-snug mb-2">{r.title}</div>
-                  <div className="flex items-center gap-1 text-xs text-gray-400">
-                    <Clock className="w-3 h-3" /> {r.time}
-                  </div>
-                </div>
-              ))}
-            </div>
 
             {/* ── FAQ ─────────────────────────────────────────────────── */}
             <h2 id="faq">Frequently Asked Questions</h2>
@@ -2041,34 +2009,80 @@ export default function AmazonCompetitorPriceTrackingTool() {
               redirected to a competitor who does.</strong>
             </p>
 
-            {/* Final CTA */}
-            <div className="final-cta-block">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3">
-                Stop Guessing. Start Knowing.
-              </h2>
-              <p className="text-gray-400 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif" }}>
-                Every hour you wait is an hour a competitor is adjusting their price and taking your Buy Box. Insydz
-                gives Indian sellers on Amazon, Flipkart real-time price intelligence — with AI
-                recommendations delivered on WhatsApp.
-              </p>
-              <div className="final-cta-benefits">
-                {["No dashboards to learn", "No credit card needed", "WhatsApp alerts from day one", "Amazon.in + Flipkart"].map(t => (
-                  <div key={t} className="final-cta-benefit">
-                    <span style={{ color: "#f97316", fontWeight: 800 }}>✓</span> {t}
+            {/* ── Related Guides ──────────────────────────────────────── */}
+            <h2 style={{ marginTop: 60 }}>Related Guides</h2>
+            <div className="related-grid">
+              {[
+                {
+                  title: "Flipkart Price Tracker: Monitor & Beat Competitor Prices in 2026",
+                  tag: "Flipkart Sellers",
+                  time: "10 min",
+                  imgSrc: "/01_hero_banner.png",
+                  route: "/resources/expert-blog/flipkart-price-tracker-monitor-beat-competitor-prices-2026",
+                },
+                {
+                  title: "How to Win the Amazon Buy Box Consistently as an Indian Seller",
+                  tag: "Buy Box Strategy",
+                  time: "11 min",
+                  imgSrc: "/three.png",
+                  route: "/use-cases/track-competitor-prices",
+                },
+                {
+                  title: "Amazon Keyword Research India: Step-by-Step Guide for 2026",
+                  tag: "Keyword Research",
+                  time: "12 min",
+                  imgSrc: "/keyword-research-hero.png",
+                  route: "/features/keyword-rank-tracking-feature",
+                },
+                {
+                  title: "Review Analytics: Turn Customer Feedback into Competitive Edge",
+                  tag: "Review Intelligence",
+                  time: "9 min",
+                  imgSrc: "/eighteen.png",
+                  route: "/features/review-analytics-feature",
+                },
+              ].map(r => (
+                <div className="related-card" key={r.title} onClick={() => setLocation(r.route)}>
+                  <div className="related-thumb">
+                    <img src={r.imgSrc} alt={r.title} />
                   </div>
-                ))}
-              </div>
-              <button className="final-cta-btn" onClick={() => setLocation("/login")}>
-                <Zap className="w-5 h-5" />
-                Try Insydz Free insydz.com
-              </button>
-              <p className="text-gray-500 text-xs mt-4">
-                No setup required · Amazon India, Flipkart &amp; supported
-              </p>
+                  <div className="related-body">
+                    <div className="related-tag">{r.tag}</div>
+                    <div className="related-title">{r.title}</div>
+                    <div className="related-meta">
+                      <Clock className="w-3 h-3" /> {r.time}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
 
           </article>
         </main>
+      </div>
+
+      {/* Final CTA */}
+      <div className="final-cta-block">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+          Beat Your Competitors to Every Price Move.
+        </h2>
+        <p className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 24px" }}>
+          Insydz tracks Amazon.in competitor prices in real time and pushes Buy Box alerts to your WhatsApp — before you lose the sale.
+        </p>
+        <div className="final-cta-benefits">
+          {["Real-time price intelligence", "Buy Box protection alerts", "Amazon.in + Flipkart", "Free forever"].map(t => (
+            <div key={t} className="final-cta-benefit text-blue-100">
+              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+            </div>
+          ))}
+        </div>
+        <button className="final-cta-btn" onClick={() => setLocation("/login")}>
+          <Zap className="w-5 h-5 flex-shrink-0" />
+          Start Price Tracking Free →
+        </button>
+        <p className="text-blue-200 text-xs mt-4">
+          Live in under 30 min · WhatsApp alerts · No card needed
+        </p>
       </div>
 
             {/* Footer */}

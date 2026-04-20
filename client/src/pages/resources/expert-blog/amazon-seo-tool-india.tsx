@@ -56,7 +56,7 @@ const schemaBlogSEO = {
       "datePublished": "2025-01-01",
       "dateModified": "2025-01-01",
       "mainEntityOfPage": { "@id": "https://insydz.com/resources/expert-blog/amazon-seo-tool-india" },
-      "keywords": ["Amazon SEO tool India","Amazon keyword research tool India","Amazon SEO for sellers","Amazon ranking tool","Amazon keyword tracking India"],
+      "keywords": ["Amazon SEO tool India", "Amazon keyword research tool India", "Amazon SEO for sellers", "Amazon ranking tool", "Amazon keyword tracking India"],
       "articleSection": "Ecommerce SEO",
       "inLanguage": "en"
     },
@@ -269,7 +269,7 @@ export default function AmazonSeoToolIndia() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  const scrollToSection = (id: string) => { document.getElementById(id)?.scrollIntoView({ behavior:"smooth" }); };
+  const scrollToSection = (id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); };
   const go = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
     setTocOpen(false);
@@ -312,13 +312,12 @@ export default function AmazonSeoToolIndia() {
       <div className="relative">
         <button
           onMouseEnter={() => setActiveDropdown(label)}
-          className={`px-2 xl:px-3 py-2 text-xs xl:text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${
-            isActive
-              ? ac ? "text-orange-600 font-semibold" : "text-purple-600 font-semibold"
-              : ac
-                ? "text-orange-600 dark:text-orange-500 hover:text-orange-700 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                : "text-gray-700 dark:text-gray-300 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-          }`}
+          className={`px-2 xl:px-3 py-2 text-xs xl:text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${isActive
+            ? ac ? "text-orange-600 font-semibold" : "text-purple-600 font-semibold"
+            : ac
+              ? "text-orange-600 dark:text-orange-500 hover:text-orange-700 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+              : "text-gray-700 dark:text-gray-300 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+            }`}
         >
           {label}
           <ChevronDown className={`w-3 h-3 xl:w-3.5 xl:h-3.5 transition-transform ${isActive ? "rotate-180" : ""}`} />
@@ -332,9 +331,8 @@ export default function AmazonSeoToolIndia() {
               <button
                 key={i}
                 onClick={() => handleMenuItemClick(item)}
-                className={`w-full px-4 py-2.5 text-left transition-colors flex items-center gap-3 group ${
-                  ac ? "hover:bg-orange-50 dark:hover:bg-orange-900/20" : "hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                }`}
+                className={`w-full px-4 py-2.5 text-left transition-colors flex items-center gap-3 group ${ac ? "hover:bg-orange-50 dark:hover:bg-orange-900/20" : "hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                  }`}
               >
                 <span className={`flex-shrink-0 ${ac ? "text-orange-600 dark:text-orange-400" : "text-purple-600 dark:text-purple-400"}`}>{item.icon}</span>
                 <span className="text-xs xl:text-sm text-gray-700 dark:text-gray-300 flex-1 text-left">{item.name}</span>
@@ -352,7 +350,7 @@ export default function AmazonSeoToolIndia() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors" style={{ overflowX: "hidden" }}>
+    <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
       <Helmet>
         <link rel="canonical" href="https://insydz.com/resources/expert-blog/amazon-seo-tool-india" />
         <title>Amazon SEO Tool India: Keyword Research &amp; Rank Tracking | Insydz</title>
@@ -372,7 +370,7 @@ export default function AmazonSeoToolIndia() {
         @media(min-width:640px){ .read-progress { top:72px; } }
         @media(min-width:1024px){ .read-progress { top:80px; } }
 
-        .article-layout { max-width:1200px; margin:0 auto; padding:24px 16px 60px; display:grid; grid-template-columns:1fr; gap:0; }
+        .article-layout { max-width:1200px; margin:0 auto; padding:24px 16px 60px; display:grid; grid-template-columns:1fr; gap:0; align-items: start; }
         @media(min-width:768px){ .article-layout { padding:36px 20px 70px; grid-template-columns:200px 1fr; gap:28px; } }
         @media(min-width:1024px){ .article-layout { padding:48px 24px 80px; grid-template-columns:220px 1fr; gap:36px; } }
         @media(min-width:1280px){ .article-layout { grid-template-columns:240px 1fr; gap:48px; } }
@@ -509,8 +507,8 @@ export default function AmazonSeoToolIndia() {
         .related-card { background:#fff; border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; cursor:pointer; transition:all .2s; }
         .dark .related-card { background:#111827; border-color:#1f2937; }
         .related-card:hover { border-color:#f97316; box-shadow:0 4px 16px rgba(249,115,22,.12); transform:translateY(-2px); }
-        .related-thumb { width:100%; height:90px; display:flex; align-items:center; justify-content:center; }
-        @media(min-width:640px){ .related-thumb { height:110px; } }
+        .related-thumb { width:100%; aspect-ratio:2.4 / 1; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+        .related-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
         .related-body { padding:12px; }
         @media(min-width:640px){ .related-body { padding:14px; } }
         .related-tag { font-size:10px; font-weight:700; color:#f97316; text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px; }
@@ -633,8 +631,8 @@ export default function AmazonSeoToolIndia() {
         .seo-graphic { width:100%; border-radius:10px; overflow:hidden; margin:20px 0 6px; box-shadow:0 8px 32px rgba(0,0,0,.12); }
         @media(min-width:640px){ .seo-graphic { margin:28px 0 8px; } }
 
-        .final-cta-block { background:linear-gradient(135deg,#0d1b2a 0%,#4f46e5 100%); border-radius:16px; padding:28px 20px; text-align:center; margin:48px 0 0; }
-        @media(min-width:640px){ .final-cta-block { border-radius:20px; padding:clamp(32px,6vw,56px) clamp(24px,5vw,48px); margin:60px 0 0; } }
+        .final-cta-block { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%); padding:28px 20px; text-align:center; margin:48px 0 0; }
+        @media(min-width:640px){ .final-cta-block { padding:clamp(48px,8vw,40px) 20px; margin:60px 0 0; } }
       `}</style>
 
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
@@ -652,14 +650,14 @@ export default function AmazonSeoToolIndia() {
             </div>
 
             <div className="hidden lg:flex items-center space-x-0.5 xl:space-x-1" ref={dropdownRef}>
-              <DesktopDropdown label="Solutions"  menuKey="Solutions" />
-              <DesktopDropdown label="Use Cases"  menuKey="Use Cases" />
-              <DesktopDropdown label="Features"   menuKey="Features" />
+              <DesktopDropdown label="Solutions" menuKey="Solutions" />
+              <DesktopDropdown label="Use Cases" menuKey="Use Cases" />
+              <DesktopDropdown label="Features" menuKey="Features" />
               <button onClick={() => setLocation("/pricing")} onMouseEnter={() => setActiveDropdown(null)} className="px-2 xl:px-3 py-2 text-xs xl:text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all">Pricing</button>
               <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
-              <DesktopDropdown label="Compare"    menuKey="Compare" />
-              <DesktopDropdown label="Resources"  menuKey="Resources" accent="orange" />
-              <DesktopDropdown label="About"      menuKey="About" />
+              <DesktopDropdown label="Compare" menuKey="Compare" />
+              <DesktopDropdown label="Resources" menuKey="Resources" accent="orange" />
+              <DesktopDropdown label="About" menuKey="About" />
               <Button onClick={() => setLocation("/login")} onMouseEnter={() => setActiveDropdown(null)} className="ml-1 text-xs xl:text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-4 xl:px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">Login</Button>
               <button className="ml-1 p-1.5 xl:p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex-shrink-0" onClick={() => setIsDarkMode(!isDarkMode)} aria-label="Toggle dark mode">
                 {isDarkMode ? <Sun className="w-4 h-4 xl:w-5 xl:h-5 text-yellow-400" /> : <Moon className="w-4 h-4 xl:w-5 xl:h-5 text-gray-800" />}
@@ -683,7 +681,7 @@ export default function AmazonSeoToolIndia() {
               <button onClick={() => { setLocation("/resources/expert-blog"); setIsMenuOpen(false); }} className="flex items-center gap-2 w-full px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium text-sm">
                 <ArrowLeft className="w-4 h-4 flex-shrink-0" /> Back to Blog
               </button>
-              {([ ["Solutions","Solutions","purple"], ["Use Cases","Use Cases","purple"], ["Features","Features","purple"], ["Free Tools","Free Tools","purple"], ["Compare","Compare","purple"], ["Resources","Resources","orange"], ["About","About","purple"] ] as [string, keyof NavigationMenu, string][]).map(([label, key, accent]) => (
+              {([["Solutions", "Solutions", "purple"], ["Use Cases", "Use Cases", "purple"], ["Features", "Features", "purple"], ["Free Tools", "Free Tools", "purple"], ["Compare", "Compare", "purple"], ["Resources", "Resources", "orange"], ["About", "About", "purple"]] as [string, keyof NavigationMenu, string][]).map(([label, key, accent]) => (
                 <div key={label}>
                   <button onClick={() => toggleMobileMenu(label)} className={`flex items-center justify-between w-full px-3 sm:px-4 py-2 rounded-lg font-medium text-sm ${accent === "orange" ? "text-orange-600 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20" : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"}`}>
                     {label}<ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${mobileActiveMenu === label ? "rotate-180" : ""}`} />
@@ -757,10 +755,10 @@ export default function AmazonSeoToolIndia() {
 
           <div className="stat-strip">
             {([
-              ["70%",     "of Amazon.in buyers never scroll past page 1"],
-              ["72%",     "revenue growth achieved by optimising one keyword gap"],
+              ["70%", "of Amazon.in buyers never scroll past page 1"],
+              ["72%", "revenue growth achieved by optimising one keyword gap"],
               ["3–6 wks", "to see measurable rank improvement after optimisation"],
-              ["₹1999",    "Insydz plans from — with a forever-free tier"],
+              ["₹1999", "Insydz plans from — with a forever-free tier"],
             ] as [string, string][]).map(([num, lbl]) => (
               <div className="stat-item" key={num}>
                 <div className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">{num}</div>
@@ -919,11 +917,11 @@ export default function AmazonSeoToolIndia() {
                   <span className="live-badge">● Active</span>
                 </div>
                 {[
-                  { n: 1, color: "#EC4899", name: "Keyword Discovery",               desc: "Pulls Amazon.in queries from your category",    tag: "auto-tag", label: "Automated" },
-                  { n: 2, color: "#7C3AED", name: "Competitor Keyword Gap",           desc: "Reveals what rivals rank for you don't",      tag: "ai-tag",   label: "AI-Powered" },
-                  { n: 3, color: "#2563EB", name: "Listing Health Audit",             desc: "Scores title, bullets, backend 0–100",          tag: "ai-tag",   label: "AI-Powered" },
-                  { n: 4, color: "#0D9488", name: "Daily Rank Tracking",              desc: "WhatsApp alert if you drop positions",          tag: "auto-tag", label: "Automated" },
-                  { n: 5, color: "#16A34A", name: "AI Optimisation Recommendations",  desc: '"Add this phrase 22K monthly searches"',     tag: "green-tag", label: "AI Decision" },
+                  { n: 1, color: "#EC4899", name: "Keyword Discovery", desc: "Pulls Amazon.in queries from your category", tag: "auto-tag", label: "Automated" },
+                  { n: 2, color: "#7C3AED", name: "Competitor Keyword Gap", desc: "Reveals what rivals rank for you don't", tag: "ai-tag", label: "AI-Powered" },
+                  { n: 3, color: "#2563EB", name: "Listing Health Audit", desc: "Scores title, bullets, backend 0–100", tag: "ai-tag", label: "AI-Powered" },
+                  { n: 4, color: "#0D9488", name: "Daily Rank Tracking", desc: "WhatsApp alert if you drop positions", tag: "auto-tag", label: "Automated" },
+                  { n: 5, color: "#16A34A", name: "AI Optimisation Recommendations", desc: '"Add this phrase 22K monthly searches"', tag: "green-tag", label: "AI Decision" },
                 ].map(s => (
                   <div className="pipe-step" key={s.n}>
                     <div className="pipe-step-n" style={{ background: s.color }}>{s.n}</div>
@@ -970,10 +968,10 @@ export default function AmazonSeoToolIndia() {
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", borderBottom: "1px solid rgba(255,255,255,.06)" }}>
                     {[
-                      { lbl:"Keywords", val:"248",  color:"#f9a8d4", delta:"↑ 34 this week",  dc:"#4ade80" },
-                      { lbl:"Avg Rank", val:"#8.4", color:"#c4b5fd", delta:"↑ from #12",       dc:"#4ade80" },
-                      { lbl:"Health",   val:"84",   color:"#4ade80", delta:"↑ from 61",        dc:"#4ade80" },
-                      { lbl:"KW Gaps",  val:"17",   color:"#fb923c", delta:"⚠ Fix now",        dc:"#f87171" },
+                      { lbl: "Keywords", val: "248", color: "#f9a8d4", delta: "↑ 34 this week", dc: "#4ade80" },
+                      { lbl: "Avg Rank", val: "#8.4", color: "#c4b5fd", delta: "↑ from #12", dc: "#4ade80" },
+                      { lbl: "Health", val: "84", color: "#4ade80", delta: "↑ from 61", dc: "#4ade80" },
+                      { lbl: "KW Gaps", val: "17", color: "#fb923c", delta: "⚠ Fix now", dc: "#f87171" },
                     ].map(m => (
                       <div key={m.lbl} style={{ padding: "clamp(7px,1.5vw,11px) clamp(4px,1vw,8px)", borderRight: "1px solid rgba(255,255,255,.05)", textAlign: "center" }}>
                         <div style={{ fontSize: "clamp(7px,1vw,8px)", fontWeight: 700, color: "rgba(255,255,255,.3)", textTransform: "uppercase", letterSpacing: .4, marginBottom: 3 }}>{m.lbl}</div>
@@ -984,10 +982,10 @@ export default function AmazonSeoToolIndia() {
                   </div>
                   <div style={{ padding: "8px 10px" }}>
                     {[
-                      { term: "mixer grinder 750 watt induction", vol: "31.2K/mo", pos: "#4",  cls: "kp-g" },
-                      { term: "juicer mixer grinder 3 jar",        vol: "28.7K/mo", pos: "#9",  cls: "kp-a" },
-                      { term: "best mixer under 3000",             vol: "19.4K/mo", pos: "#6",  cls: "kp-g" },
-                      { term: "mixer grinder for home use",        vol: "14.1K/mo", pos: "#19", cls: "kp-r" },
+                      { term: "mixer grinder 750 watt induction", vol: "31.2K/mo", pos: "#4", cls: "kp-g" },
+                      { term: "juicer mixer grinder 3 jar", vol: "28.7K/mo", pos: "#9", cls: "kp-a" },
+                      { term: "best mixer under 3000", vol: "19.4K/mo", pos: "#6", cls: "kp-g" },
+                      { term: "mixer grinder for home use", vol: "14.1K/mo", pos: "#19", cls: "kp-r" },
                     ].map(k => (
                       <div className="kw-row-dark" key={k.term}>
                         <span className="kw-term">{k.term}</span>
@@ -1120,7 +1118,7 @@ export default function AmazonSeoToolIndia() {
                 <strong>
                   Ignoring {' '}
                   <InLink to="/resources/expert-blog/amazon-seo-tool-india">
-                     Hinglish and Regional Search Patterns
+                    Hinglish and Regional Search Patterns
                   </InLink>
                 </strong>
                 <p>Buyers in smaller cities search differently from metro buyers. 'Mixer grinder' vs 'juicer mixer grinder', 'chapati maker' vs 'roti maker', 'pressure cooker induction' vs 'induction pressure cooker'. Missing regional search variants costs sellers in tier-2 and tier-3 cities the fastest-growing e-commerce segments in India right now.</p>
@@ -1195,9 +1193,9 @@ export default function AmazonSeoToolIndia() {
             <h3>Key Metrics to Track</h3>
             <div className="metrics-grid">
               {([
-                { num: "Top 10",        lbl: "Organic rank for target keywords (track daily)", link: "/features/keyword-rank-tracking-feature" },
-                { num: "CTR",           lbl: "Click-through rate low CTR signals poor title or image", link: null },
-                { num: "CVR",           lbl: "Conversion rate low CVR means listing isn't convincing buyers", link: null },
+                { num: "Top 10", lbl: "Organic rank for target keywords (track daily)", link: "/features/keyword-rank-tracking-feature" },
+                { num: "CTR", lbl: "Click-through rate low CTR signals poor title or image", link: null },
+                { num: "CVR", lbl: "Conversion rate low CVR means listing isn't convincing buyers", link: null },
                 { num: "Organic Split", lbl: "Keyword-level organic vs. paid sales breakdown", link: null },
               ] as { num: string; lbl: string; link: string | null }[]).map((m, i) => (
                 <div className="metric-card" key={i}>
@@ -1327,25 +1325,25 @@ export default function AmazonSeoToolIndia() {
                 {
                   cardTitle: "Amazon Competitor Price Tracking Tool India: Complete Guide (2026)",
                   tag: "Price Tracking",
-                  bg: "linear-gradient(135deg,#F97316,#EA580C)",
+                  imgSrc: "/one.png",
                   route: "/resources/expert-blog/amazon-competitor-price-tracking-tool",
                 },
                 {
                   cardTitle: "Best Competitor Price Tracking Tools for Indian Sellers: 2026 Guide",
                   tag: "Tool Comparison",
-                  bg: "linear-gradient(135deg,#0D9488,#0891B2)",
+                  imgSrc: "/thirteen.png",
                   route: "/compare/insydzvshelium",
                 },
                 {
                   cardTitle: "How to Win the Amazon Buy Box in India: Seller's Pricing Guide",
                   tag: "Buy Box Strategy",
-                  bg: "linear-gradient(135deg,#4F46E5,#7C3AED)",
+                  imgSrc: "/three.png",
                   route: "/use-cases/track-competitor-prices",
                 },
-              ] as { cardTitle: string; tag: string; bg: string; route: string }[]).map(r => (
+              ] as { cardTitle: string; tag: string; imgSrc: string; route: string }[]).map(r => (
                 <div key={r.cardTitle} className="related-card" onClick={() => setLocation(r.route)}>
-                  <div className="related-thumb" style={{ background: r.bg }}>
-                    <span style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(11px,2vw,13px)", fontWeight:900, color:"white", textAlign:"center", padding:"10px 14px", lineHeight:1.3 }}>{r.tag}</span>
+                  <div className="related-thumb">
+                    <img src={r.imgSrc} alt={r.cardTitle} />
                   </div>
                   <div className="related-body">
                     <div className="related-tag">{r.tag}</div>
@@ -1355,35 +1353,35 @@ export default function AmazonSeoToolIndia() {
               ))}
             </div>
 
-            {/* Final CTA */}
-            <div className="final-cta-block">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-2 sm:mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
-                Your Competitors Are Ranking. You Should Be Too.
-              </h2>
-              <p className="text-gray-400 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 20px" }}>
-                Every day your listing isn't keyword-optimised is a day your competitors are capturing buyers who should have found you first.
-              </p>
-              <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px 20px", marginBottom: 20 }}>
-                {["AI-powered keyword intelligence", "Daily rank tracking", "WhatsApp alerts", "Forever free plan"].map(t => (
-                  <div key={t} style={{ color:"#cbd5e1", fontSize:"clamp(11px,2vw,13.5px)", display:"flex", alignItems:"center", gap:6, fontFamily:"'Sora',sans-serif" }}>
-                    <span style={{ color:"#f97316", fontWeight:800 }}>✓</span> {t}
-                  </div>
-                ))}
-              </div>
-              <button
-                onClick={() => setLocation("/login")}
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm sm:text-base px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-xl transition-all transform hover:scale-105"
-              >
-                <Zap className="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
-                Start Free at insydz.com →
-              </button>
-              <p className="text-gray-500 text-xs mt-3 sm:mt-4">No credit card · No jargon · See your keyword gaps in minutes</p>
-            </div>
-
           </article>
         </main>
       </div>
-            {/* Footer */}
+
+      {/* Final CTA */}
+      <div className="final-cta-block">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-2 sm:mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+          The Amazon SEO Tool Built for India.
+        </h2>
+        <p className="text-blue-100 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 20px" }}>
+          Optimise your Amazon.in listings with AI-powered keyword data, real-time rank tracking, and WhatsApp alerts — all in one dashboard.
+        </p>
+        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px 20px", marginBottom: 20 }}>
+          {["AI listing optimisation", "Real-time rank tracking", "WhatsApp SEO alerts", "Free to start"].map(t => (
+            <div key={t} className="text-blue-100" style={{ fontSize: "clamp(11px,2vw,13.5px)", display: "flex", alignItems: "center", gap: 6, fontFamily: "'Sora',sans-serif" }}>
+              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+            </div>
+          ))}
+        </div>
+        <button
+          onClick={() => setLocation("/login")}
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm sm:text-base px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-xl transition-all transform hover:scale-105"
+        >
+          <Zap className="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
+          Optimise My Listings Free →
+        </button>
+        <p className="text-blue-200 text-xs mt-3 sm:mt-4">Amazon.in + Flipkart · Hinglish keywords · No card needed</p>
+      </div>
+      {/* Footer */}
       <footer className="bg-[#0a0f1e] text-white py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
