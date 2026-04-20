@@ -14576,9 +14576,9 @@ def check_keyword_tracker_limit(user_id: int, db: Session) -> dict:
         db.commit()
         used = 0
 
-    limit     = KEYWORD_TRACKER_LIMITS.get(tier.lower(), KEYWORD_TRACKER_LIMITS["free"])
-    remaining = (limit - used) if limit != -1 else -1
-    return {"count": used, "limit": limit, "remaining": remaining, "subscription_tier": tier}
+    # limit     = KEYWORD_TRACKER_LIMITS.get(tier.lower(), KEYWORD_TRACKER_LIMITS["free"])
+    # remaining = (limit - used) if limit != -1 else -1
+    # return {"count": used, "limit": limit, "remaining": remaining, "subscription_tier": tier}
 
 
 def atomic_increment_usage(user_id: int, increment: int, db: Session) -> bool:
@@ -14594,10 +14594,10 @@ def atomic_increment_usage(user_id: int, increment: int, db: Session) -> bool:
     if tracked_month != current_month:
         used = 0
 
-    limit = KEYWORD_TRACKER_LIMITS.get(tier.lower(), KEYWORD_TRACKER_LIMITS["free"])
-    if limit != -1 and (used + increment) > limit:
-        db.rollback()
-        return False
+    # limit = KEYWORD_TRACKER_LIMITS.get(tier.lower(), KEYWORD_TRACKER_LIMITS["free"])
+    # if limit != -1 and (used + increment) > limit:
+    #     db.rollback()
+    #     return False
 
     db.execute(
         text("UPDATE users SET keyword_tracker_used=COALESCE(keyword_tracker_used,0)+:inc, keyword_tracker_month=:m WHERE id=:uid"),
@@ -15633,8 +15633,8 @@ def fetch_and_store_seller_products(
                 saved_products.append(existing)
             else:
                 new_product = TrackedProduct(
-                    id=user_id,
-                    page=page,
+                    # id=user_id,
+                    # page=page,
                     seller_id=seller_id,
                     asin=item["asin"],
                     product_title=item["product_title"],

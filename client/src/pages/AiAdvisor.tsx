@@ -56,7 +56,7 @@ export default function AiAdvisor() {
 
             <div>
               <h2 className="text-xl sm:text-2xl font-bold text-sky-900 flex items-center gap-2">
-                AI Advisor <Sparkles className="w-5 h-5 text-amber-500" />
+                Insydz Advisor <Sparkles className="w-5 h-5 text-amber-500" />
               </h2>
               <p className="text-slate-600 text-xs sm:text-sm">
                 Get intelligent insights and market analysis for your products

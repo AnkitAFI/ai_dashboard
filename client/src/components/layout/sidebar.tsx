@@ -67,7 +67,7 @@ const EXPLORER_SECTIONS: NavSection[] = [
     items: [
       { href: "/categories", label: "Browse Categories", icon: PieChart },
       { href: "/sales", label: "Top Selling Products", icon: TrendingUp },
-      { href: "/explorer/opportunity-finder", label: "Opportunity Finder", icon: Compass, badge: "NEW" },
+      // { href: "/explorer/opportunity-finder", label: "Opportunity Finder", icon: Compass, badge: "NEW" },
     ],
   },
   {
@@ -136,7 +136,7 @@ const SELLER_SECTIONS: NavSection[] = [
     items: [
       { href: "/seller/price-optimizer", label: "Price Optimizer", icon: TrendingUp },
       { href: "/keyword-tracker", label: "Keyword Tracker", icon: History },
-      { href: "/seller/ai-advisor", label: "AI Advisor", icon: Sparkles, badge: "NEW" },
+      { href: "/seller/ai-advisor", label: "AI Advisor", icon: Sparkles, badge: "AI" },
     ],
   },
   {
@@ -449,3 +449,6 @@ export default function Sidebar() {
     </>
   );
 }
+
+
+

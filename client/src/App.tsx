@@ -83,6 +83,7 @@ import ProfitabilityOptimizer from "@/pages/ProfitabilityOptimizer";
 import WhiteSpaceFinder from "@/pages/WhiteSpaceFinder";
 import AiAdvisor from "@/pages/AiAdvisor";
 import SellerProducts from "@/pages/SellerProducts";
+import MyWatchlist from "@/pages/Mywatchlist";
 // ==================
 // Environment Config
 // ==================
@@ -398,10 +399,10 @@ function Router() {
       <ProtectedRoute path="/explorer/white-space-finder" component={WhiteSpaceFinder} />
       <ProtectedRoute path="/explorer/review-analytics" component={FeatureComingSoon} />
       <ProtectedRoute path="/explorer/profitability-optimizer" component={ProfitabilityOptimizer} />
-      <ProtectedRoute path="/explorer/ai-advisor" component={FeatureComingSoon} />
+      <ProtectedRoute path="/explorer/ai-advisor" component={AiAdvisor} />
       <ProtectedRoute path="/explorer/whatsapp-alerts" component={FeatureComingSoon} />
       <ProtectedRoute path="/explorer/festive-trends" component={FeatureComingSoon} />
-      <ProtectedRoute path="/explorer/my-watchlist" component={FeatureComingSoon} />
+      <ProtectedRoute path="/explorer/my-watchlist" component={MyWatchlist} />
 
       {/* Seller Placeholder Routes */}
       <ProtectedRoute path="/seller/my-products" component={SellerProducts} />

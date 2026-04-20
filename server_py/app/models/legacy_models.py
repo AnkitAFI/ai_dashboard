@@ -217,7 +217,8 @@ class User(Base):
     onboarding_details = Column(String(500), nullable=True)
     seller_id = Column(String(100), nullable=True)
     seller_sync_status = Column(String(20), default='IDLE') # IDLE, SYNCING, COMPLETED, FAILED
-    
+
+    watchlist_items = relationship("WhiteSpaceWatchlist", back_populates="user", cascade="all, delete-orphan")   
     # Relationships
     def __repr__(self):
         return f"<User {self.email}>"  
@@ -483,3 +484,69 @@ class TimeSeriesForcasting(Base):
     rating = Column(Numeric, nullable=True)
     rating_count = Column(Integer, nullable=True)
     review_count = Column(Integer, nullable=True)
+
+
+
+
+# ── White Space Finder ────────────────────────────────────────────────────────
+ 
+class WhiteSpaceWatchlist(Base):
+    """
+    Stores each user's saved niche watchlist items.
+    One row per (user_id, niche) pair — enforced by unique constraint.
+    Available to all subscription tiers (no Premium gate).
+    """
+    __tablename__ = "white_space_watchlist"
+ 
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+ 
+    # Niche identity
+    niche = Column(String(500), nullable=False)
+    query = Column(String(500), nullable=False)          # original search query that found this niche
+ 
+    # Snapshot of metrics at time of saving
+    score = Column(Integer, nullable=False, default=0)
+    category = Column(String(255), nullable=True)
+    platform = Column(String(20), nullable=True, default="both")   # "amazon" | "flipkart" | "both"
+    avg_price = Column(Numeric(10, 2), nullable=True, default=0)
+    avg_rating = Column(Numeric(3, 2), nullable=True, default=0)
+    competitor_count = Column(Integer, nullable=True, default=0)
+    est_revenue_max = Column(Numeric(15, 2), nullable=True, default=0)
+    top_keyword = Column(String(255), nullable=True)
+    gap_summary = Column(Text, nullable=True)
+ 
+    added_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+ 
+    # Relationship back to user
+    user = relationship("User", back_populates="watchlist_items")
+ 
+    __table_args__ = (
+        UniqueConstraint("user_id", "niche", name="uq_whitespace_watchlist_user_niche"),
+        Index("idx_whitespace_watchlist_user_added", "user_id", "added_at"),
+    )
+ 
+    def __repr__(self):
+        return f"<WhiteSpaceWatchlist user_id={self.user_id} niche='{self.niche}'>"
+ 
+ 
+class WhiteSpaceScan(Base):
+    """
+    Audit log of every scan a user runs.
+    Used to enforce monthly scan limits per tier.
+    """
+    __tablename__ = "white_space_scans"
+ 
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    query = Column(String(500), nullable=False)
+    tier = Column(String(20), nullable=False, default="free")
+    results_count = Column(Integer, nullable=True, default=0)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False, index=True)
+ 
+    __table_args__ = (
+        Index("idx_whitespace_scans_user_created", "user_id", "created_at"),
+    )
+ 
+    def __repr__(self):
+        return f"<WhiteSpaceScan user_id={self.user_id} query='{self.query}'>"

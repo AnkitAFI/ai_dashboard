@@ -19,7 +19,7 @@
 // } from "lucide-react";
 // import ReactMarkdown from "react-markdown";
 
-// const API = "http://localhost:8000/api";
+// const API = "/api/api";
 
 // const CHART_STYLE = {
 //   backgroundColor: "rgba(255,255,255,0.97)",
@@ -1250,7 +1250,7 @@
 // } from "lucide-react";
 // import ReactMarkdown from "react-markdown";
 
-// const API = "http://localhost:8000/api";
+// const API = "/api/api";
 
 // const CHART_STYLE = {
 //   backgroundColor: "rgba(255,255,255,0.97)",
@@ -2532,7 +2532,7 @@
 // } from "lucide-react";
 // import ReactMarkdown from "react-markdown";
 
-// const API = "http://localhost:8000/api";
+// const API = "/api/api";
 
 // const CHART_STYLE = {
 //   backgroundColor: "rgba(255,255,255,0.97)",
