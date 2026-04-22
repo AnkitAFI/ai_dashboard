@@ -248,19 +248,8 @@ export default function InsydzVsHelium10India() {
   const toggleMobileMenu = (name: string) => setMobileActiveMenu(p => p === name ? null : name);
 
   // ── Inline link helper ─────────────────────────────────────────────────────
-  const InLink = ({ to, children, color = "#db2777" }: { to: string; children: React.ReactNode; color?: string }) => {
-    const hoverColor = color === "#db2777" ? "#9d174d" : color === "#7c3aed" ? "#5b21b6" : color === "#f97316" ? "#c2410c" : color === "#16a34a" ? "#15803d" : "#9d174d";
-    return (
-      <a
-        href={to}
-        onClick={(e) => { e.preventDefault(); setLocation(to); }}
-        style={{ color, textDecoration: "underline", textDecorationColor: `${color}55`, textUnderlineOffset: "3px", fontWeight: 600, cursor: "pointer", transition: "color 0.15s" }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = hoverColor)}
-        onMouseLeave={(e) => (e.currentTarget.style.color = color)}
-      >
-        {children}
-      </a>
-    );
+  const InLink = ({ children }: { to: string; children: React.ReactNode; color?: string }) => {
+    return <span style={{ fontWeight: 600 }}>{children}</span>;
   };
   const scrollToSection = (sectionId: string) => {
     setLocation('/');
@@ -447,7 +436,7 @@ export default function InsydzVsHelium10India() {
         .takeaway-text{font-family:'Lora',serif;font-size:14.5px;color:#CBD5E1;line-height:1.6}
         .choose-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:24px 0}
         @media(max-width:640px){.choose-grid{grid-template-columns:1fr}}
-        .choose-card{border-radius:12px;padding:22px 24px}
+        .choose-card{border-radius:12px;padding:2px 24px 20px}
         .choose-card h3{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
         .fc-block{background:linear-gradient(135deg,#DB2777 0%,#7C3AED 100%);padding:80px 24px;text-align:center}
         .fc-inner{max-width:640px;margin:0 auto}
@@ -553,7 +542,7 @@ export default function InsydzVsHelium10India() {
            comparison for Indian sellers: Which is the Right Amazon Intelligence Tool?
         </h1>
         <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" as const, gap: "5px 18px", marginBottom: 28 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#64748B" }}><Users className="w-3.5 h-3.5" /><strong style={{ color: "#0D1B2A" }}>INSYDZ Research Team</strong></div>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#64748B" }}><Users className="w-3.5 h-3.5" /><strong className="text-[#0D1B2A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => setLocation("/author/vikrant-singh")}>Vikrant Singh</strong></div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#64748B" }}><Clock className="w-3.5 h-3.5" />January 2026</div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#64748B" }}><Clock className="w-3.5 h-3.5" /><strong>14 min read</strong></div>
           <span style={{ background: "#FFEDD5", color: "#F97316", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4 }}>Updated for 2026</span>
@@ -672,14 +661,7 @@ export default function InsydzVsHelium10India() {
               like Insydz.
             </p>
             <p>
-              The stakes are real:{" "}
-              {/* #18 — "data-driven keyword tools consistently outrank those who don't, within 6–12 weeks" → /resources/expert-blog/amazon-seo-tool-india */}
-              <InLink to="/resources/expert-blog/amazon-seo-tool-india" color="#db2777">data-driven keyword tools</InLink>{" "}consistently outrank those who don't, within 6–12 weeks
-              {/* #19 — "sellers with competitor price tracking respond to market changes in under an hour" → /resources/expert-blog/amazon-competitor-price-tracking-tool */}
-              . Sellers with {" "}
-              <InLink to="/resources/expert-blog/amazon-competitor-price-tracking-tool" color="#db2777">competitor price tracking</InLink>{" "}
-
-               respond to market changes in under an hour instead of a day. The tool you pick determines whether that advantage is calibrated for India or for a market 12,000 kilometres away.
+              The stakes are real: data-driven keyword tools consistently outrank those who don't, within 6–12 weeks. Sellers with an <a href="https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool" style={{ color: "#db2777", textDecoration: "underline", textDecorationColor: "#db277755", textUnderlineOffset: "3px", fontWeight: 600 }}>amazon competitor price tracking tool</a> respond to market changes in under an hour instead of a day. The tool you pick determines whether that advantage is calibrated for India or for a market 12,000 kilometres away.
             </p>
 
             {/* S2 */}
@@ -738,10 +720,7 @@ export default function InsydzVsHelium10India() {
             <div className="box box-indigo" style={{ padding: "20px 22px" }}>
               <div className="box-label">AI Overview Summary</div>
               <p>
-                {/* #1 alt — "Insydz vs Helium 10 comparison for Indian sellers" → self */}
-                The <InLink to="/resources/expert-blog/insydz-vs-helium-10-india" color="#4f46e5">Insydz vs Helium 10 comparison for Indian sellers</InLink> comes down to{" "}
-                {/* #3 alt — "market fit, not feature count" → /compare/insydzvshelium */}
-                <InLink to="/compare/insydzvshelium" color="#4f46e5">market fit, not feature count</InLink>. Helium 10 offers a mature, comprehensive Amazon suite but its data, pricing, and platform coverage are optimised for Amazon.com, not Amazon.in. Insydz is built specifically for India: Amazon.in keyword data including Hinglish patterns, Flipkart coverage, WhatsApp-first alerts, and pricing at 60–85% less than Helium 10.
+                The <a href="https://insydz.com/pricing" style={{ color: "#4F46E5", textDecoration: "underline", textDecorationColor: "#4F46E555", textUnderlineOffset: "3px", fontWeight: 600 }}>insydz vs helium 10 india</a> comparison comes down to market fit, not feature count. Helium 10 offers a mature, comprehensive Amazon suite but its data, pricing, and platform coverage are optimised for Amazon.com, not Amazon.in. Insydz is built specifically for India: Amazon.in keyword data including Hinglish patterns, Flipkart coverage, WhatsApp-first alerts, and pricing at 60–85% less than Helium 10.
               </p>
             </div>
 
@@ -792,19 +771,16 @@ export default function InsydzVsHelium10India() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14, margin: "20px 0 28px" }}>
               {[
                 {
-                  icon: "🔍",
-                  /* #35 — "Cerebro (Reverse ASIN)" → /compare/insydzvshelium */
                   t: "Cerebro (Reverse ASIN)",
                   tLink: "/compare/insydzvshelium",
                   d: "One of the most powerful reverse ASIN tools available. Enter a competitor's ASIN and it maps every keyword they rank for organically. For Amazon.com sellers, extraordinarily accurate.",
                 },
-                { icon: "🧲", t: "Magnet (Keyword Discovery)",    tLink: null, d: "Surfaces keyword ideas from a massive US database with strong search volume estimates. Provides a starting framework for Amazon.in even if it misses Hinglish variants." },
-                { icon: "✍️", t: "Frankenstein + Scribbles",      tLink: null, d: "Listing builder tools that help structure product listings with keyword-optimised content a genuine productivity tool for sellers managing large catalogues." },
-                { icon: "📦", t: "Black Box (Product Research)",  tLink: null, d: "Category-level demand data and competition analysis for sourcing decisions. For India-specific sourcing, data accuracy drops but the workflow is solid." },
-                { icon: "🔭", t: "Xray (Chrome Extension)",       tLink: null, d: "Browser extension that overlays competitor data on Amazon search results. Genuinely useful as a quick research layer for any marketplace." },
+                { t: "Magnet (Keyword Discovery)",    tLink: null, d: "Surfaces keyword ideas from a massive US database with strong search volume estimates. Provides a starting framework for Amazon.in even if it misses Hinglish variants." },
+                { t: "Frankenstein + Scribbles",      tLink: null, d: "Listing builder tools that help structure product listings with keyword-optimised content a genuine productivity tool for sellers managing large catalogues." },
+                { t: "Black Box (Product Research)",  tLink: null, d: "Category-level demand data and competition analysis for sourcing decisions. For India-specific sourcing, data accuracy drops but the workflow is solid." },
+                { t: "Xray (Chrome Extension)",       tLink: null, d: "Browser extension that overlays competitor data on Amazon search results. Genuinely useful as a quick research layer for any marketplace." },
               ].map(f => (
                 <div key={f.t} style={{ background: "#F8FAFC", border: "1px solid #E2E8F0", borderRadius: 10, padding: "16px 18px", display: "flex", gap: 12 }}>
-                  <span style={{ fontSize: 22, flexShrink: 0, marginTop: 2 }}>{f.icon}</span>
                   <div>
                     <strong style={{ display: "block", fontSize: 13.5, color: "#0D1B2A", marginBottom: 4, fontFamily: "'Sora',sans-serif" }}>
                       {f.tLink ? <InLink to={f.tLink} color="#0d1b2a">{f.t}</InLink> : f.t}
@@ -816,7 +792,6 @@ export default function InsydzVsHelium10India() {
             </div>
 
             <div className="verdict-banner">
-              <div style={{ fontSize: 24, flexShrink: 0 }}>📌</div>
               <p style={{ margin: 0, fontFamily: "'Lora',serif", fontSize: 15, color: "#92400E", lineHeight: 1.7 }} className="dark:text-amber-300">
                 <strong>The bottom line on Helium 10:</strong> it's a professional-grade tool that justifies its price for US market Amazon sellers. For Indian sellers, the feature set is strong — but the underlying data isn't calibrated for your market.
               </p>
@@ -883,14 +858,11 @@ export default function InsydzVsHelium10India() {
             <div style={{ display: "flex", flexDirection: "column" as const, gap: 12, margin: "20px 0 28px" }}>
               {[
                 {
-                  icon: "🇮🇳",
-                  /* #14 — "platform that covers Amazon.in natively" → /solutions/amazon-sellers */
                   title: "Amazon.in-Native Keyword Data",
                   titleLink: "/solutions/amazon-sellers",
                   body: "Insydz's keyword database is built on actual Amazon.in search behaviour not Amazon.com data retrofitted for India. Hinglish keywords, regional buying patterns, and India-specific search intent are surfaced as first-class data, not afterthoughts.",
                 },
                 {
-                  icon: "🛍️",
                   title: "Flipkart Keyword Intelligence",
                   titleLink: null,
                   /* #22 — "verify platform coverage: does the tool actually track your Flipkart listings" → /solutions/flipkart-sellers */
@@ -898,20 +870,16 @@ export default function InsydzVsHelium10India() {
                   bodyLinkText: "verify platform coverage: does the tool actually track your Flipkart listings",
                   bodyLinkRoute: "/solutions/flipkart-sellers",
                 },
-                { icon: "📲", title: "WhatsApp-First Alerts",                 titleLink: null, body: "Critical price changes, rank drops, and competitor stock-out opportunities are delivered via WhatsApp within 60 minutes. Not email. Not a dashboard you check once a day. A message that reaches you where you already are." },
-                { icon: "🤖", title: "AI Recommendations in Plain Language",  titleLink: null, body: "Rather than showing a dashboard of competitor data and leaving interpretation to the seller, Insydz provides specific, actionable recommendations: 'Competitor A dropped to ₹849 on Flipkart. Recommend adjusting to ₹869 — recovers Buy Box while protecting ₹42 more margin per unit.'" },
-                { icon: "🎉", title: "Festive Intelligence Built for India",  titleLink: null, body: "Diwali, Big Billion Days, the Great Indian Festival, Republic Day Sale these seasonal peaks drive 3–5x normal demand. Insydz tracks festive demand trends so sellers can plan inventory, pricing, and keyword strategy 4–6 weeks ahead of each event." },
+                { title: "WhatsApp-First Alerts",                 titleLink: null, body: "Critical price changes, rank drops, and competitor stock-out opportunities are delivered via WhatsApp within 60 minutes. Not email. Not a dashboard you check once a day. A message that reaches you where you already are." },
+                { title: "AI Recommendations in Plain Language",  titleLink: null, body: "Rather than showing a dashboard of competitor data and leaving interpretation to the seller, Insydz provides specific, actionable recommendations: 'Competitor A dropped to ₹849 on Flipkart. Recommend adjusting to ₹869 — recovers Buy Box while protecting ₹42 more margin per unit.'" },
+                { title: "Festive Intelligence Built for India",  titleLink: null, body: "Diwali, Big Billion Days, the Great Indian Festival, Republic Day Sale these seasonal peaks drive 3–5x normal demand. Insydz tracks festive demand trends so sellers can plan inventory, pricing, and keyword strategy 4–6 weeks ahead of each event." },
                 {
-                  icon: "💰",
-                  /* #23 — "Pricing at ₹1,999–2,999/month — with a forever-free plan" → /pricing */
                   title: "Pricing at ₹1,999–2,999/month — with a forever-free plan",
                   titleLink: "/pricing",
-                  /* #24 — "Growth plan at ₹1,499/month" → /pricing */
                   body: "The Growth plan at ₹1,499/month is the most popular for sellers doing ₹3–20 lakh/month. It costs less per month than what most sellers lose in a single Buy Box loss event.",
                 },
               ].map(f => (
                 <div key={f.title} style={{ background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 10, padding: "16px 18px", display: "flex", gap: 14 }}>
-                  <span style={{ fontSize: 22, flexShrink: 0, marginTop: 2 }}>{f.icon}</span>
                   <div>
                     <strong style={{ display: "block", fontSize: 14.5, color: "#0D1B2A", marginBottom: 4, fontFamily: "'Sora',sans-serif" }}>
                       {f.titleLink ? <InLink to={f.titleLink} color="#0d1b2a">{f.title}</InLink> : f.title}
@@ -1040,7 +1008,7 @@ export default function InsydzVsHelium10India() {
             <h2 id="who-uses">Who Should Use Which Tool?</h2>
             <div className="choose-grid">
               <div className="choose-card" style={{ background: "#F1F5F9", border: "1px solid #CBD5E1" }}>
-                <h3 style={{ color: "#0D1B2A" }}><span style={{ fontSize: 18 }}>🌐</span> Choose Helium 10 if:</h3>
+                <h3 style={{ color: "#0D1B2A" }}> Choose Helium 10 if:</h3>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column" as const, gap: 6 }}>
                   {[
                     "You sell primarily on Amazon.com (US market) or other non-Indian Amazon marketplaces",
@@ -1055,7 +1023,7 @@ export default function InsydzVsHelium10India() {
                 </ul>
               </div>
               <div className="choose-card" style={{ background: "#F0FDF4", border: "2px solid #86EFAC" }}>
-                <h3 style={{ color: "#15803D" }}><span style={{ fontSize: 18 }}>🇮🇳</span> Choose Insydz if:</h3>
+                <h3 style={{ color: "#15803D" }}> Choose Insydz if:</h3>
                 <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column" as const, gap: 6 }}>
                   {[
                     "You sell on Amazon.in and Flipkart and want one tool covering all three",
@@ -1076,8 +1044,7 @@ export default function InsydzVsHelium10India() {
             <ArticleImg src="/seventeen.png" alt="How to evaluate Amazon tools for India before signup, trial period, monthly ROI check" caption="A structured 3-phase evaluation framework for Indian sellers choosing between Amazon intelligence tools" />
 
             <h3>
-              {/* #20 — "How to Evaluate Any Amazon Tool for India" → /features */}
-              <InLink to="/features" color="#0d1b2a">Best Practices: How to Evaluate Any Amazon Tool for India</InLink>
+              <a href="https://insydz.com/" style={{ color: "#0d1b2a", textDecoration: "underline", textDecorationColor: "#0d1b2a55", textUnderlineOffset: "3px", fontWeight: 600 }}>amazon seller tools india</a>: Best Practices for Evaluation
             </h3>
             <div style={{ display: "flex", flexDirection: "column" as const, gap: 12, margin: "16px 0 28px" }}>
               {[
@@ -1187,9 +1154,7 @@ export default function InsydzVsHelium10India() {
                 {openFaq === 2 && (
                   <div className="faq-a">
                     <p>
-                      For Indian sellers specifically, the best Helium 10 alternative is a{" "}
-                      {/* #14 — "platform that covers Amazon.in natively" → /solutions/amazon-sellers */}
-                      <InLink to="/solutions/amazon-sellers" color="#64748b">platform that covers Amazon.in natively</InLink>{" "}
+                      For Indian sellers specifically, the best <a href="https://insydz.com/resources/expert-blog/best-competitor-price-tracking-tools-india" style={{ color: "#64748B", textDecoration: "underline", textDecorationColor: "#64748B55", textUnderlineOffset: "3px", fontWeight: 600 }}>helium 10 alternative india</a> is a platform that covers Amazon.in natively{" "}
                       (with Hinglish keyword support), includes Flipkart tracking, sends WhatsApp alerts, and fits within the{" "}
                       {/* #13 alt */}
                       <InLink to="/pricing" color="#64748b">₹1,999–2,999/month budget range</InLink>{" "}

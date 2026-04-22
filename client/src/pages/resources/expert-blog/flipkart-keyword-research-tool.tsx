@@ -173,6 +173,30 @@ const FAQS = [
     a:"Start your Flipkart BBD keyword optimisation 6\u20138 weeks before the event \u2014 targeting early September for an October BBD. Flipkart\u2019s algorithm pre-ranks category pages 3\u20134 weeks before the event goes live, and listing optimisation changes take 14\u201321 days to fully influence rank. Sellers who update keywords and complete attributes in September enter BBD already ranked." },
 ];
 
+// ─── Inline link helper ──────────────────────────────────────────────────────
+const InLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
+  const [, setLocation] = useLocation();
+  return (
+    <a
+      href={to}
+      onClick={(e) => { e.preventDefault(); setLocation(to); window.scrollTo(0,0); }}
+      style={{
+        color: "#2874F0",
+        textDecoration: "underline",
+        textDecorationColor: "rgba(40, 116, 240, 0.3)",
+        textUnderlineOffset: "3px",
+        fontWeight: 600,
+        cursor: "pointer",
+        transition: "color 0.15s",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.color = "#1557CC")}
+      onMouseLeave={(e) => (e.currentTarget.style.color = "#2874F0")}
+    >
+      {children}
+    </a>
+  );
+};
+
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function FlipkartKeywordResearchTool() {
   const [, setLocation] = useLocation();
@@ -662,7 +686,7 @@ export default function FlipkartKeywordResearchTool() {
           <span style={{ color:"#F4500A" }}>(2026)</span>
         </h1>
         <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong style={{ color:"#0A0F1A" }}>INSYDZ Research Team</strong></div>
+          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => setLocation("/author/vikrant-singh")}>Vikrant Singh</strong></div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>🕐 January 2026</div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>🕐 <strong>14 min read</strong></div>
           <span style={{ background:"#EFF6FF", color:"#2874F0", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Updated for 2026</span>
@@ -728,7 +752,7 @@ export default function FlipkartKeywordResearchTool() {
               ))}
             </ul>
             <button onClick={() => setLocation("/login")} style={{ display:"block", background:"#2874F0", color:"white", textAlign:"center" as const, padding:10, borderRadius:8, fontWeight:700, fontSize:12.5, width:"100%", cursor:"pointer", border:"none", fontFamily:"'Sora',sans-serif" }}>
-              Start Free \u2014 No Card Needed
+              Start Free Trial
             </button>
           </div>
           {/* <div style={{ background:"#F5F8FF", border:"1px solid #E5E7EB", borderRadius:10, padding:14, marginTop:14 }}>
@@ -757,7 +781,7 @@ export default function FlipkartKeywordResearchTool() {
             {/* In Simple Terms */}
             <div className="box box-indigo" style={{ margin:"0 0 28px" }}>
               <div className="box-label">In Simple Terms</div>
-              <p>Instead of guessing which keywords belong in your Flipkart product title and attributes, a <strong>Flipkart keyword research tool</strong> tells you precisely which terms Flipkart buyers are searching right now including the high-converting price-bracket and product-discovery terms your competitors rank for that you've never added to your listing.</p>
+              <p>Instead of guessing which keywords belong in your Flipkart product title and attributes, a <InLink to="/solutions/flipkart-sellers">flipkart keyword research tool</InLink> tells you precisely which terms Flipkart buyers are searching right now including the high-converting price-bracket and product-discovery terms your competitors rank for that you've never added to your listing.</p>
             </div>
 
             {/* ── S1: What Is ── */}
@@ -767,9 +791,7 @@ export default function FlipkartKeywordResearchTool() {
             </p>
             <p>
               Unlike Amazon keyword tools, Flipkart-specific research accounts for the platform's unique search algorithm, attribute-based product discovery system, and the behavioural differences of Flipkart's 400+ million registered user base including shorter search queries, stronger price sensitivity, and a higher proportion of mobile-first searches. Any effective{" "}
-              {/* ANCHOR: "Flipkart SEO optimization" → /flipkart-seo-optimization (secondary KW, first body mention per strategy) */}
-              <a href="/flipkart-seo-optimization" className="al" title="Flipkart SEO optimization guide for Indian sellers">Flipkart SEO optimization</a>{" "}
-              strategy must start with platform-native keyword data.
+              <InLink to="/">flipkart SEO optimization</InLink> strategy must start with platform-native keyword data.
             </p>
             <p>
               Here's the scale of the problem: <strong>Flipkart sellers collectively leave an estimated ₹2,400 crore in annual organic revenue on the table</strong> because their listings are not optimised for the search terms their buyers actually use.
@@ -778,8 +800,7 @@ export default function FlipkartKeywordResearchTool() {
             {/* ── S2: Algorithm ── */}
             <h2 id="algorithm">How Flipkart's Search Algorithm Works</h2>
             <p>
-              {/* ANCHOR: "Flipkart search algorithm" → /flipkart-search-algorithm-india (secondary KW, section intro per strategy) */}
-              Flipkart's <a href="/flipkart-search-algorithm-india" className="al" title="How Flipkart's search algorithm ranks products in India">Flipkart search algorithm</a> the <strong>Flipkart Product Relevance Engine</strong> ranks listings based on keyword relevance signals, seller performance metrics, and buyer behaviour data. Unlike Amazon's A10 which is heavily keyword-density focused, Flipkart's algorithm places significant weight on product attribute completeness.
+             Flipkart search algorithm the <strong>Flipkart Product Relevance Engine</strong> ranks listings based on keyword relevance signals, seller performance metrics, and buyer behaviour data. Unlike Amazon's A10 which is heavily keyword-density focused, Flipkart's algorithm places significant weight on product attribute completeness.
             </p>
 
             <div className="box box-indigo">
@@ -819,10 +840,7 @@ export default function FlipkartKeywordResearchTool() {
 
             <h3>The Search Visibility Gap Compounds Silently</h3>
             <p>
-              Flipkart search rank positions are not visible to sellers without a dedicated{" "}
-              {/* ANCHOR: "Flipkart rank tracking" → /flipkart-rank-tracking (secondary KW, Key Insight callout per strategy) */}
-              <a href="/flipkart-rank-tracking" className="al" title="Real-time Flipkart rank tracking tool for Indian sellers">Flipkart rank tracking</a>{" "}
-              tool. Unlike Amazon Seller Central which shows basic keyword performance, Flipkart Seller Hub provides almost no organic keyword rank data. This means most Flipkart sellers have no idea which position they hold for their critical search terms or when a competitor takes that position away from them.
+              Flipkart search rank positions are not visible to sellers without a dedicated Flipkart rank tracking tool. Unlike Amazon Seller Central which shows basic keyword performance, Flipkart Seller Hub provides almost no organic keyword rank data. This means most Flipkart sellers have no idea which position they hold for their critical search terms or when a competitor takes that position away from them.
             </p>
 
             <div className="box box-amber">
@@ -834,8 +852,7 @@ export default function FlipkartKeywordResearchTool() {
               <div className="box-label">Key Insight</div>
               <p>
                 Flipkart's search visibility is binary, not gradual. You're either in the Top 10 results capturing 65% of clicks or you're functionally invisible. A single rank change from P7 to P11 can reduce organic traffic by 40% overnight. This is why{" "}
-                {/* ANCHOR: second placement "Flipkart rank tracking" → /flipkart-rank-tracking (callout box = high-attention zone per strategy) */}
-                <a href="/flipkart-rank-tracking" className="al" title="Flipkart keyword rank tracking in real time">Flipkart rank tracking</a>{" "}
+                <InLink to="/use-cases/track-competitor-prices">flipkart rank tracking</InLink>{" "}
                 needs to run in real time, not weekly manual checks.
               </p>
             </div>
@@ -848,10 +865,7 @@ export default function FlipkartKeywordResearchTool() {
             {/* ── S4: How It Works ── */}
             <h2 id="how-it-works">How Does Flipkart Keyword Research Work? (5-Step Process)</h2>
             <p>
-              Modern AI-powered tools have replaced the manual spreadsheet approach with a <strong>5-step automated intelligence loop</strong> built specifically for Flipkart's search ecosystem. This also forms the basis of your{" "}
-              {/* ANCHOR: "cross-platform keyword strategy" → /best-amazon-keyword-research-tool-india (NLP contextual anchor, Step 2 per strategy) */}
-              <a href="/best-amazon-keyword-research-tool-india" className="al" title="Cross-platform keyword strategy for Amazon and Flipkart sellers in India">cross-platform keyword strategy</a>{" "}
-              across Flipkart and Amazon.in simultaneously.
+              Modern AI-powered tools have replaced the manual spreadsheet approach with a <strong>5-step automated intelligence loop</strong> built specifically for Flipkart's search ecosystem. This also forms the basis of your cross-platform keyword strategy Flipkart and Amazon.in simultaneously.
             </p>
 
             <div className="steps">
@@ -904,10 +918,7 @@ export default function FlipkartKeywordResearchTool() {
             {/* ── S6: Ranking Factors ── */}
             <h2 id="ranking-factors">Flipkart SEO Ranking Factors: Complete Optimisation Checklist</h2>
             <p>
-              Flipkart's{" "}
-              {/* ANCHOR: "search algorithm" → /flipkart-search-algorithm-india (second mention, natural editorial) */}
-              <a href="/flipkart-search-algorithm-india" className="al" title="Flipkart search algorithm ranking factors explained">search algorithm</a>{" "}
-              scores your listing across five dimensions. Here's the complete optimisation checklist for each ranking factor that determines your product discovery position:
+              Flipkart's search algorithm scores your listing across five dimensions. Here's the complete optimisation checklist for each ranking factor that determines your product discovery position:
             </p>
 
             <h3>1. Product Title Optimisation</h3>
@@ -931,7 +942,6 @@ export default function FlipkartKeywordResearchTool() {
             </p>
 
             <div className="verdict-banner">
-              <div style={{ fontSize:"clamp(18px,4vw,22px)", flexShrink:0 }}>🎯</div>
               <p style={{ margin:0, fontFamily:"'Lora',serif", fontSize:"clamp(13px,2vw,15px)", color:"#1E40AF", lineHeight:1.7 }} className="dark:text-blue-300">
                 Flipkart search visibility is the multiplier that determines whether your product quality and pricing actually get seen by buyers or get redirected to a better-optimised competitor listing before they ever reach yours.
               </p>
@@ -959,10 +969,7 @@ export default function FlipkartKeywordResearchTool() {
                 <div className="mistake-body">
                   <strong>Not Tracking Flipkart Rank Separately from Amazon</strong>
                   <p>
-                    Sellers who track only Amazon keyword ranks have no visibility into their Flipkart search performance. A keyword can drop from P4 to P18 on Flipkart while holding P3 on Amazon and you'd never know until Flipkart orders decline. No global tool provides{" "}
-                    {/* ANCHOR: "Flipkart rank tracking" → /flipkart-rank-tracking (Mistakes #3 second body placement per strategy) */}
-                    <a href="/flipkart-rank-tracking" className="al" title="Flipkart keyword rank tracking — India-first tool">Flipkart rank tracking</a>
-                    {" "} only India-first tools do.
+                    Sellers who track only Amazon keyword ranks have no visibility into their Flipkart search performance. A keyword can drop from P4 to P18 on Flipkart while holding P3 on Amazon and you'd never know until Flipkart orders decline. No global tool provides Flipkart rank tracking only India-first tools do.
                   </p>
                 </div>
               </div>
@@ -1038,9 +1045,8 @@ export default function FlipkartKeywordResearchTool() {
             <h2 id="best-tools">Best Flipkart Keyword Research Tools in India (2026)</h2>
             <p>
               Not all keyword research tools cover Flipkart in fact, <strong>most don't cover it at all.</strong> For Indian sellers whose revenue depends on Flipkart, here's an honest comparison. Global tools like Helium 10 and Jungle Scout reviewed in our{" "}
-              {/* ANCHOR: "Insydz vs Helium 10 comparison" → /compare/insydzvshelium (natural editorial, Related Guides cluster) */}
               <a href="/compare/insydzvshelium" className="al" title="Insydz vs Helium 10 for Indian sellers — full comparison">Insydz vs Helium 10 comparison</a>{" "}
-               have zero Flipkart rank data.
+               have zero Flipkart rank data. For a complete market overview, see our selection of the <InLink to="/resources/expert-blog/best-flipkart-analytics-tool">best Flipkart analytics tools</InLink> available today.
             </p>
 
             <div className="tbl-wrap">
@@ -1096,7 +1102,7 @@ export default function FlipkartKeywordResearchTool() {
             </div>
 
             <div className="box box-orange">
-              <div className="box-label">📌 Final Thought</div>
+              <div className="box-label">Final Thought</div>
               <p>Winning on Flipkart in 2026 isn't about having the best product or the lowest price it's about being found first. <strong>Every week without Flipkart keyword research is a week of search visibility being silently captured by a competitor who understands the algorithm better than you do.</strong></p>
             </div>
 

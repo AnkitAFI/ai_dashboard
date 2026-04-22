@@ -713,7 +713,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
           <span style={{ color:"#2874F0" }}>(2026)</span>
         </h1>
         <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong style={{ color:"#0A0F1A" }}>INSYDZ Research Team</strong></div>
+          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => setLocation("/author/vikrant-singh")}>Vikrant Singh</strong></div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>🕐 January 2026</div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>📖 <strong>12 min read</strong></div>
           <span style={{ background:"#ECFDF5", color:"#10B981", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Updated for 2026</span>
@@ -816,7 +816,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
             {/* In Simple Terms */}
             <div className="box box-purple" style={{ margin:"0 0 28px" }}>
               <div className="box-label">In Simple Terms</div>
-              <p>The <strong>amazon vs flipkart india sellers</strong> debate isn't a brand preference it's a margin and strategy question. Amazon and Flipkart reward very different seller behaviours. A strategy that wins you the Buy Box on Amazon.in can actively hurt your ranking on Flipkart because their algorithms weigh seller competition, pricing behaviour, and fulfilment speed differently.</p>
+              <p>The <strong><a href="https://insydz.com/flipkart-sellers" className="al" title="Flipkart sellers solution">amazon vs flipkart india sellers</a></strong> debate isn't a brand preference it's a margin and strategy question. Amazon and Flipkart reward very different seller behaviours. A strategy that wins you the Buy Box on Amazon.in can actively hurt your ranking on Flipkart because their algorithms weigh seller competition, pricing behaviour, and fulfilment speed differently.</p>
             </div>
 
             {/* ── S1: Overview ── */}
@@ -825,12 +825,12 @@ export default function AmazonVsFlipkartIndiaSellers() {
               The <strong>amazon vs flipkart india sellers</strong> debate isn't just a business-school case study. It's a real decision that affects your commission structure, Buy Box win rate, search traffic, and ultimately how much profit lands in your account at month-end.
             </p>
             <p>
-              Both platforms are behemoths. Amazon.in handles over <strong>280 million monthly product searches</strong>. Flipkart, backed by Walmart, commands <strong>60–70% of fashion sales</strong> and dominates Tier-2 and Tier-3 city shoppers. The problem? Most sellers list on both platforms the same way, with the same pricing, the same strategy and then wonder why margins keep shrinking.
+              Both platforms are behemoths. Amazon.in handles over <strong>280 million monthly product searches</strong>. Flipkart, backed by Walmart, commands <strong>60–70% of fashion sales</strong> and dominates Tier-2 and Tier-3 city shoppers. They are the primary drivers of <a href="https://en.wikipedia.org/wiki/E-commerce_in_India" className="al" title="E-commerce in India" target="_blank" rel="noopener noreferrer">e-commerce in India</a>. The problem? Most sellers list on both platforms the same way, with the same pricing, the same strategy and then wonder why margins keep shrinking.
             </p>
             <p>
-              This guide cuts through the noise. We compare both platforms across the metrics that actually move the needle for Indian SMB sellers: commission fees, search traffic, seller competition, Buy Box mechanics, and pricing dynamics with a final verdict for each category type. For sellers already running both platforms, pair this with our{" "}
-              <a href="/features/competitor-price-tracking-feature" className="al" title="Competitor price tracking for Amazon and Flipkart India">competitor price tracking feature</a>{" "}
-              to close the intelligence gap between the two marketplaces.
+              This guide cuts through the noise. We compare both platforms across the metrics that actually move the needle for Indian SMB sellers: <a href="https://insydz.com/resources/expert-blog/amazon-seo-tool-india" className="al" title="Amazon SEO Blog">commission fees and seller competition</a>, search traffic, Buy Box mechanics, and pricing dynamics with a final verdict for each category type. For sellers already running both platforms, pair this with our{" "}
+              {/* <a href="/features/competitor-price-tracking-feature" className="al" title="Competitor price tracking for Amazon and Flipkart India">competitor price tracking feature</a>{" "} */}
+              competitor price tracking feature to close the intelligence gap between the two marketplaces.
             </p>
 
             {/* ── S2: Commission ── */}
@@ -882,12 +882,12 @@ export default function AmazonVsFlipkartIndiaSellers() {
             <h3>Amazon's Search Advantage</h3>
             <p>
               Amazon.in's search algorithm, A9, prioritises conversion rate, relevance, and pricing competitiveness. Sellers with strong keyword targeting and competitive prices get disproportionate organic visibility. The platform also benefits from Google Shopping integrations, which drive significant search traffic from external sources. Sellers looking to maximise this advantage should read our guide on{" "}
-              <a href="/best-amazon-keyword-research-tool-india" className="al" title="Best Amazon keyword research tool India">Amazon keyword research for Indian sellers</a>.
+              Amazon keyword research for Indian sellers.
             </p>
 
             <h3>Flipkart's Audience Strengths</h3>
             <p>
-              Flipkart's traffic is geographically different. It over-indexes on Tier-2 and Tier-3 cities Patna, Indore, Jaipur, Surat where smartphone penetration drove first-time online buyers. These buyers are <strong>price-sensitive and brand-agnostic</strong>, making Flipkart the dominant platform for value-oriented products and local/regional brands.
+              Flipkart's traffic is geographically different. It over-indexes on Tier-2 and Tier-3 cities Patna, Indore, Jaipur, Surat where smartphone penetration drove first-time online buyers. These buyers are <strong>price-sensitive and brand-agnostic</strong>, making Flipkart the dominant platform for value-oriented products and local/regional brands. To capture this traffic effectively, sellers should consult a comprehensive <a href="https://insydz.com/resources/expert-blog/flipkart-keyword-research-tool" className="al" title="Flipkart Keyword Research Tool">flipkart keyword research and SEO optimization guide</a>.
             </p>
 
             <div className="box box-amber">
@@ -923,7 +923,8 @@ export default function AmazonVsFlipkartIndiaSellers() {
 
             <div className="box box-purple">
               <div className="box-label">AI Overview Summary</div>
-              <p>On Amazon.in, <strong>pricing behavior is the primary competitive weapon</strong> sellers who don't use real-time competitor price tracking lose the Buy Box within hours of a competitor repricing. Flipkart's competition is currently less algorithmically driven, but this is changing rapidly as more sophisticated sellers move onto the platform.</p>
+              <p>On Amazon.in, <strong>pricing behavior is the primary competitive weapon</strong> sellers who don't use {" "}
+              real-time competitor price tracking lose the Buy Box within hours of a competitor repricing. Flipkart's competition is currently less algorithmically driven, but this is changing rapidly as more sophisticated sellers move onto the platform.</p>
             </div>
 
             {/* ── S5: Buy Box ── */}
@@ -947,14 +948,12 @@ export default function AmazonVsFlipkartIndiaSellers() {
             {/* ── S6: Pricing ── */}
             <h2 id="pricing">Pricing Behavior: The Invisible Margin Killer</h2>
             <p>
-              This is where most <strong>ecommerce marketplace comparison india</strong> guides miss the story. Commission fees are visible. Pricing behavior is silent and it's where most margin actually disappears.
+              This is where most <strong><a href="https://insydz.com/" className="al" title="Insydz Homepage">ecommerce marketplace comparison india</a></strong> guides miss the story. Commission fees are visible. Pricing behavior is silent and it's where most margin actually disappears.
             </p>
 
             <h3>Amazon: AI-Powered Repricing at Scale</h3>
             <p>
-              Top Amazon.in sellers reprice their entire catalogue every 15–60 minutes using tools like{" "}
-              <a href="/features/competitor-price-tracking-feature" className="al" title="Insydz competitor price tracking for Amazon India">Insydz's competitor price tracking</a>.
-              {" "}A competitor who drops their price by ₹100 at 11 PM will have already recaptured the Buy Box before you wake up. Three weeks later, you've lost ₹45,000 in revenue you never even tracked.
+              Top Amazon.in sellers reprice their entire catalogue every 15–60 minutes using tools like Insydz's competitor price tracking. A competitor who drops their price by ₹100 at 11 PM will have already recaptured the Buy Box before you wake up. Three weeks later, you've lost ₹45,000 in revenue you never even tracked.
             </p>
 
             <h3>Flipkart: Manual Repricing For Now</h3>
@@ -969,7 +968,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
 
             {/* ── S7: Margins ── */}
             <h2 id="margins">Amazon Flipkart Profit Margins by Category: The Real Data</h2>
-            <p>Choosing the right primary platform for each product category is the single highest-leverage decision most sellers aren't making deliberately.</p>
+            <p>Choosing the right primary platform for each product category is the single highest-leverage decision most sellers aren't making deliberately, as <a href="https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking" className="al" title="Amazon Flipkart profit margins">amazon flipkart profit margins</a> can drastically vary.</p>
 
             <div className="tbl-wrap">
               <table className="dt">
@@ -1066,7 +1065,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
             <h2 id="tools">Best Tools for Amazon vs Flipkart Management in India (2026)</h2>
             <p>
               Global tools like Helium 10 and Jungle Scout cover Amazon.in but <strong>miss Flipkart entirely</strong>. For Indian sellers managing both platforms, you need a tool built for India-first dynamics. See our full{" "}
-              <a href="/compare/insydzvshelium" className="al" title="Insydz vs Helium 10 — full comparison for Indian sellers">Insydz vs Helium 10 comparison</a>{" "}
+              Insydz vs Helium 10 comparison{" "}
               for a detailed breakdown.
             </p>
 
@@ -1124,7 +1123,6 @@ export default function AmazonVsFlipkartIndiaSellers() {
             </p>
 
             <div className="verdict-banner">
-              <div style={{ fontSize:"clamp(18px,4vw,22px)", flexShrink:0 }}>📊</div>
               <p style={{ margin:0, fontFamily:"'Lora',serif", fontSize:"clamp(13px,2vw,15px)", color:"#92400E", lineHeight:1.7 }} className="dark:text-orange-200">
                 <strong>The data is clear:</strong> every hour without cross-platform intelligence is an hour your competitors are adjusting prices and taking your Buy Box with them.
               </p>

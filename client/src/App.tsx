@@ -89,8 +89,7 @@ import BestFlipkartAnalyticsTool from "@/pages/resources/expert-blog/best-flipka
 import FlipkartKeywordResearchTool from "@/pages/resources/expert-blog/flipkart-keyword-research-tool";
 import AmazonVsFlipkartIndiaSellers from "@/pages/resources/expert-blog/amazon-vs-flipkart-india-seller";
 import ManualVsAutomatedCompetitorTracking from "@/pages/resources/expert-blog/manual-vs-automated-competitor-tracking-tool";
-
-
+import VikrantSinghAuthorPage from "@/pages/author/vikrant-singh";
 
 // Analytics Pages
 
@@ -395,6 +394,7 @@ function Router() {
       <Route path="/resources/expert-blog/flipkart-keyword-research-tool" component={FlipkartKeywordResearchTool} />
       <Route path="/resources/expert-blog/amazon-vs-flipkart-india-seller" component={AmazonVsFlipkartIndiaSellers} />
       <Route path="/resources/expert-blog/manual-vs-automated-competitor-tracking-tool" component={ManualVsAutomatedCompetitorTracking} />
+      <Route path="/author/vikrant-singh" component={VikrantSinghAuthorPage} />
 
       {/* Auth Pages (redirect to dashboard if already logged in) */}
       <PublicRoute path="/login" component={Login} />

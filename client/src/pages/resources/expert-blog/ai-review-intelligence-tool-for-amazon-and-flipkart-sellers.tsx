@@ -353,13 +353,13 @@ export default function AmazonReviewAnalysisToolIndia() {
   };
 
   const reviewSignals = [
-    { icon:"⚙️", signal:"Durability Complaints",   detect:"Products flagged as breaking, malfunctioning, or failing early",                       action:"Source stronger materials; update listing to address objection proactively",            impact:"Reduces return rate 8–15%" },
-    { icon:"📏", signal:"Size / Fit Inaccuracy",    detect:"'Smaller than expected', 'not as described', 'sizing wrong'",                           action:"Update size chart; add dimensions callout image; revise bullet points",                impact:"Cuts negative reviews 20–30%" },
-    { icon:"📦", signal:"Packaging Damage",         detect:"Reviews mentioning damaged on arrival, poor packing, crushed box",                      action:"Flag to logistics team; upgrade packaging materials",                                  impact:"Protects 4-star average" },
-    { icon:"🔧", signal:"Missing Feature Mentions", detect:"Buyers asking for a feature a competitor offers",                                        action:"Product roadmap input; or highlight existing feature they missed in listing copy",       impact:"Conversion rate uplift 5–12%" },
-    { icon:"🎯", signal:"Competitor Pain Points",   detect:"Your rival's reviews: what their customers hate most",                                   action:"Your counter-messaging in listing; or source a better version of that product",        impact:"Category market share gain" },
-    { icon:"⭐", signal:"Positive Theme Clusters",  detect:"What buyers love most — in their exact words",                                          action:"Mirror that language in title, bullets, A+ content",                                  impact:"CTR and CVR improvement" },
-    { icon:"📉", signal:"Review Velocity Drops",    detect:"Sudden slowdown in new review rate",                                                    action:"Trigger review request campaign; check if reviews are being suppressed",              impact:"Maintains ranking momentum" },
+    { signal:"Durability Complaints",   detect:"Products flagged as breaking, malfunctioning, or failing early",                       action:"Source stronger materials; update listing to address objection proactively",            impact:"Reduces return rate 8–15%" },
+    { signal:"Size / Fit Inaccuracy",    detect:"'Smaller than expected', 'not as described', 'sizing wrong'",                           action:"Update size chart; add dimensions callout image; revise bullet points",                impact:"Cuts negative reviews 20–30%" },
+    { signal:"Packaging Damage",         detect:"Reviews mentioning damaged on arrival, poor packing, crushed box",                      action:"Flag to logistics team; upgrade packaging materials",                                  impact:"Protects 4-star average" },
+    { signal:"Missing Feature Mentions", detect:"Buyers asking for a feature a competitor offers",                                        action:"Product roadmap input; or highlight existing feature they missed in listing copy",       impact:"Conversion rate uplift 5–12%" },
+    { signal:"Competitor Pain Points",   detect:"Your rival's reviews: what their customers hate most",                                   action:"Your counter-messaging in listing; or source a better version of that product",        impact:"Category market share gain" },
+    { signal:"Positive Theme Clusters",  detect:"What buyers love most — in their exact words",                                          action:"Mirror that language in title, bullets, A+ content",                                  impact:"CTR and CVR improvement" },
+    { signal:"Review Velocity Drops",    detect:"Sudden slowdown in new review rate",                                                    action:"Trigger review request campaign; check if reviews are being suppressed",              impact:"Maintains ranking momentum" },
   ];
 
   const compRows = [
@@ -763,7 +763,7 @@ export default function AmazonReviewAnalysisToolIndia() {
           AI <span style={{ color:"#16A34A" }}>Review Intelligence Tool</span> for Amazon &amp; Flipkart Sellers: The Complete Guide (2026)
         </h1>
         <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong style={{ color:"#0D1B2A" }}>INSYDZ Research Team</strong></div>
+          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong className="text-[#0D1B2A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => setLocation("/author/vikrant-singh")}>Vikrant Singh</strong></div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />January 2026</div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong>13 min read</strong></div>
           <span style={{ background:"#FFEDD5", color:"#F97316", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Updated for 2026</span>
@@ -866,7 +866,7 @@ export default function AmazonReviewAnalysisToolIndia() {
 
             {/* In Simple Terms */}
             <div className="box box-indigo" style={{ margin:"0 0 28px" }}>
-              <div className="box-label">💡 In Simple Terms</div>
+              <div className="box-label">In Simple Terms</div>
               <p>An Amazon review analysis tool reads every customer review on your listings and your competitors' listings — then tells you in plain language: what buyers consistently love, what they consistently complain about, which product features are causing returns, and what your rivals' customers wish was better. It turns 10,000 reviews you'd never have time to read into 5 specific actions you can take this week.</p>
             </div>
 
@@ -884,13 +884,13 @@ export default function AmazonReviewAnalysisToolIndia() {
             <p>A competitor with 800 reviews and a 3.9-star rating isn't your enemy. They're <strong>a free focus group</strong> that has already told 800 real buyers what's wrong with the current category standard. If 22% of those reviews mention 'cable too short' and your product has a longer cable, you have a positioning advantage sitting in plain sight — waiting for someone to put it in their listing title.</p>
 
             <div className="box box-amber">
-              <div className="box-label">📌 Real Seller: Hyderabad Kitchen Appliances Seller</div>
+              <div className="box-label">Real Seller: Hyderabad Kitchen Appliances Seller</div>
               <p>A Hyderabad-based seller of electric kettles was doing ₹3.8 lakh/month on Amazon.in with a 4.1-star average. After running an AI review analysis on her top-selling ASIN and 3 closest competitors, three patterns emerged: (1) Her own reviews flagged 'lid doesn't seal properly' in 19% of 1-star reviews. (2) Competitor A's reviews mentioned 'auto-shutoff doesn't work' in 28% of negative reviews — she added 'reliable auto-shutoff with safety certification' to her listing title. (3) Competitor B's buyers repeatedly mentioned 'wish it had a temperature display' — she sourced a temperature-display variant and launched it as a new SKU.</p>
               <p>Within 12 weeks: her primary listing's rating recovered from 4.1 to 4.5 stars. The 'auto-shutoff' positioning upgrade lifted conversion rate by 11%. The temperature-display variant became her highest-margin SKU within 60 days. <strong>Total revenue moved from ₹3.8 lakh to ₹5.6 lakh/month.</strong></p>
             </div>
 
             <div className="box box-indigo">
-              <div className="box-label">🤖 AI Overview Summary</div>
+              <div className="box-label">AI Overview Summary</div>
               <p>AI review analysis tools for Amazon.in and Flipkart automatically process customer reviews to surface sentiment patterns, product defect signals, competitor weaknesses, and listing optimisation opportunities. For Indian D2C and growth sellers, tools built specifically for the Indian market process Hindi, Hinglish, and English reviews — delivering actionable intelligence in plain language via WhatsApp, not complex dashboards.</p>
             </div>
 
@@ -919,7 +919,7 @@ export default function AmazonReviewAnalysisToolIndia() {
             </div>
 
             <div className="box box-green">
-              <div className="box-label">⚡ Reading vs Analysing</div>
+              <div className="box-label">Reading vs Analysing</div>
               <p>Reading reviews tells you what one buyer said. AI analysis tells you that 34% of your negative reviews share the same root cause — and that fixing it will measurably improve your rating within 8 weeks.</p>
             </div>
 
@@ -1007,7 +1007,6 @@ export default function AmazonReviewAnalysisToolIndia() {
             />
 
             <div className="verdict-banner">
-              <div style={{ fontSize:"clamp(18px,4vw,22px)", flexShrink:0 }}>🎯</div>
               <p style={{ margin:0, fontFamily:"'Lora',serif", fontSize:"clamp(13px,2vw,15px)", color:"#92400E", lineHeight:1.7 }} className="dark:text-amber-300">
                 The goal of review analysis isn't to respond to buyers faster. <strong>It's to eliminate the reasons they write negative reviews at all.</strong>
               </p>
@@ -1062,15 +1061,14 @@ export default function AmazonReviewAnalysisToolIndia() {
             <h3>Key Metrics to Track</h3>
             <div className="metrics">
               {[
-                { icon:"📊", t:"Negative Review Rate by Category",     d:"Percentage of 1–2 star reviews mentioning each issue cluster (target: below 8% per cluster)" },
-                { icon:"📈", t:"Complaint Cluster Trend",               d:"Is your top complaint category growing or shrinking month-over-month?" },
-                { icon:"🎯", t:"Competitor Pain Point Coverage",        d:"What percentage of your competitors' top complaints does your listing directly address?" },
-                { icon:"📝", t:"Review Vocabulary Adoption",            d:"How much of your 5-star review language appears in your listing title and bullets?" },
-                { icon:"⭐", t:"Rating Trend (Weekly)",                  d:"Not the absolute number, but the direction. A product at 4.1 trending to 4.3 is healthier than one at 4.4 trending to 4.2." },
-                { icon:"🚀", t:"Review Velocity per SKU",               d:"Sudden drops in review rate may indicate suppression — trigger a review request campaign immediately." },
+                { t:"Negative Review Rate by Category",     d:"Percentage of 1–2 star reviews mentioning each issue cluster (target: below 8% per cluster)" },
+                { t:"Complaint Cluster Trend",               d:"Is your top complaint category growing or shrinking month-over-month?" },
+                { t:"Competitor Pain Point Coverage",        d:"What percentage of your competitors' top complaints does your listing directly address?" },
+                { t:"Review Vocabulary Adoption",            d:"How much of your 5-star review language appears in your listing title and bullets?" },
+                { t:"Rating Trend (Weekly)",                  d:"Not the absolute number, but the direction. A product at 4.1 trending to 4.3 is healthier than one at 4.4 trending to 4.2." },
+                { t:"Review Velocity per SKU",               d:"Sudden drops in review rate may indicate suppression — trigger a review request campaign immediately." },
               ].map(m => (
                 <div className="metric" key={m.t}>
-                  <div className="metric-icon">{m.icon}</div>
                   <div><div className="metric-t">{m.t}</div><div className="metric-d">{m.d}</div></div>
                 </div>
               ))}
@@ -1120,15 +1118,14 @@ export default function AmazonReviewAnalysisToolIndia() {
 
             <div style={{ display:"flex", flexDirection:"column" as const, gap:8, margin:"14px 0 24px" }}>
               {[
-                { icon:"🗣️", title:"Hindi, Hinglish, and English review processing",       body:"Reviews are understood in the language they were written, not force-translated into English before analysis." },
-                { icon:"🏪", title:"Issue cluster detection across all 3 platforms",       body:"Platform-specific complaint patterns are tracked separately — what buyers complain about on Flipkart often differs from Amazon.in." },
-                { icon:"🔍", title:"Competitor review mining — automated",                  body:"Automated analysis of your top competitors' reviews, with gap identification and counter-positioning recommendations." },
-                { icon:"📲", title:"WhatsApp alerts for critical negative reviews",        body:"Your own 1-star and 2-star reviews are flagged within 60 minutes — not buried in an email digest opened three days later." },
-                { icon:"✍️", title:"Listing copy recommendations from review data",        body:"Specific bullet point rewrites based on positive review language and competitor complaint counter-messaging." },
-                { icon:"🎉", title:"Festive trend tracking",                                body:"Review sentiment analysis contextualised for Indian seasonal patterns: post-Diwali product reviews, Big Billion Days delivery feedback, Republic Day Sale return rates." },
+                { title:"Hindi, Hinglish, and English review processing",       body:"Reviews are understood in the language they were written, not force-translated into English before analysis." },
+                { title:"Issue cluster detection across all 3 platforms",       body:"Platform-specific complaint patterns are tracked separately — what buyers complain about on Flipkart often differs from Amazon.in." },
+                { title:"Competitor review mining — automated",                  body:"Automated analysis of your top competitors' reviews, with gap identification and counter-positioning recommendations." },
+                { title:"WhatsApp alerts for critical negative reviews",        body:"Your own 1-star and 2-star reviews are flagged within 60 minutes — not buried in an email digest opened three days later." },
+                { title:"Listing copy recommendations from review data",        body:"Specific bullet point rewrites based on positive review language and competitor complaint counter-messaging." },
+                { title:"Festive trend tracking",                                body:"Review sentiment analysis contextualised for Indian seasonal patterns: post-Diwali product reviews, Big Billion Days delivery feedback, Republic Day Sale return rates." },
               ].map(f => (
                 <div key={f.title} style={{ background:"#F0FDF4", border:"1px solid #BBF7D0", borderRadius:10, padding:"12px 14px", display:"flex", gap:10 }}>
-                  <span style={{ fontSize:"clamp(16px,3vw,20px)", flexShrink:0, marginTop:2 }}>{f.icon}</span>
                   <div>
                     <strong style={{ display:"block", fontSize:"clamp(12px,2vw,14px)", color:"#0D1B2A", marginBottom:2, fontFamily:"'Sora',sans-serif" }}>{f.title}</strong>
                     <p style={{ margin:0, fontSize:"clamp(11.5px,2vw,13.5px)", color:"#374151", lineHeight:1.6, fontFamily:"'Sora',sans-serif" }}>{f.body}</p>
@@ -1138,7 +1135,7 @@ export default function AmazonReviewAnalysisToolIndia() {
             </div>
 
             <div className="box box-pink">
-              <div className="box-label">📌 No Aggressive Pitch Here</div>
+              <div className="box-label">No Aggressive Pitch Here</div>
               <p>A review intelligence tool is only valuable if it processes the language your buyers actually write in and covers the platforms they actually buy from. For Indian sellers, that test eliminates most global options immediately.</p>
             </div>
 

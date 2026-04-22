@@ -124,6 +124,30 @@ function ArticleImg({ src, alt, caption }: { src: string; alt: string; caption: 
   );
 }
 
+// ─── Inline link helper ──────────────────────────────────────────────────────
+const InLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
+  const [, setLocation] = useLocation();
+  return (
+    <a
+      href={to}
+      onClick={(e) => { e.preventDefault(); setLocation(to); window.scrollTo(0,0); }}
+      style={{
+        color: "#16A34A",
+        textDecoration: "underline",
+        textDecorationColor: "rgba(22, 163, 74, 0.3)",
+        textUnderlineOffset: "3px",
+        fontWeight: 600,
+        cursor: "pointer",
+        transition: "color 0.15s",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.color = "#15803D")}
+      onMouseLeave={(e) => (e.currentTarget.style.color = "#16A34A")}
+    >
+      {children}
+    </a>
+  );
+};
+
 export default function BestReviewAnalysisToolIndia() {
   const [, setLocation] = useLocation();
   const [activeSection, setActiveSection] = useState("what-is");
@@ -197,13 +221,13 @@ export default function BestReviewAnalysisToolIndia() {
   };
 
   const reviewTypes = [
-    { icon:"🔴", type:"Product Defect Reviews",        desc:"Complaints about physical quality, breakage, missing parts, wrong specifications",               action:"Trigger supplier escalation; update listing title with defect-addressing copy",    impact:"Fixes return rate" },
-    { icon:"📦", type:"Packaging & Delivery Reviews",  desc:"Damaged in transit, poor packing material, missing protective layers",                           action:"Flag to logistics; upgrade packaging; add fragile sticker protocol",              impact:"Protects star rating" },
-    { icon:"📏", type:"Size & Fit Reviews",             desc:"'Smaller than expected', 'doesn't fit Indian sizing', measurement inaccuracies",                 action:"Add size chart; update dimensions in listing; add comparison image",              impact:"Cuts 20–30% of negatives" },
-    { icon:"🔧", type:"Feature Gap Reviews",            desc:"Buyers wishing for a feature your competitor already offers",                                     action:"Product roadmap input or listing copy update to highlight existing features",      impact:"Conversion uplift 5–12%" },
-    { icon:"🎯", type:"Competitor Gap Reviews",         desc:"Your rivals' reviews revealing what their customers consistently hate",                           action:"Counter-message those pain points directly in your listing bullets and title",     impact:"Market share gain" },
-    { icon:"⭐", type:"Positive Theme Clusters",        desc:"Recurring phrases in 5-star reviews — what buyers love most in their exact language",             action:"Mirror that vocabulary in title, bullets, A+ content, and sponsored ad copy",      impact:"CTR + CVR lift" },
-    { icon:"📉", type:"Review Velocity Signals",        desc:"Sudden drop in new review rate — may indicate suppression or listing quality issue",              action:"Trigger review request campaign; audit listing health score",                     impact:"Ranking protection" },
+    { type:"Product Defect Reviews",        desc:"Complaints about physical quality, breakage, missing parts, wrong specifications",               action:"Trigger supplier escalation; update listing title with defect-addressing copy",    impact:"Fixes return rate" },
+    { type:"Packaging & Delivery Reviews",  desc:"Damaged in transit, poor packing material, missing protective layers",                           action:"Flag to logistics; upgrade packaging; add fragile sticker protocol",              impact:"Protects star rating" },
+    { type:"Size & Fit Reviews",             desc:"'Smaller than expected', 'doesn't fit Indian sizing', measurement inaccuracies",                 action:"Add size chart; update dimensions in listing; add comparison image",              impact:"Cuts 20–30% of negatives" },
+    { type:"Feature Gap Reviews",            desc:"Buyers wishing for a feature your competitor already offers",                                     action:"Product roadmap input or listing copy update to highlight existing features",      impact:"Conversion uplift 5–12%" },
+    { type:"Competitor Gap Reviews",         desc:"Your rivals' reviews revealing what their customers consistently hate",                           action:"Counter-message those pain points directly in your listing bullets and title",     impact:"Market share gain" },
+    { type:"Positive Theme Clusters",        desc:"Recurring phrases in 5-star reviews — what buyers love most in their exact language",             action:"Mirror that vocabulary in title, bullets, A+ content, and sponsored ad copy",      impact:"CTR + CVR lift" },
+    { type:"Review Velocity Signals",        desc:"Sudden drop in new review rate — may indicate suppression or listing quality issue",              action:"Trigger review request campaign; audit listing health score",                     impact:"Ranking protection" },
   ];
 
   const compRows = [
@@ -557,7 +581,7 @@ export default function BestReviewAnalysisToolIndia() {
           Your customers are telling you exactly what to fix and why they're switching to a competitor inside every review. Discover how India's top D2C brands use AI review intelligence to reduce returns and grow revenue.
         </p>
         <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong style={{ color:"#0D1B2A" }}>Insydz Research Team</strong></div>
+          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong className="text-[#0D1B2A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => setLocation("/author/vikrant-singh")}>Vikrant Singh</strong></div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />January 2026</div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong>14 min read</strong></div>
           <span style={{ background:"#FFEDD5", color:"#F97316", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Updated for 2026</span>
@@ -659,11 +683,11 @@ export default function BestReviewAnalysisToolIndia() {
 
             <div className="box box-indigo" style={{ margin:"0 0 28px" }}>
               <div className="box-label">In Simple Terms</div>
-              <p>A review analysis tool for India is software that automatically reads, clusters, and scores every customer review across Amazon.in, Flipkart then surfaces the exact product defects, listing gaps, and competitor weaknesses hiding in plain sight. It turns 10,000 reviews you'd never have time to read into 5 specific decisions you can act on this week.</p>
+              <p>An <InLink to="/">AI review mining software</InLink> for India is software that automatically reads, clusters, and scores every customer review across Amazon.in, Flipkart then surfaces the exact product defects, listing gaps, and competitor weaknesses hiding in plain sight. It turns your <InLink to="/solutions/amazon-sellers">amazon sentiment analysis tool</InLink> data into 5 specific decisions you can act on this week.</p>
             </div>
 
             <h2 id="what-is">What is a Review Analysis Tool for Indian Sellers?</h2>
-            <p>A review analysis tool for India is software that automatically reads, clusters, and scores every customer review across Amazon.in, Flipkart surfacing the exact product and listing issues driving 1-star reviews before they compound into a rating drop that impacts your organic ranking and conversion rate.</p>
+            <p>A review analysis tool for India is software that automatically reads, clusters, and scores every customer review across Amazon.in, Flipkart providing <InLink to="/solutions/flipkart-sellers">flipkart review insights</InLink> that surface the exact product and listing issues driving 1-star reviews before they compound into a rating drop that impacts your organic ranking and conversion rate.</p>
             <p>Unlike generic social listening tools built for brand mentions on Twitter or Instagram, India-focused review analysis tools are designed for marketplace product reviews the structured, purchase-verified feedback that directly influences your category ranking, buy box eligibility, and conversion rate on India's top e-commerce platforms.</p>
             <p>Indian D2C brands on Amazon.in receive an average of <strong>80–400 new reviews per month per ASIN</strong>. At that volume, manual review reading captures less than 10% of the signal. AI review intelligence dashboards surface the exact product and listing issues driving 1-star reviews before they compound into a rating drop that is expensive and slow to reverse.</p>
 
@@ -681,7 +705,7 @@ export default function BestReviewAnalysisToolIndia() {
             </div>
 
             <h3>Competitor Review Mining is an Untapped Product Strategy</h3>
-            <p>The most sophisticated D2C brands in India aren't just analysing their own reviews — they're mining competitor reviews to find the exact product gaps and pain points their category's buyers wish were solved. If your top competitor has 400 reviews at 3.8 stars and 31% of negative reviews mention 'remote stops working after 2 months', that's not just their problem that's your positioning opportunity. Put 'remote with 12-month replacement guarantee' in your listing title and see what happens to your conversion rate.</p>
+            <p>The most sophisticated D2C brands in India aren't just analysing their own reviews — they're mining competitor reviews to find the exact product gaps and pain points their category's buyers wish were solved. If your top competitor has 400 reviews at 3.8 stars and 31% of negative reviews mention 'remote stops working after 2 months', that's not just their problem that's your positioning opportunity. Combining this with data from an <InLink to="/resources/expert-blog/amazon-competitor-price-tracking-tool">Amazon competitor price tracking tool</InLink> allows you to outmaneuver them on both quality and value. Put 'remote with 12-month replacement guarantee' in your listing title and see what happens to your conversion rate.</p>
 
             <h3>The Festive Season Amplifies Every Unresolved Review Cluster</h3>
             <p>During Big Billion Days and Great Indian Festival, review volume spikes <strong>4–6× for most categories</strong>. An unresolved complaint cluster that generates 10 negative reviews per month generates 50–60 during the festive surge. Brands that enter the festive season with known complaint clusters unresolved don't just lose the sale — they lose the rating permanently, because the festive review damage is harder to dilute with positive reviews in the slower post-festive months.</p>
@@ -698,7 +722,7 @@ export default function BestReviewAnalysisToolIndia() {
             <div className="steps">
               {[
                 { n:1, t:"Connect Your Product ASINs", d:"Link your Amazon.in, Flipkart product pages. The tool begins ingesting all historical reviews and sets up real-time monitoring for new reviews yours and your competitor ASINs." },
-                { n:2, t:"NLP Analysis & Topic Clustering", d:"The AI engine reads every review and uses natural language processing to identify recurring themes grouping semantically similar complaints and compliments into clusters like 'packaging damage', 'size inaccuracy', 'feature gap', and 'delivery issue'." },
+                { n:2, t:"NLP Analysis & Topic Clustering", d:<>The AI engine reads every review and uses <a href="https://en.wikipedia.org/wiki/Sentiment_analysis" target="_blank" rel="noopener noreferrer" style={{ color: "#16A34A", textDecoration: "underline", fontWeight: 600 }}>sentiment analysis in natural language processing</a> to identify recurring themes grouping semantically similar complaints and compliments into clusters like 'packaging damage', 'size inaccuracy', 'feature gap', and 'delivery issue'.</> },
                 { n:3, t:"Sentiment Scoring & Rating Breakdown", d:"Each cluster is scored by sentiment polarity and weighted by frequency and recency. The tool builds a real-time rating breakdown showing exactly which complaint clusters are responsible for what percentage of your 1-star and 2-star reviews." },
                 { n:4, t:"WhatsApp Alert on New Complaint Clusters", d:"The moment a new negative theme appears in more than 3 reviews within a 48-hour window, you receive a WhatsApp alert with the complaint summary, affected ASINs, and a recommended action. For Indian sellers, WhatsApp delivery means action happens not email digests that get read 3 days later." },
                 { n:5, t:"Actionable AI Recommendation", d:"The platform delivers specific decisions: 'Update listing bullet point 2 and add packaging insert estimated rating improvement 0.3 stars in 60 days.' Not just data. Specific actions with projected outcomes." },
@@ -737,7 +761,7 @@ export default function BestReviewAnalysisToolIndia() {
                 <tbody>
                   {reviewTypes.map((r, i) => (
                     <tr key={i}>
-                      <td style={{ fontWeight:700, whiteSpace:"nowrap" as const }}><span style={{ marginRight:5 }}>{r.icon}</span>{r.type}</td>
+                      <td style={{ fontWeight:700, whiteSpace:"nowrap" as const }}>{r.type}</td>
                       <td style={{ color:"#475569" }}>{r.desc}</td>
                       <td style={{ color:"#475569" }}>{r.action}</td>
                       <td><span className="bg">{r.impact}</span></td>
@@ -782,7 +806,6 @@ export default function BestReviewAnalysisToolIndia() {
             />
 
             <div className="verdict-banner">
-              <div style={{ fontSize:"clamp(18px,4vw,22px)", flexShrink:0 }}>🎯</div>
               <p style={{ margin:0, fontFamily:"'Lora',serif", fontSize:"clamp(13px,2vw,15px)", color:"#92400E", lineHeight:1.7 }} className="dark:text-amber-300">
                 Every week without review intelligence is a week of product and listing failures compounding silently while a competitor who is reading the same market data is acting on it.
               </p>
@@ -839,15 +862,14 @@ export default function BestReviewAnalysisToolIndia() {
             <h3>Key Metrics to Track Monthly</h3>
             <div className="metrics">
               {[
-                { icon:"📊", t:"Complaint Cluster % by Category",     d:"Percentage of 1–2 star reviews in each cluster. Target: below 8% per cluster before festive season." },
-                { icon:"📈", t:"Cluster Trend Direction",             d:"Is your top complaint category growing or shrinking month-over-month? Direction matters more than absolute number." },
-                { icon:"🎯", t:"Competitor Gap Coverage Score",       d:"What % of your competitors' top 3 complaint clusters does your listing directly address?" },
-                { icon:"📝", t:"Review Vocabulary Match Rate",        d:"How much of your 5-star review language appears verbatim in your listing title and first 3 bullets?" },
-                { icon:"⭐", t:"Rating Trend (Weekly Moving Average)", d:"A product at 4.1 trending to 4.3 is healthier than one at 4.4 trending to 4.2. Direction is the signal." },
-                { icon:"🚀", t:"Review Velocity vs Category Average", d:"Sudden drops vs category baseline may indicate review suppression or listing quality flag." },
+                { t:"Complaint Cluster % by Category",     d:"Percentage of 1–2 star reviews in each cluster. Target: below 8% per cluster before festive season." },
+                { t:"Cluster Trend Direction",             d:"Is your top complaint category growing or shrinking month-over-month? Direction matters more than absolute number." },
+                { t:"Competitor Gap Coverage Score",       d:"What % of your competitors' top 3 complaint clusters does your listing directly address?" },
+                { t:"Review Vocabulary Match Rate",        d:"How much of your 5-star review language appears verbatim in your listing title and first 3 bullets?" },
+                { t:"Rating Trend (Weekly Moving Average)", d:"A product at 4.1 trending to 4.3 is healthier than one at 4.4 trending to 4.2. Direction is the signal." },
+                { t:"Review Velocity vs Category Average", d:"Sudden drops vs category baseline may indicate review suppression or listing quality flag." },
               ].map(m => (
                 <div className="metric" key={m.t}>
-                  <div className="metric-icon">{m.icon}</div>
                   <div><div className="metric-t">{m.t}</div><div className="metric-d">{m.d}</div></div>
                 </div>
               ))}
@@ -918,15 +940,14 @@ export default function BestReviewAnalysisToolIndia() {
 
             <div style={{ display:"flex", flexDirection:"column" as const, gap:8, margin:"14px 0 24px" }}>
               {[
-                { icon:"🗣️", title:"Native Hindi, Hinglish &amp; English NLP",              body:"Sentiment is scored in the language the review was written not after force-translation. 'Bilkul bekaar hai' is classified as strongly negative with the same accuracy as 'completely useless'." },
-                { icon:"🏪", title:"Amazon.in + Flipkart simultaneously",         body:"Platform-specific complaint patterns are tracked and surfaced separately. Flipkart buyers disproportionately flag delivery issues;. You see the full picture." },
-                { icon:"🔍", title:"Competitor ASIN review mining automated",           body:"Add any competitor's ASIN and Insydz clusters their reviews with the same taxonomy as yours. You see their top complaint categories, positive themes, and feature gaps in real time." },
-                { icon:"📲", title:"WhatsApp-first alert delivery",                       body:"New complaint clusters and critical individual reviews reach you via WhatsApp within 60 minutes. For Indian SMB operators who check WhatsApp 50× a day, this is the difference between acting and archiving." },
-                { icon:"✍️", title:"AI listing copy recommendations",                    body:"Specific bullet point rewrites generated from your positive review clusters and your competitors' negative review language the highest-conversion listing optimisation available." },
-                { icon:"🎉", title:"Festive season trend intelligence",                   body:"Pre-festive complaint pattern audits so you know exactly which issues to resolve before Big Billion Days and Great Indian Festival review volume spikes 4–6×." },
+                { title:"Native Hindi, Hinglish &amp; English NLP",              body:"Sentiment is scored in the language the review was written not after force-translation. 'Bilkul bekaar hai' is classified as strongly negative with the same accuracy as 'completely useless'." },
+                { title:"Amazon.in + Flipkart simultaneously",         body:"Platform-specific complaint patterns are tracked and surfaced separately. Flipkart buyers disproportionately flag delivery issues;. You see the full picture." },
+                { title:"Competitor ASIN review mining automated",           body:"Add any competitor's ASIN and Insydz clusters their reviews with the same taxonomy as yours. You see their top complaint categories, positive themes, and feature gaps in real time." },
+                { title:"WhatsApp-first alert delivery",                       body:"New complaint clusters and critical individual reviews reach you via WhatsApp within 60 minutes. For Indian SMB operators who check WhatsApp 50× a day, this is the difference between acting and archiving." },
+                { title:"AI listing copy recommendations",                    body:"Specific bullet point rewrites generated from your positive review clusters and your competitors' negative review language the highest-conversion listing optimisation available." },
+                { title:"Festive season trend intelligence",                   body:"Pre-festive complaint pattern audits so you know exactly which issues to resolve before Big Billion Days and Great Indian Festival review volume spikes 4–6×." },
               ].map(f => (
                 <div key={f.title} style={{ background:"#F0FDF4", border:"1px solid #BBF7D0", borderRadius:10, padding:"12px 14px", display:"flex", gap:10 }}>
-                  <span style={{ fontSize:"clamp(16px,3vw,20px)", flexShrink:0, marginTop:2 }}>{f.icon}</span>
                   <div>
                     <strong style={{ display:"block", fontSize:"clamp(12px,2vw,14px)", color:"#0D1B2A", marginBottom:2, fontFamily:"'Sora',sans-serif" }} dangerouslySetInnerHTML={{ __html: f.title }} />
                     <p style={{ margin:0, fontSize:"clamp(11.5px,2vw,13.5px)", color:"#374151", lineHeight:1.6, fontFamily:"'Sora',sans-serif" }}>{f.body}</p>

@@ -81,6 +81,30 @@ const navigationMenu: NavigationMenu = {
   ],
 };
 
+// ─── Inline link helper ──────────────────────────────────────────────────────
+const InLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
+  const [, setLocation] = useLocation();
+  return (
+    <a
+      href={to}
+      onClick={(e) => { e.preventDefault(); setLocation(to); window.scrollTo(0,0); }}
+      style={{
+        color: "#ea580c",
+        textDecoration: "underline",
+        textDecorationColor: "rgba(249, 115, 22, 0.3)",
+        textUnderlineOffset: "3px",
+        fontWeight: 600,
+        cursor: "pointer",
+        transition: "color 0.15s",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.color = "#c2410c")}
+      onMouseLeave={(e) => (e.currentTarget.style.color = "#ea580c")}
+    >
+      {children}
+    </a>
+  );
+};
+
 // ─── TOC ──────────────────────────────────────────────────────────────────────
 const TOC = [
   { id: "s1", label: "What Does Page 1 Ranking Mean?" },
@@ -105,7 +129,7 @@ const FAQS = [
     a: "Partially Amazon factors in price competitiveness, but it's not the dominant ranking signal. Drastically reducing your price to rank faster erodes margin without a proportional ranking benefit. The better lever is improving conversion rate through listing quality — better images, stronger title, more compelling bullet points. A product priced 15% above the category median with a 14% CVR will outrank a product priced at the median with a 7% CVR.",
   },
   {
-    q: "What is the most important part of Amazon listing optimisation for Indian sellers?",
+    q: <>What is the most important part of listing optimization tips for Amazon for Indian sellers?</>,
     a: "The product title and backend search terms together have the highest impact on ranking on Amazon India. The title determines which searches Amazon considers you relevant for your primary keyword must appear in the first 80 characters. Backend search terms (250 bytes) are the single biggest untapped opportunity for most Indian sellers the majority leave them blank or populated with duplicates. Filling them correctly with Hinglish variants, long-tail phrases, and competitor brand names (where permitted) can unlock significant additional organic visibility with no visible listing change.",
   },
   {
@@ -525,7 +549,7 @@ export default function HowToRankPage1AmazonIndia() {
           <div className="flex flex-wrap items-center gap-4 pb-7 border-b border-gray-200 dark:border-gray-800 text-sm text-gray-500 dark:text-gray-400">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              <strong className="text-gray-800 dark:text-gray-200">INSYDZ Research Team</strong>
+              <strong className="text-gray-800 dark:text-gray-200 hover:text-orange-500 transition-colors cursor-pointer" onClick={() => setLocation("/author/vikrant-singh")}>Vikrant Singh</strong>
             </div>
             <span className="text-gray-300 dark:text-gray-700">·</span>
             <span>Last updated: <strong className="text-gray-700 dark:text-gray-300">February 2026</strong></span>
@@ -595,9 +619,8 @@ export default function HowToRankPage1AmazonIndia() {
           ))}
           <div className="mt-5 pt-5 border-t border-gray-200 dark:border-gray-800">
             <button onClick={() => setLocation("/login")} className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-sm font-bold py-2.5 rounded-xl transition-all">
-              Start Free at insydz.com
+              Start Free with Insydz
             </button>
-            <p className="text-center text-xs text-gray-400 mt-2">No credit card required</p>
           </div>
         </aside>
 
@@ -617,7 +640,7 @@ export default function HowToRankPage1AmazonIndia() {
             {/* ── S1 ─────────────────────────────────────────────────────── */}
             <h2 id="s1">What Does Ranking on Page 1 of Amazon India Actually Mean?</h2>
             <p>
-              To <strong>rank on page 1 of Amazon India</strong> means getting your product to appear within the first
+              To <InLink to="/solutions/amazon-sellers">rank on page 1 amazon india</InLink> means getting your product to appear within the first
               16–24 results when a buyer searches for your category on Amazon.in the prime real estate where 70% of
               all clicks occur. Sellers who occupy this space capture the majority of organic demand without paying for
               every click. Sellers outside it are essentially invisible, regardless of product quality or price.
@@ -680,7 +703,7 @@ export default function HowToRankPage1AmazonIndia() {
             <div className="callout indigo">
               <div className="callout-label">AI Overview Summary</div>
               <div className="callout-text">
-                Ranking on page 1 of Amazon India requires optimising your product listing for the A9 algorithm across
+                Ranking on page 1 of Amazon India requires optimising your product listing for the <InLink to="/resources/expert-blog/amazon-seo-tool-india">amazon search algorithm india</InLink> across
                 four core signals: keyword relevance (title, bullets, backend), sales velocity, conversion rate, and
                 click-through rate. Tools like Insydz provide the India-specific keyword data and daily rank tracking
                 needed to systematically build and maintain page 1 positions on Amazon.in.
@@ -690,7 +713,7 @@ export default function HowToRankPage1AmazonIndia() {
             {/* ── S3: A9 Algorithm ───────────────────────────────────────── */}
             <h2 id="s3">How Amazon India's A9 Algorithm Actually Works</h2>
             <p>
-              The A9 algorithm has two jobs: find products relevant to what the buyer searched, then rank them by
+              The <a href="https://en.wikipedia.org/wiki/Amazon_(company)#A9" target="_blank" rel="noopener noreferrer" style={{ color: "#ea580c", textDecoration: "underline", fontWeight: 600 }}>Amazon A9 algorithm</a> has two jobs: find products relevant to what the buyer searched, then rank them by
               which ones are most likely to result in a purchase. Understanding this two-step logic is the key to
               ranking on page 1 of Amazon India because the algorithm isn't just looking at your keywords, it's
               looking at your entire commercial track record.
@@ -740,8 +763,7 @@ export default function HowToRankPage1AmazonIndia() {
             <p>
               The A9 algorithm is a feedback loop, not a one-time optimisation. Better keywords → more impressions → more
               clicks → more conversions → higher ranking → even more impressions. Breaking into this loop requires a
-              well-optimised listing from day one, supported by targeted early-stage advertising to build initial sales
-              velocity.
+              well-optimised listing from day one, supported by targeted early-stage advertising to build <InLink to="/">CTR optimization and conversion signals</InLink> over time.
             </p>
 
             {/* ── S4: 6 Ranking Factors ──────────────────────────────────── */}
@@ -856,9 +878,18 @@ export default function HowToRankPage1AmazonIndia() {
                 title: "Phase 1: Keyword Research (Before Touching Your Listing)",
                 sub: "Foundation cannot be skipped",
                 items: [
-                  "Use a keyword research tool to find your primary keyword (highest volume, medium competition), 3–5 secondary keywords (related terms), and 10–15 long-tail keywords (specific, high-intent phrases).",
-                  "Run a competitor reverse ASIN lookup on your top 3 rivals find keywords they rank for that you don't even have in your listing.",
-                  "Identify seasonal keywords relevant to your category (e.g., \"Diwali gift ideas\", \"monsoon raincoat\", \"back to school stationery\") and plan listing updates 4–6 weeks before the season.",
+                  <>
+                    Use a{" "}
+                    <InLink to="/resources/expert-blog/best-amazon-keyword-research-tool-india">
+                      keyword research tool
+                    </InLink>{" "}
+                    to find your primary keyword (highest volume, medium competition), 3–5 secondary keywords (related terms), and 10–15 long-tail keywords (specific, high-intent phrases).
+                  </>,
+
+                  "Run a competitor reverse ASIN lookup on your top 3 rivals to find keywords they rank for that you don't even have in your listing.",
+
+                  'Identify seasonal keywords relevant to your category (e.g., "Diwali gift ideas", "monsoon raincoat", "back to school stationery") and plan listing updates 4–6 weeks before the season.',
+
                   "Map keywords to their intended placement: primary keyword in title, secondary keywords in bullets, long-tail and Hinglish variants in backend search terms.",
                 ],
               },
