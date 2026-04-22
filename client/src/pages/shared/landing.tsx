@@ -773,74 +773,189 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
+      {/* Hero Section */}
       <section
         id="Home"
-        className="relative min-h-screen flex items-center justify-center pt-24 pb-12 bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-900 dark:via-background dark:to-gray-900 overflow-hidden"
+        className="relative min-h-screen flex items-center justify-center pt-32 lg:pt-40 pb-16 lg:pb-24 bg-gradient-to-br from-purple-50/40 via-white to-pink-50/20 dark:from-gray-900 dark:via-background dark:to-gray-900 overflow-hidden"
       >
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full text-center flex flex-col items-center justify-center space-y-2">
-          <p className="text-gray-600 dark:text-gray-400 text-lg font-medium tracking-wide">
-            India's AI Powered Ecommerce Analytics Software
-          </p>
+        {/* Abstract Background Shapes */}
+        <div className="absolute top-1/4 left-0 w-96 h-96 bg-purple-300/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
+        <div className="absolute top-1/3 right-0 w-96 h-96 bg-pink-300/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-4xl font-bold text-gray-600 dark:text-white leading-tight">
-            Turn Your Seller Data Into
-            <br />
-            <span className="text-4xl sm:text-5xl lg:text-6xl bg-gradient-to-r from-purple-900 via-pink-600 to-rose-700 bg-clip-text text-transparent">
-              Profitable Decisions
-            </span> <br />
-            <span className="text-5xl sm:text-6xl lg:text-4xl font-bold text-gray-700 dark:text-white leading-tight">
-              Faster
-            </span>
-          </h1>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+            
+            {/* Left Content */}
+            <div className="flex flex-col space-y-6 text-left mt-4 lg:mt-0">
+              {/* Pill */}
+              <div className="inline-flex w-max items-center px-4 py-2 rounded-full border border-purple-200 bg-purple-50 text-purple-700 text-sm font-semibold shadow-sm">
+                <span className="mr-2">✨</span> AI Ecommerce Analytical Software for Indian Sellers
+              </div>
 
-          <p className="text-gray-600 dark:text-gray-400 text-lg font-medium tracking-wide max-w-2xl">
-            Insydz is India's AI-powered ecommerce analytics software built specifically for Amazon, Flipkart sellers who are tired of guessing and ready to start growing.
-          </p><br></br>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 mt-6 w-full px-4">
-            {/* ── CTA: real <a> href so Googlebot treats it as a link ── */}
-            <Link
-              to="/about/contact-us"
-              className="w-full sm:w-auto bg-white border-2 border-pink-500 text-pink-500 font-semibold px-6 py-3 text-sm sm:text-base rounded-full shadow-2xl hover:bg-pink-500 hover:text-white hover:shadow-pink-500/50 transition-all transform hover:scale-105"
-            >
-              Book a Free Demo
-            </Link>
+              {/* Platforms */}
+              <div className="flex items-center space-x-3 text-sm text-gray-500 font-medium">
+                <span>Works with</span>
+                <span className="px-3 py-1 rounded-md bg-orange-50 text-orange-600 border border-orange-100 font-semibold">Amazon India</span>
+                <span className="px-3 py-1 rounded-md bg-blue-50 text-blue-600 border border-blue-100 font-semibold">Flipkart</span>
+              </div>
 
-            <Link
-              to="/login"
-              className="w-full sm:w-auto bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-6 py-3 text-sm sm:text-base rounded-full shadow-lg hover:shadow-pink-500/40 transition-all transform hover:scale-105"
-            >
-              Start Free No Credit Card Required
-            </Link>
-          </div>
+              {/* Heading */}
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-gray-900 dark:text-white">
+                <span className="text-6xl block mb-2 text-gray-900">Stop Guessing.</span>
+                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block mb-2">Make Selling</span>
+                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block mb-2">Decisions</span>
+                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block">Better & Faster</span>
+              </h1>
 
-          <div className="grid grid-cols-3 gap-3 sm:gap-6 pt-8 text-center w-full">
-            <div className="space-y-1">
-            <div className="text-xl sm:text-3xl font-bold text-purple-600">250,000+</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Reviews Analyzed
+              {/* Paragraphs */}
+              <div className="space-y-4 text-gray-600 dark:text-gray-400 text-lg max-w-xl">
+                <p>
+                  Insydz helps Amazon and Flipkart sellers understand their data and grow their business. No more guessing what works. Get clear insights and take action with confidence.
+                </p>
+                <p>
+                  Our <span className="font-semibold text-gray-900 dark:text-white">seller analytics platform</span> shows you exactly which products are making money, what your competitors are doing, and where you are losing sales.
+                </p>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Link
+                  to="/login"
+                  className="inline-flex justify-center items-center px-8 py-4 text-base font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full transition-colors shadow-lg hover:shadow-purple-500/25"
+                >
+                  Start Free. No Card Needed.
+                </Link>
+                <Link
+                  to="/about/contact-us"
+                  className="inline-flex justify-center items-center px-8 py-4 text-base font-bold text-purple-600 bg-white border-2 border-purple-600 hover:bg-purple-50 rounded-full transition-colors"
+                >
+                  See How It Works
+                </Link>
+              </div>
+
+              {/* Stats */}
+              <div className="grid grid-cols-3 gap-6 pt-8 mt-4">
+                <div>
+                  <div className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">5,000+</div>
+                  <div className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">Sellers trust Insydz</div>
+                </div>
+                <div>
+                  <div className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">2.5 Lakh+</div>
+                  <div className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">Reviews analysed</div>
+                </div>
+                <div>
+                  <div className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">24/7</div>
+                  <div className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">Live market data</div>
+                </div>
               </div>
             </div>
-            <div className="space-y-1">
-              <div className="text-xl sm:text-3xl font-bold text-pink-600">AI-Powered</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Market Intelligence
-              </div>
-            </div>
-            <div className="space-y-1">
-              <div className="text-xl sm:text-3xl font-bold text-rose-600">24/7</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                Platform Access
-              </div>
-            </div>
-          </div>
 
-          <div className="pt-12 max-w-2xl">
-            <p className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
-              Trusted by 5,000+ Sellers Across Amazon India, Flipkart
-            </p>
-            <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
-              Join thousands of forward thinking Indian businesses leveraging cutting edge analytics to drive unprecedented growth
-            </p>
+            {/* Right Content - Dashboard Mockup */}
+            <div className="relative w-full max-w-xl mx-auto lg:ml-auto xl:max-w-2xl mt-12 lg:mt-0 lg:pl-10 hidden lg:block">
+              {/* Floating elements */}
+              <div className="absolute -top-6 -right-2 sm:-right-6 z-20 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold px-5 py-3 rounded-full shadow-xl shadow-purple-500/30 animate-bounce" style={{ animationDuration: '3s' }}>
+                Sales up 18% this week
+              </div>
+              
+              <div className="absolute -bottom-6 -left-2 sm:-left-6 z-20 bg-white border border-purple-200 text-purple-600 text-sm font-bold px-5 py-4 rounded-2xl shadow-2xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
+                <span className="block text-gray-900 mb-1">Competitor dropped price</span>
+                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">on 3 of your products</span>
+              </div>
+
+              {/* Browser Window Mockup */}
+              <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
+                {/* Browser Header */}
+                <div className="bg-[#1C1C28] px-4 py-4 flex items-center gap-2">
+                  <div className="flex gap-2">
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                  </div>
+                  <div className="mx-auto bg-white/10 rounded-md px-4 py-1.5 text-xs text-white/50 w-64 text-center truncate font-medium">
+                    insydz.com/dashboard
+                  </div>
+                </div>
+
+                {/* Dashboard Content */}
+                <div className="p-6 sm:p-8 space-y-6">
+                  <div className="flex justify-between items-end">
+                    <div>
+                      <h3 className="font-bold text-gray-900 dark:text-white text-lg">Good morning, Rahul</h3>
+                    </div>
+                    <div className="text-sm text-gray-400 font-medium">22 Apr 2026</div>
+                  </div>
+
+                  {/* Stats Cards */}
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-sm bg-white dark:bg-gray-900">
+                      <div className="text-xs text-gray-500 mb-2 font-medium">Revenue Today</div>
+                      <div className="font-extrabold text-2xl text-gray-900 dark:text-white">₹48,200</div>
+                      <div className="text-xs text-green-500 mt-2 font-bold">+12% vs yesterday</div>
+                    </div>
+                    <div className="border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-sm bg-white dark:bg-gray-900">
+                      <div className="text-xs text-gray-500 mb-2 font-medium">Orders</div>
+                      <div className="font-extrabold text-2xl text-gray-900 dark:text-white">143</div>
+                      <div className="text-xs text-green-500 mt-2 font-bold">+8 orders</div>
+                    </div>
+                    <div className="border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-sm bg-white dark:bg-gray-900">
+                      <div className="text-xs text-gray-500 mb-2 font-medium">Returns</div>
+                      <div className="font-extrabold text-2xl text-gray-900 dark:text-white">4</div>
+                      <div className="text-xs text-red-500 mt-2 font-bold">Review needed</div>
+                    </div>
+                  </div>
+
+                  {/* Chart */}
+                  <div className="border border-gray-100 dark:border-gray-800 rounded-2xl p-5 shadow-sm bg-white dark:bg-gray-900">
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-6 font-semibold">Weekly Sales on Amazon India</div>
+                    <div className="flex items-end gap-3 h-28">
+                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t-md h-[30%]"></div>
+                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t-md h-[40%]"></div>
+                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t-md h-[35%]"></div>
+                      <div className="flex-1 bg-purple-100 dark:bg-purple-900/40 rounded-t-md h-[60%]"></div>
+                      <div className="flex-1 bg-gradient-to-t from-purple-500 to-pink-500 rounded-t-md h-[90%] relative"></div>
+                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t-md h-[50%]"></div>
+                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t-md h-[70%]"></div>
+                    </div>
+                  </div>
+
+                  {/* Table */}
+                  <div className="border border-purple-100 dark:border-purple-900/30 bg-purple-50/40 dark:bg-purple-900/5 rounded-2xl p-5">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-purple-600 font-bold text-left">
+                          <th className="pb-4 uppercase tracking-wider text-xs">Product</th>
+                          <th className="pb-4 uppercase tracking-wider text-xs">Price</th>
+                          <th className="pb-4 uppercase tracking-wider text-xs">Profit</th>
+                          <th className="pb-4 uppercase tracking-wider text-xs">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="text-gray-700 dark:text-gray-300">
+                        <tr className="border-b border-purple-100/50 dark:border-purple-900/20 last:border-0">
+                          <td className="py-3 font-semibold text-xs sm:text-sm">Steel Water Bottle</td>
+                          <td className="py-3 text-xs sm:text-sm">₹749</td>
+                          <td className="py-3 text-xs sm:text-sm">₹82</td>
+                          <td className="py-3"><span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold">Trending</span></td>
+                        </tr>
+                        <tr className="border-b border-purple-100/50 dark:border-purple-900/20 last:border-0">
+                          <td className="py-3 font-semibold text-xs sm:text-sm">Yoga Mat 6mm</td>
+                          <td className="py-3 text-xs sm:text-sm">₹599</td>
+                          <td className="py-3 text-xs sm:text-sm">₹41</td>
+                          <td className="py-3"><span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold">Review</span></td>
+                        </tr>
+                        <tr className="border-b border-purple-100/50 dark:border-purple-900/20 last:border-0">
+                          <td className="py-3 font-semibold text-xs sm:text-sm">Phone Stand Desk</td>
+                          <td className="py-3 text-xs sm:text-sm">₹199</td>
+                          <td className="py-3 text-xs sm:text-sm">₹12</td>
+                          <td className="py-3"><span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold">Low Margin</span></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>

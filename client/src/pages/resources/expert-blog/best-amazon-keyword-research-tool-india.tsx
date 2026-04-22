@@ -53,7 +53,7 @@ const SCHEMAS = [
     "inLanguage": "en-IN",
     "author": {
       "@type": "Organization",
-      "name": "Insydz Research Team"
+      "name": "Vikrant Singh"
     },
     "publisher": {
       "@id": "https://insydz.com/#organization"
@@ -306,6 +306,30 @@ function ArticleImg({ src, alt, caption }: { src: string; alt: string; caption: 
 }
 
 
+
+// ─── Inline link helper ──────────────────────────────────────────────────────
+const InLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
+  const [, setLocation] = useLocation();
+  return (
+    <a
+      href={to}
+      onClick={(e) => { e.preventDefault(); setLocation(to); window.scrollTo(0,0); }}
+      style={{
+        color: "#7C3AED",
+        textDecoration: "underline",
+        textDecorationColor: "rgba(124, 58, 237, 0.3)",
+        textUnderlineOffset: "3px",
+        fontWeight: 600,
+        cursor: "pointer",
+        transition: "color 0.15s",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.color = "#6D28D9")}
+      onMouseLeave={(e) => (e.currentTarget.style.color = "#7C3AED")}
+    >
+      {children}
+    </a>
+  );
+};
 
 export default function BestAmazonKeywordResearchToolIndia() {
   const [, setLocation] = useLocation();
@@ -766,7 +790,7 @@ export default function BestAmazonKeywordResearchToolIndia() {
           Find buyer-intent keywords your competitors are ranking for on Amazon.in and win the search result before they know you're there. India's definitive guide to keyword gap analysis, search volume tracking, and rank monitoring.
         </p>
         <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong style={{ color:"#0D1B2A" }}>Insydz Research Team</strong></div>
+          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong className="text-[#0D1B2A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => setLocation("/author/vikrant-singh")}>Vikrant Singh</strong></div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />January 2026</div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong>13 min read</strong></div>
           <span style={{ background:"#FFEDD5", color:"#F97316", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Updated for 2026</span>
@@ -807,7 +831,7 @@ export default function BestAmazonKeywordResearchToolIndia() {
             "Search volume alone is a trap. On Amazon.in, a keyword with 8,000 monthly searches and low competition converts better than one with 80,000 searches and 400 competitors.",
             "Backend keyword fields on Amazon.in are underused by 80% of Indian SMB sellers fixing this alone can lift organic rank by 2–3 positions.",
             "India-first tools like Insydz track keyword ranking shifts on Amazon.in and Flipkart simultaneously global tools miss Flipkart entirely.",
-            "Combining keyword research with competitor price tracking and review intelligence gives Indian sellers a complete, AI-powered growth picture.",
+            "Combining keyword research with competitor price tracking and an <InLink to=\"/resources/expert-blog/review-analysis-guide-india\">AI review intelligence tool for Amazon & Flipkart sellers</InLink> gives Indian sellers a complete, AI-powered growth picture.",
           ].map(t => (
             <div className="takeaway-item" key={t}>
               <div className="takeaway-dot">✓</div>
@@ -868,20 +892,20 @@ export default function BestAmazonKeywordResearchToolIndia() {
             {/* In Simple Terms */}
             <div className="box box-indigo" style={{ margin:"0 0 28px" }}>
               <div className="box-label">In Simple Terms</div>
-              <p>Instead of guessing which keywords to put in your product title and backend fields, a keyword research tool tells you precisely which terms drive actual sales on Amazon.in right now including the hidden buy-intent terms your competitors are ranking for and you've never even thought of.</p>
+              <p>Instead of guessing which keywords to put in your product title and backend fields, an <InLink to="/">amazon keyword research</InLink> tool tells you precisely which terms drive actual sales on Amazon.in right now including the hidden buy-intent terms your competitors are ranking for and you've never even thought of.</p>
             </div>
 
             <h2 id="what-is">What is Amazon Keyword Research for India?</h2>
-            <p>An Amazon keyword research tool for India is software that identifies the exact search terms Indian buyers type into Amazon.in and Flipkart before purchasing and reveals which of those terms your competitors are ranking for that your listing currently doesn't target. This is called keyword gap analysis, and it's the fastest route to organic rank improvement available to any Indian seller.</p>
+            <p>The <InLink to="/solutions/amazon-sellers">best amazon keyword research tool india</InLink> is software that identifies the exact search terms Indian buyers type into Amazon.in and Flipkart before purchasing and reveals which of those terms your competitors are ranking for that your listing currently doesn't target. This is called keyword gap analysis, and it's the fastest route to organic rank improvement available to any Indian seller.</p>
             <p>Unlike generic global tools built for US or European marketplaces, India-focused keyword research accounts for regional language intent, rupee-based price-search patterns, and platform-specific search behaviour on Amazon.in, Flipkart simultaneously.</p>
             <p>Here's the scale of the problem: <strong>Indian sellers on Amazon.in collectively leave an estimated ₹500–800 crore in annual organic revenue on the table</strong> simply because their listings are not optimised for the search terms their buyers are actually using. AI-powered keyword dashboards surface the exact gaps that are costing you search visibility — showing you which competitor keywords to target first, ranked by revenue impact.</p>
 
             <h2 id="why-critical">Why is Keyword Research Critical for Indian Sellers?</h2>
             <h3>India's Search Behaviour is Unlike Any Other Market</h3>
-            <p>India's e-commerce search behaviour is unlike any other market in the world. Buyers search in Hindi transliterations, regional colloquialisms, and hyper-specific price brackets. A buyer looking for a mobile stand might search "mobile holder for car dashboard under 300 rupees" a term with zero US equivalent and zero visibility in Helium 10's keyword database. An India-first tool surfaces this term with its actual Amazon.in search volume and competition score.</p>
+            <p>India's e-commerce search behaviour is unlike any other market in the world. Buyers search in Hindi transliterations, regional colloquialisms, and hyper-specific price brackets. When performing <a href="https://en.wikipedia.org/wiki/Keyword_research" target="_blank" rel="noopener noreferrer" style={{ color: "#7C3AED", textDecoration: "underline", fontWeight: 600 }}>keyword research in search engine optimization</a> for the Indian market, a buyer looking for a mobile stand might search "mobile holder for car dashboard under 300 rupees" a term with zero US equivalent and zero visibility in Helium 10's keyword database. An India-first tool surfaces this term with its actual Amazon.in search volume and competition score.</p>
 
             <h3>The Keyword Visibility Gap is Silent and Compounding</h3>
-            <p>Most Indian sellers do keyword research once at launch and never revisit it. Meanwhile, their competitors are continuously adding new terms, capturing new search traffic, and rising in rank. By the time the revenue impact becomes visible in your seller dashboard, you've already lost 3–6 months of compounding organic traffic to a better-optimised competitor listing.</p>
+            <p>Most Indian sellers do keyword research once at launch and never revisit it. Meanwhile, their competitors are continuously adding new terms, capturing new search traffic, and rising in rank. By the time the revenue impact becomes visible in your seller dashboard, you've already lost 3–6 months of compounding organic traffic to a better-optimised listing that captures <InLink to="/use-cases/track-competitor-prices">amazon competitor keywords</InLink> you are missing.</p>
 
             <div className="box box-amber">
               <div className="box-label">Real Seller Example</div>
@@ -1009,7 +1033,6 @@ export default function BestAmazonKeywordResearchToolIndia() {
             />
 
             <div className="verdict-banner">
-              <div style={{ fontSize:"clamp(18px,4vw,22px)", flexShrink:0 }}>🎯</div>
               <p style={{ margin:0, fontFamily:"'Lora',serif", fontSize:"clamp(13px,2vw,15px)", color:"#4C1D95", lineHeight:1.7 }} className="dark:text-purple-300">
                 Every week without structured keyword research is a week of organic traffic being silently redirected to a competitor who does it properly.
               </p>
@@ -1065,15 +1088,14 @@ export default function BestAmazonKeywordResearchToolIndia() {
             <h3>Key Metrics to Track Monthly</h3>
             <div className="metrics">
               {[
-                { icon:"📊", t:"Keyword Gap Count",               d:"Number of high-volume terms competitors rank for that you don't. Target: reduce by 20% each month." },
-                { icon:"📈", t:"Average Rank Position (Top 20)",  d:"Track your mean rank across your top 20 buy-intent keywords. Direction matters more than absolute position." },
-                { icon:"🎯", t:"Backend Field Utilisation",       d:"Are your 250 backend bytes fully used with non-duplicate, India-specific terms? Most sellers use <40%." },
-                { icon:"🔍", t:"New Keyword Entries (Competitor)", d:"How many new terms did your top rivals start ranking for this month? Each is a gap risk." },
-                { icon:"⚡", t:"Rank Drop Alert Response Time",   d:"How quickly do you update listings after a rank drop alert? Target: within 48 hours of alert." },
-                { icon:"🚀", t:"Traffic Recovery Rate",           d:"After backend keyword updates, track organic sessions per ASIN over 30-day recovery window." },
+                { t:"Keyword Gap Count",               d:"Number of high-volume terms competitors rank for that you don't. Target: reduce by 20% each month." },
+                { t:"Average Rank Position (Top 20)",  d:"Track your mean rank across your top 20 buy-intent keywords. Direction matters more than absolute position." },
+                { t:"Backend Field Utilisation",       d:"Are your 250 backend bytes fully used with non-duplicate, India-specific terms? Most sellers use <40%." },
+                { t:"New Keyword Entries (Competitor)", d:"How many new terms did your top rivals start ranking for this month? Each is a gap risk." },
+                { t:"Rank Drop Alert Response Time",   d:"How quickly do you update listings after a rank drop alert? Target: within 48 hours of alert." },
+                { t:"Traffic Recovery Rate",           d:"After backend keyword updates, track organic sessions per ASIN over 30-day recovery window." },
               ].map(m => (
                 <div className="metric" key={m.t}>
-                  <div className="metric-icon">{m.icon}</div>
                   <div><div className="metric-t">{m.t}</div><div className="metric-d">{m.d}</div></div>
                 </div>
               ))}
@@ -1145,15 +1167,14 @@ export default function BestAmazonKeywordResearchToolIndia() {
 
             <div style={{ display:"flex", flexDirection:"column" as const, gap:8, margin:"14px 0 24px" }}>
               {[
-                { icon:"🔍", title:"Full Amazon.in + Flipkart keyword database",     body:"Rank positions tracked natively on both platforms not estimated from Amazon.com data. Flipkart keyword coverage is unique to India-first tools." },
-                { icon:"🗣️", title:"Hindi and Hinglish keyword detection",           body:"Regional language search terms, transliterated Hindi queries, and Hinglish product descriptors are surfaced and scored by conversion intent not filtered out." },
-                { icon:"💰", title:"Price-bracket keyword intelligence",             body:"'Under 999', 'below 2000', 'best budget' modifiers are detected and scored for India-specific purchase intent the highest-conversion keyword category most sellers miss." },
-                { icon:"📲", title:"WhatsApp rank drop alerts within 60 minutes",   body:"Any rank drop of 3+ positions on a tracked buy-intent keyword triggers a WhatsApp alert with the affected ASIN, term, and a recommended backend field fix." },
-                { icon:"🤖", title:"AI backend field recommendations",              body:"For each keyword gap identified, the platform generates the exact text to add to your Amazon.in backend search terms field no guesswork, no duplication." },
-                { icon:"🎉", title:"Festive keyword intelligence",                  body:"Pre-festive keyword audits surface seasonal search terms specific to Big Billion Days, Great Indian Festival, Diwali, and Republic Day Sale 3 weeks before the revenue window opens." },
+                { title:"Full Amazon.in + Flipkart keyword database",     body:"Rank positions tracked natively on both platforms not estimated from Amazon.com data. Flipkart keyword coverage is unique to India-first tools." },
+                { title:"Hindi and Hinglish keyword detection",           body:"Regional language search terms, transliterated Hindi queries, and Hinglish product descriptors are surfaced and scored by conversion intent not filtered out." },
+                { title:"Price-bracket keyword intelligence",             body:"'Under 999', 'below 2000', 'best budget' modifiers are detected and scored for India-specific purchase intent the highest-conversion keyword category most sellers miss." },
+                { title:"WhatsApp rank drop alerts within 60 minutes",   body:"Any rank drop of 3+ positions on a tracked buy-intent keyword triggers a WhatsApp alert with the affected ASIN, term, and a recommended backend field fix." },
+                { title:"AI backend field recommendations",              body:"For each keyword gap identified, the platform generates the exact text to add to your Amazon.in backend search terms field no guesswork, no duplication." },
+                { title:"Festive keyword intelligence",                  body:"Pre-festive keyword audits surface seasonal search terms specific to Big Billion Days, Great Indian Festival, Diwali, and Republic Day Sale 3 weeks before the revenue window opens." },
               ].map(f => (
                 <div key={f.title} style={{ background:"#F5F3FF", border:"1px solid #DDD6FE", borderRadius:10, padding:"12px 14px", display:"flex", gap:10 }}>
-                  <span style={{ fontSize:"clamp(16px,3vw,20px)", flexShrink:0, marginTop:2 }}>{f.icon}</span>
                   <div>
                     <strong style={{ display:"block", fontSize:"clamp(12px,2vw,14px)", color:"#0D1B2A", marginBottom:2, fontFamily:"'Sora',sans-serif" }}>{f.title}</strong>
                     <p style={{ margin:0, fontSize:"clamp(11.5px,2vw,13.5px)", color:"#374151", lineHeight:1.6, fontFamily:"'Sora',sans-serif" }}>{f.body}</p>

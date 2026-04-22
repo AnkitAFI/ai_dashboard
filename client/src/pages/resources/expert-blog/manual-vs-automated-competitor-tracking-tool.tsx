@@ -552,7 +552,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
 
         /* mid CTA */
         .mid-cta{background:linear-gradient(135deg,#F4500A 0%,#D03D00 100%);border-radius:10px;padding:20px 22px;margin:32px 0;display:flex;flex-direction:column;gap:16px}
-        @media(min-width:640px){.mid-cta{padding:24px 28px;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:40px 0;gap:20px}}
+        @media(min-width:640px){.mid-cta{padding:2px 28px 32px;flex-direction:row;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:40px 0;gap:16px}}
         .mid-cta h3{font-size:16px;font-weight:800;color:white;margin-bottom:5px;font-family:'Sora',sans-serif}
         @media(min-width:640px){.mid-cta h3{font-size:18px}}
         .mid-cta p{color:rgba(255,255,255,.8);font-size:12.5px;margin:0;font-family:'Sora',sans-serif}
@@ -752,7 +752,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
           Indian ecommerce sellers spend 3–5 hours daily tracking competitor prices in Excel and still react 24 hours too late. Here's an honest, data-backed comparison of manual price tracking versus AI-powered automated competitor tracking, and exactly which approach works for Indian sellers at every growth stage.
         </p>
         <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong style={{ color:"#0A0F1A" }}>INSYDZ Research Team</strong></div>
+          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => setLocation("/author/vikrant-singh")}>Vikrant Singh</strong></div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>🕐 January 2026</div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>📖 <strong>12 min read</strong></div>
           <span style={{ background:"rgba(244,80,10,.12)", color:"#F4500A", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"3px 10px", borderRadius:20 }}>Updated for 2026</span>
@@ -865,7 +865,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
               At its simplest: <strong>manual price tracking gives you a snapshot of where prices were when you checked. Automated competitor tracking tells you where prices are right now and what to do about it.</strong>
             </p>
             <p>
-              For Indian ecommerce sellers on Amazon.in and Flipkart, that distinction is the difference between winning and losing the Buy Box on any given day. India's e-commerce market moves faster than any other a ₹50 price change at 11 PM can shift the Buy Box overnight, and you won't know it happened until the next morning when you open your spreadsheet.
+              For Indian ecommerce sellers on Amazon.in and Flipkart, that distinction is the difference between winning and losing the Buy Box on any given day. <a href="https://en.wikipedia.org/wiki/Dynamic_pricing" target="_blank" rel="noopener noreferrer" className="al" title="Dynamic pricing explained">Dynamic pricing in e-commerce</a> means India's market moves faster than any other — a ₹50 price change at 11 PM can shift the Buy Box overnight, and you won't know it happened until the next morning when you open your spreadsheet.
             </p>
 
             {/* Compare visual */}
@@ -938,7 +938,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
             {/* S3: Manual full picture */}
             <h2 id="manual">Manual Price Tracking: The Full Picture</h2>
             <p>
-              Manual price tracking opening competitor listings on Amazon.in and Flipkart every morning, copying prices into a spreadsheet, and trying to spot patterns is how the majority of Indian ecommerce sellers still manage competitor intelligence today.
+              <Link to="/resources/expert-blog/amazon-competitor-price-tracking-tool" className="al" title="Amazon competitor price tracking tool India">Manual price tracking</Link> — opening competitor listings on Amazon.in and Flipkart every morning, copying prices into a spreadsheet, and trying to spot patterns — is how the majority of Indian ecommerce sellers still manage competitor intelligence today.
             </p>
             <p>
               It works. At very small scale. For sellers with 1–5 SKUs and a handful of competitors who are just starting out, a daily Excel check is a legitimate, zero-cost method of staying roughly informed. <strong>The problem isn't that manual tracking is wrong. The problem is that it stops working exactly when your business starts getting serious.</strong>
@@ -967,10 +967,10 @@ export default function ManualVsAutomatedCompetitorTracking() {
             {/* S4: Automated full picture */}
             <h2 id="automated">Automated Competitor Tracking: The Full Picture</h2>
             <p>
-              Automated competitor tracking tools crawl competitor prices on Amazon.in, Flipkart, and Meesho continuously typically every 15–60 minutes and surface changes the moment they happen, with AI-generated recommendations for exactly how to respond.
+              <Link to="/use-cases/track-competitor-prices" className="al" title="Track competitor prices with automated ecommerce tools">Automated competitor tracking in ecommerce</Link> tools crawl competitor prices on Amazon.in, Flipkart, and Meesho continuously — typically every 15–60 minutes — and surface changes the moment they happen, with AI-generated recommendations for exactly how to respond.
             </p>
             <p>
-              The key distinction between basic price alert tools and genuine <strong>AI-powered ecommerce automation</strong> is the intelligence layer. A basic free tool tells you 'Competitor A changed their price.' An AI-powered platform tells you: 'Competitor A dropped to ₹899. You're currently at ₹949. Recommend: Adjust to ₹919 to recover the Buy Box while protecting ₹42 more margin than a direct price match.'
+              The key distinction between basic price alert tools and a genuine <Link to="/resources/expert-blog/amazon-seo-tool-india" className="al" title="AI price tracking tool for Amazon India sellers">AI price tracking tool</Link> is the intelligence layer. A basic free tool tells you 'Competitor A changed their price.' An AI-powered platform tells you: 'Competitor A dropped to ₹899. You're currently at ₹949. Recommend: Adjust to ₹919 to recover the Buy Box while protecting ₹42 more margin than a direct price match.'
             </p>
 
            
@@ -1081,7 +1081,10 @@ export default function ManualVsAutomatedCompetitorTracking() {
             {/* S8: Execution model */}
             <h2 id="execution">Best Practices: Weekly Execution Model for Automated Tracking</h2>
             <p>
-              The most successful Indian sellers don't react to pricing changes they run a structured weekly rhythm that keeps them consistently competitive without manual effort. Daily automated digests, weekly 30-minute reviews, and monthly strategic audits keep your ecommerce automation strategy compounding.
+              The most successful Indian sellers don't react to pricing changes — they run a structured weekly rhythm that keeps them consistently competitive without manual effort. The foundation is <a href="/" className="al" title="Insydz - real-time ecommerce intelligence">real-time alerts and data accuracy</a> — two capabilities that manual tracking simply cannot provide at scale. Daily automated digests, weekly 30-minute reviews, and monthly strategic audits keep your ecommerce automation strategy compounding.
+            </p>
+            <p>
+              For Flipkart sellers, our <Link to="/resources/expert-blog/flipkart-keyword-research-tool" className="al" title="Flipkart keyword research and SEO guide">Flipkart keyword research and SEO optimization guide</Link> details the specific rank tracking workflow that complements automated price monitoring.
             </p>
             
 
