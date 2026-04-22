@@ -550,3 +550,97 @@ class WhiteSpaceScan(Base):
  
     def __repr__(self):
         return f"<WhiteSpaceScan user_id={self.user_id} query='{self.query}'>"
+    
+
+class KwTracked(Base):
+    """
+    One row per (user, keyword, product, platform).
+    Replaces the generic tracked_keywords name to avoid conflicts.
+    """
+    __tablename__ = "kw_tracked"
+ 
+    id              = Column(Integer, primary_key=True, autoincrement=True)
+    user_id         = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    keyword         = Column(String(500), nullable=False)
+    asin_or_pid     = Column(String(200), nullable=False)
+    platform        = Column(String(20),  nullable=False)   # 'amazon' | 'flipkart'
+    category        = Column(String(255), nullable=True)
+    current_rank    = Column(Integer,     nullable=True)    # NULL = not in top results
+    previous_rank   = Column(Integer,     nullable=True)
+    last_checked_at = Column(DateTime(timezone=True), nullable=True)
+    created_at      = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    is_active       = Column(Boolean, default=True, nullable=False)
+ 
+    # Relationships
+    rank_history = relationship("KwRankHistory",  back_populates="tracked_kw", cascade="all, delete-orphan")
+    competitors  = relationship("KwCompetitor",   back_populates="tracked_kw", cascade="all, delete-orphan")
+    alert        = relationship("KwAlertSettings",back_populates="tracked_kw", uselist=False, cascade="all, delete-orphan")
+ 
+    __table_args__ = (
+        UniqueConstraint("user_id", "keyword", "asin_or_pid", "platform", name="uq_kw_tracked"),
+        Index("idx_kw_tracked_user_active", "user_id", "is_active"),
+    )
+ 
+    def __repr__(self):
+        return f"<KwTracked user={self.user_id} kw='{self.keyword}' pid='{self.asin_or_pid}'>"
+ 
+ 
+class KwRankHistory(Base):
+    """
+    Append-only log — one row per rank check.
+    Named kw_rank_history to avoid conflict with existing keyword_rank_history.
+    """
+    __tablename__ = "kw_rank_history"
+ 
+    id         = Column(Integer,  primary_key=True, autoincrement=True)
+    kw_id      = Column(Integer,  ForeignKey("kw_tracked.id", ondelete="CASCADE"), nullable=False, index=True)
+    rank       = Column(Integer,  nullable=True)    # NULL = not found in results
+    checked_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+ 
+    tracked_kw = relationship("KwTracked", back_populates="rank_history")
+ 
+    __table_args__ = (
+        Index("idx_kw_rank_history_kw_checked", "kw_id", "checked_at"),
+    )
+ 
+ 
+class KwCompetitor(Base):
+    """
+    Competitor ASINs/PIDs tracked alongside a keyword.
+    Basic: 2 per keyword. Premium: 10 per keyword.
+    """
+    __tablename__ = "kw_competitors"
+ 
+    id                     = Column(Integer, primary_key=True, autoincrement=True)
+    kw_id                  = Column(Integer, ForeignKey("kw_tracked.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id                = Column(Integer, nullable=False)
+    competitor_asin_or_pid = Column(String(200), nullable=False)
+    platform               = Column(String(20), nullable=False)
+    current_rank           = Column(Integer, nullable=True)
+    last_checked_at        = Column(DateTime(timezone=True), nullable=True)
+ 
+    tracked_kw = relationship("KwTracked", back_populates="competitors")
+ 
+    __table_args__ = (
+        UniqueConstraint("kw_id", "user_id", "competitor_asin_or_pid", name="uq_kw_competitor"),
+    )
+ 
+ 
+class KwAlertSettings(Base):
+    """
+    One settings row per tracked keyword. Upserted on save.
+    Email: Basic+. WhatsApp: Premium only.
+    """
+    __tablename__ = "kw_alert_settings"
+ 
+    id               = Column(Integer, primary_key=True, autoincrement=True)
+    kw_id            = Column(Integer, ForeignKey("kw_tracked.id", ondelete="CASCADE"), nullable=False, unique=True)
+    user_id          = Column(Integer, nullable=False)
+    alert_on_drop    = Column(Boolean, default=True,  nullable=False)
+    drop_threshold   = Column(Integer, default=5,     nullable=False)   # positions
+    email_enabled    = Column(Boolean, default=True,  nullable=False)
+    whatsapp_enabled = Column(Boolean, default=False, nullable=False)
+    whatsapp_number  = Column(String(20), nullable=True)
+    updated_at       = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+ 
+    tracked_kw = relationship("KwTracked", back_populates="alert")    

@@ -70,3 +70,6 @@ async def get_current_user_jwt(token: str = Depends(oauth2_scheme), db: Session 
     if user is None:
         raise credentials_exception
     return user
+
+def get_current_user_id(current_user = Depends(get_current_user)) -> str:
+    return str(current_user.id)

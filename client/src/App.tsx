@@ -117,6 +117,9 @@ import WhiteSpaceFinder from "./pages/dashboard/WhiteSpaceFinder";
 import ProfitabilityOptimizer from "./pages/dashboard/ProfitabilityOptimizer";
 import AiAdvisor from "./pages/dashboard/AiAdvisor";
 import SellerProducts from "./pages/dashboard/SellerProducts";
+import KeywordTrackerIntelligence from "@/pages/dashboard/keyword-intelligence";
+import PriceComparison from "@/pages/dashboard/PriceComparison";
+import ReviewComparison from "@/pages/dashboard/ReviewComparison";
 // ==================
 // Environment Config
 // ==================
@@ -421,7 +424,7 @@ function Router() {
       <ProtectedRoute path="/subscription" component={Subscription} />
       <ProtectedRoute path="/settings" component={Settings} />
       <ProtectedRoute path="/share-of-voice" component={ShareOfVoice} />
-      <ProtectedRoute path="/keyword-tracker" component={KeywordTracker} />
+      <ProtectedRoute path="/keyword-intelligence" component={KeywordTrackerIntelligence} />
       <ProtectedRoute path="/order-history" component={OrderHistory} />
       <ProtectedRoute path="/admin-dashboard" component={AdminDashboard} />
 
@@ -440,8 +443,8 @@ function Router() {
       {/* Seller Placeholder Routes */}
       <ProtectedRoute path="/seller/my-products" component={SellerProducts} />
       <ProtectedRoute path="/seller/listing-audit" component={FeatureComingSoon} />
-      <ProtectedRoute path="/seller/price-comparison" component={FeatureComingSoon} />
-      <ProtectedRoute path="/seller/review-comparison" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/price-comparison" component={PriceComparison} />
+      <ProtectedRoute path="/seller/review-comparison" component={ReviewComparison} />
       <ProtectedRoute path="/seller/keyword-gap" component={FeatureComingSoon} />
       <ProtectedRoute path="/seller/price-optimizer" component={FeatureComingSoon} />
       <ProtectedRoute path="/seller/seo-optimizer" component={FeatureComingSoon} />

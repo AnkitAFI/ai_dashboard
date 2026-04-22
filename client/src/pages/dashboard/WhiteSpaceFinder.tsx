@@ -1,1275 +1,3 @@
-
-
-// import { useState, useCallback, useRef, useEffect } from "react";
-// import axios from "axios";
-// import Sidebar from "@/components/layout/sidebar";
-// import { useAuth } from "@/App";
-// import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-// import { Badge } from "@/components/ui/badge";
-// import {
-//   BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid,
-//   Tooltip, ResponsiveContainer, RadarChart, Radar, PolarGrid,
-//   PolarAngleAxis, PolarRadiusAxis,
-// } from "recharts";
-// import {
-//   Search, Lock, Crown, CheckCircle, X, RefreshCw,
-//   TrendingUp, TrendingDown, AlertCircle, Sparkles, ChevronDown, ChevronUp,
-//   BookOpen, ShoppingBag, Star, Users, ArrowRight, Bell, Download,
-//   Target, Zap, Eye, BarChart3, Shield, Bot, Menu, Minus,
-//   Package, Flame, Filter, SortAsc, ChevronRight,
-// } from "lucide-react";
-
-// const API = "http://localhost:8000/api";
-
-// const CHART_STYLE = {
-//   backgroundColor: "rgba(255,255,255,0.97)",
-//   borderRadius: "12px",
-//   border: "1.5px solid #e2e8f0",
-//   boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
-//   fontSize: 12,
-//   padding: "8px 14px",
-// };
-
-// // ── Types ───────────────────────────────────────────────────────────────────
-
-// interface ScoreBreakdown {
-//   rating_gap: number;
-//   review_thinness: number;
-//   demand_signal: number;
-//   price_gap: number;
-// }
-
-// interface Competitor {
-//   asin?: string;
-//   title: string;
-//   rating: number;
-//   review_count: number;
-//   price: number;
-//   weakness: string;
-//   platform: "amazon" | "flipkart";
-//   is_best_seller?: boolean;
-//   is_amazon_choice?: boolean;
-//   trend_signal?: string;
-// }
-
-// interface AIInsight {
-//   type: "entry_price" | "listing_gap" | "trend_alert" | "quick_win";
-//   headline: string;
-//   detail: string;
-// }
-
-// interface Opportunity {
-//   id: string;
-//   product_niche: string;
-//   score: number;
-//   gap_summary: string;
-//   category: string;
-//   platform: "amazon" | "flipkart" | "both";
-//   search_volume_estimate: number;
-//   avg_price: number;
-//   avg_rating: number;
-//   avg_reviews: number;
-//   competitor_count: number;
-//   est_revenue_min: number;
-//   est_revenue_max: number;
-//   top_keyword: string;
-//   score_breakdown: ScoreBreakdown;
-//   competitors: Competitor[];
-//   trend_direction: "up" | "down" | "steady";
-//   trend_pct: number;
-//   has_best_seller_gap: boolean;
-//   has_amazon_choice_gap: boolean;
-//   entry_price_suggestion?: number;
-//   ai_insights?: AIInsight[];
-//   watchlist_count?: number;
-// }
-
-// interface ScanResult {
-//   query: string;
-//   category: string;
-//   platform: string;
-//   total_found: number;
-//   tier: string;
-//   scans_used: number;
-//   scans_limit: number;
-//   opportunities: Opportunity[];
-//   locked_count: number;
-//   ai_market_summary?: string;
-// }
-
-// interface Toast {
-//   id: number;
-//   title: string;
-//   description: string;
-//   variant: "success" | "error";
-// }
-
-// // ── Helpers ─────────────────────────────────────────────────────────────────
-
-// function inr(n: number | null | undefined): string {
-//   const num = Number(n);
-//   if (n === undefined || n === null || isNaN(num)) return "—";
-//   if (num >= 100000) return "₹" + (num / 100000).toFixed(1) + "L";
-//   if (num >= 1000) return "₹" + Math.round(num).toLocaleString("en-IN");
-//   return "₹" + Math.round(num);
-// }
-
-// function extractErr(e: unknown): string {
-//   const err = e as Record<string, unknown>;
-//   const detail = (err?.response as Record<string, unknown>)?.data
-//     ? ((err.response as Record<string, unknown>).data as Record<string, unknown>)?.detail
-//     : undefined;
-//   if (!detail) return (err?.message as string) ?? "Something went wrong.";
-//   if (typeof detail === "string") return detail;
-//   return JSON.stringify(detail);
-// }
-
-// function getScoreColor(score: number): string {
-//   if (score >= 80) return "text-emerald-600";
-//   if (score >= 65) return "text-blue-600";
-//   if (score >= 50) return "text-amber-600";
-//   return "text-red-600";
-// }
-
-// function getScoreBg(score: number): string {
-//   if (score >= 80) return "bg-emerald-50 border-emerald-200";
-//   if (score >= 65) return "bg-blue-50 border-blue-200";
-//   if (score >= 50) return "bg-amber-50 border-amber-200";
-//   return "bg-red-50 border-red-200";
-// }
-
-// function getScoreLabel(score: number): { label: string; color: string } {
-//   if (score >= 80) return { label: "Hot pick", color: "bg-emerald-100 text-emerald-800" };
-//   if (score >= 65) return { label: "Good gap", color: "bg-blue-100 text-blue-800" };
-//   if (score >= 50) return { label: "Moderate", color: "bg-amber-100 text-amber-800" };
-//   return { label: "Skip", color: "bg-red-100 text-red-800" };
-// }
-
-// // ── Score Ring SVG ───────────────────────────────────────────────────────────
-
-// function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
-//   const r = (size - 10) / 2;
-//   const circ = 2 * Math.PI * r;
-//   const offset = circ * (1 - score / 100);
-//   const color = score >= 80 ? "#10b981" : score >= 65 ? "#3b82f6" : score >= 50 ? "#f59e0b" : "#ef4444";
-//   return (
-//     <div style={{ width: size, height: size, position: "relative", flexShrink: 0 }} className="flex items-center justify-center">
-//       <svg width={size} height={size} style={{ position: "absolute", transform: "rotate(-90deg)" }}>
-//         <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e2e8f0" strokeWidth={5} />
-//         <circle
-//           cx={size / 2} cy={size / 2} r={r} fill="none"
-//           stroke={color} strokeWidth={5}
-//           strokeDasharray={circ} strokeDashoffset={offset}
-//           strokeLinecap="round"
-//         />
-//       </svg>
-//       <span className={`text-sm font-bold relative z-10 ${getScoreColor(score)}`}>{score}</span>
-//     </div>
-//   );
-// }
-
-// // ── Score Breakdown Bars ─────────────────────────────────────────────────────
-
-// function ScoreBreakdownBars({ breakdown }: { breakdown: ScoreBreakdown }) {
-//   const items = [
-//     { label: "Rating gap", value: breakdown.rating_gap, max: 32, color: "#3b82f6" },
-//     { label: "Review thinness", value: breakdown.review_thinness, max: 32, color: "#8b5cf6" },
-//     { label: "Demand signal", value: breakdown.demand_signal, max: 24, color: "#10b981" },
-//     { label: "Price gap", value: breakdown.price_gap, max: 12, color: "#f59e0b" },
-//   ];
-//   return (
-//     <div className="space-y-2">
-//       {items.map((item) => (
-//         <div key={item.label} className="flex items-center gap-3">
-//           <span className="text-xs text-slate-500 w-28 shrink-0">{item.label}</span>
-//           <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-//             <div
-//               className="h-full rounded-full transition-all duration-700"
-//               style={{ width: `${(item.value / item.max) * 100}%`, background: item.color }}
-//             />
-//           </div>
-//           <span className="text-xs font-semibold text-slate-600 w-6 text-right">+{item.value}</span>
-//         </div>
-//       ))}
-//     </div>
-//   );
-// }
-
-// // ── Competitor Card ─────────────────────────────────────────────────────────
-
-// function CompetitorRow({ comp, index }: { comp: Competitor; index: number }) {
-//   return (
-//     <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-//       <div className="w-5 h-5 rounded-full bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600 shrink-0 mt-0.5">
-//         {index + 1}
-//       </div>
-//       <div className="flex-1 min-w-0">
-//         <p className="text-xs font-medium text-slate-700 truncate mb-1">{comp.title}</p>
-//         <div className="flex items-center gap-3 flex-wrap mb-1">
-//           <span className="text-[10px] text-slate-500">★ {comp.rating.toFixed(1)}</span>
-//           <span className="text-[10px] text-slate-500">{comp.review_count.toLocaleString()} reviews</span>
-//           <span className="text-[10px] text-slate-500">₹{comp.price.toLocaleString("en-IN")}</span>
-//           <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${comp.platform === "amazon" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"}`}>
-//             {comp.platform}
-//           </span>
-//           {comp.is_best_seller && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-yellow-100 text-yellow-700">Best Seller</span>}
-//           {comp.is_amazon_choice && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-teal-100 text-teal-700">A's Choice</span>}
-//         </div>
-//         <p className="text-[10px] text-red-600 font-medium">⚠ {comp.weakness}</p>
-//       </div>
-//     </div>
-//   );
-// }
-
-// // ── AI Insight Badge ─────────────────────────────────────────────────────────
-
-// function AIInsightBadge({ insight }: { insight: AIInsight }) {
-//   const configs = {
-//     entry_price: { icon: <Target className="w-3.5 h-3.5" />, bg: "bg-purple-50 border-purple-200", text: "text-purple-700" },
-//     listing_gap: { icon: <Eye className="w-3.5 h-3.5" />, bg: "bg-blue-50 border-blue-200", text: "text-blue-700" },
-//     trend_alert: { icon: <TrendingUp className="w-3.5 h-3.5" />, bg: "bg-emerald-50 border-emerald-200", text: "text-emerald-700" },
-//     quick_win:   { icon: <Zap className="w-3.5 h-3.5" />, bg: "bg-amber-50 border-amber-200", text: "text-amber-700" },
-//   };
-//   const c = configs[insight.type] ?? configs.quick_win;
-//   return (
-//     <div className={`flex items-start gap-2 p-2.5 rounded-lg border ${c.bg}`}>
-//       <span className={`${c.text} shrink-0 mt-0.5`}>{c.icon}</span>
-//       <div>
-//         <p className={`text-xs font-semibold ${c.text}`}>{insight.headline}</p>
-//         <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{insight.detail}</p>
-//       </div>
-//     </div>
-//   );
-// }
-
-// // ── Opportunity Card ─────────────────────────────────────────────────────────
-
-// function OpportunityCard({
-//   opp, index, tier, onUpgrade, onWatchlist,
-// }: {
-//   opp: Opportunity;
-//   index: number;
-//   tier: string;
-//   onUpgrade: (f: string) => void;
-//   onWatchlist: (niche: string) => void;
-// }) {
-//   const [expanded, setExpanded] = useState(false);
-//   const isBasicPlus = tier === "basic" || tier === "premium";
-//   const isPremium = tier === "premium";
-//   const sl = getScoreLabel(opp.score);
-
-//   const trendEl = isPremium ? (
-//     opp.trend_direction === "up" ? (
-//       <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-//         <TrendingUp className="w-2.5 h-2.5" />+{opp.trend_pct}%
-//       </span>
-//     ) : opp.trend_direction === "down" ? (
-//       <span className="flex items-center gap-1 text-[10px] font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">
-//         <TrendingDown className="w-2.5 h-2.5" />-{opp.trend_pct}%
-//       </span>
-//     ) : (
-//       <span className="flex items-center gap-1 text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">
-//         <Minus className="w-2.5 h-2.5" />steady
-//       </span>
-//     )
-//   ) : null;
-
-//   return (
-//     <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white/90 hover:border-slate-300 transition-all duration-200">
-//       <CardContent className="p-5">
-
-//         {/* Header row */}
-//         <div className="flex items-start gap-3 mb-3">
-//           <ScoreRing score={opp.score} />
-//           <div className="flex-1 min-w-0">
-//             <div className="flex items-start justify-between gap-2 mb-1.5">
-//               <h3 className="text-sm font-semibold text-slate-900 leading-tight">{opp.product_niche}</h3>
-//               <span className={`shrink-0 text-[10px] font-semibold px-2.5 py-1 rounded-full ${sl.color}`}>{sl.label}</span>
-//             </div>
-//             <div className="flex items-center gap-1.5 flex-wrap">
-//               <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{opp.category}</span>
-//               <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${opp.platform === "both" ? "bg-purple-100 text-purple-700" : opp.platform === "amazon" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"}`}>
-//                 {opp.platform === "both" ? "Amazon + Flipkart" : opp.platform === "amazon" ? "Amazon.in" : "Flipkart"}
-//               </span>
-//               {opp.has_best_seller_gap && <span className="text-[10px] bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full font-medium">No Best Seller yet</span>}
-//               {opp.has_amazon_choice_gap && <span className="text-[10px] bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full font-medium">No A's Choice</span>}
-//               {trendEl}
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Gap summary */}
-//         <div className="flex items-start gap-2 p-3 bg-slate-50 rounded-xl border border-slate-100 mb-3">
-//           <AlertCircle className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />
-//           <p className="text-xs text-slate-600 leading-relaxed">{opp.gap_summary}</p>
-//         </div>
-
-//         {/* Stats grid */}
-//         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
-//           {[
-//             { label: "Est. revenue / mo", value: `${inr(opp.est_revenue_min)}–${inr(opp.est_revenue_max)}` },
-//             { label: "Avg price", value: `₹${opp.avg_price.toLocaleString("en-IN")}` },
-//             { label: "Avg rating", value: `★ ${opp.avg_rating.toFixed(1)}` },
-//             { label: "Competitors", value: String(opp.competitor_count) },
-//           ].map((s) => (
-//             <div key={s.label} className="bg-slate-50 rounded-lg p-2.5 border border-slate-100 text-center">
-//               <p className="text-[9px] text-slate-400 mb-0.5 uppercase tracking-wide">{s.label}</p>
-//               <p className="text-xs font-semibold text-slate-700">{s.value}</p>
-//             </div>
-//           ))}
-//         </div>
-
-//         {/* Score breakdown */}
-//         {isBasicPlus ? (
-//           <div className="mb-3">
-//             <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Score breakdown</p>
-//             <ScoreBreakdownBars breakdown={opp.score_breakdown} />
-//           </div>
-//         ) : (
-//           <div className="relative mb-3">
-//             <div className="space-y-2 opacity-20 blur-sm pointer-events-none select-none">
-//               {[["Rating gap", 22], ["Review thinness", 18], ["Demand signal", 15], ["Price gap", 10]].map(([l, v]) => (
-//                 <div key={l} className="flex items-center gap-3">
-//                   <span className="text-xs text-slate-400 w-28 shrink-0">{l}</span>
-//                   <div className="flex-1 bg-slate-200 rounded-full h-1.5">
-//                     <div className="h-full rounded-full bg-slate-400" style={{ width: `${(Number(v) / 32) * 100}%` }} />
-//                   </div>
-//                   <span className="text-xs w-6 text-right text-slate-400">+{v}</span>
-//                 </div>
-//               ))}
-//             </div>
-//             <div className="absolute inset-0 flex items-center justify-center">
-//               <button onClick={() => onUpgrade("Score breakdown")} className="flex items-center gap-1.5 text-xs px-4 py-1.5 bg-white border border-slate-300 rounded-full shadow-sm font-medium text-slate-700 hover:border-blue-300 transition-colors">
-//                 <Lock className="w-3 h-3 text-amber-500" /> Unlock breakdown — Basic
-//               </button>
-//             </div>
-//           </div>
-//         )}
-
-//         {/* Entry price suggestion — Premium */}
-//         {isPremium && opp.entry_price_suggestion && (
-//           <div className="flex items-center gap-2 p-2.5 bg-purple-50 border border-purple-200 rounded-lg mb-3">
-//             <Target className="w-3.5 h-3.5 text-purple-600 shrink-0" />
-//             <p className="text-xs text-purple-700">
-//               <span className="font-semibold">Suggested entry price:</span> ₹{opp.entry_price_suggestion.toLocaleString("en-IN")} — 12% below market avg for "Lowest New Price" badge
-//             </p>
-//           </div>
-//         )}
-
-//         {/* AI Insights — Premium (powered by llama3.2:3b) */}
-//         {isPremium && opp.ai_insights && opp.ai_insights.length > 0 && (
-//           <div className="space-y-2 mb-3">
-//             <div className="flex items-center gap-2">
-//               <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">AI insights</p>
-//               <span className="text-[9px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">llama3.2:3b</span>
-//             </div>
-//             {opp.ai_insights.map((ins, i) => (
-//               <AIInsightBadge key={i} insight={ins} />
-//             ))}
-//           </div>
-//         )}
-
-//         {/* Competitor section */}
-//         {isBasicPlus && opp.competitors.length > 0 && (
-//           <div>
-//             <button
-//               onClick={() => setExpanded((p) => !p)}
-//               className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-800 transition-colors font-medium mb-2"
-//             >
-//               {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-//               {expanded ? "Hide" : "Show"} top {opp.competitors.length} competitors & weaknesses
-//             </button>
-//             {expanded && (
-//               <div className="space-y-2">
-//                 {opp.competitors.map((c, i) => (
-//                   <CompetitorRow key={i} comp={c} index={i} />
-//                 ))}
-//               </div>
-//             )}
-//           </div>
-//         )}
-
-//         {!isBasicPlus && (
-//           <button onClick={() => onUpgrade("Competitor deep-dive")} className="flex items-center gap-1.5 text-xs text-amber-600 hover:text-amber-800 transition-colors font-medium">
-//             <Lock className="w-3 h-3" /> View competitor weaknesses — Basic
-//           </button>
-//         )}
-
-//         {/* Footer: keyword + watchlist */}
-//         <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
-//           <span className="text-[10px] text-slate-400">
-//             Top keyword: <span className="text-slate-600 font-medium">{opp.top_keyword}</span>
-//           </span>
-//           <div className="flex items-center gap-2">
-//             {isPremium ? (
-//               <button
-//                 onClick={() => onWatchlist(opp.product_niche)}
-//                 className="flex items-center gap-1 text-[10px] px-2.5 py-1 border border-slate-300 rounded-full text-slate-500 hover:bg-slate-100 transition-colors"
-//               >
-//                 <Bell className="w-2.5 h-2.5" /> Watch
-//                 {opp.watchlist_count ? <span className="ml-0.5 text-slate-400">({opp.watchlist_count})</span> : null}
-//               </button>
-//             ) : (
-//               <button onClick={() => onUpgrade("Watchlist & alerts")} className="flex items-center gap-1 text-[10px] px-2.5 py-1 border border-slate-200 rounded-full text-slate-400 hover:bg-slate-50 transition-colors">
-//                 <Lock className="w-2.5 h-2.5" /> Watch niche
-//               </button>
-//             )}
-//           </div>
-//         </div>
-//       </CardContent>
-//     </Card>
-//   );
-// }
-
-// // ── Locked Card ──────────────────────────────────────────────────────────────
-
-// function LockedCard({ position, onUpgrade }: { position: number; onUpgrade: (f: string) => void }) {
-//   return (
-//     <div className="relative rounded-2xl border border-slate-200 bg-white/60 overflow-hidden cursor-pointer group" onClick={() => onUpgrade("Full results")}>
-//       <div className="p-5 blur-sm opacity-30 pointer-events-none select-none">
-//         <div className="flex items-start gap-3 mb-3">
-//           <div className="w-13 h-13 rounded-full bg-emerald-100 border border-emerald-200 flex items-center justify-center text-sm font-bold text-emerald-600">{position}</div>
-//           <div>
-//             <div className="h-3 w-44 bg-slate-200 rounded mb-2" />
-//             <div className="h-2 w-28 bg-slate-100 rounded" />
-//           </div>
-//         </div>
-//         <div className="grid grid-cols-4 gap-2">
-//           {[1, 2, 3, 4].map((i) => <div key={i} className="h-10 bg-slate-100 rounded-lg" />)}
-//         </div>
-//       </div>
-//       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/70 backdrop-blur-[1px]">
-//         <Lock className="w-4 h-4 text-amber-500" />
-//         <p className="text-sm font-semibold text-slate-700">Result #{position} locked</p>
-//         <p className="text-xs text-slate-500">Upgrade to Basic to unlock all results</p>
-//         <span className="mt-1 text-xs px-5 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full font-medium shadow group-hover:shadow-md transition-all">
-//           Unlock — ₹1,999/mo
-//         </span>
-//       </div>
-//     </div>
-//   );
-// }
-
-// // ── Tier Feature Table ────────────────────────────────────────────────────────
-
-// const TIER_FEATURES = [
-//   { key: "scans", label: "Scans / month", free: "3", basic: "20", premium: "Unlimited" },
-//   { key: "results", label: "Results per scan", free: "3", basic: "All", premium: "All" },
-//   { key: "breakdown", label: "Score breakdown", free: false, basic: true, premium: true },
-//   { key: "competitors", label: "Competitor weaknesses", free: false, basic: true, premium: true },
-//   { key: "demand", label: "Demand signals chart", free: false, basic: true, premium: true },
-//   { key: "trend", label: "Trend data (90-day)", free: false, basic: false, premium: true },
-//   { key: "entry_price", label: "Entry price suggestion", free: false, basic: false, premium: true },
-//   { key: "ai_insights", label: "AI strategic insights", free: false, basic: false, premium: true },
-//   { key: "watchlist", label: "Watchlist & alerts", free: false, basic: false, premium: true },
-//   { key: "export", label: "CSV export", free: false, basic: false, premium: true },
-//   { key: "badges", label: "Best Seller gap signal", free: false, basic: true, premium: true },
-// ];
-
-// function TierCell({ val }: { val: boolean | string }) {
-//   if (val === true) return <CheckCircle className="w-4 h-4 text-emerald-500 mx-auto" />;
-//   if (val === false) return <X className="w-4 h-4 text-slate-300 mx-auto" />;
-//   return <span className="text-xs font-semibold text-slate-700">{val}</span>;
-// }
-
-// // ══════════════════════════════════════════════════════════════════════════════
-// // MAIN COMPONENT
-// // ══════════════════════════════════════════════════════════════════════════════
-
-// export default function WhiteSpaceFinder() {
-//   const { user, isLoading } = useAuth();
-//   const userEmail = user?.email || "";
-//   const userId = user?.id;
-
-//   const [query, setQuery] = useState("");
-//   const [category, setCategory] = useState("all");
-//   const [platform, setPlatform] = useState<"amazon" | "flipkart" | "both">("both");
-//   const [sortBy, setSortBy] = useState<"score" | "revenue" | "competition">("score");
-//   const [minScore, setMinScore] = useState(0);
-//   const [loading, setLoading] = useState(false);
-//   const [result, setResult] = useState<ScanResult | null>(null);
-//   const [error, setError] = useState<string | null>(null);
-//   const [isMobileMenu, setMobileMenu] = useState(false);
-//   const [toasts, setToasts] = useState<Toast[]>([]);
-//   const [showTierTable, setShowTierTable] = useState(false);
-//   const [categories, setCategories] = useState<string[]>(["all"]);
-//   const [watchlisted, setWatchlisted] = useState<Set<string>>(new Set());
-//   const [exporting, setExporting] = useState(false);
-//   const [ollamaStatus, setOllamaStatus] = useState<{
-//     status: "ready" | "no_model" | "offline" | "error" | "checking";
-//     model?: string;
-//     setup_hint?: string;
-//   }>({ status: "checking" });
-//   const inputRef = useRef<HTMLInputElement>(null);
-
-//   const tier = result?.tier ?? "free";
-//   const isBasicPlus = tier === "basic" || tier === "premium";
-//   const isPremium = tier === "premium";
-//   const scansUsed = result?.scans_used ?? 0;
-//   const scansLimit = result?.scans_limit ?? 3;
-//   const scanPct = Math.min((scansUsed / scansLimit) * 100, 100);
-
-//   const showToast = (title: string, description: string, variant: "success" | "error" = "success") => {
-//     const id = Date.now();
-//     setToasts((p) => [...p, { id, title, description, variant }]);
-//     setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 4500);
-//   };
-
-//   // ── Fetch Ollama status on mount ─────────────────────────────────────────
-//   useEffect(() => {
-//     axios
-//       .get(`${API}/white-space/ai/status`)
-//       .then((res) => setOllamaStatus(res.data))
-//       .catch(() => setOllamaStatus({ status: "offline", setup_hint: "ollama serve" }));
-//   }, []);
-
-//   // ── Fetch categories when platform changes ────────────────────────────────
-//   useEffect(() => {
-//     axios
-//       .get(`${API}/white-space/categories`, { params: { platform } })
-//       .then((res) => {
-//         setCategories(["all", ...res.data.categories]);
-//         setCategory("all");
-//       })
-//       .catch(() => {});
-//   }, [platform]);
-
-//   // ── Main scan ─────────────────────────────────────────────────────────────
-//   const runScan = useCallback(async () => {
-//     if (!query.trim()) {
-//       inputRef.current?.focus();
-//       return;
-//     }
-//     setLoading(true);
-//     setError(null);
-//     try {
-//       const res = await axios.post(`${API}/white-space/scan`, {
-//         query: query.trim(),
-//         category: category === "all" ? null : category,
-//         platform,
-//         user_id: userId?.toString() ?? "",
-//       });
-//       setResult(res.data as ScanResult);
-//       setTimeout(() => window.scrollTo({ top: 300, behavior: "smooth" }), 100);
-//     } catch (e: unknown) {
-//       const status = (e as { response?: { status?: number } })?.response?.status;
-//       if (status === 403) {
-//         showToast("Limit reached", "You've used all scans this month. Upgrade for more.", "error");
-//       } else if (status === 429) {
-//         setError("Monthly scan limit reached. Upgrade for more scans.");
-//       } else {
-//         setError(extractErr(e));
-//       }
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, [query, category, platform, userId]);
-
-//   // ── Export ────────────────────────────────────────────────────────────────
-//   const handleExport = async () => {
-//     if (!isPremium) {
-//       showToast("Premium feature", "CSV export requires the Premium plan.", "error");
-//       return;
-//     }
-//     if (!result) return;
-//     setExporting(true);
-//     try {
-//       const rows = [
-//         ["Niche", "Score", "Category", "Platform", "Avg Price", "Avg Rating", "Competitors", "Est Rev Min", "Est Rev Max", "Trend", "Top Keyword"],
-//         ...result.opportunities.map((o) => [
-//           o.product_niche, o.score, o.category, o.platform,
-//           o.avg_price, o.avg_rating, o.competitor_count,
-//           o.est_revenue_min, o.est_revenue_max, o.trend_direction, o.top_keyword,
-//         ]),
-//       ];
-//       const csv = rows.map((r) => r.map((v) => `"${v}"`).join(",")).join("\n");
-//       const blob = new Blob([csv], { type: "text/csv" });
-//       const a = document.createElement("a");
-//       a.href = URL.createObjectURL(blob);
-//       a.download = `white_space_${query.replace(/\s+/g, "_")}_${Date.now()}.csv`;
-//       a.click();
-//       showToast("Export ready!", "CSV downloaded successfully.", "success");
-//     } catch {
-//       showToast("Export failed", "Could not generate CSV.", "error");
-//     } finally {
-//       setExporting(false);
-//     }
-//   };
-
-//   // ── Watchlist ─────────────────────────────────────────────────────────────
-//   const handleWatchlist = (niche: string) => {
-//     if (!isPremium) {
-//       showToast("Premium feature", "Watchlist requires the Premium plan.", "error");
-//       return;
-//     }
-//     setWatchlisted((prev) => {
-//       const n = new Set(prev);
-//       if (n.has(niche)) {
-//         n.delete(niche);
-//         showToast("Removed from watchlist", niche, "success");
-//       } else {
-//         n.add(niche);
-//         showToast("Added to watchlist!", `You'll get weekly alerts for "${niche}"`, "success");
-//       }
-//       return n;
-//     });
-//   };
-
-//   // ── Sort + filter opportunities ──────────────────────────────────────────
-//   const sortedOpps = [...(result?.opportunities ?? [])].filter((o) => o.score >= minScore).sort((a, b) => {
-//     if (sortBy === "revenue") return b.est_revenue_max - a.est_revenue_max;
-//     if (sortBy === "competition") return a.competitor_count - b.competitor_count;
-//     return b.score - a.score;
-//   });
-
-//   // ── Chart data ────────────────────────────────────────────────────────────
-//   const radarData = sortedOpps.slice(0, 1).map((o) => [
-//     { subject: "Rating gap", A: o.score_breakdown.rating_gap, fullMark: 32 },
-//     { subject: "Review thin.", A: o.score_breakdown.review_thinness, fullMark: 32 },
-//     { subject: "Demand", A: o.score_breakdown.demand_signal, fullMark: 24 },
-//     { subject: "Price gap", A: o.score_breakdown.price_gap, fullMark: 12 },
-//   ])[0] ?? [];
-
-//   const distData = [
-//     { name: "Hot 80+", count: sortedOpps.filter((o) => o.score >= 80).length, fill: "#639922" },
-//     { name: "Good 65–79", count: sortedOpps.filter((o) => o.score >= 65 && o.score < 80).length, fill: "#378ADD" },
-//     { name: "Mod 50–64", count: sortedOpps.filter((o) => o.score >= 50 && o.score < 65).length, fill: "#BA7517" },
-//     { name: "Skip <50", count: sortedOpps.filter((o) => o.score < 50).length, fill: "#E24B4A" },
-//   ];
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-br from-[#F8FBFF] via-[#ECF5FF] to-[#E0F2FE] overflow-x-hidden">
-
-//       {/* ── Toasts ── */}
-//       <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-sm">
-//         {toasts.map((t) => (
-//           <div key={t.id} className={`flex items-start gap-3 p-4 rounded-xl shadow-lg border-2 backdrop-blur-md ${t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"}`}>
-//             {t.variant === "success" ? <CheckCircle className="h-5 w-5 text-green-600 shrink-0 mt-0.5" /> : <X className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />}
-//             <div className="flex-1">
-//               <p className={`font-semibold text-sm ${t.variant === "success" ? "text-green-900" : "text-red-900"}`}>{t.title}</p>
-//               <p className={`text-xs mt-0.5 ${t.variant === "success" ? "text-green-700" : "text-red-700"}`}>{t.description}</p>
-//             </div>
-//             <button onClick={() => setToasts((p) => p.filter((x) => x.id !== t.id))}><X className="w-4 h-4 text-slate-400" /></button>
-//           </div>
-//         ))}
-//       </div>
-
-//       {/* ── Mobile sidebar ── */}
-//       {isMobileMenu && (
-//         <>
-//           <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileMenu(false)} />
-//           <aside className="fixed inset-y-0 left-0 w-64 bg-white z-50 lg:hidden shadow-2xl">
-//             <div className="flex justify-end p-4"><button onClick={() => setMobileMenu(false)}><X className="w-5 h-5" /></button></div>
-//             <Sidebar />
-//           </aside>
-//         </>
-//       )}
-//       <aside className="hidden lg:block fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-40"><Sidebar /></aside>
-
-//       <div className="lg:ml-64 transition-all min-h-screen">
-
-//         {/* ── Header ── */}
-//         <header className="bg-white/80 backdrop-blur-xl border border-sky-100 shadow-xl rounded-2xl px-6 py-4 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6 gap-4">
-//           <div className="flex items-center gap-4">
-//             <button className="lg:hidden p-2 rounded-lg hover:bg-slate-100" onClick={() => setMobileMenu(true)}>
-//               <Menu className="w-5 h-5" />
-//             </button>
-//             <div className="flex items-center gap-3">
-//               <div className="w-11 h-11 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-xl flex items-center justify-center shadow-inner">
-//                 <Sparkles className="h-5 w-5 text-violet-600" />
-//               </div>
-//               <div>
-//                 <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-violet-900 to-indigo-700 bg-clip-text text-transparent tracking-tight">
-//                   Opportunity Finder
-//                 </h2>
-//                 <p className="text-slate-500 text-xs sm:text-sm font-medium">Discover untapped product gaps — Amazon.in & Flipkart</p>
-//               </div>
-//             </div>
-//           </div>
-
-//           <div className="flex items-center gap-3 flex-wrap">
-//             {/* Ollama status pill — only shown for Premium (AI features active) */}
-//             {isPremium && (
-//               <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 rounded-xl border border-slate-800">
-//                 <div className="relative w-2.5 h-2.5">
-//                   <div className={`w-2 h-2 rounded-full ${
-//                     ollamaStatus.status === "ready" ? "bg-green-400" :
-//                     ollamaStatus.status === "no_model" ? "bg-amber-400" :
-//                     ollamaStatus.status === "checking" ? "bg-blue-400 animate-pulse" :
-//                     "bg-red-400"
-//                   }`} style={ollamaStatus.status === "ready" ? { boxShadow: "0 0 6px rgba(74,222,128,0.7)" } : {}} />
-//                   {ollamaStatus.status === "ready" && (
-//                     <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-green-400 opacity-25 animate-ping" />
-//                   )}
-//                 </div>
-//                 <span className="text-[10px] font-mono text-slate-300">
-//                   {ollamaStatus.status === "checking" ? "Checking AI…" :
-//                    ollamaStatus.status === "ready" ? `${ollamaStatus.model ?? "llama3.2:3b"} · ready` :
-//                    ollamaStatus.status === "no_model" ? "Model missing" :
-//                    "AI offline"}
-//                 </span>
-//                 {(ollamaStatus.status === "no_model" || ollamaStatus.status === "offline") && ollamaStatus.setup_hint && (
-//                   <code className="text-[9px] text-amber-400 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800/40">
-//                     {ollamaStatus.setup_hint}
-//                   </code>
-//                 )}
-//               </div>
-//             )}
-
-//             {/* Scan counter */}
-//             {result && (
-//               <div className="bg-white/60 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
-//                 <div className="flex items-center justify-between gap-3 mb-1">
-//                   <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Scans used</p>
-//                   <Badge className={`h-4 text-[10px] border-none px-1.5 ${tier === "premium" ? "bg-violet-100 text-violet-800" : tier === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
-//                     {tier.toUpperCase()}
-//                   </Badge>
-//                 </div>
-//                 <div className="flex items-center gap-2">
-//                   <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-//                     <div
-//                       className="h-full rounded-full transition-all duration-500"
-//                       style={{ width: `${scanPct}%`, background: scanPct >= 80 ? "#ef4444" : "#7F77DD" }}
-//                     />
-//                   </div>
-//                   <span className="text-[11px] font-bold text-slate-600">
-//                     {scansUsed}/{isPremium ? "∞" : scansLimit}
-//                   </span>
-//                 </div>
-//               </div>
-//             )}
-
-//             {/* Action buttons */}
-//             {result && (
-//               <div className="flex items-center gap-2">
-//                 {isPremium && (
-//                   <button
-//                     onClick={handleExport}
-//                     disabled={exporting}
-//                     className="flex items-center gap-1.5 text-xs px-3 py-2 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 text-slate-600 transition-colors"
-//                   >
-//                     {exporting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
-//                     Export CSV
-//                   </button>
-//                 )}
-//                 <button
-//                   onClick={() => setShowTierTable(!showTierTable)}
-//                   className="flex items-center gap-1.5 text-xs px-3 py-2 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 text-slate-600 transition-colors"
-//                 >
-//                   <Crown className="w-3.5 h-3.5 text-amber-500" />
-//                   Plans
-//                 </button>
-//               </div>
-//             )}
-
-//             {isLoading ? (
-//               <p className="text-xs text-slate-400 animate-pulse">Checking session…</p>
-//             ) : !userEmail ? (
-//               <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 gap-1 text-[10px]">
-//                 <AlertCircle className="h-3 w-3" /> Guest Mode
-//               </Badge>
-//             ) : null}
-//           </div>
-//         </header>
-
-//         <div className="px-4 sm:px-6 pb-12 space-y-5 max-w-7xl mx-auto">
-
-//           {/* ── Tier comparison table ── */}
-//           {showTierTable && (
-//             <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white/90">
-//               <CardHeader className="pb-2">
-//                 <div className="flex items-center justify-between">
-//                   <CardTitle className="text-base font-semibold text-slate-700 flex items-center gap-2">
-//                     <Crown className="h-4 w-4 text-amber-500" /> Plan comparison
-//                   </CardTitle>
-//                   <button onClick={() => setShowTierTable(false)} className="text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
-//                 </div>
-//               </CardHeader>
-//               <CardContent>
-//                 <div className="overflow-x-auto">
-//                   <table className="w-full text-sm">
-//                     <thead>
-//                       <tr className="border-b border-slate-200">
-//                         <th className="text-left p-2.5 text-xs text-slate-500 font-medium w-48">Feature</th>
-//                         <th className="text-center p-2.5 text-xs font-semibold text-slate-600">Free</th>
-//                         <th className="text-center p-2.5 text-xs font-semibold text-amber-700 bg-amber-50 rounded-t">
-//                           Basic<br /><span className="text-[10px] font-normal">₹1,999/mo</span>
-//                         </th>
-//                         <th className="text-center p-2.5 text-xs font-semibold text-violet-700 bg-violet-50 rounded-t">
-//                           Premium<br /><span className="text-[10px] font-normal">₹2,999/mo</span>
-//                         </th>
-//                       </tr>
-//                     </thead>
-//                     <tbody>
-//                       {TIER_FEATURES.map((f) => (
-//                         <tr key={f.key} className="border-b border-slate-100">
-//                           <td className="p-2.5 text-xs text-slate-600">{f.label}</td>
-//                           <td className="p-2.5 text-center"><TierCell val={f.free} /></td>
-//                           <td className="p-2.5 text-center bg-amber-50/40"><TierCell val={f.basic} /></td>
-//                           <td className="p-2.5 text-center bg-violet-50/40"><TierCell val={f.premium} /></td>
-//                         </tr>
-//                       ))}
-//                     </tbody>
-//                     <tfoot>
-//                       <tr>
-//                         <td />
-//                         <td className="p-3 text-center"><span className="text-xs text-slate-400">Current</span></td>
-//                         <td className="p-3 text-center bg-amber-50/40">
-//                           <a href="/subscription" className="text-xs px-4 py-1.5 bg-amber-500 text-white rounded-full font-medium hover:bg-amber-600 transition-colors">Upgrade</a>
-//                         </td>
-//                         <td className="p-3 text-center bg-violet-50/40">
-//                           <a href="/subscription" className="text-xs px-4 py-1.5 bg-violet-600 text-white rounded-full font-medium hover:bg-violet-700 transition-colors">Upgrade</a>
-//                         </td>
-//                       </tr>
-//                     </tfoot>
-//                   </table>
-//                 </div>
-//               </CardContent>
-//             </Card>
-//           )}
-
-//           {/* ── Search & Filters ── */}
-//           <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white/80 backdrop-blur-md">
-//             <CardContent className="p-5">
-//               {/* Search input */}
-//               <div className="flex gap-3 mb-4">
-//                 <div className="relative flex-1">
-//                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-//                   <input
-//                     ref={inputRef}
-//                     type="text"
-//                     value={query}
-//                     onChange={(e) => setQuery(e.target.value)}
-//                     onKeyDown={(e) => e.key === "Enter" && runScan()}
-//                     placeholder='Search a category or product, e.g. "kitchen organizer", "baby feeding", "pet care"'
-//                     className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-violet-300 focus:border-violet-400 outline-none transition-all"
-//                   />
-//                 </div>
-//                 <button
-//                   onClick={runScan}
-//                   disabled={loading || !query.trim()}
-//                   className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm rounded-xl shadow hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-w-[130px] justify-center"
-//                 >
-//                   {loading ? <><RefreshCw className="w-4 h-4 animate-spin" />Scanning…</> : <><Sparkles className="w-4 h-4" />Find gaps</>}
-//                 </button>
-//               </div>
-
-//               {/* Filter row */}
-//               <div className="flex flex-wrap items-center gap-3">
-//                 {/* Platform */}
-//                 <div className="flex rounded-lg overflow-hidden border border-slate-300">
-//                   {(["both", "amazon", "flipkart"] as const).map((p) => (
-//                     <button
-//                       key={p}
-//                       onClick={() => setPlatform(p)}
-//                       className={`px-3 py-2 text-xs font-medium transition-all ${platform === p ? "bg-violet-600 text-white" : "bg-white text-slate-500 hover:bg-slate-50"}`}
-//                     >
-//                       {p === "both" ? "Both" : p === "amazon" ? "Amazon.in" : "Flipkart"}
-//                     </button>
-//                   ))}
-//                 </div>
-
-//                 {/* Category */}
-//                 <select
-//                   value={category}
-//                   onChange={(e) => setCategory(e.target.value)}
-//                   className="h-9 px-3 text-xs border border-slate-300 rounded-lg bg-white text-slate-600 focus:ring-2 focus:ring-violet-300 outline-none"
-//                 >
-//                   {categories.map((c) => <option key={c} value={c}>{c === "all" ? "All categories" : c}</option>)}
-//                 </select>
-
-//                 {/* Min score */}
-//                 <select
-//                   value={minScore}
-//                   onChange={(e) => setMinScore(Number(e.target.value))}
-//                   className="h-9 px-3 text-xs border border-slate-300 rounded-lg bg-white text-slate-600 focus:ring-2 focus:ring-violet-300 outline-none"
-//                 >
-//                   <option value={0}>Any score</option>
-//                   <option value={80}>Hot only (80+)</option>
-//                   <option value={65}>Good+ (65+)</option>
-//                   <option value={50}>Moderate+ (50+)</option>
-//                 </select>
-
-//                 {/* Sort */}
-//                 <div className="flex items-center gap-1.5 ml-auto">
-//                   <SortAsc className="w-3.5 h-3.5 text-slate-400" />
-//                   <select
-//                     value={sortBy}
-//                     onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-//                     className="h-9 px-3 text-xs border border-slate-300 rounded-lg bg-white text-slate-600 focus:ring-2 focus:ring-violet-300 outline-none"
-//                   >
-//                     <option value="score">Sort: Score</option>
-//                     <option value="revenue">Sort: Revenue</option>
-//                     <option value="competition">Sort: Fewest competitors</option>
-//                   </select>
-//                 </div>
-//               </div>
-
-//               {/* Quick search pills */}
-//               {!result && (
-//                 <div className="mt-4 flex flex-wrap gap-2">
-//                   <span className="text-xs text-slate-400 flex items-center">Try:</span>
-//                   {["kitchen organizer", "baby feeding", "pet grooming", "sleep aid", "skincare tools", "home scent", "gaming accessories", "fitness gear"].map((s) => (
-//                     <button key={s} onClick={() => { setQuery(s); }} className="text-xs px-3 py-1 bg-slate-100 text-slate-500 rounded-full border border-slate-200 hover:bg-violet-100 hover:text-violet-700 hover:border-violet-200 transition-colors">
-//                       {s}
-//                     </button>
-//                   ))}
-//                 </div>
-//               )}
-//             </CardContent>
-//           </Card>
-
-//           {/* ── Error ── */}
-//           {error && (
-//             <div className="flex items-start gap-3 p-4 bg-red-50 border-l-4 border-red-400 rounded-r-2xl">
-//               <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-//               <p className="text-sm text-red-700">{error}</p>
-//             </div>
-//           )}
-
-//           {/* ── Loading skeleton ── */}
-//           {loading && (
-//             <div className="space-y-3">
-//               {[1, 2, 3].map((i) => (
-//                 <Card key={i} className="bg-white/70 rounded-2xl shadow-sm animate-pulse">
-//                   <CardContent className="p-5">
-//                     <div className="flex gap-3 mb-3">
-//                       <div className="w-12 h-12 bg-slate-200 rounded-full" />
-//                       <div className="flex-1">
-//                         <div className="h-3.5 w-52 bg-slate-200 rounded mb-2" />
-//                         <div className="h-2.5 w-28 bg-slate-100 rounded" />
-//                       </div>
-//                       <div className="w-16 h-10 bg-slate-200 rounded-xl" />
-//                     </div>
-//                     <div className="h-10 bg-slate-100 rounded-xl mb-3" />
-//                     <div className="grid grid-cols-4 gap-2">
-//                       {[1, 2, 3, 4].map((j) => <div key={j} className="h-12 bg-slate-100 rounded-lg" />)}
-//                     </div>
-//                   </CardContent>
-//                 </Card>
-//               ))}
-//             </div>
-//           )}
-
-//           {/* ── Results ── */}
-//           {result && !loading && (
-//             <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-
-//               {/* Left: results list */}
-//               <div className="xl:col-span-2 space-y-4">
-
-//                 {/* Summary + AI market summary */}
-//                 <div className="flex items-start justify-between gap-3">
-//                   <div>
-//                     <h3 className="text-base font-semibold text-slate-800">
-//                       {result.total_found} opportunities — <span className="text-violet-600">"{result.query}"</span>
-//                     </h3>
-//                     <p className="text-xs text-slate-400 mt-0.5">
-//                       {sortedOpps.filter((o) => o.score >= 80).length} hot picks · {sortedOpps.filter((o) => o.score >= 65 && o.score < 80).length} good gaps · {sortedOpps.filter((o) => o.score < 50).length} to skip
-//                     </p>
-//                   </div>
-//                   {result.total_found > 0 && (
-//                     <div className="text-right">
-//                       <p className="text-xs text-slate-400">Top score</p>
-//                       <p className={`text-xl font-bold ${getScoreColor(Math.max(...sortedOpps.map((o) => o.score)))}`}>
-//                         {Math.max(...sortedOpps.map((o) => o.score))}
-//                       </p>
-//                     </div>
-//                   )}
-//                 </div>
-
-//                 {/* AI market summary — Premium */}
-//                 {isPremium && result.ai_market_summary && (
-//                   <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200 rounded-2xl">
-//                     <Bot className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" />
-//                     <div className="flex-1 min-w-0">
-//                       <div className="flex items-center gap-2 mb-1">
-//                         <p className="text-xs font-semibold text-violet-700">AI market summary</p>
-//                         <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-mono ${
-//                           ollamaStatus.status === "ready"
-//                             ? "bg-green-100 text-green-700"
-//                             : "bg-slate-100 text-slate-500"
-//                         }`}>
-//                           {ollamaStatus.status === "ready" ? `llama3.2:3b` : "static fallback"}
-//                         </span>
-//                       </div>
-//                       <p className="text-xs text-slate-600 leading-relaxed">{result.ai_market_summary}</p>
-//                     </div>
-//                   </div>
-//                 )}
-//                 {isPremium && !result.ai_market_summary && (
-//                   <div className="flex items-start gap-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
-//                     <Bot className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-//                     <div>
-//                       <p className="text-xs font-semibold text-slate-500 mb-1">AI market summary unavailable</p>
-//                       <p className="text-xs text-slate-400">
-//                         {ollamaStatus.status === "offline" ? "Ollama is offline. Run: " : ollamaStatus.status === "no_model" ? "Model not loaded. Run: " : "AI summary not generated."}
-//                         {(ollamaStatus.status === "offline" || ollamaStatus.status === "no_model") && ollamaStatus.setup_hint && (
-//                           <code className="ml-1 bg-slate-100 px-1 rounded text-slate-600">{ollamaStatus.setup_hint}</code>
-//                         )}
-//                       </p>
-//                     </div>
-//                   </div>
-//                 )}
-//                 {!isPremium && result.total_found > 0 && (
-//                   <div className="flex items-center gap-3 p-3 bg-violet-50 border border-violet-200 rounded-xl cursor-pointer hover:bg-violet-100 transition-colors" onClick={() => window.location.href = "/subscription"}>
-//                     <Bot className="w-4 h-4 text-violet-400 shrink-0" />
-//                     <p className="text-xs text-violet-600 flex-1">AI market summary + strategic insights (llama3.2:3b) — Premium</p>
-//                     <ChevronRight className="w-3.5 h-3.5 text-violet-400" />
-//                   </div>
-//                 )}
-
-//                 {/* Opportunity cards */}
-//                 {sortedOpps.map((opp, i) => (
-//                   <OpportunityCard
-//                     key={opp.id}
-//                     opp={opp}
-//                     index={i}
-//                     tier={tier}
-//                     onUpgrade={(f) => showToast("Upgrade required", `"${f}" requires a higher plan.`, "error")}
-//                     onWatchlist={handleWatchlist}
-//                   />
-//                 ))}
-
-//                 {/* Locked results */}
-//                 {result.locked_count > 0 && Array.from({ length: result.locked_count }).map((_, i) => (
-//                   <LockedCard
-//                     key={`locked-${i}`}
-//                     position={sortedOpps.length + i + 1}
-//                     onUpgrade={(f) => showToast("Upgrade required", `"${f}" requires Basic or above.`, "error")}
-//                   />
-//                 ))}
-
-//                 {/* Upgrade nudges */}
-//                 {!isBasicPlus && result.total_found > 0 && (
-//                   <Card className="bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 rounded-2xl shadow-sm">
-//                     <CardContent className="p-6 text-center">
-//                       <Sparkles className="w-7 h-7 text-violet-400 mx-auto mb-3" />
-//                       <h3 className="text-base font-semibold text-slate-800 mb-1">
-//                         {result.locked_count} more opportunities waiting
-//                       </h3>
-//                       <p className="text-sm text-slate-500 mb-4 max-w-md mx-auto">
-//                         Basic unlocks all results, score breakdowns, competitor weaknesses, demand signal charts, and the Best Seller gap indicator. One avoided inventory mistake pays for months of subscription.
-//                       </p>
-//                       <a href="/subscription" className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm rounded-xl shadow hover:opacity-90 transition-all">
-//                         <Crown className="w-4 h-4" /> Upgrade to Basic — ₹1,999/mo <ArrowRight className="w-4 h-4" />
-//                       </a>
-//                     </CardContent>
-//                   </Card>
-//                 )}
-
-//                 {isBasicPlus && !isPremium && result.total_found > 0 && (
-//                   <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl shadow-sm">
-//                     <CardContent className="p-5 flex items-center gap-4">
-//                       <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
-//                         <Zap className="w-5 h-5 text-amber-600" />
-//                       </div>
-//                       <div className="flex-1">
-//                         <p className="text-sm font-semibold text-slate-800">Unlock the full intelligence layer</p>
-//                         <p className="text-xs text-slate-500 mt-0.5">Premium adds 90-day trend data, AI strategic insights per niche, entry price recommendations, watchlist with weekly email alerts, and CSV export.</p>
-//                       </div>
-//                       <a href="/subscription" className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-amber-500 text-white text-xs font-semibold rounded-xl hover:bg-amber-600 transition-colors">
-//                         <Crown className="w-3.5 h-3.5" /> ₹2,999/mo
-//                       </a>
-//                     </CardContent>
-//                   </Card>
-//                 )}
-//               </div>
-
-//               {/* Right: sidebar charts & insights */}
-//               <div className="space-y-4">
-
-//                 {/* Score distribution */}
-//                 <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white/80">
-//                   <CardHeader className="pb-2">
-//                     <CardTitle className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-//                       <BarChart3 className="w-4 h-4 text-violet-500" /> Score distribution
-//                     </CardTitle>
-//                     <CardDescription className="text-slate-400">Opportunity quality breakdown</CardDescription>
-//                   </CardHeader>
-//                   <CardContent>
-//                     <ResponsiveContainer width="100%" height={160}>
-//                       <BarChart data={distData} margin={{ left: 0, right: 5, top: 4, bottom: 4 }} barCategoryGap="20%">
-//                         <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-//                         <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-//                         <YAxis tick={{ fontSize: 9, fill: "#94a3b8" }} axisLine={false} tickLine={false} allowDecimals={false} />
-//                         <Tooltip contentStyle={CHART_STYLE} formatter={(v: unknown) => [String(v), "Count"]} />
-//                         <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={40}>
-//                           {distData.map((d, i) => <Cell key={i} fill={d.fill} />)}
-//                         </Bar>
-//                       </BarChart>
-//                     </ResponsiveContainer>
-//                   </CardContent>
-//                 </Card>
-
-//                 {/* Top opportunity radar — Basic+ */}
-//                 {isBasicPlus && radarData.length > 0 && sortedOpps.length > 0 && (
-//                   <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white/80">
-//                     <CardHeader className="pb-2">
-//                       <CardTitle className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-//                         <Target className="w-4 h-4 text-blue-500" /> Top pick — score anatomy
-//                       </CardTitle>
-//                       <CardDescription className="text-slate-400 truncate">{sortedOpps[0]?.product_niche}</CardDescription>
-//                     </CardHeader>
-//                     <CardContent>
-//                       <ResponsiveContainer width="100%" height={180}>
-//                         <RadarChart data={radarData}>
-//                           <PolarGrid stroke="#e2e8f0" />
-//                           <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: "#64748b" }} />
-//                           <PolarRadiusAxis angle={30} tick={{ fontSize: 8, fill: "#94a3b8" }} />
-//                           <Radar name="Score" dataKey="A" stroke="#7F77DD" fill="#7F77DD" fillOpacity={0.18} strokeWidth={2} />
-//                         </RadarChart>
-//                       </ResponsiveContainer>
-//                     </CardContent>
-//                   </Card>
-//                 )}
-
-//                 {/* Demand signals — Basic+ */}
-//                 {isBasicPlus ? (
-//                   <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white/80">
-//                     <CardHeader className="pb-2">
-//                       <CardTitle className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-//                         <Flame className="w-4 h-4 text-orange-500" /> Demand signals
-//                       </CardTitle>
-//                     </CardHeader>
-//                     <CardContent className="space-y-2.5">
-//                       {sortedOpps.slice(0, 6).map((o) => (
-//                         <div key={o.id} className="flex items-center gap-2.5">
-//                           <span className="text-xs text-slate-500 truncate w-28 shrink-0">{o.product_niche.split(" ").slice(0, 3).join(" ")}</span>
-//                           <div className="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
-//                             <div className="h-full rounded-full transition-all duration-700"
-//                               style={{ width: `${o.score}%`, background: o.score >= 80 ? "#639922" : o.score >= 65 ? "#378ADD" : "#BA7517" }} />
-//                           </div>
-//                           <span className={`text-xs font-semibold w-6 text-right ${getScoreColor(o.score)}`}>{o.score}</span>
-//                         </div>
-//                       ))}
-//                     </CardContent>
-//                   </Card>
-//                 ) : (
-//                   <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white/80">
-//                     <CardHeader className="pb-2">
-//                       <CardTitle className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-//                         <Flame className="w-4 h-4 text-orange-500" /> Demand signals
-//                       </CardTitle>
-//                     </CardHeader>
-//                     <CardContent>
-//                       <div className="relative">
-//                         <div className="space-y-2.5 opacity-20 blur-sm pointer-events-none select-none">
-//                           {[70, 85, 55, 90, 60].map((s, i) => (
-//                             <div key={i} className="flex items-center gap-2.5">
-//                               <div className="h-3 bg-slate-200 rounded w-24 shrink-0" />
-//                               <div className="flex-1 bg-slate-100 rounded-full h-2"><div className="h-full rounded-full bg-slate-300" style={{ width: `${s}%` }} /></div>
-//                             </div>
-//                           ))}
-//                         </div>
-//                         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-//                           <Lock className="w-4 h-4 text-amber-500" />
-//                           <button onClick={() => window.location.href = "/subscription"} className="text-xs px-4 py-1.5 bg-white border border-slate-300 rounded-full shadow-sm font-medium text-slate-700 hover:border-violet-300 transition-colors">
-//                             Unlock — Basic ₹1,999/mo
-//                           </button>
-//                         </div>
-//                       </div>
-//                     </CardContent>
-//                   </Card>
-//                 )}
-
-//                 {/* Watchlist summary — Premium */}
-//                 {isPremium && watchlisted.size > 0 && (
-//                   <Card className="shadow-sm border border-violet-200 rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50">
-//                     <CardHeader className="pb-2">
-//                       <CardTitle className="text-sm font-semibold text-violet-700 flex items-center gap-2">
-//                         <Bell className="w-4 h-4" /> Your watchlist ({watchlisted.size})
-//                       </CardTitle>
-//                     </CardHeader>
-//                     <CardContent className="space-y-1.5">
-//                       {Array.from(watchlisted).map((niche) => (
-//                         <div key={niche} className="flex items-center justify-between text-xs">
-//                           <span className="text-slate-700 truncate">{niche}</span>
-//                           <button onClick={() => handleWatchlist(niche)} className="text-slate-400 hover:text-red-500 ml-2 shrink-0"><X className="w-3 h-3" /></button>
-//                         </div>
-//                       ))}
-//                       <p className="text-[10px] text-violet-600 mt-2">Weekly alerts active for all watched niches</p>
-//                     </CardContent>
-//                   </Card>
-//                 )}
-
-//                 {/* How scoring works */}
-//                 <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white/80">
-//                   <CardHeader className="pb-2">
-//                     <CardTitle className="text-sm font-semibold text-slate-700 flex items-center gap-2">
-//                       <Shield className="w-4 h-4 text-slate-500" /> How scoring works
-//                     </CardTitle>
-//                   </CardHeader>
-//                   <CardContent className="space-y-2">
-//                     {[
-//                       { label: "Rating gap", desc: "Avg competitor rating below 4.0 = opportunity", pts: "+32", color: "#3b82f6" },
-//                       { label: "Review thinness", desc: "Fewer than 150 reviews = easy to outrank", pts: "+32", color: "#8b5cf6" },
-//                       { label: "Demand signal", desc: "High sales volume = proven buyer intent", pts: "+24", color: "#10b981" },
-//                       { label: "Price gap", desc: "MRP vs. selling price spread = margin room", pts: "+12", color: "#f59e0b" },
-//                     ].map((s) => (
-//                       <div key={s.label} className="flex items-start gap-2.5">
-//                         <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ background: s.color }} />
-//                         <div>
-//                           <p className="text-xs font-medium text-slate-700">{s.label} <span className="text-slate-400 font-normal">({s.pts})</span></p>
-//                           <p className="text-[10px] text-slate-400">{s.desc}</p>
-//                         </div>
-//                       </div>
-//                     ))}
-//                   </CardContent>
-//                 </Card>
-//               </div>
-//             </div>
-//           )}
-
-//           {/* ── Empty state ── */}
-//           {!result && !loading && (
-//             <div className="flex flex-col items-center justify-center py-20 text-center">
-//               <div className="w-16 h-16 bg-violet-50 rounded-2xl flex items-center justify-center mb-5 border border-violet-100">
-//                 <Sparkles className="w-7 h-7 text-violet-400" />
-//               </div>
-//               <h3 className="text-lg font-semibold text-slate-800 mb-2">Find your next winning product</h3>
-//               <p className="text-sm text-slate-400 max-w-md leading-relaxed mb-6">
-//                 Scan any keyword to surface real white spaces — niches with high demand and weak competition on Amazon.in and Flipkart, scored using 4 real market signals from your live database.
-//               </p>
-
-//               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8 w-full max-w-xl">
-//                 {[
-//                   { icon: <Star className="w-4 h-4 text-amber-500" />, label: "Rating gap analysis" },
-//                   { icon: <Users className="w-4 h-4 text-blue-500" />, label: "Real competitor data" },
-//                   { icon: <ShoppingBag className="w-4 h-4 text-emerald-500" />, label: "Live sales estimates" },
-//                   { icon: <Package className="w-4 h-4 text-violet-500" />, label: "Best Seller gap signal" },
-//                 ].map((f) => (
-//                   <div key={f.label} className="flex flex-col items-center gap-2 p-3.5 bg-white rounded-2xl border border-slate-200 text-center shadow-sm">
-//                     {f.icon}
-//                     <span className="text-xs text-slate-500 leading-tight">{f.label}</span>
-//                   </div>
-//                 ))}
-//               </div>
-
-//               <div className="flex items-center gap-2 p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-700 mb-6">
-//                 <BookOpen className="w-4 h-4 shrink-0" />
-//                 Free: 3 scans / 3 results · Basic: 20 scans + all results · Premium: unlimited + AI insights
-//               </div>
-
-//               <div className="flex flex-wrap gap-2 justify-center">
-//                 {["kitchen organizer", "baby feeding", "pet grooming", "sleep aid", "skincare tools", "home scent", "gaming accessories", "fitness gear"].map((s) => (
-//                   <button key={s} onClick={() => { setQuery(s); setTimeout(runScan, 50); }} className="text-xs px-4 py-2 bg-white border border-slate-200 text-slate-500 rounded-full hover:bg-violet-50 hover:border-violet-200 hover:text-violet-600 transition-colors shadow-sm">
-//                     {s}
-//                   </button>
-//                 ))}
-//               </div>
-//             </div>
-//           )}
-
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
-
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -1285,7 +13,7 @@ import {
 import {
   Search, Lock, Crown, CheckCircle, X, RefreshCw,
   TrendingUp, TrendingDown, AlertCircle, Sparkles, ChevronDown, ChevronUp,
-  BookOpen, ShoppingBag, Star, Users, ArrowRight, Bell, Download,
+  BookOpen, ShoppingBag, Star, Users, ArrowRight, Download,
   Target, Zap, Eye, BarChart3, Shield, Bot, Menu, Minus,
   Package, Flame, SortAsc, ChevronRight, Bookmark,
 } from "lucide-react";
@@ -1424,7 +152,7 @@ function getScoreLabel(score: number): { label: string; color: string } {
   return { label: "Skip", color: "bg-red-100 text-red-800" };
 }
 
-// ── Score Ring SVG ────────────────────────────────────────────────────────────
+// ── Score Ring ────────────────────────────────────────────────────────────────
 
 function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
   const r = (size - 10) / 2;
@@ -1542,9 +270,9 @@ function OpportunityCard({
   watchlistLoading: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const isBasicPlus = tier === "basic" || tier === "premium";
-  const isPremium   = tier === "premium";
-  const sl = getScoreLabel(opp.score);
+  const isBasicPlus  = tier === "basic" || tier === "premium";
+  const isPremium    = tier === "premium";
+  const sl           = getScoreLabel(opp.score);
   const alreadyWatched = watchlistItems.some((i) => i.niche === opp.product_niche);
 
   const trendEl = isPremium ? (
@@ -1709,11 +437,9 @@ function OpportunityCard({
                 : "border-slate-300 text-slate-500 hover:bg-violet-50 hover:border-violet-300 hover:text-violet-600"
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            {watchlistLoading ? (
-              <RefreshCw className="w-2.5 h-2.5 animate-spin" />
-            ) : (
-              <Bookmark className={`w-2.5 h-2.5 ${alreadyWatched ? "fill-white" : ""}`} />
-            )}
+            {watchlistLoading
+              ? <RefreshCw className="w-2.5 h-2.5 animate-spin" />
+              : <Bookmark className={`w-2.5 h-2.5 ${alreadyWatched ? "fill-white" : ""}`} />}
             {alreadyWatched ? "Watching" : "Watch"}
           </button>
         </div>
@@ -1759,17 +485,17 @@ function LockedCard({ position, onUpgrade }: { position: number; onUpgrade: (f: 
 // ── Tier Feature Table ────────────────────────────────────────────────────────
 
 const TIER_FEATURES = [
-  { key: "scans",       label: "Scans / month",          free: "3",   basic: "20",  premium: "Unlimited" },
-  { key: "results",     label: "Results per scan",        free: "3",   basic: "All", premium: "All"       },
-  { key: "breakdown",   label: "Score breakdown",         free: false, basic: true,  premium: true        },
-  { key: "competitors", label: "Competitor weaknesses",   free: false, basic: true,  premium: true        },
-  { key: "demand",      label: "Demand signals chart",    free: false, basic: true,  premium: true        },
-  { key: "trend",       label: "Trend data (90-day)",     free: false, basic: false, premium: true        },
-  { key: "entry_price", label: "Entry price suggestion",  free: false, basic: false, premium: true        },
-  { key: "ai_insights", label: "AI strategic insights",   free: false, basic: false, premium: true        },
-  { key: "watchlist",   label: "Watchlist",               free: true,  basic: true,  premium: true        },
-  { key: "export",      label: "CSV export",              free: false, basic: false, premium: true        },
-  { key: "badges",      label: "Best Seller gap signal",  free: false, basic: true,  premium: true        },
+  { key: "scans",       label: "Scans / month",         free: "3",   basic: "20",  premium: "Unlimited" },
+  { key: "results",     label: "Results per scan",       free: "3",   basic: "All", premium: "All"       },
+  { key: "breakdown",   label: "Score breakdown",        free: false, basic: true,  premium: true        },
+  { key: "competitors", label: "Competitor weaknesses",  free: false, basic: true,  premium: true        },
+  { key: "demand",      label: "Demand signals chart",   free: false, basic: true,  premium: true        },
+  { key: "trend",       label: "Trend data (90-day)",    free: false, basic: false, premium: true        },
+  { key: "entry_price", label: "Entry price suggestion", free: false, basic: false, premium: true        },
+  { key: "ai_insights", label: "AI strategic insights",  free: false, basic: false, premium: true        },
+  { key: "watchlist",   label: "Watchlist",              free: true,  basic: true,  premium: true        },
+  { key: "export",      label: "CSV export",             free: false, basic: false, premium: true        },
+  { key: "badges",      label: "Best Seller gap signal", free: false, basic: true,  premium: true        },
 ];
 
 function TierCell({ val }: { val: boolean | string }) {
@@ -1801,17 +527,22 @@ export default function WhiteSpaceFinder() {
   const [toasts,        setToasts]        = useState<Toast[]>([]);
   const [showTierTable, setShowTierTable] = useState(false);
   const [categories,    setCategories]    = useState<string[]>(["all"]);
-  const [watchlistItems,    setWatchlistItems]    = useState<WatchlistItem[]>([]);
-  const [watchlistLoading,  setWatchlistLoading]  = useState(false);
-  const [exporting,     setExporting]     = useState(false);
-  const [ollamaStatus,  setOllamaStatus]  = useState<{
+
+
+  const [watchlistItems,   setWatchlistItems]   = useState<WatchlistItem[]>([]);
+  const [watchlistLoading, setWatchlistLoading] = useState(false);
+  const [exporting,        setExporting]        = useState(false);
+  const [ollamaStatus, setOllamaStatus] = useState<{
     status: "ready" | "no_model" | "offline" | "error" | "checking";
     model?: string;
     setup_hint?: string;
   }>({ status: "checking" });
+
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const tier        = result?.tier ?? "free";
+  // Tier: prefer scan result (most up-to-date from DB at scan time),
+  // fall back to profile fetch done on mount.
+  const tier = result?.tier ?? user?.subscriptionTier ?? "free";
   const isBasicPlus = tier === "basic" || tier === "premium";
   const isPremium   = tier === "premium";
   const scansUsed   = result?.scans_used  ?? 0;
@@ -1824,7 +555,8 @@ export default function WhiteSpaceFinder() {
     setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 4500);
   };
 
-  // ── Fetch watchlist from backend ─────────────────────────────────────────
+
+  // ── Fetch watchlist ──────────────────────────────────────────────────────
   const fetchWatchlist = useCallback(async () => {
     if (!userId) return;
     try {
@@ -1833,7 +565,7 @@ export default function WhiteSpaceFinder() {
       });
       setWatchlistItems(res.data.watchlist as WatchlistItem[]);
     } catch {
-      // Non-critical — silent fail
+      // Non-critical — silent
     }
   }, [userId]);
 
@@ -1841,15 +573,13 @@ export default function WhiteSpaceFinder() {
     fetchWatchlist();
   }, [fetchWatchlist]);
 
-  // ── Auto-run scan from ?q= query param (e.g. navigated from watchlist) ──
+  // ── Auto-run scan from ?q= param ─────────────────────────────────────────
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const q = params.get("q");
     if (q) {
       setQuery(q);
-      setTimeout(() => {
-        document.getElementById("ws-scan-btn")?.click();
-      }, 150);
+      setTimeout(() => document.getElementById("ws-scan-btn")?.click(), 150);
     }
   }, [location.search]);
 
@@ -1928,7 +658,7 @@ export default function WhiteSpaceFinder() {
     }
   };
 
-  // ── Watchlist toggle (API-backed, all tiers) ─────────────────────────────
+  // ── Watchlist toggle ─────────────────────────────────────────────────────
   const handleWatchlist = async (opp: Opportunity) => {
     if (!userId) {
       showToast("Sign in required", "Please sign in to use the watchlist.", "error");
@@ -1949,7 +679,7 @@ export default function WhiteSpaceFinder() {
         est_revenue_max:  opp.est_revenue_max,
         top_keyword:      opp.top_keyword,
         gap_summary:      opp.gap_summary,
-        query:            query,
+        query,
       });
       await fetchWatchlist();
       if (alreadyIn) {
@@ -1965,7 +695,7 @@ export default function WhiteSpaceFinder() {
     }
   };
 
-  // ── Remove single item from sidebar watchlist preview ────────────────────
+  // ── Sidebar watchlist remove ─────────────────────────────────────────────
   const handleSidebarRemove = async (item: WatchlistItem) => {
     if (!userId) return;
     try {
@@ -2007,10 +737,10 @@ export default function WhiteSpaceFinder() {
   ])[0] ?? [];
 
   const distData = [
-    { name: "Hot 80+",   count: sortedOpps.filter((o) => o.score >= 80).length,                         fill: "#639922" },
-    { name: "Good 65–79",count: sortedOpps.filter((o) => o.score >= 65 && o.score < 80).length,         fill: "#378ADD" },
-    { name: "Mod 50–64", count: sortedOpps.filter((o) => o.score >= 50 && o.score < 65).length,         fill: "#BA7517" },
-    { name: "Skip <50",  count: sortedOpps.filter((o) => o.score < 50).length,                          fill: "#E24B4A" },
+    { name: "Hot 80+",    count: sortedOpps.filter((o) => o.score >= 80).length,                 fill: "#639922" },
+    { name: "Good 65–79", count: sortedOpps.filter((o) => o.score >= 65 && o.score < 80).length, fill: "#378ADD" },
+    { name: "Mod 50–64",  count: sortedOpps.filter((o) => o.score >= 50 && o.score < 65).length, fill: "#BA7517" },
+    { name: "Skip <50",   count: sortedOpps.filter((o) => o.score < 50).length,                  fill: "#E24B4A" },
   ];
 
   return (
@@ -2101,7 +831,7 @@ export default function WhiteSpaceFinder() {
               </div>
             )}
 
-            {/* Scan counter */}
+            {/* Scan counter — shown once a scan has been run */}
             {result && (
               <div className="bg-white/60 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
                 <div className="flex items-center justify-between gap-3 mb-1">
@@ -2124,6 +854,21 @@ export default function WhiteSpaceFinder() {
               </div>
             )}
 
+            {/* Tier badge — before first scan: skeleton while loading, then real tier */}
+            {!result && (
+  isLoading ? (
+    <div className="h-5 w-16 bg-slate-200 rounded-full animate-pulse" />
+  ) : (
+    <Badge className={`text-[10px] border-none px-2 py-1 ${
+      tier === "premium" ? "bg-violet-100 text-violet-800"
+      : tier === "basic" ? "bg-amber-100 text-amber-800"
+      : "bg-slate-100 text-slate-500"
+    }`}>
+      {tier.toUpperCase()}
+    </Badge>
+  )
+)}
+
             {/* Action buttons */}
             {result && (
               <div className="flex items-center gap-2">
@@ -2144,6 +889,16 @@ export default function WhiteSpaceFinder() {
                   <Crown className="w-3.5 h-3.5 text-amber-500" /> Plans
                 </button>
               </div>
+            )}
+
+            {/* Plans button shown even before scan */}
+            {!result && (
+              <button
+                onClick={() => setShowTierTable(!showTierTable)}
+                className="flex items-center gap-1.5 text-xs px-3 py-2 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 text-slate-600 transition-colors"
+              >
+                <Crown className="w-3.5 h-3.5 text-amber-500" /> Plans
+              </button>
             )}
 
             {isLoading ? (
@@ -2199,13 +954,29 @@ export default function WhiteSpaceFinder() {
                     <tfoot>
                       <tr>
                         <td />
-                        <td className="p-3 text-center"><span className="text-xs text-slate-400">Current</span></td>
-                        <td className="p-3 text-center bg-amber-50/40">
-                          <a href="/subscription" className="text-xs px-4 py-1.5 bg-amber-500 text-white rounded-full font-medium hover:bg-amber-600 transition-colors">Upgrade</a>
-                        </td>
-                        <td className="p-3 text-center bg-violet-50/40">
-                          <a href="/subscription" className="text-xs px-4 py-1.5 bg-violet-600 text-white rounded-full font-medium hover:bg-violet-700 transition-colors">Upgrade</a>
-                        </td>
+                        {(["free", "basic", "premium"] as const).map((t) => (
+                          <td
+                            key={t}
+                            className={`p-3 text-center ${t === "basic" ? "bg-amber-50/40" : t === "premium" ? "bg-violet-50/40" : ""}`}
+                          >
+                            {tier === t ? (
+                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-violet-600 bg-violet-100 px-3 py-1 rounded-full">
+                                <CheckCircle className="w-3 h-3" /> Your plan
+                              </span>
+                            ) : t !== "free" ? (
+                              <a
+                                href="/subscription"
+                                className={`text-xs px-4 py-1.5 rounded-full font-medium transition-colors ${
+                                  t === "basic"
+                                    ? "bg-amber-500 text-white hover:bg-amber-600"
+                                    : "bg-violet-600 text-white hover:bg-violet-700"
+                                }`}
+                              >
+                                Upgrade
+                              </a>
+                            ) : null}
+                          </td>
+                        ))}
                       </tr>
                     </tfoot>
                   </table>
@@ -2348,7 +1119,7 @@ export default function WhiteSpaceFinder() {
           {result && !loading && (
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
 
-              {/* Left — opportunity cards */}
+              {/* Left — cards */}
               <div className="xl:col-span-2 space-y-4">
 
                 {/* Summary bar */}
@@ -2441,7 +1212,7 @@ export default function WhiteSpaceFinder() {
                     />
                   ))}
 
-                {/* Free upgrade nudge */}
+                {/* Free → Basic nudge */}
                 {!isBasicPlus && result.total_found > 0 && (
                   <Card className="bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 rounded-2xl shadow-sm">
                     <CardContent className="p-6 text-center">
@@ -2486,7 +1257,7 @@ export default function WhiteSpaceFinder() {
                 )}
               </div>
 
-              {/* Right sidebar charts */}
+              {/* Right sidebar */}
               <div className="space-y-4">
 
                 {/* Score distribution */}
@@ -2592,7 +1363,7 @@ export default function WhiteSpaceFinder() {
                   </Card>
                 )}
 
-                {/* Watchlist preview — all tiers */}
+                {/* Watchlist preview */}
                 {watchlistItems.length > 0 && (
                   <Card className="shadow-sm border border-violet-200 rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50">
                     <CardHeader className="pb-2">
@@ -2677,10 +1448,10 @@ export default function WhiteSpaceFinder() {
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8 w-full max-w-xl">
                 {[
-                  { icon: <Star className="w-4 h-4 text-amber-500" />,    label: "Rating gap analysis"   },
-                  { icon: <Users className="w-4 h-4 text-blue-500" />,    label: "Real competitor data"  },
-                  { icon: <ShoppingBag className="w-4 h-4 text-emerald-500" />, label: "Live sales estimates" },
-                  { icon: <Package className="w-4 h-4 text-violet-500" />, label: "Best Seller gap signal" },
+                  { icon: <Star className="w-4 h-4 text-amber-500" />,         label: "Rating gap analysis"   },
+                  { icon: <Users className="w-4 h-4 text-blue-500" />,         label: "Real competitor data"  },
+                  { icon: <ShoppingBag className="w-4 h-4 text-emerald-500" />, label: "Live sales estimates"  },
+                  { icon: <Package className="w-4 h-4 text-violet-500" />,     label: "Best Seller gap signal" },
                 ].map((f) => (
                   <div key={f.label} className="flex flex-col items-center gap-2 p-3.5 bg-white rounded-2xl border border-slate-200 text-center shadow-sm">
                     {f.icon}
