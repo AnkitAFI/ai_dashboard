@@ -1,6 +1,4 @@
-// ============================================
 // FILE: src/pages/not-found.tsx (IMPROVED)
-// ============================================
 import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

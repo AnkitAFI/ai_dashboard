@@ -5,15 +5,6 @@ import { Rocket, ArrowLeft, Sparkles } from "lucide-react";
 export default function FeatureComingSoon() {
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 text-center">
-      {/* <div className="relative mb-8">
-        <div className="absolute -inset-4 bg-orange-500/20 blur-3xl rounded-full animate-pulse" />
-        <div className="relative bg-white/10 backdrop-blur-md p-6 rounded-3xl border border-white/20 shadow-2xl">
-          <Rocket className="w-16 h-16 text-orange-500 animate-bounce" />
-        </div>
-        <div className="absolute -top-2 -right-2">
-          <Sparkles className="w-8 h-8 text-yellow-500 animate-pulse" />
-        </div>
-      </div> */}
 
       <h1 className="text-4xl font-bold text-[#003366] mb-4 tracking-tight">
         Feature Coming Soon!

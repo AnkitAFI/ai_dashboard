@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
+import { Footer } from "@/components/layout/Footer";
 
 // ── Schema ─────────────────────────────────────────────────────────────────────
 const schemaManualVsAuto = {
@@ -1297,57 +1298,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-[#0a0f1e] text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-10 mb-14">
-            <div className="col-span-2 md:col-span-3 lg:col-span-1">
-              <Link to="/" className="flex items-center space-x-3 mb-4" aria-label="Insydz Home">
-                <img src="/logo.png" alt="Insydz Logo" className="w-10 h-10 object-contain p-0.5" />
-                <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Insydz</span>
-              </Link>
-              <p className="text-gray-400 text-sm leading-relaxed mb-6">India's AI-powered ecommerce analytics software for Amazon, Flipkart sellers.</p>
-              <Link to="/login" className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all transform hover:scale-105 shadow-lg">Start Free →</Link>
-              <div className="flex space-x-3 mt-6">
-                {[
-                  { href:"https://www.facebook.com/profile.php?id=61586202582209", label:"Facebook",  icon:<Facebook  className="w-4 h-4" /> },
-                  { href:"https://x.com/growwithinsydz",                          label:"Twitter",   icon:<Twitter   className="w-4 h-4" /> },
-                  { href:"https://www.instagram.com/growwithinsydz/",              label:"Instagram", icon:<Instagram className="w-4 h-4" /> },
-                  { href:"https://www.linkedin.com/company/insydz/",               label:"LinkedIn",  icon:<Linkedin  className="w-4 h-4" /> },
-                ].map(s => (
-                  <a key={s.label} title={`Insydz on ${s.label}`} href={s.href} target="_blank" rel="noopener noreferrer" className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors" aria-label={`Insydz on ${s.label}`}>{s.icon}</a>
-                ))}
-              </div>
-            </div>
-            {[
-              { title:"Solutions", links:[["Amazon Sellers","/solutions/amazon-sellers"],["Flipkart Sellers","/solutions/flipkart-sellers"],["Agencies","/solutions/ecommerce-agencies"],["Brand Managers","/solutions/brand-managers"]] },
-              { title:"Product",   links:[["Features","/features"],["Pricing","/pricing"],["Festive Trends","/features/festive-trend-feature"],["Compare","/compare/insydzvshelium"]] },
-              { title:"Resources", links:[["Blog","/resources/expert-blog"],["E-commerce Guides","/resources/guides"],["Video Tutorials","/resources/videos"],["Free Tools","/free-tools/free-amazon-product-analyzer"]] },
-              { title:"Company",   links:[["Our Vision","/about/our-vision"],["Careers","/about/careers"],["Contact","/about/contact-us"]] },
-            ].map(col => (
-              <div key={col.title}>
-                <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">{col.title}</h4>
-                <ul className="space-y-3">
-                  {col.links.map(([name, route]) => (
-                    <li key={name}><Link to={route} className="text-sm text-gray-400 hover:text-white transition-colors">{name}</Link></li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-          <div className="border-t border-white/10 pt-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-              <p className="text-gray-500 text-sm">© 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed &amp; Developed in India 🇮🇳</p>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>
-                <span className="text-gray-700">·</span>
-                <a href="/terms-service" className="hover:text-white transition-colors">Terms of Service</a>
-                <span className="text-gray-700">·</span>
-                <a href="/privacy-policy" className="hover:text-white transition-colors">Data Disclaimer</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
