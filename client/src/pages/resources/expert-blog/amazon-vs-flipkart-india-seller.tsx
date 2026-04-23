@@ -598,26 +598,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
         /* ── Hero image caption ── */
         .hero-caption{font-family:'Sora',sans-serif;font-size:12px;color:#94A3B8;font-style:italic;text-align:center;margin-bottom:32px;padding:6px 10px}
 
-        /* ── Final CTA ── */
-        .fc-block{background:linear-gradient(135deg,#FF9900 0%,#e67e00 50%,#0A0F1A 100%);padding:56px 12px;text-align:center}
-        @media(min-width:640px){.fc-block{padding:36px 12px}}
-        @media(min-width:1024px){.fc-block{padding:36px 12px}}
-        .fc-inner{max-width:640px;margin:0 auto}
-        .fc-inner h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:12px;line-height:1.2;letter-spacing:-.4px}
-        @media(min-width:640px){.fc-inner h2{font-size:28px;margin-bottom:14px}}
-        @media(min-width:1024px){.fc-inner h2{font-size:34px}}
-        .fc-inner p{color:rgba(255,255,255,.8);font-size:14px;max-width:520px;margin:0 auto 22px;line-height:1.7;font-family:'Lora',serif}
-        @media(min-width:640px){.fc-inner p{font-size:16px;margin:0 auto 28px}}
-        .fc-points{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-bottom:24px}
-        @media(min-width:640px){.fc-points{gap:8px 24px;margin-bottom:32px}}
-        .fc-pt{color:rgba(255,255,255,.9);font-size:12px;display:flex;align-items:center;gap:6px;font-family:'Sora',sans-serif}
-        @media(min-width:640px){.fc-pt{font-size:13.5px}}
-        .fc-pt::before{content:'✓';color:white;font-weight:800}
-        .fc-btn{background:white;color:#FF9900;padding:13px 28px;border-radius:10px;font-size:13px;font-weight:800;border:none;cursor:pointer;transition:transform .2s;width:100%;max-width:480px}
-        @media(min-width:640px){.fc-btn{padding:16px 36px;font-size:15px;width:auto}}
-        .fc-btn:hover{transform:translateY(-2px)}
-        .fc-sub{color:rgba(255,255,255,.55);font-size:11.5px;margin-top:12px}
-        @media(min-width:640px){.fc-sub{font-size:12.5px;margin-top:14px}}
+        .final-cta-block { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%); padding: clamp(48px,8vw,40px) 20px; text-align:center; margin:60px 0 0; }
       `}</style>
 
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
@@ -708,11 +689,14 @@ export default function AmazonVsFlipkartIndiaSellers() {
         <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#FFF7ED", color:"#FF9900", fontSize:"clamp(10px,2vw,11.5px)", fontWeight:700, letterSpacing:.6, textTransform:"uppercase" as const, padding:"4px 12px", borderRadius:20, marginBottom:14, border:"1px solid #FED7AA", fontFamily:"'Sora',sans-serif" }}>
           ◆ Seller Tools &amp; Strategy
         </div>
-        <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(22px,4vw,40px)", fontWeight:900, lineHeight:1.16, color:"#0A0F1A", letterSpacing:"-.5px", marginBottom:14, maxWidth:820 }} className="dark:text-white">
+        <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(22px,4vw,40px)", fontWeight:800, lineHeight:1.18, color:"#0A0F1A", letterSpacing:"-.5px", maxWidth:820 }} className="dark:text-white">
           <span style={{ color:"#FF9900" }}>Amazon vs Flipkart:</span>{" "}
           Which Marketplace is Better in India?{" "}
           <span style={{ color:"#2874F0" }}>(2026)</span>
         </h1>
+        <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2.5vw,17px)", color:"#475569", lineHeight:1.75, maxWidth:800,paddingTop:10, marginBottom:20 }} className="dark:text-gray-400">
+          Most Indian sellers are bleeding margin by choosing the wrong platform without running the numbers first. See how successful D2C brands evaluate fees, traffic, and competition data to decide where every rupee of inventory should go.
+        </p>
         <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => setLocation("/author/vikrant-singh")}>Vikrant Singh</strong></div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>🕐 January 2026</div>
@@ -1167,22 +1151,30 @@ export default function AmazonVsFlipkartIndiaSellers() {
         </main>
       </div>
 
-      {/* FINAL CTA */}
-      <div className="fc-block">
-        <div className="fc-inner">
-          <h2>Every Hour Without Cross-Platform Intelligence Is an Hour Your Competitors Are Taking Your Buy Box</h2>
-          <p>Insydz tracks competitor prices across Amazon.in and Flipkart in real time alerts you via WhatsApp the moment a rival reprices, and tells you exactly how to respond to protect your margin.</p>
-          <div className="fc-points">
-            <div className="fc-pt">Forever free plan</div>
-            <div className="fc-pt">No credit card</div>
-            <div className="fc-pt">Amazon.in + Flipkart</div>
-            <div className="fc-pt">WhatsApp alerts in 60 min</div>
-          </div>
-          <Link to="/login" className="fc-btn" style={{ display:"inline-block", textDecoration:"none" }}>
-            → Stop Guessing. Start Knowing — insydz.com
-          </Link>
-          <p className="fc-sub">Forever free plan · No setup required · Amazon India, Flipkart &amp; supported</p>
+      {/* Final CTA */}
+      <div className="final-cta-block">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+          Your Competitors Track Both Platforms. Now You Can Too.
+        </h2>
+        <p className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 24px" }}>
+          Insydz gives you unified price intelligence across Amazon.in and Flipkart — with real-time WhatsApp alerts the moment a rival moves, and AI guidance on exactly how to respond.
+        </p>
+        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px 20px", marginBottom: 20 }}>
+          {["Free plan", "Amazon.in + Flipkart", "WhatsApp alerts in 60 min"].map(t => (
+            <div key={t} className="text-blue-100" style={{ fontSize:"clamp(11px,2vw,13.5px)", display:"flex", alignItems:"center", gap:6, fontFamily:"'Sora',sans-serif" }}>
+              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+            </div>
+          ))}
         </div>
+        <Link
+          to="/login"
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm sm:text-base px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-xl transition-all transform hover:scale-105 inline-block text-decoration-none"
+        >
+          Track Both Platforms Free →
+        </Link>
+        <p className="text-blue-200 text-xs mt-4">
+          Free plan · Amazon.in + Flipkart · WhatsApp alerts in 60 min
+        </p>
       </div>
 
       {/* Footer */}

@@ -759,47 +759,7 @@ export default function BestCompetitorPriceTrackingToolsIndia() {
           width: 100%; display: block;
         }
 
-        /* ── Final CTA ───────────────────────────────────────── */
-        .fc-block {
-          background: linear-gradient(135deg,#DB2777 0%,#7C3AED 100%);
-          padding: clamp(48px,8vw,80px) clamp(16px,4vw,24px);
-          text-align: center;
-        }
-        .fc-inner { max-width: 640px; margin: 0 auto; }
-        .fc-inner h2 {
-          font-family: 'Sora',sans-serif;
-          font-size: clamp(22px,4vw,38px);
-          font-weight: 800; color: white; margin-bottom: 14px;
-          line-height: 1.2; letter-spacing: -.4px;
-        }
-        .fc-inner p {
-          color: rgba(255,255,255,.75);
-          font-size: clamp(14px,1.6vw,16px);
-          max-width: 520px; margin: 0 auto 24px;
-          line-height: 1.7; font-family: 'Lora',serif;
-        }
-        .fc-points {
-          display: flex; justify-content: center;
-          flex-wrap: wrap; gap: 8px 20px; margin-bottom: 28px;
-        }
-        .fc-pt {
-          color: rgba(255,255,255,.85); font-size: clamp(12px,1.4vw,13.5px);
-          display: flex; align-items: center; gap: 7px;
-          font-family: 'Sora',sans-serif;
-        }
-        .fc-pt::before { content: '✓'; color: white; font-weight: 800; }
-        .fc-btn {
-          background: white; color: #DB2777;
-          padding: clamp(13px,2vw,16px) clamp(24px,4vw,40px);
-          border-radius: 10px; font-size: clamp(14px,1.6vw,16px);
-          font-weight: 800; border: none; cursor: pointer;
-          transition: transform .2s; letter-spacing: -.2px;
-          min-height: 52px; touch-action: manipulation;
-        }
-        .fc-btn:hover { transform: translateY(-2px); }
-        @media(hover:none) { .fc-btn:hover { transform: none; } }
-        @media(max-width:400px) { .fc-btn { width: 100%; } }
-        .fc-sub { color: rgba(255,255,255,.5); font-size: 12.5px; margin-top: 14px; }
+        .final-cta-block { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%); padding: clamp(48px,8vw,40px) 20px; text-align:center; margin:60px 0 0; }
 
         /* ── Breadcrumb ──────────────────────────────────────── */
         .breadcrumb-bar {
@@ -958,9 +918,12 @@ export default function BestCompetitorPriceTrackingToolsIndia() {
           Tool Comparison &amp; Reviews
         </div>
 
-        <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(22px,3.8vw,40px)", fontWeight: 800, lineHeight: 1.18, color: "#0D1B2A", letterSpacing: "-.5px", marginBottom: 16, maxWidth: 820 }} className="dark:text-white">
+        <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(22px,3.8vw,40px)", fontWeight: 800, lineHeight: 1.18, color: "#0D1B2A", letterSpacing: "-.5px", maxWidth: 820 }} className="dark:text-white">
           Best <span style={{ color: "#F97316" }}>Competitor Price Tracking Tools</span> for Indian Sellers: The 2026 Guide
         </h1>
+        <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2.5vw,17px)", color:"#475569", lineHeight:1.75, maxWidth:800,paddingTop:10, marginBottom:20 }} className="dark:text-gray-400">
+          Your competitors are repricing in real time while you're still checking prices manually — and losing the Buy Box because of it. See how India's smartest marketplace sellers use automated price intelligence across Amazon, Flipkart, and Meesho to protect margin and win more sales.
+        </p>
 
         <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "5px 16px", marginBottom: 24 }}>
           {[
@@ -1293,20 +1256,30 @@ export default function BestCompetitorPriceTrackingToolsIndia() {
         </main>
       </div>
 
-      {/* ════════════════════════════════ FINAL CTA */}
-      <div className="fc-block">
-        <div className="fc-inner">
-          <h2>Your Competitors Are Already Tracking Your Prices.</h2>
-          <p>The question isn't whether you should track competitor prices. It's whether you'll be the one acting on the information or the one reacting to it. Insydz gives you the same intelligence, built specifically for Amazon.in and Flipkart monitoring your rivals around the clock.</p>
-          <div className="fc-points">
-            <div className="fc-pt">No dashboards to learn</div>
-            <div className="fc-pt">No credit card needed</div>
-            <div className="fc-pt">WhatsApp alerts from day one</div>
-            <div className="fc-pt">Setup in under 30 minutes</div>
-          </div>
-          <button className="fc-btn" onClick={() => setLocation("/login")}>Start Tracking Free at insydz.com →</button>
-          <p className="fc-sub">Forever free plan · No credit card · Cancel anytime</p>
+      {/* Final CTA */}
+      <div className="final-cta-block">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+          Your Competitors Are Tracking. Start Now.
+        </h2>
+        <p className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 24px" }}>
+          Insydz monitors rival prices on Amazon.in and Flipkart — and alerts you on WhatsApp before you lose the Buy Box.
+        </p>
+        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px 20px", marginBottom: 20 }}>
+          {["Real-time price alerts", "Amazon.in + Flipkart", "WhatsApp notifications", "Free forever"].map(t => (
+            <div key={t} className="text-blue-100" style={{ fontSize:"clamp(11px,2vw,13.5px)", display:"flex", alignItems:"center", gap:6, fontFamily:"'Sora',sans-serif" }}>
+              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+            </div>
+          ))}
         </div>
+        <button
+          onClick={() => setLocation("/login")}
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm sm:text-base px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-xl transition-all transform hover:scale-105"
+        >
+          Track Competitors Free →
+        </button>
+        <p className="text-blue-200 text-xs mt-4">
+          Live in 30 min · No setup needed · No card required
+        </p>
       </div>
 
       {/* Footer */}

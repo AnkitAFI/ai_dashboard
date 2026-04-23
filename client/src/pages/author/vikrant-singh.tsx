@@ -160,7 +160,7 @@ const articles: Article[] = [
   {
     id: "11",
     title: "Amazon vs Flipkart: Which Marketplace is Better in India? (2026)",
-    excerpt: "The amazon vs flipkart india sellers debate isn't a brand preference it's a margin and strategy question.",
+    excerpt: "Most Indian sellers are bleeding margin by choosing the wrong platform without running the numbers first. See how successful D2C brands evaluate fees, traffic, and competition data to decide where every rupee of inventory should go.",
     category: "Seller Tools & Strategy",
     readTime: "8 min read",
     image: "/amazon-vs-flipkart-hero-metrics.png",
@@ -171,7 +171,7 @@ const articles: Article[] = [
   {
     id: "10",
     title: "Flipkart Keyword Research Tool & SEO Optimization Guide for Sellers (2026)",
-    excerpt: "Flipkart's search algorithm rewards listings that match buyer intent exactly not just category keywords.",
+    excerpt: "Your listings are invisible to lakhs of Flipkart shoppers because you're targeting the wrong keywords. Discover how India's top Flipkart sellers use AI-powered keyword research to dominate search rankings and multiply their organic traffic.",
     category: "Flipkart SEO & Seller Strategy",
     readTime: "9 min read",
     image: "/01_hero_banner.png",
@@ -238,7 +238,7 @@ const articles: Article[] = [
   {
     id: "4",
     title: "Best Competitor Price Tracking Tools for Indian Sellers: The 2026 Guide",
-    excerpt: "Learn intelligent pricing tactics that protect margins while maintaining competitiveness during festive sales and everyday operations.",
+    excerpt: "Your competitors are repricing in real time while you're still checking prices manually — and losing the Buy Box because of it. See how India's smartest marketplace sellers use automated price intelligence across Amazon, Flipkart, and Meesho to protect margin and win more sales.",
     category: "Tool Comparison & Reviews",
     readTime: "10 min read",
     image: "/Best_Price_Tracer-blog2_image1.png?v=1",
@@ -248,7 +248,7 @@ const articles: Article[] = [
   {
     id: "5",
     title: "Insydz vs Helium 10: Which is the Right Amazon Intelligence Tool for Indian Sellers?",
-    excerpt: "Extract actionable insights from thousands of reviews using AI-powered sentiment analysis and competitive benchmarking.",
+    excerpt: "Helium 10 was built for Amazon US — not for the way Indian marketplaces actually work. Find out why thousands of Indian sellers are switching to a tool built specifically for Amazon India, Flipkart, and Meesho.",
     category: "Pricing + Compare",
     readTime: "7 min read",
     image: "/thirteen.png",
@@ -257,7 +257,7 @@ const articles: Article[] = [
   {
     id: "6",
     title: "AI Review Intelligence Tool for Amazon & Flipkart Sellers: The Complete Guide (2026)",
-    excerpt: "An Amazon review analysis tool reads every customer review on your listings and your competitors' listings then tells you in plain language: what buyers consistently love, what they consistently complain about.",
+    excerpt: "Your customers are already telling you exactly what's broken and why they're switching to a competitor — inside every review. Learn how India's fastest-growing D2C brands use AI review analysis to cut returns, fix listings, and grow revenue.",
     category: "Review Intelligence Pillar",
     readTime: "11 min read",
     image: "/eighteen.png",
@@ -864,10 +864,20 @@ export default function VikrantSinghAuthorPage() {
             </p>
 
             <div className="flex justify-center items-center gap-4">
-               <a href="#" className="p-3 bg-white dark:bg-gray-800 shadow-md hover:shadow-lg rounded-full text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all">
+               <a 
+                 href="https://www.linkedin.com/in/singhvikrant?utm_source=share_via&utm_content=profile&utm_medium=member_ios" 
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="p-3 bg-white dark:bg-gray-800 shadow-md hover:shadow-lg rounded-full text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
+                >
                  <Linkedin className="w-5 h-5" />
                </a>
-               <a href="#" className="p-3 bg-white dark:bg-gray-800 shadow-md hover:shadow-lg rounded-full text-gray-500 hover:text-blue-400 dark:hover:text-blue-300 transition-all">
+               <a 
+                 href="https://x.com/vsingh_afi" 
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="p-3 bg-white dark:bg-gray-800 shadow-md hover:shadow-lg rounded-full text-gray-500 hover:text-blue-400 dark:hover:text-blue-300 transition-all"
+                >
                  <Twitter className="w-5 h-5" />
                </a>
             </div>

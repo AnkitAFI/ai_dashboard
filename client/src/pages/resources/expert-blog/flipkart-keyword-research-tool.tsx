@@ -681,11 +681,14 @@ export default function FlipkartKeywordResearchTool() {
         <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#EFF6FF", color:"#2874F0", fontSize:"clamp(10px,2vw,11.5px)", fontWeight:700, letterSpacing:.6, textTransform:"uppercase" as const, padding:"4px 12px", borderRadius:20, marginBottom:14, border:"1px solid #DBEAFE", fontFamily:"'Sora',sans-serif" }}>
           ◆ Flipkart SEO &amp; Seller Strategy
         </div>
-        <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(22px,4vw,40px)", fontWeight:900, lineHeight:1.16, color:"#0A0F1A", letterSpacing:"-.5px", marginBottom:14, maxWidth:820 }} className="dark:text-white">
+        <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(22px,4vw,40px)", fontWeight:800, lineHeight:1.18, color:"#0A0F1A", letterSpacing:"-.5px", maxWidth:820 }} className="dark:text-white">
           <span style={{ color:"#2874F0" }}>Flipkart Keyword Research Tool</span>{" "}
           &amp; SEO Optimization Guide for Sellers{" "}
           <span style={{ color:"#F4500A" }}>(2026)</span>
         </h1>
+        <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2.5vw,17px)", color:"#475569", lineHeight:1.75, maxWidth:800,paddingTop:10, marginBottom:20 }} className="dark:text-gray-400">
+          Your listings are invisible to lakhs of Flipkart shoppers because you're targeting the wrong keywords. Discover how India's top Flipkart sellers use AI-powered keyword research to dominate search rankings and multiply their organic traffic.
+        </p>
         <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => setLocation("/author/vikrant-singh")}>Vikrant Singh</strong></div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>🕐 January 2026</div>

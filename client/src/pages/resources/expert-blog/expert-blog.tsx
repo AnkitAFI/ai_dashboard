@@ -165,7 +165,7 @@ const articles: Article[] = [
   {
     id: "11",
     title: "Amazon vs Flipkart: Which Marketplace is Better in India? (2026)",
-    excerpt: "The amazon vs flipkart india sellers debate isn't a brand preference it's a margin and strategy question.",
+    excerpt: "Most Indian sellers are bleeding margin by choosing the wrong platform without running the numbers first. See how successful D2C brands evaluate fees, traffic, and competition data to decide where every rupee of inventory should go.",
     category: "Seller Tools & Strategy",
     readTime: "8 min read",
     image: "/amazon-vs-flipkart-hero-metrics.png", // ✅ only this article has the image
@@ -176,8 +176,7 @@ const articles: Article[] = [
   {
     id: "10",
     title: "Flipkart Keyword Research Tool & SEO Optimization Guide for Sellers (2026)",
-    excerpt: "Flipkart's search algorithm rewards listings that match buyer intent exactly not just category keywords.",
-    // Discover how India's top Flipkart sellers use AI-powered keyword research, rank tracking, and SEO optimization to dominate Flipkart search results and capture search visibility their competitors don't even know they're missing.",
+    excerpt: "Your listings are invisible to lakhs of Flipkart shoppers because you're targeting the wrong keywords. Discover how India's top Flipkart sellers use AI-powered keyword research to dominate search rankings and multiply their organic traffic.",
     category: "Flipkart SEO & Seller Strategy",
     readTime: "9 min read",
     image: "/01_hero_banner.png",
@@ -250,7 +249,7 @@ const articles: Article[] = [
   {
     id: "4",
     title: "Best Competitor Price Tracking Tools for Indian Sellers: The 2026 Guide",
-    excerpt: "Learn intelligent pricing tactics that protect margins while maintaining competitiveness during festive sales and everyday operations.",
+    excerpt: "Your competitors are repricing in real time while you're still checking prices manually — and losing the Buy Box because of it. See how India's smartest marketplace sellers use automated price intelligence across Amazon, Flipkart, and Meesho to protect margin and win more sales.",
     category: "Tool Comparison & Reviews",
     readTime: "10 min read",
     image: "/Best_Price_Tracer-blog2_image1.png?v=1",
@@ -260,7 +259,7 @@ const articles: Article[] = [
   {
     id: "5",
     title: "Insydz vs Helium 10: Which is the Right Amazon Intelligence Tool for Indian Sellers?",
-    excerpt: "Extract actionable insights from thousands of reviews using AI-powered sentiment analysis and competitive benchmarking.",
+    excerpt: "Helium 10 was built for Amazon US — not for the way Indian marketplaces actually work. Find out why thousands of Indian sellers are switching to a tool built specifically for Amazon India, Flipkart, and Meesho.",
     category: "Pricing + Compare",
     readTime: "7 min read",
     image: "/thirteen.png",
@@ -269,7 +268,7 @@ const articles: Article[] = [
   {
     id: "6",
     title: "AI Review Intelligence Tool for Amazon & Flipkart Sellers: The Complete Guide (2026)",
-    excerpt: "An Amazon review analysis tool reads every customer review on your listings and your competitors' listings then tells you in plain language: what buyers consistently love, what they consistently complain about, which product features are causing returns, and what your rivals' customers wish was better. It turns 10,000 reviews you'd never have time to read into 5 specific actions you can take this week.",
+    excerpt: "Your customers are already telling you exactly what's broken and why they're switching to a competitor — inside every review. Learn how India's fastest-growing D2C brands use AI review analysis to cut returns, fix listings, and grow revenue.",
     category: "Review Intelligence Pillar",
     readTime: "11 min read",
     image: "/eighteen.png",
@@ -1317,29 +1316,39 @@ export default function ExpertBlog() {
       )}
 
       {/* Free Plan CTA */}
-      <section className="py-10 bg-gradient-to-r from-orange-500 to-red-500 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZmZmZjIwIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-40"></div>
-
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+      <section className="py-16 md:py-24 relative overflow-hidden" style={{ background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)" }}>
+        {/* Background Grid Pattern */}
+        <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(#fff 1px, transparent 1px)", backgroundSize: "30px 30px" }}></div>
+        
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <h2 className="text-3xl md:text-5xl font-extrabold mb-6 text-white tracking-tight" style={{ fontFamily: "'Sora', sans-serif" }}>
             Learn. Apply. Grow.
           </h2>
 
-          <p className="text-xl text-white/90 mb-8 leading-relaxed">
-            Every strategy you read here can be tested inside Insydz using your real product data.
+          <p className="text-lg md:text-xl text-blue-50 mb-10 leading-relaxed max-w-2xl mx-auto" style={{ fontFamily: "'Lora', serif" }}>
+            Every strategy you read here can be tested inside Insydz using your real product data. Connect your marketplace today.
           </p>
+
+          <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "10px 24px", marginBottom: 32 }}>
+            {["Free forever plan", "No credit card", "Results in 5 min"].map(t => (
+              <div key={t} className="text-blue-50 font-medium" style={{ fontSize: "14px", display: "flex", alignItems: "center", gap: 8, fontFamily: "'Sora', sans-serif" }}>
+                <span className="bg-white/20 p-1 rounded-full"><CheckCircle2 className="w-3 h-3 text-white" /></span> {t}
+              </div>
+            ))}
+          </div>
 
           <Button
             onClick={() => setLocation('/login')}
             size="lg"
-            className="bg-white text-orange-600 hover:bg-gray-100 font-bold px-10 py-6 text-lg rounded-full shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105"
+            className="bg-white text-blue-600 hover:bg-blue-50 font-bold px-10 py-7 text-lg rounded-full shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 border-none"
+            style={{ fontFamily: "'Sora', sans-serif" }}
           >
             <Zap className="w-5 h-5 mr-2" />
-            Start Free
+            Get Started Free →
           </Button>
 
-          <p className="text-sm text-white/80 mt-4">
-            No credit card required
+          <p className="text-sm text-blue-200 mt-6 font-medium" style={{ fontFamily: "'Sora', sans-serif" }}>
+            Live in 30 min · No setup needed · No card required
           </p>
         </div>
       </section>

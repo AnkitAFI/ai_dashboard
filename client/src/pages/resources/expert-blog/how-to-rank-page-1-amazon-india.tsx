@@ -154,7 +154,7 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
         src={src}
         alt={alt}
         onLoad={() => setLoaded(true)}
-        style={{ width: "100%", display: loaded ? "block" : "none", objectFit: "cover", maxHeight: 460 }}
+        style={{ width: "100%", height: "auto", display: loaded ? "block" : "none" }}
       />
       {caption && <figcaption className="img-caption">{caption}</figcaption>}
     </figure>
