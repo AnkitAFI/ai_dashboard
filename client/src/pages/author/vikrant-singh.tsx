@@ -36,6 +36,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Helmet } from 'react-helmet-async';
+import { Footer } from "@/components/layout/Footer";
 
 // Define types for menu items
 type MenuItemWithBadge = {
@@ -159,7 +160,7 @@ const articles: Article[] = [
   {
     id: "11",
     title: "Amazon vs Flipkart: Which Marketplace is Better in India? (2026)",
-    excerpt: "The amazon vs flipkart india sellers debate isn't a brand preference it's a margin and strategy question.",
+    excerpt: "Most Indian sellers are bleeding margin by choosing the wrong platform without running the numbers first. See how successful D2C brands evaluate fees, traffic, and competition data to decide where every rupee of inventory should go.",
     category: "Seller Tools & Strategy",
     readTime: "8 min read",
     image: "/amazon-vs-flipkart-hero-metrics.png",
@@ -170,7 +171,7 @@ const articles: Article[] = [
   {
     id: "10",
     title: "Flipkart Keyword Research Tool & SEO Optimization Guide for Sellers (2026)",
-    excerpt: "Flipkart's search algorithm rewards listings that match buyer intent exactly not just category keywords.",
+    excerpt: "Your listings are invisible to lakhs of Flipkart shoppers because you're targeting the wrong keywords. Discover how India's top Flipkart sellers use AI-powered keyword research to dominate search rankings and multiply their organic traffic.",
     category: "Flipkart SEO & Seller Strategy",
     readTime: "9 min read",
     image: "/01_hero_banner.png",
@@ -237,7 +238,7 @@ const articles: Article[] = [
   {
     id: "4",
     title: "Best Competitor Price Tracking Tools for Indian Sellers: The 2026 Guide",
-    excerpt: "Learn intelligent pricing tactics that protect margins while maintaining competitiveness during festive sales and everyday operations.",
+    excerpt: "Your competitors are repricing in real time while you're still checking prices manually — and losing the Buy Box because of it. See how India's smartest marketplace sellers use automated price intelligence across Amazon, Flipkart, and Meesho to protect margin and win more sales.",
     category: "Tool Comparison & Reviews",
     readTime: "10 min read",
     image: "/Best_Price_Tracer-blog2_image1.png?v=1",
@@ -247,7 +248,7 @@ const articles: Article[] = [
   {
     id: "5",
     title: "Insydz vs Helium 10: Which is the Right Amazon Intelligence Tool for Indian Sellers?",
-    excerpt: "Extract actionable insights from thousands of reviews using AI-powered sentiment analysis and competitive benchmarking.",
+    excerpt: "Helium 10 was built for Amazon US — not for the way Indian marketplaces actually work. Find out why thousands of Indian sellers are switching to a tool built specifically for Amazon India, Flipkart, and Meesho.",
     category: "Pricing + Compare",
     readTime: "7 min read",
     image: "/thirteen.png",
@@ -256,7 +257,7 @@ const articles: Article[] = [
   {
     id: "6",
     title: "AI Review Intelligence Tool for Amazon & Flipkart Sellers: The Complete Guide (2026)",
-    excerpt: "An Amazon review analysis tool reads every customer review on your listings and your competitors' listings then tells you in plain language: what buyers consistently love, what they consistently complain about.",
+    excerpt: "Your customers are already telling you exactly what's broken and why they're switching to a competitor — inside every review. Learn how India's fastest-growing D2C brands use AI review analysis to cut returns, fix listings, and grow revenue.",
     category: "Review Intelligence Pillar",
     readTime: "11 min read",
     image: "/eighteen.png",
@@ -835,7 +836,14 @@ export default function VikrantSinghAuthorPage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="max-w-4xl mx-auto text-center">
-            
+            <div className="mx-auto mb-8 flex justify-center">
+              <img
+                src="/vikrant-singh-author.png"
+                alt="Professional portrait of Vikrant Singh sitting at a desk in a modern office."
+                className="h-40 w-40 sm:h-44 sm:w-44 rounded-full object-cover shadow-xl ring-4 ring-white dark:ring-gray-800"
+              />
+            </div>
+
             <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-400 px-4 py-2 rounded-full text-sm font-semibold mb-6 shadow-sm border border-orange-200 dark:border-orange-900">
               <Users className="w-4 h-4" />
               <span>Author Profile</span>
@@ -856,10 +864,20 @@ export default function VikrantSinghAuthorPage() {
             </p>
 
             <div className="flex justify-center items-center gap-4">
-               <a href="#" className="p-3 bg-white dark:bg-gray-800 shadow-md hover:shadow-lg rounded-full text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all">
+               <a 
+                 href="https://www.linkedin.com/in/singhvikrant?utm_source=share_via&utm_content=profile&utm_medium=member_ios" 
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="p-3 bg-white dark:bg-gray-800 shadow-md hover:shadow-lg rounded-full text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
+                >
                  <Linkedin className="w-5 h-5" />
                </a>
-               <a href="#" className="p-3 bg-white dark:bg-gray-800 shadow-md hover:shadow-lg rounded-full text-gray-500 hover:text-blue-400 dark:hover:text-blue-300 transition-all">
+               <a 
+                 href="https://x.com/vsingh_afi" 
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 className="p-3 bg-white dark:bg-gray-800 shadow-md hover:shadow-lg rounded-full text-gray-500 hover:text-blue-400 dark:hover:text-blue-300 transition-all"
+                >
                  <Twitter className="w-5 h-5" />
                </a>
             </div>
@@ -936,143 +954,7 @@ export default function VikrantSinghAuthorPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#0a0f1e] text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-          {/* 5 Column Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-10 mb-14">
-
-            {/* Column 1 – Brand */}
-            <div className="col-span-2 md:col-span-3 lg:col-span-1">
-              <a href="/" className="flex items-center space-x-3 mb-4" aria-label="Insydz – Home">
-                <img
-                  src="/logo.png"
-                  alt="Insydz Logo"
-                  className="w-10 h-10 object-contain p-0.5"
-                />
-                <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Insydz
-                </span>
-              </a>
-              <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                India's AI-powered ecommerce analytics software for Amazon, Flipkart sellers.
-              </p>
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all transform hover:scale-105 shadow-lg"
-              >
-                Start Free →
-              </Link>
-              <div className="flex space-x-3 mt-6">
-                <a
-                  title="Insydz on Facebook"
-                  href="https://www.facebook.com/profile.php?id=61586202582209"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on Facebook"
-                >
-                  <Facebook className="w-4 h-4" />
-                </a>
-                <a
-                  title="Insydz on Twitter / X"
-                  href="https://x.com/growwithinsydz"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on Twitter"
-                >
-                  <Twitter className="w-4 h-4" />
-                </a>
-                <a
-                  title="Insydz on Instagram"
-                  href="https://www.instagram.com/growwithinsydz/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on Instagram"
-                >
-                  <Instagram className="w-4 h-4" />
-                </a>
-                <a
-                  title="Insydz on LinkedIn"
-                  href="https://www.linkedin.com/company/insydz/?viewAsMember=true"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on LinkedIn"
-                >
-                  <Linkedin className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
-
-            {/* Column 2 – Solutions */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Solutions</h4>
-              <ul className="space-y-3">
-                <li><Link href="/solutions/amazon-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Amazon Sellers</Link></li>
-                <li><Link href="/solutions/flipkart-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Flipkart Sellers</Link></li>
-                <li><Link href="/solutions/ecommerce-agencies" className="text-sm text-gray-400 hover:text-white transition-colors">Agencies</Link></li>
-                <li><Link href="/solutions/brand-managers" className="text-sm text-gray-400 hover:text-white transition-colors">Brand Managers</Link></li>
-              </ul>
-            </div>
-
-            {/* Column 3 – Product */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Product</h4>
-              <ul className="space-y-3">
-                <li><Link href="/features" className="text-sm text-gray-400 hover:text-white transition-colors">Features</Link></li>
-                <li><Link href="/pricing" className="text-sm text-gray-400 hover:text-white transition-colors">Pricing</Link></li>
-                <li><Link href="/features/festive-trend-feature" className="text-sm text-gray-400 hover:text-white transition-colors">Festive Trends</Link></li>
-                <li><Link href="/compare/insydzvshelium" className="text-sm text-gray-400 hover:text-white transition-colors">Compare</Link></li>
-              </ul>
-            </div>
-
-            {/* Column 4 – Resources */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Resources</h4>
-              <ul className="space-y-3">
-                <li><Link href="/resources/expert-blog" className="text-sm text-gray-400 hover:text-white transition-colors">Blog</Link></li>
-                <li><Link href="/resources/guides" className="text-sm text-gray-400 hover:text-white transition-colors">E-commerce Guides</Link></li>
-                <li><Link href="/resources/videos" className="text-sm text-gray-400 hover:text-white transition-colors">Video Tutorials</Link></li>
-                <li><Link href="/resources/case-studies" className="text-sm text-gray-400 hover:text-white transition-colors">Case Studies</Link></li>
-                <li><Link href="/free-tools/free-amazon-product-analyzer" className="text-sm text-gray-400 hover:text-white transition-colors">Free Tools</Link></li>
-              </ul>
-            </div>
-
-            {/* Column 5 – Company */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Company</h4>
-              <ul className="space-y-3">
-                {/* "About" scrolls on this page — use a hash href so it's crawlable */}
-                <li><a href="#About" onClick={(e) => { e.preventDefault(); scrollToSection('About'); }} className="text-sm text-gray-400 hover:text-white transition-colors">About</a></li>
-                <li><Link href="/about/our-vision" className="text-sm text-gray-400 hover:text-white transition-colors">Our Vision</Link></li>
-                <li><Link href="/about/careers" className="text-sm text-gray-400 hover:text-white transition-colors">Careers</Link></li>
-                <li><Link href="/about/contact-us" className="text-sm text-gray-400 hover:text-white transition-colors">Contact</Link></li>
-              </ul>
-            </div>
-
-          </div>
-
-          {/* Bottom Strip */}
-          <div className="border-t border-white/10 pt-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-              <p className="text-gray-500 text-sm">
-                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
-              </p>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>
-                <span className="text-gray-700">·</span>
-                <a href="/terms-service" className="hover:text-white transition-colors">Terms of Service</a>
-                <span className="text-gray-700">·</span>
-                <a href="/privacy-policy" className="hover:text-white transition-colors">Data Disclaimer</a>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

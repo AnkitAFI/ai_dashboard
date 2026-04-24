@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Helmet } from "react-helmet-async";
+import { Footer } from "@/components/layout/Footer";
 
 // ── Schema ─────────────────────────────────────────────────────────────────────
 const schemaAmazonVsFlipkart = {
@@ -597,26 +598,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
         /* ── Hero image caption ── */
         .hero-caption{font-family:'Sora',sans-serif;font-size:12px;color:#94A3B8;font-style:italic;text-align:center;margin-bottom:32px;padding:6px 10px}
 
-        /* ── Final CTA ── */
-        .fc-block{background:linear-gradient(135deg,#FF9900 0%,#e67e00 50%,#0A0F1A 100%);padding:56px 12px;text-align:center}
-        @media(min-width:640px){.fc-block{padding:36px 12px}}
-        @media(min-width:1024px){.fc-block{padding:36px 12px}}
-        .fc-inner{max-width:640px;margin:0 auto}
-        .fc-inner h2{font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:12px;line-height:1.2;letter-spacing:-.4px}
-        @media(min-width:640px){.fc-inner h2{font-size:28px;margin-bottom:14px}}
-        @media(min-width:1024px){.fc-inner h2{font-size:34px}}
-        .fc-inner p{color:rgba(255,255,255,.8);font-size:14px;max-width:520px;margin:0 auto 22px;line-height:1.7;font-family:'Lora',serif}
-        @media(min-width:640px){.fc-inner p{font-size:16px;margin:0 auto 28px}}
-        .fc-points{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin-bottom:24px}
-        @media(min-width:640px){.fc-points{gap:8px 24px;margin-bottom:32px}}
-        .fc-pt{color:rgba(255,255,255,.9);font-size:12px;display:flex;align-items:center;gap:6px;font-family:'Sora',sans-serif}
-        @media(min-width:640px){.fc-pt{font-size:13.5px}}
-        .fc-pt::before{content:'✓';color:white;font-weight:800}
-        .fc-btn{background:white;color:#FF9900;padding:13px 28px;border-radius:10px;font-size:13px;font-weight:800;border:none;cursor:pointer;transition:transform .2s;width:100%;max-width:480px}
-        @media(min-width:640px){.fc-btn{padding:16px 36px;font-size:15px;width:auto}}
-        .fc-btn:hover{transform:translateY(-2px)}
-        .fc-sub{color:rgba(255,255,255,.55);font-size:11.5px;margin-top:12px}
-        @media(min-width:640px){.fc-sub{font-size:12.5px;margin-top:14px}}
+        .final-cta-block { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%); padding: clamp(48px,8vw,40px) 20px; text-align:center; margin:60px 0 0; }
       `}</style>
 
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
@@ -707,11 +689,14 @@ export default function AmazonVsFlipkartIndiaSellers() {
         <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#FFF7ED", color:"#FF9900", fontSize:"clamp(10px,2vw,11.5px)", fontWeight:700, letterSpacing:.6, textTransform:"uppercase" as const, padding:"4px 12px", borderRadius:20, marginBottom:14, border:"1px solid #FED7AA", fontFamily:"'Sora',sans-serif" }}>
           ◆ Seller Tools &amp; Strategy
         </div>
-        <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(22px,4vw,40px)", fontWeight:900, lineHeight:1.16, color:"#0A0F1A", letterSpacing:"-.5px", marginBottom:14, maxWidth:820 }} className="dark:text-white">
+        <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(22px,4vw,40px)", fontWeight:800, lineHeight:1.18, color:"#0A0F1A", letterSpacing:"-.5px", maxWidth:820 }} className="dark:text-white">
           <span style={{ color:"#FF9900" }}>Amazon vs Flipkart:</span>{" "}
           Which Marketplace is Better in India?{" "}
           <span style={{ color:"#2874F0" }}>(2026)</span>
         </h1>
+        <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2.5vw,17px)", color:"#475569", lineHeight:1.75, maxWidth:800,paddingTop:10, marginBottom:20 }} className="dark:text-gray-400">
+          Most Indian sellers are bleeding margin by choosing the wrong platform without running the numbers first. See how successful D2C brands evaluate fees, traffic, and competition data to decide where every rupee of inventory should go.
+        </p>
         <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => setLocation("/author/vikrant-singh")}>Vikrant Singh</strong></div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>🕐 January 2026</div>
@@ -1166,162 +1151,34 @@ export default function AmazonVsFlipkartIndiaSellers() {
         </main>
       </div>
 
-      {/* FINAL CTA */}
-      <div className="fc-block">
-        <div className="fc-inner">
-          <h2>Every Hour Without Cross-Platform Intelligence Is an Hour Your Competitors Are Taking Your Buy Box</h2>
-          <p>Insydz tracks competitor prices across Amazon.in and Flipkart in real time alerts you via WhatsApp the moment a rival reprices, and tells you exactly how to respond to protect your margin.</p>
-          <div className="fc-points">
-            <div className="fc-pt">Forever free plan</div>
-            <div className="fc-pt">No credit card</div>
-            <div className="fc-pt">Amazon.in + Flipkart</div>
-            <div className="fc-pt">WhatsApp alerts in 60 min</div>
-          </div>
-          <Link to="/login" className="fc-btn" style={{ display:"inline-block", textDecoration:"none" }}>
-            → Stop Guessing. Start Knowing — insydz.com
-          </Link>
-          <p className="fc-sub">Forever free plan · No setup required · Amazon India, Flipkart &amp; supported</p>
+      {/* Final CTA */}
+      <div className="final-cta-block">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+          Your Competitors Track Both Platforms. Now You Can Too.
+        </h2>
+        <p className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 24px" }}>
+          Insydz gives you unified price intelligence across Amazon.in and Flipkart — with real-time WhatsApp alerts the moment a rival moves, and AI guidance on exactly how to respond.
+        </p>
+        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px 20px", marginBottom: 20 }}>
+          {["Free plan", "Amazon.in + Flipkart", "WhatsApp alerts in 60 min"].map(t => (
+            <div key={t} className="text-blue-100" style={{ fontSize:"clamp(11px,2vw,13.5px)", display:"flex", alignItems:"center", gap:6, fontFamily:"'Sora',sans-serif" }}>
+              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+            </div>
+          ))}
         </div>
+        <Link
+          to="/login"
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm sm:text-base px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-xl transition-all transform hover:scale-105 inline-block text-decoration-none"
+        >
+          Track Both Platforms Free →
+        </Link>
+        <p className="text-blue-200 text-xs mt-4">
+          Free plan · Amazon.in + Flipkart · WhatsApp alerts in 60 min
+        </p>
       </div>
 
       {/* Footer */}
-      <footer className="bg-[#0a0f1e] text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-          {/* 5 Column Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-10 mb-14">
-
-            {/* Column 1 – Brand */}
-            <div className="col-span-2 md:col-span-3 lg:col-span-1">
-              <a href="/" className="flex items-center space-x-3 mb-4" aria-label="Insydz – Home">
-                <img
-                  src="/logo.png"
-                  alt="Insydz Logo"
-                  className="w-10 h-10 object-contain p-0.5"
-                />
-                <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Insydz
-                </span>
-              </a>
-              <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                India's AI-powered ecommerce analytics software for Amazon, Flipkart sellers.
-              </p>
-              <Link
-                to="/login"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all transform hover:scale-105 shadow-lg"
-              >
-                Start Free →
-              </Link>
-              <div className="flex space-x-3 mt-6">
-                <a
-                  title="Insydz on Facebook"
-                  href="https://www.facebook.com/profile.php?id=61586202582209"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on Facebook"
-                >
-                  <Facebook className="w-4 h-4" />
-                </a>
-                <a
-                  title="Insydz on Twitter / X"
-                  href="https://x.com/growwithinsydz"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on Twitter"
-                >
-                  <Twitter className="w-4 h-4" />
-                </a>
-                <a
-                  title="Insydz on Instagram"
-                  href="https://www.instagram.com/growwithinsydz/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on Instagram"
-                >
-                  <Instagram className="w-4 h-4" />
-                </a>
-                <a
-                  title="Insydz on LinkedIn"
-                  href="https://www.linkedin.com/company/insydz/?viewAsMember=true"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on LinkedIn"
-                >
-                  <Linkedin className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
-
-            {/* Column 2 – Solutions */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Solutions</h4>
-              <ul className="space-y-3">
-                <li><Link to="/solutions/amazon-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Amazon Sellers</Link></li>
-                <li><Link to="/solutions/flipkart-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Flipkart Sellers</Link></li>
-                <li><Link to="/solutions/ecommerce-agencies" className="text-sm text-gray-400 hover:text-white transition-colors">Agencies</Link></li>
-                <li><Link to="/solutions/brand-managers" className="text-sm text-gray-400 hover:text-white transition-colors">Brand Managers</Link></li>
-              </ul>
-            </div>
-
-            {/* Column 3 – Product */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Product</h4>
-              <ul className="space-y-3">
-                <li><Link to="/features" className="text-sm text-gray-400 hover:text-white transition-colors">Features</Link></li>
-                <li><Link to="/pricing" className="text-sm text-gray-400 hover:text-white transition-colors">Pricing</Link></li>
-                <li><Link to="/features/festive-trend-feature" className="text-sm text-gray-400 hover:text-white transition-colors">Festive Trends</Link></li>
-                <li><Link to="/compare/insydzvshelium" className="text-sm text-gray-400 hover:text-white transition-colors">Compare</Link></li>
-              </ul>
-            </div>
-
-            {/* Column 4 – Resources */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Resources</h4>
-              <ul className="space-y-3">
-                <li><Link to="/resources/expert-blog" className="text-sm text-gray-400 hover:text-white transition-colors">Blog</Link></li>
-                <li><Link to="/resources/guides" className="text-sm text-gray-400 hover:text-white transition-colors">E-commerce Guides</Link></li>
-                <li><Link to="/resources/videos" className="text-sm text-gray-400 hover:text-white transition-colors">Video Tutorials</Link></li>
-                <li><Link to="/resources/case-studies" className="text-sm text-gray-400 hover:text-white transition-colors">Case Studies</Link></li>
-                <li><Link to="/free-tools/free-amazon-product-analyzer" className="text-sm text-gray-400 hover:text-white transition-colors">Free Tools</Link></li>
-              </ul>
-            </div>
-
-            {/* Column 5 – Company */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Company</h4>
-              <ul className="space-y-3">
-                {/* "About" scrolls on this page — use a hash href so it's crawlable */}
-                <li><a href="#About" onClick={(e) => { e.preventDefault(); scrollToSection('About'); }} className="text-sm text-gray-400 hover:text-white transition-colors">About</a></li>
-                <li><Link to="/about/our-vision" className="text-sm text-gray-400 hover:text-white transition-colors">Our Vision</Link></li>
-                <li><Link to="/about/careers" className="text-sm text-gray-400 hover:text-white transition-colors">Careers</Link></li>
-                <li><Link to="/about/contact-us" className="text-sm text-gray-400 hover:text-white transition-colors">Contact</Link></li>
-              </ul>
-            </div>
-
-          </div>
-
-          {/* Bottom Strip */}
-          <div className="border-t border-white/10 pt-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-              <p className="text-gray-500 text-sm">
-                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
-              </p>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>
-                <span className="text-gray-700">·</span>
-                <a href="/terms-service" className="hover:text-white transition-colors">Terms of Service</a>
-                <span className="text-gray-700">·</span>
-                <a href="/privacy-policy" className="hover:text-white transition-colors">Data Disclaimer</a>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </footer>
+      <Footer />
 
       <style>{`
         @keyframes fade-in {

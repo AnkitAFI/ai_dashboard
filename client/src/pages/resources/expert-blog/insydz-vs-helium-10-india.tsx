@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Helmet } from 'react-helmet-async';
+import { Footer } from "@/components/layout/Footer";
 
 const schemaBlogComparison = {
   "@context": "https://schema.org",
@@ -414,7 +415,8 @@ export default function InsydzVsHelium10India() {
         .rel-card{border:1px solid #E2E8F0;border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;background:#fff}
         .dark .rel-card{background:#111827;border-color:#1f2937}
         .rel-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.09);transform:translateY(-2px)}
-        .rel-thumb{width:100%;height:128px;display:flex;align-items:center;justify-content:center;font-size:28px}
+        .rel-thumb{width:100%;aspect-ratio:2.4/1;overflow:hidden;background:#0A0F1A;display:flex;align-items:center;justify-content:center}
+        .rel-thumb img{width:100%;height:100%;object-fit:cover;display:block}
         .rel-body{padding:14px}
         .rel-tag{font-size:10.5px;font-weight:700;color:#F97316;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;font-family:'Sora',sans-serif}
         .rel-title{font-size:13px;font-weight:700;color:#0D1B2A;line-height:1.4;font-family:'Sora',sans-serif}
@@ -438,16 +440,7 @@ export default function InsydzVsHelium10India() {
         @media(max-width:640px){.choose-grid{grid-template-columns:1fr}}
         .choose-card{border-radius:12px;padding:2px 24px 20px}
         .choose-card h3{font-family:'Sora',sans-serif;font-size:16px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-        .fc-block{background:linear-gradient(135deg,#DB2777 0%,#7C3AED 100%);padding:80px 24px;text-align:center}
-        .fc-inner{max-width:640px;margin:0 auto}
-        .fc-inner h2{font-family:'Sora',sans-serif;font-size:clamp(24px,4vw,36px);font-weight:800;color:white;margin-bottom:14px;line-height:1.2;letter-spacing:-.4px}
-        .fc-inner p{color:rgba(255,255,255,.75);font-size:16px;max-width:520px;margin:0 auto 28px;line-height:1.7;font-family:'Lora',serif}
-        .fc-points{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 24px;margin-bottom:32px}
-        .fc-pt{color:rgba(255,255,255,.85);font-size:13.5px;display:flex;align-items:center;gap:7px;font-family:'Sora',sans-serif}
-        .fc-pt::before{content:'✓';color:white;font-weight:800}
-        .fc-btn{background:white;color:#DB2777;padding:16px 40px;border-radius:10px;font-size:16px;font-weight:800;border:none;cursor:pointer;transition:transform .2s}
-        .fc-btn:hover{transform:translateY(-2px)}
-        .fc-sub{color:rgba(255,255,255,.5);font-size:12.5px;margin-top:14px}
+        .final-cta-block { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%); padding: clamp(48px,8vw,40px) 20px; text-align:center; margin:60px 0 0; }
         .verdict-banner{background:linear-gradient(135deg,#FFF7ED 0%,#FFEDD5 100%);border:2px solid #FED7AA;border-radius:12px;padding:22px 24px;margin:28px 0;display:flex;gap:16px;align-items:flex-start}
         .dark .verdict-banner{background:#431407;border-color:#78350f}
       `}</style>
@@ -536,11 +529,14 @@ export default function InsydzVsHelium10India() {
           <Trophy className="w-3.5 h-3.5" />
           Pricing + Compare
         </div>
-        <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(26px,3.8vw,40px)", fontWeight: 800, lineHeight: 1.18, color: "#0D1B2A", letterSpacing: "-.5px", marginBottom: 18, maxWidth: 820 }} className="dark:text-white">
+        <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(26px,3.8vw,40px)", fontWeight: 800, lineHeight: 1.18, color: "#0D1B2A", letterSpacing: "-.5px", maxWidth: 820 }} className="dark:text-white">
           {/* Link #1 — self-referencing primary keyword */}
           <InLink to="/resources/expert-blog/insydz-vs-helium-10-india" color="#4F46E5">Insydz vs Helium 10</InLink>{" "}
            comparison for Indian sellers: Which is the Right Amazon Intelligence Tool?
         </h1>
+        <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2.5vw,17px)", color:"#475569", lineHeight:1.75, maxWidth:800,paddingTop:10, marginBottom:20 }} className="dark:text-gray-400">
+          Helium 10 was built for Amazon US — not for the way Indian marketplaces actually work. Find out why thousands of Indian sellers are switching to a tool built specifically for Amazon India, Flipkart, and Meesho.
+        </p>
         <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap" as const, gap: "5px 18px", marginBottom: 28 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#64748B" }}><Users className="w-3.5 h-3.5" /><strong className="text-[#0D1B2A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => setLocation("/author/vikrant-singh")}>Vikrant Singh</strong></div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#64748B" }}><Clock className="w-3.5 h-3.5" />January 2026</div>
@@ -1222,12 +1218,12 @@ export default function InsydzVsHelium10India() {
               <h2 style={{ fontSize: 20, fontWeight: 800, color: "#0D1B2A", margin: "0 0 22px", border: "none", padding: 0, fontFamily: "'Sora',sans-serif" }} className="dark:text-white">Related Guides</h2>
               <div className="related-grid">
                 {([
-                  { cardTitle: "Best Competitor Price Tracking Tools for Indian Sellers: The 2026 Guide", tag: "Price Tracking",  bg: "linear-gradient(135deg,#F97316,#EA580C)", em: "📊", r: "/features/competitor-price-tracking-feature" },
-                  { cardTitle: "Amazon SEO Tool India: The Complete 2026 Guide for Indian Sellers",        tag: "SEO Guide",       bg: "linear-gradient(135deg,#0D9488,#0891B2)", em: "🔍", r: "/resources/expert-blog/amazon-seo-tool-india" },
-                  { cardTitle: "How to Rank on Page 1 of Amazon India in 2026",                           tag: "Ranking Guide",   bg: "linear-gradient(135deg,#4F46E5,#7C3AED)", em: "🏆", r: "/use-cases/find-profitable-products" },
-                ] as { cardTitle: string; tag: string; bg: string; em: string; r: string }[]).map(rc => (
+                  { cardTitle: "Best Competitor Price Tracking Tools for Indian Sellers: The 2026 Guide", tag: "Price Tracking", image: "/Best_Price_Tracer-blog2_image1.png?v=1", r: "/resources/expert-blog/best-competitor-price-tracking-tools-india" },
+                  { cardTitle: "Amazon SEO Tool India: The Complete 2026 Guide for Indian Sellers",        tag: "SEO Guide",      image: "/Amazon_SEO_Tool-Blog3_image1.png", r: "/resources/expert-blog/amazon-seo-tool-india" },
+                  { cardTitle: "How to Rank on Page 1 of Amazon India in 2026",                           tag: "Ranking Guide",  image: "/twenty three.png", r: "/resources/expert-blog/how-to-rank-page-1-amazon-india" },
+                ] as { cardTitle: string; tag: string; image: string; r: string }[]).map(rc => (
                   <div key={rc.cardTitle} className="rel-card" onClick={() => setLocation(rc.r)}>
-                    <div className="rel-thumb" style={{ background: rc.bg }}><span>{rc.em}</span></div>
+                    <div className="rel-thumb"><img src={rc.image} alt={rc.cardTitle} /></div>
                     <div className="rel-body">
                       <div className="rel-tag">{rc.tag}</div>
                       <div className="rel-title">{rc.cardTitle}</div>
@@ -1241,162 +1237,34 @@ export default function InsydzVsHelium10India() {
         </main>
       </div>
 
-      {/* ══ FINAL CTA ══ */}
-      <div className="fc-block">
-        <div className="fc-inner">
-          <h2>The Right Tool Isn't the Most Expensive One. It's the Most Accurate One for Your Market.</h2>
-          <p>Every rupee you spend on a tool that returns inaccurate Amazon.in data, ignores Flipkart, and sends alerts to an email inbox you check twice a day is a rupee working against you not for you.</p>
-          <div className="fc-points">
-            <div className="fc-pt">Forever free plan</div>
-            <div className="fc-pt">No credit card required</div>
-            <div className="fc-pt">Hinglish keyword data</div>
-            <div className="fc-pt">Amazon.in + Flipkart</div>
-          </div>
-          <button className="fc-btn" onClick={() => setLocation("/login")}>
-            Try Insydz Free at insydz.com See Your Amazon.in Keyword Gaps in 5 Minutes
-          </button>
-          <p className="fc-sub">Forever free plan · No credit card · Cancel anytime</p>
+      {/* Final CTA */}
+      <div className="final-cta-block">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+          The Right Tool Isn't the Most Expensive One. <br /> It's the Most Accurate One for Your Market.
+        </h2>
+        <p className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 24px" }}>
+          Every rupee spent on a tool that ignores Flipkart, returns inaccurate Amazon.in data, and sends alerts to an email inbox — is a rupee working against you.
+        </p>
+        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px 20px", marginBottom: 20 }}>
+          {["Hinglish keyword data", "Amazon.in + Flipkart", "Free plan"].map(t => (
+            <div key={t} className="text-blue-100" style={{ fontSize:"clamp(11px,2vw,13.5px)", display:"flex", alignItems:"center", gap:6, fontFamily:"'Sora',sans-serif" }}>
+              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+            </div>
+          ))}
         </div>
+        <button
+          onClick={() => setLocation("/login")}
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm sm:text-base px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-xl transition-all transform hover:scale-105"
+        >
+          See Your Keyword Gaps Free →
+        </button>
+        <p className="text-blue-200 text-xs mt-4">
+          Hinglish keyword data · Amazon.in + Flipkart · Free plan
+        </p>
       </div>
 
             {/* Footer */}
-      <footer className="bg-[#0a0f1e] text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-          {/* 5 Column Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-10 mb-14">
-
-            {/* Column 1 – Brand */}
-            <div className="col-span-2 md:col-span-3 lg:col-span-1">
-              <a href="/" className="flex items-center space-x-3 mb-4" aria-label="Insydz – Home">
-                <img
-                  src="/logo.png"
-                  alt="Insydz Logo"
-                  className="w-10 h-10 object-contain p-0.5"
-                />
-                <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Insydz
-                </span>
-              </a>
-              <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                India's AI-powered ecommerce analytics software for Amazon, Flipkart sellers.
-              </p>
-              <Link
-                to="/login"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all transform hover:scale-105 shadow-lg"
-              >
-                Start Free →
-              </Link>
-              <div className="flex space-x-3 mt-6">
-                <a
-                  title="Insydz on Facebook"
-                  href="https://www.facebook.com/profile.php?id=61586202582209"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on Facebook"
-                >
-                  <Facebook className="w-4 h-4" />
-                </a>
-                <a
-                  title="Insydz on Twitter / X"
-                  href="https://x.com/growwithinsydz"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on Twitter"
-                >
-                  <Twitter className="w-4 h-4" />
-                </a>
-                <a
-                  title="Insydz on Instagram"
-                  href="https://www.instagram.com/growwithinsydz/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on Instagram"
-                >
-                  <Instagram className="w-4 h-4" />
-                </a>
-                <a
-                  title="Insydz on LinkedIn"
-                  href="https://www.linkedin.com/company/insydz/?viewAsMember=true"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on LinkedIn"
-                >
-                  <Linkedin className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
-
-            {/* Column 2 – Solutions */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Solutions</h4>
-              <ul className="space-y-3">
-                <li><Link to="/solutions/amazon-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Amazon Sellers</Link></li>
-                <li><Link to="/solutions/flipkart-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Flipkart Sellers</Link></li>
-                <li><Link to="/solutions/ecommerce-agencies" className="text-sm text-gray-400 hover:text-white transition-colors">Agencies</Link></li>
-                <li><Link to="/solutions/brand-managers" className="text-sm text-gray-400 hover:text-white transition-colors">Brand Managers</Link></li>
-              </ul>
-            </div>
-
-            {/* Column 3 – Product */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Product</h4>
-              <ul className="space-y-3">
-                <li><Link to="/features" className="text-sm text-gray-400 hover:text-white transition-colors">Features</Link></li>
-                <li><Link to="/pricing" className="text-sm text-gray-400 hover:text-white transition-colors">Pricing</Link></li>
-                <li><Link to="/features/festive-trend-feature" className="text-sm text-gray-400 hover:text-white transition-colors">Festive Trends</Link></li>
-                <li><Link to="/compare/insydzvshelium" className="text-sm text-gray-400 hover:text-white transition-colors">Compare</Link></li>
-              </ul>
-            </div>
-
-            {/* Column 4 – Resources */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Resources</h4>
-              <ul className="space-y-3">
-                <li><Link to="/resources/expert-blog" className="text-sm text-gray-400 hover:text-white transition-colors">Blog</Link></li>
-                <li><Link to="/resources/guides" className="text-sm text-gray-400 hover:text-white transition-colors">E-commerce Guides</Link></li>
-                <li><Link to="/resources/videos" className="text-sm text-gray-400 hover:text-white transition-colors">Video Tutorials</Link></li>
-                <li><Link to="/resources/case-studies" className="text-sm text-gray-400 hover:text-white transition-colors">Case Studies</Link></li>
-                <li><Link to="/free-tools/free-amazon-product-analyzer" className="text-sm text-gray-400 hover:text-white transition-colors">Free Tools</Link></li>
-              </ul>
-            </div>
-
-            {/* Column 5 – Company */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Company</h4>
-              <ul className="space-y-3">
-                {/* "About" scrolls on this page — use a hash href so it's crawlable */}
-                <li><a href="#About" onClick={(e) => { e.preventDefault(); scrollToSection('About'); }} className="text-sm text-gray-400 hover:text-white transition-colors">About</a></li>
-                <li><Link to="/about/our-vision" className="text-sm text-gray-400 hover:text-white transition-colors">Our Vision</Link></li>
-                <li><Link to="/about/careers" className="text-sm text-gray-400 hover:text-white transition-colors">Careers</Link></li>
-                <li><Link to="/about/contact-us" className="text-sm text-gray-400 hover:text-white transition-colors">Contact</Link></li>
-              </ul>
-            </div>
-
-          </div>
-
-          {/* Bottom Strip */}
-          <div className="border-t border-white/10 pt-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-              <p className="text-gray-500 text-sm">
-                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
-              </p>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>
-                <span className="text-gray-700">·</span>
-                <a href="/terms-service" className="hover:text-white transition-colors">Terms of Service</a>
-                <span className="text-gray-700">·</span>
-                <a href="/privacy-policy" className="hover:text-white transition-colors">Data Disclaimer</a>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </footer>
+      <Footer />
 
       <style>{`
         @keyframes fade-in {

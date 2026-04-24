@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Helmet } from 'react-helmet-async';
+import { Footer } from "@/components/layout/Footer";
 
 const schemaBlogPriceTools = {
   "@context": "https://schema.org",
@@ -758,47 +759,7 @@ export default function BestCompetitorPriceTrackingToolsIndia() {
           width: 100%; display: block;
         }
 
-        /* ── Final CTA ───────────────────────────────────────── */
-        .fc-block {
-          background: linear-gradient(135deg,#DB2777 0%,#7C3AED 100%);
-          padding: clamp(48px,8vw,80px) clamp(16px,4vw,24px);
-          text-align: center;
-        }
-        .fc-inner { max-width: 640px; margin: 0 auto; }
-        .fc-inner h2 {
-          font-family: 'Sora',sans-serif;
-          font-size: clamp(22px,4vw,38px);
-          font-weight: 800; color: white; margin-bottom: 14px;
-          line-height: 1.2; letter-spacing: -.4px;
-        }
-        .fc-inner p {
-          color: rgba(255,255,255,.75);
-          font-size: clamp(14px,1.6vw,16px);
-          max-width: 520px; margin: 0 auto 24px;
-          line-height: 1.7; font-family: 'Lora',serif;
-        }
-        .fc-points {
-          display: flex; justify-content: center;
-          flex-wrap: wrap; gap: 8px 20px; margin-bottom: 28px;
-        }
-        .fc-pt {
-          color: rgba(255,255,255,.85); font-size: clamp(12px,1.4vw,13.5px);
-          display: flex; align-items: center; gap: 7px;
-          font-family: 'Sora',sans-serif;
-        }
-        .fc-pt::before { content: '✓'; color: white; font-weight: 800; }
-        .fc-btn {
-          background: white; color: #DB2777;
-          padding: clamp(13px,2vw,16px) clamp(24px,4vw,40px);
-          border-radius: 10px; font-size: clamp(14px,1.6vw,16px);
-          font-weight: 800; border: none; cursor: pointer;
-          transition: transform .2s; letter-spacing: -.2px;
-          min-height: 52px; touch-action: manipulation;
-        }
-        .fc-btn:hover { transform: translateY(-2px); }
-        @media(hover:none) { .fc-btn:hover { transform: none; } }
-        @media(max-width:400px) { .fc-btn { width: 100%; } }
-        .fc-sub { color: rgba(255,255,255,.5); font-size: 12.5px; margin-top: 14px; }
+        .final-cta-block { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%); padding: clamp(48px,8vw,40px) 20px; text-align:center; margin:60px 0 0; }
 
         /* ── Breadcrumb ──────────────────────────────────────── */
         .breadcrumb-bar {
@@ -957,9 +918,12 @@ export default function BestCompetitorPriceTrackingToolsIndia() {
           Tool Comparison &amp; Reviews
         </div>
 
-        <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(22px,3.8vw,40px)", fontWeight: 800, lineHeight: 1.18, color: "#0D1B2A", letterSpacing: "-.5px", marginBottom: 16, maxWidth: 820 }} className="dark:text-white">
+        <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(22px,3.8vw,40px)", fontWeight: 800, lineHeight: 1.18, color: "#0D1B2A", letterSpacing: "-.5px", maxWidth: 820 }} className="dark:text-white">
           Best <span style={{ color: "#F97316" }}>Competitor Price Tracking Tools</span> for Indian Sellers: The 2026 Guide
         </h1>
+        <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2.5vw,17px)", color:"#475569", lineHeight:1.75, maxWidth:800,paddingTop:10, marginBottom:20 }} className="dark:text-gray-400">
+          Your competitors are repricing in real time while you're still checking prices manually — and losing the Buy Box because of it. See how India's smartest marketplace sellers use automated price intelligence across Amazon, Flipkart, and Meesho to protect margin and win more sales.
+        </p>
 
         <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "5px 16px", marginBottom: 24 }}>
           {[
@@ -1292,160 +1256,34 @@ export default function BestCompetitorPriceTrackingToolsIndia() {
         </main>
       </div>
 
-      {/* ════════════════════════════════ FINAL CTA */}
-      <div className="fc-block">
-        <div className="fc-inner">
-          <h2>Your Competitors Are Already Tracking Your Prices.</h2>
-          <p>The question isn't whether you should track competitor prices. It's whether you'll be the one acting on the information or the one reacting to it. Insydz gives you the same intelligence, built specifically for Amazon.in and Flipkart monitoring your rivals around the clock.</p>
-          <div className="fc-points">
-            <div className="fc-pt">No dashboards to learn</div>
-            <div className="fc-pt">No credit card needed</div>
-            <div className="fc-pt">WhatsApp alerts from day one</div>
-            <div className="fc-pt">Setup in under 30 minutes</div>
-          </div>
-          <button className="fc-btn" onClick={() => setLocation("/login")}>Start Tracking Free at insydz.com →</button>
-          <p className="fc-sub">Forever free plan · No credit card · Cancel anytime</p>
+      {/* Final CTA */}
+      <div className="final-cta-block">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+          Your Competitors Are Tracking. Start Now.
+        </h2>
+        <p className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 24px" }}>
+          Insydz monitors rival prices on Amazon.in and Flipkart — and alerts you on WhatsApp before you lose the Buy Box.
+        </p>
+        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px 20px", marginBottom: 20 }}>
+          {["Real-time price alerts", "Amazon.in + Flipkart", "WhatsApp notifications", "Free forever"].map(t => (
+            <div key={t} className="text-blue-100" style={{ fontSize:"clamp(11px,2vw,13.5px)", display:"flex", alignItems:"center", gap:6, fontFamily:"'Sora',sans-serif" }}>
+              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+            </div>
+          ))}
         </div>
+        <button
+          onClick={() => setLocation("/login")}
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm sm:text-base px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-xl transition-all transform hover:scale-105"
+        >
+          Track Competitors Free →
+        </button>
+        <p className="text-blue-200 text-xs mt-4">
+          Live in 30 min · No setup needed · No card required
+        </p>
       </div>
 
       {/* Footer */}
-      <footer className="bg-[#0a0f1e] text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-          {/* 5 Column Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8 lg:gap-10 mb-14">
-
-            {/* Column 1 – Brand */}
-            <div className="col-span-2 md:col-span-3 lg:col-span-1">
-              <a href="/" className="flex items-center space-x-3 mb-4" aria-label="Insydz – Home">
-                <img
-                  src="/logo.png"
-                  alt="Insydz Logo"
-                  className="w-10 h-10 object-contain p-0.5"
-                />
-                <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Insydz
-                </span>
-              </a>
-              <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                India's AI-powered ecommerce analytics software for Amazon, Flipkart sellers.
-              </p>
-              <Link
-                to="/login"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all transform hover:scale-105 shadow-lg"
-              >
-                Start Free →
-              </Link>
-              <div className="flex space-x-3 mt-6">
-                <a
-                  title="Insydz on Facebook"
-                  href="https://www.facebook.com/profile.php?id=61586202582209"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on Facebook"
-                >
-                  <Facebook className="w-4 h-4" />
-                </a>
-                <a
-                  title="Insydz on Twitter / X"
-                  href="https://x.com/growwithinsydz"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on Twitter"
-                >
-                  <Twitter className="w-4 h-4" />
-                </a>
-                <a
-                  title="Insydz on Instagram"
-                  href="https://www.instagram.com/growwithinsydz/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on Instagram"
-                >
-                  <Instagram className="w-4 h-4" />
-                </a>
-                <a
-                  title="Insydz on LinkedIn"
-                  href="https://www.linkedin.com/company/insydz/?viewAsMember=true"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-9 h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Insydz on LinkedIn"
-                >
-                  <Linkedin className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
-
-            {/* Column 2 – Solutions */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Solutions</h4>
-              <ul className="space-y-3">
-                <li><Link to="/solutions/amazon-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Amazon Sellers</Link></li>
-                <li><Link to="/solutions/flipkart-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Flipkart Sellers</Link></li>
-                <li><Link to="/solutions/ecommerce-agencies" className="text-sm text-gray-400 hover:text-white transition-colors">Agencies</Link></li>
-                <li><Link to="/solutions/brand-managers" className="text-sm text-gray-400 hover:text-white transition-colors">Brand Managers</Link></li>
-              </ul>
-            </div>
-
-            {/* Column 3 – Product */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Product</h4>
-              <ul className="space-y-3">
-                <li><Link to="/features" className="text-sm text-gray-400 hover:text-white transition-colors">Features</Link></li>
-                <li><Link to="/pricing" className="text-sm text-gray-400 hover:text-white transition-colors">Pricing</Link></li>
-                <li><Link to="/features/festive-trend-feature" className="text-sm text-gray-400 hover:text-white transition-colors">Festive Trends</Link></li>
-                <li><Link to="/compare/insydzvshelium" className="text-sm text-gray-400 hover:text-white transition-colors">Compare</Link></li>
-              </ul>
-            </div>
-
-            {/* Column 4 – Resources */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Resources</h4>
-              <ul className="space-y-3">
-                <li><Link to="/resources/expert-blog" className="text-sm text-gray-400 hover:text-white transition-colors">Blog</Link></li>
-                <li><Link to="/resources/guides" className="text-sm text-gray-400 hover:text-white transition-colors">E-commerce Guides</Link></li>
-                <li><Link to="/resources/videos" className="text-sm text-gray-400 hover:text-white transition-colors">Video Tutorials</Link></li>
-                <li><Link to="/resources/case-studies" className="text-sm text-gray-400 hover:text-white transition-colors">Case Studies</Link></li>
-                <li><Link to="/free-tools/free-amazon-product-analyzer" className="text-sm text-gray-400 hover:text-white transition-colors">Free Tools</Link></li>
-              </ul>
-            </div>
-
-            {/* Column 5 – Company */}
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Company</h4>
-              <ul className="space-y-3">
-                {/* "About" scrolls on this page — use a hash href so it's crawlable */}
-                <li><a href="#About" onClick={(e) => { e.preventDefault(); scrollToSection('About'); }} className="text-sm text-gray-400 hover:text-white transition-colors">About</a></li>
-                <li><Link to="/about/our-vision" className="text-sm text-gray-400 hover:text-white transition-colors">Our Vision</Link></li>
-                <li><Link to="/about/careers" className="text-sm text-gray-400 hover:text-white transition-colors">Careers</Link></li>
-                <li><Link to="/about/contact-us" className="text-sm text-gray-400 hover:text-white transition-colors">Contact</Link></li>
-              </ul>
-            </div>
-
-          </div>
-
-          {/* Bottom Strip */}
-          <div className="border-t border-white/10 pt-8">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
-              <p className="text-gray-500 text-sm">
-                © 2026 <span className="text-purple-400 font-semibold">Insydz</span>. All rights reserved. Designed & Developed in India 🇮🇳
-              </p>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a>
-                <span className="text-gray-700">·</span>
-                <a href="/terms-service" className="hover:text-white transition-colors">Terms of Service</a>
-                <span className="text-gray-700">·</span>
-                <a href="/privacy-policy" className="hover:text-white transition-colors">Data Disclaimer</a>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </footer>
+      <Footer />
 
       <style>{`
         @keyframes fade-in {
