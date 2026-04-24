@@ -790,7 +790,7 @@ export default function LandingPage() {
             <div className="flex flex-col space-y-6 text-left mt-4 lg:mt-0">
               {/* Pill */}
               <div className="inline-flex w-max items-center px-4 py-2 rounded-full border border-purple-200 bg-purple-50 text-purple-700 text-sm font-semibold shadow-sm">
-                <span className="mr-2">✨</span> AI Ecommerce Analytical Software for Indian Sellers
+                AI Ecommerce Analytical Software for Indian Sellers
               </div>
 
               {/* Platforms */}
@@ -801,9 +801,9 @@ export default function LandingPage() {
               </div>
 
               {/* Heading */}
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-gray-900 dark:text-white">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight text-gray-900 dark:text-white">
                 <span className="text-6xl block mb-2 text-gray-900">Stop Guessing.</span>
-                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block mb-2">Make Selling</span>
+                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text leading-tight text-transparent block mb-2">Make Selling</span>
                 <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block mb-2">Decisions</span>
                 <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block">Better & Faster</span>
               </h1>
@@ -825,12 +825,6 @@ export default function LandingPage() {
                   className="inline-flex justify-center items-center px-8 py-4 text-base font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full transition-colors shadow-lg hover:shadow-purple-500/25"
                 >
                   Start Free. No Card Needed.
-                </Link>
-                <Link
-                  to="/about/contact-us"
-                  className="inline-flex justify-center items-center px-8 py-4 text-base font-bold text-purple-600 bg-white border-2 border-purple-600 hover:bg-purple-50 rounded-full transition-colors"
-                >
-                  See How It Works
                 </Link>
               </div>
 
@@ -966,10 +960,10 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
-              Built for Every E-commerce Growth Team <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Insydz</span>
+              Built for Every E-commerce Growth Team
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Whether you're a solo seller or managing a portfolio of brands, Insydz adapts to your needs.
+              Whether you're a solo Amazon seller or managing a portfolio of brands, Insydz is the marketplace analytics software that adapts to your needs. 
             </p>
           </div>
 
@@ -1016,10 +1010,10 @@ export default function LandingPage() {
             </Link>
 
             {/* E-commerce Agencies */}
-            <Link to="/solutions/ecommerce-agencies" className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border-2 border-blue-200 dark:border-blue-900 hover:shadow-2xl transition-all block">
+            <Link to="/solutions/ecommerce-agencies" className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border-2 border-purple-200 dark:border-purple-900 hover:shadow-2xl transition-all block">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center">
+                  <div className="w-16 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
                     <Trophy className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -1036,10 +1030,10 @@ export default function LandingPage() {
             </Link>
 
             {/* Brand Managers */}
-            <Link to="/solutions/brand-managers" className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border-2 border-green-200 dark:border-green-900 hover:shadow-2xl transition-all block">
+            <Link to="/solutions/brand-managers" className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 border-2 border-purple-200 dark:border-purple-900 hover:shadow-2xl transition-all block">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
                     <Trophy className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -1066,7 +1060,7 @@ export default function LandingPage() {
               Why Indian Sellers Choose <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Insydz</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Discover how Insydz outperforms the competition across key metrics that actually matter for Indian marketplaces
+              Discover how Insydz outperforms the competition across key metrics, from real time listing intelligence to competitor tracking, built specifically for Indian marketplaces.
             </p>
           </div>
 
@@ -1179,7 +1173,7 @@ export default function LandingPage() {
                 </li>
                 <li className="flex items-start">
                   <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">Superior data precision for Indian marketplaces</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">Superior data precision for marketplaces</span>
                 </li>
                 <li className="flex items-start">
                   <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0 mt-0.5" />
@@ -1214,7 +1208,7 @@ export default function LandingPage() {
               Accelerate Your Growth With <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Insydz</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Access free, premium resources built by and for Indian e-commerce sellers
+              Access premium resources built for Indian e-commerce sellers from seller guides and success stories to video masterclasses and strategic playbooks.
             </p>
           </div>
 
@@ -1263,7 +1257,7 @@ export default function LandingPage() {
               </div>
               <h3 className="text-2xl font-bold mb-3 text-gray-900 dark:text-white">Video Masterclasses</h3>
               <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">
-                Step-by-step platform walkthroughs, seller workshops, and marketplace strategy sessions
+                Step-by-step platform walkthroughs, seller workshops, marketplace strategy sessions
               </p>
               <span className="text-pink-600 dark:text-pink-400 font-semibold mt-auto">
                 Start Learning →
@@ -1298,7 +1292,7 @@ export default function LandingPage() {
               About <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Insydz</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              We're a team of marketplace sellers, data engineers, and AI specialists who got frustrated with analytics tools that weren't built for India so we built one that was.
+               We're a team of marketplace sellers, data engineers, and AI specialists who got frustrated with analytics tools that weren't built for India so we built one that was. Insydz is more than software, it's the ecommerce analytics software that finally speaks the language of Indian marketplace sellers. 
             </p>
           </div>
 
@@ -1387,7 +1381,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Building India's Most Trusted <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Seller Analytics Platform</span>
+              Building India's Most Trusted <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Seller <br /> Analytics Platform</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
               Supporting data driven decisions for Indian sellers across every marketplace
