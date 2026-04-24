@@ -236,7 +236,7 @@ export default function SolutionsPage() {
         'AI-powered review mining across your category',
         'Pricing AI to protect margin without losing rank'
       ],
-      microScenario: 'Ravi, a Delhi-based reseller doing ₹18L/month, stabilised his Buy Box hold rate by over 60% in the first month using Insydz price alerts.',
+      // microScenario: 'Ravi, a Delhi-based reseller doing ₹18L/month, stabilised his Buy Box hold rate by over 60% in the first month using Insydz price alerts.',
       outcome: 'Sell smarter, react faster, protect your margins.',
       link: '/solutions/amazon-sellers',
       color: 'from-orange-500 to-red-500'
@@ -249,7 +249,7 @@ export default function SolutionsPage() {
       whoItsFor: 'Sellers primarily operating on Flipkart',
       pain: 'Your listing drops from 200 to 60 daily views nothing changed, or so you think.',
       problems: [
-        'SEO & visibility gap analysis find out exactly why your listing dropped',
+        'SEO and visibility gap analysis find out exactly why your listing dropped',
         'Price war alerts on high-converting listings',
         'Competitor monitoring new entrants, flash sales, stock-out patterns'
       ],
@@ -257,23 +257,6 @@ export default function SolutionsPage() {
       outcome: 'Better visibility and faster reactions on Flipkart.',
       link: '/solutions/flipkart-sellers',
       color: 'from-blue-500 to-cyan-500'
-    },
-    {
-      id: 'd2c-brands',
-      icon: <TrendingUp className="w-10 h-10" />,
-      title: 'D2C Brands',
-      subtitle: 'For Shopify / D2C Brands',
-      whoItsFor: 'D2C brands selling via Shopify + marketplaces',
-      pain: 'About to launch a new product supplier research done, but no idea if the market actually wants it.',
-      problems: [
-        'Market demand validation real search volume & trend curves before you commit inventory',
-        'Competitive benchmarking who\'s winning and at what price, rating & review count',
-        'Product positioning find the gap and the messaging angle that converts'
-      ],
-      microScenario: 'A Bangalore-based D2C skincare brand avoided a ₹8L inventory mistake by using Insydz trend data pivoting from a declining category to a rising one before launch.',
-      outcome: 'Smarter launches and better positioning.',
-      link: '/solutions/d2c-brands',
-      color: 'from-purple-500 to-pink-500'
     },
     {
       id: 'ecommerce-agencies',
@@ -301,7 +284,7 @@ export default function SolutionsPage() {
       pain: 'Leadership wants data-backed decisions you\'re working off last quarter\'s research and a gut feel.',
       problems: [
         'Real-time market intelligence dashboards not stale reports',
-        'Competitive positioning vs key rivals on price, rating & visibility',
+        'Competitive positioning vs key rivals on price, rating and visibility',
         'Performance tracking over time for listings and strategies'
       ],
       microScenario: null,
@@ -318,13 +301,6 @@ export default function SolutionsPage() {
       outcome: 'Reacted faster with alerts protected margins',
       icon: <ShoppingBag className="w-8 h-8" />,
       color: 'from-orange-500 to-red-500'
-    },
-    {
-      type: 'D2C Brand',
-      problem: 'Launched products without knowing real marketplace demand inventory risk',
-      outcome: 'Validated demand before launch reduced inventory risk',
-      icon: <TrendingUp className="w-8 h-8" />,
-      color: 'from-purple-500 to-pink-500'
     },
     {
       type: 'E-commerce Agency',
@@ -346,7 +322,6 @@ export default function SolutionsPage() {
   const quickGuide = [
     { condition: 'Selling on Amazon India', solution: 'Amazon Seller Solution', link: '/solutions/amazon-sellers' },
     { condition: 'Selling on Flipkart', solution: 'Flipkart Seller Solution', link: '/solutions/flipkart-sellers' },
-    { condition: 'Own brand / Shopify + marketplaces', solution: 'D2C Solution', link: '/solutions/d2c-brands' },
     { condition: 'Managing multiple client accounts', solution: 'Agency Solution', link: '/solutions/ecommerce-agencies' },
     { condition: 'Category manager or brand team', solution: 'Brand Manager Solution', link: '/solutions/brand-managers' },
   ];
@@ -760,22 +735,18 @@ export default function SolutionsPage() {
             {/* Left */}
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 bg-orange-100 border border-orange-300 rounded-full px-4 py-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600"></span>
-                </span>
-                <span className="text-sm font-medium text-orange-700">Built for Indian Marketplaces 🇮🇳</span>
-              </div>
+                <span className="text-sm font-medium text-orange-700">India's AI Ecommerce Analytics Software </span>
+              </div> 
 
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
-                The Ecommerce Analytics Solution Built for
+              <h2 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
+                The Ecommerce Analytics Platform Built for 
                 <br />
                 <span className="bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 bg-clip-text text-transparent">
-                  Every Type of
+                  Indian Sellers
                 </span>
-                <br />
-                Indian Seller
-              </h1>
+                {/* <br /> */}
+                
+              </h2>
 
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
                 Whether you sell on Amazon, Flipkart Insydz gives you the exact intelligence you need to
@@ -819,7 +790,7 @@ export default function SolutionsPage() {
                   {[
                     { title: 'Amazon Seller Solution', sub: 'Price tracking • Review insights • Buy Box AI', grad: 'from-orange-500 to-red-500', Icon: ShoppingBag },
                     { title: 'Flipkart Seller Solution', sub: 'SEO monitoring • Competitor tracking', grad: 'from-blue-500 to-cyan-500', Icon: Store },
-                    { title: 'D2C Brand Solution', sub: 'Market validation • Positioning', grad: 'from-purple-500 to-pink-500', Icon: TrendingUp },
+                    // { title: 'D2C Brand Solution', sub: 'Market validation • Positioning', grad: 'from-purple-500 to-pink-500', Icon: TrendingUp },
                     { title: 'Ecommerce Agencies Solution', sub: 'Market validation • Positioning', grad: 'from-yellow-500 to-orange-500', Icon: TrendingUp },
                     { title: 'Brand Managers Solution', sub: 'Market validation • Positioning', grad: 'from-green-500 to-teal-500', Icon: TrendingUp },
                   ].map(({ title, sub, grad, Icon }) => (
@@ -839,7 +810,7 @@ export default function SolutionsPage() {
                   ))}
                 </div>
                 <div className="absolute -top-4 -right-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl px-4 py-2 shadow-xl">
-                  <p className="text-white font-bold text-sm">5 Solutions</p>
+                  <p className="text-white font-bold text-sm">4 Solutions</p>
                 </div>
               </div>
             </div>
@@ -866,10 +837,10 @@ export default function SolutionsPage() {
             <p className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-6">Here's what most Amazon seller tools don't tell you:</p>
             <div className="space-y-4">
               {[
-                'Your competitor dropped their price at 11 PM on a Friday and took your Buy Box before you woke up',
-                'Your product keyword ranks #4 on Flipkart search but your listing title hasn\'t been optimised in 6 months',
-                'A cluster of 1-star reviews about "packaging" is quietly tanking your conversion but you\'ve never spotted the pattern',
-                'You launched a new SKU based on gut feeling and it\'s been sitting dead in inventory for 3 months',
+                'The metrics Amazon shows you are trailing indicators, you need leading ones.',
+                `Your data lives in 6 tabs across 3 different tools, that's not intelligence that's chaos.`,
+                'Global tools are optimized for US/EU sellers, Indian marketplace logic is completely different.',
+                'Automation tools without intelligence just automate your mistakes faster.',
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
                   <Lightbulb className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
@@ -882,10 +853,10 @@ export default function SolutionsPage() {
 
           <div className="bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 border-2 border-orange-400 rounded-3xl p-8 text-center shadow-lg">
             <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Insydz is the <span className="text-orange-600">ecommerce analytics solution</span> designed around exactly these moments
+              Insydz is the <span className="text-orange-600">ecommerce analytics solution</span> designed around exactly these problems 
             </p>
             <p className="text-gray-700 dark:text-gray-300 text-lg">
-              with AI that thinks the way an experienced Indian marketplace seller thinks.
+              and built the right way to solve them
             </p>
           </div>
         </div>
@@ -896,19 +867,19 @@ export default function SolutionsPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white">
-              Different Sellers Different Problems
+              Different Sellers. Different Problems.
               <br />
-              <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">One Platform.</span>
+              <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">One Marketplace Software Platform.</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              No two sellers operate the same way. That's why Insydz offers role-specific intelligence same data engine, tailored insights for your selling reality.
+              No two sellers are the same, that's why Insydz applies real AI-powered intelligence to your unique marketplace software needs, giving you targeted insights instead of generic dashboards.  
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-2 gap-8 items-stretch">
             {solutions.map((solution) => (
               <div key={solution.id}
-                className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-8 hover:border-orange-400 hover:shadow-xl transition-all group"
+                className="flex flex-col h-full bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-3xl p-8 shadow-xl"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-start gap-4">
@@ -944,7 +915,7 @@ export default function SolutionsPage() {
                   {solution.microScenario && (
                     <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-3">
                       <p className="text-xs font-semibold text-blue-600 uppercase mb-1">Real Example</p>
-                      <p className="text-sm text-gray-700 dark:text-gray-300">{solution.microScenario}</p>
+                      {/* <p className="text-sm text-gray-700 dark:text-gray-300">{solution.microScenario}</p> */}
                     </div>
                   )}
 
@@ -954,12 +925,14 @@ export default function SolutionsPage() {
                   </div>
                 </div>
 
+                <div className="mt-auto pt-6">
                 <Link href={solution.link}>
                   <Button className="w-full bg-gray-900 dark:bg-gray-700 hover:bg-gray-800 dark:hover:bg-gray-600 text-white font-semibold py-6 rounded-xl group">
                     View {solution.title} Solution
                     <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </Link>
+              </div>
               </div>
             ))}
           </div>
@@ -980,20 +953,20 @@ export default function SolutionsPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {caseStudies.map((study, index) => (
+          <div className="grid md:grid-cols-2 justify-center gap-8 max-w-4xl mx-auto">
+            {caseStudies.map((study, index) => ( 
               <div key={index}
                 className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-8 hover:border-orange-400 hover:shadow-xl transition-all group"
               >
                 <div
-  className={`w-16 h-16 bg-gradient-to-br ${study.color} 
-  rounded-2xl flex items-center justify-center mb-6 mx-auto
-  text-white group-hover:scale-110 transition-transform shadow-lg`}
->
-  <div className="w-10 h-10 flex items-center justify-center scale-90">
-    {study.icon}
-  </div>
-</div>
+                  className={`w-16 h-16 bg-gradient-to-br ${study.color} 
+                  rounded-2xl flex items-center justify-center mb-6 mx-auto
+                  text-white group-hover:scale-110 transition-transform shadow-lg`}
+                >
+                  <div className="w-10 h-10 flex items-center justify-center scale-90">
+                    {study.icon}
+              </div>
+            </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{study.type}</h3>
                 <div className="space-y-4">
                   <div>
@@ -1016,12 +989,12 @@ export default function SolutionsPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white">
-              What Makes Insydz Different
+              What Makes Insydz Different as <br /> Marketplace Software.
               <br />
               <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Built for India, Not Adapted for It</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              Most ecommerce optimization platforms are American tools with an Indian price tag. The India-specific nuances Flipkart's algorithm, category dynamics, regional language listing behaviour are afterthoughts.
+              Most ecommerce analytics tools are built for the US or EU seller. Insydz is the only marketplace software that starts with Indian marketplace logic, regional languages, category-specific insights, and local fulfillment data, not as an afterthought, but as the foundation.  
             </p>
           </div>
 
@@ -1076,9 +1049,9 @@ export default function SolutionsPage() {
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">
-              What Does Better Intelligence
+              What Does a Real Ecommerce <br />Optimization Platform 
               <br />
-              <span className="text-orange-600">Actually Mean for Your Business?</span>
+              <span className="text-orange-600">Actually Mean for Your Business? </span>
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-400">
               Scenario: Amazon seller, ₹20L/month GMV, electronics accessories category
@@ -1120,9 +1093,9 @@ export default function SolutionsPage() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white">
-              Not Sure Which
+              Not Sure Which Amazon Seller 
               <br />
-              <span className="text-orange-600">Solution Fits You?</span>
+              <span className="text-orange-600">Tool or Plan Fits You?</span>
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400">Here's a quick guide to help you choose:</p>
           </div>
@@ -1143,13 +1116,10 @@ export default function SolutionsPage() {
             </div>
           </div>
 
-          <p className="text-center text-gray-600 dark:text-gray-400 mb-6">You don't need to decide now. Start free and Insydz will adapt to how you sell.</p>
-
           <div className="text-center">
             <Button onClick={handleGetStarted} size="lg"
               className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-4 sm:px-12 py-6 text-sm sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group w-full sm:w-auto"
-            >
-              Start Free & Choose Inside the Product
+            >Start your free trail now
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -1157,7 +1127,7 @@ export default function SolutionsPage() {
       </section>
 
       {/* ── FREE-FIRST CTA ────────────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-white dark:bg-gray-950">
+      {/* <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white">
             Start Free.
@@ -1178,7 +1148,7 @@ export default function SolutionsPage() {
             <p className="text-sm text-gray-600 dark:text-gray-400">Start free choose your solution inside the product.</p>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ── SECTION 8: FAQ ────────────────────────────────────────────────────── */}
       <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
@@ -1212,7 +1182,7 @@ export default function SolutionsPage() {
       </section>
 
       {/* ── SECTION 9: FINAL CTA (ICP-segmented) ─────────────────────────────── */}
-      <section className="py-20 px-4 bg-gradient-to-br from-orange-600 via-red-600 to-orange-700">
+      <section className="py-20 px-4 bg-gradient-to-br from-orange-500 via-red-500 to-orange-500">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl lg:text-5xl font-black mb-6 text-white">
             Whatever You Sell.
@@ -1250,25 +1220,25 @@ export default function SolutionsPage() {
               }
             ].map((card, i) => (
               <div
-  key={i}
-  className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-left 
-  flex flex-col h-full"
->
-  <p className="font-bold text-white mb-2">{card.label}</p>
+            key={i}
+            className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-left 
+            flex flex-col h-full"
+          >
+            <p className="font-bold text-white mb-2">{card.label}</p>
 
-  <p className="text-white/80 text-sm mb-4">
-    {card.desc}
-  </p>
+            <p className="text-white/80 text-sm mb-4">
+              {card.desc}
+            </p>
 
-  <div className="mt-auto">
-    <button
-  onClick={card.action}
-  className="text-orange-200 font-semibold text-sm hover:text-white transition-colors underline whitespace-nowrap"
->
-  {card.cta}
-</button>
-  </div>
-</div>
+            <div className="mt-auto">
+              <button
+            onClick={card.action}
+            className="text-orange-200 font-semibold text-sm hover:text-white transition-colors underline whitespace-nowrap"
+          >
+            {card.cta}
+          </button>
+            </div>
+          </div>
             ))}
           </div>
 
@@ -1276,16 +1246,16 @@ export default function SolutionsPage() {
             <Button onClick={handleGetStarted} size="lg"
               className="bg-white hover:bg-gray-100 text-orange-700 font-bold px-12 py-6 text-lg rounded-full shadow-2xl group"
             >
-              Start Free
+              Start a Free Trial
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button
+            {/* <Button
               onClick={() => document.getElementById('solutions-grid')?.scrollIntoView({ behavior: 'smooth' })}
               size="lg"
               className="bg-orange-700 hover:bg-orange-800 text-white font-bold px-12 py-6 text-lg rounded-full border-2 border-orange-400"
             >
               Explore Solutions →
-            </Button>
+            </Button> */}
           </div>
           <p className="text-white/80 mt-6 text-sm flex items-center justify-center gap-2 flex-wrap">
   <span>✓ No credit card required</span>
