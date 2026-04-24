@@ -119,6 +119,7 @@ import SellerProducts from "./pages/dashboard/SellerProducts";
 import KeywordTrackerIntelligence from "@/pages/dashboard/keyword-intelligence";
 import PriceComparison from "@/pages/dashboard/PriceComparison";
 import ReviewComparison from "@/pages/dashboard/ReviewComparison";
+import KeywordGapAnalysis from "./pages/dashboard/KeywordGapAnalysis";
 // ==================
 // Environment Config
 // ==================
@@ -445,7 +446,7 @@ function Router() {
       <ProtectedRoute path="/seller/listing-audit" component={FeatureComingSoon} />
       <ProtectedRoute path="/seller/price-comparison" component={PriceComparison} />
       <ProtectedRoute path="/seller/review-comparison" component={ReviewComparison} />
-      <ProtectedRoute path="/seller/keyword-gap" component={FeatureComingSoon} />
+      <ProtectedRoute path="/seller/keyword-gap" component={KeywordGapAnalysis} />
       <ProtectedRoute path="/seller/price-optimizer" component={FeatureComingSoon} />
       <ProtectedRoute path="/seller/seo-optimizer" component={FeatureComingSoon} />
       <ProtectedRoute path="/seller/ai-advisor" component={AiAdvisor} />

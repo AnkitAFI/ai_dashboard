@@ -160,6 +160,14 @@ class RapidapiAmazonProducts(Base):
     is_amazon_choice = Column(Boolean)
     is_prime = Column(Boolean)
     sales_volume = Column(String)
+    avg_price = Column(Float)
+    min_price = Column(Float)
+    max_price = Column(Float)
+
+    avg_sales_volume = Column(Float)
+    min_sales_volume = Column(Float)
+    max_sales_volume = Column(Float)
+    
     country = Column(String)
     raw_data = Column(JSON)
     created_at = Column(TIMESTAMP)
