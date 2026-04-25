@@ -1,4 +1,4 @@
-import { useAuth } from '@/App';
+import { useAuth } from '@/lib/auth-context';
 import { useSubscriptionLimits } from './useSubscriptionLimits';
 
 const API_BASE_URL = "http://localhost:8000";

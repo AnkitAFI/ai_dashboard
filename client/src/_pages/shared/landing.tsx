@@ -6,71 +6,89 @@ import { navigate } from "wouter/use-browser-location";
 import { Helmet } from 'react-helmet-async';
 import { Footer } from "@/components/layout/Footer";
 
-const schemaSoftware = {
+const GRAPH_SCHEMA = {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
-  "@id": "https://insydz.com/#software",
-  "name": "Insydz",
-  "applicationCategory": "BusinessApplication",
-  "applicationSubCategory": "E-commerce Intelligence",
-  "operatingSystem": "Web",
-  "url": "https://insydz.com",
-  "description": "AI-powered ecommerce analytics for Amazon & Flipkart sellers. Track competitor prices, research products, and grow sales, all in one dashboard. Try free.",
-  "offers": [
+  "@graph": [
     {
-      "@type": "Offer",
-      "name": "Starter",
-      "price": "0",
-      "priceCurrency": "INR",
-      "description": "Free plan — core features, limited daily checks"
+      "@type": "Organization",
+      "@id": "https://insydz.com/#organization",
+      "name": "Insydz",
+      "url": "https://insydz.com",
+      "logo": "https://insydz.com/logo.png",
+      "sameAs": [
+        "https://www.linkedin.com/company/insydz"
+      ]
     },
     {
-      "@type": "Offer",
-      "name": "Growth",
-      "price": "1999",
-      "priceCurrency": "INR",
-      "priceSpecification": {
-        "@type": "UnitPriceSpecification",
-        "price": "1999",
-        "priceCurrency": "INR",
-        "unitCode": "MON"
-      }
-    },
-    {
-      "@type": "Offer",
-      "name": "Pro",
-      "price": "2999",
-      "priceCurrency": "INR",
-      "priceSpecification": {
-        "@type": "UnitPriceSpecification",
-        "price": "2999",
-        "priceCurrency": "INR",
-        "unitCode": "MON"
+      "@type": "SoftwareApplication",
+      "@id": "https://insydz.com/#software",
+      "name": "Insydz",
+      "url": "https://insydz.com",
+      "applicationCategory": "BusinessApplication",
+      "applicationSubCategory": "E-commerce Intelligence",
+      "operatingSystem": "Web",
+      "inLanguage": "en-IN",
+      "description": "AI-powered ecommerce analytics for Amazon and Flipkart sellers. Track competitor prices, research products, and grow sales in one dashboard.",
+      "creator": {
+        "@id": "https://insydz.com/#organization"
+      },
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Starter",
+          "price": "0",
+          "priceCurrency": "INR",
+          "availability": "https://schema.org/InStock",
+          "url": "https://insydz.com/pricing"
+        },
+        {
+          "@type": "Offer",
+          "name": "Growth",
+          "price": "1999",
+          "priceCurrency": "INR",
+          "availability": "https://schema.org/InStock",
+          "url": "https://insydz.com/pricing",
+          "priceSpecification": {
+            "@type": "UnitPriceSpecification",
+            "price": "1999",
+            "priceCurrency": "INR",
+            "unitCode": "MON"
+          }
+        },
+        {
+          "@type": "Offer",
+          "name": "Pro",
+          "price": "2999",
+          "priceCurrency": "INR",
+          "availability": "https://schema.org/InStock",
+          "url": "https://insydz.com/pricing",
+          "priceSpecification": {
+            "@type": "UnitPriceSpecification",
+            "price": "2999",
+            "priceCurrency": "INR",
+            "unitCode": "MON"
+          }
+        }
+      ],
+      "featureList": [
+        "Competitor price tracking for Amazon India, Flipkart, Meesho",
+        "AI review analysis in Hindi and English",
+        "Keyword rank tracking for Amazon India",
+        "Product research with demand scoring",
+        "AI repricing recommendations",
+        "WhatsApp alerts for price, stock, and reviews",
+        "Festive demand insights for Indian marketplaces"
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "50",
+        "bestRating": "5",
+        "worstRating": "1"
       }
     }
-  ],
-  "featureList": [
-    "Competitor price tracking — Amazon India, Flipkart",
-    "AI review analysis — Hindi + English",
-    "Keyword rank tracking — Amazon India organic search",
-    "Product research — demand scoring and competition analysis",
-    "AI repricing recommendations",
-    "WhatsApp alerts — price changes, stockouts, Buy Box loss, new reviews",
-    "Indian festive demand intelligence — Diwali, Big Billion Days, Great Indian Festival"
-  ],
-  "creator": {
-    "@id": "https://insydz.com/#organization"
-  },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.8",
-    "reviewCount": "50",
-    "bestRating": "5",
-    "worstRating": "1"
-  }
+  ]
 };
-
-const SCHEMAS = [schemaSoftware];
 
 // Define types for menu items
 type MenuItemWithBadge = {
@@ -153,23 +171,6 @@ export default function LandingPage() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-  SCHEMAS.forEach((schema, i) => {
-    const id = `insydz-lp-schema-${i}`;
-    if (document.getElementById(id)) return;
-    const script = document.createElement("script");
-    script.id = id;
-    script.type = "application/ld+json";
-    script.textContent = JSON.stringify(schema);
-    document.head.appendChild(script);
-  });
-  return () => {
-    SCHEMAS.forEach((_, i) => {
-      document.getElementById(`insydz-lp-schema-${i}`)?.remove();
-    });
-  };
-}, []);
 
   useEffect(() => {
     const html = document.documentElement;
@@ -285,74 +286,9 @@ export default function LandingPage() {
         <link rel="canonical" href="https://insydz.com" />
         <title>AI-Powered Ecommerce Analytics Software | Insydz</title>
         <meta name="description" content="AI-powered ecommerce analytics for Amazon & Flipkart sellers. Track competitor prices, research products, and grow sales, all in one dashboard. Try free." />
-        <script
-  type="application/ld+json"
-  dangerouslySetInnerHTML={{
-    __html: JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "@id": "https://insydz.com/#software",
-      "name": "Insydz",
-      "applicationCategory": "BusinessApplication",
-      "applicationSubCategory": "E-commerce Intelligence",
-      "operatingSystem": "Web",
-      "url": "https://insydz.com",
-      "description": "AI-powered ecommerce analytics for Amazon & Flipkart sellers. Track competitor prices, research products, and grow sales, all in one dashboard. Try free.",
-      "offers": [
-        {
-          "@type": "Offer",
-          "name": "Starter",
-          "price": "0",
-          "priceCurrency": "INR",
-          "description": "Free plan — core features, limited daily checks"
-        },
-        {
-          "@type": "Offer",
-          "name": "Growth",
-          "price": "1999",
-          "priceCurrency": "INR",
-          "priceSpecification": {
-            "@type": "UnitPriceSpecification",
-            "price": "1999",
-            "priceCurrency": "INR",
-            "unitCode": "MON"
-          }
-        },
-        {
-          "@type": "Offer",
-          "name": "Pro",
-          "price": "2999",
-          "priceCurrency": "INR",
-          "priceSpecification": {
-            "@type": "UnitPriceSpecification",
-            "price": "2999",
-            "priceCurrency": "INR",
-            "unitCode": "MON"
-          }
-        }
-      ],
-      "featureList": [
-        "Competitor price tracking — Amazon India, Flipkart",
-        "AI review analysis — Hindi + English",
-        "Keyword rank tracking — Amazon India organic search",
-        "Product research — demand scoring and competition analysis",
-        "AI repricing recommendations",
-        "WhatsApp alerts — price changes, stockouts, Buy Box loss, new reviews",
-        "Indian festive demand intelligence — Diwali, Big Billion Days, Great Indian Festival"
-      ],
-      "creator": {
-        "@id": "https://insydz.com/#organization"
-      },
-      "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "4.8",
-        "reviewCount": "50",
-        "bestRating": "5",
-        "worstRating": "1"
-      }
-    }),
-  }}
-/>
+        <script type="application/ld+json">
+          {JSON.stringify(GRAPH_SCHEMA)}
+        </script>
       </Helmet>
       {/* Navigation */}
       <nav
@@ -773,7 +709,6 @@ export default function LandingPage() {
         )}
       </nav>
 
-      {/* Hero Section */}
       {/* Hero Section */}
       <section
         id="Home"
@@ -1463,7 +1398,6 @@ export default function LandingPage() {
                 </li>
               </ul>
               
-              {/* Plan CTA: <Link> so crawlers see this as a link to /login */}
               <Link
                 to="/login"
                 className="w-full inline-block text-center border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 font-medium py-2 rounded-lg"

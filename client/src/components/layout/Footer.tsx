@@ -1,4 +1,5 @@
-import { Link } from "wouter";
+"use client";
+import Link from "next/link";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 
 export function Footer() {
@@ -51,10 +52,10 @@ export function Footer() {
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Solutions</h4>
             <ul className="space-y-3">
-              <li><Link to="/solutions/amazon-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Amazon Sellers</Link></li>
-              <li><Link to="/solutions/flipkart-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Flipkart Sellers</Link></li>
-              <li><Link to="/solutions/ecommerce-agencies" className="text-sm text-gray-400 hover:text-white transition-colors">Agencies</Link></li>
-              <li><Link to="/solutions/brand-managers" className="text-sm text-gray-400 hover:text-white transition-colors">Brand Managers</Link></li>
+              <li><Link href="/solutions/amazon-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Amazon Sellers</Link></li>
+              <li><Link href="/solutions/flipkart-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Flipkart Sellers</Link></li>
+              <li><Link href="/solutions/ecommerce-agencies" className="text-sm text-gray-400 hover:text-white transition-colors">Agencies</Link></li>
+              <li><Link href="/solutions/brand-managers" className="text-sm text-gray-400 hover:text-white transition-colors">Brand Managers</Link></li>
             </ul>
           </div>
 
@@ -62,10 +63,10 @@ export function Footer() {
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Product</h4>
             <ul className="space-y-3">
-              <li><Link to="/features" className="text-sm text-gray-400 hover:text-white transition-colors">Features</Link></li>
-              <li><Link to="/pricing" className="text-sm text-gray-400 hover:text-white transition-colors">Pricing</Link></li>
-              <li><Link to="/features/festive-trend-feature" className="text-sm text-gray-400 hover:text-white transition-colors">Festive Trends</Link></li>
-              <li><Link to="/compare/insydzvshelium" className="text-sm text-gray-400 hover:text-white transition-colors">Compare</Link></li>
+              <li><Link href="/features" className="text-sm text-gray-400 hover:text-white transition-colors">Features</Link></li>
+              <li><Link href="/pricing" className="text-sm text-gray-400 hover:text-white transition-colors">Pricing</Link></li>
+              <li><Link href="/features/festive-trend-feature" className="text-sm text-gray-400 hover:text-white transition-colors">Festive Trends</Link></li>
+              <li><Link href="/compare/insydzvshelium" className="text-sm text-gray-400 hover:text-white transition-colors">Compare</Link></li>
             </ul>
           </div>
 
@@ -73,11 +74,11 @@ export function Footer() {
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Resources</h4>
             <ul className="space-y-3">
-              <li><Link to="/resources/expert-blog" className="text-sm text-gray-400 hover:text-white transition-colors">Blog</Link></li>
-              <li><Link to="/resources/guides" className="text-sm text-gray-400 hover:text-white transition-colors">E-commerce Guides</Link></li>
-              <li><Link to="/resources/videos" className="text-sm text-gray-400 hover:text-white transition-colors">Video Tutorials</Link></li>
-              <li><Link to="/resources/case-studies" className="text-sm text-gray-400 hover:text-white transition-colors">Case Studies</Link></li>
-              <li><Link to="/free-tools/free-amazon-product-analyzer" className="text-sm text-gray-400 hover:text-white transition-colors">Free Tools</Link></li>
+              <li><Link href="/resources/expert-blog" className="text-sm text-gray-400 hover:text-white transition-colors">Blog</Link></li>
+              <li><Link href="/resources/guides" className="text-sm text-gray-400 hover:text-white transition-colors">E-commerce Guides</Link></li>
+              <li><Link href="/resources/videos" className="text-sm text-gray-400 hover:text-white transition-colors">Video Tutorials</Link></li>
+              <li><Link href="/resources/case-studies" className="text-sm text-gray-400 hover:text-white transition-colors">Case Studies</Link></li>
+              <li><Link href="/free-tools/free-amazon-product-analyzer" className="text-sm text-gray-400 hover:text-white transition-colors">Free Tools</Link></li>
             </ul>
           </div>
 
@@ -86,9 +87,9 @@ export function Footer() {
             <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Company</h4>
             <ul className="space-y-3">
               <li><a href="/#About" className="text-sm text-gray-400 hover:text-white transition-colors">About</a></li>
-              <li><Link to="/about/our-vision" className="text-sm text-gray-400 hover:text-white transition-colors">Our Vision</Link></li>
-              <li><Link to="/about/careers" className="text-sm text-gray-400 hover:text-white transition-colors">Careers</Link></li>
-              <li><Link to="/about/contact-us" className="text-sm text-gray-400 hover:text-white transition-colors">Contact</Link></li>
+              <li><Link href="/about/our-vision" className="text-sm text-gray-400 hover:text-white transition-colors">Our Vision</Link></li>
+              <li><Link href="/about/careers" className="text-sm text-gray-400 hover:text-white transition-colors">Careers</Link></li>
+              <li><Link href="/about/contact-us" className="text-sm text-gray-400 hover:text-white transition-colors">Contact</Link></li>
             </ul>
           </div>
 
@@ -119,9 +120,9 @@ export function Footer() {
               © {new Date().getFullYear()} <span className="text-purple-400 font-semibold">Insydz</span>. All Rights Reserved.
             </p>
             <div className="hidden sm:block">|</div>
-            <Link to="/terms-service" className="hover:text-white transition-colors">Terms & Conditions</Link>
+            <Link href="/terms-service" className="hover:text-white transition-colors">Terms & Conditions</Link>
             <div className="hidden sm:block">|</div>
-            <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
+            <Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
           </div>
         </div>
 

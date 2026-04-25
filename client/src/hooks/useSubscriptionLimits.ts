@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useAuth } from '@/App';
+import { useAuth } from '@/lib/auth-context';
 
 export interface SubscriptionLimits {
   productTrackingLimit: number;

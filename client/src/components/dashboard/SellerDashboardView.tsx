@@ -358,7 +358,7 @@ import {
   TrendingUp, TrendingDown, Package, Star, DollarSign,
   Zap, BarChart3, Users, Award, ShieldCheck, Loader2, RefreshCcw, ShoppingCart, Percent
 } from "lucide-react";
-import { useAuth } from "@/App";
+import { useAuth } from '@/lib/auth-context';
 
 const COLORS = ["#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981"];
 

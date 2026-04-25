@@ -1,0 +1,36 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+// Public routes that should never be protected
+const publicRoutes = ["/login", "/signup", "/verify-email"];
+
+export function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+
+  // 1. Exclude public routes safely (supports nested paths)
+  if (publicRoutes.some(route => path.startsWith(route))) {
+    return NextResponse.next();
+  }
+
+  // 2. Adaptable Session Cookie
+  // Name to be finalized during backend integration
+  const sessionCookieName = process.env.SESSION_COOKIE_NAME || "session";
+  const sessionCookie = request.cookies.get(sessionCookieName);
+
+  // If there's no session cookie, redirect to login
+  if (!sessionCookie) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  return NextResponse.next();
+}
+
+// 3. Clean Matcher Architecture
+export const config = {
+  matcher: [
+    "/dashboard/:path*",
+    "/explorer/:path*",
+    "/seller/:path*",
+    "/admin-dashboard/:path*"
+  ],
+};

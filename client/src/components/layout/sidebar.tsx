@@ -1,10 +1,14 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "wouter";
+import Link from "next/link";
+import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useAuth } from "@/App";
+import { useAuth } from "@/lib/auth-context";
 import {
   Home,
+  MessageSquare,
   Crown,
   Info,
   Settings,
@@ -30,9 +34,7 @@ import {
   Shield,
   Store,
   Zap,
-  User,
   Star,
-  MessageSquare,
   Bookmark,
   Calculator
 } from "lucide-react";
@@ -67,7 +69,6 @@ const EXPLORER_SECTIONS: NavSection[] = [
     items: [
       { href: "/categories", label: "Browse Categories", icon: PieChart },
       { href: "/sales", label: "Top Selling Products", icon: TrendingUp },
-      // { href: "/explorer/opportunity-finder", label: "Opportunity Finder", icon: Compass, badge: "NEW" },
     ],
   },
   {
@@ -160,17 +161,20 @@ const SELLER_SECTIONS: NavSection[] = [
   },
 ];
 
+
+
 export default function Sidebar() {
-  const [location, setLocation] = useLocation();
+  const pathname = usePathname();
+  const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [mode, setMode] = useState<'explorer' | 'seller'>(() => {
-    // Persistent mode storage
-    if (typeof window !== 'undefined') {
-      const savedMode = localStorage.getItem('sidebar-mode');
-      if (savedMode === 'explorer' || savedMode === 'seller') return savedMode;
+  const [mode, setMode] = useState<'explorer' | 'seller'>('explorer');
+
+  useEffect(() => {
+    const savedMode = localStorage.getItem('sidebar-mode');
+    if (savedMode === 'explorer' || savedMode === 'seller') {
+      setMode(savedMode);
     }
-    return 'explorer';
-  });
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('sidebar-mode', mode);
@@ -179,17 +183,14 @@ export default function Sidebar() {
   const { user, logout, isLoading } = useAuth();
   const { toast } = useToast();
 
-  // ✅ REMOVED: localStorage effect - now using auth context
-  // User data comes directly from the auth context
-
   const handleLogout = async () => {
     try {
-      await logout(); // ✅ Calls backend to clear session
+      await logout();
       toast({
         title: "Logged out",
         description: "You have been successfully logged out."
       });
-      setLocation("/login");
+      router.push("/login");
     } catch (error) {
       console.error("Logout error:", error);
       toast({
@@ -199,8 +200,6 @@ export default function Sidebar() {
       });
     }
   };
-
-
 
   const getSubscriptionColor = (tier: string) => {
     switch (tier?.toLowerCase()) {
@@ -215,29 +214,20 @@ export default function Sidebar() {
 
   const isActive = (href: string) => {
     if (href === "/dashboard") {
-      return location === "/" || location === "/dashboard";
+      return pathname === "/" || pathname === "/dashboard";
     }
-    return location === href;
+    return pathname === href;
   };
 
   const getDisplayName = () => {
     if (!user) return "User";
-
-    // Try firstName and lastName
     if (user.firstName || user.lastName) {
       return `${user.firstName || ""} ${user.lastName || ""}`.trim();
     }
-
-    // Fallback to name field
-    if (user.name) {
-      return user.name;
-    }
-
-    // Final fallback
+    if (user.name) return user.name;
     return "User";
   };
 
-  // Show loading state while checking authentication
   if (isLoading) {
     return (
       <div className="fixed left-0 top-0 h-full w-64 z-50 flex items-center justify-center border-r border-white/20 backdrop-blur-2xl bg-gradient-to-b from-[#E8F9FF]/90 via-[#DFF6FF]/80 to-[#C7EFFF]/90">
@@ -268,15 +258,12 @@ export default function Sidebar() {
         {/* Header */}
         <div className="p-4 border-b border-white/20 flex items-center justify-between">
           <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center")}>
-            {/* ✅ CLICKABLE LOGO */}
-            <Link href="/">
-              <a className="cursor-pointer">
-                <img
-                  src="/logo.png"
-                  alt="Insydz Logo"
-                  className="w-10 h-10 object-contain rounded-xl shadow-md hover:scale-105 transition"
-                />
-              </a>
+            <Link href="/" className="cursor-pointer">
+              <img
+                src="/logo.png"
+                alt="Insydz Logo"
+                className="w-10 h-10 object-contain rounded-xl shadow-md hover:scale-105 transition"
+              />
             </Link>
 
             {!isCollapsed && (
@@ -310,7 +297,7 @@ export default function Sidebar() {
               <button
                 onClick={() => {
                   setMode('explorer');
-                  setLocation("/dashboard");
+                  router.push("/dashboard");
                 }}
                 className={cn(
                   "flex-1 flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-bold transition-all duration-300 z-10 relative",
@@ -325,7 +312,7 @@ export default function Sidebar() {
               <button
                 onClick={() => {
                   setMode('seller');
-                  setLocation("/dashboard");
+                  router.push("/dashboard");
                 }}
                 className={cn(
                   "flex-1 flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-bold transition-all duration-300 z-10 relative",
@@ -359,41 +346,40 @@ export default function Sidebar() {
                 {section.items.map(item => {
                   const Icon = item.icon;
                   return (
-                    <Link key={item.href} href={item.disabled ? "#" : item.href}>
-                      <a className={cn(item.disabled && "cursor-not-allowed")}>
-                        <Button
-                          variant={isActive(item.href) ? "default" : "ghost"}
-                          disabled={item.disabled}
-                          className={cn(
-                            "w-full justify-start transition-all duration-200 rounded-xl font-medium relative group",
-                            isCollapsed && "justify-center px-2",
-                            isActive(item.href)
-                              ? "bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-md"
-                              : "text-slate-700 hover:bg-white/60",
-                            item.disabled && "opacity-50 grayscale select-none"
-                          )}
-                        >
-                          <Icon className={cn("h-4 w-4 shrink-0", !isCollapsed && "mr-3")} />
-                          {!isCollapsed && (
-                            <div className="flex items-center justify-between w-full">
-                              <span className="truncate text-sm">{item.label}</span>
-                              {item.badge && (
-                                <Badge
-                                  variant="secondary"
-                                  className={cn(
-                                    "ml-2 text-[8px] px-1.5 py-0 leading-none h-4 uppercase font-bold tracking-tighter",
-                                    item.badge === "AI" ? "bg-orange-100 text-orange-600 border-orange-200" :
-                                      item.badge === "NEW" ? "bg-blue-100 text-blue-600 border-blue-200" :
-                                        "bg-slate-100 text-slate-500 border-slate-200"
-                                  )}
-                                >
-                                  {item.badge}
-                                </Badge>
-                              )}
-                            </div>
-                          )}
-                        </Button>
-                      </a>
+                    <Link key={item.href} href={item.disabled ? "#" : item.href}
+                      className={cn(item.disabled && "cursor-not-allowed block")}>
+                      <Button
+                        variant={isActive(item.href) ? "default" : "ghost"}
+                        disabled={item.disabled}
+                        className={cn(
+                          "w-full justify-start transition-all duration-200 rounded-xl font-medium relative group",
+                          isCollapsed && "justify-center px-2",
+                          isActive(item.href)
+                            ? "bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-md"
+                            : "text-slate-700 hover:bg-white/60",
+                          item.disabled && "opacity-50 grayscale select-none"
+                        )}
+                      >
+                        <Icon className={cn("h-4 w-4 shrink-0", !isCollapsed && "mr-3")} />
+                        {!isCollapsed && (
+                          <div className="flex items-center justify-between w-full">
+                            <span className="truncate text-sm">{item.label}</span>
+                            {item.badge && (
+                              <Badge
+                                variant="secondary"
+                                className={cn(
+                                  "ml-2 text-[8px] px-1.5 py-0 leading-none h-4 uppercase font-bold tracking-tighter",
+                                  item.badge === "AI" ? "bg-orange-100 text-orange-600 border-orange-200" :
+                                    item.badge === "NEW" ? "bg-blue-100 text-blue-600 border-blue-200" :
+                                      "bg-slate-100 text-slate-500 border-slate-200"
+                                )}
+                              >
+                                {item.badge}
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+                      </Button>
                     </Link>
                   );
                 })}
@@ -408,10 +394,8 @@ export default function Sidebar() {
             "flex items-center p-2 bg-white/70 rounded-xl shadow-sm",
             isCollapsed && "justify-center"
           )}>
-            <Link href="/settings">
-              <a className="flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-sm hover:scale-105 transition-transform">
-                <Settings className="h-4 w-4" />
-              </a>
+            <Link href="/settings" className="flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-sm hover:scale-105 transition-transform">
+              <Settings className="h-4 w-4" />
             </Link>
 
             {!isCollapsed && (
@@ -449,6 +433,3 @@ export default function Sidebar() {
     </>
   );
 }
-
-
-

@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Loader2, Save, ShoppingBag, Globe } from "lucide-react";
-import { useAuth } from "@/App";
+import { useAuth } from '@/lib/auth-context';
 import {
   Select,
   SelectContent,

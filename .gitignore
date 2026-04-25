@@ -78,3 +78,8 @@ test.db
 *~
 
 fetch_changes.log
+
+# Next.js
+/.next/
+/out/
+.env*.local
