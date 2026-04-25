@@ -17,7 +17,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 function HealthScoreRing({ score }: { score: number }) {
   const r = 28, circ = 2 * Math.PI * r;
@@ -65,7 +65,7 @@ function SentimentBar({ label, pct, icon: Icon, color }: { label: string; pct: n
 function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
   const router = useRouter();
   return (
-    <div className="absolute inset-0 bg-white/85 backdrop-blur-[3px] rounded-[2.5rem] flex flex-col items-center justify-center z-10 gap-3">
+    <div className="absolute inset-0 bg-background backdrop-blur-none rounded-[2.5rem] flex flex-col items-center justify-center z-10 gap-3">
       <div className={`w-11 h-11 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? "bg-blue-50" : "bg-amber-50"}`}>
         <Lock className={`w-5 h-5 ${tier === "premium" ? "text-blue-500" : "text-amber-500"}`} />
       </div>
@@ -312,7 +312,7 @@ function ReviewComparisonContent() {
               </CardTitle>
             </CardHeader>
             <CardContent className={`p-8 pt-4 ${!isPremium ? 'blur-sm' : ''}`}>
-              <div className="p-6 rounded-2xl bg-white/5 border border-white/5 space-y-4">
+              <div className="p-6 rounded-2xl bg-background opacity-100 border border-white/5 space-y-4">
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] border-b border-white/5 pb-2">Suggested Resolution Protocol</p>
                 <p className="text-sm text-slate-300 font-medium leading-relaxed italic">
                   "{data?.ai_response_suggestion || "Analysing negative feedback clusters to generate optimal resolution scripts..."}"
@@ -347,9 +347,11 @@ function ReviewComparisonContent() {
   );
 }
 
+
+
 export default function ReviewComparisonPage() {
   return (
-    <Suspense fallback={<div className="flex h-[70vh] items-center justify-center"><RefreshCw className="animate-spin text-sky-500" /></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>
       <ReviewComparisonContent />
     </Suspense>
   );

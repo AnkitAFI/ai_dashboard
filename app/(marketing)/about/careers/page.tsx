@@ -329,7 +329,7 @@ export default function CareersPage() {
           NAVIGATION (exactly matches SolutionsPage)
       ═══════════════════════════════════════════════════════ */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg" : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"
+        scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
@@ -609,7 +609,7 @@ export default function CareersPage() {
           </p>
           <div className="space-y-4 text-left">
             {NOT_FOR.map((item, i) => (
-              <div key={i} className="flex items-center gap-4 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 hover:bg-white/8 transition-colors">
+              <div key={i} className="flex items-center gap-4 bg-background opacity-100 border border-white/10 rounded-2xl px-6 py-4 hover:bg-background opacity-100 transition-colors">
                 <div className="w-8 h-8 rounded-full border-2 border-red-500 flex items-center justify-center flex-shrink-0">
                   <X className="w-4 h-4 text-red-500" />
                 </div>

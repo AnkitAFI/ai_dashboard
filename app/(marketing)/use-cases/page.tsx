@@ -383,7 +383,7 @@ const UseCasesPage = () => {
       
 
       {/* ══ NAV ══ */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg" : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
             {/* Logo */}
@@ -879,7 +879,7 @@ const UseCasesPage = () => {
 
             <div className="bg-gradient-to-br from-orange-500 to-red-600 border-2 border-orange-400 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-2xl transition-all relative overflow-hidden">
               <div className="absolute top-3 sm:top-4 right-3 sm:right-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-2 sm:px-3 py-1 rounded-full">Most Popular</div>
-              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-background opacity-100 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg">
                 <DollarSign className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
               </div>
               <h3 className="text-lg sm:text-xl font-bold text-white mb-1 sm:mb-2">For Growing Sellers</h3>

@@ -71,7 +71,7 @@ export default function About() {
       {/* Main Content */}
       <div className="flex-1 w-full lg:ml-64 min-h-screen flex flex-col">
         {/* Header */}
-        <header className="bg-white/70 backdrop-blur-xl border border-sky-100 shadow-lg rounded-2xl px-6 sm:px-12 py-4 sm:py-6 mb-6 flex items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6">
+        <header className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-lg rounded-2xl px-6 sm:px-12 py-4 sm:py-6 mb-6 flex items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6">
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
@@ -92,7 +92,7 @@ export default function About() {
         <main className="px-4 sm:px-6 flex-1 overflow-y-auto pb-6 space-y-12">
           {/* Hero Section */}
           <div className="text-center space-y-6">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-white/50 backdrop-blur-md rounded-2xl mb-4 shadow-sm mx-auto">
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-background backdrop-blur-none rounded-2xl mb-4 shadow-sm mx-auto">
               <Brain className="h-12 w-12 text-primary" />
             </div>
             <h1 className="text-4xl font-bold text-sky-900">About Insydz</h1>

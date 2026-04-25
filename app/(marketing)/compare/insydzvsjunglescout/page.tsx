@@ -621,7 +621,7 @@ export default function InsydzVsJungleScoutPage() {
             ].map((alert, i) => (
               <div key={i} className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <div className={`bg-gradient-to-r ${alert.color} p-4 flex items-center gap-3`}>
-                  <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center text-white">{alert.icon}</div>
+                  <div className="w-8 h-8 bg-background opacity-100 rounded-lg flex items-center justify-center text-white">{alert.icon}</div>
                   <span className="font-bold text-white text-sm">WhatsApp Alert — {alert.type}</span>
                 </div>
                 <div className="p-5">
@@ -672,7 +672,7 @@ export default function InsydzVsJungleScoutPage() {
               { icp: 'Growing Seller', headline: 'Scaling to ₹5L+ monthly on Indian marketplaces', cta: 'Try Growth Plan →', action: () => router.push('/pricing') },
               { icp: 'Agency', headline: 'Managing multiple seller accounts across platforms', cta: 'Book Demo →', action: () => router.push('/about/contact-us') },
             ].map((card, i) => (
-              <div key={i} className="bg-white/10 backdrop-blur rounded-2xl p-6 text-white border border-white/20">
+              <div key={i} className="bg-background opacity-100 backdrop-blur rounded-2xl p-6 text-white border border-white/20">
                 <p className="text-xs font-bold uppercase tracking-widest text-white/60 mb-2">{card.icp}</p>
                 <p className="text-sm mb-4 text-white/90">{card.headline}</p>
                 {card.cta === "Try Growth Plan →" ? (

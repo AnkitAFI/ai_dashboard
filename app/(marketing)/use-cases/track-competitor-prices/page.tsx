@@ -235,7 +235,7 @@ export default function TrackCompetitorPricesPage() {
       
 
       {/* ══ NAV ══ */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg" : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
             <a href="/" className="flex items-center space-x-1 group">
@@ -830,7 +830,7 @@ export default function TrackCompetitorPricesPage() {
               { label: "Growing Sellers (Growth Plan)", desc: "Doing ₹5L+ monthly? Every day of slow price reaction is costing you measurable revenue. The Growth Plan gives you full competitor tracking across your entire catalogue.", cta: "Try Growth Plan →", action: () => router.push("/pricing") },
               { label: "Agencies & Brand Managers (Demo)", desc: "Managing multiple seller accounts? Run competitor price tracking across all clients from one dashboard with white-label reporting per account.", cta: "Book a Demo →", action: () => router.push("/demo") },
             ].map((card, i) => (
-              <div key={i} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 sm:p-6 text-left">
+              <div key={i} className="bg-background opacity-100 backdrop-blur-none border border-white/20 rounded-2xl p-5 sm:p-6 text-left">
                 <p className="font-bold text-white mb-1.5 sm:mb-2 text-sm sm:text-base">{card.label}</p>
                 <p className="text-white/80 text-xs sm:text-sm mb-3 sm:mb-4">{card.desc}</p>
                 <button onClick={card.action} className="text-orange-100 font-semibold text-xs sm:text-sm hover:text-white transition-colors underline">{card.cta}</button>

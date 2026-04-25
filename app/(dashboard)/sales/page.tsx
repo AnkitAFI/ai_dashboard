@@ -2,14 +2,11 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, IndianRupee, ArrowUpDown, TrendingUp, ShoppingBag, Filter, LayoutGrid, List, Search } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Input } from "@/components/ui/input";
+import { Star, IndianRupee, ArrowUpDown, TrendingUp } from "lucide-react";
 
+// Unified interface for both Flipkart & Amazon
 interface TrendingProduct {
   id?: number;
   title?: string;
@@ -33,7 +30,7 @@ interface TrendingProduct {
   product_price?: string;
 }
 
-export default function SalesPage() {
+export default function Sales() {
   const [products, setProducts] = useState<TrendingProduct[]>([]);
   const [source, setSource] = useState<"flipkart" | "amazon">("flipkart");
   const [sortField, setSortField] = useState<"reviews" | "price" | "rating" | "sales">("sales");
@@ -41,19 +38,24 @@ export default function SalesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(12);
-  const [search, setSearch] = useState("");
+  const [itemsPerPage] = useState(10);
 
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  useEffect(() => {
+    fetchData();
+  }, [source]);
 
-  // Parse sales_volume text like "9.4K+ bought"
+  // Parse sales_volume text like "9.4K+ bought" or "10K+ bought in past month"
   const parseSalesVolume = (salesText?: string, avgSales?: number): number => {
     if (avgSales) return avgSales;
     if (!salesText) return 0;
+
+    // Extract number and multiplier (K, M, etc.)
     const match = salesText.match(/([\d.]+)([KMB])?/i);
     if (!match) return 0;
+
     const num = parseFloat(match[1]);
     const multiplier = match[2]?.toUpperCase();
+
     switch (multiplier) {
       case 'K': return num * 1000;
       case 'M': return num * 1000000;
@@ -62,27 +64,22 @@ export default function SalesPage() {
     }
   };
 
-  const fetchData = async () => {
+  const fetchData = () => {
     setLoading(true);
-    setError("");
-    const url = source === "flipkart"
-      ? `${BASE_URL}/top?table=rapidapi_flipkart_products&n=500`
-      : `${BASE_URL}/rapidapi/top-sales?limit=500`;
+    const url =
+      source === "flipkart"
+        ? "http://localhost:8000/top?table=rapidapi_flipkart_products&n=500"
+        : "http://localhost:8000/rapidapi/top-sales?limit=500";
 
-    try {
-      const res = await axios.get(url);
-      const data = res.data.data || res.data;
-      setProducts(Array.isArray(data) ? data : []);
-    } catch (err) {
-      setError("Failed to fetch top products intelligence.");
-    } finally {
-      setLoading(false);
-    }
+    axios
+      .get(url)
+      .then((res) => {
+        const data = res.data.data || res.data;
+        setProducts(Array.isArray(data) ? data : []);
+      })
+      .catch(() => setError("Failed to fetch top products"))
+      .finally(() => setLoading(false));
   };
-
-  useEffect(() => {
-    fetchData();
-  }, [source]);
 
   const getFieldValue = (p: TrendingProduct, field: string) => {
     switch (field) {
@@ -99,12 +96,7 @@ export default function SalesPage() {
     }
   };
 
-  const filteredProducts = products.filter(p => {
-    const title = (p.title || p.product_title || "").toLowerCase();
-    return title.includes(search.toLowerCase());
-  });
-
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
+  const sortedProducts = [...products].sort((a, b) => {
     const factor = sortOrder === "asc" ? 1 : -1;
     return (getFieldValue(a, sortField) - getFieldValue(b, sortField)) * factor;
   });
@@ -123,164 +115,179 @@ export default function SalesPage() {
     }
   };
 
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   const formatSalesDisplay = (product: TrendingProduct): string => {
     const salesNum = getFieldValue(product, "sales");
-    if (salesNum === 0 && product.sales_volume) return product.sales_volume;
-    if (salesNum >= 1000000) return `${(salesNum / 1000000).toFixed(1)}M`;
-    if (salesNum >= 1000) return `${(salesNum / 1000).toFixed(1)}K`;
+    if (salesNum === 0 && product.sales_volume) {
+      return product.sales_volume;
+    }
+    if (salesNum >= 1000000) {
+      return `${(salesNum / 1000000).toFixed(1)}M`;
+    }
+    if (salesNum >= 1000) {
+      return `${(salesNum / 1000).toFixed(1)}K`;
+    }
     return salesNum.toLocaleString();
   };
 
-  return (
-    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-16">
-      {/* Premium Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <Badge variant="outline" className="mb-2 px-3 py-1 rounded-full bg-emerald-50 border-emerald-100 text-emerald-700 text-[9px] font-black uppercase tracking-widest">
-            <TrendingUp className="w-3 h-3 mr-1" /> Velocity Insights
-          </Badge>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Market Momentum</h1>
-          <p className="text-sm text-slate-500 font-medium">Top performing products by real-time sales volume</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Select value={source} onValueChange={(v) => setSource(v as any)}>
-            <SelectTrigger className="w-40 rounded-xl border-slate-200 font-bold text-xs uppercase tracking-wider">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="rounded-xl font-bold">
-              <SelectItem value="flipkart">Flipkart Store</SelectItem>
-              <SelectItem value="amazon">Amazon Store</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" onClick={fetchData} className="rounded-xl border-slate-200 shadow-sm font-bold">
-            Refresh Data
-          </Button>
+  if (loading)
+    return (
+      <div className="flex h-[400px] items-center justify-center text-slate-400">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
+          <p>Loading {source} top product data...</p>
         </div>
       </div>
+    );
 
-      {/* Discovery Toolbar */}
-      <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden p-2">
-        <CardContent className="p-4 flex flex-col lg:flex-row items-center justify-between gap-4">
-          <div className="relative w-full lg:w-96">
-            <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-            <Input 
-              placeholder="Search trending products..." 
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
-              className="pl-11 h-12 rounded-2xl bg-slate-50 border-none shadow-inner font-medium"
-            />
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {["sales", "reviews", "price", "rating"].map((field) => (
-              <Button
-                key={field}
-                variant={sortField === field ? "default" : "outline"}
-                onClick={() => toggleSort(field as any)}
-                className={`h-10 rounded-xl font-bold text-[10px] uppercase tracking-wider px-4 ${
-                  sortField === field ? "bg-slate-900 text-white shadow-lg" : "border-slate-100 text-slate-600"
-                }`}
-              >
-                {field} {sortField === field && (sortOrder === "asc" ? "↑" : "↓")}
-              </Button>
-            ))}
-          </div>
+  if (error)
+    return (
+      <div className="flex h-[400px] items-center justify-center text-red-500">
+        {error}
+      </div>
+    );
+
+  return (
+    <div className="space-y-8">
+      {/* Filters/Source Select */}
+      <div className="flex justify-end">
+        <select
+          value={source}
+          onChange={(e) => setSource(e.target.value as "flipkart" | "amazon")}
+          className="border border-slate-300 bg-white px-3 py-2 rounded-md text-slate-700 font-medium shadow-sm hover:bg-slate-50"
+        >
+          <option value="flipkart">Flipkart</option>
+          <option value="amazon">Amazon</option>
+        </select>
+      </div>
+
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+          Product Performance Overview ({source})
+        </h1>
+        <p className="text-slate-500 text-lg">
+          Analyze and sort by sales, reviews, price, or rating for data-driven decisions.
+        </p>
+      </div>
+
+      <div className="flex justify-end gap-3 flex-wrap">
+        {["sales", "reviews", "price", "rating"].map((field) => (
+          <Button
+            key={field}
+            variant={sortField === field ? "default" : "outline"}
+            className={`flex items-center gap-2 ${sortField === field
+              ? "bg-blue-500 text-white hover:bg-blue-600"
+              : "text-slate-700 border-slate-300 hover:bg-slate-100"
+              }`}
+            onClick={() => toggleSort(field as "reviews" | "price" | "rating" | "sales")}
+          >
+            <ArrowUpDown className="w-4 h-4" />
+            {field.charAt(0).toUpperCase() + field.slice(1)}
+            {sortField === field ? ` (${sortOrder === "asc" ? "↑" : "↓"})` : ""}
+          </Button>
+        ))}
+      </div>
+
+      <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 backdrop-blur-none">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-slate-700">
+            Showing Page {currentPage} of {totalPages} — Sorted by{" "}
+            {sortField.charAt(0).toUpperCase() + sortField.slice(1)}{" "}
+            ({sortOrder === "asc" ? "Low → High" : "High → Low"})
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent className="overflow-x-auto">
+          <table className="w-full text-sm text-slate-700">
+            <thead className="bg-slate-100 text-slate-700 uppercase text-xs font-semibold">
+              <tr>
+                <th className="py-3 px-4 text-left">#</th>
+                <th className="py-3 px-4 text-left">Product</th>
+                <th className="py-3 px-4 text-left">Category</th>
+                <th className="py-3 px-4 text-right">Price (₹)</th>
+                <th className="py-3 px-4 text-right">Rating</th>
+                <th className="py-3 px-4 text-right">Reviews</th>
+                <th className="py-3 px-4 text-right">Sales</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {currentProducts.map((p, i) => (
+                <tr
+                  key={i}
+                  className="border-b border-slate-200 hover:bg-gradient-to-r hover:from-[#E0F2FE] hover:to-[#F0F9FF] transition-colors"
+                >
+                  <td className="py-3 px-4 font-medium text-slate-600">
+                    {(currentPage - 1) * itemsPerPage + i + 1}
+                  </td>
+
+                  <td className="py-3 px-4 font-medium text-slate-800 truncate max-w-xs">
+                    {p.title || p.product_title}
+                  </td>
+
+                  <td className="py-3 px-4 text-slate-600">
+                    {p.category || p.category_name || source}
+                  </td>
+
+                  <td className="py-3 px-4 text-right text-emerald-600 font-semibold">
+                    <IndianRupee className="inline w-4 h-4" />
+                    {(p.price ?? p.avg_price ?? 0).toFixed(2)}
+                  </td>
+
+                  <td className="py-3 px-4 text-right text-yellow-500 font-medium">
+                    <Star className="inline w-4 h-4 mr-1" />
+                    {(p.rating ?? p.avg_rating ?? p.product_star_rating_numeric ?? p.product_star_rating ?? 0).toFixed(1)}
+                  </td>
+
+                  <td className="py-3 px-4 text-right text-blue-600 font-semibold">
+                    {(p.reviews ?? p.total_reviews ?? p.total_ratings ?? p.product_num_ratings ?? p.product_rating_count ?? 0).toLocaleString()}
+                  </td>
+
+                  <td className="py-3 px-4 text-right text-purple-600 font-semibold">
+                    <TrendingUp className="inline w-4 h-4 mr-1" />
+                    {formatSalesDisplay(p)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </CardContent>
       </Card>
 
-      {/* Products Grid */}
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {[1,2,3,4,5,6,7,8].map(i => <Skeleton key={i} className="h-[400px] rounded-[2.5rem]" />)}
-        </div>
-      ) : error ? (
-        <div className="py-20 text-center">
-          <div className="w-20 h-20 mx-auto rounded-full bg-rose-50 flex items-center justify-center mb-4">
-            <ShoppingBag className="w-10 h-10 text-rose-500" />
-          </div>
-          <h3 className="text-xl font-black text-slate-900">{error}</h3>
-          <Button onClick={fetchData} variant="link" className="text-sky-600 font-bold">Try again</Button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {currentProducts.map((p, i) => (
-            <Card key={i} className="group border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden transition-all hover:-translate-y-2 hover:shadow-2xl">
-              <div className="relative h-48 bg-slate-50 flex items-center justify-center p-6">
-                <div className="absolute top-4 left-4 z-10">
-                  <Badge className="bg-white/80 backdrop-blur-md text-slate-900 border-none font-black text-[9px] uppercase px-3 py-1 rounded-full">
-                    Rank #{(currentPage - 1) * itemsPerPage + i + 1}
-                  </Badge>
-                </div>
-                <div className="w-32 h-32 bg-white rounded-2xl shadow-sm flex items-center justify-center p-4 group-hover:scale-110 transition-transform duration-500">
-                  <ShoppingBag className="w-12 h-12 text-slate-200" />
-                </div>
-              </div>
-              <CardContent className="p-8 space-y-4">
-                <div className="min-h-[3rem]">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{p.category || p.category_name || source}</p>
-                  <h3 className="font-bold text-slate-900 text-sm line-clamp-2 leading-snug group-hover:text-sky-600 transition-colors">
-                    {p.title || p.product_title}
-                  </h3>
-                </div>
-                
-                <div className="flex items-center justify-between pt-2">
-                  <div>
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Momentum</p>
-                    <div className="flex items-center gap-1 text-emerald-600">
-                      <TrendingUp className="w-4 h-4" />
-                      <span className="font-black text-lg">{formatSalesDisplay(p)}</span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">Rating</p>
-                    <div className="flex items-center gap-1 text-amber-500 justify-end">
-                      <Star className="w-4 h-4 fill-amber-500" />
-                      <span className="font-black text-lg">{(p.rating ?? p.avg_rating ?? p.product_star_rating_numeric ?? p.product_star_rating ?? 0).toFixed(1)}</span>
-                    </div>
-                  </div>
-                </div>
+      <div className="flex justify-center items-center gap-3 mt-6">
+        <Button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="bg-white border border-slate-300 text-slate-700 hover:bg-slate-100"
+        >
+          Previous
+        </Button>
 
-                <div className="pt-4 border-t border-slate-50 flex items-center justify-between">
-                  <div className="flex items-center text-sky-700">
-                    <IndianRupee className="w-4 h-4" />
-                    <span className="font-black text-xl">{(p.price ?? p.avg_price ?? 0).toLocaleString("en-IN")}</span>
-                  </div>
-                  <span className="text-[10px] font-bold text-slate-400">
-                    {(p.reviews ?? p.total_reviews ?? 0).toLocaleString()} reviews
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+        <span className="text-slate-600 font-medium">
+          Page {currentPage} of {totalPages}
+        </span>
 
-      {/* Pagination */}
-      {!loading && products.length > 0 && (
-        <div className="flex justify-center items-center gap-6 pt-8">
-          <Button 
-            variant="outline" 
-            disabled={currentPage === 1}
-            onClick={() => { setCurrentPage(p => p - 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            className="rounded-xl border-slate-200 font-bold h-12 px-8 shadow-sm"
-          >
-            Previous
-          </Button>
-          <span className="text-sm font-black text-slate-900">Page {currentPage} of {totalPages}</span>
-          <Button 
-            variant="outline" 
-            disabled={currentPage === totalPages}
-            onClick={() => { setCurrentPage(p => p + 1); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-            className="rounded-xl border-slate-200 font-bold h-12 px-8 shadow-sm"
-          >
-            Next
-          </Button>
-        </div>
-      )}
+        <Button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="bg-white border border-slate-300 text-slate-700 hover:bg-slate-100"
+        >
+          Next
+        </Button>
+      </div>
 
-      {/* Legal Footer */}
-      <p className="text-[9px] text-center text-slate-400 uppercase tracking-[0.2em] max-w-2xl mx-auto leading-relaxed pt-12">
-        <span className="font-black text-slate-500">Notice:</span> Sales telemetry varies by platform (Flipkart: Lifetime / Amazon: 30D). Market data provided by 3rd party nodes for strategic intelligence only.
-      </p>
+      {/* Legal Disclaimer */}
+      <div className="mt-12 pt-6 border-t border-slate-200">
+        <p className="text-[9px] leading-tight text-slate-400 text-center max-w-5xl mx-auto">
+          <span className="font-semibold">DISCLAIMER:</span> Sales data represents different time periods (Flipkart: lifetime, Amazon: past month). All information sourced from third-party APIs is for informational purposes only and may not be accurate or current. <span className="font-semibold">Not affiliated with any retailer.</span> Use at your own risk.
+        </p>
+      </div>
     </div>
   );
 }

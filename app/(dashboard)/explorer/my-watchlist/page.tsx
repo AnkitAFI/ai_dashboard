@@ -12,6 +12,8 @@ import {
   Calculator,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
@@ -49,211 +51,105 @@ interface SavedProductDB {
     profit_per_unit: number;
     net_margin_pct: number;
     monthly_profit: number;
-    yearly_profit?: number;
-    roi_pct?: number;
-    acos_pct?: number;
-    breakeven_units?: number;
-    tier: string;
+    monthly_revenue: number;
+    roas: number;
+    total_cost: number;
   };
-  profit_per_unit: number;
-  net_margin_pct: number;
-  monthly_profit: number;
   created_at: string;
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function inr(n: number): string {
-  if (n >= 100000) return "₹" + (n / 100000).toFixed(1) + "L";
-  if (n >= 1000)   return "₹" + Math.round(n / 1000) + "K";
-  return "₹" + Math.round(n);
+interface SavedProduct extends SavedProductDB {
+  monthly_profit: number;
+  net_margin_pct: number;
 }
 
-function timeAgo(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60000);
-  const hrs  = Math.floor(diff / 3600000);
-  const days = Math.floor(diff / 86400000);
-  if (mins < 1)  return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  if (hrs  < 24) return `${hrs}h ago`;
-  return `${days}d ago`;
-}
+// ── Sub-components ────────────────────────────────────────────────────────────
 
-function getScoreColor(score: number): string {
-  if (score >= 80) return "text-emerald-600";
-  if (score >= 65) return "text-blue-600";
-  if (score >= 50) return "text-amber-600";
-  return "text-red-500";
-}
-
-function getScoreBg(score: number): string {
-  if (score >= 80) return "bg-emerald-50 border-emerald-200";
-  if (score >= 65) return "bg-blue-50 border-blue-200";
-  if (score >= 50) return "bg-amber-50 border-amber-200";
-  return "bg-red-50 border-red-200";
-}
-
-function getScoreLabel(score: number): string {
-  if (score >= 80) return "Hot pick";
-  if (score >= 65) return "Good gap";
-  if (score >= 50) return "Moderate";
-  return "Skip";
-}
-
-function getMarginColor(margin: number): string {
-  if (margin >= 20) return "text-emerald-600";
-  if (margin >= 10) return "text-amber-600";
-  return "text-red-500";
-}
-
-function ScoreRing({ score, size = 48 }: { score: number; size?: number }) {
-  const r    = (size - 8) / 2;
-  const circ = 2 * Math.PI * r;
-  const offset = circ * (1 - score / 100);
-  const color  = score >= 80 ? "#10b981" : score >= 65 ? "#3b82f6" : score >= 50 ? "#f59e0b" : "#ef4444";
+const TabSlider = ({ activeTab, onChange, whiteSpaceCount, profitCount }: any) => {
   return (
-    <div style={{ width: size, height: size, position: "relative", flexShrink: 0 }} className="flex items-center justify-center">
-      <svg width={size} height={size} style={{ position: "absolute", transform: "rotate(-90deg)" }}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e2e8f0" strokeWidth={4} />
-        <circle
-          cx={size / 2} cy={size / 2} r={r} fill="none"
-          stroke={color} strokeWidth={4}
-          strokeDasharray={circ} strokeDashoffset={offset}
-          strokeLinecap="round"
-        />
-      </svg>
-      <span className={cn("text-xs font-bold relative z-10", getScoreColor(score))}>{score}</span>
-    </div>
-  );
-}
-
-function MarginRing({ margin, size = 48 }: { margin: number; size?: number }) {
-  const clamped = Math.max(0, Math.min(100, margin));
-  const r    = (size - 8) / 2;
-  const circ = 2 * Math.PI * r;
-  const offset = circ * (1 - clamped / 100);
-  const color = margin >= 20 ? "#10b981" : margin >= 10 ? "#f59e0b" : "#ef4444";
-  return (
-    <div style={{ width: size, height: size, position: "relative", flexShrink: 0 }} className="flex items-center justify-center">
-      <svg width={size} height={size} style={{ position: "absolute", transform: "rotate(-90deg)" }}>
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e2e8f0" strokeWidth={4} />
-        <circle
-          cx={size / 2} cy={size / 2} r={r} fill="none"
-          stroke={color} strokeWidth={4}
-          strokeDasharray={circ} strokeDashoffset={offset}
-          strokeLinecap="round"
-        />
-      </svg>
-      <span className={cn("text-[10px] font-bold relative z-10", getMarginColor(margin))}>{Math.round(margin)}%</span>
-    </div>
-  );
-}
-
-// ── Tab Slider ─────────────────────────────────────────────────────────────────
-
-function TabSlider({
-  activeTab,
-  onChange,
-  whiteSpaceCount,
-  profitCount,
-}: {
-  activeTab: "whitespace" | "profitability";
-  onChange: (t: "whitespace" | "profitability") => void;
-  whiteSpaceCount: number;
-  profitCount: number;
-}) {
-  return (
-    <div className="relative bg-slate-100 rounded-2xl p-1 flex gap-1">
-      {/* Sliding pill */}
-      <div
-        className="absolute top-1 bottom-1 rounded-xl bg-white shadow-md transition-all duration-300 ease-out"
-        style={{
-          left:  activeTab === "whitespace" ? "4px" : "calc(50% + 2px)",
-          width: "calc(50% - 6px)",
-        }}
-      />
+    <div className="bg-slate-200/50 p-1 rounded-2xl flex items-center w-full max-w-sm mx-auto shadow-inner">
       <button
         onClick={() => onChange("whitespace")}
         className={cn(
-          "relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-colors duration-200",
-          activeTab === "whitespace" ? "text-violet-700" : "text-slate-500 hover:text-slate-700"
+          "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all duration-300",
+          activeTab === "whitespace"
+            ? "bg-white text-violet-700 shadow-lg scale-[1.02]"
+            : "text-slate-500 hover:text-slate-700"
         )}
       >
         <Sparkles className="w-4 h-4" />
-        <span>Opportunity Finder</span>
-        {whiteSpaceCount > 0 && (
-          <span className={cn("text-[10px] font-bold px-1.5 py-0.5 rounded-full", activeTab === "whitespace" ? "bg-violet-100 text-violet-700" : "bg-slate-200 text-slate-500")}>
-            {whiteSpaceCount}
-          </span>
-        )}
+        Niches
+        <span className={cn("text-[10px] px-1.5 py-0.5 rounded-md", activeTab === "whitespace" ? "bg-violet-100 text-violet-600" : "bg-slate-200 text-slate-500")}>
+          {whiteSpaceCount}
+        </span>
       </button>
       <button
-        onClick={() => onChange("profitability")}
+        onClick={() => onChange("profit")}
         className={cn(
-          "relative z-10 flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-medium transition-colors duration-200",
-          activeTab === "profitability" ? "text-blue-700" : "text-slate-500 hover:text-slate-700"
+          "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all duration-300",
+          activeTab === "profit"
+            ? "bg-white text-blue-700 shadow-lg scale-[1.02]"
+            : "text-slate-500 hover:text-slate-700"
         )}
       >
         <Calculator className="w-4 h-4" />
-        <span>Price Optimizer</span>
-        {profitCount > 0 && (
-          <span className={cn("text-[10px] font-bold px-1.5 py-0.5 rounded-full", activeTab === "profitability" ? "bg-blue-100 text-blue-700" : "bg-slate-200 text-slate-500")}>
-            {profitCount}
-          </span>
-        )}
+        Calculator
+        <span className={cn("text-[10px] px-1.5 py-0.5 rounded-md", activeTab === "profit" ? "bg-blue-100 text-blue-600" : "bg-slate-200 text-slate-500")}>
+          {profitCount}
+        </span>
       </button>
     </div>
   );
-}
+};
 
-// ── Main Page Content ─────────────────────────────────────────────────────────
-
-export default function MyWatchlistPage() {
-  const router = useRouter();
+export default function MyWatchlist() {
   const { user } = useAuth();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<"whitespace" | "profit">("whitespace");
+  const [items, setItems] = useState<WatchlistItem[]>([]);
+  const [savedProducts, setSavedProducts] = useState<SavedProduct[]>([]);
+  const [wsLoading, setWsLoading] = useState(false);
+  const [profitLoading, setProfitLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<"added" | "score" | "revenue">("added");
+  const [profitSortBy, setProfitSortBy] = useState<"added" | "margin" | "profit">("added");
+  const [confirmClear, setConfirmClear] = useState(false);
+
   const userId = user?.id;
 
-  // ── White Space state ──────────────────────────────────────────────────────
-  const [items,        setItems]        = useState<WatchlistItem[]>([]);
-  const [wsLoading,    setWsLoading]    = useState(true);
-  const [removing,     setRemoving]     = useState<string | null>(null);
-  const [confirmClear, setConfirmClear] = useState(false);
-  const [clearing,     setClearing]     = useState(false);
-
-  // ── Profitability state ────────────────────────────────────────────────────
-  const [savedProducts,    setSavedProducts]    = useState<SavedProductDB[]>([]);
-  const [profitLoading,    setProfitLoading]    = useState(true);
-  const [removingProduct,  setRemovingProduct]  = useState<string | null>(null);
-
-  // ── Shared state ──────────────────────────────────────────────────────────
-  const [activeTab,    setActiveTab]    = useState<"whitespace" | "profitability">("whitespace");
-  const [search,       setSearch]       = useState("");
-  const [sortBy,       setSortBy]       = useState<"added" | "score" | "revenue">("added");
-  const [profitSortBy, setProfitSortBy] = useState<"added" | "margin" | "profit">("added");
-
-  // ── Fetch White Space watchlist ────────────────────────────────────────────
   const fetchWatchlist = useCallback(async () => {
-    if (!userId) { setWsLoading(false); return; }
+    if (!userId) return;
     setWsLoading(true);
     try {
-      const res = await axios.get(`${API}/white-space/watchlist`, {
-        params: { user_id: userId.toString() },
-      });
-      setItems(res.data.watchlist as WatchlistItem[]);
-    } catch { /* silent */ }
-    finally { setWsLoading(false); }
+      const res = await axios.get(`${API}/white-space/watchlist?user_id=${userId}`);
+      if (res.data.watchlist) {
+        setItems(res.data.watchlist || []);
+      }
+    } catch (err) {
+      console.error("Watchlist fetch error:", err);
+    } finally {
+      setWsLoading(false);
+    }
   }, [userId]);
 
-  // ── Fetch Profitability saved products ────────────────────────────────────
   const fetchSavedProducts = useCallback(async () => {
-    if (!userId) { setProfitLoading(false); return; }
+    if (!userId) return;
     setProfitLoading(true);
     try {
       const res = await axios.get(`${API}/profitability/saved/${userId}`);
-      setSavedProducts(res.data as SavedProductDB[]);
-    } catch { /* silent */ }
-    finally { setProfitLoading(false); }
+      if (Array.isArray(res.data)) {
+        const flattened = res.data.map((p: SavedProductDB) => ({
+          ...p,
+          monthly_profit: p.calc_snapshot.monthly_profit,
+          net_margin_pct: p.calc_snapshot.net_margin_pct
+        }));
+        setSavedProducts(flattened);
+      }
+    } catch (err) {
+      console.error("Saved products fetch error:", err);
+    } finally {
+      setProfitLoading(false);
+    }
   }, [userId]);
 
   useEffect(() => {
@@ -261,71 +157,44 @@ export default function MyWatchlistPage() {
     fetchSavedProducts();
   }, [fetchWatchlist, fetchSavedProducts]);
 
-  useEffect(() => { setSearch(""); }, [activeTab]);
-
-  const removeItem = async (item: WatchlistItem) => {
-    if (!userId || removing) return;
-    setRemoving(item.niche);
-    setItems((prev) => prev.filter((i) => i.niche !== item.niche));
+  const removeItem = async (niche: string) => {
+    if (!userId) return;
     try {
-      await axios.post(`${API}/white-space/watchlist/toggle`, {
-        user_id: userId.toString(), niche: item.niche, score: item.score,
-        category: item.category, platform: item.platform, avg_price: item.avg_price,
-        avg_rating: item.avg_rating, competitor_count: item.competitor_count,
-        est_revenue_max: item.est_revenue_max, top_keyword: item.top_keyword,
-        gap_summary: item.gap_summary, query: item.query,
-      });
-    } catch {
-      setItems((prev) => [item, ...prev]);
-    } finally {
-      setRemoving(null);
+      await axios.delete(`${API}/white-space/watchlist/remove?user_id=${userId}&niche=${encodeURIComponent(niche)}`);
+      setItems((prev) => prev.filter((i) => i.niche !== niche));
+    } catch (err) {
+      console.error("Remove error:", err);
     }
   };
 
-  const removeProduct = async (id: string) => {
-    if (!userId || removingProduct) return;
-    setRemovingProduct(id);
-    const original = [...savedProducts];
-    setSavedProducts((prev) => prev.filter((p) => p.id !== id));
+  const removeSavedProduct = async (id: string) => {
     try {
       await axios.delete(`${API}/profitability/saved/${userId}/${id}`);
-    } catch {
-      setSavedProducts(original);
-    } finally {
-      setRemovingProduct(null);
+      setSavedProducts((prev) => prev.filter((p) => p.id !== id));
+    } catch (err) {
+      console.error("Remove product error:", err);
     }
   };
 
   const clearAll = async () => {
-    if (!userId || clearing) return;
-    setClearing(true);
-    const snapshot = [...items];
-    setItems([]);
-    setConfirmClear(false);
+    if (!userId) return;
     try {
-      await Promise.all(
-        snapshot.map((item) =>
-          axios.delete(`${API}/white-space/watchlist/remove`, {
-            params: { user_id: userId.toString(), niche: item.niche },
-          })
-        )
-      );
-    } catch {
-      setItems(snapshot);
-    } finally {
-      setClearing(false);
+      await Promise.all(items.map(item => axios.delete(`${API}/white-space/watchlist/remove?user_id=${userId}&niche=${encodeURIComponent(item.niche)}`)));
+      setItems([]);
+      setConfirmClear(false);
+    } catch (err) {
+      console.error("Clear error:", err);
     }
   };
 
-  const filteredWS = items
+  const filteredItems = items
     .filter((i) =>
       !search ||
       i.niche.toLowerCase().includes(search.toLowerCase()) ||
-      i.category.toLowerCase().includes(search.toLowerCase()) ||
-      i.query.toLowerCase().includes(search.toLowerCase())
+      i.category.toLowerCase().includes(search.toLowerCase())
     )
     .sort((a, b) => {
-      if (sortBy === "score")   return b.score - a.score;
+      if (sortBy === "score") return b.score - a.score;
       if (sortBy === "revenue") return b.est_revenue_max - a.est_revenue_max;
       return new Date(b.added_at).getTime() - new Date(a.added_at).getTime();
     });
@@ -345,8 +214,8 @@ export default function MyWatchlistPage() {
   const apiLoading = activeTab === "whitespace" ? wsLoading : profitLoading;
 
   return (
-    <div className="flex-1 w-full min-h-screen flex flex-col">
-      <header className="bg-white/80 backdrop-blur-xl border border-sky-100 shadow-xl rounded-2xl px-6 py-4 mb-6 flex items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-xl flex items-center justify-center shadow-inner">
             <Bookmark className="h-5 w-5 text-violet-600 fill-violet-200" />
@@ -362,26 +231,27 @@ export default function MyWatchlistPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <button
+          <Button
+            variant="outline"
+            size="icon"
             onClick={() => { fetchWatchlist(); fetchSavedProducts(); }}
             disabled={apiLoading}
-            className="p-2 rounded-lg border border-slate-200 text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors disabled:opacity-40"
-            title="Refresh watchlist"
+            className="rounded-xl"
           >
             <RefreshCw className={cn("w-4 h-4", apiLoading && "animate-spin")} />
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={() => router.push("/explorer/white-space-finder")}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-sm font-medium rounded-xl hover:opacity-90 transition-all shadow"
+            className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl shadow hover:opacity-90 transition-all"
           >
-            <Sparkles className="w-4 h-4" />
-            <span className="hidden sm:inline">Find more gaps</span>
-          </button>
+            <Sparkles className="w-4 h-4 mr-2" />
+            Find more gaps
+          </Button>
         </div>
-      </header>
+      </div>
 
-      <div className="px-4 sm:px-6 pb-12 max-w-5xl mx-auto space-y-6 w-full">
+      <div className="max-w-5xl mx-auto space-y-6 w-full">
         <TabSlider
           activeTab={activeTab}
           onChange={setActiveTab}
@@ -420,11 +290,13 @@ export default function MyWatchlistPage() {
                   <option value="revenue">Est. revenue</option>
                 </select>
                 {!confirmClear ? (
-                  <button onClick={() => setConfirmClear(true)} className="h-10 px-3 text-xs border border-red-200 text-red-500 rounded-xl hover:bg-red-50 flex items-center gap-1.5"><Trash2 className="w-3.5 h-3.5" /> Clear</button>
+                  <Button variant="outline" size="sm" onClick={() => setConfirmClear(true)} className="text-red-500 border-red-200 hover:bg-red-50 rounded-xl">
+                    <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Clear
+                  </Button>
                 ) : (
                   <div className="flex items-center gap-1.5">
-                    <button onClick={clearAll} className="h-10 px-3 text-xs bg-red-500 text-white rounded-xl hover:bg-red-600">Confirm</button>
-                    <button onClick={() => setConfirmClear(false)} className="h-10 px-3 text-xs border border-slate-300 rounded-xl hover:bg-slate-50">X</button>
+                    <Button size="sm" onClick={clearAll} className="bg-red-500 text-white rounded-xl hover:bg-red-600">Confirm</Button>
+                    <Button size="sm" variant="outline" onClick={() => setConfirmClear(false)} className="rounded-xl">X</Button>
                   </div>
                 )}
               </div>
@@ -448,103 +320,138 @@ export default function MyWatchlistPage() {
             <div className="w-20 h-20 bg-amber-50 rounded-2xl flex items-center justify-center mb-6 border border-amber-100"><Bookmark className="w-9 h-9 text-amber-300" /></div>
             <h3 className="text-lg font-semibold text-slate-800 mb-2">Sign in to see your watchlist</h3>
             <p className="text-sm text-slate-400 max-w-sm mb-6">Your watchlist is saved to your account so it's available on all your devices.</p>
-            <button onClick={() => router.push("/login")} className="px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm rounded-xl shadow hover:opacity-90 transition-all">Sign in <ArrowRight className="w-4 h-4 ml-2 inline" /></button>
+            <Button onClick={() => router.push("/login")}>Sign In Now</Button>
           </div>
         ) : apiLoading ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-3"><RefreshCw className="w-7 h-7 text-violet-400 animate-spin" /><p className="text-sm text-slate-400">Loading...</p></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[1, 2, 3, 4].map((n) => (
+              <div key={n} className="h-64 bg-slate-100 rounded-3xl animate-pulse" />
+            ))}
+          </div>
         ) : activeTab === "whitespace" ? (
-          filteredWS.length === 0 ? (
-            <div className="text-center py-24"><Bookmark className="w-12 h-12 text-slate-200 mx-auto mb-4" /><p className="text-slate-400 text-sm">No items found.</p></div>
+          items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center bg-background border border-slate-200 border-dashed rounded-3xl">
+              <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4"><Sparkles className="w-7 h-7 text-slate-300" /></div>
+              <p className="text-slate-500 font-medium">Your niche watchlist is empty</p>
+              <Button variant="link" onClick={() => router.push("/explorer/white-space-finder")} className="mt-2 text-violet-600">Start exploring market gaps</Button>
+            </div>
           ) : (
-            <div className="space-y-4">
-              {filteredWS.map((item) => (
-                <Card key={item.niche} className="overflow-hidden border border-slate-200 rounded-2xl bg-white hover:border-violet-200 hover:shadow-md transition-all group p-5">
-                  <div className="flex items-start gap-4">
-                    <ScoreRing score={item.score} />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-3 mb-2">
-                        <div className="min-w-0">
-                          <h3 className="text-sm font-semibold text-slate-900 leading-tight mb-1">{item.niche}</h3>
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full border", getScoreBg(item.score), getScoreColor(item.score))}>{getScoreLabel(item.score)}</span>
-                            <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{item.category}</span>
-                            <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full", item.platform === "both" ? "bg-purple-100 text-purple-700" : item.platform === "amazon" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700")}>
-                              {item.platform === "both" ? "Amazon + Flipkart" : item.platform === "amazon" ? "Amazon.in" : "Flipkart"}
-                            </span>
-                          </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {filteredItems.map((item) => (
+                <Card key={item.query} className="overflow-hidden border-slate-200/60 hover:shadow-xl hover:shadow-violet-500/5 transition-all duration-300 group rounded-3xl">
+                  <CardContent className="p-0">
+                    <div className="p-5 space-y-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="space-y-1">
+                          <h3 className="font-bold text-slate-900 group-hover:text-violet-600 transition-colors">{item.niche}</h3>
+                          <p className="text-xs text-slate-500 flex items-center gap-1">
+                            {item.platform === "flipkart" ? "🛒 Flipkart" : "📦 Amazon"} • {item.category}
+                          </p>
                         </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-[10px] text-slate-400 flex items-center gap-1"><Clock className="w-2.5 h-2.5" />{timeAgo(item.added_at)}</span>
-                          <button onClick={() => removeItem(item)} className="text-slate-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <div className="flex flex-col items-end gap-2">
+                          <div className={cn(
+                            "px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase",
+                            item.score >= 80 ? "bg-emerald-100 text-emerald-700" :
+                              item.score >= 60 ? "bg-amber-100 text-amber-700" : "bg-rose-100 text-rose-700"
+                          )}>
+                            Score: {item.score}
+                          </div>
+                          <button onClick={() => removeItem(item.niche)} className="p-1.5 text-slate-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                         </div>
                       </div>
-                      <p className="text-xs text-slate-500 leading-relaxed mb-3 line-clamp-2">{item.gap_summary}</p>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
-                        {[
-                          { label: "Max rev/mo", val: inr(item.est_revenue_max) },
-                          { label: "Avg price",  val: "₹" + item.avg_price.toLocaleString("en-IN") },
-                          { label: "Avg rating", val: "★ " + item.avg_rating.toFixed(1) },
-                          { label: "Competitors", val: String(item.competitor_count) },
-                        ].map((s) => (
-                          <div key={s.label} className="bg-slate-50 rounded-lg p-2 border border-slate-100 text-center">
-                            <p className="text-[9px] text-slate-400 mb-0.5 uppercase tracking-wide">{s.label}</p>
-                            <p className="text-xs font-semibold text-slate-700">{s.val}</p>
-                          </div>
-                        ))}
+
+                      <div className="grid grid-cols-3 gap-2 bg-slate-50 rounded-2xl p-3 border border-slate-100">
+                        <div className="text-center">
+                          <p className="text-[10px] text-slate-400 font-medium uppercase mb-0.5">Rating</p>
+                          <p className="text-xs font-bold text-slate-700 flex items-center justify-center gap-0.5">{item.avg_rating} <Star className="w-2.5 h-2.5 text-amber-400 fill-amber-400" /></p>
+                        </div>
+                        <div className="text-center border-x border-slate-200">
+                          <p className="text-[10px] text-slate-400 font-medium uppercase mb-0.5">Price</p>
+                          <p className="text-xs font-bold text-slate-700">₹{Math.round(item.avg_price)}</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-[10px] text-slate-400 font-medium uppercase mb-0.5">Competition</p>
+                          <p className="text-xs font-bold text-slate-700">{item.competitor_count}</p>
+                        </div>
                       </div>
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-slate-400">Keyword: <span className="text-slate-600 font-medium">{item.top_keyword}</span></span>
-                        <button onClick={() => router.push(`/explorer/white-space-finder?q=${encodeURIComponent(item.query)}`)} className="flex items-center gap-1 text-[10px] text-violet-600 hover:text-violet-800 font-medium"><ExternalLink className="w-3 h-3" /> Re-scan</button>
+
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
+                          <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
+                          Top Keyword: <span className="text-violet-600">{item.top_keyword}</span>
+                        </div>
+                        <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed italic border-l-2 border-violet-100 pl-3">"{item.gap_summary}"</p>
                       </div>
                     </div>
-                  </div>
+
+                    <div className="flex border-t border-slate-100">
+                      <button
+                        onClick={() => router.push(`/explorer/white-space-finder?q=${encodeURIComponent(item.query)}&platform=${item.platform}&category=${encodeURIComponent(item.category)}`)}
+                        className="flex-1 py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-1.5 transition-colors border-r border-slate-100"
+                      >
+                        <RefreshCw className="w-3.5 h-3.5" /> Analyze Now
+                      </button>
+                      <button
+                        onClick={() => window.open(item.platform === "flipkart" ? `https://www.flipkart.com/search?q=${item.query}` : `https://www.amazon.in/s?k=${item.query}`, "_blank")}
+                        className="flex-1 py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-1.5 transition-colors"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" /> Search Live
+                      </button>
+                    </div>
+                  </CardContent>
                 </Card>
               ))}
             </div>
           )
         ) : (
-          filteredProfit.length === 0 ? (
-            <div className="text-center py-24"><Calculator className="w-12 h-12 text-slate-200 mx-auto mb-4" /><p className="text-slate-400 text-sm">No saved products found.</p></div>
+          savedProducts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 text-center bg-background border border-slate-200 border-dashed rounded-3xl">
+              <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4"><Calculator className="w-7 h-7 text-slate-300" /></div>
+              <p className="text-slate-500 font-medium">No saved calculations yet</p>
+              <Button variant="link" onClick={() => router.push("/explorer/profitability-optimizer")} className="mt-2 text-blue-600">Open Profit Calculator</Button>
+            </div>
           ) : (
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredProfit.map((p) => (
-                <Card key={p.id} className="overflow-hidden border border-slate-200 rounded-2xl bg-white hover:border-blue-200 hover:shadow-md transition-all group p-5">
-                  <div className="flex items-start gap-4">
-                    <MarginRing margin={p.net_margin_pct} />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-3 mb-2">
-                        <div className="min-w-0">
-                          <h3 className="text-sm font-semibold text-slate-900 leading-tight mb-1">{p.name}</h3>
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{p.inputs.category}</span>
-                            <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full", p.inputs.marketplace === "amazon" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700")}>
-                              {p.inputs.marketplace === "amazon" ? "Amazon.in" : "Flipkart"}
-                            </span>
+                <Card key={p.id} className="overflow-hidden border-slate-200/60 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 group rounded-3xl">
+                  <CardContent className="p-0">
+                    <div className="p-5 space-y-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="space-y-1 flex-1">
+                          <h3 className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">{p.name}</h3>
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary" className="text-[9px] uppercase px-1.5 py-0">{p.inputs.marketplace}</Badge>
+                            <span className="text-[10px] text-slate-400">{p.inputs.category}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-[10px] text-slate-400 flex items-center gap-1"><Clock className="w-2.5 h-2.5" />{timeAgo(p.created_at)}</span>
-                          <button onClick={() => removeProduct(p.id)} className="text-slate-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => removeSavedProduct(p.id)} className="p-1.5 text-slate-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-blue-50/50 p-3 rounded-2xl border border-blue-100/50">
+                          <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Monthly Profit</p>
+                          <p className="text-lg font-black text-blue-600">₹{Math.round(p.monthly_profit).toLocaleString()}</p>
+                        </div>
+                        <div className="bg-emerald-50/50 p-3 rounded-2xl border border-emerald-100/50">
+                          <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Net Margin</p>
+                          <p className="text-lg font-black text-emerald-600">{p.net_margin_pct.toFixed(1)}%</p>
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
-                        {[
-                          { label: "Price", val: "₹" + p.inputs.selling_price.toLocaleString("en-IN") },
-                          { label: "Margin", val: p.net_margin_pct.toFixed(1) + "%" },
-                          { label: "Profit/unit", val: "₹" + Math.round(p.profit_per_unit) },
-                          { label: "Monthly Profit", val: inr(p.monthly_profit) },
-                        ].map((s) => (
-                          <div key={s.label} className="bg-slate-50 rounded-lg p-2 border border-slate-100 text-center">
-                            <p className="text-[9px] text-slate-400 mb-0.5 uppercase tracking-wide">{s.label}</p>
-                            <p className="text-xs font-semibold text-slate-700">{s.val}</p>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="flex items-center justify-end">
-                        <button onClick={() => router.push(`/explorer/profitability-optimizer?id=${p.id}`)} className="flex items-center gap-1 text-[10px] text-blue-600 hover:text-blue-800 font-medium"><ExternalLink className="w-3 h-3" /> Open in Optimizer</button>
+
+                      <div className="grid grid-cols-3 gap-2 py-1">
+                        <div><p className="text-[9px] text-slate-400 uppercase font-medium">Price</p><p className="text-xs font-bold text-slate-700">₹{p.inputs.selling_price}</p></div>
+                        <div><p className="text-[9px] text-slate-400 uppercase font-medium">Cost</p><p className="text-xs font-bold text-slate-700">₹{p.inputs.product_cost}</p></div>
+                        <div><p className="text-[9px] text-slate-400 uppercase font-medium">Volume</p><p className="text-xs font-bold text-slate-700">{p.inputs.monthly_units}</p></div>
                       </div>
                     </div>
-                  </div>
+
+                    <button
+                      onClick={() => router.push(`/explorer/profitability-optimizer?id=${p.id}`)}
+                      className="w-full py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 border-t border-slate-100 flex items-center justify-center gap-1.5 transition-colors"
+                    >
+                      <ArrowRight className="w-3.5 h-3.5" /> View Full Breakdown
+                    </button>
+                  </CardContent>
                 </Card>
               ))}
             </div>

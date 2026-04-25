@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+
 import axios from "axios";
 import {
   Card,
@@ -10,12 +11,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { ChevronLeft, Star, ShoppingBag, ArrowUpRight, TrendingUp, Filter, Search, LayoutGrid, List } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
+import { ChevronLeft, Star, ShoppingBag } from "lucide-react";
 
 interface Product {
   product_name: string;
@@ -27,213 +23,220 @@ interface Product {
   source: string;
 }
 
-export default function CategoryProductsPage() {
+export default function CategoryProducts() {
   const params = useParams();
-  const searchParams = useSearchParams();
+  const source = params?.source;
+  const category = params?.category;
   const router = useRouter();
-  
-  const source = params.source as string;
-  const category = decodeURIComponent(params.category as string);
-  
+
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const [fromDashboard, setFromDashboard] = useState(false);
   const limit = 12;
 
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  // ✅ Check if coming from dashboard
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const fromParam = urlParams.get("from");
+      const pageParam = urlParams.get("page");
+
+      setFromDashboard(fromParam === "dashboard");
+      if (pageParam) {
+        setPage(parseInt(pageParam));
+      }
+
+      console.log("=== CATEGORY PRODUCTS PAGE LOADED ===");
+      console.log("from param:", fromParam);
+      console.log("fromDashboard:", fromParam === "dashboard");
+      console.log("page:", pageParam);
+      console.log("=====================================");
+    }
+  }, []);
 
   useEffect(() => {
     if (!source || !category) return;
+
+    const decodedCategory = decodeURIComponent((category as string).trim());
     setLoading(true);
+
     axios
       .get(
-        `${BASE_URL}/category/products/${encodeURIComponent(category)}?source=${source}&limit=${limit}&offset=${(page - 1) * limit}`
+        `${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")}/category/products/${encodeURIComponent(
+          decodedCategory
+        )}?source=${source}&limit=${limit}&offset=${(page - 1) * limit}`
       )
       .then((res) => {
-        setProducts(Array.isArray(res.data.products) ? res.data.products : []);
+        if (Array.isArray(res.data.products)) {
+          setProducts(res.data.products);
+        } else {
+          setProducts([]);
+        }
       })
-      .catch(() => setError("Failed to synchronize cluster intelligence."))
+      .catch(() => setError("Failed to fetch products"))
       .finally(() => setLoading(false));
   }, [source, category, page]);
 
-  const filteredProducts = products.filter(p => 
-    p.product_name.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleBackClick = () => {
+    console.log("=== BACK BUTTON CLICKED ===");
+    console.log("fromDashboard:", fromDashboard);
+
+    // ✅ Direct window check as backup
+    const currentURL = new URLSearchParams(window.location.search);
+    const fromParam = currentURL.get("from");
+    console.log("Direct URL check - from param:", fromParam);
+
+    // Priority: If from dashboard, go back to dashboard
+    if (fromDashboard || fromParam === "dashboard") {
+      console.log("✅ Redirecting to Dashboard (/dashboard)");
+      window.location.href = "/dashboard";
+    } else {
+      console.log("Redirecting to Categories page");
+      router.push("/categories");
+    }
+
+    console.log("===========================");
+  };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-16">
-      {/* Premium Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.back()} className="rounded-xl hover:bg-sky-50 text-sky-700">
-            <ChevronLeft className="w-6 h-6" />
-          </Button>
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Badge variant="outline" className="px-2 py-0.5 rounded-full bg-sky-50 border-sky-100 text-sky-700 text-[9px] font-black uppercase tracking-widest">
-                {source} Node
-              </Badge>
-              <Badge variant="outline" className="px-2 py-0.5 rounded-full bg-slate-50 border-slate-100 text-slate-500 text-[9px] font-black uppercase tracking-widest">
-                Cluster Drill-down
-              </Badge>
-            </div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight capitalize">{category}</h1>
-          </div>
+    <div className="space-y-6">
+      {/* Sticky Header */}
+      <header className="bg-background border border-sky-100 shadow-lg rounded-2xl px-6 py-4 sm:py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sticky top-0 z-20">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <button
+            onClick={handleBackClick}
+            className="flex items-center text-blue-600 hover:text-blue-800 transition text-sm font-medium"
+          >
+            <ChevronLeft className="h-5 w-5 mr-1" />
+            Back
+          </button>
+          <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 capitalize">
+            {decodeURIComponent((category as string) || "")} —{" "}
+            <span className="text-blue-600">{source}</span>
+          </h2>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="relative w-64 hidden lg:block">
-            <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-            <Input 
-              placeholder="Search in cluster..." 
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-11 h-12 rounded-xl bg-white border-slate-100 shadow-sm font-medium"
-            />
-          </div>
+        <p className="text-xs sm:text-sm text-slate-500">
+          Explore top products in this category
+        </p>
+      </header>
+
+      {/* Hero Section */}
+      <div className="text-center space-y-4 pt-4">
+        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-2xl mb-2 shadow-inner">
+          <ShoppingBag className="h-8 w-8 text-blue-500" />
         </div>
+        <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+          Products in {decodeURIComponent((category as string) || "")}
+        </h1>
+        <p className="text-base sm:text-lg text-slate-500 max-w-2xl mx-auto">
+          Browse {source} products with ratings, reviews, and prices.
+        </p>
       </div>
 
-      {/* Cluster Health Stats */}
-      {!loading && products.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {[
-            { label: "Cluster Size", value: products.length, sub: "Synchronized products", icon: <ShoppingBag className="w-5 h-5" />, color: "sky" },
-            { label: "Avg Trust", value: (products.reduce((s, p) => s + p.avg_rating, 0) / products.length).toFixed(1), sub: "Weighted rating", icon: <Star className="w-5 h-5" />, color: "amber" },
-            { label: "Value Mean", value: `₹${(products.reduce((s, p) => s + p.avg_price, 0) / products.length).toLocaleString(undefined, {maximumFractionDigits: 0})}`, sub: "Cluster average price", icon: <TrendingUp className="w-5 h-5" />, color: "emerald" },
-          ].map((stat, i) => (
-            <Card key={i} className="border-none shadow-md rounded-3xl bg-white overflow-hidden">
-              <CardContent className="p-6 flex items-center gap-4">
-                <div className={`w-12 h-12 rounded-2xl bg-${stat.color}-50 text-${stat.color}-600 flex items-center justify-center`}>
-                  {stat.icon}
-                </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">{stat.label}</p>
-                  <p className="text-xl font-black text-slate-900">{stat.value}</p>
-                  <p className="text-[9px] font-bold text-slate-400 uppercase mt-0.5">{stat.sub}</p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+      {/* Loading & Error */}
+      {loading ? (
+        <div className="text-center text-slate-400 py-20 text-lg">
+          Loading products...
         </div>
-      )}
+      ) : error ? (
+        <div className="text-center text-red-500 py-20 text-lg">{error}</div>
+      ) : products.length === 0 ? (
+        <div className="text-center text-slate-500 py-20 text-lg">
+          No products found in this category.
+        </div>
+      ) : (
+        <>
+          {/* Product Table */}
+          <Card className="bg-card border border-slate-200 rounded-2xl shadow-md overflow-hidden">
+            <CardHeader>
+              <CardTitle className="text-xl font-semibold text-slate-800">
+                Product List
+              </CardTitle>
+              <CardDescription>
+                Showing products for {decodeURIComponent((category as string) || "")}
+              </CardDescription>
+            </CardHeader>
 
-      {/* Products Directory */}
-      <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden">
-        <CardHeader className="px-10 pt-10 pb-6 border-b border-slate-50 flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="text-xl font-black text-slate-900">Intelligence Directory</CardTitle>
-            <CardDescription className="text-xs font-medium text-slate-500">Real-time inventory analysis for this cluster</CardDescription>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="rounded-lg text-slate-400 hover:bg-slate-50"><LayoutGrid className="w-4 h-4" /></Button>
-            <Button variant="ghost" size="icon" className="rounded-lg text-sky-600 bg-sky-50"><List className="w-4 h-4" /></Button>
-          </div>
-        </CardHeader>
-        <CardContent className="p-0">
-          {loading ? (
-            <div className="p-10 space-y-4">
-              {[1,2,3,4,5].map(i => <Skeleton key={i} className="h-14 w-full rounded-2xl" />)}
-            </div>
-          ) : error ? (
-            <div className="py-20 text-center text-rose-500 font-bold">{error}</div>
-          ) : products.length === 0 ? (
-            <div className="py-24 text-center">
-              <ShoppingBag className="w-12 h-12 text-slate-200 mx-auto mb-4" />
-              <h3 className="text-lg font-black text-slate-900">End of Cluster</h3>
-              <p className="text-sm text-slate-400 mt-1">No further items detected in this specific hierarchy.</p>
-              <Button onClick={() => setPage(1)} variant="link" className="text-sky-600 font-bold mt-4">Reset Pagination</Button>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+            <CardContent className="overflow-x-auto">
+              <table className="min-w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                    <th className="px-10 py-5">Product Intelligence</th>
-                    <th className="px-6 py-5">Trust Score</th>
-                    <th className="px-6 py-5">Value Index</th>
-                    <th className="px-6 py-5">Min / Max Delta</th>
-                    <th className="px-10 py-5 text-right">Action</th>
+                  <tr className="bg-gradient-to-r from-blue-50 to-cyan-50 text-slate-700 border-b">
+                    <th className="py-3 px-4 text-left font-semibold">#</th>
+                    <th className="py-3 px-4 text-left font-semibold">
+                      Product Name
+                    </th>
+                    <th className="py-3 px-4 text-left font-semibold">Avg. Price</th>
+                    <th className="py-3 px-4 text-left font-semibold">Min Price</th>
+                    <th className="py-3 px-4 text-left font-semibold">Max Price</th>
+                    <th className="py-3 px-4 text-left font-semibold">Rating</th>
+                    <th className="py-3 px-4 text-left font-semibold">Reviews</th>
+                    <th className="py-3 px-4 text-left font-semibold">Source</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {filteredProducts.map((p, i) => (
-                    <tr key={i} className="group hover:bg-sky-50/30 transition-colors">
-                      <td className="px-10 py-6">
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-2xl bg-slate-50 flex items-center justify-center group-hover:bg-white transition-colors">
-                            <ShoppingBag className="w-5 h-5 text-slate-300 group-hover:text-sky-500" />
-                          </div>
-                          <div className="max-w-md">
-                            <Link 
-                              href={`/product/${encodeURIComponent(p.product_name)}?source=${source}&category=${encodeURIComponent(category)}&page=${page}`}
-                              className="text-sm font-black text-slate-900 hover:text-sky-600 transition-colors line-clamp-1"
-                            >
-                              {p.product_name}
-                            </Link>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{p.total_reviews.toLocaleString()} Social Signals</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-6">
-                        <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-0.5">
-                            {[1,2,3,4,5].map(s => (
-                              <Star key={s} className={`w-3 h-3 ${s <= Math.round(p.avg_rating) ? 'fill-amber-400 text-amber-400' : 'text-slate-200'}`} />
-                            ))}
-                          </div>
-                          <span className="text-xs font-black text-slate-900">{p.avg_rating.toFixed(1)}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-6">
-                        <span className="text-sm font-black text-emerald-600">₹{p.avg_price.toLocaleString()}</span>
-                      </td>
-                      <td className="px-6 py-6">
-                        <div className="flex items-center gap-3 text-[10px] font-bold">
-                          <span className="text-sky-600 bg-sky-50 px-2 py-1 rounded-md">MIN: ₹{p.min_price?.toLocaleString() || '—'}</span>
-                          <span className="text-rose-600 bg-rose-50 px-2 py-1 rounded-md">MAX: ₹{p.max_price?.toLocaleString() || '—'}</span>
-                        </div>
-                      </td>
-                      <td className="px-10 py-6 text-right">
-                        <Link 
-                          href={`/product/${encodeURIComponent(p.product_name)}?source=${source}&category=${encodeURIComponent(category)}&page=${page}`}
-                          className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-slate-900 text-white hover:bg-black transition-all hover:scale-110 shadow-lg shadow-slate-100"
+                <tbody>
+                  {products.map((p, index) => (
+                    <tr
+                      key={index}
+                      className="border-b hover:bg-slate-50 transition-all"
+                    >
+                      <td className="py-3 px-4">{(page - 1) * limit + index + 1}</td>
+                      <td className="py-3 px-4 font-medium text-slate-800">
+                        <span
+                          onClick={() =>
+                            router.push(
+                              `/product/${encodeURIComponent(p.product_name)}?source=${source}&category=${category}&page=${page}`
+                            )
+                          }
+                          className="text-blue-600 hover:text-blue-800 cursor-pointer underline-offset-2 hover:underline transition"
                         >
-                          <ArrowUpRight className="w-4 h-4" />
-                        </Link>
+                          {p.product_name}
+                        </span>
                       </td>
+                      <td className="py-3 px-4 text-emerald-600 font-semibold">
+                        ₹{p.avg_price?.toLocaleString()}
+                      </td>
+                      <td className="py-3 px-4 text-blue-600 font-semibold">
+                        {p.min_price ? `₹${p.min_price.toLocaleString()}` : "—"}
+                      </td>
+                      <td className="py-3 px-4 text-red-600 font-semibold">
+                        {p.max_price ? `₹${p.max_price.toLocaleString()}` : "—"}
+                      </td>
+                      <td className="py-3 px-4 text-yellow-500 font-medium flex items-center gap-1">
+                        <Star className="h-4 w-4" />
+                        {p.avg_rating?.toFixed(1) ?? "N/A"}
+                      </td>
+                      <td className="py-3 px-4 text-slate-600">
+                        {p.total_reviews.toLocaleString()}
+                      </td>
+                      <td className="py-3 px-4 capitalize text-slate-700">{p.source}</td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
-          )}
-        </CardContent>
-        {/* Pagination Footer */}
-        {!loading && products.length > 0 && (
-          <div className="bg-slate-50/50 px-10 py-6 flex items-center justify-between border-t border-slate-50">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Displaying Cluster Page {page}</span>
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                disabled={page === 1}
-                onClick={() => setPage(p => Math.max(p - 1, 1))}
-                className="rounded-xl border-slate-200 font-black text-[10px] uppercase h-10 px-6 bg-white"
-              >
-                Previous
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => setPage(p => p + 1)}
-                className="rounded-xl border-slate-200 font-black text-[10px] uppercase h-10 px-6 bg-white"
-              >
-                Next Node
-              </Button>
-            </div>
+            </CardContent>
+          </Card>
+
+          {/* Pagination */}
+          <div className="flex justify-center items-center gap-4 mt-8 pb-10">
+            <button
+              onClick={() => setPage((p) => Math.max(p - 1, 1))}
+              disabled={page === 1}
+              className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 disabled:opacity-50 transition"
+            >
+              Previous
+            </button>
+            <span className="font-medium text-slate-700">Page {page}</span>
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+            >
+              Next
+            </button>
           </div>
-        )}
-      </Card>
+        </>
+      )}
     </div>
   );
 }

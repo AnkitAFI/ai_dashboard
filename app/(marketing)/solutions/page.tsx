@@ -879,7 +879,7 @@ export default function SolutionsPage() {
             ].map((card, i) => (
               <div
             key={i}
-            className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-left 
+            className="bg-background opacity-100 backdrop-blur-none border border-white/20 rounded-2xl p-6 text-left 
             flex flex-col h-full"
           >
             <p className="font-bold text-white mb-2">{card.label}</p>

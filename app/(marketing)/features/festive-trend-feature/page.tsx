@@ -336,7 +336,7 @@ export default function FestiveTrendFeaturePage() {
       
       {/* ── NAVIGATION ── */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg" : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"
+        scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
@@ -724,7 +724,7 @@ export default function FestiveTrendFeaturePage() {
               <div className="relative bg-white dark:bg-gray-900 border-2 border-orange-200 dark:border-orange-800 rounded-3xl p-8 shadow-2xl">
 
                 {/* Coming Soon overlay */}
-                <div className="absolute inset-0 rounded-3xl bg-white/50 dark:bg-gray-900/70 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center gap-4">
+                <div className="absolute inset-0 rounded-3xl bg-background dark:bg-gray-900/70 backdrop-blur-none z-10 flex flex-col items-center justify-center gap-4">
                   <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl px-6 py-4 shadow-xl text-center">
                     <Lock className="w-8 h-8 text-white mx-auto mb-2" />
                     <p className="text-white font-black text-lg">Coming Soon</p>

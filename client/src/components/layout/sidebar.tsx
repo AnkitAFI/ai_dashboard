@@ -163,11 +163,35 @@ const SELLER_SECTIONS: NavSection[] = [
 
 
 
-export default function Sidebar() {
+interface SidebarProps {
+  isMobileOpen?: boolean;
+  onClose?: () => void;
+}
+
+export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [mode, setMode] = useState<'explorer' | 'seller'>('explorer');
+
+  // Sync isCollapsed with isMobileOpen on mobile
+  useEffect(() => {
+    // Only force collapse state based on mobile prop if on mobile
+    const handleResize = () => {
+      if (window.innerWidth < 1024) { // 1024 is 'lg' breakpoint
+        if (isMobileOpen !== undefined) {
+          setIsCollapsed(!isMobileOpen);
+        }
+      } else {
+        // On desktop, keep it expanded to match layout margin
+        setIsCollapsed(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isMobileOpen]);
 
   useEffect(() => {
     const savedMode = localStorage.getItem('sidebar-mode');
@@ -178,6 +202,7 @@ export default function Sidebar() {
 
   useEffect(() => {
     localStorage.setItem('sidebar-mode', mode);
+    window.dispatchEvent(new Event('sidebar-mode-changed'));
   }, [mode]);
 
   const { user, logout, isLoading } = useAuth();
@@ -241,10 +266,13 @@ export default function Sidebar() {
 
   return (
     <>
-      {!isCollapsed && (
+      {(!isCollapsed || isMobileOpen) && (
         <div
           className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden"
-          onClick={() => setIsCollapsed(true)}
+          onClick={() => {
+            setIsCollapsed(true);
+            onClose?.();
+          }}
         />
       )}
 
@@ -277,7 +305,10 @@ export default function Sidebar() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setIsCollapsed(!isCollapsed)}
+            onClick={() => {
+              setIsCollapsed(!isCollapsed);
+              if (!isCollapsed) onClose?.();
+            }}
             className="lg:hidden text-slate-600"
           >
             {isCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}

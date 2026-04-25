@@ -237,7 +237,7 @@ export default function FindProfitableProductsPage() {
       
 
       {/* ══ NAV ══ */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg" : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
             <a href="/" className="flex items-center space-x-1 group">
@@ -726,7 +726,7 @@ export default function FindProfitableProductsPage() {
               { label: "Growing Sellers (Growth Plan)", desc: "Doing ₹5L+ monthly and planning your next SKU? The Growth Plan unlocks unlimited research, full demand history, advanced margin modelling, and automated alerts.", cta: "Try Growth Plan →", action: () => router.push("/pricing") },
               { label: "D2C Brands / Agencies (Demo)", desc: "Managing multiple product launches? Custom workflows, white-label opportunity reports, API access, and dedicated account support.", cta: "Book a Demo →", action: () => router.push("/demo") },
             ].map((card, i) => (
-              <div key={i} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 sm:p-6 text-left">
+              <div key={i} className="bg-background opacity-100 backdrop-blur-none border border-white/20 rounded-2xl p-5 sm:p-6 text-left">
                 <p className="font-bold text-white mb-1.5 sm:mb-2 text-sm sm:text-base">{card.label}</p>
                 <p className="text-white/80 text-xs sm:text-sm mb-3 sm:mb-4">{card.desc}</p>
                 {card.cta === "Try Growth Plan →" ? (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { TrendingUp, Star, AlertCircle, ChevronLeft, ChevronRight, X, Loader2, ShoppingBag, Filter, ShieldCheck, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function SentimentAnalysisPage() {
+function SentimentAnalysisPageContent() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -24,7 +24,7 @@ export default function SentimentAnalysisPage() {
   const [totalProducts, setTotalProducts] = useState(0);
   const limit = 24;
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -81,7 +81,7 @@ export default function SentimentAnalysisPage() {
             <Card key={i} className="border-none shadow-sm rounded-3xl bg-white overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer" onClick={() => router.push(`/product/${encodeURIComponent(p.product_title)}?source=${source}`)}>
               <div className="aspect-square bg-slate-50 relative overflow-hidden">
                 {p.image_url ? <img src={p.image_url} alt={p.product_title} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 p-4" /> : <div className="w-full h-full flex items-center justify-center"><ShoppingBag className="w-10 h-10 text-slate-200" /></div>}
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm border border-slate-100"><Star className="w-3 h-3 fill-amber-400 text-amber-400" /><span className="text-xs font-black text-slate-900">{p.rating?.toFixed(1)}</span></div>
+                <div className="absolute top-4 right-4 bg-background opacity-100 backdrop-blur-none px-2 py-1 rounded-lg flex items-center gap-1 shadow-sm border border-slate-100"><Star className="w-3 h-3 fill-amber-400 text-amber-400" /><span className="text-xs font-black text-slate-900">{p.rating?.toFixed(1)}</span></div>
               </div>
               <CardContent className="p-6 space-y-4">
                 <p className="text-sm font-bold text-slate-900 line-clamp-2 group-hover:text-sky-600 transition-colors">{p.product_title}</p>
@@ -105,5 +105,16 @@ export default function SentimentAnalysisPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+
+
+
+export default function SentimentAnalysisPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>
+      <SentimentAnalysisPageContent />
+    </Suspense>
   );
 }

@@ -421,8 +421,8 @@ export default function PriceOptimizationFeaturePage() {
       {/* ─── NAVIGATION ──────────────────────────────────────────────────────── */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg"
-          : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"
+          ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg"
+          : "bg-background dark:bg-gray-900/80 backdrop-blur-none"
       }`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
@@ -1371,7 +1371,7 @@ export default function PriceOptimizationFeaturePage() {
                   { title: 'LinkedIn', href: 'https://www.linkedin.com/company/insydz/?viewAsMember=true', icon: 'in' },
                 ].map(s => (
                   <a key={s.title} title={s.title} href={s.href} target="_blank" rel="noopener noreferrer"
-                    className="w-8 h-8 sm:w-9 sm:h-9 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors text-xs font-bold"
+                    className="w-8 h-8 sm:w-9 sm:h-9 bg-background opacity-100 rounded-full flex items-center justify-center hover:bg-background opacity-100 transition-colors text-xs font-bold"
                   >
                     {s.icon}
                   </a>

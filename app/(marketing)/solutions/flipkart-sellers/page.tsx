@@ -867,7 +867,7 @@ export default function FlipkartSellersPage() {
             {/* For Growing Sellers */}
             <div className="bg-gradient-to-br from-blue-600 to-indigo-700 border-2 border-blue-500 rounded-3xl p-8 text-center shadow-2xl hover:shadow-3xl transition-all relative overflow-hidden">
               <div className="absolute top-4 right-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full">Most Popular</div>
-              <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <div className="w-14 h-14 bg-background opacity-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                 <TrendingUp className="w-7 h-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-white mb-3">For Growing Sellers</h3>

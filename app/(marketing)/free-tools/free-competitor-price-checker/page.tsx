@@ -187,7 +187,7 @@ export default function FreeCompetitorPriceCheckerPage() {
       
 
       {/* ─── NAVIGATION ─── */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg" : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center space-x-3">
@@ -544,7 +544,7 @@ export default function FreeCompetitorPriceCheckerPage() {
                 <p className="text-teal-100 text-xs font-bold uppercase tracking-wider mb-1">Competitor Price Report</p>
                 <p className="text-white font-bold text-lg">Stainless Steel Water Bottle · B09EXAMPLE</p>
               </div>
-              <span className="bg-white/20 border border-white/30 text-white text-xs font-semibold px-3 py-1 rounded-full">Amazon India</span>
+              <span className="bg-background opacity-100 border border-white/30 text-white text-xs font-semibold px-3 py-1 rounded-full">Amazon India</span>
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-gray-100 dark:divide-gray-700">
               {[
@@ -834,7 +834,7 @@ export default function FreeCompetitorPriceCheckerPage() {
               { type: "Growing Seller", msg: "Stop repricing after losing sales. Get daily pricing alerts and WhatsApp notifications on the Growth Plan.", cta: "Try Growth Plan →", href: "/signup?plan=growth" },
               { type: "Agency", msg: "Run live competitor price checks in client strategy sessions show the Buy Box zone in real time before recommending a repricing strategy.", cta: "Book Demo →", href: "/about/contact-us" },
             ].map((icp, i) => (
-              <div key={i} className="bg-white/15 border border-white/30 rounded-2xl p-6 text-left backdrop-blur-sm">
+              <div key={i} className="bg-background opacity-100 border border-white/30 rounded-2xl p-6 text-left backdrop-blur-none">
                 <p className="text-xs font-bold uppercase tracking-widest text-white/65 mb-2">{icp.type}</p>
                 <p className="text-sm text-white/90 leading-relaxed mb-4">{icp.msg}</p>
                  <a href={icp.href} className="text-sm font-bold text-white border-b border-white/40 hover:border-white pb-0.5 transition-colors">{icp.cta}</a>

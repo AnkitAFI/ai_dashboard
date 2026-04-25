@@ -19,13 +19,13 @@ import {
 } from "recharts";
 import { cn } from "@/lib/utils";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 // ── Tier Gate ─────────────────────────────────────────────────────────────────
 function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
   const { push } = require("next/navigation").useRouter();
   return (
-    <div className="absolute inset-0 bg-white/90 backdrop-blur-[2px] rounded-3xl flex flex-col items-center justify-center z-10 gap-4 text-center p-6 border-2 border-dashed border-slate-100">
+    <div className="absolute inset-0 bg-background backdrop-blur-none rounded-3xl flex flex-col items-center justify-center z-10 gap-4 text-center p-6 border-2 border-dashed border-slate-100">
       <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-100", tier === "premium" ? "bg-indigo-600" : "bg-sky-600")}>
         <Lock className="w-6 h-6 text-white" />
       </div>
@@ -229,7 +229,7 @@ function RankTrackerContent() {
 
 export default function RankTrackerPage() {
   return (
-    <Suspense fallback={<div className="p-12 text-center"><Loader2 className="w-12 h-12 text-emerald-500 animate-spin mx-auto mb-6" /><p className="text-slate-400 font-black uppercase text-xs tracking-[0.2em]">Synchronizing Rank Intelligence...</p></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>
       <RankTrackerContent />
     </Suspense>
   );

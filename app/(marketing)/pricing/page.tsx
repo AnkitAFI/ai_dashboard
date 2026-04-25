@@ -671,7 +671,7 @@ export default function Pricing() {
             <Button
               size="lg"
               variant="outline"
-              className="border-2 border-white text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full w-full sm:w-auto"
+              className="border-2 border-white text-white hover:bg-background opacity-100 px-8 py-6 text-lg rounded-full w-full sm:w-auto"
               onClick={() => window.location.href = "mailto:sales@insydz.com"}
             >
               Talk to Sales →

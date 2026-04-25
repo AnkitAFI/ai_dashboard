@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect, Suspense } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import axios from "axios";
 import { useAuth } from "@/lib/auth-context";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -15,12 +15,11 @@ import {
   Search, Lock, Crown, CheckCircle, X, RefreshCw,
   TrendingUp, TrendingDown, AlertCircle, Sparkles, ChevronDown, ChevronUp,
   BookOpen, ShoppingBag, Star, Users, ArrowRight, Download,
-  Target, Zap, Eye, BarChart3, Shield, Bot, Minus,
+  Target, Zap, Eye, BarChart3, Shield, Bot, Menu, Minus,
   Package, Flame, SortAsc, ChevronRight, Bookmark,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000") + "/api";
 
 const CHART_STYLE = {
   backgroundColor: "rgba(255,255,255,0.97)",
@@ -154,7 +153,7 @@ function getScoreLabel(score: number): { label: string; color: string } {
   return { label: "Skip", color: "bg-red-100 text-red-800" };
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ── Score Ring ────────────────────────────────────────────────────────────────
 
 function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
   const r = (size - 10) / 2;
@@ -176,10 +175,12 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
           strokeLinecap="round"
         />
       </svg>
-      <span className={cn("text-sm font-bold relative z-10", getScoreColor(score))}>{score}</span>
+      <span className={`text-sm font-bold relative z-10 ${getScoreColor(score)}`}>{score}</span>
     </div>
   );
 }
+
+// ── Score Breakdown Bars ──────────────────────────────────────────────────────
 
 function ScoreBreakdownBars({ breakdown }: { breakdown: ScoreBreakdown }) {
   const items = [
@@ -206,6 +207,8 @@ function ScoreBreakdownBars({ breakdown }: { breakdown: ScoreBreakdown }) {
   );
 }
 
+// ── Competitor Row ────────────────────────────────────────────────────────────
+
 function CompetitorRow({ comp, index }: { comp: Competitor; index: number }) {
   return (
     <div className="flex items-start gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
@@ -218,7 +221,7 @@ function CompetitorRow({ comp, index }: { comp: Competitor; index: number }) {
           <span className="text-[10px] text-slate-500">★ {comp.rating.toFixed(1)}</span>
           <span className="text-[10px] text-slate-500">{comp.review_count.toLocaleString()} reviews</span>
           <span className="text-[10px] text-slate-500">₹{comp.price.toLocaleString("en-IN")}</span>
-          <span className={cn("text-[10px] px-1.5 py-0.5 rounded-full font-medium", comp.platform === "amazon" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700")}>
+          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${comp.platform === "amazon" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"}`}>
             {comp.platform}
           </span>
           {comp.is_best_seller && (
@@ -234,6 +237,8 @@ function CompetitorRow({ comp, index }: { comp: Competitor; index: number }) {
   );
 }
 
+// ── AI Insight Badge ──────────────────────────────────────────────────────────
+
 function AIInsightBadge({ insight }: { insight: AIInsight }) {
   const configs = {
     entry_price: { icon: <Target className="w-3.5 h-3.5" />, bg: "bg-purple-50 border-purple-200", text: "text-purple-700" },
@@ -243,15 +248,17 @@ function AIInsightBadge({ insight }: { insight: AIInsight }) {
   };
   const c = configs[insight.type] ?? configs.quick_win;
   return (
-    <div className={cn("flex items-start gap-2 p-2.5 rounded-lg border", c.bg)}>
-      <span className={cn(c.text, "shrink-0 mt-0.5")}>{c.icon}</span>
+    <div className={`flex items-start gap-2 p-2.5 rounded-lg border ${c.bg}`}>
+      <span className={`${c.text} shrink-0 mt-0.5`}>{c.icon}</span>
       <div>
-        <p className={cn("text-xs font-semibold", c.text)}>{insight.headline}</p>
+        <p className={`text-xs font-semibold ${c.text}`}>{insight.headline}</p>
         <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">{insight.detail}</p>
       </div>
     </div>
   );
 }
+
+// ── Opportunity Card ──────────────────────────────────────────────────────────
 
 function OpportunityCard({
   opp, tier, onUpgrade, onWatchlist, watchlistItems, watchlistLoading,
@@ -286,20 +293,20 @@ function OpportunityCard({
   ) : null;
 
   return (
-    <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white/90 hover:border-slate-300 transition-all duration-200">
+    <Card className="shadow-sm border border-slate-200 rounded-2xl bg-background hover:border-slate-300 transition-all duration-200">
       <CardContent className="p-5">
+
+        {/* Header */}
         <div className="flex items-start gap-3 mb-3">
           <ScoreRing score={opp.score} />
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2 mb-1.5">
               <h3 className="text-sm font-semibold text-slate-900 leading-tight">{opp.product_niche}</h3>
-              <span className={cn("shrink-0 text-[10px] font-semibold px-2.5 py-1 rounded-full", sl.color)}>{sl.label}</span>
+              <span className={`shrink-0 text-[10px] font-semibold px-2.5 py-1 rounded-full ${sl.color}`}>{sl.label}</span>
             </div>
             <div className="flex items-center gap-1.5 flex-wrap">
               <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{opp.category}</span>
-              <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full", 
-                opp.platform === "both" ? "bg-purple-100 text-purple-700" : 
-                opp.platform === "amazon" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700")}>
+              <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${opp.platform === "both" ? "bg-purple-100 text-purple-700" : opp.platform === "amazon" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"}`}>
                 {opp.platform === "both" ? "Amazon + Flipkart" : opp.platform === "amazon" ? "Amazon.in" : "Flipkart"}
               </span>
               {opp.has_best_seller_gap && (
@@ -313,11 +320,13 @@ function OpportunityCard({
           </div>
         </div>
 
+        {/* Gap summary */}
         <div className="flex items-start gap-2 p-3 bg-slate-50 rounded-xl border border-slate-100 mb-3">
           <AlertCircle className="w-3.5 h-3.5 text-blue-500 shrink-0 mt-0.5" />
           <p className="text-xs text-slate-600 leading-relaxed">{opp.gap_summary}</p>
         </div>
 
+        {/* Stats grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
           {[
             { label: "Est. revenue / mo", value: `${inr(opp.est_revenue_min)}–${inr(opp.est_revenue_max)}` },
@@ -332,6 +341,7 @@ function OpportunityCard({
           ))}
         </div>
 
+        {/* Score breakdown */}
         {isBasicPlus ? (
           <div className="mb-3">
             <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Score breakdown</p>
@@ -341,12 +351,12 @@ function OpportunityCard({
           <div className="relative mb-3">
             <div className="space-y-2 opacity-20 blur-sm pointer-events-none select-none">
               {[["Rating gap", 22], ["Review thinness", 18], ["Demand signal", 15], ["Price gap", 10]].map(([l, v]) => (
-                <div key={l as string} className="flex items-center gap-3">
-                  <span className="text-xs text-slate-400 w-28 shrink-0">{l as string}</span>
+                <div key={l} className="flex items-center gap-3">
+                  <span className="text-xs text-slate-400 w-28 shrink-0">{l}</span>
                   <div className="flex-1 bg-slate-200 rounded-full h-1.5">
                     <div className="h-full rounded-full bg-slate-400" style={{ width: `${(Number(v) / 32) * 100}%` }} />
                   </div>
-                  <span className="text-xs w-6 text-right text-slate-400">+{v as number}</span>
+                  <span className="text-xs w-6 text-right text-slate-400">+{v}</span>
                 </div>
               ))}
             </div>
@@ -361,6 +371,7 @@ function OpportunityCard({
           </div>
         )}
 
+        {/* Entry price — Premium */}
         {isPremium && opp.entry_price_suggestion && (
           <div className="flex items-center gap-2 p-2.5 bg-purple-50 border border-purple-200 rounded-lg mb-3">
             <Target className="w-3.5 h-3.5 text-purple-600 shrink-0" />
@@ -371,6 +382,7 @@ function OpportunityCard({
           </div>
         )}
 
+        {/* AI Insights — Premium */}
         {isPremium && opp.ai_insights && opp.ai_insights.length > 0 && (
           <div className="space-y-2 mb-3">
             <div className="flex items-center gap-2">
@@ -383,6 +395,7 @@ function OpportunityCard({
           </div>
         )}
 
+        {/* Competitors — Basic+ */}
         {isBasicPlus && opp.competitors.length > 0 && (
           <div>
             <button
@@ -402,15 +415,7 @@ function OpportunityCard({
           </div>
         )}
 
-        {!isBasicPlus && (
-          <button
-            onClick={() => onUpgrade("Competitor deep-dive")}
-            className="flex items-center gap-1.5 text-xs text-amber-600 hover:text-amber-800 transition-colors font-medium"
-          >
-            <Lock className="w-3 h-3" /> View competitor weaknesses — Basic
-          </button>
-        )}
-
+        {/* Footer */}
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
           <span className="text-[10px] text-slate-400">
             Top keyword: <span className="text-slate-600 font-medium">{opp.top_keyword}</span>
@@ -418,17 +423,15 @@ function OpportunityCard({
           <button
             onClick={() => onWatchlist(opp)}
             disabled={watchlistLoading}
-            className={cn(
-              "flex items-center gap-1.5 text-[10px] px-3 py-1.5 rounded-full font-medium border transition-all",
+            className={`flex items-center gap-1.5 text-[10px] px-3 py-1.5 rounded-full font-medium border transition-all ${
               alreadyWatched
                 ? "bg-violet-600 text-white border-violet-600 hover:bg-violet-700"
-                : "border-slate-300 text-slate-500 hover:bg-violet-50 hover:border-violet-300 hover:text-violet-600",
-              "disabled:opacity-50 disabled:cursor-not-allowed"
-            )}
+                : "border-slate-300 text-slate-500 hover:bg-violet-50 hover:border-violet-300 hover:text-violet-600"
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {watchlistLoading
               ? <RefreshCw className="w-2.5 h-2.5 animate-spin" />
-              : <Bookmark className={cn("w-2.5 h-2.5", alreadyWatched && "fill-white")} />}
+              : <Bookmark className={`w-2.5 h-2.5 ${alreadyWatched ? "fill-white" : ""}`} />}
             {alreadyWatched ? "Watching" : "Watch"}
           </button>
         </div>
@@ -437,10 +440,12 @@ function OpportunityCard({
   );
 }
 
+// ── Locked Card ───────────────────────────────────────────────────────────────
+
 function LockedCard({ position, onUpgrade }: { position: number; onUpgrade: (f: string) => void }) {
   return (
     <div
-      className="relative rounded-2xl border border-slate-200 bg-white/60 overflow-hidden cursor-pointer group"
+      className="relative rounded-2xl border border-slate-200 bg-background opacity-100 overflow-hidden cursor-pointer group"
       onClick={() => onUpgrade("Full results")}
     >
       <div className="p-5 blur-sm opacity-30 pointer-events-none select-none">
@@ -457,7 +462,7 @@ function LockedCard({ position, onUpgrade }: { position: number; onUpgrade: (f: 
           {[1, 2, 3, 4].map((i) => <div key={i} className="h-10 bg-slate-100 rounded-lg" />)}
         </div>
       </div>
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-white/70 backdrop-blur-[1px]">
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background backdrop-blur-none">
         <Lock className="w-4 h-4 text-amber-500" />
         <p className="text-sm font-semibold text-slate-700">Result #{position} locked</p>
         <p className="text-xs text-slate-500">Upgrade to Basic to unlock all results</p>
@@ -468,6 +473,8 @@ function LockedCard({ position, onUpgrade }: { position: number; onUpgrade: (f: 
     </div>
   );
 }
+
+// ── Tier Feature Table ────────────────────────────────────────────────────────
 
 const TIER_FEATURES = [
   { key: "scans",       label: "Scans / month",         free: "3",   basic: "20",  premium: "Unlimited" },
@@ -489,13 +496,16 @@ function TierCell({ val }: { val: boolean | string }) {
   return <span className="text-xs font-semibold text-slate-700">{val}</span>;
 }
 
-// ── Main Page Content ─────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ══════════════════════════════════════════════════════════════════════════════
 
-function OpportunityFinderContent() {
+function WhiteSpaceFinderContent() {
   const { user, isLoading: authLoading } = useAuth();
+  const userEmail = user?.email || "";
+  const userId    = user?.id;
   const router = useRouter();
   const searchParams = useSearchParams();
-  const userId = user?.id;
 
   const [query,         setQuery]         = useState("");
   const [category,      setCategory]      = useState("all");
@@ -508,7 +518,6 @@ function OpportunityFinderContent() {
   const [toasts,        setToasts]        = useState<Toast[]>([]);
   const [showTierTable, setShowTierTable] = useState(false);
   const [categories,    setCategories]    = useState<string[]>(["all"]);
-  const [mounted,       setMounted]       = useState(false);
 
   const [watchlistItems,   setWatchlistItems]   = useState<WatchlistItem[]>([]);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
@@ -520,8 +529,6 @@ function OpportunityFinderContent() {
   }>({ status: "checking" });
 
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => { setMounted(true); }, []);
 
   const tier = result?.tier ?? user?.subscriptionTier ?? "free";
   const isBasicPlus = tier === "basic" || tier === "premium";
@@ -543,10 +550,39 @@ function OpportunityFinderContent() {
         params: { user_id: userId.toString() },
       });
       setWatchlistItems(res.data.watchlist as WatchlistItem[]);
-    } catch { /* silent */ }
+    } catch {
+      // Non-critical
+    }
   }, [userId]);
 
-  useEffect(() => { fetchWatchlist(); }, [fetchWatchlist]);
+  useEffect(() => {
+    fetchWatchlist();
+  }, [fetchWatchlist]);
+
+  useEffect(() => {
+    const q = searchParams.get("q");
+    if (q) {
+      setQuery(q);
+      setTimeout(() => document.getElementById("ws-scan-btn")?.click(), 150);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    axios
+      .get(`${API}/white-space/ai/status`)
+      .then((res) => setOllamaStatus(res.data))
+      .catch(() => setOllamaStatus({ status: "offline", setup_hint: "ollama serve" }));
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get(`${API}/white-space/categories`, { params: { platform } })
+      .then((res) => {
+        setCategories(["all", ...res.data.categories]);
+        setCategory("all");
+      })
+      .catch(() => {});
+  }, [platform]);
 
   const runScan = useCallback(async () => {
     if (!query.trim()) { inputRef.current?.focus(); return; }
@@ -560,7 +596,7 @@ function OpportunityFinderContent() {
         user_id:  userId?.toString() ?? "",
       });
       setResult(res.data as ScanResult);
-      if (mounted) window.scrollTo({ top: 300, behavior: "smooth" });
+      setTimeout(() => window.scrollTo({ top: 300, behavior: "smooth" }), 100);
     } catch (e: unknown) {
       const status = (e as { response?: { status?: number } })?.response?.status;
       if (status === 403) {
@@ -573,30 +609,7 @@ function OpportunityFinderContent() {
     } finally {
       setLoading(false);
     }
-  }, [query, category, platform, userId, mounted]);
-
-  useEffect(() => {
-    const q = searchParams.get("q");
-    if (q) {
-      setQuery(q);
-      setTimeout(() => document.getElementById("ws-scan-btn")?.click(), 150);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    axios.get(`${API}/white-space/ai/status`)
-      .then((res) => setOllamaStatus(res.data))
-      .catch(() => setOllamaStatus({ status: "offline", setup_hint: "ollama serve" }));
-  }, []);
-
-  useEffect(() => {
-    axios.get(`${API}/white-space/categories`, { params: { platform } })
-      .then((res) => {
-        setCategories(["all", ...res.data.categories]);
-        setCategory("all");
-      })
-      .catch(() => {});
-  }, [platform]);
+  }, [query, category, platform, userId]);
 
   const handleExport = async () => {
     if (!isPremium) { showToast("Premium feature", "CSV export requires the Premium plan.", "error"); return; }
@@ -626,22 +639,25 @@ function OpportunityFinderContent() {
   };
 
   const handleWatchlist = async (opp: Opportunity) => {
-    if (!userId) { showToast("Sign in required", "Please sign in to use the watchlist.", "error"); return; }
+    if (!userId) {
+      showToast("Sign in required", "Please sign in to use the watchlist.", "error");
+      return;
+    }
     const alreadyIn = watchlistItems.some((i) => i.niche === opp.product_niche);
     setWatchlistLoading(true);
     try {
       await axios.post(`${API}/white-space/watchlist/toggle`, {
-        user_id: userId.toString(),
-        niche: opp.product_niche,
-        score: opp.score,
-        category: opp.category,
-        platform: opp.platform,
-        avg_price: opp.avg_price,
-        avg_rating: opp.avg_rating,
+        user_id:          userId.toString(),
+        niche:            opp.product_niche,
+        score:            opp.score,
+        category:         opp.category,
+        platform:         opp.platform,
+        avg_price:        opp.avg_price,
+        avg_rating:       opp.avg_rating,
         competitor_count: opp.competitor_count,
-        est_revenue_max: opp.est_revenue_max,
-        top_keyword: opp.top_keyword,
-        gap_summary: opp.gap_summary,
+        est_revenue_max:  opp.est_revenue_max,
+        top_keyword:      opp.top_keyword,
+        gap_summary:      opp.gap_summary,
         query,
       });
       await fetchWatchlist();
@@ -662,21 +678,23 @@ function OpportunityFinderContent() {
     if (!userId) return;
     try {
       await axios.post(`${API}/white-space/watchlist/toggle`, {
-        user_id: userId.toString(),
-        niche: item.niche,
-        score: item.score,
-        category: item.category,
-        platform: item.platform,
-        avg_price: item.avg_price,
-        avg_rating: item.avg_rating,
+        user_id:          userId.toString(),
+        niche:            item.niche,
+        score:            item.score,
+        category:         item.category,
+        platform:         item.platform,
+        avg_price:        item.avg_price,
+        avg_rating:       item.avg_rating,
         competitor_count: item.competitor_count,
-        est_revenue_max: item.est_revenue_max,
-        top_keyword: item.top_keyword,
-        gap_summary: item.gap_summary,
-        query: item.query,
+        est_revenue_max:  item.est_revenue_max,
+        top_keyword:      item.top_keyword,
+        gap_summary:      item.gap_summary,
+        query:            item.query,
       });
       await fetchWatchlist();
-    } catch { showToast("Error", "Could not remove item.", "error"); }
+    } catch {
+      showToast("Error", "Could not remove item.", "error");
+    }
   };
 
   const sortedOpps = [...(result?.opportunities ?? [])]
@@ -703,17 +721,17 @@ function OpportunityFinderContent() {
 
   return (
     <div className="space-y-6">
+
       {/* Toasts */}
       <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-sm">
         {toasts.map((t) => (
-          <div key={t.id} className={cn("flex items-start gap-3 p-4 rounded-xl shadow-lg border-2 backdrop-blur-md", 
-            t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300")}>
+          <div key={t.id} className={`flex items-start gap-3 p-4 rounded-xl shadow-lg border-2 backdrop-blur-none ${t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"}`}>
             {t.variant === "success"
               ? <CheckCircle className="h-5 w-5 text-green-600 shrink-0 mt-0.5" />
               : <X className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />}
             <div className="flex-1">
-              <p className={cn("font-semibold text-sm", t.variant === "success" ? "text-green-900" : "text-red-900")}>{t.title}</p>
-              <p className={cn("text-xs mt-0.5", t.variant === "success" ? "text-green-700" : "text-red-700")}>{t.description}</p>
+              <p className={`font-semibold text-sm ${t.variant === "success" ? "text-green-900" : "text-red-900"}`}>{t.title}</p>
+              <p className={`text-xs mt-0.5 ${t.variant === "success" ? "text-green-700" : "text-red-700"}`}>{t.description}</p>
             </div>
             <button onClick={() => setToasts((p) => p.filter((x) => x.id !== t.id))}>
               <X className="w-4 h-4 text-slate-400" />
@@ -722,330 +740,706 @@ function OpportunityFinderContent() {
         ))}
       </div>
 
-      <header className="bg-white/80 backdrop-blur-xl border border-sky-100 shadow-xl rounded-2xl px-6 py-4 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6 gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-xl flex items-center justify-center shadow-inner">
-            <Sparkles className="h-5 w-5 text-violet-600" />
-          </div>
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-violet-900 to-indigo-700 bg-clip-text text-transparent tracking-tight">
-              Opportunity Finder
-            </h2>
-            <p className="text-slate-500 text-xs sm:text-sm font-medium">
-              Discover untapped product gaps — Amazon.in & Flipkart
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3 flex-wrap">
-          {isPremium && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 rounded-xl border border-slate-800">
-              <div className="relative w-2.5 h-2.5">
-                <div className={cn("w-2 h-2 rounded-full", 
-                  ollamaStatus.status === "ready" ? "bg-green-400" :
-                  ollamaStatus.status === "no_model" ? "bg-amber-400" :
-                  ollamaStatus.status === "checking" ? "bg-blue-400 animate-pulse" : "bg-red-400")} 
-                  style={ollamaStatus.status === "ready" ? { boxShadow: "0 0 6px rgba(74,222,128,0.7)" } : {}} />
-                {ollamaStatus.status === "ready" && <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-green-400 opacity-25 animate-ping" />}
-              </div>
-              <span className="text-[10px] font-mono text-slate-300">
-                {ollamaStatus.status === "checking" ? "Checking AI…" :
-                 ollamaStatus.status === "ready"    ? `${ollamaStatus.model ?? "llama3.2:3b"} · ready` :
-                 ollamaStatus.status === "no_model" ? "Model missing" : "AI offline"}
-              </span>
+      <div className="max-w-7xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-xl flex items-center justify-center shadow-inner">
+              <Sparkles className="h-5 w-5 text-violet-600" />
             </div>
-          )}
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-violet-900 to-indigo-700 bg-clip-text text-transparent tracking-tight">
+                Opportunity Finder
+              </h2>
+              <p className="text-slate-500 text-xs sm:text-sm font-medium">
+                Discover untapped product gaps — Amazon.in & Flipkart
+              </p>
+            </div>
+          </div>
 
-          {result && (
-            <div className="bg-white/60 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
-              <div className="flex items-center justify-between gap-3 mb-1">
-                <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Scans used</p>
-                <Badge className={cn("h-4 text-[10px] border-none px-1.5", 
-                  tier === "premium" ? "bg-violet-100 text-violet-800" : 
-                  tier === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600")}>
+          <div className="flex items-center gap-3 flex-wrap">
+            {/* Ollama status — Premium only */}
+            {isPremium && (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 rounded-xl border border-slate-800">
+                <div className="relative w-2.5 h-2.5">
+                  <div className={`w-2 h-2 rounded-full ${
+                    ollamaStatus.status === "ready"    ? "bg-green-400" :
+                    ollamaStatus.status === "no_model" ? "bg-amber-400" :
+                    ollamaStatus.status === "checking" ? "bg-blue-400 animate-pulse" :
+                    "bg-red-400"
+                  }`} style={ollamaStatus.status === "ready" ? { boxShadow: "0 0 6px rgba(74,222,128,0.7)" } : {}} />
+                  {ollamaStatus.status === "ready" && (
+                    <div className="absolute inset-0 w-2.5 h-2.5 rounded-full bg-green-400 opacity-25 animate-ping" />
+                  )}
+                </div>
+                <span className="text-[10px] font-mono text-slate-300">
+                  {ollamaStatus.status === "checking" ? "Checking AI…" :
+                   ollamaStatus.status === "ready"    ? `${ollamaStatus.model ?? "llama3.2:3b"} · ready` :
+                   ollamaStatus.status === "no_model" ? "Model missing" : "AI offline"}
+                </span>
+                {(ollamaStatus.status === "no_model" || ollamaStatus.status === "offline") && ollamaStatus.setup_hint && (
+                  <code className="text-[9px] text-amber-400 bg-amber-950/60 px-1.5 py-0.5 rounded border border-amber-800/40">
+                    {ollamaStatus.setup_hint}
+                  </code>
+                )}
+              </div>
+            )}
+
+            {/* Scan counter — shown once a scan has been run */}
+            {result && (
+              <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
+                <div className="flex items-center justify-between gap-3 mb-1">
+                  <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Scans used</p>
+                  <Badge className={`h-4 text-[10px] border-none px-1.5 ${tier === "premium" ? "bg-violet-100 text-violet-800" : tier === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+                    {tier.toUpperCase()}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${scanPct}%`, background: scanPct >= 80 ? "#ef4444" : "#7F77DD" }}
+                    />
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-600">
+                    {scansUsed}/{isPremium ? "∞" : scansLimit}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Tier badge — before first scan */}
+            {!result && (
+              authLoading ? (
+                <div className="h-5 w-16 bg-slate-200 rounded-full animate-pulse" />
+              ) : (
+                <Badge className={`text-[10px] border-none px-2 py-1 ${
+                  tier === "premium" ? "bg-violet-100 text-violet-800"
+                  : tier === "basic" ? "bg-amber-100 text-amber-800"
+                  : "bg-slate-100 text-slate-500"
+                }`}>
                   {tier.toUpperCase()}
                 </Badge>
-              </div>
+              )
+            )}
+
+            {/* Action buttons */}
+            {result && (
               <div className="flex items-center gap-2">
-                <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                  <div className="h-full rounded-full transition-all duration-500"
-                    style={{ width: `${scanPct}%`, background: scanPct >= 80 ? "#ef4444" : "#7F77DD" }} />
-                </div>
-                <span className="text-[11px] font-bold text-slate-600">{scansUsed}/{isPremium ? "∞" : scansLimit}</span>
+                {isPremium && (
+                  <button
+                    onClick={handleExport}
+                    disabled={exporting}
+                    className="flex items-center gap-1.5 text-xs px-3 py-2 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 text-slate-600 transition-colors"
+                  >
+                    {exporting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                    Export CSV
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowTierTable(!showTierTable)}
+                  className="flex items-center gap-1.5 text-xs px-3 py-2 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 text-slate-600 transition-colors"
+                >
+                  <Crown className="w-3.5 h-3.5 text-amber-500" /> Plans
+                </button>
               </div>
+            )}
+
+            {/* Plans button shown even before scan */}
+            {!result && (
+              <button
+                onClick={() => setShowTierTable(!showTierTable)}
+                className="flex items-center gap-1.5 text-xs px-3 py-2 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 text-slate-600 transition-colors"
+              >
+                <Crown className="w-3.5 h-3.5 text-amber-500" /> Plans
+              </button>
+            )}
+
+            {authLoading ? (
+              <p className="text-xs text-slate-400 animate-pulse">Checking session…</p>
+            ) : !userEmail ? (
+              <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 gap-1 text-[10px]">
+                <AlertCircle className="h-3 w-3" /> Guest Mode
+              </Badge>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="pb-12 space-y-5">
+
+          {/* Tier table */}
+          {showTierTable && (
+            <Card className="shadow-sm border border-slate-200 rounded-2xl bg-background">
+              <CardHeader className="pb-2">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base font-semibold text-slate-700 flex items-center gap-2">
+                    <Crown className="h-4 w-4 text-amber-500" /> Plan comparison
+                  </CardTitle>
+                  <button onClick={() => setShowTierTable(false)} className="text-slate-400 hover:text-slate-600">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-slate-200">
+                        <th className="text-left p-2.5 text-xs text-slate-500 font-medium w-48">Feature</th>
+                        <th className="text-center p-2.5 text-xs font-semibold text-slate-600">Free</th>
+                        <th className="text-center p-2.5 text-xs font-semibold text-amber-700 bg-amber-50 rounded-t">
+                          Basic<br /><span className="text-[10px] font-normal">₹1,999/mo</span>
+                        </th>
+                        <th className="text-center p-2.5 text-xs font-semibold text-violet-700 bg-violet-50 rounded-t">
+                          Premium<br /><span className="text-[10px] font-normal">₹2,999/mo</span>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {TIER_FEATURES.map((f) => (
+                        <tr key={f.key} className="border-b border-slate-100">
+                          <td className="p-2.5 text-xs text-slate-600">{f.label}</td>
+                          <td className="p-2.5 text-center"><TierCell val={f.free} /></td>
+                          <td className="p-2.5 text-center bg-amber-50/40"><TierCell val={f.basic} /></td>
+                          <td className="p-2.5 text-center bg-violet-50/40"><TierCell val={f.premium} /></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td />
+                        {(["free", "basic", "premium"] as const).map((t) => (
+                          <td
+                            key={t}
+                            className={`p-3 text-center ${t === "basic" ? "bg-amber-50/40" : t === "premium" ? "bg-violet-50/40" : ""}`}
+                          >
+                            {tier === t ? (
+                              <span className="inline-flex items-center gap-1 text-xs font-semibold text-violet-600 bg-violet-100 px-3 py-1 rounded-full">
+                                <CheckCircle className="w-3 h-3" /> Your plan
+                              </span>
+                            ) : t !== "free" ? (
+                              <a
+                                href="/subscription"
+                                className={`text-xs px-4 py-1.5 rounded-full font-medium transition-colors ${
+                                  t === "basic"
+                                    ? "bg-amber-500 text-white hover:bg-amber-600"
+                                    : "bg-violet-600 text-white hover:bg-violet-700"
+                                }`}
+                              >
+                                Upgrade
+                              </a>
+                            ) : null}
+                          </td>
+                        ))}
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Search & Filters */}
+          <Card className="shadow-sm border border-slate-200 rounded-2xl bg-background opacity-100 backdrop-blur-none">
+            <CardContent className="p-5">
+              <div className="flex gap-3 mb-4">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && runScan()}
+                    placeholder='Search a category or product, e.g. "kitchen organizer", "baby feeding", "pet care"'
+                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-violet-300 focus:border-violet-400 outline-none transition-all"
+                  />
+                </div>
+                <button
+                  id="ws-scan-btn"
+                  onClick={runScan}
+                  disabled={loading || !query.trim()}
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm rounded-xl shadow hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-w-[130px] justify-center"
+                >
+                  {loading
+                    ? <><RefreshCw className="w-4 h-4 animate-spin" />Scanning…</>
+                    : <><Sparkles className="w-4 h-4" />Find gaps</>}
+                </button>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Platform toggle */}
+                <div className="flex rounded-lg overflow-hidden border border-slate-300">
+                  {(["both", "amazon", "flipkart"] as const).map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setPlatform(p)}
+                      className={`px-3 py-2 text-xs font-medium transition-all ${platform === p ? "bg-violet-600 text-white" : "bg-white text-slate-500 hover:bg-slate-50"}`}
+                    >
+                      {p === "both" ? "Both" : p === "amazon" ? "Amazon.in" : "Flipkart"}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Category */}
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="h-9 px-3 text-xs border border-slate-300 rounded-lg bg-white text-slate-600 focus:ring-2 focus:ring-violet-300 outline-none"
+                >
+                  {categories.map((c) => (
+                    <option key={c} value={c}>{c === "all" ? "All categories" : c}</option>
+                  ))}
+                </select>
+
+                {/* Min score */}
+                <select
+                  value={minScore}
+                  onChange={(e) => setMinScore(Number(e.target.value))}
+                  className="h-9 px-3 text-xs border border-slate-300 rounded-lg bg-white text-slate-600 focus:ring-2 focus:ring-violet-300 outline-none"
+                >
+                  <option value={0}>Any score</option>
+                  <option value={80}>Hot only (80+)</option>
+                  <option value={65}>Good+ (65+)</option>
+                  <option value={50}>Moderate+ (50+)</option>
+                </select>
+
+                {/* Sort */}
+                <div className="flex items-center gap-1.5 ml-auto">
+                  <SortAsc className="w-3.5 h-3.5 text-slate-400" />
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                    className="h-9 px-3 text-xs border border-slate-300 rounded-lg bg-white text-slate-600 focus:ring-2 focus:ring-violet-300 outline-none"
+                  >
+                    <option value="score">Sort: Score</option>
+                    <option value="revenue">Sort: Revenue</option>
+                    <option value="competition">Sort: Fewest competitors</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Quick pills */}
+              {!result && (
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <span className="text-xs text-slate-400 flex items-center">Try:</span>
+                  {["kitchen organizer","baby feeding","pet grooming","sleep aid","skincare tools","home scent","gaming accessories","fitness gear"].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => setQuery(s)}
+                      className="text-xs px-3 py-1 bg-slate-100 text-slate-500 rounded-full border border-slate-200 hover:bg-violet-100 hover:text-violet-700 hover:border-violet-200 transition-colors"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Error */}
+          {error && (
+            <div className="flex items-start gap-3 p-4 bg-red-50 border-l-4 border-red-400 rounded-r-2xl">
+              <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+              <p className="text-sm text-red-700">{error}</p>
             </div>
           )}
 
-          <div className="flex items-center gap-2">
-            {result && isPremium && (
-              <button onClick={handleExport} disabled={exporting} className="flex items-center gap-1.5 text-xs px-3 py-2 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 text-slate-600 transition-colors">
-                {exporting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />} Export CSV
-              </button>
-            )}
-            <button onClick={() => setShowTierTable(!showTierTable)} className="flex items-center gap-1.5 text-xs px-3 py-2 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 text-slate-600 transition-colors">
-              <Crown className="w-3.5 h-3.5 text-amber-500" /> Plans
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <div className="px-4 sm:px-6 pb-12 space-y-5 max-w-7xl mx-auto">
-        {showTierTable && (
-          <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white/90">
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base font-semibold text-slate-700 flex items-center gap-2">
-                  <Crown className="h-4 w-4 text-amber-500" /> Plan comparison
-                </CardTitle>
-                <button onClick={() => setShowTierTable(false)} className="text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-slate-200">
-                      <th className="text-left p-2.5 text-xs text-slate-500 font-medium w-48">Feature</th>
-                      <th className="text-center p-2.5 text-xs font-semibold text-slate-600">Free</th>
-                      <th className="text-center p-2.5 text-xs font-semibold text-amber-700 bg-amber-50 rounded-t">Basic<br/><span className="text-[10px] font-normal">₹1,999/mo</span></th>
-                      <th className="text-center p-2.5 text-xs font-semibold text-violet-700 bg-violet-50 rounded-t">Premium<br/><span className="text-[10px] font-normal">₹2,999/mo</span></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {TIER_FEATURES.map((f) => (
-                      <tr key={f.key} className="border-b border-slate-100">
-                        <td className="p-2.5 text-xs text-slate-600">{f.label}</td>
-                        <td className="p-2.5 text-center"><TierCell val={f.free} /></td>
-                        <td className="p-2.5 text-center bg-amber-50/40"><TierCell val={f.basic} /></td>
-                        <td className="p-2.5 text-center bg-violet-50/40"><TierCell val={f.premium} /></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr>
-                      <td />
-                      {(["free", "basic", "premium"] as const).map((t) => (
-                        <td key={t} className={cn("p-3 text-center", t === "basic" && "bg-amber-50/40", t === "premium" && "bg-violet-50/40")}>
-                          {tier === t ? (
-                            <span className="inline-flex items-center gap-1 text-xs font-semibold text-violet-600 bg-violet-100 px-3 py-1 rounded-full"><CheckCircle className="w-3 h-3" /> Your plan</span>
-                          ) : t !== "free" ? (
-                            <button onClick={() => router.push("/subscription")} className={cn("text-xs px-4 py-1.5 rounded-full font-medium transition-colors", t === "basic" ? "bg-amber-500 text-white hover:bg-amber-600" : "bg-violet-600 text-white hover:bg-violet-700")}>Upgrade</button>
-                          ) : null}
-                        </td>
-                      ))}
-                    </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white/80 backdrop-blur-md">
-          <CardContent className="p-5">
-            <div className="flex gap-3 mb-4">
-              <div className="relative flex-1">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input ref={inputRef} type="text" value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === "Enter" && runScan()} placeholder='Search a category or product, e.g. "kitchen organizer", "baby feeding", "pet care"' className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-violet-300 focus:border-violet-400 outline-none transition-all" />
-              </div>
-              <button id="ws-scan-btn" onClick={runScan} disabled={loading || !query.trim()} className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm rounded-xl shadow hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-w-[130px] justify-center">
-                {loading ? <><RefreshCw className="w-4 h-4 animate-spin" />Scanning…</> : <><Sparkles className="w-4 h-4" />Find gaps</>}
-              </button>
+          {/* Loading skeleton */}
+          {loading && (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="bg-background rounded-2xl shadow-sm animate-pulse">
+                  <CardContent className="p-5">
+                    <div className="flex gap-3 mb-3">
+                      <div className="w-12 h-12 bg-slate-200 rounded-full" />
+                      <div className="flex-1">
+                        <div className="h-3.5 w-52 bg-slate-200 rounded mb-2" />
+                        <div className="h-2.5 w-28 bg-slate-100 rounded" />
+                      </div>
+                      <div className="w-16 h-10 bg-slate-200 rounded-xl" />
+                    </div>
+                    <div className="h-10 bg-slate-100 rounded-xl mb-3" />
+                    <div className="grid grid-cols-4 gap-2">
+                      {[1,2,3,4].map((j) => <div key={j} className="h-12 bg-slate-100 rounded-lg" />)}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
+          )}
 
-            <div className="flex flex-wrap items-center gap-3">
-              <div className="flex rounded-lg overflow-hidden border border-slate-300">
-                {(["both", "amazon", "flipkart"] as const).map((p) => (
-                  <button key={p} onClick={() => setPlatform(p)} className={cn("px-3 py-2 text-xs font-medium transition-all", platform === p ? "bg-violet-600 text-white" : "bg-white text-slate-500 hover:bg-slate-50")}>
-                    {p === "both" ? "Both" : p === "amazon" ? "Amazon.in" : "Flipkart"}
-                  </button>
-                ))}
-              </div>
-              <select value={category} onChange={(e) => setCategory(e.target.value)} className="h-9 px-3 text-xs border border-slate-300 rounded-lg bg-white text-slate-600 focus:ring-2 focus:ring-violet-300 outline-none">
-                {categories.map((c) => <option key={c} value={c}>{c === "all" ? "All categories" : c}</option>)}
-              </select>
-              <select value={minScore} onChange={(e) => setMinScore(Number(e.target.value))} className="h-9 px-3 text-xs border border-slate-300 rounded-lg bg-white text-slate-600 focus:ring-2 focus:ring-violet-300 outline-none">
-                <option value={0}>Any score</option>
-                <option value={80}>Hot only (80+)</option>
-                <option value={65}>Good+ (65+)</option>
-                <option value={50}>Moderate+ (50+)</option>
-              </select>
-              <div className="flex items-center gap-1.5 ml-auto">
-                <SortAsc className="w-3.5 h-3.5 text-slate-400" />
-                <select value={sortBy} onChange={(e) => setSortBy(e.target.value as typeof sortBy)} className="h-9 px-3 text-xs border border-slate-300 rounded-lg bg-white text-slate-600 focus:ring-2 focus:ring-violet-300 outline-none">
-                  <option value="score">Sort: Score</option>
-                  <option value="revenue">Sort: Revenue</option>
-                  <option value="competition">Sort: Fewest competitors</option>
-                </select>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Results */}
+          {result && !loading && (
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
 
-        {error && <div className="flex items-start gap-3 p-4 bg-red-50 border-l-4 border-red-400 rounded-r-2xl"><AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" /><p className="text-sm text-red-700">{error}</p></div>}
+              {/* Left — cards */}
+              <div className="xl:col-span-2 space-y-4">
 
-        {loading && (
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <Card key={i} className="bg-white/70 rounded-2xl shadow-sm animate-pulse">
-                <CardContent className="p-5">
-                  <div className="flex gap-3 mb-3"><div className="w-12 h-12 bg-slate-200 rounded-full" /><div className="flex-1"><div className="h-3.5 w-52 bg-slate-200 rounded mb-2" /><div className="h-2.5 w-28 bg-slate-100 rounded" /></div><div className="w-16 h-10 bg-slate-200 rounded-xl" /></div>
-                  <div className="h-10 bg-slate-100 rounded-xl mb-3" />
-                  <div className="grid grid-cols-4 gap-2">{[1,2,3,4].map((j) => <div key={j} className="h-12 bg-slate-100 rounded-lg" />)}</div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {result && !loading && (
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-            <div className="xl:col-span-2 space-y-4">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <h3 className="text-base font-semibold text-slate-800">{result.total_found} opportunities — <span className="text-violet-600">"{result.query}"</span></h3>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    {sortedOpps.filter((o) => o.score >= 80).length} hot picks · {sortedOpps.filter((o) => o.score >= 65 && o.score < 80).length} good gaps · {sortedOpps.filter((o) => o.score < 50).length} to skip
-                  </p>
-                </div>
-                {result.total_found > 0 && (
-                  <div className="text-right">
-                    <p className="text-xs text-slate-400">Top score</p>
-                    <p className={cn("text-xl font-bold", getScoreColor(Math.max(...sortedOpps.map((o) => o.score))))}>{Math.max(...sortedOpps.map((o) => o.score))}</p>
+                {/* Summary bar */}
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-base font-semibold text-slate-800">
+                      {result.total_found} opportunities —{" "}
+                      <span className="text-violet-600">"{result.query}"</span>
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      {sortedOpps.filter((o) => o.score >= 80).length} hot picks ·{" "}
+                      {sortedOpps.filter((o) => o.score >= 65 && o.score < 80).length} good gaps ·{" "}
+                      {sortedOpps.filter((o) => o.score < 50).length} to skip
+                    </p>
                   </div>
+                  {result.total_found > 0 && (
+                    <div className="text-right">
+                      <p className="text-xs text-slate-400">Top score</p>
+                      <p className={`text-xl font-bold ${getScoreColor(Math.max(...sortedOpps.map((o) => o.score)))}`}>
+                        {Math.max(...sortedOpps.map((o) => o.score))}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* AI market summary — Premium */}
+                {isPremium && result.ai_market_summary && (
+                  <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200 rounded-2xl">
+                    <Bot className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <p className="text-xs font-semibold text-violet-700">AI market summary</p>
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-mono ${ollamaStatus.status === "ready" ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-500"}`}>
+                          {ollamaStatus.status === "ready" ? "llama3.2:3b" : "static fallback"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 leading-relaxed">{result.ai_market_summary}</p>
+                    </div>
+                  </div>
+                )}
+                {isPremium && !result.ai_market_summary && (
+                  <div className="flex items-start gap-3 p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                    <Bot className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs font-semibold text-slate-500 mb-1">AI market summary unavailable</p>
+                      <p className="text-xs text-slate-400">
+                        {ollamaStatus.status === "offline"  ? "Ollama is offline. Run: " :
+                         ollamaStatus.status === "no_model" ? "Model not loaded. Run: " :
+                         "AI summary not generated."}
+                        {(ollamaStatus.status === "offline" || ollamaStatus.status === "no_model") && ollamaStatus.setup_hint && (
+                          <code className="ml-1 bg-slate-100 px-1 rounded text-slate-600">{ollamaStatus.setup_hint}</code>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                )}
+                {!isPremium && result.total_found > 0 && (
+                  <div
+                    className="flex items-center gap-3 p-3 bg-violet-50 border border-violet-200 rounded-xl cursor-pointer hover:bg-violet-100 transition-colors"
+                    onClick={() => router.push("/subscription")}
+                  >
+                    <Bot className="w-4 h-4 text-violet-400 shrink-0" />
+                    <p className="text-xs text-violet-600 flex-1">
+                      AI market summary + strategic insights (llama3.2:3b) — Premium
+                    </p>
+                    <ChevronRight className="w-3.5 h-3.5 text-violet-400" />
+                  </div>
+                )}
+
+                {/* Opportunity cards */}
+                {sortedOpps.map((opp) => (
+                  <OpportunityCard
+                    key={opp.id}
+                    opp={opp}
+                    tier={tier}
+                    onUpgrade={(f) => showToast("Upgrade required", `"${f}" requires a higher plan.`, "error")}
+                    onWatchlist={handleWatchlist}
+                    watchlistItems={watchlistItems}
+                    watchlistLoading={watchlistLoading}
+                  />
+                ))}
+
+                {/* Locked results */}
+                {result.locked_count > 0 &&
+                  Array.from({ length: result.locked_count }).map((_, i) => (
+                    <LockedCard
+                      key={`locked-${i}`}
+                      position={sortedOpps.length + i + 1}
+                      onUpgrade={(f) => showToast("Upgrade required", `"${f}" requires Basic or above.`, "error")}
+                    />
+                  ))}
+
+                {/* Free → Basic nudge */}
+                {!isBasicPlus && result.total_found > 0 && (
+                  <Card className="bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 rounded-2xl shadow-sm">
+                    <CardContent className="p-6 text-center">
+                      <Sparkles className="w-7 h-7 text-violet-400 mx-auto mb-3" />
+                      <h3 className="text-base font-semibold text-slate-800 mb-1">
+                        {result.locked_count} more opportunities waiting
+                      </h3>
+                      <p className="text-sm text-slate-500 mb-4 max-w-md mx-auto">
+                        Basic unlocks all results, score breakdowns, competitor weaknesses, demand signal charts, and the Best Seller gap indicator.
+                      </p>
+                      <a
+                        href="/subscription"
+                        className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm rounded-xl shadow hover:opacity-90 transition-all"
+                      >
+                        <Crown className="w-4 h-4" /> Upgrade to Basic — ₹1,999/mo <ArrowRight className="w-4 h-4" />
+                      </a>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Basic → Premium nudge */}
+                {isBasicPlus && !isPremium && result.total_found > 0 && (
+                  <Card className="bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-2xl shadow-sm">
+                    <CardContent className="p-5 flex items-center gap-4">
+                      <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
+                        <Zap className="w-5 h-5 text-amber-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-slate-800">Unlock the full intelligence layer</p>
+                        <p className="text-xs text-slate-500 mt-0.5">
+                          Premium adds 90-day trend data, AI strategic insights, entry price recommendations, and CSV export.
+                        </p>
+                      </div>
+                      <a
+                        href="/subscription"
+                        className="shrink-0 flex items-center gap-1.5 px-4 py-2 bg-amber-500 text-white text-xs font-semibold rounded-xl hover:bg-amber-600 transition-colors"
+                      >
+                        <Crown className="w-3.5 h-3.5" /> ₹2,999/mo
+                      </a>
+                    </CardContent>
+                  </Card>
                 )}
               </div>
 
-              {isPremium && result.ai_market_summary && (
-                <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200 rounded-2xl">
-                  <Bot className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="text-xs font-semibold text-violet-700">AI market summary</p>
-                      <span className={cn("text-[9px] px-1.5 py-0.5 rounded-full font-mono", ollamaStatus.status === "ready" ? "bg-green-100 text-green-700" : "bg-slate-100 text-slate-500")}>
-                        {ollamaStatus.status === "ready" ? "llama3.2:3b" : "static fallback"}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-600 leading-relaxed">{result.ai_market_summary}</p>
-                  </div>
-                </div>
-              )}
+              {/* Right sidebar */}
+              <div className="space-y-4">
 
-              {sortedOpps.map((opp) => (
-                <OpportunityCard key={opp.id} opp={opp} tier={tier} onUpgrade={(f) => showToast("Upgrade required", `"${f}" requires a higher plan.`, "error")} onWatchlist={handleWatchlist} watchlistItems={watchlistItems} watchlistLoading={watchlistLoading} />
-              ))}
-
-              {result.locked_count > 0 && Array.from({ length: result.locked_count }).map((_, i) => (
-                <LockedCard key={`locked-${i}`} position={sortedOpps.length + i + 1} onUpgrade={(f) => showToast("Upgrade required", `"${f}" requires Basic or above.`, "error")} />
-              ))}
-
-              {!isBasicPlus && result.total_found > 0 && (
-                <Card className="bg-gradient-to-br from-violet-50 to-indigo-50 border border-violet-200 rounded-2xl shadow-sm">
-                  <CardContent className="p-6 text-center">
-                    <Sparkles className="w-7 h-7 text-violet-400 mx-auto mb-3" />
-                    <h3 className="text-base font-semibold text-slate-800 mb-1">{result.locked_count} more opportunities waiting</h3>
-                    <p className="text-sm text-slate-500 mb-4 max-w-md mx-auto">Basic unlocks all results, score breakdowns, competitor weaknesses, and more.</p>
-                    <button onClick={() => router.push("/subscription")} className="inline-flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm rounded-xl shadow hover:opacity-90 transition-all"><Crown className="w-4 h-4" /> Upgrade to Basic — ₹1,999/mo <ArrowRight className="w-4 h-4" /></button>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-
-            <div className="space-y-4">
-              {mounted && (
-                <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white/80">
+                {/* Score distribution */}
+                <Card className="shadow-sm border border-slate-200 rounded-2xl bg-background">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-semibold text-slate-700 flex items-center gap-2"><BarChart3 className="w-4 h-4 text-violet-500" /> Score distribution</CardTitle>
+                    <CardTitle className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4 text-violet-500" /> Score distribution
+                    </CardTitle>
+                    <CardDescription className="text-slate-400">Opportunity quality breakdown</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <ResponsiveContainer width="100%" height={160}>
-                      <BarChart data={distData} margin={{ left: 0, right: 5, top: 4, bottom: 4 }}>
+                      <BarChart data={distData} margin={{ left: 0, right: 5, top: 4, bottom: 4 }} barCategoryGap="20%">
                         <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                         <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
                         <YAxis tick={{ fontSize: 9, fill: "#94a3b8" }} axisLine={false} tickLine={false} allowDecimals={false} />
-                        <Tooltip contentStyle={CHART_STYLE} formatter={(v: number) => [String(v), "Count"]} />
-                        <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={40}>{distData.map((d, i) => <Cell key={i} fill={d.fill} />)}</Bar>
+                        <Tooltip contentStyle={CHART_STYLE} formatter={(v: unknown) => [String(v), "Count"]} />
+                        <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={40}>
+                          {distData.map((d, i) => <Cell key={i} fill={d.fill} />)}
+                        </Bar>
                       </BarChart>
                     </ResponsiveContainer>
                   </CardContent>
                 </Card>
-              )}
 
-              {mounted && isBasicPlus && radarData.length > 0 && (
-                <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white/80">
+                {/* Radar — Basic+ */}
+                {isBasicPlus && radarData.length > 0 && sortedOpps.length > 0 && (
+                  <Card className="shadow-sm border border-slate-200 rounded-2xl bg-background">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                        <Target className="w-4 h-4 text-blue-500" /> Top pick — score anatomy
+                      </CardTitle>
+                      <CardDescription className="text-slate-400 truncate">{sortedOpps[0]?.product_niche}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <ResponsiveContainer width="100%" height={180}>
+                        <RadarChart data={radarData}>
+                          <PolarGrid stroke="#e2e8f0" />
+                          <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: "#64748b" }} />
+                          <PolarRadiusAxis angle={30} tick={{ fontSize: 8, fill: "#94a3b8" }} />
+                          <Radar name="Score" dataKey="A" stroke="#7F77DD" fill="#7F77DD" fillOpacity={0.18} strokeWidth={2} />
+                        </RadarChart>
+                      </ResponsiveContainer>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Demand signals */}
+                {isBasicPlus ? (
+                  <Card className="shadow-sm border border-slate-200 rounded-2xl bg-background">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                        <Flame className="w-4 h-4 text-orange-500" /> Demand signals
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2.5">
+                      {sortedOpps.slice(0, 6).map((o) => (
+                        <div key={o.id} className="flex items-center gap-2.5">
+                          <span className="text-xs text-slate-500 truncate w-28 shrink-0">
+                            {o.product_niche.split(" ").slice(0, 3).join(" ")}
+                          </span>
+                          <div className="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all duration-700"
+                              style={{ width: `${o.score}%`, background: o.score >= 80 ? "#639922" : o.score >= 65 ? "#378ADD" : "#BA7517" }}
+                            />
+                          </div>
+                          <span className={`text-xs font-semibold w-6 text-right ${getScoreColor(o.score)}`}>{o.score}</span>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Card className="shadow-sm border border-slate-200 rounded-2xl bg-background">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                        <Flame className="w-4 h-4 text-orange-500" /> Demand signals
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="relative">
+                        <div className="space-y-2.5 opacity-20 blur-sm pointer-events-none select-none">
+                          {[70, 85, 55, 90, 60].map((s, i) => (
+                            <div key={i} className="flex items-center gap-2.5">
+                              <div className="h-3 bg-slate-200 rounded w-24 shrink-0" />
+                              <div className="flex-1 bg-slate-100 rounded-full h-2">
+                                <div className="h-full rounded-full bg-slate-300" style={{ width: `${s}%` }} />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                          <Lock className="w-4 h-4 text-amber-500" />
+                          <button
+                            onClick={() => router.push("/subscription")}
+                            className="text-xs px-4 py-1.5 bg-white border border-slate-300 rounded-full shadow-sm font-medium text-slate-700 hover:border-violet-300 transition-colors"
+                          >
+                            Unlock — Basic ₹1,999/mo
+                          </button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Watchlist preview */}
+                {watchlistItems.length > 0 && (
+                  <Card className="shadow-sm border border-violet-200 rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50">
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm font-semibold text-violet-700 flex items-center gap-2">
+                          <Bookmark className="w-4 h-4 fill-violet-600" /> Watchlist ({watchlistItems.length})
+                        </CardTitle>
+                        <button
+                          onClick={() => router.push("/explorer/my-watchlist")}
+                          className="text-[10px] text-violet-600 hover:text-violet-800 font-medium flex items-center gap-1"
+                        >
+                          View all <ChevronRight className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-1.5">
+                      {watchlistItems.slice(0, 4).map((item) => (
+                        <div key={item.niche} className="flex items-center justify-between text-xs group">
+                          <div className="flex-1 min-w-0 mr-2">
+                            <p className="text-slate-700 truncate font-medium">{item.niche}</p>
+                            <p className="text-[10px] text-slate-400">{item.category} · score {item.score}</p>
+                          </div>
+                          <button
+                            onClick={() => handleSidebarRemove(item)}
+                            className="text-slate-300 hover:text-red-500 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                      {watchlistItems.length > 4 && (
+                        <button
+                          onClick={() => router.push("/explorer/my-watchlist")}
+                          className="text-[10px] text-violet-600 hover:underline mt-1"
+                        >
+                          +{watchlistItems.length - 4} more — view all
+                        </button>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* How scoring works */}
+                <Card className="shadow-sm border border-slate-200 rounded-2xl bg-background">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-semibold text-slate-700 flex items-center gap-2"><Target className="w-4 h-4 text-blue-500" /> Top pick anatomy</CardTitle>
+                    <CardTitle className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-slate-500" /> How scoring works
+                    </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={180}>
-                      <RadarChart data={radarData}>
-                        <PolarGrid stroke="#e2e8f0" />
-                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: "#64748b" }} />
-                        <Radar name="Score" dataKey="A" stroke="#7F77DD" fill="#7F77DD" fillOpacity={0.18} strokeWidth={2} />
-                      </RadarChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
-              )}
-
-              {isBasicPlus && (
-                <Card className="shadow-sm border border-slate-200 rounded-2xl bg-white/80">
-                  <CardHeader className="pb-2"><CardTitle className="text-sm font-semibold text-slate-700 flex items-center gap-2"><Flame className="w-4 h-4 text-orange-500" /> Demand signals</CardTitle></CardHeader>
-                  <CardContent className="space-y-2.5">
-                    {sortedOpps.slice(0, 6).map((o) => (
-                      <div key={o.id} className="flex items-center gap-2.5">
-                        <span className="text-xs text-slate-500 truncate w-28 shrink-0">{o.product_niche.split(" ").slice(0, 3).join(" ")}</span>
-                        <div className="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden"><div className="h-full rounded-full transition-all duration-700" style={{ width: `${o.score}%`, background: o.score >= 80 ? "#639922" : o.score >= 65 ? "#378ADD" : "#BA7517" }} /></div>
-                        <span className={cn("text-xs font-semibold w-6 text-right", getScoreColor(o.score))}>{o.score}</span>
+                  <CardContent className="space-y-2">
+                    {[
+                      { label: "Rating gap",      desc: "Avg competitor rating below 4.0 = opportunity", pts: "+32", color: "#3b82f6" },
+                      { label: "Review thinness", desc: "Fewer than 150 reviews = easy to outrank",      pts: "+32", color: "#8b5cf6" },
+                      { label: "Demand signal",   desc: "High sales volume = proven buyer intent",       pts: "+24", color: "#10b981" },
+                      { label: "Price gap",       desc: "MRP vs. selling price spread = margin room",   pts: "+12", color: "#f59e0b" },
+                    ].map((s) => (
+                      <div key={s.label} className="flex items-start gap-2.5">
+                        <div className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0" style={{ background: s.color }} />
+                        <div>
+                          <p className="text-xs font-medium text-slate-700">
+                            {s.label} <span className="text-slate-400 font-normal">({s.pts})</span>
+                          </p>
+                          <p className="text-[10px] text-slate-400">{s.desc}</p>
+                        </div>
                       </div>
                     ))}
                   </CardContent>
                 </Card>
-              )}
-
-              {watchlistItems.length > 0 && (
-                <Card className="shadow-sm border border-violet-200 rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm font-semibold text-violet-700 flex items-center gap-2"><Bookmark className="w-4 h-4 fill-violet-600" /> Watchlist ({watchlistItems.length})</CardTitle>
-                      <button onClick={() => router.push("/explorer/my-watchlist")} className="text-[10px] text-violet-600 hover:text-violet-800 font-medium flex items-center gap-1">View all <ChevronRight className="w-3 h-3" /></button>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-1.5">
-                    {watchlistItems.slice(0, 4).map((item) => (
-                      <div key={item.niche} className="flex items-center justify-between text-xs group">
-                        <div className="flex-1 min-w-0 mr-2"><p className="text-slate-700 truncate font-medium">{item.niche}</p><p className="text-[10px] text-slate-400">{item.category} · score {item.score}</p></div>
-                        <button onClick={() => handleSidebarRemove(item)} className="text-slate-300 hover:text-red-500 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"><X className="w-3 h-3" /></button>
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              )}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {!result && !loading && (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-16 h-16 bg-violet-50 rounded-2xl flex items-center justify-center mb-5 border border-violet-100"><Sparkles className="w-7 h-7 text-violet-400" /></div>
-            <h3 className="text-lg font-semibold text-slate-800 mb-2">Find your next winning product</h3>
-            <p className="text-sm text-slate-400 max-w-md leading-relaxed mb-6">Scan any keyword to surface real white spaces — niches with high demand and weak competition.</p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {["kitchen organizer","baby feeding","pet grooming","sleep aid","skincare tools","home scent","gaming accessories","fitness gear"].map((s) => (
-                <button key={s} onClick={() => { setQuery(s); setTimeout(runScan, 50); }} className="text-xs px-4 py-2 bg-white border border-slate-200 text-slate-500 rounded-full hover:bg-violet-50 hover:border-violet-200 hover:text-violet-600 transition-colors shadow-sm">{s}</button>
-              ))}
+          {/* Empty state */}
+          {!result && !loading && (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="w-16 h-16 bg-violet-50 rounded-2xl flex items-center justify-center mb-5 border border-violet-100">
+                <Sparkles className="w-7 h-7 text-violet-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-slate-800 mb-2">Find your next winning product</h3>
+              <p className="text-sm text-slate-400 max-w-md leading-relaxed mb-6">
+                Scan any keyword to surface real white spaces — niches with high demand and weak competition on Amazon.in and Flipkart.
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8 w-full max-w-xl">
+                {[
+                  { icon: <Star className="w-4 h-4 text-amber-500" />,         label: "Rating gap analysis"   },
+                  { icon: <Users className="w-4 h-4 text-blue-500" />,         label: "Real competitor data"  },
+                  { icon: <ShoppingBag className="w-4 h-4 text-emerald-500" />, label: "Live sales estimates"  },
+                  { icon: <Package className="w-4 h-4 text-violet-500" />,     label: "Best Seller gap signal" },
+                ].map((f) => (
+                  <div key={f.label} className="flex flex-col items-center gap-2 p-3.5 bg-white rounded-2xl border border-slate-200 text-center shadow-sm">
+                    {f.icon}
+                    <span className="text-xs text-slate-500 leading-tight">{f.label}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-center gap-2 p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-700 mb-6">
+                <BookOpen className="w-4 h-4 shrink-0" />
+                Free: 3 scans / 3 results · Basic: 20 scans + all results · Premium: unlimited + AI insights
+              </div>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {["kitchen organizer","baby feeding","pet grooming","sleep aid","skincare tools","home scent","gaming accessories","fitness gear"].map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => { setQuery(s); setTimeout(runScan, 50); }}
+                    className="text-xs px-4 py-2 bg-white border border-slate-200 text-slate-500 rounded-full hover:bg-violet-50 hover:border-violet-200 hover:text-violet-600 transition-colors shadow-sm"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+        </div>
       </div>
     </div>
   );
 }
 
-export default function WhiteSpaceFinderPage() {
+export default function WhiteSpaceFinder() {
   return (
-    <Suspense fallback={<div className="p-8 text-center">Loading Opportunity Finder...</div>}>
-      <OpportunityFinderContent />
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>
+      <WhiteSpaceFinderContent />
     </Suspense>
   );
 }

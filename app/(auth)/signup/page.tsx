@@ -217,15 +217,13 @@ export default function Signup() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-purple-50 dark:from-gray-900 dark:via-background dark:to-gray-900 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         <div className="text-center mb-8">
-          <Link href="/">
-            <a className="inline-flex flex-col items-center group">
-              <img
-                src="/logo.png"
-                alt="Insydz Logo"
-                className="w-20 h-20 object-contain mb-3 transition-transform group-hover:scale-110"
-              />
-              <h1 className="text-3xl font-bold mb-1">Insydz</h1>
-            </a>
+          <Link href="/" className="inline-flex flex-col items-center group">
+            <img
+              src="/logo.png"
+              alt="Insydz Logo"
+              className="w-20 h-20 object-contain mb-3 transition-transform group-hover:scale-110"
+            />
+            <h1 className="text-3xl font-bold mb-1">Insydz</h1>
           </Link>
 
           <p className="text-muted-foreground">

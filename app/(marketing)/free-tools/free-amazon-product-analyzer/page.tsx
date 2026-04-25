@@ -230,7 +230,7 @@ export default function FreeAmazonProductAnalyzerPage() {
     <div className="min-h-screen bg-white dark:bg-gray-950">
       
       {/* ─── NAVIGATION ─── */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg" : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center space-x-3">
@@ -705,7 +705,7 @@ export default function FreeAmazonProductAnalyzerPage() {
                 <p className="text-white font-bold text-lg mt-0.5">Stainless Steel Water Bottle · B09EXAMPLE</p>
               </div>
               <div className="text-right">
-                <span className="bg-white/20 text-white text-xs font-semibold px-3 py-1 rounded-full">Amazon India</span>
+                <span className="bg-background opacity-100 text-white text-xs font-semibold px-3 py-1 rounded-full">Amazon India</span>
               </div>
             </div>
 

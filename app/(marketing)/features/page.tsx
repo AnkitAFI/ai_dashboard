@@ -719,7 +719,7 @@ export default function AllFeaturesPage() {
 
       {/* ═══ NAVIGATION ═══ */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg" : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"
+        scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-20">
@@ -775,7 +775,7 @@ export default function AllFeaturesPage() {
       </nav>
 
       {/* Mobile sticky CTA */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 px-3 sm:px-4 pb-3 sm:pb-4 pt-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur border-t border-gray-200 dark:border-gray-800">
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 px-3 sm:px-4 pb-3 sm:pb-4 pt-2 bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur border-t border-gray-200 dark:border-gray-800">
         <a href="/signup" className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-3 sm:py-4 rounded-full shadow-xl text-sm sm:text-base flex items-center justify-center">
           Start Free — No Credit Card
         </a>

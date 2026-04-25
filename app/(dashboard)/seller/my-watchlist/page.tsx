@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API = process.env.NEXT_PUBLIC_API_URL || (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api");
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -346,7 +346,7 @@ export default function MyWatchlistPage() {
 
   return (
     <div className="flex-1 w-full min-h-screen flex flex-col">
-      <header className="bg-white/80 backdrop-blur-xl border border-sky-100 shadow-xl rounded-2xl px-6 py-4 mb-6 flex items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6">
+      <header className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-xl rounded-2xl px-6 py-4 mb-6 flex items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-xl flex items-center justify-center shadow-inner">
             <Bookmark className="h-5 w-5 text-violet-600 fill-violet-200" />

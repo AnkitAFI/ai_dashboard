@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 export default function SellerProductsPage() {
   const { user, refreshUser } = useAuth();
@@ -76,232 +76,216 @@ export default function SellerProductsPage() {
   };
 
   return (
-    <div className="flex-1 w-full min-h-screen flex flex-col">
-      {/* Header */}
-      <header className="bg-white/70 backdrop-blur-xl border border-sky-100 shadow-sm px-4 sm:px-6 lg:px-8 py-4 sm:py-5 mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 sticky top-0 z-20 mx-0 sm:mx-6 rounded-2xl">
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-sky-900">My Products</h2>
-            <p className="text-slate-600 text-xs sm:text-sm">
-              Click <span className="text-sky-600 font-semibold">Price</span> or{" "}
-              <span className="text-violet-600 font-semibold">Reviews</span> on any product to compare
-            </p>
-          </div>
+    <div className="space-y-6">
+      {!activeSellerId ? (
+        <div className="max-w-xl mx-auto">
+          <SellerIdInput
+            onSaved={(id) => {
+              setLocalSellerId(id);
+              refreshUser();
+            }}
+          />
         </div>
-        {activeSellerId && (
-          <div className="text-xs text-slate-500 bg-white/60 px-3 py-1 rounded-full border">
-            Last updated: just now
-          </div>
-        )}
-      </header>
-
-      <main className="px-4 sm:px-6 flex-1 pb-6 space-y-6">
-        {!activeSellerId ? (
-          <div className="max-w-xl mx-auto">
-            <SellerIdInput
-              onSaved={(id) => {
-                setLocalSellerId(id);
-                refreshUser();
-              }}
-            />
-          </div>
-        ) : (
-          <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-            {/* Controls */}
-            <div className="p-4 sm:p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <h3 className="font-bold text-slate-800 text-lg">Product Catalog</h3>
-                <p className="text-sm text-slate-500">{filteredProducts.length} products found</p>
+      ) : (
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+          {/* Controls */}
+          <div className="p-4 sm:p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h3 className="font-bold text-slate-800 text-lg">Product Catalog</h3>
+              <p className="text-sm text-slate-500">{filteredProducts.length} products found</p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Input
+                  placeholder="Search products..."
+                  className="pl-9 w-full sm:w-64 bg-slate-50 border-none h-10 rounded-xl"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
               </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="relative">
-                  <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <Input
-                    placeholder="Search products..."
-                    className="pl-9 w-full sm:w-64 bg-slate-50 border-none h-10 rounded-xl"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-                <div className="flex gap-2 bg-slate-100 p-1 rounded-xl">
-                  {(["all", "prime", "best_seller"] as const).map((f) => (
-                    <button
-                      key={f}
-                      onClick={() => setActiveFilter(f)}
-                      className={cn(
-                        "px-4 py-1.5 text-sm font-medium rounded-lg transition-colors",
-                        activeFilter === f
-                          ? "bg-orange-500 text-white shadow-sm"
-                          : "text-slate-600 hover:text-slate-900"
-                      )}
-                    >
-                      {f === "all" ? "All" : f === "prime" ? "Prime" : "Best Seller"}
-                      <span className="opacity-80 text-xs ml-1">
-                        {f === "all"
-                          ? products.length
-                          : f === "prime"
-                          ? products.filter((p) => p.is_prime).length
-                          : products.filter((p) => p.is_best_seller).length}
-                      </span>
-                    </button>
-                  ))}
-                </div>
+              <div className="flex gap-2 bg-slate-100 p-1 rounded-xl">
+                {(["all", "prime", "best_seller"] as const).map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => setActiveFilter(f)}
+                    className={cn(
+                      "px-4 py-1.5 text-sm font-medium rounded-lg transition-colors",
+                      activeFilter === f
+                        ? "bg-orange-500 text-white shadow-sm"
+                        : "text-slate-600 hover:text-slate-900"
+                    )}
+                  >
+                    {f === "all" ? "All" : f === "prime" ? "Prime" : "Best Seller"}
+                    <span className="opacity-80 text-xs ml-1">
+                      {f === "all"
+                        ? products.length
+                        : f === "prime"
+                        ? products.filter((p) => p.is_prime).length
+                        : products.filter((p) => p.is_best_seller).length}
+                    </span>
+                  </button>
+                ))}
               </div>
             </div>
+          </div>
 
-            {/* Table */}
-            <div className="overflow-x-auto">
-              {loading ? (
-                <div className="flex flex-col items-center justify-center h-64 gap-3">
-                  <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
-                  <p className="text-slate-500 font-medium">Loading catalog...</p>
+          {/* Table */}
+          <div className="overflow-x-auto">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center h-64 gap-3">
+                <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+                <p className="text-slate-500 font-medium">Loading catalog...</p>
+              </div>
+            ) : products.length === 0 ? (
+              <div className="flex flex-col items-center justify-center p-12 text-center h-64">
+                <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-4">
+                  <Search className="w-8 h-8" />
                 </div>
-              ) : products.length === 0 ? (
-                <div className="flex flex-col items-center justify-center p-12 text-center h-64">
-                  <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-4">
-                    <Search className="w-8 h-8" />
-                  </div>
-                  <h3 className="text-lg font-bold text-slate-800 mb-1">No products found</h3>
-                  <p className="text-slate-500 max-w-sm">
-                    We couldn't find any tracked products for your Seller ID.
-                    Make sure you are tracking products in the Explorer mode first.
-                  </p>
-                </div>
-              ) : (
-                <table className="w-full text-sm text-left">
-                  <thead className="text-xs text-slate-500 border-b border-slate-100 font-semibold sticky top-0 bg-white z-10 uppercase tracking-wider">
-                    <tr>
-                      <th className="px-6 py-4 w-[34%]">Product</th>
-                      <th className="px-6 py-4">Price</th>
-                      <th className="px-6 py-4">Rating</th>
-                      <th className="px-6 py-4">Reviews</th>
-                      <th className="px-6 py-4">Sales</th>
-                      <th className="px-6 py-4">BSR</th>
-                      <th className="px-6 py-4">Type</th>
-                      <th className="px-6 py-4">Compare</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-50">
-                    {filteredProducts.map((p, idx) => (
-                      <tr
-                        key={idx}
-                        className="hover:bg-slate-50/80 transition-colors"
-                      >
-                        {/* Product */}
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-white border border-slate-100 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
-                              {p.image ? (
-                                <img src={p.image} alt={p.title} className="w-full h-full object-contain p-1" />
-                              ) : (
-                                <span className="text-slate-300 font-bold text-lg">{p.title.charAt(0)}</span>
+                <h3 className="text-lg font-bold text-slate-800 mb-1">No products found</h3>
+                <p className="text-slate-500 max-w-sm">
+                  We couldn't find any tracked products for your Seller ID.
+                  Make sure you are tracking products in the Explorer mode first.
+                </p>
+              </div>
+            ) : (
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs text-slate-500 border-b border-slate-100 font-semibold sticky top-0 bg-white z-10 uppercase tracking-wider">
+                  <tr>
+                    <th className="px-6 py-4 w-[34%]">Product</th>
+                    <th className="px-6 py-4">Price</th>
+                    <th className="px-6 py-4">Rating</th>
+                    <th className="px-6 py-4">Reviews</th>
+                    <th className="px-6 py-4">Sales</th>
+                    <th className="px-6 py-4">BSR</th>
+                    <th className="px-6 py-4">Type</th>
+                    <th className="px-6 py-4">Compare</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-50">
+                  {filteredProducts.map((p, idx) => (
+                    <tr
+                      key={idx}
+                      className="hover:bg-slate-50/80 transition-colors"
+                    >
+                      {/* Product */}
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-white border border-slate-100 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
+                            {p.image ? (
+                              <img src={p.image} alt={p.title} className="w-full h-full object-contain p-1" />
+                            ) : (
+                              <span className="text-slate-300 font-bold text-lg">{p.title.charAt(0)}</span>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <p 
+                              className="font-semibold text-slate-800 line-clamp-1 cursor-pointer hover:text-sky-600 hover:underline transition-all" 
+                              title={p.title}
+                              onClick={() => router.push(`/product/${encodeURIComponent(p.title)}?from=seller&source=amazon`)}
+                            >
+                              {p.title}
+                            </p>
+                            <div className="flex items-center mt-1 gap-2 text-xs">
+                              <span className="text-slate-400 font-mono">{p.asin}</span>
+                              {p.is_prime && (
+                                <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-600 border-blue-200 px-1 py-0 h-4">
+                                  PRIME
+                                </Badge>
+                              )}
+                              {p.is_best_seller && (
+                                <Badge variant="outline" className="text-[10px] bg-orange-50 text-orange-600 border-orange-200 px-1 py-0 h-4">
+                                  BEST SELLER
+                                </Badge>
                               )}
                             </div>
-                            <div className="min-w-0">
-                              <p className="font-semibold text-slate-800 line-clamp-1" title={p.title}>
-                                {p.title}
-                              </p>
-                              <div className="flex items-center mt-1 gap-2 text-xs">
-                                <span className="text-slate-400 font-mono">{p.asin}</span>
-                                {p.is_prime && (
-                                  <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-600 border-blue-200 px-1 py-0 h-4">
-                                    PRIME
-                                  </Badge>
-                                )}
-                                {p.is_best_seller && (
-                                  <Badge variant="outline" className="text-[10px] bg-orange-50 text-orange-600 border-orange-200 px-1 py-0 h-4">
-                                    BEST SELLER
-                                  </Badge>
-                                )}
-                              </div>
-                            </div>
                           </div>
-                        </td>
+                        </div>
+                      </td>
 
-                        {/* Price */}
-                        <td className="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">
-                          {p.price
-                            ? p.price.toString().startsWith("₹") || p.price.toString().startsWith("$")
-                              ? p.price
-                              : `₹${p.price}`
-                            : "N/A"}
-                        </td>
+                      {/* Price */}
+                      <td className="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">
+                        {p.price
+                          ? p.price.toString().startsWith("₹") || p.price.toString().startsWith("$")
+                            ? p.price
+                            : `₹${p.price}`
+                          : "N/A"}
+                      </td>
 
-                        {/* Rating */}
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-1 font-bold text-slate-800">
-                            <Star className="w-4 h-4 text-orange-400 fill-orange-400 -mt-0.5" />
-                            {p.rating}
-                          </div>
-                        </td>
+                      {/* Rating */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-1 font-bold text-slate-800">
+                          <Star className="w-4 h-4 text-orange-400 fill-orange-400 -mt-0.5" />
+                          {p.rating}
+                        </div>
+                      </td>
 
-                        {/* Reviews */}
-                        <td className="px-6 py-4 text-slate-500 whitespace-nowrap">
-                          {p.reviews >= 1000
-                            ? `${(p.reviews / 1000).toFixed(1)}K`
-                            : p.reviews}
-                        </td>
+                      {/* Reviews */}
+                      <td className="px-6 py-4 text-slate-500 whitespace-nowrap">
+                        {p.reviews >= 1000
+                          ? `${(p.reviews / 1000).toFixed(1)}K`
+                          : p.reviews}
+                      </td>
 
-                        {/* Sales */}
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-md text-xs">
-                            {p.sales}
-                          </span>
-                        </td>
+                      {/* Sales */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-md text-xs">
+                          {p.sales}
+                        </span>
+                      </td>
 
-                        {/* BSR */}
-                        <td className="px-6 py-4 text-slate-500 whitespace-nowrap font-mono text-xs">
-                          {p.bsr}
-                        </td>
+                      {/* BSR */}
+                      <td className="px-6 py-4 text-slate-500 whitespace-nowrap font-mono text-xs">
+                        {p.bsr}
+                      </td>
 
-                        {/* Type */}
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {p.is_fba ? (
-                            <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200 uppercase text-[10px] tracking-wider font-bold">
-                              FBA
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 uppercase text-[10px] tracking-wider font-bold">
-                              FBM
-                            </Badge>
-                          )}
-                        </td>
+                      {/* Type */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {p.is_fba ? (
+                          <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200 uppercase text-[10px] tracking-wider font-bold">
+                            FBA
+                          </Badge>
+                        ) : (
+                          <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 uppercase text-[10px] tracking-wider font-bold">
+                            FBM
+                          </Badge>
+                        )}
+                      </td>
 
-                        {/* Compare buttons — always visible, click to navigate */}
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={(e) => goToComparison(e, "price", p.asin)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
-                            >
-                              <BarChart2 className="w-3.5 h-3.5" />
-                              Price
-                            </button>
-                            <button
-                              onClick={(e) => goToComparison(e, "review", p.asin)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-500 hover:bg-violet-600 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
-                            >
-                              <MessageSquare className="w-3.5 h-3.5" />
-                              Reviews
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            </div>
-
-            {/* Footer */}
-            {products.length > 0 && !loading && (
-              <div className="p-4 border-t border-slate-100 text-xs text-slate-500 flex justify-between items-center bg-slate-50/50">
-                <p>Showing {filteredProducts.length} of {products.length} products</p>
-              </div>
+                      {/* Compare buttons — always visible, click to navigate */}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={(e) => goToComparison(e, "price", p.asin)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
+                          >
+                            <BarChart2 className="w-3.5 h-3.5" />
+                            Price
+                          </button>
+                          <button
+                            onClick={(e) => goToComparison(e, "review", p.asin)}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-500 hover:bg-violet-600 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
+                          >
+                            <MessageSquare className="w-3.5 h-3.5" />
+                            Reviews
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </div>
-        )}
-      </main>
+
+          {/* Footer */}
+          {products.length > 0 && !loading && (
+            <div className="p-4 border-t border-slate-100 text-xs text-slate-500 flex justify-between items-center bg-slate-50/50">
+              <p>Showing {filteredProducts.length} of {products.length} products</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

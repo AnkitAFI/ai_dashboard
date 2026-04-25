@@ -380,7 +380,7 @@ export default function LandingPage() {
                     <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
                     <div className="w-3 h-3 rounded-full bg-green-500"></div>
                   </div>
-                  <div className="mx-auto bg-white/10 rounded-md px-4 py-1.5 text-xs text-white/50 w-64 text-center truncate font-medium">
+                  <div className="mx-auto bg-background opacity-100 rounded-md px-4 py-1.5 text-xs text-white/50 w-64 text-center truncate font-medium">
                     insydz.com/dashboard
                   </div>
                 </div>
@@ -791,7 +791,7 @@ export default function LandingPage() {
       </section>
 
       {/* About Section */}
-      <section id="About" className="py-24 bg-white/50 dark:bg-gray-800/50">
+      <section id="About" className="py-24 bg-background dark:bg-gray-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">

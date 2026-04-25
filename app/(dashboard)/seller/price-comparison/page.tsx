@@ -18,7 +18,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 function fmt(val: number | null | undefined, currency = "USD"): string {
   if (val == null) return "—";
@@ -37,7 +37,7 @@ function fmtShort(val: number | null | undefined, currency = "USD"): string {
 function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
   const router = useRouter();
   return (
-    <div className="absolute inset-0 bg-white/85 backdrop-blur-[3px] rounded-[2rem] flex flex-col items-center justify-center z-10 gap-3">
+    <div className="absolute inset-0 bg-background backdrop-blur-none rounded-[2rem] flex flex-col items-center justify-center z-10 gap-3">
       <div className={`w-11 h-11 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? "bg-blue-50" : "bg-amber-50"}`}>
         <Lock className={`w-5 h-5 ${tier === "premium" ? "text-blue-500" : "text-amber-500"}`} />
       </div>
@@ -268,7 +268,7 @@ function PriceComparisonContent() {
             {!isPremium && <TierGate tier="premium" feature="AI Pricing Logic" />}
             <CardContent className={`p-8 ${!isPremium ? 'blur-sm' : ''}`}>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-background opacity-100 flex items-center justify-center">
                   <Sparkles className="w-5 h-5 text-sky-400" />
                 </div>
                 <h4 className="font-black text-sm uppercase tracking-widest">AI Strategy Node</h4>
@@ -288,9 +288,11 @@ function PriceComparisonContent() {
   );
 }
 
+
+
 export default function PriceComparisonPage() {
   return (
-    <Suspense fallback={<div className="flex h-[70vh] items-center justify-center"><RefreshCw className="animate-spin text-sky-500" /></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>
       <PriceComparisonContent />
     </Suspense>
   );

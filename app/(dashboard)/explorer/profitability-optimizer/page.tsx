@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useMemo, Suspense } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import axios from "axios";
 import { useAuth } from "@/lib/auth-context";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -17,9 +17,8 @@ import {
   Bookmark, Target, ShieldCheck, Zap, Send, RotateCcw, AlertCircle,
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
-import { cn } from "@/lib/utils";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api");
 
 const CHART_STYLE = {
   backgroundColor: "rgba(255,255,255,0.97)",
@@ -212,7 +211,7 @@ function useOllamaStream() {
   return { streaming, text, error, start, stop, reset };
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ── AlertBox ──────────────────────────────────────────────────────────────────
 
 function AlertBox({ type, message }: { type: string; message: string }) {
   const styles: Record<string, string> = {
@@ -226,12 +225,14 @@ function AlertBox({ type, message }: { type: string; message: string }) {
     success: <CheckCircle className="w-4 h-4 shrink-0 mt-0.5" />,
   };
   return (
-    <div className={cn("flex items-start gap-2 p-3 rounded-xl border-l-4 text-sm", styles[type] ?? styles.warn)}>
+    <div className={`flex items-start gap-2 p-3 rounded-xl border-l-4 text-sm ${styles[type] ?? styles.warn}`}>
       {icons[type] ?? icons.warn}
       <span>{String(message ?? "")}</span>
     </div>
   );
 }
+
+// ── SliderRow ─────────────────────────────────────────────────────────────────
 
 function SliderRow({
   label, value, min, max, step, format, locked, onChange,
@@ -241,7 +242,7 @@ function SliderRow({
   onChange: (v: number) => void;
 }) {
   return (
-    <div className={cn("flex items-center gap-3 py-1.5", locked && "opacity-40 pointer-events-none")}>
+    <div className={`flex items-center gap-3 py-1.5 ${locked ? "opacity-40 pointer-events-none" : ""}`}>
       <label className="text-xs text-slate-500 w-36 shrink-0 flex items-center gap-1">
         {label}
         {locked && <Lock className="w-2.5 h-2.5 text-amber-500" />}
@@ -255,6 +256,8 @@ function SliderRow({
     </div>
   );
 }
+
+// ── AIPanel ───────────────────────────────────────────────────────────────────
 
 function AIPanel({
   calcResult, inputs, scenarios, healthData,
@@ -335,6 +338,7 @@ function AIPanel({
 
   const statusColor = aiStatus?.status === "ready" ? "bg-green-400" : aiStatus?.status === "no_model" ? "bg-amber-400" : "bg-red-400";
 
+  // ── StreamBox: white card with dark text ──────────────────────────────────
   function StreamBox({ stream }: { stream: ReturnType<typeof useOllamaStream> }) {
     return (
       <div className="mt-3 min-h-16 max-h-80 overflow-y-auto bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
@@ -373,10 +377,11 @@ function AIPanel({
 
   return (
     <div className="space-y-4">
+      {/* Status bar */}
       <div className="flex items-center justify-between bg-slate-900 rounded-2xl px-5 py-3 border border-slate-800">
         <div className="flex items-center gap-3">
           <div className="relative w-3 h-3">
-            <div className={cn("w-2.5 h-2.5 rounded-full", statusColor)} style={ready ? { boxShadow: "0 0 8px rgba(74,222,128,0.7)" } : {}} />
+            <div className={`w-2.5 h-2.5 rounded-full ${statusColor}`} style={ready ? { boxShadow: "0 0 8px rgba(74,222,128,0.7)" } : {}} />
             {ready && <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-400 opacity-25 animate-ping" />}
           </div>
           <span className="text-sm font-mono text-slate-300">
@@ -392,20 +397,20 @@ function AIPanel({
         </div>
       </div>
 
+      {/* Mode tabs */}
       <div className="flex gap-2 flex-wrap">
         {MODES.map((m) => {
           const locked = m.tier === "premium" ? !isPremium : !isBasicPlus;
           return (
             <button key={m.id}
               onClick={() => locked ? onUpgrade(m.label) : setActiveMode(m.id as typeof activeMode)}
-              className={cn(
-                "flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium border transition-all",
+              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-medium border transition-all ${
                 activeMode === m.id
                   ? "bg-violet-600 text-white border-violet-500 shadow-lg shadow-violet-900/30"
                   : locked
                   ? "bg-slate-900/50 text-slate-600 border-slate-800 cursor-not-allowed"
                   : "bg-slate-800 text-slate-300 border-slate-700 hover:border-violet-500 hover:text-white"
-              )}
+              }`}
             >
               {locked && <span className="text-amber-500 text-[10px]">🔒</span>}
               {m.label}
@@ -414,6 +419,7 @@ function AIPanel({
         })}
       </div>
 
+      {/* ── Full analysis ── */}
       {activeMode === "analyze" && (
         <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
           <div className="flex items-start justify-between mb-2">
@@ -444,6 +450,7 @@ function AIPanel({
         </div>
       )}
 
+      {/* ── Chat ── */}
       {activeMode === "chat" && (
         <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
           <div className="max-h-72 overflow-y-auto space-y-3 mb-4">
@@ -464,12 +471,12 @@ function AIPanel({
               </div>
             )}
             {chatHistory.map((msg, i) => (
-              <div key={i} className={cn("flex", msg.role === "user" ? "justify-end" : "justify-start")}>
-                <div className={cn("max-w-[85%] px-3.5 py-2.5 text-xs leading-relaxed rounded-2xl",
+              <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                <div className={`max-w-[85%] px-3.5 py-2.5 text-xs leading-relaxed rounded-2xl ${
                   msg.role === "user"
                     ? "bg-violet-600 text-white rounded-br-sm"
                     : "bg-slate-100 text-slate-800 rounded-bl-sm border border-slate-200"
-                )}>
+                }`}>
                   <div className="prose prose-sm max-w-none">
                     <ReactMarkdown>{String(msg.content ?? "")}</ReactMarkdown>
                   </div>
@@ -520,6 +527,7 @@ function AIPanel({
         </div>
       )}
 
+      {/* ── Scenario advice ── */}
       {activeMode === "scenario" && (
         <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
           <div className="flex items-start justify-between mb-2">
@@ -546,6 +554,7 @@ function AIPanel({
         </div>
       )}
 
+      {/* ── Health advice ── */}
       {activeMode === "health" && (
         <div className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm">
           <div className="flex items-start justify-between mb-2">
@@ -575,9 +584,11 @@ function AIPanel({
   );
 }
 
-// ── Main Page Content ─────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+// MAIN COMPONENT
+// ══════════════════════════════════════════════════════════════════════════════
 
-function ProfitabilityOptimizerContent() {
+export default function ProfitabilityOptimizer() {
   const { user } = useAuth();
   const userId = user?.id;
 
@@ -597,39 +608,38 @@ function ProfitabilityOptimizerContent() {
   const [tier, setTier]               = useState("free");
   const [calcLoading, setCalcLoading] = useState(false);
   const [tabLoading, setTabLoading]   = useState(false);
-  const [mounted, setMounted]         = useState(false);
 
+  // ── Updated saved products state (DB-backed) ──────────────────────────────
   const [savedProducts, setSaved]         = useState<SavedProductDB[]>([]);
   const [saveModal, setSaveModal]         = useState(false);
   const [saveName, setSaveName]           = useState("");
   const [savingProduct, setSavingProduct] = useState(false);
-  const [loadingSaved, setLoadingSaved]   = useState(false);
 
   const [upgradeModal, setUpgrade]    = useState({ open: false, feature: "" });
   const [toasts, setToasts]           = useState<Toast[]>([]);
-
-  useEffect(() => { setMounted(true); }, []);
 
   const isBasicPlus = tier === "basic" || tier === "premium";
   const isPremium   = tier === "premium";
   const saveLimit   = tier === "free" ? 0 : tier === "basic" ? 5 : 9999;
 
-  const showToast = (title: string, description: string, variant: "success" | "error" = "success") => {
+  const toast = (title: string, description: string, variant: "success" | "error" = "success") => {
     const id = Date.now();
     setToasts((p) => [...p, { id, title, description, variant }]);
     setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 4500);
   };
 
+  // ── fetchSavedProducts ────────────────────────────────────────────────────
   const fetchSavedProducts = useCallback(async () => {
     if (!userId) return;
-    setLoadingSaved(true);
     try {
       const res = await axios.get(`${API}/profitability/saved/${userId}`);
       setSaved(res.data as SavedProductDB[]);
-    } catch { /* silent */ }
-    finally { setLoadingSaved(false); }
+    } catch {
+      // silent
+    }
   }, [userId]);
 
+  // ── Mount effects ─────────────────────────────────────────────────────────
   useEffect(() => {
     fetchCategories(inputs.marketplace);
     if (userId) {
@@ -637,6 +647,29 @@ function ProfitabilityOptimizerContent() {
       fetchSavedProducts();
     }
   }, [userId]);
+
+  useEffect(() => { fetchCategories(inputs.marketplace); setMarketIntel(null); }, [inputs.marketplace]);
+  useEffect(() => {
+    setScenarios(null);
+    setMarketIntel(null);
+    setHealthData(null);
+  }, [inputs]);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      if (activeTab === "scenario" && isPremium) {
+        fetchScenarios();
+      }
+      if (activeTab === "market" && isPremium) {
+        fetchMarketIntel();
+      }
+      if (activeTab === "health" && isPremium) {
+        fetchHealth();
+      }
+    }, 500); // debounce
+
+    return () => clearTimeout(t);
+  }, [inputs, activeTab]);
 
   const fetchCategories = async (marketplace: string) => {
     try {
@@ -654,6 +687,12 @@ function ProfitabilityOptimizerContent() {
     } catch { /* silent */ }
   };
 
+  useEffect(() => {
+    if (!inputs.category) return;
+    const t = setTimeout(runCalculate, 420);
+    return () => clearTimeout(t);
+  }, [inputs]);
+
   const runCalculate = useCallback(async () => {
     if (!inputs.category) return;
     setCalcLoading(true);
@@ -662,17 +701,11 @@ function ProfitabilityOptimizerContent() {
       setCalcResult(res.data as CalcResult);
       setTier(String(res.data.tier ?? "free"));
     } catch (e) {
-      showToast("Calculation failed", extractErr(e), "error");
+      toast("Calculation failed", extractErr(e), "error");
     } finally {
       setCalcLoading(false);
     }
   }, [inputs, userId]);
-
-  useEffect(() => {
-    if (!inputs.category) return;
-    const t = setTimeout(runCalculate, 420);
-    return () => clearTimeout(t);
-  }, [inputs, runCalculate]);
 
   const fetchScenarios = async () => {
     if (!isPremium) { setUpgrade({ open: true, feature: "Scenario planner" }); return; }
@@ -698,7 +731,7 @@ function ProfitabilityOptimizerContent() {
     } catch (e: unknown) {
       if ((e as { response?: { status?: number } })?.response?.status === 403)
         setUpgrade({ open: true, feature: "Market intelligence" });
-      else showToast("Market data error", extractErr(e), "error");
+      else toast("Market data error", extractErr(e), "error");
     } finally { setTabLoading(false); }
   };
 
@@ -714,16 +747,24 @@ function ProfitabilityOptimizerContent() {
     } finally { setTabLoading(false); }
   };
 
-  useEffect(() => {
-    const t = setTimeout(() => {
-      if (activeTab === "scenario" && isPremium) fetchScenarios();
-      if (activeTab === "market"   && isPremium) fetchMarketIntel();
-      if (activeTab === "health"   && isPremium) fetchHealth();
-    }, 500);
-    return () => clearTimeout(t);
-  }, [inputs, activeTab, isPremium]);
+  const handleTab = (tab: typeof activeTab) => {
+    setActiveTab(tab);
+  };  
 
   const inp = (key: keyof Inputs, value: number | string) => setInputs((p) => ({ ...p, [key]: value }));
+
+  const handleSave = () => {
+    if (!userId) {
+      toast("Not logged in", "Log in to save products.", "error");
+      return;
+    }
+    if (saveLimit === 0) { setUpgrade({ open: true, feature: "Save products" }); return; }
+    if (savedProducts.length >= saveLimit) {
+      toast("Limit reached", `Upgrade to save more than ${saveLimit} products.`, "error");
+      return;
+    }
+    setSaveModal(true);
+  };
 
   const confirmSave = async () => {
     if (!saveName.trim() || !calcResult || !userId) return;
@@ -738,24 +779,16 @@ function ProfitabilityOptimizerContent() {
       setSaved((p) => [res.data as SavedProductDB, ...p]);
       setSaveModal(false);
       setSaveName("");
-      showToast("Saved!", `"${saveName}" saved to your account.`, "success");
+      toast("Saved!", `"${saveName}" saved to your account.`, "success");
     } catch (e: unknown) {
       const status = (e as { response?: { status?: number } })?.response?.status;
-      if (status === 403) setUpgrade({ open: true, feature: "Save products" });
-      else showToast("Save failed", extractErr(e), "error");
+      if (status === 403) {
+        setUpgrade({ open: true, feature: "Save products" });
+      } else {
+        toast("Save failed", extractErr(e), "error");
+      }
     } finally {
       setSavingProduct(false);
-    }
-  };
-
-  const deleteProduct = async (productId: string) => {
-    if (!userId) return;
-    try {
-      await axios.delete(`${API}/profitability/saved/${userId}/${productId}`);
-      setSaved((p) => p.filter((x) => x.id !== productId));
-      showToast("Deleted", "Product removed.", "success");
-    } catch {
-      showToast("Delete failed", "Could not remove product.", "error");
     }
   };
 
@@ -777,20 +810,38 @@ function ProfitabilityOptimizerContent() {
 
   return (
     <div className="space-y-6">
-      {/* Modals & Toasts */}
+      {/* Title Section */}
+      <div className="flex justify-between items-center bg-white p-4 rounded-2xl border border-sky-100 shadow-sm">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-sky-900">Profitability Optimizer</h1>
+          <p className="text-slate-500 text-xs sm:text-sm mt-0.5">Real margins · Live market data</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Badge className={`text-xs font-semibold ${tier === "premium" ? "bg-blue-100 text-blue-800" : tier === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+            {tier.toUpperCase()}
+          </Badge>
+          {calcResult && (
+            <Button size="sm" variant="outline" onClick={handleSave} className="flex items-center gap-1.5 text-xs">
+              <Bookmark className="w-3.5 h-3.5" /> Save
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Upgrade Modal */}
       {upgradeModal.open && (
-        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
-          <Card className="max-w-md w-full p-6 shadow-2xl bg-white rounded-2xl">
+        <div className="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
             <div className="text-center">
               <div className="mx-auto w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center mb-4 shadow-lg">
                 <Lock className="h-7 w-7 text-white" />
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-1">{String(upgradeModal.feature)}</h3>
               <p className="text-slate-500 text-sm mb-5">Upgrade to unlock this feature.</p>
-              <div className="grid grid-cols-2 gap-3 mb-5 text-left text-[10px] sm:text-xs">
+              <div className="grid grid-cols-2 gap-3 mb-5 text-left text-xs">
                 {[
-                  { tier: "Basic · ₹2k/mo", feats: ["Full cost waterfall", "ROI & ACOS tracking", "Smart alerts", "AI chat"] },
-                  { tier: "Premium · ₹3k/mo", feats: ["Scenario planner", "Market intel", "Health score", "AI analysis"] },
+                  { tier: "Basic · ₹2,000/mo", feats: ["Full cost waterfall", "ROI & ACOS tracking", "Smart alerts", "Return rate modelling", "AI chat"] },
+                  { tier: "Premium · ₹3,000/mo", feats: ["Scenario planner", "Live market intel", "Business health score", "AI full analysis", "Unlimited saves"] },
                 ].map((plan) => (
                   <div key={plan.tier} className="bg-slate-50 rounded-xl p-3 border border-slate-200">
                     <p className="font-semibold text-slate-700 mb-2">{plan.tier}</p>
@@ -805,70 +856,80 @@ function ProfitabilityOptimizerContent() {
               <div className="flex gap-3">
                 <Button variant="outline" className="flex-1" onClick={() => setUpgrade({ open: false, feature: "" })}>Cancel</Button>
                 <Button className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-500 text-white" onClick={() => (window.location.href = "/subscription")}>
-                  <Crown className="w-4 h-4 mr-1" /> Upgrade
+                  <Crown className="w-4 h-4 mr-1" /> Upgrade Now
                 </Button>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
       )}
 
+      {/* Save Modal */}
       {saveModal && (
-        <div className="fixed inset-0 bg-black/50 z-[60] flex items-center justify-center p-4">
-          <Card className="max-w-sm w-full p-6 shadow-2xl bg-white rounded-2xl">
+        <div className="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl">
             <h3 className="text-lg font-bold text-slate-900 mb-1">Save product</h3>
-            <p className="text-xs text-slate-400 mb-4">Synced across all your devices</p>
-            <input type="text" value={saveName} onChange={(e) => setSaveName(e.target.value)} placeholder="e.g. Phone stand — Delhi supplier" className="w-full p-3 border border-slate-300 rounded-xl text-sm mb-4 focus:ring-2 focus:ring-blue-500 outline-none" autoFocus />
+            <p className="text-xs text-slate-400 mb-4">
+              Saved to your account · accessible on any device
+            </p>
+            <input
+              type="text"
+              value={saveName}
+              onChange={(e) => setSaveName(e.target.value)}
+              placeholder="e.g. Phone stand — Delhi supplier"
+              className="w-full p-3 border border-slate-300 rounded-xl text-sm mb-4 focus:ring-2 focus:ring-blue-500 outline-none"
+              onKeyDown={(e) => e.key === "Enter" && !savingProduct && confirmSave()}
+              autoFocus
+            />
             {calcResult && (
               <div className="bg-slate-50 rounded-xl p-3 mb-4 border border-slate-100 text-xs text-slate-500 space-y-1">
-                <div className="flex justify-between"><span>Profit / unit</span><span className="font-semibold text-slate-700">{inr(calcResult.profit_per_unit)}</span></div>
-                <div className="flex justify-between"><span>Net margin</span><span className="font-semibold text-slate-700">{pct(calcResult.net_margin_pct)}</span></div>
+                <div className="flex justify-between">
+                  <span>Profit / unit</span>
+                  <span className="font-semibold text-slate-700">{inr(calcResult.profit_per_unit)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Net margin</span>
+                  <span className="font-semibold text-slate-700">{pct(calcResult.net_margin_pct)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Monthly profit</span>
+                  <span className="font-semibold text-slate-700">{inr(calcResult.monthly_profit)}</span>
+                </div>
               </div>
             )}
             <div className="flex gap-3">
-              <Button variant="outline" className="flex-1" onClick={() => setSaveModal(false)}>Cancel</Button>
-              <Button className="flex-1 bg-blue-600 text-white" onClick={confirmSave} disabled={!saveName.trim() || savingProduct}>
-                {savingProduct ? "Saving..." : "Save"}
+              <Button variant="outline" className="flex-1" onClick={() => setSaveModal(false)} disabled={savingProduct}>
+                Cancel
+              </Button>
+              <Button
+                className="flex-1 bg-blue-600 text-white"
+                onClick={confirmSave}
+                disabled={!saveName.trim() || savingProduct}
+              >
+                {savingProduct ? <><RefreshCw className="w-3.5 h-3.5 animate-spin mr-1.5" /> Saving...</> : "Save"}
               </Button>
             </div>
-          </Card>
+          </div>
         </div>
       )}
 
-      <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-sm">
+      {/* Toasts */}
+      <div className="fixed bottom-4 right-4 z-[100] space-y-2 max-w-sm">
         {toasts.map((t) => (
-          <div key={t.id} className={cn("flex items-start gap-3 p-4 rounded-xl shadow-lg border-2 backdrop-blur-md", 
-            t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300")}>
-            {t.variant === "success" ? <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" /> : <XCircle className="h-5 w-5 text-red-600 mt-0.5" />}
+          <div key={t.id} className={`flex items-start gap-3 p-4 rounded-xl shadow-lg border-2 backdrop-blur-none ${t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"}`}>
+            {t.variant === "success" ? <CheckCircle className="h-5 w-5 text-green-600 shrink-0 mt-0.5" /> : <XCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />}
             <div className="flex-1">
-              <p className={cn("font-semibold text-sm", t.variant === "success" ? "text-green-900" : "text-red-900")}>{t.title}</p>
-              <p className={cn("text-xs mt-0.5", t.variant === "success" ? "text-green-700" : "text-red-700")}>{t.description}</p>
+              <p className={`font-semibold text-sm ${t.variant === "success" ? "text-green-900" : "text-red-900"}`}>{String(t.title)}</p>
+              <p className={`text-xs mt-0.5 ${t.variant === "success" ? "text-green-700" : "text-red-700"}`}>{String(t.description)}</p>
             </div>
             <button onClick={() => setToasts((p) => p.filter((x) => x.id !== t.id))}><X className="w-4 h-4 text-slate-400" /></button>
           </div>
         ))}
       </div>
 
-      <header className="bg-white/70 backdrop-blur-xl border border-sky-100 shadow-xl rounded-2xl px-6 py-4 flex items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-sky-900">Profitability Optimizer</h2>
-          <p className="text-slate-500 text-xs sm:text-sm mt-0.5">Real margins · Live market data</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Badge className={cn("text-xs font-semibold px-2.5 py-1", 
-            tier === "premium" ? "bg-blue-100 text-blue-800" : tier === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600")}>
-            {tier.toUpperCase()}
-          </Badge>
-          {calcResult && (
-            <Button size="sm" variant="outline" onClick={() => userId ? setSaveModal(true) : showToast("Sign in required", "Sign in to save products.", "error")} className="flex items-center gap-1.5">
-              <Bookmark className="w-3.5 h-3.5" /> <span className="hidden sm:inline">Save</span>
-            </Button>
-          )}
-        </div>
-      </header>
-
-      <div className="px-4 sm:px-6 pb-12 max-w-7xl mx-auto space-y-5">
-        <Card className="bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl shadow-lg overflow-hidden">
+      {/* Tab bar */}
+      <Card className="bg-white border border-slate-200 rounded-2xl shadow-sm">
+        <CardContent className="p-0">
           <div className="flex border-b border-slate-200 overflow-x-auto">
             {([
               { id: "calc",     label: "Calculator",   icon: <Calculator className="w-4 h-4" />,  min: "free"    },
@@ -876,365 +937,409 @@ function ProfitabilityOptimizerContent() {
               { id: "market",   label: "Market intel", icon: <TrendingUp className="w-4 h-4" />,  min: "premium" },
               { id: "health",   label: "Health",       icon: <Activity className="w-4 h-4" />,    min: "premium" },
               { id: "ai",       label: "AI Advisor",   icon: <Bot className="w-4 h-4" />,         min: "basic"   },
-            ] as const).map((tab) => {
+            ] as { id: string; label: string; icon: JSX.Element; min: string }[]).map((tab) => {
               const locked = (tab.min === "premium" && !isPremium) || (tab.min === "basic" && !isBasicPlus);
               return (
                 <button key={tab.id}
-                  onClick={() => locked ? setUpgrade({ open: true, feature: tab.label }) : setActiveTab(tab.id)}
-                  className={cn("flex-1 min-w-[100px] py-4 px-3 font-medium text-xs sm:text-sm transition-all flex items-center justify-center gap-2", 
-                    activeTab === tab.id ? "border-b-2 border-blue-500 text-blue-600 bg-blue-50/50" : "text-gray-500 hover:bg-gray-50")}>
+                  onClick={() => locked ? setUpgrade({ open: true, feature: tab.label }) : handleTab(tab.id as typeof activeTab)}
+                  className={`flex-1 min-w-[80px] py-3.5 px-3 font-medium text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 ${activeTab === tab.id ? "border-b-2 border-blue-500 text-blue-600 bg-blue-50/50" : "text-gray-500 hover:bg-gray-50"}`}>
                   {tab.icon}
-                  <span className="hidden md:inline">{tab.label}</span>
+                  <span className="hidden sm:inline">{tab.label}</span>
                   {locked && <Lock className="w-3 h-3 text-amber-500" />}
                 </button>
               );
             })}
           </div>
-        </Card>
+        </CardContent>
+      </Card>
 
-        {activeTab === "calc" && (
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
-            <Card className="lg:col-span-2 bg-white/90 border border-slate-200 rounded-2xl shadow-lg">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Calculator className="w-4 h-4 text-blue-500" /> Cost inputs
-                  </CardTitle>
-                  {calcLoading && <RefreshCw className="w-3.5 h-3.5 text-blue-400 animate-spin" />}
+      {/* ══ CALCULATOR ══════════════════════════════════════════════════ */}
+      {activeTab === "calc" && (
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-5">
+          <Card className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl shadow-sm">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Calculator className="w-4 h-4 text-blue-500" /> Cost inputs
+                </CardTitle>
+                {calcLoading && <RefreshCw className="w-3.5 h-3.5 text-blue-400 animate-spin" />}
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-0.5 pt-0">
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label className="text-xs text-slate-500 block mb-1">Marketplace</label>
+                  <select value={inputs.marketplace} onChange={(e) => inp("marketplace", e.target.value)}
+                    className="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    <option value="amazon">Amazon</option>
+                    <option value="flipkart">Flipkart</option>
+                  </select>
                 </div>
-              </CardHeader>
-              <CardContent className="space-y-1">
-                <div className="grid grid-cols-2 gap-3 mb-3">
-                  <div>
-                    <label className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block mb-1">Marketplace</label>
-                    <select value={inputs.marketplace} onChange={(e) => inp("marketplace", e.target.value)} className="w-full p-2.5 border border-slate-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-                      <option value="amazon">Amazon.in</option>
-                      <option value="flipkart">Flipkart</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-[10px] text-slate-400 uppercase font-bold tracking-wider block mb-1">Category</label>
-                    <select value={inputs.category} onChange={(e) => inp("category", e.target.value)} className="w-full p-2.5 border border-slate-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-                      {categories.map((c) => <option key={c}>{c}</option>)}
-                    </select>
-                  </div>
+                <div>
+                  <label className="text-xs text-slate-500 block mb-1">Category</label>
+                  <select value={inputs.category} onChange={(e) => inp("category", e.target.value)}
+                    className="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    {categories.map((c) => <option key={c}>{c}</option>)}
+                    {categories.length === 0 && <option value="">Loading...</option>}
+                  </select>
                 </div>
+              </div>
 
-                <div className="h-px bg-slate-100 my-2" />
-                <SliderRow label="Selling price"   value={inputs.selling_price}     min={100}  max={10000} step={50}  format={inr}           onChange={(v) => inp("selling_price", v)} />
-                <SliderRow label="Product cost"    value={inputs.product_cost}      min={50}   max={5000}  step={25}  format={inr}           onChange={(v) => inp("product_cost", v)} />
-                <SliderRow label="Shipping to FBA" value={inputs.shipping_to_fba}   min={0}    max={800}   step={10}  format={inr}           onChange={(v) => inp("shipping_to_fba", v)} />
-                <SliderRow label="FBA fee"         value={inputs.fba_fee}           min={0}    max={600}   step={10}  format={inr}           onChange={(v) => inp("fba_fee", v)} />
-                <SliderRow label="Ad spend / unit" value={inputs.ad_spend_per_unit} min={0}    max={800}   step={5}   format={inr}           onChange={(v) => inp("ad_spend_per_unit", v)} />
-                <SliderRow label="Monthly units"   value={inputs.monthly_units}     min={10}   max={5000}  step={10}  format={(v) => String(v)} onChange={(v) => inp("monthly_units", v)} />
-                <SliderRow label={`Referral (${Number(inputs.referral_fee_pct).toFixed(0)}%)`} value={inputs.referral_fee_pct} min={1} max={25} step={0.5} format={pct} onChange={(v) => inp("referral_fee_pct", v)} />
+              <div className="h-px bg-slate-100 my-2" />
+              <p className="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1.5">Core pricing</p>
 
-                <div className="h-px bg-slate-100 my-2" />
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Advanced</p>
-                  {!isBasicPlus && <Badge variant="secondary" className="bg-amber-100 text-amber-700 cursor-pointer" onClick={() => setUpgrade({ open: true, feature: "Advanced inputs" })}>Basic+</Badge>}
-                </div>
-                <SliderRow label="Return rate"    value={inputs.return_rate_pct}      min={0} max={40}  step={1} format={pct} locked={!isBasicPlus} onChange={(v) => inp("return_rate_pct", v)} />
-                <SliderRow label="Storage / unit" value={inputs.storage_fee_per_unit} min={0} max={150} step={2} format={inr} locked={!isBasicPlus} onChange={(v) => inp("storage_fee_per_unit", v)} />
+              <SliderRow label="Selling price"   value={inputs.selling_price}     min={100}  max={10000} step={50}  format={inr}           onChange={(v) => inp("selling_price", v)} />
+              <SliderRow label="Product cost"    value={inputs.product_cost}      min={50}   max={5000}  step={25}  format={inr}           onChange={(v) => inp("product_cost", v)} />
+              <SliderRow label="Shipping to FBA" value={inputs.shipping_to_fba}   min={0}    max={800}   step={10}  format={inr}           onChange={(v) => inp("shipping_to_fba", v)} />
+              <SliderRow label="FBA fee"         value={inputs.fba_fee}           min={0}    max={600}   step={10}  format={inr}           onChange={(v) => inp("fba_fee", v)} />
+              <SliderRow label="Ad spend / unit" value={inputs.ad_spend_per_unit} min={0}    max={800}   step={5}   format={inr}           onChange={(v) => inp("ad_spend_per_unit", v)} />
+              <SliderRow label="Monthly units"   value={inputs.monthly_units}     min={10}   max={5000}  step={10}  format={(v) => `${v}`} onChange={(v) => inp("monthly_units", v)} />
+              <SliderRow label={`Referral (${Number(inputs.referral_fee_pct).toFixed(0)}%)`} value={inputs.referral_fee_pct} min={1} max={25} step={0.5} format={pct} onChange={(v) => inp("referral_fee_pct", v)} />
+
+              <div className="h-px bg-slate-100 my-2" />
+              <div className="flex items-center justify-between mb-1.5">
+                <p className="text-xs font-medium text-slate-400 uppercase tracking-wider">Advanced</p>
                 {!isBasicPlus && (
-                  <Button variant="outline" className="w-full mt-2 text-xs border-blue-200 text-blue-600 hover:bg-blue-50" onClick={() => setUpgrade({ open: true, feature: "Advanced inputs" })}>
-                    <Lock className="w-3.5 h-3.5 mr-2" /> Unlock Advanced — ₹2,000/mo
-                  </Button>
+                  <span onClick={() => setUpgrade({ open: true, feature: "Advanced inputs" })}
+                    className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium cursor-pointer hover:bg-amber-200 transition-colors">Basic+</span>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+              <SliderRow label="Return rate"    value={inputs.return_rate_pct}      min={0} max={40}  step={1} format={pct} locked={!isBasicPlus} onChange={(v) => inp("return_rate_pct", v)} />
+              <SliderRow label="Storage / unit" value={inputs.storage_fee_per_unit} min={0} max={150} step={2} format={inr} locked={!isBasicPlus} onChange={(v) => inp("storage_fee_per_unit", v)} />
+              {!isBasicPlus && (
+                <button onClick={() => setUpgrade({ open: true, feature: "Advanced inputs" })}
+                  className="w-full mt-3 py-2 text-xs text-blue-600 border border-blue-200 rounded-xl hover:bg-blue-50 transition-colors flex items-center justify-center gap-1.5">
+                  <Lock className="w-3.5 h-3.5" /> Unlock — Basic ₹2,000/mo
+                </button>
+              )}
+            </CardContent>
+          </Card>
 
-            <div className="lg:col-span-3 space-y-4">
-              {calcResult && (
-                <>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {[
-                      { label: "Profit / unit",  val: inr(calcResult.profit_per_unit),  cls: calcResult.profit_per_unit > 0 ? (calcResult.net_margin_pct > 20 ? "text-emerald-600" : "text-amber-600") : "text-red-600" },
-                      { label: "Net margin",     val: pct(calcResult.net_margin_pct),   cls: calcResult.net_margin_pct > 20 ? "text-emerald-600" : calcResult.net_margin_pct > 10 ? "text-amber-600" : "text-red-600" },
-                      { label: "Monthly profit", val: inr(calcResult.monthly_profit),   cls: "text-blue-600", sub: calcResult.yearly_profit ? `~${inr(calcResult.yearly_profit)}/yr` : undefined },
-                      { label: "Break-even",     val: `${calcResult.breakeven_units} units`, cls: "text-slate-700" },
-                      { label: "ROI",            val: pct(calcResult.roi_pct), cls: "text-purple-600", locked: !isBasicPlus },
-                      { label: "True ACOS",      val: pct(calcResult.acos_pct), cls: (calcResult.acos_pct ?? 0) > 20 ? "text-amber-600" : "text-slate-700", locked: !isBasicPlus },
-                    ].map((m, i) => (
-                      <Card key={i} className="relative p-4 border border-slate-200 bg-white/90">
-                        <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">{m.label}</p>
-                        <p className={cn("text-xl font-black", m.cls)}>{m.val}</p>
-                        {m.sub && <p className="text-[10px] text-slate-400 mt-1">{m.sub}</p>}
-                        {m.locked && (
-                          <div className="absolute inset-0 bg-white/80 backdrop-blur-[1.5px] flex items-center justify-center cursor-pointer rounded-2xl" onClick={() => setUpgrade({ open: true, feature: m.label })}>
-                            <span className="text-xs text-amber-600 font-bold flex items-center gap-1"><Lock className="w-3 h-3" /> Basic</span>
-                          </div>
-                        )}
-                      </Card>
-                    ))}
-                  </div>
-
-                  <Card className="bg-white/90 border border-slate-200 rounded-2xl shadow-lg overflow-hidden">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm flex items-center gap-2">
-                        Cost waterfall
-                        {!isBasicPlus && <Badge variant="secondary" className="bg-amber-100 text-amber-700">Basic+</Badge>}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      {isBasicPlus && waterfallData.length > 0 ? (
-                        <div className="space-y-3">
-                          {waterfallData.map((row) => {
-                            const sp = calcResult.selling_price || 1;
-                            const rowPct = Math.min((row.value / sp) * 100, 100);
-                            return (
-                              <div key={row.name} className="flex items-center gap-3">
-                                <span className="text-xs text-slate-500 w-28 shrink-0">{row.name}</span>
-                                <div className="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
-                                  <div className="h-full rounded-full transition-all duration-300" style={{ width: `${Math.min(rowPct * 2.5, 100)}%`, background: row.color }} />
-                                </div>
-                                <span className="text-xs font-semibold text-slate-700 w-14 text-right">{inr(row.value)}</span>
-                                <span className="text-[10px] text-slate-400 w-8 text-right">{rowPct.toFixed(0)}%</span>
-                              </div>
-                            );
-                          })}
-                          <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
-                            <span className="text-sm font-semibold text-slate-700">Net Profit</span>
-                            <span className={cn("text-lg font-black", calcResult.profit_per_unit > 0 ? "text-emerald-600" : "text-red-600")}>
-                              {inr(calcResult.profit_per_unit)} ({pct(calcResult.net_margin_pct)})
-                            </span>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="relative py-6">
-                          <div className="space-y-2.5 opacity-25 blur-sm pointer-events-none">
-                            {["Product cost", "FBA fee", "Referral fee", "Ad spend"].map((n) => (
-                              <div key={n} className="flex items-center gap-3">
-                                <span className="text-xs w-28 text-slate-400">{n}</span>
-                                <div className="flex-1 bg-slate-100 rounded-full h-2"><div className="h-full rounded-full bg-slate-300" style={{ width: "60%" }} /></div>
-                              </div>
-                            ))}
-                          </div>
-                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                            <p className="text-sm font-semibold text-slate-700">Visual cost breakdown</p>
-                            <Button size="sm" className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full" onClick={() => setUpgrade({ open: true, feature: "Cost waterfall" })}>Unlock — ₹2,000/mo</Button>
-                          </div>
+          <div className="lg:col-span-3 space-y-4">
+            {calcResult && (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {([
+                    { label: "Profit / unit",  val: inr(Number(calcResult.profit_per_unit)),  cls: Number(calcResult.profit_per_unit) > 0 ? (Number(calcResult.net_margin_pct) > 20 ? "text-green-600" : "text-amber-600") : "text-red-600" },
+                    { label: "Net margin",     val: pct(Number(calcResult.net_margin_pct)),   cls: Number(calcResult.net_margin_pct) > 20 ? "text-green-600" : Number(calcResult.net_margin_pct) > 10 ? "text-amber-600" : "text-red-600" },
+                    { label: "Monthly profit", val: inr(Number(calcResult.monthly_profit)),   cls: "text-blue-600", sub: calcResult.yearly_profit ? "~" + inr(Number(calcResult.yearly_profit)) + "/yr" : undefined },
+                    { label: "Break-even",     val: String(Number(calcResult.breakeven_units) || 0) + " units", cls: "text-slate-700" },
+                    { label: "ROI",            val: calcResult.roi_pct !== undefined ? pct(Number(calcResult.roi_pct)) : "—", cls: "text-purple-600", locked: !isBasicPlus },
+                    { label: "True ACOS",      val: calcResult.acos_pct !== undefined ? pct(Number(calcResult.acos_pct)) : "—", cls: calcResult.acos_pct !== undefined && Number(calcResult.acos_pct) > 20 ? "text-amber-600" : "text-slate-700", locked: !isBasicPlus },
+                  ] as { label: string; val: string; cls: string; sub?: string; locked?: boolean }[]).map((m, i) => (
+                    <div key={i} className={`relative bg-white rounded-2xl p-4 border border-slate-200 shadow-sm ${m.locked ? "overflow-hidden" : ""}`}>
+                      <p className="text-xs text-slate-400 mb-1">{m.label}</p>
+                      <p className={`text-xl font-black ${m.cls}`}>{m.val}</p>
+                      {m.sub && <p className="text-xs text-slate-400 mt-0.5">{m.sub}</p>}
+                      {m.locked && (
+                        <div className="absolute inset-0 bg-background backdrop-blur-none flex items-center justify-center cursor-pointer rounded-2xl"
+                          onClick={() => setUpgrade({ open: true, feature: m.label })}>
+                          <span className="text-xs text-amber-600 font-semibold flex items-center gap-1"><Lock className="w-3 h-3" /> Basic</span>
                         </div>
                       )}
-                    </CardContent>
-                  </Card>
-
-                  {isBasicPlus && calcResult.alerts && calcResult.alerts.length > 0 && (
-                    <div className="space-y-2">
-                      {calcResult.alerts.map((a, i) => <AlertBox key={i} type={a.type} message={a.message} />)}
                     </div>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
-        {activeTab === "scenario" && (
-          <div className="space-y-5">
-            {tabLoading && <div className="py-20 text-center"><RefreshCw className="w-8 h-8 text-blue-500 animate-spin mx-auto mb-3" /><p className="text-slate-400 text-sm">Generating scenarios...</p></div>}
-            {!tabLoading && scenarios && (
-              <>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                  {(scenarios as any[]).map((s, i) => (
-                    <Card key={i} className="bg-white/90 border border-slate-200 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all">
-                      <CardContent className="p-4">
-                        <div className="w-2.5 h-2.5 rounded-full mb-3" style={{ background: s.color }} />
-                        <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: s.color }}>{s.label}</p>
-                        <p className={cn("text-2xl font-black", s.profit_per_unit > 0 ? "text-slate-800" : "text-red-600")}>
-                          {inr(s.profit_per_unit)}<span className="text-[10px] font-normal text-slate-400 ml-1">/unit</span>
-                        </p>
-                        <p className={cn("text-xs font-bold mt-1", s.net_margin_pct > 15 ? "text-emerald-600" : "text-amber-600")}>{pct(s.net_margin_pct)} margin</p>
-                        <div className="mt-4 pt-4 border-t border-slate-100 space-y-1.5 text-xs">
-                          <div className="flex justify-between"><span>Monthly profit</span><span className="font-bold text-slate-700">{inr(s.monthly_profit)}</span></div>
-                          <div className="flex justify-between"><span>ROI</span><span className="font-bold text-slate-700">{pct(s.roi_pct)}</span></div>
-                          <div className="flex justify-between"><span>ACOS</span><span className={cn("font-bold", s.acos_pct > 25 ? "text-amber-600" : "text-slate-700")}>{pct(s.acos_pct)}</span></div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-                {mounted && (
-                  <Card className="bg-white/90 border border-slate-200 rounded-2xl shadow-lg">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm">Price sensitivity</CardTitle>
-                      <CardDescription className="text-xs">Margin impact across ±30% price variance</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <ResponsiveContainer width="100%" height={240}>
-                        <LineChart data={sensitivity}>
-                          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                          <XAxis dataKey="price" tickFormatter={(v) => `₹${Math.round(v/1000)}k`} tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                          <YAxis tickFormatter={(v) => `${v}%`} tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                          <Tooltip contentStyle={CHART_STYLE} formatter={(v: any) => [`${v.toFixed(1)}%`, "Margin"]} labelFormatter={(v) => `Price: ₹${v}`} />
-                          <Line type="monotone" dataKey="margin_pct" stroke="#3b82f6" strokeWidth={3} dot={false} activeDot={{ r: 5 }} />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-                )}
-              </>
-            )}
-          </div>
-        )}
-
-        {activeTab === "market" && (
-          <div className="space-y-5">
-            {tabLoading && <div className="py-20 text-center"><RefreshCw className="w-8 h-8 text-blue-500 animate-spin mx-auto mb-3" /><p className="text-slate-400 text-sm">Fetching real-time market data...</p></div>}
-            {!tabLoading && marketIntel && bench && (
-              <>
-                <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-2xl p-4 text-sm text-blue-800 font-medium">
-                  {String(marketIntel.insight)}
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-                  {[
-                    { label: "Avg Price", val: inr(Number(bench.avg_price)) },
-                    { label: "Min Price", val: inr(Number(bench.min_price)) },
-                    { label: "Max Price", val: inr(Number(bench.max_price)) },
-                    { label: "Avg Rating", val: bench.avg_rating ? `★ ${Number(bench.avg_rating).toFixed(1)}` : "—" },
-                    { label: "Monthly Sales", val: bench.avg_sales_volume ? Math.round(Number(bench.avg_sales_volume)).toLocaleString() : "—" },
-                    { label: "Avg Discount", val: bench.mrp_discount_depth_pct ? `${Math.round(Number(bench.mrp_discount_depth_pct))}%` : "—" },
-                  ].map((m, i) => (
-                    <Card key={i} className="p-3 bg-white border border-slate-200 text-center">
-                      <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider mb-1">{m.label}</p>
-                      <p className="text-base font-black text-slate-800">{m.val}</p>
-                    </Card>
                   ))}
                 </div>
 
-                {mounted && (
-                  <Card className="bg-white/90 border border-slate-200 rounded-2xl shadow-lg">
-                    <CardHeader className="pb-2"><CardTitle className="text-sm">Price Positioning</CardTitle></CardHeader>
-                    <CardContent>
-                      <ResponsiveContainer width="100%" height={200}>
-                        <BarChart data={[
-                          { name: "Min", value: Number(bench.min_price) },
-                          { name: "Yours", value: inputs.selling_price },
-                          { name: "Avg", value: Number(bench.avg_price) },
-                          { name: "Max", value: Number(bench.max_price) },
-                        ]} barCategoryGap="30%">
-                          <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                          <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
-                          <YAxis tickFormatter={(v) => `₹${Math.round(v/1000)}k`} tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                          <Tooltip contentStyle={CHART_STYLE} formatter={(v: any) => [inr(v), "Price"]} />
-                          <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={48}>
-                            {[0,1,2,3].map((i) => <Cell key={i} fill={["#94a3b8","#3b82f6","#f59e0b","#ef4444"][i]} />)}
-                          </Bar>
-                        </BarChart>
-                      </ResponsiveContainer>
-                    </CardContent>
-                  </Card>
-                )}
-              </>
-            )}
-          </div>
-        )}
-
-        {activeTab === "health" && (
-          <div className="space-y-5">
-            {tabLoading && <div className="py-20 text-center"><RefreshCw className="w-8 h-8 text-blue-500 animate-spin mx-auto mb-3" /><p className="text-slate-400 text-sm">Computing business health metrics...</p></div>}
-            {!tabLoading && healthData && (
-              <>
-                <div className={cn("rounded-3xl p-8 text-white shadow-xl flex items-center gap-8", 
-                  Number(healthData.overall_score) > 75 ? "bg-gradient-to-r from-emerald-500 to-green-600" : 
-                  Number(healthData.overall_score) > 50 ? "bg-gradient-to-r from-blue-500 to-indigo-600" : "bg-gradient-to-r from-amber-500 to-orange-600")}>
-                  <div className="shrink-0 text-center">
-                    <p className="text-6xl font-black">{Math.round(Number(healthData.overall_score))}</p>
-                    <p className="text-white/60 text-sm font-bold">SCORE</p>
-                  </div>
-                  <div>
-                    <Badge className="bg-white/20 text-white border-none text-xs px-3 py-1 mb-2">BUSINESS HEALTH</Badge>
-                    <h3 className="text-4xl font-black tracking-tight">{String(healthData.overall_label)}</h3>
-                    <p className="text-white/80 text-sm mt-1 max-w-md">Comprehensive analysis of your margins, unit velocity, and cost efficiency.</p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <Card className="bg-white/90 border border-slate-200 rounded-2xl shadow-lg">
-                    <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-indigo-500" /> Metric breakdown</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                      {(healthData.metrics as any[]).map((m, i) => {
-                        const color = m.status === "good" ? "#10b981" : m.status === "warn" ? "#f59e0b" : "#ef4444";
-                        return (
-                          <div key={i}>
-                            <div className="flex items-center justify-between text-xs font-bold mb-1.5">
-                              <span className="text-slate-600">{m.label}</span>
-                              <div className="flex items-center gap-2">
-                                <span className="text-slate-400 font-normal">{m.detail}</span>
-                                <span className="text-slate-900 w-8 text-right">{Math.round(m.score)}</span>
+                <Card className="bg-white border border-slate-200 rounded-2xl shadow-sm relative overflow-hidden">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                      Cost waterfall
+                      {!isBasicPlus && <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">Basic+</span>}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    {isBasicPlus && waterfallData.length > 0 ? (
+                      <div className="space-y-2.5">
+                        {waterfallData.map((row) => {
+                          const sp = Number(calcResult.selling_price) || 1;
+                          const rowPct = Math.min((row.value / sp) * 100, 100);
+                          return (
+                            <div key={row.name} className="flex items-center gap-3">
+                              <span className="text-xs text-slate-500 w-28 shrink-0">{row.name}</span>
+                              <div className="flex-1 bg-slate-100 rounded-full h-2 overflow-hidden">
+                                <div className="h-full rounded-full transition-all duration-300" style={{ width: `${Math.min(rowPct * 2.5, 100)}%`, background: row.color }} />
                               </div>
+                              <span className="text-xs font-semibold text-slate-700 w-14 text-right">{inr(row.value)}</span>
+                              <span className="text-xs text-slate-400 w-8 text-right">{rowPct.toFixed(0)}%</span>
                             </div>
-                            <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                              <div className="h-full transition-all duration-1000" style={{ width: `${m.score}%`, background: color }} />
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </CardContent>
-                  </Card>
-
-                  {mounted && (
-                    <Card className="bg-white/90 border border-slate-200 rounded-2xl shadow-lg">
-                      <CardHeader className="pb-2"><CardTitle className="text-sm">Health Radar</CardTitle></CardHeader>
-                      <CardContent>
-                        <ResponsiveContainer width="100%" height={240}>
-                          <RadarChart data={(healthData.metrics as any[]).map(m => ({ subject: m.label.split(' ')[0], value: m.score }))}>
-                            <PolarGrid stroke="#e2e8f0" />
-                            <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: "#64748b" }} />
-                            <Radar name="Health" dataKey="value" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.15} strokeWidth={2} />
-                          </RadarChart>
-                        </ResponsiveContainer>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-
-                <Card className="bg-white/90 border border-slate-200 rounded-2xl shadow-lg">
-                  <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Zap className="w-4 h-4 text-amber-500" /> Strategic roadmap</CardTitle></CardHeader>
-                  <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {(healthData.recommendations as any[]).map((r, i) => (
-                      <div key={i} className="flex gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100 hover:border-blue-200 hover:bg-blue-50/30 transition-all">
-                        <div className={cn("shrink-0 w-10 h-10 rounded-2xl flex items-center justify-center text-white font-black shadow-lg", 
-                          r.priority === "critical" || r.priority === "high" ? "bg-red-500" : "bg-amber-500")}>{i + 1}</div>
-                        <div>
-                          <div className="flex gap-2 mb-1.5">
-                            <span className="text-[10px] font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full uppercase">{r.area}</span>
-                            <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full uppercase", 
-                              r.priority === "critical" || r.priority === "high" ? "bg-red-100 text-red-600" : "bg-amber-100 text-amber-600")}>{r.priority}</span>
-                          </div>
-                          <p className="text-sm font-bold text-slate-800 leading-snug">{r.action}</p>
-                          <p className="text-xs text-emerald-600 font-medium mt-1">Impact: {r.impact}</p>
+                          );
+                        })}
+                        <div className="pt-2 border-t border-slate-200 flex items-center justify-between">
+                          <span className="text-sm font-semibold text-slate-700">Profit / unit</span>
+                          <span className={`text-base font-black ${Number(calcResult.profit_per_unit) > 0 ? "text-green-600" : "text-red-600"}`}>
+                            {inr(Number(calcResult.profit_per_unit))} ({pct(Number(calcResult.net_margin_pct))})
+                          </span>
                         </div>
                       </div>
-                    ))}
+                    ) : (
+                      <div className="relative min-h-[100px]">
+                        <div className="space-y-2 opacity-25 blur-sm pointer-events-none">
+                          {["Product cost", "FBA fee", "Referral fee", "Ad spend"].map((n) => (
+                            <div key={n} className="flex items-center gap-3">
+                              <span className="text-xs w-28 text-slate-400">{n}</span>
+                              <div className="flex-1 bg-slate-100 rounded-full h-2"><div className="h-full rounded-full bg-slate-300" style={{ width: "55%" }} /></div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                          <p className="text-sm font-semibold text-slate-700">Full cost breakdown</p>
+                          <button className="text-xs px-4 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full shadow"
+                            onClick={() => setUpgrade({ open: true, feature: "Cost waterfall" })}>Unlock — Basic ₹2,000/mo</button>
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
+
+                {isBasicPlus && calcResult.alerts && calcResult.alerts.length > 0 && (
+                  <div className="space-y-2">
+                    {calcResult.alerts.map((a, i) => <AlertBox key={i} type={String(a.type ?? "")} message={String(a.message ?? "")} />)}
+                  </div>
+                )}
               </>
             )}
           </div>
-        )}
+        </div>
+      )}
 
-        {activeTab === "ai" && (
-          <AIPanel
-            calcResult={calcResult}
-            inputs={inputs}
-            scenarios={scenarios}
-            healthData={healthData}
-            isBasicPlus={isBasicPlus}
-            isPremium={isPremium}
-            userId={userId?.toString()}
-            onUpgrade={(f) => setUpgrade({ open: true, feature: f })}
-          />
-        )}
-      </div>
+      {/* ══ SCENARIOS ════════════════════════════════════════════════════ */}
+      {activeTab === "scenario" && (
+        <div className="space-y-5">
+          {tabLoading && <Card className="bg-background rounded-2xl shadow-lg"><CardContent className="p-12 flex flex-col items-center gap-3"><RefreshCw className="w-8 h-8 text-blue-500 animate-spin" /><p className="text-slate-500 text-sm">Building scenarios...</p></CardContent></Card>}
+          {!tabLoading && scenarios && (
+            <>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {(scenarios as Record<string, unknown>[]).map((s, i) => (
+                  <Card key={i} className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md hover:scale-[1.01] transition-all">
+                    <CardContent className="p-4">
+                      <div className="w-2 h-2 rounded-full mb-2" style={{ background: String(s.color ?? "#888") }} />
+                      <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: String(s.color ?? "#888") }}>{String(s.label ?? "")}</p>
+                      <p className={`text-2xl font-black ${Number(s.profit_per_unit) > 0 ? "text-slate-800" : "text-red-600"}`}>
+                        {inr(Number(s.profit_per_unit))}<span className="text-xs font-normal text-slate-400">/unit</span>
+                      </p>
+                      <p className={`text-sm font-semibold mt-1 ${Number(s.net_margin_pct) > 15 ? "text-green-600" : "text-amber-600"}`}>{pct(Number(s.net_margin_pct))} margin</p>
+                      <div className="mt-3 pt-3 border-t border-slate-100 space-y-1 text-xs text-slate-500">
+                        <div className="flex justify-between"><span>Monthly</span><span className="font-semibold text-slate-700">{inr(Number(s.monthly_profit))}</span></div>
+                        <div className="flex justify-between"><span>Units</span><span className="font-semibold text-slate-700">{Number(s.units || 0).toLocaleString()}</span></div>
+                        <div className="flex justify-between"><span>ROI</span><span className="font-semibold text-slate-700">{pct(Number(s.roi_pct))}</span></div>
+                        <div className="flex justify-between"><span>ACOS</span><span className={`font-semibold ${Number(s.acos_pct) > 20 ? "text-amber-600" : "text-slate-700"}`}>{pct(Number(s.acos_pct))}</span></div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              <Card className="bg-white border border-slate-200 rounded-2xl shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm">Price sensitivity — margin vs selling price</CardTitle>
+                  <CardDescription>How net margin changes across a ±30% price range</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={220}>
+                    <LineChart data={sensitivity} margin={{ left: 0, right: 20, top: 4, bottom: 4 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                      <XAxis dataKey="price" tickFormatter={(v) => "₹" + (Number(v) / 1000).toFixed(1) + "k"} tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+                      <YAxis tickFormatter={(v) => `${v}%`} tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+                      <Tooltip contentStyle={CHART_STYLE} formatter={(v: unknown) => [Number(v).toFixed(1) + "%", "Net margin"]} labelFormatter={(v) => "Price: ₹" + String(v)} />
+                      <Line type="monotone" dataKey="margin_pct" stroke="#3b82f6" strokeWidth={2.5} dot={false} activeDot={{ r: 4 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ══ MARKET INTEL ════════════════════════════════════════════════ */}
+      {activeTab === "market" && (
+        <div className="space-y-5">
+          {tabLoading && <Card className="bg-background rounded-2xl shadow-lg"><CardContent className="p-12 flex flex-col items-center gap-3"><RefreshCw className="w-8 h-8 text-blue-500 animate-spin" /><p className="text-slate-500 text-sm">Fetching live market data from your DB...</p></CardContent></Card>}
+          {!tabLoading && marketIntel && bench && (
+            <>
+              <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-2xl p-4 text-sm text-blue-800 font-medium">{String(marketIntel.insight ?? "")}</div>
+              {marketIntel.your_price_position && (
+                <div className={`p-4 rounded-2xl text-sm font-semibold border-2 flex items-center gap-2 ${marketIntel.your_price_position === "Above market" ? "bg-purple-50 border-purple-300 text-purple-800" : marketIntel.your_price_position === "Below market" ? "bg-amber-50 border-amber-300 text-amber-800" : "bg-green-50 border-green-300 text-green-800"}`}>
+                  <Target className="w-4 h-4 shrink-0" />
+                  Your price ({inr(Number(marketIntel.your_price))}) is {String(marketIntel.your_price_position ?? "")} in this category
+                </div>
+              )}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                {([
+                  { label: "Avg price",      val: inr(Number(bench.avg_price)) },
+                  { label: "Min price",       val: inr(Number(bench.min_price)) },
+                  { label: "Max price",       val: inr(Number(bench.max_price)) },
+                  { label: "Avg rating",      val: bench.avg_rating != null ? "★ " + Number(bench.avg_rating).toFixed(1) : "N/A" },
+                  { label: "Avg sales / mo",  val: bench.avg_sales_volume != null ? Math.round(Number(bench.avg_sales_volume)).toLocaleString() : "N/A" },
+                  { label: "MRP discount",    val: bench.mrp_discount_depth_pct != null ? Math.round(Number(bench.mrp_discount_depth_pct)) + "%" : "N/A" },
+                ] as { label: string; val: string }[]).map((m, i) => (
+                  <div key={i} className="bg-white rounded-2xl p-3 border border-slate-200 shadow-sm text-center">
+                    <p className="text-xs text-slate-400 mb-1">{m.label}</p>
+                    <p className="text-base font-black text-slate-800">{m.val}</p>
+                  </div>
+                ))}
+              </div>
+
+              <Card className="bg-white border border-slate-200 rounded-2xl shadow-sm">
+                <CardHeader className="pb-2"><CardTitle className="text-sm">Your price vs market</CardTitle></CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={180}>
+                    <BarChart data={[
+                      { name: "Market min", value: Number(bench.min_price ?? 0) },
+                      { name: "Your price", value: Number(inputs.selling_price) },
+                      { name: "Market avg", value: Number(bench.avg_price ?? 0) },
+                      { name: "Market max", value: Number(bench.max_price ?? 0) },
+                    ]} margin={{ left: 10, right: 10, top: 4, bottom: 4 }} barCategoryGap="30%">
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                      <XAxis dataKey="name" tick={{ fontSize: 11, fill: "#64748b" }} axisLine={false} tickLine={false} />
+                      <YAxis tickFormatter={(v) => "₹" + (Number(v) / 1000).toFixed(0) + "k"} tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+                      <Tooltip contentStyle={CHART_STYLE} formatter={(v: unknown) => [inr(Number(v)), "Price"]} />
+                      <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={52}>
+                        {[0,1,2,3].map((i) => <Cell key={i} fill={["#94a3b8","#3b82f6","#f59e0b","#ef4444"][i]} />)}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+
+              {Array.isArray(marketIntel.price_bands) && (marketIntel.price_bands as unknown[]).length > 0 && (
+                <Card className="bg-white border border-slate-200 rounded-2xl shadow-sm">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Price band whitespace — from your DB</CardTitle>
+                    <CardDescription>Green = fewer competitors · Red = crowded · Real data</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {(marketIntel.price_bands as Record<string, unknown>[]).map((b, i) => {
+                      const opp = String(b.opportunity ?? "");
+                      const c = opp === "High" ? "#10b981" : opp === "Medium" ? "#f59e0b" : opp === "Low" ? "#3b82f6" : "#ef4444";
+                      const maxB = Math.max(...(marketIntel.price_bands as Record<string, unknown>[]).map((x) => Number(x.brand_count) || 0), 1);
+                      return (
+                        <div key={i} className="flex items-center gap-3">
+                          <span className="text-xs text-slate-600 w-40 shrink-0">{String(b.band ?? "")}</span>
+                          <div className="flex-1 bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                            <div className="h-full rounded-full transition-all" style={{ width: `${(Number(b.brand_count) / maxB) * 100}%`, background: c }} />
+                          </div>
+                          <span className="text-xs text-slate-500 w-20 text-right">{String(b.brand_count ?? "0")} brands</span>
+                          <span className="text-xs font-semibold w-16 text-right" style={{ color: c }}>{opp}</span>
+                        </div>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+              )}
+
+              {Array.isArray(bench.top_brands) && (bench.top_brands as unknown[]).length > 0 && (
+                <Card className="bg-white border border-slate-200 rounded-2xl shadow-sm">
+                  <CardHeader className="pb-2"><CardTitle className="text-sm">Top competitors in {String(inputs.category)} — {String(inputs.marketplace)}</CardTitle></CardHeader>
+                  <CardContent>
+                    <div className="flex flex-wrap gap-2">
+                      {(bench.top_brands as string[]).map((b, i) => (
+                        <span key={i} className="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-full text-xs font-medium text-slate-700">#{i + 1} {String(b ?? "")}</span>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ══ HEALTH ═══════════════════════════════════════════════════════ */}
+      {activeTab === "health" && (
+        <div className="space-y-5">
+          {tabLoading && <Card className="bg-background rounded-2xl shadow-lg"><CardContent className="p-12 flex flex-col items-center gap-3"><RefreshCw className="w-8 h-8 text-blue-500 animate-spin" /><p className="text-slate-500 text-sm">Computing health score...</p></CardContent></Card>}
+          {!tabLoading && healthData && (
+            <>
+              <div className={`relative rounded-3xl p-6 text-white overflow-hidden ${Number(healthData.overall_score) > 75 ? "bg-gradient-to-r from-emerald-500 to-green-600" : Number(healthData.overall_score) > 50 ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-amber-500 to-orange-500"}`}>
+                <div className="flex items-center gap-6">
+                  <div className="shrink-0 text-center">
+                    <p className="text-5xl font-black">{Math.round(Number(healthData.overall_score) || 0)}</p>
+                    <p className="text-white/70 text-sm">/100</p>
+                  </div>
+                  <div>
+                    <p className="text-white/70 text-xs uppercase tracking-wider mb-1">Business health</p>
+                    <p className="text-3xl font-black">{String(healthData.overall_label ?? "")}</p>
+                    <p className="text-white/80 text-sm mt-1">Based on margin, ACOS, returns, volume, and ROI</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <Card className="bg-white border border-slate-200 rounded-2xl shadow-sm">
+                  <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><ShieldCheck className="w-4 h-4 text-purple-500" /> Metric breakdown</CardTitle></CardHeader>
+                  <CardContent className="space-y-4">
+                    {(healthData.metrics as Record<string, unknown>[]).map((m, i) => {
+                      const color = String(m.status) === "good" ? "#10b981" : String(m.status) === "warn" ? "#f59e0b" : "#ef4444";
+                      return (
+                        <div key={i}>
+                          <div className="flex items-center justify-between text-sm mb-1.5">
+                            <span className="text-slate-600 font-medium">{String(m.label ?? "")}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-slate-400">{String(m.detail ?? "")}</span>
+                              <span className="font-bold text-slate-800 w-8 text-right">{Math.round(Number(m.score) || 0)}</span>
+                            </div>
+                          </div>
+                          <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Number(m.score) || 0}%`, background: color }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-white border border-slate-200 rounded-2xl shadow-sm">
+                  <CardHeader className="pb-2"><CardTitle className="text-sm">Health radar</CardTitle></CardHeader>
+                  <CardContent>
+                    <ResponsiveContainer width="100%" height={230}>
+                      <RadarChart data={(healthData.metrics as Record<string, unknown>[]).map((m) => ({ subject: String(m.label ?? "").replace(" health","").replace(" risk","").replace(" momentum",""), value: Number(m.score) || 0 }))}>
+                        <PolarGrid stroke="#e2e8f0" />
+                        <PolarAngleAxis dataKey="subject" tick={{ fontSize: 10, fill: "#64748b" }} />
+                        <PolarRadiusAxis angle={30} domain={[0, 100]} tick={{ fontSize: 9, fill: "#94a3b8" }} />
+                        <Radar name="Health" dataKey="value" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.15} strokeWidth={2} />
+                      </RadarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card className="bg-white border border-slate-200 rounded-2xl shadow-sm">
+                <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Zap className="w-4 h-4 text-amber-500" /> Action recommendations</CardTitle></CardHeader>
+                <CardContent className="space-y-3">
+                  {(healthData.recommendations as Record<string, unknown>[]).map((r, i) => (
+                    <div key={i} className="flex gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-200 hover:bg-blue-50/30 transition-all">
+                      <div className={`shrink-0 w-9 h-9 rounded-xl flex items-center justify-center text-white font-black text-sm shadow ${String(r.priority) === "high" || String(r.priority) === "critical" ? "bg-red-500" : "bg-amber-500"}`}>{i + 1}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">{String(r.area ?? "")}</span>
+                          <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${String(r.priority) === "high" || String(r.priority) === "critical" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>{String(r.priority ?? "")}</span>
+                        </div>
+                        <p className="text-sm font-medium text-slate-800">{String(r.action ?? "")}</p>
+                        <p className="text-xs text-green-600 font-medium mt-1">💡 {String(r.impact ?? "")}</p>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            </>
+          )}
+        </div>
+      )}
+
+      {/* ══ AI ADVISOR ══════════════════════════════════════════════════ */}
+      {activeTab === "ai" && (
+        <AIPanel
+          calcResult={calcResult}
+          inputs={inputs}
+          scenarios={scenarios}
+          healthData={healthData}
+          isBasicPlus={isBasicPlus}
+          isPremium={isPremium}
+          userId={userId?.toString()}
+          onUpgrade={(feature: string) => setUpgrade({ open: true, feature })}
+        />
+      )}
     </div>
-  );
-}
-
-export default function ProfitabilityOptimizerPage() {
-  return (
-    <Suspense fallback={<div className="p-8 text-center">Loading Optimizer...</div>}>
-      <ProfitabilityOptimizerContent />
-    </Suspense>
   );
 }

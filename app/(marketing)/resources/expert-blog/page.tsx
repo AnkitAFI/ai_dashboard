@@ -528,7 +528,7 @@ export default function ExpertBlog() {
       </section>
 
       {/* Category Filter Bar */}
-      <section className="sticky top-0 z-40 bg-white/95 dark:bg-gray-950/95 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 shadow-sm">
+      <section className="sticky top-0 z-40 bg-background opacity-100 dark:bg-gray-950/95 backdrop-blur-none border-b border-gray-200 dark:border-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="overflow-x-auto scrollbar-hide">
             {/* <div className="flex gap-2 py-4 min-w-max">
@@ -636,7 +636,7 @@ export default function ExpertBlog() {
                         </div>
                       )}
                       <div className="absolute top-3 right-3">
-                        <span className="bg-white/90 dark:bg-gray-950/90 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                        <span className="bg-background dark:bg-gray-950/90 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-none">
                           {article.category}
                         </span>
                       </div>
@@ -838,7 +838,7 @@ export default function ExpertBlog() {
           <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "10px 24px", marginBottom: 32 }}>
             {["Free forever plan", "No credit card", "Results in 5 min"].map(t => (
               <div key={t} className="text-blue-50 font-medium" style={{ fontSize: "14px", display: "flex", alignItems: "center", gap: 8, fontFamily: "'Sora', sans-serif" }}>
-                <span className="bg-white/20 p-1 rounded-full"><CheckCircle2 className="w-3 h-3 text-white" /></span> {t}
+                <span className="bg-background opacity-100 p-1 rounded-full"><CheckCircle2 className="w-3 h-3 text-white" /></span> {t}
               </div>
             ))}
           </div>

@@ -332,7 +332,7 @@ export default function AvoidStockoutsPage() {
       
       {/* ── NAVIGATION ────────────────────────────────────────────────────────── */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg" : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"
+        scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
@@ -1148,7 +1148,7 @@ export default function AvoidStockoutsPage() {
                 action: () => router.push("/demo"),
               },
             ].map((card, i) => (
-              <div key={i} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-left">
+              <div key={i} className="bg-background opacity-100 backdrop-blur-none border border-white/20 rounded-2xl p-6 text-left">
                 <p className="font-bold text-white mb-2">{card.label}</p>
                 <p className="text-white/80 text-sm mb-4">{card.desc}</p>
                 {card.cta === "Try Growth Plan →" ? (

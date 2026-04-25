@@ -106,7 +106,7 @@ function WhatsappAlertsContent() {
         <div className="space-y-6">
            <Card className="border-none shadow-xl shadow-slate-200/40 rounded-[2.5rem] bg-emerald-950 p-10 relative overflow-hidden text-white">
               {!isPremium && (
-                <div className="absolute inset-0 bg-emerald-950/80 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center text-center p-6 gap-4">
+                <div className="absolute inset-0 bg-emerald-950/80 backdrop-blur-none z-10 flex flex-col items-center justify-center text-center p-6 gap-4">
                    <div className="w-12 h-12 bg-amber-500 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/20"><Lock className="w-6 h-6 text-emerald-950" /></div>
                    <div><p className="text-sm font-black uppercase tracking-widest text-amber-500">Premium Required</p><p className="text-xs text-emerald-200/60 mt-1">Unlock AI-driven predictive alerting</p></div>
                    <Button className="rounded-xl bg-white text-emerald-950 font-black px-6 py-2">Upgrade Now</Button>
@@ -115,11 +115,11 @@ function WhatsappAlertsContent() {
               <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-900 rounded-full -mr-24 -mt-24 opacity-30 blur-2xl" />
               <h3 className="text-xl font-black mb-8 relative flex items-center gap-3"><Zap className="h-6 w-6 text-amber-400" /> Smart Prediction</h3>
               <div className="space-y-8 relative">
-                 <div className="p-6 bg-emerald-900/50 rounded-3xl border border-emerald-800/50 backdrop-blur-sm">
+                 <div className="p-6 bg-emerald-900/50 rounded-3xl border border-emerald-800/50 backdrop-blur-none">
                     <p className="text-[10px] font-black text-emerald-300 uppercase tracking-widest mb-3 flex items-center gap-2"><Sparkles className="w-3 h-3 text-amber-400" /> Predictive Alert</p>
                     <p className="text-sm font-medium leading-relaxed italic text-emerald-100">"Expect a price war on 'Gaming Mice' in the next 48 hours. Rivals are dumping stock. We will alert you the moment first drop hits."</p>
                  </div>
-                 <div className="flex items-center gap-3 p-4 bg-white/5 rounded-2xl border border-white/10">
+                 <div className="flex items-center gap-3 p-4 bg-background opacity-100 rounded-2xl border border-white/10">
                     <Activity className="w-4 h-4 text-sky-400" />
                     <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">Sync Frequency: REAL-TIME</span>
                  </div>
@@ -151,7 +151,7 @@ function Label({ children, className }: { children: React.ReactNode; className?:
 
 export default function WhatsappAlertsPage() {
   return (
-    <Suspense fallback={<div className="p-12 text-center"><Loader2 className="w-12 h-12 text-emerald-500 animate-spin mx-auto mb-6" /><p className="text-slate-400 font-black uppercase text-xs tracking-[0.2em]">Configuring Secure Notification Channels...</p></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>
       <WhatsappAlertsContent />
     </Suspense>
   );

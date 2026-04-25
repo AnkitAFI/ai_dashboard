@@ -827,7 +827,7 @@ export default function BestCompetitorPriceTrackingToolsIndia() {
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
 
       {/* ════════════════════════════════ NAV */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg" : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-8">
           <div className="flex items-center justify-between h-[72px] lg:h-20">
 

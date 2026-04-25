@@ -1,31 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
+
 import axios from "axios";
+import { Line } from "react-chartjs-2";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip as RechartsTooltip,
-  ResponsiveContainer,
-  Area,
-  AreaChart,
-} from "recharts";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { ChevronLeft, Star, ShoppingBag, TrendingUp, Sparkles, Zap, ArrowUpRight, ArrowDownRight, Share2, Heart, Shield } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+  Chart as ChartJS,
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+  Title,
+  Filler,
+} from "chart.js";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+ChartJS.register(
+  LineElement,
+  PointElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+  Title,
+  Filler
+);
 
 interface ProductData {
   product_name: string;
@@ -44,24 +46,53 @@ interface ForecastData {
   dates: string[];
 }
 
-export default function ProductDetailsPage() {
+interface Tab {
+  key: string;
+  label: string;
+}
+
+export default function ProductDetails() {
   const params = useParams();
-  const searchParams = useSearchParams();
+  const productName = params?.name ? decodeURIComponent(params.name as string) : "";
   const router = useRouter();
-  
-  const name = params.name as string;
-  const productName = decodeURIComponent(name || "").trim();
-  const fromCategory = searchParams.get("category") || "";
-  const sourceParam = searchParams.get("source") || "";
+
+  const [fromCategory, setFromCategory] = useState("");
+  const [fromPage, setFromPage] = useState(1);
+  const [source, setSource] = useState("");
+  const [fromDashboard, setFromDashboard] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const fromParam = urlParams.get("from");
+      const categoryParam = urlParams.get("category");
+      const sourceParam = urlParams.get("source");
+      const pageParam = urlParams.get("page");
+
+      setFromCategory(categoryParam || "");
+      setFromPage(parseInt(pageParam || "1"));
+      setSource(sourceParam || "");
+
+      const isDashboard = fromParam === "dashboard";
+      setFromDashboard(isDashboard);
+
+      console.log("=== PRODUCT DETAILS PAGE LOADED ===");
+      console.log("Full URL:", window.location.href);
+      console.log("from param:", fromParam);
+      console.log("isDashboard:", isDashboard);
+      console.log("source:", sourceParam);
+      console.log("===================================");
+    }
+  }, []);
 
   const [data, setData] = useState<ProductData | null>(null);
   const [forecast, setForecast] = useState<ForecastData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [activeRange, setActiveRange] = useState("1y");
+  const [activeTab, setActiveTab] = useState("1y");
   const [isAmazon, setIsAmazon] = useState(false);
 
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
   useEffect(() => {
     if (!productName) return;
@@ -72,12 +103,16 @@ export default function ProductDetailsPage() {
       .get<ProductData>(`${BASE_URL}/product/${encodeURIComponent(productName)}`)
       .then((res) => {
         setData(res.data);
-        const productSource = res.data.source || sourceParam || "";
-        setIsAmazon(productSource.toLowerCase() === "amazon");
+        const productSource = res.data.source || "";
+        const isAmazonProduct =
+          productSource.toLowerCase() === "amazon" ||
+          fromCategory.toLowerCase().includes("amazon");
+
+        setIsAmazon(isAmazonProduct);
       })
-      .catch(() => setError("Failed to synchronize product intelligence."))
+      .catch(() => setError("Failed to fetch product details"))
       .finally(() => setLoading(false));
-  }, [productName]);
+  }, [productName, fromCategory]);
 
   useEffect(() => {
     if (!productName || !data) return;
@@ -96,248 +131,301 @@ export default function ProductDetailsPage() {
     axios
       .get(endpoint)
       .then((res) => {
-        if (res.data.forecast && Array.isArray(res.data.forecast.forecast_dates)) {
-          setForecast({ 
-            dates: res.data.forecast.forecast_dates, 
-            forecast: res.data.forecast.forecast_sales 
-          });
-        } else if (Array.isArray(res.data.forecast_dates)) {
+        // Both Amazon and Flipkart now have same response structure
+        if (
+          res.data.forecast &&
+          Array.isArray(res.data.forecast.forecast_dates) &&
+          Array.isArray(res.data.forecast.forecast_sales)
+        ) {
+          const forecastDates = res.data.forecast.forecast_dates;
+          const forecastSales = res.data.forecast.forecast_sales;
+
+          setForecast({ dates: forecastDates, forecast: forecastSales });
+        } else if (
+          Array.isArray(res.data.forecast_dates) &&
+          Array.isArray(res.data.forecast_sales)
+        ) {
+          // Fallback for old response format
           setForecast({
             dates: res.data.forecast_dates,
             forecast: res.data.forecast_sales,
           });
+        } else {
+          setForecast(null);
         }
       })
-      .catch(console.error);
+      .catch((err) => {
+        console.error("Forecast fetch error:", err);
+        setForecast(null);
+      });
   }, [productName, isAmazon, data]);
 
-  if (loading) return (
-    <div className="max-w-7xl mx-auto p-8 space-y-12">
-      <Skeleton className="h-20 w-full rounded-3xl" />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <Skeleton className="h-[500px] rounded-[3rem]" />
-        <div className="space-y-8">
-          <Skeleton className="h-40 rounded-[2.5rem]" />
-          <Skeleton className="h-40 rounded-[2.5rem]" />
-        </div>
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-[50vh] text-sky-600">
+        <p className="text-sm sm:text-base">Loading product details...</p>
       </div>
-    </div>
-  );
+    );
 
-  if (!data) return (
-    <div className="flex flex-col h-[70vh] items-center justify-center text-slate-500">
-      <ShoppingBag className="w-16 h-16 mb-4 text-slate-200" />
-      <p className="font-black text-xl">Intelligence Gap Detected</p>
-      <p className="text-sm">No data available for this specific product ID.</p>
-      <Button onClick={() => router.back()} variant="link" className="text-sky-600 font-bold mt-4">Return to Directory</Button>
-    </div>
-  );
+  if (error)
+    return (
+      <div className="flex items-center justify-center min-h-[50vh] text-red-600">
+        <p className="text-sm sm:text-base">{error}</p>
+      </div>
+    );
 
-  const getChartData = () => {
-    if (!forecast) return [];
-    let slice = 365;
-    if (activeRange === "1w") slice = 7;
-    else if (activeRange === "1m") slice = 30;
-    else if (activeRange === "3m") slice = 90;
-    else if (activeRange === "6m") slice = 180;
+  if (!data)
+    return (
+      <div className="flex items-center justify-center min-h-[50vh] text-gray-500">
+        <p className="text-sm sm:text-base">No data available for this product.</p>
+      </div>
+    );
 
-    return forecast.dates.slice(0, slice).map((date, i) => ({
-      date: new Date(date).toLocaleDateString("en-IN", { day: 'numeric', month: 'short' }),
-      sales: forecast.forecast[i],
-    }));
+  let displayedForecast: number[] = [];
+  let displayedDates: string[] = [];
+
+  if (forecast?.forecast && forecast?.dates) {
+    switch (activeTab) {
+      case "1w":
+        displayedForecast = forecast.forecast.slice(0, 7);
+        displayedDates = forecast.dates.slice(0, 7);
+        break;
+      case "1m":
+        displayedForecast = forecast.forecast.slice(0, 30);
+        displayedDates = forecast.dates.slice(0, 30);
+        break;
+      case "3m":
+        displayedForecast = forecast.forecast.slice(0, 90);
+        displayedDates = forecast.dates.slice(0, 90);
+        break;
+      case "6m":
+        displayedForecast = forecast.forecast.slice(0, 180);
+        displayedDates = forecast.dates.slice(0, 180);
+        break;
+      case "1y":
+      default:
+        displayedForecast = forecast.forecast.slice(0, 365);
+        displayedDates = forecast.dates.slice(0, 365);
+        break;
+    }
+  }
+
+  const chartData = {
+    labels: displayedDates,
+    datasets: [
+      {
+        label: isAmazon ? "Amazon Sales Forecast" : "Flipkart Sales Forecast",
+        data: displayedForecast,
+        borderColor: isAmazon ? "rgba(54,162,235,1)" : "rgba(255,99,132,1)",
+        backgroundColor: isAmazon
+          ? "rgba(54,162,235,0.2)"
+          : "rgba(255,99,132,0.2)",
+        fill: true,
+        tension: 0.4,
+        pointRadius: 2,
+      },
+    ],
   };
 
-  const chartData = getChartData();
-  const priceTrend = data.max_price && data.min_price ? (data.max_price - data.min_price) / data.min_price * 100 : 0;
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: "top" as const },
+      title: {
+        display: true,
+        text: isAmazon
+          ? "Amazon Sales Forecast (Next 1 Year)"
+          : "Flipkart Sales Forecast (Next 1 Year)",
+      },
+    },
+    scales: {
+      x: { title: { display: true, text: "Date" } },
+      y: { title: { display: true, text: "Sales Volume" } },
+    },
+  };
+
+  const tabs: Tab[] = [
+    { key: "1w", label: "1 Week" },
+    { key: "1m", label: "1 Month" },
+    { key: "3m", label: "3 Months" },
+    { key: "6m", label: "6 Months" },
+    { key: "1y", label: "1 Year" },
+  ];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-12 pb-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      {/* Header Sticky Container */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-6">
-          <Button variant="ghost" size="icon" onClick={() => router.back()} className="w-12 h-12 rounded-2xl hover:bg-white shadow-sm border border-slate-50 text-sky-700">
-            <ChevronLeft className="w-6 h-6" />
-          </Button>
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Badge variant="outline" className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${isAmazon ? 'bg-orange-50 border-orange-100 text-orange-700' : 'bg-blue-50 border-blue-100 text-blue-700'}`}>
-                {isAmazon ? 'Amazon Store' : 'Flipkart Store'}
-              </Badge>
-              <Badge variant="outline" className="px-3 py-1 rounded-full bg-emerald-50 border-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest">
-                Active Telemetry
-              </Badge>
-            </div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight leading-tight max-w-2xl">{data.product_name}</h1>
-          </div>
+    <div className="space-y-6">
+      <header className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-lg rounded-2xl px-4 sm:px-6 lg:px-8 py-4 lg:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="w-full sm:w-auto">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-sky-900 break-words">{data.product_name}</h2>
+          <p className="text-xs sm:text-sm text-gray-500 mt-1">
+            Source: {isAmazon ? "Amazon" : "Flipkart"}
+          </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" className="w-12 h-12 rounded-2xl border-slate-100 text-slate-400 hover:text-rose-500 hover:bg-rose-50"><Heart className="w-5 h-5" /></Button>
-          <Button variant="outline" className="w-12 h-12 rounded-2xl border-slate-100 text-slate-400 hover:text-sky-600 hover:bg-sky-50"><Share2 className="w-5 h-5" /></Button>
-        </div>
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            console.log("=== BACK BUTTON CLICKED ===");
+            console.log("fromDashboard state:", fromDashboard);
+
+            const currentURL = new URLSearchParams(window.location.search);
+            const fromParam = currentURL.get("from");
+            console.log("Direct URL check - from param:", fromParam);
+
+            if (fromDashboard || fromParam === "dashboard") {
+              console.log("✅ Redirecting to Dashboard");
+              window.location.href = "/dashboard";
+              return;
+            }
+
+            if (fromCategory && source) {
+              console.log("Redirecting to category products");
+              router.push(
+                `/category-products/${encodeURIComponent(
+                  source
+                )}/${encodeURIComponent(fromCategory)}?page=${fromPage}`
+              );
+            } else {
+              console.log("Redirecting to categories list");
+              router.push("/categories");
+            }
+          }}
+          className="text-xs sm:text-sm font-medium bg-gradient-to-r from-sky-400 to-sky-600 text-white px-3 sm:px-4 py-2 rounded-xl shadow hover:shadow-lg hover:scale-105 transition-all whitespace-nowrap"
+        >
+          ← Back
+        </button>
+      </header>
+
+      {/* Product Image */}
+      <div className="flex justify-center">
+        <img
+          src={data.image || "/no-image.png"}
+          alt={data.product_name}
+          className="w-40 h-40 object-contain rounded-2xl shadow-md bg-white p-3"
+          onError={(e) => (e.currentTarget.src = "/no-image.png")}
+        />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Left: Product Showcase */}
-        <div className="lg:col-span-5 space-y-8">
-          <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden group">
-            <div className="aspect-square relative flex items-center justify-center p-12 bg-slate-50/50">
-              <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent pointer-events-none" />
-              <img 
-                src={data.image || "/no-image.png"} 
-                alt={data.product_name} 
-                className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700"
-              />
-              <div className="absolute bottom-8 right-8">
-                <Badge className="bg-white/90 backdrop-blur-md text-slate-900 shadow-xl border-none font-black text-xs px-6 py-3 rounded-full flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-emerald-500" /> Verified SKU
-                </Badge>
-              </div>
-            </div>
-          </Card>
-
-          <div className="grid grid-cols-2 gap-6">
-            <Card className="border-none shadow-xl rounded-[2.5rem] bg-white p-8">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 flex items-center gap-2">
-                <Star className="w-3 h-3 fill-amber-400 text-amber-400" /> Trust Score
-              </p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-4xl font-black text-slate-900">{data.avg_rating?.toFixed(1) || "—"}</span>
-                <span className="text-sm font-bold text-slate-300">/ 5.0</span>
-              </div>
-              <p className="text-xs font-medium text-slate-500 mt-2">From {data.total_reviews?.toLocaleString()} reviews</p>
-            </Card>
-            <Card className="border-none shadow-xl rounded-[2.5rem] bg-slate-900 text-white p-8">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Value Position</p>
-              <div className="flex items-baseline gap-2">
-                <span className="text-sm font-black text-sky-400">₹</span>
-                <span className="text-4xl font-black">{data.avg_price?.toLocaleString()}</span>
-              </div>
-              <p className="text-[10px] font-bold text-emerald-400 mt-2 flex items-center gap-1 uppercase tracking-tighter">
-                <TrendingUp className="w-3 h-3" /> Optimal Pricing
-              </p>
-            </Card>
-          </div>
-        </div>
-
-        {/* Right: Insights & Forecast */}
-        <div className="lg:col-span-7 space-y-8">
-          {/* Price Range Radar */}
-          <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
-            <CardHeader className="px-10 pt-10 pb-6 border-b border-slate-50">
-              <CardTitle className="text-xl font-black text-slate-900 flex items-center gap-3">
-                <Zap className="w-5 h-5 text-sky-600" /> Price Volatility Radar
-              </CardTitle>
-              <CardDescription className="text-xs font-medium">Historical range and market positioning</CardDescription>
-            </CardHeader>
-            <CardContent className="p-10 space-y-10">
-              <div className="relative pt-12 pb-4">
-                <div className="h-3 bg-slate-50 rounded-full flex items-center px-1">
-                  <div className="flex-1 h-2 bg-gradient-to-r from-emerald-400 via-sky-500 to-rose-400 rounded-full relative">
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 -mt-12 text-center">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">MIN</p>
-                      <p className="text-sm font-black text-emerald-600">₹{data.min_price?.toLocaleString() || '—'}</p>
-                    </div>
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 -mt-12 text-center">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">MAX</p>
-                      <p className="text-sm font-black text-rose-600">₹{data.max_price?.toLocaleString() || '—'}</p>
-                    </div>
-                    {/* Current Indicator */}
-                    <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
-                      <div className="w-5 h-5 bg-white border-4 border-slate-900 rounded-full shadow-lg" />
-                      <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 text-center w-32">
-                        <p className="text-sm font-black text-slate-900">₹{data.avg_price?.toLocaleString()}</p>
-                        <p className="text-[9px] font-bold text-slate-400 uppercase">Current Avg</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4 pt-8">
-                <div className="p-4 rounded-2xl bg-sky-50/50 flex flex-col gap-1">
-                  <p className="text-[9px] font-black text-sky-700 uppercase tracking-widest">Price Delta</p>
-                  <p className="text-lg font-black text-sky-900">{priceTrend.toFixed(1)}%</p>
-                </div>
-                <div className="p-4 rounded-2xl bg-slate-50/50 flex flex-col gap-1">
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Market Status</p>
-                  <p className="text-lg font-black text-slate-800">Competitive</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Sales Forecast Engine */}
-          <Card className="border-none shadow-2xl rounded-[3rem] bg-white overflow-hidden">
-            <CardHeader className="px-10 pt-10 pb-4 flex flex-col md:flex-row items-center justify-between gap-4">
-              <div>
-                <CardTitle className="text-xl font-black text-slate-900 flex items-center gap-3">
-                  <Sparkles className="w-5 h-5 text-indigo-600" /> Sales Forecast Engine
-                </CardTitle>
-                <CardDescription className="text-xs font-medium">LSTM-based predictive inventory modeling</CardDescription>
-              </div>
-              <Tabs value={activeRange} onValueChange={setActiveRange} className="w-full md:w-auto">
-                <TabsList className="bg-slate-100 rounded-xl p-1 h-10 border-none">
-                  {['1w', '1m', '3m', '1y'].map(range => (
-                    <TabsTrigger key={range} value={range} className="rounded-lg text-[10px] font-black uppercase tracking-widest px-4 data-[state=active]:bg-white data-[state=active]:shadow-sm data-[state=active]:text-indigo-600 transition-all">
-                      {range === '1w' ? '7D' : range.toUpperCase()}
-                    </TabsTrigger>
-                  ))}
-                </TabsList>
-              </Tabs>
-            </CardHeader>
-            <CardContent className="p-10 pt-4">
-              {forecast ? (
-                <div className="h-[300px] w-full mt-6">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={chartData}>
-                      <defs>
-                        <linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#6366f1" stopOpacity={0.2}/>
-                          <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                      <XAxis 
-                        dataKey="date" 
-                        axisLine={false} 
-                        tickLine={false} 
-                        tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}} 
-                        dy={10}
-                      />
-                      <YAxis 
-                        axisLine={false} 
-                        tickLine={false} 
-                        tick={{fontSize: 10, fontWeight: 700, fill: '#94a3b8'}}
-                      />
-                      <RechartsTooltip 
-                        contentStyle={{ borderRadius: '20px', border: 'none', boxShadow: '0 10px 30px rgba(0,0,0,0.1)', padding: '15px' }}
-                        labelStyle={{ fontSize: '10px', fontWeight: '900', textTransform: 'uppercase', color: '#94a3b8', marginBottom: '5px' }}
-                        itemStyle={{ fontSize: '14px', fontWeight: '900', color: '#1e293b' }}
-                      />
-                      <Area 
-                        type="monotone" 
-                        dataKey="sales" 
-                        stroke="#6366f1" 
-                        strokeWidth={4} 
-                        fillOpacity={1} 
-                        fill="url(#salesGradient)" 
-                        animationDuration={2000}
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                  <p className="text-[10px] text-center text-slate-400 font-bold uppercase tracking-[0.2em] mt-8 select-none">
-                    Proprietary LSTM Prediction Node · Confidence Interval: 84%
-                  </p>
-                </div>
-              ) : (
-                <div className="h-[300px] flex flex-col items-center justify-center bg-slate-50 rounded-[2.5rem] border-2 border-dashed border-slate-100">
-                  <Zap className="w-8 h-8 text-slate-200 mb-4" />
-                  <p className="text-sm font-bold text-slate-400">Historical velocity data required for prediction</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+      <div className="flex justify-start">
+        <span
+          className={`inline-flex items-center px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-medium ${isAmazon ? "bg-blue-100 text-blue-800" : "bg-orange-100 text-orange-800"
+            }`}
+        >
+          {isAmazon ? "🛒 Amazon Product" : "🛍️ Flipkart Product"}
+        </span>
       </div>
+
+      {/* Product Info Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        <Card className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-xl rounded-3xl hover:shadow-2xl hover:scale-[1.01] transition-all">
+          <CardHeader className="border-b border-sky-100 bg-gradient-to-r from-sky-50 to-white rounded-t-3xl">
+            <CardTitle className="text-sky-900 font-semibold text-base sm:text-lg">Average Price</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6 text-center">
+            <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-sky-600">
+              {data.avg_price != null ? `₹${data.avg_price.toFixed(2)}` : "N/A"}
+            </p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Based on market data</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-xl rounded-3xl hover:shadow-2xl hover:scale-[1.01] transition-all">
+          <CardHeader className="border-b border-sky-100 bg-gradient-to-r from-sky-50 to-white rounded-t-3xl">
+            <CardTitle className="text-sky-900 font-semibold text-base sm:text-lg">Minimum Price</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6 text-center">
+            <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-emerald-500">
+              {data.min_price != null ? `₹${data.min_price.toFixed(2)}` : "N/A"}
+            </p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Lowest observed</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-xl rounded-3xl hover:shadow-2xl hover:scale-[1.01] transition-all">
+          <CardHeader className="border-b border-sky-100 bg-gradient-to-r from-sky-50 to-white rounded-t-3xl">
+            <CardTitle className="text-sky-900 font-semibold text-base sm:text-lg">Maximum Price</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6 text-center">
+            <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-rose-500">
+              {data.max_price != null ? `₹${data.max_price.toFixed(2)}` : "N/A"}
+            </p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Highest observed</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-xl rounded-3xl hover:shadow-2xl hover:scale-[1.01] transition-all">
+          <CardHeader className="border-b border-sky-100 bg-gradient-to-r from-sky-50 to-white rounded-t-3xl">
+            <CardTitle className="text-sky-900 font-semibold text-base sm:text-lg">Average Rating</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6 text-center">
+            <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-emerald-500">
+              {data.avg_rating != null ? data.avg_rating.toFixed(1) : "N/A"}
+            </p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Customer satisfaction</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-xl rounded-3xl hover:shadow-2xl hover:scale-[1.01] transition-all">
+          <CardHeader className="border-b border-sky-100 bg-gradient-to-r from-sky-50 to-white rounded-t-3xl">
+            <CardTitle className="text-sky-900 font-semibold text-base sm:text-lg">Total Reviews</CardTitle>
+          </CardHeader>
+          <CardContent className="p-4 sm:p-6 text-center">
+            <p className="text-2xl sm:text-3xl lg:text-4xl font-bold text-orange-500">
+              {data.total_reviews ?? 0}
+            </p>
+            <p className="text-xs sm:text-sm text-gray-500 mt-1">Across all platforms</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Forecast Chart */}
+      <Card className="backdrop-blur-none bg-background border border-sky-100 shadow-xl rounded-3xl">
+        <CardHeader className="border-b border-sky-100 bg-gradient-to-r from-sky-50 to-white rounded-t-3xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <CardTitle className="text-sky-900 font-semibold text-base sm:text-lg">Forecast Trend</CardTitle>
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+            {tabs.map((tab: Tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setActiveTab(tab.key)}
+                className={`px-2 sm:px-3 py-1 rounded-lg text-xs sm:text-sm font-medium transition-all ${activeTab === tab.key
+                  ? "bg-sky-500 text-white shadow"
+                  : "bg-sky-100 text-sky-700 hover:bg-sky-200"
+                  }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </CardHeader>
+
+        <CardContent className="p-4 sm:p-6">
+          {forecast && displayedForecast.length > 0 ? (
+            <>
+              <div className="h-64 sm:h-80 lg:h-96">
+                <Line data={chartData} options={chartOptions} />
+              </div>
+              <div className="mt-3 pt-3 border-t border-slate-100">
+                <p className="text-[10px] sm:text-[11px] text-center text-slate-400/70 leading-relaxed select-none">
+                  <strong>Disclaimer:</strong> Sales forecasts are predictive estimates based on historical data and statistical models.
+                  Actual sales may vary due to market conditions, seasonality, competition, and other factors.
+                  Use these forecasts as guidance only and not as guaranteed outcomes.
+                </p>
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-8 sm:py-12">
+              <p className="text-gray-500 mb-2 text-sm sm:text-base">No forecast data available for this product.</p>
+              <p className="text-xs sm:text-sm text-gray-400">
+                {isAmazon
+                  ? "Amazon forecast endpoint may not have data for this product."
+                  : "Flipkart forecast endpoint may not have data for this product."}
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

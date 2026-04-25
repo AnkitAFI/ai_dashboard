@@ -1,21 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+
 import { useAuth } from "@/lib/auth-context";
 import {
   RefreshCw, Search, ArrowUpRight, ArrowDownRight,
   Users, ShieldCheck, ShieldOff, Crown, TrendingUp,
   Wallet, IndianRupee,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 
-const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL || "syatharthdelhi@gmail.com";
+const API_BASE_URL = ((process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")) || (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
+const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "") || "syatharthdelhi@gmail.com";
 const TIER_PRICE: Record<string, number> = { free: 0, basic: 1999, premium: 2999 };
 
 const inr = (n: number) => "₹" + n.toLocaleString("en-IN");
@@ -26,14 +22,13 @@ interface Stats {
   unverified_users: number; recent_signups_7days: number;
   by_tier: { free: number; basic: number; premium: number };
 }
-
 interface UserRow {
   id: number; first_name: string; last_name: string;
   email: string; subscription_tier: "free" | "basic" | "premium";
   is_verified: boolean; ai_chat_used: number; created_at: string;
 }
 
-export default function AdminPage() {
+export default function AdminDashboard() {
   const router = useRouter();
   const { user } = useAuth();
   const [stats, setStats] = useState<Stats | null>(null);
@@ -43,38 +38,25 @@ export default function AdminPage() {
   const [filterTier, setFilterTier] = useState("all");
   const [lastUpd, setLastUpd] = useState(new Date());
 
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  useEffect(() => {
+    if (!user) return;
+    if (user.email !== ADMIN_EMAIL) { router.push("/dashboard"); return; }
+    fetchStats();
+  }, [user]);
 
   const fetchStats = async () => {
     setIsLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/api/admin/stats`, { credentials: "include" });
-      if (!res.ok) {
-        router.push("/dashboard");
-        return;
-      }
+      const res = await fetch(`${API_BASE_URL}/api/admin/stats`, { 
+        credentials: "include",
+        cache: 'no-store'
+      });
+      if (!res.ok) { router.push("/dashboard"); return; }
       const data = await res.json();
-      setStats(data.stats);
-      setUsers(data.users);
-      setLastUpd(new Date());
-    } catch (err) {
-      console.error("Admin stats fetch failed:", err);
-      router.push("/dashboard");
-    } finally {
-      setIsLoading(false);
-    }
+      setStats(data.stats); setUsers(data.users); setLastUpd(new Date());
+    } catch { router.push("/dashboard"); }
+    finally { setIsLoading(false); }
   };
-
-  useEffect(() => {
-    if (!user) return;
-    if (user.email !== ADMIN_EMAIL) {
-      router.push("/dashboard");
-      return;
-    }
-    fetchStats();
-  }, [user]);
-
-  if (!user || user.email !== ADMIN_EMAIL) return null;
 
   const basicCount = stats?.by_tier?.basic ?? 0;
   const premiumCount = stats?.by_tier?.premium ?? 0;
@@ -94,198 +76,687 @@ export default function AdminPage() {
     );
   });
 
+  // ── Loading ──────────────────────────────────────────────────────────────
+  if (isLoading) return (
+    <div style={{
+      display: "flex", flexDirection: "column", alignItems: "center",
+      justifyContent: "center", minHeight: "400px",
+      fontFamily: "Inter, sans-serif"
+    }}>
+      <div style={{
+        width: 38, height: 38, borderRadius: "50%",
+        border: "3px solid #e2e8f0", borderTop: "3px solid #6366f1",
+        animation: "spin 0.8s linear infinite"
+      }} />
+      <p style={{
+        marginTop: 14, color: "#94a3b8", fontSize: 13,
+        letterSpacing: "0.06em"
+      }}>Loading…</p>
+      <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
+    </div>
+  );
+
   return (
-    <div className="max-w-[1600px] mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-16">
-      {/* Admin Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center shadow-lg shadow-indigo-100">
-            <Crown className="w-7 h-7 text-white" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Admin Command Center</h1>
-            <p className="text-sm text-slate-500 font-medium flex items-center gap-2">
-              System health and user intelligence overview
-              <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-100 text-[9px] font-black uppercase py-0 px-1.5">Live</Badge>
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden lg:block">
-            Last Updated: {lastUpd.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+    <div className="space-y-8" style={{ fontFamily: "Inter, -apple-system, sans-serif", color: "#1e293b" }}>
+      <style>{CSS}</style>
+
+      {/* Page title & Refresh */}
+      <div className="flex justify-between items-start mb-4">
+        <div className="fade-in">
+          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: "#1e293b" }}>
+            Admin Overview
+          </h1>
+          <p style={{ margin: "4px 0 0", fontSize: 13, color: "#94a3b8" }}>
+            Welcome back — here's what's happening today.
           </p>
-          <Button variant="outline" onClick={fetchStats} disabled={isLoading} className="rounded-xl border-slate-200 shadow-sm font-bold">
-            <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} /> Refresh
-          </Button>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <span style={{ fontSize: 11, color: "#94a3b8" }}>
+            Updated {lastUpd.toLocaleTimeString("en-IN",
+              { hour: "2-digit", minute: "2-digit" })}
+          </span>
+          <button onClick={fetchStats} className="hdr-btn">
+            <RefreshCw size={13} /> Refresh
+          </button>
         </div>
       </div>
 
-      {/* KPI Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        {[
-          { label: "Total Users", value: stats?.total_users ?? 0, sub: `+${stats?.recent_signups_7days ?? 0} signups`, icon: <Users className="w-5 h-5" />, color: "indigo" },
-          { label: "Verified", value: stats?.verified_users ?? 0, sub: `${pct(stats?.verified_users ?? 0, stats?.total_users ?? 0)}% rate`, icon: <ShieldCheck className="w-5 h-5" />, color: "emerald" },
-          { label: "Pending", value: stats?.unverified_users ?? 0, sub: "Action required", icon: <ShieldOff className="w-5 h-5" />, color: "amber" },
-          { label: "Paid Users", value: paidUsers, sub: `${pct(paidUsers, tierTotal)}% conversion`, icon: <Wallet className="w-5 h-5" />, color: "sky" },
-          { label: "Monthly Rev", value: inr(totalMRR), sub: "Gross MRR", icon: <IndianRupee className="w-5 h-5" />, color: "emerald" },
-          { label: "7D Growth", value: stats?.recent_signups_7days ?? 0, sub: "New accounts", icon: <TrendingUp className="w-5 h-5" />, color: "violet" },
-        ].map((kpi, i) => (
-          <Card key={i} className="border-none shadow-md rounded-2xl bg-white overflow-hidden group hover:shadow-xl transition-all">
-            <CardContent className="p-5 flex flex-col justify-between h-full space-y-4">
-              <div className="flex justify-between items-start">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{kpi.label}</p>
-                <div className={`p-2 rounded-xl bg-${kpi.color}-50 text-${kpi.color}-600 group-hover:scale-110 transition-transform`}>
-                  {kpi.icon}
-                </div>
+      {/* ── KPI CARDS ───────────────────────────────────────────────── */}
+      <div className="kpi-grid fade-in" style={{ animationDelay: "0.04s" }}>
+        {([
+          {
+            label: "Total Users", value: stats?.total_users ?? 0,
+            sub: `+${stats?.recent_signups_7days ?? 0} this week`,
+            up: true, isRupee: false,
+            icon: <Users size={20} />,
+            grad: "linear-gradient(135deg,#6366f1,#8b5cf6)",
+            glow: "#6366f133",
+          },
+          {
+            label: "New (7 Days)", value: stats?.recent_signups_7days ?? 0,
+            sub: "recent signups", up: true, isRupee: false,
+            icon: <TrendingUp size={20} />,
+            grad: "linear-gradient(135deg,#06b6d4,#0284c7)",
+            glow: "#06b6d433",
+          },
+          {
+            label: "Verified", value: stats?.verified_users ?? 0,
+            sub: `${pct(stats?.verified_users ?? 0, stats?.total_users ?? 0)}% of total`,
+            up: true, isRupee: false,
+            icon: <ShieldCheck size={20} />,
+            grad: "linear-gradient(135deg,#10b981,#059669)",
+            glow: "#10b98133",
+          },
+          {
+            label: "Unverified", value: stats?.unverified_users ?? 0,
+            sub: "pending verification", up: false, isRupee: false,
+            icon: <ShieldOff size={20} />,
+            grad: "linear-gradient(135deg,#f59e0b,#ef4444)",
+            glow: "#f59e0b33",
+          },
+          {
+            label: "Monthly Revenue", value: totalMRR,
+            sub: `${paidUsers} paid users`, up: true, isRupee: true,
+            icon: <IndianRupee size={20} />,
+            grad: "linear-gradient(135deg,#10b981,#059669)",
+            glow: "#10b98133",
+          },
+          {
+            label: "Paid Users", value: paidUsers,
+            sub: `${pct(paidUsers, tierTotal)}% conversion`,
+            up: true, isRupee: false,
+            icon: <Wallet size={20} />,
+            grad: "linear-gradient(135deg,#f59e0b,#f97316)",
+            glow: "#f59e0b33",
+          },
+        ] as const).map((card, i) => (
+          <div key={i} className="kpi-card"
+            style={{ animationDelay: `${i * 0.05}s` }}>
+            <div style={{ flex: 1 }}>
+              <p style={{
+                margin: "0 0 10px", fontSize: 11, fontWeight: 600,
+                color: "#94a3b8", textTransform: "uppercase",
+                letterSpacing: "0.1em"
+              }}>
+                {card.label}
+              </p>
+              <p style={{
+                margin: "0 0 10px",
+                fontSize: card.isRupee ? 22 : 30,
+                fontWeight: 700, color: "#1e293b", lineHeight: 1
+              }}>
+                {card.isRupee
+                  ? "₹" + card.value.toLocaleString("en-IN")
+                  : card.value.toLocaleString("en-IN")}
+              </p>
+              <div style={{
+                display: "flex", alignItems: "center", gap: 4,
+                fontSize: 12,
+                color: card.up ? "#10b981" : "#ef4444"
+              }}>
+                {card.up
+                  ? <ArrowUpRight size={13} />
+                  : <ArrowDownRight size={13} />}
+                <span>{card.sub}</span>
               </div>
-              <div>
-                <p className="text-2xl font-black text-slate-900">{kpi.value}</p>
-                <p className="text-[10px] text-slate-500 font-bold mt-1 flex items-center gap-1">
-                  <ArrowUpRight className="w-3 h-3 text-emerald-500" /> {kpi.sub}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+            <div style={{
+              width: 52, height: 52, borderRadius: 14, flexShrink: 0,
+              background: card.grad,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: "white",
+              boxShadow: `0 6px 18px ${card.glow}`,
+            }}>
+              {card.icon}
+            </div>
+          </div>
         ))}
       </div>
 
-      {/* Analytics Row */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-        <Card className="xl:col-span-2 border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden">
-          <CardHeader className="border-b border-slate-50 px-8 py-6 flex flex-row items-center justify-between">
-            <div>
-              <CardTitle className="text-xl font-black text-slate-900">User Intelligence Directory</CardTitle>
-              <CardDescription className="text-xs font-medium">Manage and monitor all platform members</CardDescription>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <Input 
-                  value={search} 
-                  onChange={(e) => setSearch(e.target.value)} 
-                  placeholder="Search by name or email..." 
-                  className="pl-9 w-64 h-10 rounded-xl bg-slate-50 border-none shadow-inner"
-                />
-              </div>
-              <Select value={filterTier} onValueChange={setFilterTier}>
-                <SelectTrigger className="w-32 h-10 rounded-xl bg-slate-50 border-none shadow-inner font-bold text-xs uppercase tracking-wider">
-                  <SelectValue placeholder="All Tiers" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-slate-100 font-bold">
-                  <SelectItem value="all">All Tiers</SelectItem>
-                  <SelectItem value="free">Free</SelectItem>
-                  <SelectItem value="basic">Basic</SelectItem>
-                  <SelectItem value="premium">Premium</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardHeader>
-          <CardContent className="p-0">
-            {isLoading ? (
-              <div className="p-8 space-y-4">
-                {[1, 2, 3, 4, 5].map(i => <Skeleton key={i} className="h-12 w-full rounded-xl" />)}
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                      <th className="px-8 py-4">Identity</th>
-                      <th className="px-6 py-4">Access Level</th>
-                      <th className="px-6 py-4">Status</th>
-                      <th className="px-6 py-4">Contribution</th>
-                      <th className="px-8 py-4 text-right">Joined</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-50">
-                    {filtered.map(u => (
-                      <tr key={u.id} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="px-8 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center font-black text-xs text-slate-600">
-                              {u.first_name?.[0]}{u.last_name?.[0]}
-                            </div>
-                            <div>
-                              <p className="text-sm font-bold text-slate-900">{u.first_name} {u.last_name}</p>
-                              <p className="text-[10px] font-medium text-slate-400">{u.email}</p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <Badge className={`rounded-full text-[10px] font-black uppercase tracking-wider ${
-                            u.subscription_tier === 'premium' ? 'bg-amber-50 text-amber-700 border-amber-100' : 
-                            u.subscription_tier === 'basic' ? 'bg-sky-50 text-sky-700 border-sky-100' : 
-                            'bg-slate-50 text-slate-600 border-slate-100'
-                          }`}>
-                            {u.subscription_tier}
-                          </Badge>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-2 h-2 rounded-full ${u.is_verified ? 'bg-emerald-500' : 'bg-amber-500'}`} />
-                            <span className={`text-[11px] font-bold ${u.is_verified ? 'text-emerald-700' : 'text-amber-700'}`}>
-                              {u.is_verified ? 'Verified' : 'Pending'}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <p className="text-sm font-black text-slate-900">{inr(TIER_PRICE[u.subscription_tier] || 0)}</p>
-                          <p className="text-[10px] font-medium text-slate-400">AI Used: {u.ai_chat_used || 0}</p>
-                        </td>
-                        <td className="px-8 py-4 text-right">
-                          <p className="text-xs font-bold text-slate-600">{new Date(u.created_at).toLocaleDateString("en-IN", { day: '2-digit', month: 'short', year: 'numeric' })}</p>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+      {/* ── MIDDLE ROW ──────────────────────────────────────────────── */}
+      <div className="mid-grid fade-in" style={{ animationDelay: "0.18s" }}>
 
-        <div className="space-y-8">
-          {/* Revenue Distribution Panel */}
-          <Card className="border-none shadow-xl rounded-[2.5rem] bg-white overflow-hidden h-full">
-            <CardHeader className="px-8 py-6">
-              <CardTitle className="text-xl font-black text-slate-900">Revenue Metrics</CardTitle>
-              <CardDescription className="text-xs font-medium">Detailed financial breakdown</CardDescription>
-            </CardHeader>
-            <CardContent className="px-8 pb-8 space-y-6">
-              <div className="p-6 rounded-3xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-100">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80 mb-2">Total Monthly Revenue</p>
-                <p className="text-3xl font-black">{inr(totalMRR)}</p>
-                <div className="mt-4 pt-4 border-t border-white/20 flex justify-between items-center">
-                  <span className="text-[10px] font-bold uppercase tracking-wider opacity-70">ARR Projection</span>
-                  <span className="text-sm font-black">{inr(totalMRR * 12)}</span>
-                </div>
+        {/* Tier Distribution */}
+        <div className="panel">
+          <PanelHead title="Tier Distribution"
+            sub="Users by subscription plan" />
+          <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+            {([
+              {
+                label: "Free", val: freeCount, color: "#94a3b8",
+                bg: "#f1f5f9", border: "#e2e8f0"
+              },
+              {
+                label: "Basic", val: basicCount, color: "#6366f1",
+                bg: "#ede9fe", border: "#c4b5fd"
+              },
+              {
+                label: "Premium", val: premiumCount, color: "#f59e0b",
+                bg: "#fef3c7", border: "#fde68a"
+              },
+            ]).map(t => (
+              <div key={t.label} style={{
+                flex: 1, padding: "14px 16px",
+                background: t.bg, border: `1px solid ${t.border}`,
+                borderRadius: 12,
+              }}>
+                <p style={{
+                  margin: "0 0 6px", fontSize: 10, fontWeight: 600,
+                  color: t.color, letterSpacing: "0.1em",
+                  textTransform: "uppercase"
+                }}>{t.label}</p>
+                <p style={{
+                  margin: "0 0 3px", fontSize: 24,
+                  fontWeight: 700, color: "#1e293b"
+                }}>{t.val}</p>
+                <p style={{ margin: 0, fontSize: 11, color: "#64748b" }}>
+                  {pct(t.val, tierTotal)}% of users
+                </p>
               </div>
+            ))}
+          </div>
+          {/* Stacked bar */}
+          <div style={{
+            height: 8, borderRadius: 6,
+            display: "flex", overflow: "hidden", gap: 2
+          }}>
+            <div style={{
+              width: `${pct(freeCount, tierTotal)}%`,
+              background: "#94a3b8", transition: "width 0.8s ease",
+              borderRadius: "6px 0 0 6px"
+            }} />
+            <div style={{
+              width: `${pct(basicCount, tierTotal)}%`,
+              background: "#6366f1", transition: "width 0.9s ease 0.05s"
+            }} />
+            <div style={{
+              width: `${pct(premiumCount, tierTotal)}%`,
+              background: "#f59e0b", transition: "width 1s ease 0.1s",
+              borderRadius: "0 6px 6px 0"
+            }} />
+          </div>
+          <div style={{ display: "flex", gap: 16, marginTop: 10 }}>
+            {([["#94a3b8", "Free"], ["#6366f1", "Basic"],
+            ["#f59e0b", "Premium"]] as const).map(([c, l]) => (
+              <div key={l} style={{
+                display: "flex", alignItems: "center",
+                gap: 6, fontSize: 11, color: "#64748b"
+              }}>
+                <div style={{
+                  width: 8, height: 8, borderRadius: 2,
+                  background: c
+                }} />
+                {l}
+              </div>
+            ))}
+          </div>
+        </div>
 
-              <div className="space-y-4">
-                {[
-                  { label: "Premium Tier", count: premiumCount, rev: premiumMRR, color: "bg-amber-500" },
-                  { label: "Basic Tier", count: basicCount, rev: basicMRR, color: "bg-sky-500" },
-                  { label: "Free Tier", count: freeCount, rev: 0, color: "bg-slate-300" },
-                ].map((row, i) => (
-                  <div key={i} className="flex items-center justify-between p-4 rounded-2xl bg-slate-50/50 border border-slate-100">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-3 h-3 rounded-full ${row.color}`} />
-                      <div>
-                        <p className="text-sm font-bold text-slate-800">{row.label}</p>
-                        <p className="text-[10px] font-medium text-slate-400">{row.count} Active Users</p>
+        {/* Revenue */}
+        <div className="panel">
+          <PanelHead title="Revenue" sub="Monthly & annual breakdown" />
+
+          <div style={{
+            background: "linear-gradient(135deg,#f0fdf4,#dcfce7)",
+            border: "1px solid #bbf7d0",
+            borderRadius: 12, padding: "16px 18px", marginBottom: 16,
+          }}>
+            <p style={{
+              margin: "0 0 5px", fontSize: 10, fontWeight: 600,
+              color: "#16a34a", letterSpacing: "0.14em",
+              textTransform: "uppercase"
+            }}>Monthly Recurring Revenue</p>
+            <p style={{
+              margin: 0, fontSize: 28, fontWeight: 700,
+              color: "#15803d"
+            }}>{inr(totalMRR)}</p>
+          </div>
+
+          {([
+            {
+              label: "Basic", count: basicCount, mrr: basicMRR,
+              color: "#6366f1", bg: "#ede9fe"
+            },
+            {
+              label: "Premium", count: premiumCount, mrr: premiumMRR,
+              color: "#f59e0b", bg: "#fef3c7"
+            },
+          ]).map((row, i, arr) => (
+            <div key={row.label} style={{
+              display: "flex", justifyContent: "space-between",
+              alignItems: "center", padding: "11px 0",
+              borderBottom: i < arr.length - 1
+                ? "1px solid #f1f5f9" : "none",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <div style={{
+                  width: 8, height: 8, borderRadius: "50%",
+                  background: row.color
+                }} />
+                <span style={{
+                  fontSize: 13, color: "#1e293b",
+                  fontWeight: 500
+                }}>{row.label}</span>
+                <span style={{ fontSize: 11, color: "#94a3b8" }}>
+                  {row.count} × {inr(TIER_PRICE[row.label.toLowerCase()])}
+                </span>
+              </div>
+              <span style={{
+                fontSize: 13, fontWeight: 700,
+                color: row.color
+              }}>{inr(row.mrr)}</span>
+            </div>
+          ))}
+
+          <div style={{
+            display: "flex", justifyContent: "space-between",
+            alignItems: "center", paddingTop: 12, marginTop: 4,
+            borderTop: "1px solid #f1f5f9"
+          }}>
+            <span style={{
+              fontSize: 11, color: "#94a3b8",
+              fontWeight: 600, textTransform: "uppercase",
+              letterSpacing: "0.1em"
+            }}>ARR Projection</span>
+            <span style={{
+              fontSize: 15, fontWeight: 700,
+              color: "#1e293b"
+            }}>{inr(totalMRR * 12)}</span>
+          </div>
+        </div>
+
+        {/* Quick Stats */}
+        <div className="panel">
+          <PanelHead title="Quick Stats" sub="Key metrics at a glance" />
+          {([
+            {
+              label: "Verification Rate",
+              value: `${pct(stats?.verified_users ?? 0, stats?.total_users ?? 0)}%`,
+              color: "#10b981"
+            },
+            {
+              label: "Paid Users",
+              value: paidUsers, color: "#6366f1"
+            },
+            {
+              label: "Free Users",
+              value: freeCount, color: "#94a3b8"
+            },
+            {
+              label: "Weekly Growth",
+              value: `+${stats?.recent_signups_7days ?? 0}`,
+              color: "#f59e0b"
+            },
+            {
+              label: "ARPU (Paid)",
+              value: paidUsers
+                ? inr(Math.round(totalMRR / paidUsers)) : "—",
+              color: "#8b5cf6"
+            },
+          ]).map((item, i, arr) => (
+            <div key={item.label} style={{
+              display: "flex", justifyContent: "space-between",
+              alignItems: "center", padding: "11px 0",
+              borderBottom: i < arr.length - 1
+                ? "1px solid #f1f5f9" : "none",
+            }}>
+              <span style={{ fontSize: 13, color: "#64748b" }}>
+                {item.label}
+              </span>
+              <span style={{
+                fontSize: 15, fontWeight: 700,
+                color: item.color
+              }}>
+                {item.value}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── USERS TABLE ─────────────────────────────────────────────── */}
+      <div className="panel fade-in"
+        style={{ padding: 0, animationDelay: "0.3s", overflow: "hidden" }}>
+
+        {/* Toolbar */}
+        <div style={{
+          padding: "18px 24px",
+          borderBottom: "1px solid #f1f5f9",
+          display: "flex", alignItems: "center",
+          justifyContent: "space-between", gap: 14
+        }}>
+          <div>
+            <p style={{
+              margin: "0 0 2px", fontSize: 15,
+              fontWeight: 700, color: "#1e293b"
+            }}>All Users</p>
+            <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>
+              {filtered.length} of {users.length} users
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ position: "relative" }}>
+              <Search size={12} style={{
+                position: "absolute", left: 10,
+                top: "50%", transform: "translateY(-50%)",
+                color: "#94a3b8"
+              }} />
+              <input value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search users..."
+                className="tbl-input"
+                style={{ paddingLeft: 28 }} />
+            </div>
+            <select value={filterTier}
+              onChange={e => setFilterTier(e.target.value)}
+              className="tbl-select">
+              <option value="all">All Tiers</option>
+              <option value="free">Free</option>
+              <option value="basic">Basic</option>
+              <option value="premium">Premium</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Table */}
+        <div style={{ overflowX: "auto" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ background: "#f8fafc" }}>
+                {["User", "Email", "Tier", "Status",
+                  "MRR Contribution", "AI Used", "Joined"].map(h => (
+                    <th key={h} style={{
+                      padding: "10px 18px", textAlign: "left",
+                      fontSize: 10, fontWeight: 600, color: "#94a3b8",
+                      textTransform: "uppercase", letterSpacing: "0.1em",
+                      whiteSpace: "nowrap",
+                      borderBottom: "1px solid #f1f5f9",
+                    }}>{h}</th>
+                  ))}
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr><td colSpan={7} style={{
+                  padding: 52, textAlign: "center",
+                  color: "#94a3b8", fontSize: 14,
+                }}>No users found</td></tr>
+              ) : filtered.map(u => {
+                const userMRR = TIER_PRICE[u.subscription_tier] ?? 0;
+                const hue = (u.id * 47) % 360;
+                const tierMeta = {
+                  free: {
+                    color: "#64748b", bg: "#f1f5f9",
+                    border: "#e2e8f0"
+                  },
+                  basic: {
+                    color: "#6366f1", bg: "#ede9fe",
+                    border: "#c4b5fd"
+                  },
+                  premium: {
+                    color: "#f59e0b", bg: "#fef3c7",
+                    border: "#fde68a"
+                  },
+                }[u.subscription_tier];
+
+                return (
+                  <tr key={u.id} className="tbl-row">
+
+                    {/* Name */}
+                    <td style={{ padding: "12px 18px" }}>
+                      <div style={{
+                        display: "flex",
+                        alignItems: "center", gap: 10
+                      }}>
+                        <div style={{
+                          width: 34, height: 34, borderRadius: 10,
+                          flexShrink: 0,
+                          background: `hsl(${hue},60%,92%)`,
+                          border: `1px solid hsl(${hue},50%,82%)`,
+                          display: "flex", alignItems: "center",
+                          justifyContent: "center", fontSize: 12,
+                          fontWeight: 700,
+                          color: `hsl(${hue},55%,38%)`,
+                        }}>
+                          {u.first_name?.[0]}{u.last_name?.[0]}
+                        </div>
+                        <div>
+                          <p style={{
+                            margin: 0, fontSize: 13,
+                            fontWeight: 600, color: "#1e293b"
+                          }}>
+                            {u.first_name} {u.last_name}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-black text-slate-900">{inr(row.rev)}</p>
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{pct(row.rev, totalMRR)}%</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                    </td>
+
+                    {/* Email */}
+                    <td style={{
+                      padding: "12px 18px", fontSize: 13,
+                      color: "#64748b"
+                    }}>{u.email}</td>
+
+                    {/* Tier */}
+                    <td style={{ padding: "12px 18px" }}>
+                      <span style={{
+                        padding: "4px 10px", fontSize: 11,
+                        fontWeight: 600, borderRadius: 6,
+                        textTransform: "capitalize",
+                        background: tierMeta.bg,
+                        color: tierMeta.color,
+                        border: `1px solid ${tierMeta.border}`,
+                      }}>
+                        {u.subscription_tier}
+                      </span>
+                    </td>
+
+                    {/* Status */}
+                    <td style={{ padding: "12px 18px" }}>
+                      <div style={{
+                        display: "flex",
+                        alignItems: "center", gap: 6
+                      }}>
+                        <div style={{
+                          width: 7, height: 7,
+                          borderRadius: "50%",
+                          background: u.is_verified
+                            ? "#10b981" : "#f59e0b"
+                        }} />
+                        <span style={{
+                          fontSize: 12, fontWeight: 500,
+                          color: u.is_verified
+                            ? "#10b981" : "#f59e0b"
+                        }}>
+                          {u.is_verified ? "Verified" : "Pending"}
+                        </span>
+                      </div>
+                    </td>
+
+                    {/* MRR */}
+                    <td style={{ padding: "12px 18px" }}>
+                      {userMRR > 0 ? (
+                        <span style={{
+                          fontSize: 13, fontWeight: 700,
+                          color: "#6366f1"
+                        }}>
+                          {inr(userMRR)}
+                          <span style={{
+                            fontSize: 11,
+                            color: "#94a3b8", fontWeight: 400
+                          }}>
+                            /mo
+                          </span>
+                        </span>
+                      ) : (
+                        <span style={{
+                          color: "#cbd5e1",
+                          fontSize: 13
+                        }}>—</span>
+                      )}
+                    </td>
+
+                    {/* AI Used */}
+                    <td style={{
+                      padding: "12px 18px", fontSize: 13,
+                      color: "#64748b"
+                    }}>
+                      {u.ai_chat_used ?? 0}
+                    </td>
+
+                    {/* Joined */}
+                    <td style={{
+                      padding: "12px 18px", fontSize: 12,
+                      color: "#94a3b8", whiteSpace: "nowrap"
+                    }}>
+                      {new Date(u.created_at).toLocaleDateString("en-IN",
+                        { day: "numeric", month: "short", year: "numeric" })}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer */}
+        <div style={{
+          padding: "12px 24px",
+          borderTop: "1px solid #f1f5f9",
+          display: "flex", justifyContent: "space-between",
+          alignItems: "center", background: "#f8fafc"
+        }}>
+          <span style={{ fontSize: 12, color: "#94a3b8" }}>
+            Showing {filtered.length} result
+            {filtered.length !== 1 ? "s" : ""}
+          </span>
+          <span style={{
+            fontSize: 11, color: "#cbd5e1",
+            letterSpacing: "0.1em", textTransform: "uppercase"
+          }}>
+            Insydz · Restricted Access
+          </span>
         </div>
       </div>
     </div>
   );
 }
+
+// ─── PanelHead ────────────────────────────────────────────────────────────────
+function PanelHead({ title, sub }: { title: string; sub: string }) {
+  return (
+    <div style={{ marginBottom: 18 }}>
+      <p style={{
+        margin: "0 0 2px", fontSize: 15,
+        fontWeight: 700, color: "#1e293b"
+      }}>{title}</p>
+      <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>{sub}</p>
+    </div>
+  );
+}
+
+// ─── CSS ──────────────────────────────────────────────────────────────────────
+const CSS = `
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  * { box-sizing: border-box; }
+
+  ::-webkit-scrollbar       { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: #f8fafc; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+
+  @keyframes spin   { to { transform: rotate(360deg); } }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes cellIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in { animation: fadeIn 0.45s ease forwards; }
+
+  /* KPI grid */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .kpi-card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px 18px;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    border: 1px solid #f1f5f9;
+    animation: cellIn 0.45s ease forwards;
+    opacity: 0;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .kpi-card:hover {
+    box-shadow: 0 6px 22px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+  }
+
+  /* Middle row */
+  .mid-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1.3fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  /* Shared panel */
+  .panel {
+    background: white;
+    border-radius: 14px;
+    padding: 22px 24px;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+    border: 1px solid #f1f5f9;
+  }
+
+  /* Header refresh button */
+  .hdr-btn {
+    display: flex; align-items: center; gap: 6px;
+    background: white; border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 6px 14px;
+    color: #64748b; font-size: 12px; cursor: pointer;
+    font-family: inherit; font-weight: 500;
+    transition: all 0.15s ease;
+  }
+  .hdr-btn:hover {
+    background: #f8fafc; border-color: #6366f1; color: #6366f1;
+  }
+
+  /* Table inputs */
+  .tbl-input {
+    background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 7px 12px;
+    color: #1e293b; font-size: 13px; width: 185px;
+    font-family: inherit; outline: none;
+  }
+  .tbl-input::placeholder { color: #94a3b8; }
+  .tbl-input:focus { border-color: #6366f1; }
+
+  .tbl-select {
+    background: #f8fafc; border: 1px solid #e2e8f0;
+    border-radius: 8px; padding: 7px 12px;
+    color: #64748b; font-size: 13px; cursor: pointer;
+    font-family: inherit; outline: none;
+  }
+  .tbl-select:focus { border-color: #6366f1; }
+
+  /* Table rows */
+  .tbl-row { border-top: 1px solid #f8fafc; transition: background 0.12s; }
+  .tbl-row:hover { background: #f8fafc; }
+
+  /* Responsive */
+  @media (max-width: 1280px) {
+    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .mid-grid { grid-template-columns: 1fr; }
+  }
+`;

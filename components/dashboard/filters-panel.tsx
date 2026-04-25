@@ -58,7 +58,7 @@ const TOP_N_OPTIONS = [
   { value: 100, label: "Top 100" },
 ];
 
-export default function FiltersPanel({ selectedSource }: { selectedSource: string }) {
+export default function FiltersPanel() {
   const { filters: appliedFiltersContext, setFilters: setAppliedFiltersContext, maxTopN } = useFilters();
   const { currentTier, limits } = useSubscriptionLimits();
 

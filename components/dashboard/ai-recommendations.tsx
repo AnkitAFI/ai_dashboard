@@ -148,7 +148,7 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
   }, [selectedSource, filters, hasAIRecommendations, usageLimitReached, BASE_URL]);
 
   return (
-    <Card className="bg-gradient-to-r from-sky-50 to-indigo-50 rounded-2xl p-6 border-sky-100 shadow-sm mb-8">
+    <Card className="bg-gradient-to-r from-sky-50 to-indigo-50 rounded-3xl p-6 sm:p-8 border-sky-100 shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between mb-4 p-0">
         <div className="flex items-center gap-3">
           <div className="p-2.5 bg-sky-600 rounded-xl"><Bot className="text-white h-5 w-5" /></div>

@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 // Public routes that should never be protected
 const publicRoutes = ["/login", "/signup", "/verify-email"];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
 
   // 1. Exclude public routes safely (supports nested paths)
@@ -14,7 +14,7 @@ export function middleware(request: NextRequest) {
 
   // 2. Adaptable Session Cookie
   // Name to be finalized during backend integration
-  const sessionCookieName = process.env.SESSION_COOKIE_NAME || "session";
+  const sessionCookieName = process.env.SESSION_COOKIE_NAME || "session_id";
   const sessionCookie = request.cookies.get(sessionCookieName);
 
   // If there's no session cookie, redirect to login

@@ -7,7 +7,7 @@ export default function AiAdvisorPage() {
   return (
     <div className="flex-1 w-full min-h-screen flex flex-col">
       {/* Header */}
-      <header className="bg-white/70 backdrop-blur-xl border border-sky-100 shadow-lg 
+      <header className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-lg 
         rounded-none sm:rounded-2xl 
         px-4 sm:px-6 lg:px-8 
         py-4 sm:py-5 
@@ -35,7 +35,7 @@ export default function AiAdvisorPage() {
 
       {/* Full Screen Chatbot Component */}
       <main className="flex-1 px-4 sm:px-6 pb-6 h-full flex flex-col">
-        <div className="flex-1 bg-white/50 backdrop-blur-sm rounded-3xl border border-sky-100 shadow-xl overflow-hidden flex flex-col">
+        <div className="flex-1 bg-background backdrop-blur-none rounded-3xl border border-sky-100 shadow-xl overflow-hidden flex flex-col">
           <Chatbot variant="fullscreen" />
         </div>
       </main>

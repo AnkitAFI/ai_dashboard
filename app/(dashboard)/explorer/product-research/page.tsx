@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 function ProductResearchContent() {
   const { user } = useAuth();
@@ -120,7 +120,7 @@ function ProductResearchContent() {
             <div className="flex flex-col md:flex-row gap-12 relative z-10">
               <div className="flex-1 space-y-8">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-sky-500/20 rounded-2xl flex items-center justify-center border border-sky-500/30 backdrop-blur-md"><Zap className="w-6 h-6 text-sky-400" /></div>
+                  <div className="w-12 h-12 bg-sky-500/20 rounded-2xl flex items-center justify-center border border-sky-500/30 backdrop-blur-none"><Zap className="w-6 h-6 text-sky-400" /></div>
                   <div>
                     <h3 className="text-2xl font-black tracking-tight">AI Strategic Evaluation</h3>
                     <p className="text-sky-300/60 text-xs font-bold uppercase tracking-[0.2em] mt-1">Niche Vulnerability Report</p>
@@ -128,11 +128,11 @@ function ProductResearchContent() {
                 </div>
                 <p className="text-sky-50/80 text-lg font-medium leading-relaxed italic border-l-4 border-sky-500/50 pl-6 py-2">"{result.ai_strategy}"</p>
                 <div className="grid grid-cols-2 gap-4">
-                   <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm"><p className="text-[10px] font-black text-sky-400 uppercase tracking-widest mb-1">Entry Risk</p><p className="text-sm font-bold text-white">LOW - High Gap Detected</p></div>
-                   <div className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm"><p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Market Fit</p><p className="text-sm font-bold text-white">Excellent (4.8/5.0)</p></div>
+                   <div className="p-4 rounded-2xl bg-background opacity-100 border border-white/10 backdrop-blur-none"><p className="text-[10px] font-black text-sky-400 uppercase tracking-widest mb-1">Entry Risk</p><p className="text-sm font-bold text-white">LOW - High Gap Detected</p></div>
+                   <div className="p-4 rounded-2xl bg-background opacity-100 border border-white/10 backdrop-blur-none"><p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Market Fit</p><p className="text-sm font-bold text-white">Excellent (4.8/5.0)</p></div>
                 </div>
               </div>
-              <div className="md:w-80 bg-white/10 backdrop-blur-2xl rounded-[2.5rem] p-10 border border-white/20 text-center flex flex-col items-center justify-center space-y-4 shadow-2xl shadow-black/20">
+              <div className="md:w-80 bg-background opacity-100 backdrop-blur-none rounded-[2.5rem] p-10 border border-white/20 text-center flex flex-col items-center justify-center space-y-4 shadow-2xl shadow-black/20">
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-sky-300">Opportunity Score</p>
                 <div className="relative">
                    <div className="text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white to-sky-400">{result.final_verdict?.opportunity_score ?? 0}</div>
@@ -150,7 +150,7 @@ function ProductResearchContent() {
 
 export default function ProductResearchPage() {
   return (
-    <Suspense fallback={<div className="p-12 text-center"><Loader2 className="w-12 h-12 text-sky-500 animate-spin mx-auto mb-6" /><p className="text-slate-400 font-black uppercase text-xs tracking-[0.2em]">Synthesizing Market Intelligence...</p></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>
       <ProductResearchContent />
     </Suspense>
   );

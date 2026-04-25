@@ -89,14 +89,13 @@
 }
 
 .metric-card {
-  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(245,240,255,0.8));
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(170,240,255,0.15);
+  @apply bg-card opacity-100 backdrop-blur-none;
+  border: 1px solid var(--border);
 }
 
 .dark .metric-card {
-  background: linear-gradient(135deg, rgba(30,30,50,0.9), rgba(20,20,40,0.8));
-  border: 1px solid rgba(255,255,255,0.08);
+  @apply bg-card opacity-100 backdrop-blur-none;
+  border: 1px solid var(--border);
 }
 
 .gradient-text {
@@ -153,11 +152,11 @@
 /* ===== Table & Cards ===== */
 th {
   @apply px-4 py-3 text-left cursor-pointer sticky top-0 z-10;
-  background-color: rgba(170, 240, 255, 0.1); /* 10% ice blue */
+  background-color: var(--muted); /* Use solid muted color */
 }
 
 tr:hover {
-  background-color: rgba(170, 240, 255, 0.2); /* hover highlight */
+  background-color: var(--muted); /* Use solid muted color */
   transition: background-color 0.2s ease-in-out;
 }
 

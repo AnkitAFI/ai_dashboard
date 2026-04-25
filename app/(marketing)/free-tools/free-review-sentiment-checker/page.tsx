@@ -188,7 +188,7 @@ export default function FreeReviewSentimentCheckerPage() {
       
 
       {/* ─── NAVIGATION ─── */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg' : 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-md'}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg' : 'bg-background dark:bg-gray-900/80 backdrop-blur-none'}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
 
@@ -527,7 +527,7 @@ export default function FreeReviewSentimentCheckerPage() {
                 <p className="text-purple-100 text-xs font-bold uppercase tracking-wider mb-1">Review Sentiment Report</p>
                 <p className="text-white font-bold text-lg">Noise Cancelling Earbuds · B09EXAMPLE</p>
               </div>
-              <span className="bg-white/20 border border-white/30 text-white text-xs font-semibold px-3 py-1 rounded-full">Amazon India</span>
+              <span className="bg-background opacity-100 border border-white/30 text-white text-xs font-semibold px-3 py-1 rounded-full">Amazon India</span>
             </div>
             {/* Score bar */}
             <div className="px-8 py-6 border-b border-gray-100 dark:border-gray-700">
@@ -849,7 +849,7 @@ export default function FreeReviewSentimentCheckerPage() {
               { type: "Growing Seller", msg: "Diagnose why your rating is falling get daily sentiment monitoring and WhatsApp alerts on the Growth Plan.", cta: "Try Growth Plan →", href: "/signup?plan=growth" },
               { type: "Agency", msg: "Run sentiment audits across all your clients' listings identify the fastest improvements to present at your next review.", cta: "Book Demo →", href: "/about/contact-us" },
             ].map((icp, i) => (
-              <div key={i} className="bg-white/12 border border-white/25 rounded-2xl p-6 text-left backdrop-blur-sm">
+              <div key={i} className="bg-background opacity-100 border border-white/25 rounded-2xl p-6 text-left backdrop-blur-none">
                 <p className="text-xs font-bold uppercase tracking-widest text-white/60 mb-2">{icp.type}</p>
                 <p className="text-sm text-white/90 leading-relaxed mb-4">{icp.msg}</p>
                  <a href={icp.href} className="text-sm font-bold text-white border-b border-white/40 hover:border-white pb-0.5 transition-colors">{icp.cta}</a>

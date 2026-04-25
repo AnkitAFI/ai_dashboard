@@ -19,7 +19,7 @@ interface MetricCardProps {
 function MetricCard({ title, value, icon, color, isLoading }: MetricCardProps) {
   if (isLoading) {
     return (
-      <Card className="metric-card bg-card rounded-xl p-6 border shadow-sm">
+      <Card className="metric-card bg-card rounded-3xl p-6 sm:p-8 border shadow-sm">
         <div className="flex items-center justify-between mb-4">
           <div className={cn("p-3 rounded-lg", color)}>
             <Skeleton className="h-6 w-6" />
@@ -32,7 +32,7 @@ function MetricCard({ title, value, icon, color, isLoading }: MetricCardProps) {
   }
 
   return (
-    <Card className="metric-card bg-card rounded-xl p-6 border shadow-sm hover:shadow-md transition-shadow">
+    <Card className="metric-card bg-card rounded-3xl p-6 sm:p-8 border shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between mb-4">
         <div className={cn("p-3 rounded-lg", color)}>{icon}</div>
         <Badge variant="secondary" className="ai-badge text-xs">
@@ -75,10 +75,10 @@ export default function MetricsCards({ selectedSource }: { selectedSource: strin
 
         if (table === "both") {
           const [flipkartStatsRes, amazonStatsRes, flipkartCatRes, amazonCatRes] = await Promise.all([
-            fetch(`${BASE_URL}/analytics-summary?source=flipkart&${queryParams}`),
-            fetch(`${BASE_URL}/analytics-summary?source=amazon&${queryParams}`),
-            fetch(`${BASE_URL}/flipkart/categories?${queryParams}`),
-            fetch(`${BASE_URL}/rapidapi_amazon_products/categories?${queryParams}`),
+            fetch(`${BASE_URL}/analytics-summary?source=flipkart&${queryParams}`, { cache: 'no-store' }),
+            fetch(`${BASE_URL}/analytics-summary?source=amazon&${queryParams}`, { cache: 'no-store' }),
+            fetch(`${BASE_URL}/flipkart/categories?${queryParams}`, { cache: 'no-store' }),
+            fetch(`${BASE_URL}/rapidapi_amazon_products/categories?${queryParams}`, { cache: 'no-store' }),
           ]);
           setFlipkartStats(await flipkartStatsRes.json());
           setAmazonStats(await amazonStatsRes.json());
@@ -86,8 +86,8 @@ export default function MetricsCards({ selectedSource }: { selectedSource: strin
           setAmazonCategories(await amazonCatRes.json());
         } else if (table === "amazon") {
           const [statsRes, catsRes] = await Promise.all([
-            fetch(`${BASE_URL}/analytics-summary?source=amazon&${queryParams}`),
-            fetch(`${BASE_URL}/rapidapi_amazon_products/categories?${queryParams}`),
+            fetch(`${BASE_URL}/analytics-summary?source=amazon&${queryParams}`, { cache: 'no-store' }),
+            fetch(`${BASE_URL}/rapidapi_amazon_products/categories?${queryParams}`, { cache: 'no-store' }),
           ]);
           setAmazonStats(await statsRes.json());
           setAmazonCategories(await catsRes.json());
@@ -95,8 +95,8 @@ export default function MetricsCards({ selectedSource }: { selectedSource: strin
           setFlipkartCategories([]);
         } else {
           const [statsRes, catsRes] = await Promise.all([
-            fetch(`${BASE_URL}/analytics-summary?source=flipkart&${queryParams}`),
-            fetch(`${BASE_URL}/flipkart/categories?${queryParams}`),
+            fetch(`${BASE_URL}/analytics-summary?source=flipkart&${queryParams}`, { cache: 'no-store' }),
+            fetch(`${BASE_URL}/flipkart/categories?${queryParams}`, { cache: 'no-store' }),
           ]);
           setFlipkartStats(await statsRes.json());
           setFlipkartCategories(await catsRes.json());
@@ -158,7 +158,7 @@ export default function MetricsCards({ selectedSource }: { selectedSource: strin
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
       {cards.map((card, index) => (
         <MetricCard key={index} title={card.title} value={card.value} icon={card.icon} color={card.color} isLoading={isLoading} />
       ))}

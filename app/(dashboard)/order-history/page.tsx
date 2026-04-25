@@ -10,8 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
+  X,
   Receipt,
   CheckCircle2,
   Clock,
@@ -25,7 +25,8 @@ import {
   FileText,
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
+
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 interface PaymentOrder {
   id: number;
@@ -96,21 +97,177 @@ function formatAmount(amount: number) {
   }).format(amount);
 }
 
-export default function OrderHistoryPage() {
-  const { user } = useAuth();
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+
+function SkeletonRow() {
+  return (
+    <div className="flex items-center gap-4 p-5 border-b border-slate-100 last:border-0 animate-pulse">
+      <div className="w-10 h-10 rounded-xl bg-slate-200 flex-shrink-0" />
+      <div className="flex-1 space-y-2">
+        <div className="h-4 bg-slate-200 rounded w-1/3" />
+        <div className="h-3 bg-slate-100 rounded w-1/4" />
+      </div>
+      <div className="h-4 bg-slate-200 rounded w-16" />
+      <div className="h-6 bg-slate-200 rounded-full w-16" />
+    </div>
+  );
+}
+
+// ─── Empty State ──────────────────────────────────────────────────────────────
+
+function EmptyState() {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 space-y-4 text-center">
+      <div className="w-20 h-20 rounded-3xl bg-sky-50 border border-sky-100 flex items-center justify-center">
+        <Receipt className="h-9 w-9 text-sky-300" />
+      </div>
+      <div>
+        <p className="text-slate-700 font-bold text-lg">No orders yet</p>
+        <p className="text-slate-400 text-sm mt-1">Your payment history will appear here once you subscribe to a plan.</p>
+      </div>
+      <Button
+        onClick={() => (window.location.href = "/subscription")}
+        className="bg-sky-600 hover:bg-sky-700 text-white rounded-xl px-6 font-bold"
+      >
+        View Plans
+      </Button>
+    </div>
+  );
+}
+
+// ─── Order Detail Modal
+
+function OrderDetailModal({
+  order,
+  onClose,
+}: {
+  order: PaymentOrder;
+  onClose: () => void;
+}) {
+  const status = STATUS_CONFIG[order.status] ?? STATUS_CONFIG.pending;
+
+  return (
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-none z-[100] flex items-center justify-center p-4"
+      onClick={onClose}>
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 space-y-5"
+        onClick={(e) => e.stopPropagation()}>
+
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Invoice</p>
+            <p className="text-xl font-extrabold text-slate-900">
+              {order.invoice_number ?? `#ORD-${order.id}`}
+            </p>
+          </div>
+          <button onClick={onClose}
+            className="p-2 rounded-xl hover:bg-slate-100 transition-colors">
+            <X className="h-5 w-5 text-slate-500" />
+          </button>
+        </div>
+
+        {/* Status badge */}
+        <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-bold border ${status.badgeClass}`}>
+          {status.icon}
+          {status.label}
+        </div>
+
+        {/* Plan */}
+        <div className="bg-slate-50 rounded-2xl p-4 space-y-3">
+          <div className="flex justify-between text-sm">
+            <span className="text-slate-500">Plan</span>
+            <span className={`font-bold capitalize px-2 py-0.5 rounded-full text-xs ${PLAN_BADGE[order.plan_id] ?? "bg-slate-100 text-slate-600"}`}>
+              {order.plan_id}
+            </span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-slate-500">Base Amount</span>
+            <span className="font-semibold text-slate-800">{formatAmount(order.base_amount)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-slate-500">GST (18%)</span>
+            <span className="font-semibold text-slate-800">{formatAmount(order.gst_amount)}</span>
+          </div>
+          <div className="border-t border-slate-200 pt-3 flex justify-between">
+            <span className="font-bold text-slate-700">Total Paid</span>
+            <span className="font-extrabold text-sky-700 text-lg">{formatAmount(order.amount)}</span>
+          </div>
+        </div>
+
+        {/* Meta */}
+        <div className="space-y-2.5 text-sm">
+          {order.razorpay_payment_id && (
+            <div className="flex justify-between">
+              <span className="text-slate-400 flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5" /> Payment ID</span>
+              <span className="font-mono text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded-lg">{order.razorpay_payment_id}</span>
+            </div>
+          )}
+          {order.gst_number && (
+            <div className="flex justify-between">
+              <span className="text-slate-400 flex items-center gap-1.5"><FileText className="h-3.5 w-3.5" /> GSTIN</span>
+              <span className="font-mono text-xs text-slate-600">{order.gst_number}</span>
+            </div>
+          )}
+          <div className="flex justify-between">
+            <span className="text-slate-400 flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Order Date</span>
+            <span className="text-slate-700 font-medium">{formatDate(order.created_at)}</span>
+          </div>
+          {order.paid_at && (
+            <div className="flex justify-between">
+              <span className="text-slate-400 flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5" /> Paid On</span>
+              <span className="text-slate-700 font-medium">{formatDate(order.paid_at)}</span>
+            </div>
+          )}
+          {order.expires_at && (
+            <div className="flex justify-between">
+              <span className="text-slate-400 flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Expires</span>
+              <span className="text-slate-700 font-medium">{formatDate(order.expires_at)}</span>
+            </div>
+          )}
+        </div>
+
+        {order.status === "paid" ? (
+          <Button
+            className="w-full bg-sky-600 hover:bg-sky-700 text-white rounded-xl h-11 font-bold flex items-center gap-2"
+            onClick={() =>
+              window.open(`${API_BASE}/api/payments/invoice/${order.id}`, "_blank")
+            }
+          >
+            <Download className="h-4 w-4" />
+            Download Invoice
+          </Button>
+        ) : (
+          <Button
+            className="w-full rounded-xl h-11 font-bold"
+            variant="outline"
+            onClick={onClose}
+          >
+            Close
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// MAIN PAGE
+
+export default function OrderHistory() {
+  const { user, isLoading: authLoading } = useAuth();
+
   const [orders, setOrders] = useState<PaymentOrder[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<PaymentOrder | null>(null);
 
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  // ── Fetch orders
 
   const fetchOrders = async () => {
     if (!user?.id) return;
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${BASE_URL}/api/payments/history/${user.id}`, {
+      const res = await fetch(`${API_BASE}/api/payments/history/${user.id}`, {
         credentials: "include",
       });
       if (!res.ok) {
@@ -130,69 +287,111 @@ export default function OrderHistoryPage() {
     if (user) fetchOrders();
   }, [user]);
 
-  if (!user) return null;
+  // ── Auth guards
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center space-y-3">
+          <div className="w-12 h-12 rounded-full border-4 border-sky-100 border-t-sky-600 animate-spin mx-auto" />
+          <p className="text-slate-600 font-medium">Loading order history...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Card className="w-full max-w-md shadow-xl rounded-3xl">
+          <CardHeader>
+            <CardTitle>Authentication Required</CardTitle>
+            <CardDescription>Please login to view your order history</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => (window.location.href = "/login")}
+              className="w-full bg-sky-600 hover:bg-sky-700 text-white rounded-xl h-11 font-bold">
+              Go to Login
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // ── Stats
 
   const totalPaid = orders.filter((o) => o.status === "paid").reduce((s, o) => s + o.amount, 0);
   const paidCount = orders.filter((o) => o.status === "paid").length;
   const pendingCount = orders.filter((o) => o.status === "pending").length;
 
+  // ── Render
+
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Hero Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="space-y-6 max-w-4xl mx-auto w-full">
+      {/* Modal */}
+      {selectedOrder && (
+        <OrderDetailModal order={selectedOrder} onClose={() => setSelectedOrder(null)} />
+      )}
+
+      {/* Title & Actions */}
+      <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Order History</h1>
-          <p className="text-sm text-slate-500 font-medium">All your past payments and invoices in one place</p>
+          <h1 className="text-2xl font-extrabold text-sky-900 tracking-tight">Order History</h1>
+          <p className="text-slate-500 text-sm">{user.email}</p>
         </div>
         <Button
           variant="outline"
+          size="sm"
           onClick={fetchOrders}
           disabled={loading}
-          className="rounded-xl border-sky-100 text-sky-700 hover:bg-sky-50 shadow-sm"
+          className="items-center gap-2 rounded-xl border-sky-200 text-sky-700 hover:bg-sky-50"
         >
-          <RefreshCw className={`h-4 w-4 mr-2 ${loading ? "animate-spin" : ""}`} />
-          Refresh History
+          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          Refresh
         </Button>
       </div>
 
+      {/* Error */}
       {error && (
-        <Alert variant="destructive" className="rounded-2xl border-rose-200 bg-rose-50/50">
+        <Alert variant="destructive" className="rounded-2xl border-rose-200 bg-rose-50">
           <AlertCircle className="h-4 w-4 text-rose-500" />
           <AlertDescription className="text-rose-700">{error}</AlertDescription>
         </Alert>
       )}
 
-      {/* Stats Overview */}
+      {/* Stats Row */}
       {!loading && orders.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
             {
               label: "Total Spent",
               value: formatAmount(totalPaid),
-              icon: <IndianRupee className="h-5 w-5 text-sky-600" />,
+              icon: <IndianRupee className="h-5 w-5 text-sky-500" />,
               bg: "bg-sky-50",
             },
             {
               label: "Successful",
               value: paidCount,
-              icon: <CheckCircle2 className="h-5 w-5 text-emerald-600" />,
+              icon: <CheckCircle2 className="h-5 w-5 text-emerald-500" />,
               bg: "bg-emerald-50",
             },
             {
               label: "Pending",
               value: pendingCount,
-              icon: <Clock className="h-5 w-5 text-amber-600" />,
+              icon: <Clock className="h-5 w-5 text-amber-500" />,
               bg: "bg-amber-50",
             },
           ].map((stat) => (
-            <Card key={stat.label} className={`${stat.bg} border-none shadow-md rounded-3xl overflow-hidden`}>
-              <CardContent className="p-6 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center flex-shrink-0">
+            <Card key={stat.label}
+              className={`${stat.bg} border-0 shadow-sm rounded-2xl`}>
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-white shadow-sm flex items-center justify-center flex-shrink-0">
                   {stat.icon}
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500 font-bold uppercase tracking-wider">{stat.label}</p>
-                  <p className="text-2xl font-black text-slate-900">{stat.value}</p>
+                  <p className="text-xs text-slate-500 font-medium">{stat.label}</p>
+                  <p className="text-base font-extrabold text-slate-800">{stat.value}</p>
                 </div>
               </CardContent>
             </Card>
@@ -200,157 +399,115 @@ export default function OrderHistoryPage() {
         </div>
       )}
 
-      {/* Orders List */}
-      <Card className="rounded-[2.5rem] shadow-xl border-none bg-white overflow-hidden">
-        <CardHeader className="border-b border-slate-50 px-8 py-6">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-xl font-bold text-slate-800 flex items-center gap-2">
-              <Receipt className="h-5 w-5 text-sky-500" />
-              Recent Transactions
-            </CardTitle>
-            {!loading && <Badge variant="secondary" className="rounded-full">{orders.length} Records</Badge>}
-          </div>
+      {/* Orders Table Card */}
+      <Card className="rounded-3xl shadow-sm border border-sky-100 overflow-hidden">
+        <CardHeader className="border-b border-slate-100 px-6 py-5">
+          <CardTitle className="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+            <Receipt className="h-5 w-5 text-sky-500" />
+            Payment Records
+          </CardTitle>
+          <CardDescription>
+            {loading ? "Fetching your orders..." : `${orders.length} order${orders.length !== 1 ? "s" : ""} found`}
+          </CardDescription>
         </CardHeader>
+
         <CardContent className="p-0">
           {loading ? (
-            <div className="p-8 space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <Skeleton className="w-12 h-12 rounded-2xl" />
-                  <div className="space-y-2 flex-1">
-                    <Skeleton className="h-4 w-1/4" />
-                    <Skeleton className="h-3 w-1/3" />
-                  </div>
-                  <Skeleton className="h-8 w-24 rounded-full" />
-                </div>
-              ))}
+            <div>
+              {Array.from({ length: 4 }).map((_, i) => <SkeletonRow key={i} />)}
             </div>
           ) : orders.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-24 h-24 rounded-full bg-slate-50 flex items-center justify-center mb-6">
-                <Receipt className="h-10 w-10 text-slate-300" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-800">No orders found</h3>
-              <p className="text-slate-500 max-w-xs mx-auto mt-2">You haven't made any purchases yet. Your history will appear here once you subscribe.</p>
-              <Button className="mt-8 bg-sky-600 hover:bg-sky-700 rounded-xl px-8" asChild>
-                <a href="/subscription">View Plans</a>
-              </Button>
-            </div>
+            <EmptyState />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
-                <thead>
-                  <tr className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                    <th className="px-8 py-4">Transaction</th>
-                    <th className="px-6 py-4">Plan</th>
-                    <th className="px-6 py-4 text-right">Amount</th>
-                    <th className="px-6 py-4">Date</th>
-                    <th className="px-8 py-4 text-right">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {orders.map((order) => {
-                    const status = STATUS_CONFIG[order.status] ?? STATUS_CONFIG.pending;
-                    return (
-                      <tr key={order.id} className="group hover:bg-sky-50/30 transition-colors cursor-pointer" onClick={() => setSelectedOrder(order)}>
-                        <td className="px-8 py-5">
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center group-hover:bg-sky-100 transition-colors">
-                              <Receipt className="h-4 w-4 text-sky-600" />
-                            </div>
-                            <div className="min-w-0">
-                              <p className="font-bold text-slate-800 text-sm truncate">
-                                {order.invoice_number ?? `#ORD-${order.id}`}
-                              </p>
-                              {order.razorpay_payment_id && (
-                                <p className="text-[10px] text-slate-400 font-mono mt-0.5 truncate uppercase">
-                                  {order.razorpay_payment_id}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-5">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider
-                                            ${PLAN_BADGE[order.plan_id] ?? "bg-slate-100 text-slate-600"}`}>
-                            {order.plan_id}
-                          </span>
-                        </td>
-                        <td className="px-6 py-5 text-right">
-                          <p className="font-black text-slate-900 text-sm">{formatAmount(order.amount)}</p>
-                          <p className="text-[10px] text-slate-400 font-medium">Incl. {formatAmount(order.gst_amount)} GST</p>
-                        </td>
-                        <td className="px-6 py-5">
-                          <p className="text-sm font-semibold text-slate-700">{formatDate(order.paid_at ?? order.created_at)}</p>
-                        </td>
-                        <td className="px-8 py-5 text-right">
-                          <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-black border tracking-wider ${status.badgeClass}`}>
-                            {status.icon}
-                            {status.label.toUpperCase()}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <div>
+              {/* Table header — hidden on mobile */}
+              <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4
+                              px-6 py-3 bg-slate-50 border-b border-slate-100
+                              text-xs font-bold text-slate-400 uppercase tracking-wider">
+                <span>Order</span>
+                <span>Plan</span>
+                <span>Amount</span>
+                <span>Date</span>
+                <span>Status</span>
+              </div>
+
+              {orders.map((order) => {
+                const status = STATUS_CONFIG[order.status] ?? STATUS_CONFIG.pending;
+                return (
+                  <button
+                    key={order.id}
+                    onClick={() => setSelectedOrder(order)}
+                    className={`w-full text-left flex sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr_auto]
+                                items-center gap-3 sm:gap-4 px-6 py-4 border-b border-slate-100
+                                last:border-0 hover:bg-sky-50/60 transition-colors group
+                                ${status.rowBg}`}
+                  >
+                    {/* Order ID + Invoice */}
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center flex-shrink-0">
+                        <Receipt className="h-4 w-4 text-sky-600" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-slate-800 text-sm truncate">
+                          {order.invoice_number ?? `#ORD-${order.id}`}
+                        </p>
+                        {order.razorpay_payment_id && (
+                          <p className="text-xs text-slate-400 font-mono truncate">
+                            {order.razorpay_payment_id}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Plan */}
+                    <div>
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold capitalize
+                                        ${PLAN_BADGE[order.plan_id] ?? "bg-slate-100 text-slate-600"}`}>
+                        {order.plan_id}
+                      </span>
+                    </div>
+
+                    {/* Amount */}
+                    <div>
+                      <p className="font-extrabold text-slate-800 text-sm">
+                        {formatAmount(order.amount)}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        +{formatAmount(order.gst_amount)} GST
+                      </p>
+                    </div>
+
+                    {/* Date */}
+                    <div className="hidden sm:block">
+                      <p className="text-sm font-medium text-slate-700">{formatDate(order.paid_at ?? order.created_at)}</p>
+                      {order.expires_at && (
+                        <p className="text-xs text-slate-400">
+                          Expires {formatDate(order.expires_at)}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Status */}
+                    <div>
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
+                                        text-xs font-bold border ${status.badgeClass}`}>
+                        {status.icon}
+                        <span className="hidden sm:inline">{status.label}</span>
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Modal / Dialog for Details */}
-      {selectedOrder && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex items-center justify-center p-4" onClick={() => setSelectedOrder(null)}>
-          <Card className="w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl border-none animate-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
-            <div className="p-8 space-y-6">
-              <div className="flex justify-between items-start">
-                <div>
-                  <Badge variant="outline" className="mb-2 text-[10px] font-black tracking-widest uppercase py-1">Invoice Details</Badge>
-                  <h3 className="text-2xl font-black text-slate-900">{selectedOrder.invoice_number ?? `#ORD-${selectedOrder.id}`}</h3>
-                </div>
-                <button onClick={() => setSelectedOrder(null)} className="p-2 rounded-2xl hover:bg-slate-100 text-slate-400"><RefreshCw className="w-5 h-5 rotate-45" /></button>
-              </div>
-
-              <div className="bg-slate-50 rounded-3xl p-6 space-y-4">
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate-500 font-medium">Plan Type</span>
-                  <span className={`font-black uppercase tracking-wider px-3 py-1 rounded-full text-[10px] ${PLAN_BADGE[selectedOrder.plan_id]}`}>{selectedOrder.plan_id}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate-500 font-medium">Base Amount</span>
-                  <span className="font-bold text-slate-800">{formatAmount(selectedOrder.base_amount)}</span>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                  <span className="text-slate-500 font-medium">GST (18%)</span>
-                  <span className="font-bold text-slate-800">{formatAmount(selectedOrder.gst_amount)}</span>
-                </div>
-                <div className="pt-4 border-t border-slate-200 flex justify-between items-center">
-                  <span className="font-black text-slate-900">Total Paid</span>
-                  <span className="text-2xl font-black text-sky-600">{formatAmount(selectedOrder.amount)}</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 text-xs">
-                <div className="bg-slate-50/50 rounded-2xl p-3">
-                  <p className="text-slate-400 font-bold uppercase tracking-wider text-[9px] mb-1">Payment ID</p>
-                  <p className="font-mono text-slate-800 truncate">{selectedOrder.razorpay_payment_id || "N/A"}</p>
-                </div>
-                <div className="bg-slate-50/50 rounded-2xl p-3">
-                  <p className="text-slate-400 font-bold uppercase tracking-wider text-[9px] mb-1">Order Date</p>
-                  <p className="text-slate-800 font-bold">{formatDate(selectedOrder.created_at)}</p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <Button className="flex-1 bg-sky-600 hover:bg-sky-700 rounded-2xl h-12 font-bold shadow-lg shadow-sky-100" onClick={() => window.open(`${BASE_URL}/api/payments/invoice/${selectedOrder.id}`, "_blank")}>
-                  <Download className="w-4 h-4 mr-2" /> Download
-                </Button>
-                <Button variant="outline" className="flex-1 rounded-2xl h-12 font-bold border-slate-100" onClick={() => setSelectedOrder(null)}>Close</Button>
-              </div>
-            </div>
-          </Card>
-        </div>
+      {/* Footer note */}
+      {!loading && orders.length > 0 && (
+        <p className="text-center text-xs text-slate-400 pb-2">
+          Showing last {orders.length} orders • Click any row to view full invoice details
+        </p>
       )}
     </div>
   );
