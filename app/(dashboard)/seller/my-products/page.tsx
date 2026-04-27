@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
 
 export default function SellerProductsPage() {
   const { user, refreshUser } = useAuth();
