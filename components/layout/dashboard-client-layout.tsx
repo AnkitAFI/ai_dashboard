@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Sidebar from "@/components/layout/sidebar";
-import { DashboardHeader } from "@/client/src/components/layout/DashboardHeader";
+import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { FiltersProvider } from "@/components/dashboard/filters-context";
 import { AlertProvider } from "@/components/dashboard/alert-context";
 import { SidebarProvider, useSidebar } from "@/components/layout/sidebar-context";
@@ -57,6 +57,15 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             {children}
           </div>
         </main>
+        {/* Disclaimer Footer */}
+        <footer className="mt-auto px-4 sm:px-6 py-4 border-t border-sky-100">
+          <p className="text-xs text-gray-400 text-center leading-relaxed">
+            <span className="font-medium text-gray-500">Disclaimer:</span>{" "}
+            The data and insights presented in this dashboard are for informational purposes only.
+            While we strive for accuracy, we cannot guarantee the completeness or reliability of
+            the information. Please verify critical data independently before making business decisions.
+          </p>
+        </footer>
       </div>
       <AlertDetailsDialog />
     </div>

@@ -1,5 +1,3 @@
-"use client";
-
 import { useMemo } from 'react';
 import { useAuth } from '@/lib/auth-context';
 
@@ -46,8 +44,8 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     maxTopN: 5,
     hasChartAISummaries: false,
     maxNotifications: 5,
-    maxFullAnalysesPerMonth: 5,
-    maxAIChatMessagesPerMonth: 5,
+    maxFullAnalysesPerMonth: 5, // ✅ 5 product analyses per month
+    maxAIChatMessagesPerMonth: 5, // 5 AI chat messages per month
   },
   basic: {
     productTrackingLimit: 1000,
@@ -67,8 +65,8 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     maxTopN: 20,
     hasChartAISummaries: true,
     maxNotifications: 15,
-    maxFullAnalysesPerMonth: 20,
-    maxAIChatMessagesPerMonth: 20,
+    maxFullAnalysesPerMonth: 20, // ✅ 20 product analyses per month
+    maxAIChatMessagesPerMonth: 20, // 20 AI chat messages per month
   },
   premium: {
     productTrackingLimit: UNLIMITED,
@@ -88,8 +86,8 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     maxTopN: 100,
     hasChartAISummaries: true,
     maxNotifications: UNLIMITED,
-    maxFullAnalysesPerMonth: UNLIMITED,
-    maxAIChatMessagesPerMonth: UNLIMITED,
+    maxFullAnalysesPerMonth: UNLIMITED, // ✅ Unlimited product analyses
+    maxAIChatMessagesPerMonth: UNLIMITED, // Unlimited AI chat messages
   },
   enterprise: {
     productTrackingLimit: UNLIMITED,
@@ -109,28 +107,33 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     maxTopN: UNLIMITED,
     hasChartAISummaries: true,
     maxNotifications: UNLIMITED,
-    maxFullAnalysesPerMonth: UNLIMITED,
-    maxAIChatMessagesPerMonth: UNLIMITED,
+    maxFullAnalysesPerMonth: UNLIMITED, // ✅ Unlimited product analyses
+    maxAIChatMessagesPerMonth: UNLIMITED, // Unlimited AI chat messages
   },
 };
 
 export function useSubscriptionLimits() {
   const { user } = useAuth();
 
+  // ✅ Determine current subscription tier from auth context
   const currentTier = useMemo(() => {
     return user?.subscriptionTier?.toLowerCase() || 'free';
   }, [user?.subscriptionTier]);
 
+  // ✅ Get subscription limits based on tier
   const limits = useMemo(() => {
     return TIER_LIMITS[currentTier] || TIER_LIMITS.free;
   }, [currentTier]);
 
+  // Check if a boolean feature is enabled
   const canAccessFeature = (feature: keyof SubscriptionLimits): boolean => {
     const value = limits[feature];
     if (typeof value === 'boolean') return value;
+    console.warn(`Feature ${feature} is not boolean in subscription limits.`);
     return true;
   };
 
+  // ✅ Check if a usage type has reached its limit
   const isAtLimit = (
     currentCount: number,
     limitType: 'products' | 'widgets' | 'reports' | 'topN' | 'AIChatMessages' | 'productAnalyses'
@@ -146,13 +149,14 @@ export function useSubscriptionLimits() {
         return limits.maxTopN < UNLIMITED && currentCount >= limits.maxTopN;
       case 'AIChatMessages':
         return limits.maxAIChatMessagesPerMonth < UNLIMITED && currentCount >= limits.maxAIChatMessagesPerMonth;
-      case 'productAnalyses':
+      case 'productAnalyses': // ✅ Added product analyses limit check
         return limits.maxFullAnalysesPerMonth < UNLIMITED && currentCount >= limits.maxFullAnalysesPerMonth;
       default:
         return false;
     }
   };
 
+  // ✅ Get remaining count for a usage type
   const getRemainingCount = (
     currentCount: number,
     limitType: 'products' | 'widgets' | 'reports' | 'topN' | 'AIChatMessages' | 'productAnalyses'
@@ -174,7 +178,7 @@ export function useSubscriptionLimits() {
       case 'AIChatMessages':
         limit = limits.maxAIChatMessagesPerMonth;
         break;
-      case 'productAnalyses':
+      case 'productAnalyses': // ✅ Added product analyses remaining count
         limit = limits.maxFullAnalysesPerMonth;
         break;
       default:
@@ -184,6 +188,7 @@ export function useSubscriptionLimits() {
     return Math.max(0, limit - currentCount);
   };
 
+  // ✅ New helper: Check if user can perform action
   const canPerformAction = (
     actionType: 'productAnalysis' | 'aiChat' | 'addWidget' | 'saveReport',
     currentCount: number
@@ -202,6 +207,7 @@ export function useSubscriptionLimits() {
     }
   };
 
+  // ✅ New helper: Get upgrade message
   const getUpgradeMessage = (
     limitType: 'productAnalyses' | 'AIChatMessages' | 'widgets' | 'reports'
   ): string => {
@@ -235,7 +241,7 @@ export function useSubscriptionLimits() {
     canAccessFeature,
     isAtLimit,
     getRemainingCount,
-    canPerformAction,
-    getUpgradeMessage,
+    canPerformAction, // ✅ New helper
+    getUpgradeMessage, // ✅ New helper
   };
 }

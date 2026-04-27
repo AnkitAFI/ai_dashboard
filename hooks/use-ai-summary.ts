@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 
 interface Filters {
@@ -16,17 +14,22 @@ interface Filters {
 export function useAISummary(
   question: string,
   source: string,
-  data: any[],
+  data: any[],  // ✅ The ACTUAL chart data
   triggerKey: number,
   filters?: Filters
 ) {
   const [summary, setSummary] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(true);
 
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
   useEffect(() => {
-    if (!question || !data || data.length === 0) {
+    console.log("🔍 useAISummary called:", {
+      question,
+      source,
+      actualDataCount: data?.length,
+      filters
+    });
+
+    if (!data || data.length === 0) {
       setSummary("");
       setLoading(false);
       return;
@@ -34,23 +37,38 @@ export function useAISummary(
 
     const fetchSummary = async () => {
       setLoading(true);
+
       try {
+        // ✅ CRITICAL: Send the ACTUAL chart data
         const payload = {
           question: question,
           source: source,
-          chartData: data,
+          chartData: data,  // ✅ Send exact data from charts
           filters: filters || {}
         };
 
-        const res = await fetch(`${BASE_URL}/ai/analyze-chart`, {
+        console.log("📤 Sending chart data to AI:", {
+          dataCount: data.length,
+          sampleItem: data[0]
+        });
+
+        const res = await fetch("http://localhost:8000/ai/analyze-chart", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         });
 
-        if (!res.ok) throw new Error(`API returned ${res.status}`);
+        if (!res.ok) {
+          throw new Error(`API returned ${res.status}`);
+        }
+
         const json = await res.json();
-        setSummary(json.answer || "No insights available.");
+
+        if (json.answer) {
+          setSummary(json.answer);
+        } else {
+          setSummary("No insights available.");
+        }
       } catch (err: any) {
         console.error("❌ AI summary error:", err);
         setSummary("Unable to generate summary.");
@@ -59,9 +77,15 @@ export function useAISummary(
       }
     };
 
+    // Small delay to batch requests
     const timer = setTimeout(fetchSummary, 100);
     return () => clearTimeout(timer);
-  }, [question, source, JSON.stringify(data), triggerKey, BASE_URL]);
+  }, [
+    question,
+    source,
+    JSON.stringify(data),  // ✅ Re-run when data changes
+    triggerKey
+  ]);
 
   return { summary, loading };
 }

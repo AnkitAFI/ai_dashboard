@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   X, CreditCard, Building2, CheckCircle2, AlertCircle,
@@ -13,14 +11,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "http://localhost:8000";
 
 export interface PaymentPlan {
   id: string;
   name: string;
-  price: number;      
+  price: number;      // prorated charge from /billing-preview
   description: string;
-  priceNote?: string;      
+  priceNote?: string;      // e.g. "₹400 credit applied — pay ₹1599 today"
 }
 
 interface BillingForm {
@@ -50,6 +48,8 @@ export interface PaymentModalProps {
   onPaymentSuccess: (planId: string) => void;
 }
 
+// ─── Razorpay globals ─────────────────────────────────────────────────────────
+
 declare global {
   interface Window {
     Razorpay: new (options: RazorpayOptions) => RazorpayInstance;
@@ -70,6 +70,8 @@ interface RazorpayResponse {
 }
 interface RazorpayInstance { open: () => void; }
 
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 const GST_REGEX = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
 const isValidGST = (g: string) => GST_REGEX.test(g.toUpperCase());
 
@@ -83,6 +85,8 @@ const loadRazorpay = (): Promise<boolean> =>
     s.onerror = () => resolve(false);
     document.body.appendChild(s);
   });
+
+// ─── Step Indicator ───────────────────────────────────────────────────────────
 
 const STEPS = ["Billing Details", "Review & Pay", "Processing"];
 
@@ -121,6 +125,8 @@ function StepIndicator({ current }: { current: number }) {
   );
 }
 
+// ─── Field wrapper ────────────────────────────────────────────────────────────
+
 function Field({
   label, required = false, icon, error, hint, children, span2 = false,
 }: {
@@ -149,6 +155,8 @@ function Field({
     </div>
   );
 }
+
+// ─── Price Breakdown ──────────────────────────────────────────────────────────
 
 function PriceCard({
   breakup, hasGst, gstNumber, priceNote,
@@ -217,6 +225,7 @@ function PriceCard({
     </div>
   );
 }
+// MAIN COMPONENT
 
 export default function PaymentModal({
   isOpen, onClose, plan, userId, userEmail = "", userName = "", onPaymentSuccess,
@@ -251,7 +260,7 @@ export default function PaymentModal({
       setForm((p) => ({ ...p, fullName: userName || p.fullName, email: userEmail || p.email }));
       setBreakup({ basePrice: plan.price, gstRate: 18, gstAmount: 0, total: plan.price });
     }
-  }, [isOpen, userName, userEmail, plan.price]);
+  }, [isOpen]);
 
   useEffect(() => {
     const gst = form.hasGst ? Math.round((plan.price * 18) / 100) : 0;
@@ -296,7 +305,7 @@ export default function PaymentModal({
       setInvoiceId(dbId); setDone(true); onPaymentSuccess(plan.id);
     } catch (err) {
       if (!mountedRef.current) return;
-      setError(err instanceof Error ? err.message : "Verification failed. Contact support.");
+      setError(err instanceof Error ? err.message : "Verification failed. Contact support@insydz.com");
     } finally {
       if (mountedRef.current) setLoading(false);
     }
@@ -308,7 +317,7 @@ export default function PaymentModal({
 
     try {
       const sdkLoaded = await loadRazorpay();
-      if (!sdkLoaded) throw new Error("Failed to load Razorpay.");
+      if (!sdkLoaded) throw new Error("Failed to load Razorpay. Check your internet connection.");
 
       const res = await fetch(`${API_BASE}/api/payments/create-order`, {
         method: "POST",
@@ -336,6 +345,7 @@ export default function PaymentModal({
 
       const data = await res.json();
 
+      // Backend self-healed an already-active plan — no payment needed
       if (data.already_active) {
         if (!mountedRef.current) return;
         setDone(true); onPaymentSuccess(plan.id); setLoading(false);
@@ -379,7 +389,7 @@ export default function PaymentModal({
 
     } catch (err) {
       if (!mountedRef.current) return;
-      setError(err instanceof Error ? err.message : "Payment failed.");
+      setError(err instanceof Error ? err.message : "Payment failed. Please try again.");
       setLoading(false); setStep(1);
     }
   };
@@ -411,6 +421,7 @@ export default function PaymentModal({
               </h2>
             </div>
           </div>
+          {/* Disabled while Razorpay is open */}
           <button onClick={onClose} disabled={step === 2 && !done}
             className="w-9 h-9 rounded-xl flex items-center justify-center
                              text-slate-400 hover:text-slate-700 hover:bg-slate-100
@@ -419,7 +430,10 @@ export default function PaymentModal({
           </button>
         </div>
 
+        {/* Body */}
         <div className="flex-1 overflow-y-auto px-6 py-6">
+
+          {/* SUCCESS */}
           {done ? (
             <div className="text-center py-4">
               <div className="relative w-24 h-24 mx-auto mb-6">
@@ -455,6 +469,7 @@ export default function PaymentModal({
                 </Button>
               </div>
             </div>
+
           ) : (
             <>
               <StepIndicator current={step} />
@@ -466,77 +481,186 @@ export default function PaymentModal({
                 </Alert>
               )}
 
+              {/* STEP 0: Billing Form */}
               {step === 0 && (
                 <div className="space-y-5">
                   <div className="grid grid-cols-2 gap-4">
-                    <Field label="Full Name" required icon={<User className="h-4 w-4" />} error={errs.fullName} span2>
-                      <Input value={form.fullName} onChange={(e) => set("fullName", e.target.value)} placeholder="John Doe" />
+
+                    <Field label="Full Name" required icon={<User className="h-4 w-4" />}
+                      error={errs.fullName} span2>
+                      <Input value={form.fullName} onChange={(e) => set("fullName", e.target.value)}
+                        placeholder="John Doe"
+                        className={`rounded-xl border-slate-200 bg-slate-50 focus:bg-white
+                               transition-colors h-11 ${errs.fullName ? "border-rose-400 bg-rose-50" : ""}`} />
                     </Field>
+
                     <Field label="Email" required icon={<Mail className="h-4 w-4" />} error={errs.email}>
-                      <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="john@company.com" />
+                      <Input type="email" value={form.email} onChange={(e) => set("email", e.target.value)}
+                        placeholder="john@company.com"
+                        className={`rounded-xl border-slate-200 bg-slate-50 focus:bg-white
+                               transition-colors h-11 ${errs.email ? "border-rose-400 bg-rose-50" : ""}`} />
                     </Field>
-                    <Field label="Mobile Number" required icon={<Phone className="h-4 w-4" />} error={errs.mobile}>
-                      <Input type="tel" value={form.mobile} onChange={(e) => set("mobile", e.target.value.replace(/\D/g, ""))} placeholder="9876543210" maxLength={10} />
+
+                    <Field label="Mobile Number" required icon={<Phone className="h-4 w-4" />}
+                      error={errs.mobile}>
+                      <Input type="tel" value={form.mobile}
+                        onChange={(e) => set("mobile", e.target.value.replace(/\D/g, ""))}
+                        placeholder="9876543210" maxLength={10}
+                        className={`rounded-xl border-slate-200 bg-slate-50 focus:bg-white
+                               transition-colors h-11 ${errs.mobile ? "border-rose-400 bg-rose-50" : ""}`} />
                     </Field>
+
                     <Field label="Company Name" icon={<Building2 className="h-4 w-4" />}>
-                      <Input value={form.companyName} onChange={(e) => set("companyName", e.target.value)} placeholder="Acme Pvt. Ltd." />
+                      <Input value={form.companyName} onChange={(e) => set("companyName", e.target.value)}
+                        placeholder="Acme Pvt. Ltd. (optional)"
+                        className="rounded-xl border-slate-200 bg-slate-50 focus:bg-white
+                               transition-colors h-11" />
                     </Field>
-                    <Field label="Billing Address" required icon={<MapPin className="h-4 w-4" />} error={errs.billingAddress} span2>
-                      <Textarea value={form.billingAddress} onChange={(e) => set("billingAddress", e.target.value)} placeholder="123, MG Road..." rows={3} />
+
+                    <Field label="Billing Address" required icon={<MapPin className="h-4 w-4" />}
+                      error={errs.billingAddress} span2>
+                      <Textarea value={form.billingAddress}
+                        onChange={(e) => set("billingAddress", e.target.value)}
+                        placeholder="123, MG Road, Bengaluru, Karnataka – 560001" rows={3}
+                        className={`rounded-xl border-slate-200 bg-slate-50 focus:bg-white
+                                  transition-colors resize-none pt-2.5
+                                  ${errs.billingAddress ? "border-rose-400 bg-rose-50" : ""}`} />
                     </Field>
+
                   </div>
 
-                  <div className={`rounded-2xl border-2 p-4 transition-all duration-300 ${form.hasGst ? "border-sky-300 bg-sky-50" : "border-slate-200 bg-slate-50"}`}>
+                  {/* GST */}
+                  <div className={`rounded-2xl border-2 p-4 transition-all duration-300
+                    ${form.hasGst ? "border-sky-300 bg-sky-50" : "border-slate-200 bg-slate-50"}`}>
                     <div className="flex items-start gap-3">
-                      <Checkbox id="gst" checked={form.hasGst} onCheckedChange={(c) => set("hasGst", !!c)} />
-                      <label htmlFor="gst" className="cursor-pointer">
+                      <Checkbox id="gst" checked={form.hasGst}
+                        onCheckedChange={(c) => set("hasGst", !!c)}
+                        className="mt-0.5 border-slate-300 data-[state=checked]:bg-sky-600
+                                           data-[state=checked]:border-sky-600" />
+                      <label htmlFor="gst" className="cursor-pointer select-none">
                         <p className="text-sm font-semibold text-slate-700">I have a GST Number</p>
-                        <p className="text-xs text-slate-400">Add your GSTIN to claim ITC</p>
+                        <p className="text-xs text-slate-400 mt-0.5">Add your GSTIN to claim Input Tax Credit (ITC)</p>
                       </label>
                     </div>
                     {form.hasGst && (
                       <div className="mt-4 space-y-1.5">
-                        <Input value={form.gstNumber} onChange={(e) => set("gstNumber", e.target.value.toUpperCase())} placeholder="29ABCDE1234F1Z5" maxLength={15} />
-                        {errs.gstNumber && <p className="text-xs text-rose-500">{errs.gstNumber}</p>}
+                        <Label className="text-xs font-bold text-slate-600 uppercase tracking-wider">
+                          GSTIN <span className="text-rose-400">*</span>
+                        </Label>
+                        <Input value={form.gstNumber}
+                          onChange={(e) => set("gstNumber", e.target.value.toUpperCase())}
+                          placeholder="29ABCDE1234F1Z5" maxLength={15}
+                          className={`rounded-xl font-mono tracking-widest uppercase h-11 bg-white
+                                 transition-colors ${errs.gstNumber ? "border-rose-400"
+                              : form.gstNumber.length === 15 && isValidGST(form.gstNumber)
+                                ? "border-green-400 bg-green-50" : "border-slate-200"}`} />
+                        {errs.gstNumber ? (
+                          <p className="text-xs text-rose-500 flex items-center gap-1">
+                            <AlertCircle className="h-3 w-3" />{errs.gstNumber}
+                          </p>
+                        ) : form.gstNumber.length === 15 && isValidGST(form.gstNumber) ? (
+                          <p className="text-xs text-green-600 flex items-center gap-1 font-semibold">
+                            <CheckCircle2 className="h-3 w-3" /> Valid GSTIN · GST @ 18% will be added
+                          </p>
+                        ) : (
+                          <p className="text-xs text-slate-400">Format: 22AAAAA0000A1Z5 · 15 characters</p>
+                        )}
                       </div>
                     )}
                   </div>
 
-                  <Button onClick={() => { if (validate()) setStep(1); }} className="w-full h-12 rounded-xl font-bold bg-sky-600 text-white">
+                  <Button onClick={() => { if (validate()) setStep(1); }}
+                    className="w-full h-12 rounded-xl font-bold text-sm
+                                     bg-gradient-to-r from-sky-600 to-blue-700
+                                     hover:from-sky-700 hover:to-blue-800
+                                     text-white shadow-lg shadow-sky-200 transition-all duration-200">
                     Continue to Review <ChevronRight className="h-4 w-4 ml-1" />
                   </Button>
                 </div>
               )}
 
+              {/* STEP 1: Review & Pay */}
               {step === 1 && (
                 <div className="space-y-5">
-                  <div className="rounded-2xl bg-gradient-to-r from-sky-600 to-blue-700 p-5 flex items-center justify-between text-white">
+                  <div className="rounded-2xl bg-gradient-to-r from-sky-600 to-blue-700
+                                  p-5 flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-bold uppercase opacity-80">Selected Plan</p>
-                      <p className="text-2xl font-extrabold">{plan.name}</p>
+                      <p className="text-sky-200 text-xs font-bold uppercase tracking-widest mb-1">Selected Plan</p>
+                      <p className="text-white text-2xl font-extrabold">{plan.name}</p>
+                      <p className="text-sky-200 text-sm">{plan.description}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-3xl font-extrabold">₹{breakup.total.toLocaleString("en-IN")}</p>
+                      <p className="text-white text-3xl font-extrabold">
+                        ₹{breakup.total.toLocaleString("en-IN")}
+                      </p>
+                      <p className="text-sky-200 text-sm">
+                        {breakup.basePrice < plan.price ? "prorated today" : "per month"}
+                      </p>
                     </div>
                   </div>
 
-                  <PriceCard breakup={breakup} hasGst={form.hasGst} gstNumber={form.gstNumber} priceNote={plan.priceNote} />
+                  <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Billing To</p>
+                    <div className="space-y-1">
+                      <p className="font-bold text-slate-800">{form.fullName}</p>
+                      {form.companyName && <p className="text-sm text-slate-600">{form.companyName}</p>}
+                      <p className="text-sm text-slate-500">{form.email}</p>
+                      <p className="text-sm text-slate-500">+91 {form.mobile}</p>
+                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">{form.billingAddress}</p>
+                    </div>
+                  </div>
+
+                  <PriceCard breakup={breakup} hasGst={form.hasGst}
+                    gstNumber={form.gstNumber} priceNote={plan.priceNote} />
+
+                  <div className="flex items-center justify-center gap-2 py-1">
+                    <Lock className="h-3.5 w-3.5 text-green-500" />
+                    <span className="text-xs text-slate-400 font-medium">256-bit SSL · Secured by Razorpay</span>
+                    <Shield className="h-3.5 w-3.5 text-green-500" />
+                  </div>
 
                   <div className="flex gap-3">
-                    <Button variant="outline" onClick={() => setStep(0)} disabled={loading} className="flex-1">Edit</Button>
-                    <Button onClick={pay} disabled={loading} className="flex-[2] h-12 rounded-xl font-bold bg-sky-600 text-white shadow-lg">
-                      {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Sparkles className="h-4 w-4 mr-2" />Pay ₹{breakup.total.toLocaleString("en-IN")}</>}
+                    <Button variant="outline" onClick={() => setStep(0)} disabled={loading}
+                      className="flex-1 h-12 rounded-xl border-2 border-slate-200
+                                       text-slate-600 hover:bg-slate-50 font-semibold">
+                      ← Edit
+                    </Button>
+                    <Button onClick={pay} disabled={loading}
+                      className="flex-[2] h-12 rounded-xl font-bold text-sm
+                                       bg-gradient-to-r from-sky-600 to-blue-700
+                                       hover:from-sky-700 hover:to-blue-800
+                                       text-white shadow-lg shadow-sky-200 transition-all duration-200">
+                      {loading
+                        ? <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Initialising…</>
+                        : <><Sparkles className="h-4 w-4 mr-2" />Pay ₹{breakup.total.toLocaleString("en-IN")}</>
+                      }
                     </Button>
                   </div>
                 </div>
               )}
 
+              {/* STEP 2: Processing */}
               {step === 2 && (
                 <div className="text-center py-10 space-y-5">
-                  <Loader2 className="h-12 w-12 text-sky-600 animate-spin mx-auto" />
+                  <div className="relative w-20 h-20 mx-auto">
+                    <div className="absolute inset-0 rounded-full bg-sky-100 animate-ping opacity-50" />
+                    <div className="relative w-20 h-20 rounded-full bg-sky-50 border-2
+                                    border-sky-200 flex items-center justify-center">
+                      <Loader2 className="h-9 w-9 text-sky-600 animate-spin" />
+                    </div>
+                  </div>
                   <div>
-                    <h3 className="text-lg font-extrabold">Razorpay is open</h3>
-                    <p className="text-sm text-slate-500">Complete payment in the Razorpay window.</p>
+                    <h3 className="text-lg font-extrabold text-slate-900">Razorpay is open</h3>
+                    <p className="text-sm text-slate-500 max-w-xs mx-auto mt-2">
+                      Complete payment in the Razorpay window. Do not close or refresh this tab.
+                    </p>
+                  </div>
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full
+                                  bg-sky-50 border border-sky-200">
+                    <Lock className="h-3.5 w-3.5 text-sky-500" />
+                    <span className="text-xs font-semibold text-sky-700">
+                      ₹{breakup.total.toLocaleString("en-IN")} · {plan.name} Plan
+                    </span>
                   </div>
                 </div>
               )}

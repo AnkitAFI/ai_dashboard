@@ -791,7 +791,8 @@ export default function FlipkartKeywordContent() {
             <ul className="space-y-4 text-sm">
               <li>support@insydz.com</li>
               <li>Mumbai, India</li>
-            </div>
+            </ul>
+          </div>
         </div>
         <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-800 text-center text-xs">
           <p>© 2026 Insydz (A brand of AFI Digital Lab). All rights reserved.</p>

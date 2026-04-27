@@ -1,8 +1,9 @@
 "use client";
 
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { useSubscriptionLimits } from "@/hooks/use-subscription-limits";
+import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
 
+// ✅ Export Filters interface
 export interface Filters {
   table: string;
   category: string;
@@ -17,7 +18,7 @@ export interface Filters {
 interface FiltersContextType {
   filters: Filters;
   setFilters: React.Dispatch<React.SetStateAction<Filters>>;
-  maxTopN: number;
+  maxTopN: number; // Expose the subscription limit
 }
 
 const FiltersContext = createContext<FiltersContextType | undefined>(undefined);
@@ -33,9 +34,10 @@ export const FiltersProvider = ({ children }: { children: ReactNode }) => {
     dateRange: "30d",
     showTrendingOnly: false,
     sortBy: "sales_desc",
-    topN: Math.min(5, limits.maxTopN)
+    topN: Math.min(5, limits.maxTopN) // ✅ Enforce limit on initialization
   });
 
+  // ✅ Auto-correct topN if it exceeds the subscription limit
   useEffect(() => {
     if (filters.topN > limits.maxTopN) {
       setFilters(prev => ({
@@ -43,7 +45,7 @@ export const FiltersProvider = ({ children }: { children: ReactNode }) => {
         topN: limits.maxTopN
       }));
     }
-  }, [limits.maxTopN, filters.topN]);
+  }, [limits.maxTopN]);
 
   return (
     <FiltersContext.Provider value={{ 
@@ -56,6 +58,7 @@ export const FiltersProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
+// ✅ Export useFilters hook
 export const useFilters = (): FiltersContextType => {
   const context = useContext(FiltersContext);
   if (!context) throw new Error("useFilters must be used within a FiltersProvider");

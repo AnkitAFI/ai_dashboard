@@ -9,9 +9,9 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Filter, X, RotateCcw, Lock, Crown, Info } from "lucide-react";
+import { Filter, X, RotateCcw, Lock, Crown, Info, AlertCircle } from "lucide-react";
 import { useFilters } from "./filters-context";
-import { useSubscriptionLimits } from "@/hooks/use-subscription-limits";
+import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
 import {
   Dialog,
   DialogContent,
@@ -60,27 +60,36 @@ const TOP_N_OPTIONS = [
 
 export default function FiltersPanel() {
   const { filters: appliedFiltersContext, setFilters: setAppliedFiltersContext, maxTopN } = useFilters();
-  const { currentTier, limits } = useSubscriptionLimits();
+  const { currentTier, limits, canAccessFeature } = useSubscriptionLimits();
 
+  // Local state for temporary filter changes (before applying)
   const [localFilters, setLocalFilters] = useState<FilterState>(appliedFiltersContext);
   const [appliedFilters, setAppliedFilters] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [attemptedTopN, setAttemptedTopN] = useState<number | null>(null);
 
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
+  // Sync local filters with context on mount
   useEffect(() => {
     setLocalFilters(appliedFiltersContext);
-  }, [appliedFiltersContext]);
+  }, []);
 
+  // ------------------ Fetch Categories ------------------
   const fetchCategories = async (table: string) => {
     try {
-      const res = await fetch(`${BASE_URL}/categories?table=${table}`);
+      const res = await fetch(`http://localhost:8000/categories?table=${table}`);
       const data = await res.json();
-      const categoriesArray = Array.isArray(data) ? data : (data?.data && Array.isArray(data.data) ? data.data : []);
-      const cats = categoriesArray.map((c: any) => typeof c === 'string' ? c : (c.category || c.category_name || ""));
-      setCategories(["All Categories", ...cats.filter(Boolean)]);
+      const cats = data.map((c: any) => c.category);
+
+      setCategories(["All Categories", ...cats]);
+
+      // Reset category if current not in list
+      setLocalFilters(prev => {
+        if (!["All Categories", ...cats].includes(prev.category)) {
+          return { ...prev, category: "All Categories" };
+        }
+        return prev;
+      });
     } catch (err) {
       console.error("Failed to fetch categories:", err);
     }
@@ -88,8 +97,9 @@ export default function FiltersPanel() {
 
   useEffect(() => {
     fetchCategories(localFilters.table);
-  }, [localFilters.table, BASE_URL]);
+  }, [localFilters.table]);
 
+  // ------------------ Helpers ------------------
   const updateLocalFilter = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
     setLocalFilters({ ...localFilters, [key]: value });
   };
@@ -105,15 +115,19 @@ export default function FiltersPanel() {
       dateRange: "30d",
       showTrendingOnly: false,
       sortBy: "sales_desc",
-      topN: Math.min(10, limits.maxTopN),
+      topN: Math.min(10, limits.maxTopN), // Respect subscription limit
     };
+
     setLocalFilters(defaultFilters);
     setAppliedFiltersContext(defaultFilters);
     setAppliedFilters([]);
   };
 
   const applyFilters = () => {
+    // Update the actual context with local filters
     setAppliedFiltersContext(localFilters);
+
+    // Generate applied filters badges
     const applied: string[] = [];
     applied.push(`Table: ${localFilters.table}`);
     if (localFilters.category !== "All Categories") applied.push(`Category: ${localFilters.category}`);
@@ -122,65 +136,419 @@ export default function FiltersPanel() {
     if (localFilters.rating > 0) applied.push(`Rating: ${localFilters.rating}+ stars`);
     if (localFilters.showTrendingOnly) applied.push("Trending Only");
     if (localFilters.topN !== 10) applied.push(`Top ${localFilters.topN} Products`);
+
     setAppliedFilters(applied);
   };
 
   const removeFilter = (filterToRemove: string) => {
     setAppliedFilters(prev => prev.filter(f => f !== filterToRemove));
+
     let updatedFilters = { ...localFilters };
+
     if (filterToRemove.startsWith("Table:")) updatedFilters.table = "flipkart";
     else if (filterToRemove.startsWith("Category:")) updatedFilters.category = "All Categories";
     else if (filterToRemove.startsWith("Price:")) updatedFilters.priceRange = [0, 5000000];
     else if (filterToRemove.startsWith("Rating:")) updatedFilters.rating = 0;
     else if (filterToRemove === "Trending Only") updatedFilters.showTrendingOnly = false;
     else if (filterToRemove.startsWith("Top")) updatedFilters.topN = Math.min(10, limits.maxTopN);
+
     setLocalFilters(updatedFilters);
     setAppliedFiltersContext(updatedFilters);
   };
 
+  // Handle Top N change with subscription check
+  const handleTopNChange = (value: string) => {
+    const numValue = parseInt(value);
+
+    if (numValue > limits.maxTopN) {
+      setAttemptedTopN(numValue);
+      setShowUpgradeDialog(true);
+      return;
+    }
+
+    updateLocalFilter("topN", numValue);
+  };
+
+  // Check if Top N option is locked
+  const isTopNLocked = (value: number) => value > limits.maxTopN;
+
+  // Get next tier name
+  const getNextTierForTopN = (value: number): string => {
+    if (value <= 5) return "Free";
+    if (value <= 20) return "Basic";
+    if (value <= 100) return "Premium";
+    return "Enterprise";
+  };
+
+  // ------------------ Render ------------------
   return (
     <>
       <Card className="bg-card rounded-lg border mb-6">
         <CardHeader className="flex flex-row items-center justify-between pb-4">
           <CardTitle className="flex items-center gap-2">
-            <Filter className="h-5 w-5" /> Filters & Settings
-            <Badge variant="outline" className="text-[10px] ml-2 bg-purple-50 text-purple-700">{currentTier.toUpperCase()}</Badge>
+            <Filter className="h-5 w-5" />
+            Filters & Settings
+            <Badge variant="outline" className="text-xs ml-2 bg-gradient-to-r from-purple-50 to-blue-50 border-purple-300 text-purple-700">
+              {currentTier.toUpperCase()}
+            </Badge>
           </CardTitle>
-          <Button variant="outline" size="sm" onClick={resetFilters} className="h-8 text-xs">
-            <RotateCcw className="h-3 w-3 mr-1" /> Reset
+          <Button variant="outline" size="sm" onClick={resetFilters}>
+            <RotateCcw className="h-4 w-4 mr-2" /> Reset
           </Button>
         </CardHeader>
+
         <CardContent className="space-y-6">
+          {/* Applied Filters */}
           {appliedFilters.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {appliedFilters.map((f, i) => (
-                <Badge key={i} variant="secondary" className="text-[10px] cursor-pointer hover:bg-rose-100" onClick={() => removeFilter(f)}>
-                  {f} <X className="h-2.5 w-2.5 ml-1" />
-                </Badge>
-              ))}
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Applied Filters</Label>
+              <div className="flex flex-wrap gap-2">
+                {appliedFilters.map((filter, index) => (
+                  <Badge
+                    key={index}
+                    variant="secondary"
+                    className="cursor-pointer hover:bg-destructive hover:text-destructive-foreground"
+                    onClick={() => removeFilter(filter)}
+                  >
+                    {filter} <X className="h-3 w-3 ml-1" />
+                  </Badge>
+                ))}
+              </div>
+              <Separator className="mt-4" />
             </div>
           )}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="space-y-2"><Label className="text-xs">Data Source</Label><Select value={localFilters.table} onValueChange={(v) => updateLocalFilter("table", v)}><SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="flipkart">Flipkart</SelectItem><SelectItem value="amazon">Amazon</SelectItem></SelectContent></Select></div>
-            <div className="space-y-2"><Label className="text-xs">Category</Label><Select value={localFilters.category} onValueChange={(v) => updateLocalFilter("category", v)}><SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger><SelectContent>{categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent></Select></div>
-            <div className="space-y-2"><Label className="text-xs">Price Range</Label><div className="px-2"><Slider value={localFilters.priceRange} onValueChange={(v) => updateLocalFilter("priceRange", v as [number, number])} min={0} max={100000} step={1000} /><div className="flex justify-between text-[10px] text-muted-foreground mt-1"><span>{formatPrice(localFilters.priceRange[0])}</span><span>{formatPrice(localFilters.priceRange[1])}</span></div></div></div>
-            <div className="space-y-2"><Label className="text-xs">Min Rating</Label><Select value={localFilters.rating.toString()} onValueChange={(v) => updateLocalFilter("rating", parseFloat(v))}><SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="0">All Ratings</SelectItem><SelectItem value="4">4+ Stars</SelectItem><SelectItem value="4.5">4.5+ Stars</SelectItem></SelectContent></Select></div>
-            <div className="space-y-2"><Label className="text-xs">Date Range</Label><Select value={localFilters.dateRange} onValueChange={(v) => updateLocalFilter("dateRange", v)}><SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger><SelectContent>{DATE_RANGES.map(r => <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>)}</SelectContent></Select></div>
-            <div className="space-y-2"><Label className="text-xs">Top N Products</Label><Select value={localFilters.topN.toString()} onValueChange={(v) => { const n = parseInt(v); if(n > limits.maxTopN) { setAttemptedTopN(n); setShowUpgradeDialog(true); } else updateLocalFilter("topN", n); }}><SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger><SelectContent>{TOP_N_OPTIONS.map(o => <SelectItem key={o.value} value={o.value.toString()} disabled={o.value > limits.maxTopN}>{o.label} {o.value > limits.maxTopN && "🔒"}</SelectItem>)}</SelectContent></Select></div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Table Selector */}
+            <div className="space-y-2">
+              <Label>Data Source</Label>
+              <Select value={localFilters.table} onValueChange={(v) => updateLocalFilter("table", v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select table" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="flipkart">Flipkart</SelectItem>
+                  <SelectItem value="amazon">Amazon</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Category Selector */}
+            <div className="space-y-2">
+              <Label>Category</Label>
+              <Select value={localFilters.category} onValueChange={(v) => updateLocalFilter("category", v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Price Range */}
+            <div className="space-y-2">
+              <Label>Price Range</Label>
+              <div className="px-2">
+                <Slider
+                  value={localFilters.priceRange}
+                  onValueChange={(v) => updateLocalFilter("priceRange", v as [number, number])}
+                  min={0}
+                  max={100000}
+                  step={1000}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                  <span>{formatPrice(localFilters.priceRange[0])}</span>
+                  <span>{formatPrice(localFilters.priceRange[1])}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Rating */}
+            <div className="space-y-2">
+              <Label>Minimum Rating</Label>
+              <Select value={localFilters.rating.toString()} onValueChange={(v) => updateLocalFilter("rating", parseFloat(v))}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="All Ratings" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="0">All Ratings</SelectItem>
+                  <SelectItem value="1">1+ Stars</SelectItem>
+                  <SelectItem value="2">2+ Stars</SelectItem>
+                  <SelectItem value="3">3+ Stars</SelectItem>
+                  <SelectItem value="4">4+ Stars</SelectItem>
+                  <SelectItem value="4.5">4.5+ Stars</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Date Range */}
+            <div className="space-y-2">
+              <Label>Date Range</Label>
+              <Select value={localFilters.dateRange} onValueChange={(v) => updateLocalFilter("dateRange", v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select date range" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DATE_RANGES.map((range) => (
+                    <SelectItem key={range.value} value={range.value}>
+                      {range.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Sort By */}
+            <div className="space-y-2">
+              <Label>Sort By</Label>
+              <Select value={localFilters.sortBy} onValueChange={(v) => updateLocalFilter("sortBy", v)}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Sort by" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SORT_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Top N Products - WITH SUBSCRIPTION LIMITS */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="flex items-center gap-2">
+                  Top N Products
+                  <div className="group relative">
+                    <Info className="h-3 w-3 text-muted-foreground cursor-help" />
+                    <div className="hidden group-hover:block absolute z-50 w-48 p-2 bg-gray-900 text-white text-xs rounded shadow-lg -top-2 left-6">
+                      Your limit: {limits.maxTopN >= UNLIMITED ? "Unlimited" : `Top ${limits.maxTopN}`}
+                    </div>
+                  </div>
+                </Label>
+                {limits.maxTopN < UNLIMITED && (
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Lock className="h-3 w-3" />
+                    Max: {limits.maxTopN}
+                  </span>
+                )}
+              </div>
+              <Select
+                value={localFilters.topN.toString()}
+                onValueChange={handleTopNChange}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select limit" />
+                </SelectTrigger>
+                <SelectContent>
+                  {TOP_N_OPTIONS.map((option) => {
+                    const locked = isTopNLocked(option.value);
+                    return (
+                      <SelectItem
+                        key={option.value}
+                        value={option.value.toString()}
+                        disabled={locked}
+                        className={locked ? "opacity-50" : ""}
+                      >
+                        <div className="flex items-center justify-between w-full">
+                          <span>{option.label}</span>
+                          {locked && (
+                            <Lock className="h-3 w-3 ml-2 text-muted-foreground" />
+                          )}
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+
+              {/* Current selection display */}
+              <div className="text-xs text-muted-foreground">
+                Currently: Top {localFilters.topN} products
+              </div>
+            </div>
           </div>
-          <div className="flex items-center justify-between pt-2">
-            <div className="flex items-center gap-2"><Switch checked={localFilters.showTrendingOnly} onCheckedChange={(c) => updateLocalFilter("showTrendingOnly", c)} /><Label className="text-xs">Trending Only</Label></div>
-            <div className="flex gap-2"><Button variant="outline" onClick={resetFilters} className="h-9 text-xs">Clear</Button><Button onClick={applyFilters} className="h-9 text-xs bg-sky-600 hover:bg-sky-700">Apply</Button></div>
+
+          {/* Subscription Upgrade Prompt */}
+          {limits.maxTopN < 100 && (
+            <div className="bg-gradient-to-r from-purple-50 via-blue-50 to-purple-50 border-2 border-purple-200 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <Crown className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-purple-900 mb-1">
+                    🚀 Unlock More Data Insights
+                  </p>
+                  <p className="text-xs text-purple-700 mb-2">
+                    {currentTier === "free"
+                      ? "Upgrade to Basic for Top 20 products or Premium for Top 100"
+                      : currentTier === "basic"
+                        ? "Upgrade to Premium for Top 100 products + real-time alerts"
+                        : "Upgrade to Enterprise for unlimited products"}
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      className="bg-purple-600 hover:bg-purple-700 text-xs h-7"
+                      onClick={() => window.location.href = "/subscription"}
+                    >
+                      <Crown className="w-3 h-3 mr-1" />
+                      View Plans
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs h-7 border-purple-300 text-purple-700 hover:bg-purple-50"
+                      onClick={() => setShowUpgradeDialog(true)}
+                    >
+                      Learn More
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Advanced Options */}
+          <Separator />
+          <div className="space-y-4">
+            <Label className="text-sm font-medium">Advanced Options</Label>
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label className="text-sm">Show Trending Products Only</Label>
+                <p className="text-xs text-muted-foreground">
+                  Filter to display only products that are currently trending
+                </p>
+              </div>
+              <Switch
+                checked={localFilters.showTrendingOnly}
+                onCheckedChange={(checked) => updateLocalFilter("showTrendingOnly", checked)}
+              />
+            </div>
+          </div>
+
+          {/* Apply & Clear Buttons */}
+          <div className="flex gap-2 pt-4">
+            <Button onClick={applyFilters} className="flex-1">
+              Apply Filters
+            </Button>
+            <Button variant="outline" onClick={resetFilters}>
+              Clear All
+            </Button>
           </div>
         </CardContent>
       </Card>
 
+      {/* Upgrade Dialog */}
       <Dialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
-        <DialogContent className="max-w-md rounded-2xl">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><Crown className="h-5 w-5 text-amber-500" /> Upgrade Plan</DialogTitle><DialogDescription>Your current plan is limited to Top {limits.maxTopN} products.</DialogDescription></DialogHeader>
-          <div className="py-4 space-y-4">
-            <div className="bg-sky-50 p-4 rounded-xl border border-sky-100 text-sm text-sky-900">Upgrade to Basic for Top 20 or Premium for Top 100 products.</div>
-            <Button className="w-full bg-sky-600 hover:bg-sky-700 h-11 font-bold rounded-xl" onClick={() => window.location.href="/subscription"}>View Plans</Button>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <Crown className="w-6 h-6 text-purple-600" />
+              Upgrade to View More Products
+            </DialogTitle>
+            <DialogDescription>
+              {attemptedTopN
+                ? `You tried to select Top ${attemptedTopN}, but your ${currentTier} plan is limited to Top ${limits.maxTopN}`
+                : `Your ${currentTier} plan is limited to Top ${limits.maxTopN} products`
+              }
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {/* Current Plan Info */}
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-semibold text-slate-900">
+                  Current Plan: {currentTier.toUpperCase()}
+                </p>
+                <Badge variant="outline" className="text-xs">Active</Badge>
+              </div>
+              <p className="text-sm text-slate-700">
+                <strong>Your Limit:</strong> Top {limits.maxTopN} products
+              </p>
+            </div>
+
+            {/* Feature Comparison */}
+            <div className="space-y-3">
+              <h4 className="font-semibold text-sm text-slate-800">
+                📊 Upgrade Options:
+              </h4>
+
+              <div className="space-y-2">
+                {currentTier === "free" && (
+                  <>
+                    <div className="border-l-4 border-blue-500 bg-blue-50 p-3 rounded-r-lg">
+                      <p className="font-semibold text-sm text-blue-900">Basic - ₹499/month</p>
+                      <ul className="text-xs text-blue-700 space-y-1 mt-1 ml-4">
+                        <li>✓ Top 20 products (4x more)</li>
+                        <li>✓ AI chart summaries</li>
+                        <li>✓ 15 notifications</li>
+                        <li>✓ Export data</li>
+                      </ul>
+                    </div>
+                    <div className="border-l-4 border-purple-500 bg-purple-50 p-3 rounded-r-lg">
+                      <p className="font-semibold text-sm text-purple-900">Premium - ₹1999/month ⭐</p>
+                      <ul className="text-xs text-purple-700 space-y-1 mt-1 ml-4">
+                        <li>✓ Top 100 products (20x more)</li>
+                        <li>✓ Real-time data & alerts</li>
+                        <li>✓ Unlimited notifications</li>
+                        <li>✓ Advanced analytics</li>
+                      </ul>
+                    </div>
+                  </>
+                )}
+
+                {currentTier === "basic" && (
+                  <div className="border-l-4 border-purple-500 bg-purple-50 p-3 rounded-r-lg">
+                    <p className="font-semibold text-sm text-purple-900">Premium - ₹1999/month ⭐</p>
+                    <ul className="text-xs text-purple-700 space-y-1 mt-1 ml-4">
+                      <li>✓ Top 100 products (5x more)</li>
+                      <li>✓ Real-time data & alerts</li>
+                      <li>✓ Unlimited notifications</li>
+                      <li>✓ Advanced analytics</li>
+                      <li>✓ AI chatbot support</li>
+                    </ul>
+                  </div>
+                )}
+
+                {currentTier === "premium" && (
+                  <div className="border-l-4 border-amber-500 bg-amber-50 p-3 rounded-r-lg">
+                    <p className="font-semibold text-sm text-amber-900">Enterprise - Custom 👑</p>
+                    <ul className="text-xs text-amber-700 space-y-1 mt-1 ml-4">
+                      <li>✓ Unlimited products</li>
+                      <li>✓ Dedicated account manager</li>
+                      <li>✓ Custom integrations</li>
+                      <li>✓ 24/7 priority support</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="flex gap-3 pt-2">
+              <Button
+                className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                onClick={() => window.location.href = "/subscription"}
+              >
+                <Crown className="w-4 h-4 mr-2" />
+                Upgrade Now
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setShowUpgradeDialog(false)}
+              >
+                Maybe Later
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

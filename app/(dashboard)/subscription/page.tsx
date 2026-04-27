@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
-import { useSubscriptionLimits } from "@/hooks/useSubscriptionLimits";
-import { useSubscriptionSync } from "@/hooks/useSubscriptionSync";
+import { useSubscriptionLimits } from "@/hooks/use-subscription-limits";
+import { useSubscriptionSync } from "@/hooks/use-subscription-sync";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, X, Crown, Zap, Building2, Loader2, AlertCircle, Sparkles, Infinity as InfinityIcon, Shield, } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import PaymentModal, { type PaymentPlan } from "@/components/payment/PaymentModal";
+import PaymentModal, { type PaymentPlan } from "@/components/payment/payment-modal";
 
 const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 

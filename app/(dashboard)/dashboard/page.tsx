@@ -5,8 +5,8 @@ import MetricsCards from "@/components/dashboard/metrics-cards";
 import ChartsGrid from "@/components/dashboard/charts-grid";
 import ProductRankings from "@/components/dashboard/product-rankings";
 import AIRecommendations from "@/components/dashboard/ai-recommendations";
-import SellerDashboardView from "@/components/dashboard/SellerDashboardView";
-import SellerIdInput from "@/components/dashboard/SellerIdInput";
+import SellerDashboardView from "@/components/dashboard/seller-dashboard-view";
+import SellerIdInput from "@/components/dashboard/seller-id-input";
 
 import { Button } from "@/components/ui/button";
 import { TrendingDown, TrendingUp, Star, Package, AlertCircle, ExternalLink, Lock, Crown } from "lucide-react";
@@ -19,10 +19,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { useSubscriptionLimits, UNLIMITED } from "@/hooks/useSubscriptionLimits";
-import { useSubscriptionSync } from "@/hooks/useSubscriptionSync";
+import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
+import { useSubscriptionSync } from "@/hooks/use-subscription-sync";
 import { useAuth } from "@/lib/auth-context";
-import OnboardingModal, { OnboardingData } from "@/components/modals/OnboardingModal";
+import OnboardingModal, { OnboardingData } from "@/components/modals/onboarding-modal";
 import { toast } from "@/hooks/use-toast";
 import { useAlerts, Notification, NotificationDetails } from "@/components/dashboard/alert-context";
 import { useRouter } from "next/navigation";

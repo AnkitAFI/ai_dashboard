@@ -1,11 +1,8 @@
-"use client";
-
 import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 import {
   Bot, Lightbulb, RefreshCw, Target, TrendingUp,
   Lock, Crown, AlertCircle, ShieldAlert, Zap, BarChart2,
@@ -13,6 +10,10 @@ import {
 import { useFilters } from "@/components/dashboard/filters-context";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
 import { useSubscriptionSync } from "@/hooks/use-subscription-sync";
+
+// ─────────────────────────────────────────────
+// TYPES
+// ─────────────────────────────────────────────
 
 interface IntelligenceData {
   market_pulse: string;
@@ -26,6 +27,17 @@ interface IntelligenceData {
   cached: boolean;
   data_rows: number;
 }
+
+interface RecommendationCardProps {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  gradient: string;
+}
+
+// ─────────────────────────────────────────────
+// MOMENTUM RING
+// ─────────────────────────────────────────────
 
 function MomentumRing({ score, label }: { score: number; label: string }) {
   const radius = 28;
@@ -56,7 +68,11 @@ function MomentumRing({ score, label }: { score: number; label: string }) {
   );
 }
 
-function RecommendationCard({ icon, title, description, gradient }: { icon: React.ReactNode; title: string; description: string; gradient: string }) {
+// ─────────────────────────────────────────────
+// RECOMMENDATION CARD  (original structure preserved)
+// ─────────────────────────────────────────────
+
+function RecommendationCard({ icon, title, description, gradient }: RecommendationCardProps) {
   return (
     <div className={`bg-gradient-to-br ${gradient} rounded-lg p-4 text-white`}>
       <div className="flex items-center mb-2">
@@ -68,21 +84,36 @@ function RecommendationCard({ icon, title, description, gradient }: { icon: Reac
   );
 }
 
+// ─────────────────────────────────────────────
+// MICRO INSIGHT  — inline bold markdown renderer
+// ─────────────────────────────────────────────
+
 function MicroInsight({ text, index }: { text: string; index: number }) {
+  // Render **bold** markdown
   const parts = text.split(/\*\*(.*?)\*\*/g);
   const colors = ["text-violet-600", "text-blue-600", "text-emerald-600"];
   const bgColors = ["bg-violet-50", "bg-blue-50", "bg-emerald-50"];
   const borderColors = ["border-violet-200", "border-blue-200", "border-emerald-200"];
 
   return (
-    <div className={`flex items-start gap-2 p-2.5 rounded-lg border ${bgColors[index % 3]} ${borderColors[index % 3]}`}>
-      <span className={`text-xs font-bold mt-0.5 shrink-0 ${colors[index % 3]}`}>#{index + 1}</span>
+    <div className={`flex items-start gap-2 p-2.5 rounded-lg border ${bgColors[index]} ${borderColors[index]}`}>
+      <span className={`text-xs font-bold mt-0.5 shrink-0 ${colors[index]}`}>#{index + 1}</span>
       <p className="text-xs text-gray-700 leading-relaxed">
-        {parts.map((part, i) => i % 2 === 1 ? <strong key={i} className="text-gray-900">{part}</strong> : part)}
+        {parts.map((part, i) =>
+          i % 2 === 1
+            ? <strong key={i} className="text-gray-900">{part}</strong>
+            : part
+        )}
       </p>
     </div>
   );
 }
+
+// ─────────────────────────────────────────────
+// MAIN COMPONENT
+// ─────────────────────────────────────────────
+
+const BASE_URL = "http://localhost:8000";
 
 export default function AIRecommendations({ selectedSource }: { selectedSource: string }) {
   const { filters } = useFilters();
@@ -90,31 +121,45 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
   const { trackAIChatUsage, canUseAIFeature, getAIUsage } = useSubscriptionSync();
 
   const hasAIRecommendations = canAccessFeature("hasChartAISummaries");
+
   const [data, setData] = useState<IntelligenceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [aiUsage, setAiUsage] = useState<{ used: number; limit: number; month: string } | null>(null);
   const [usageLimitReached, setUsageLimitReached] = useState(false);
+
+  // Abort controller to cancel in-flight requests on filter change
   const abortRef = useRef<AbortController | null>(null);
 
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-
+  // ── Load usage on mount ──
   useEffect(() => {
     if (!hasAIRecommendations) return;
-    getAIUsage().then(usage => {
+    (async () => {
+      const usage = await getAIUsage();
       setAiUsage(usage);
-      if (usage.limit < UNLIMITED && usage.used >= usage.limit) setUsageLimitReached(true);
-    });
-  }, [hasAIRecommendations, getAIUsage]);
+      if (usage.limit < UNLIMITED && usage.used >= usage.limit) {
+        setUsageLimitReached(true);
+      }
+    })();
+  }, [hasAIRecommendations]);
 
+  // ── Fetch intelligence ──
   const fetchIntelligence = async () => {
     const canUse = await canUseAIFeature();
     if (!canUse) { setUsageLimitReached(true); return; }
 
+    // Cancel any previous in-flight request
     abortRef.current?.abort();
     abortRef.current = new AbortController();
+
     setLoading(true);
 
-    const mappedSource = (filters.table || selectedSource) === "amazon" ? "amazon" : "flipkart";
+    const sourceMap: Record<string, string> = {
+      flipkart: "flipkart",
+      amazon: "amazon",
+      rapidapi_amazon_products: "amazon",
+      both: "flipkart",   // fallback for "both"
+    };
+    const mappedSource = sourceMap[filters.table || selectedSource] || "flipkart";
 
     try {
       const res = await fetch(`${BASE_URL}/ai/intelligence`, {
@@ -129,58 +174,251 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
       const json: IntelligenceData = await res.json();
       setData(json);
 
+      // Only track usage if not served from cache
       if (!json.cached) {
         await trackAIChatUsage();
         const updatedUsage = await getAIUsage();
         setAiUsage(updatedUsage);
-        if (updatedUsage.limit < UNLIMITED && updatedUsage.used >= updatedUsage.limit) setUsageLimitReached(true);
+        if (updatedUsage.limit < UNLIMITED && updatedUsage.used >= updatedUsage.limit) {
+          setUsageLimitReached(true);
+        }
       }
+
     } catch (err: any) {
-      if (err.name === "AbortError") return;
+      if (err.name === "AbortError") return;   // cancelled — don't update state
       console.error("Intelligence fetch error:", err);
+
+      // Graceful fallback — set minimal data so the UI doesn't crash
+      const cat = filters.category && filters.category !== "All Categories" ? filters.category : "the selected market";
+      const src = mappedSource === "amazon" ? "Amazon" : "Flipkart";
+      setData({
+        market_pulse: `${src} data for ${cat} is being analysed. Try refreshing.`,
+        opportunity: "Broaden your filters to surface more opportunities.",
+        risk: "Unable to assess risk — check your filter selection.",
+        verdict: "Refresh to get the latest intelligence for these filters.",
+        micro_insights: [],
+        momentum_score: 0,
+        momentum_label: "Loading…",
+        context_summary: `${src} · ${cat}`,
+        cached: false,
+        data_rows: 0,
+      });
     } finally {
       setLoading(false);
     }
   };
 
+  // ── Re-fetch on filter / source change ──
   useEffect(() => {
-    if (hasAIRecommendations && !usageLimitReached) fetchIntelligence();
-  }, [selectedSource, filters, hasAIRecommendations, usageLimitReached, BASE_URL]);
+    if (hasAIRecommendations && !usageLimitReached) {
+      fetchIntelligence();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSource, filters, hasAIRecommendations]);
 
+  // ── Derived display values ──
+  const displaySource =
+    (filters.table || selectedSource) === "both" ? "Both Platforms" :
+      (filters.table || selectedSource) === "amazon" ? "Amazon" : "Flipkart";
+
+  const cardStyles = [
+    { icon: <Target className="h-5 w-5" />, gradient: "from-green-500 to-emerald-600", title: "Key Opportunity" },
+    { icon: <TrendingUp className="h-5 w-5" />, gradient: "from-blue-500 to-cyan-600", title: "Action Plan" },
+  ];
+
+  // ─────────────────────────────────────────
+  // RENDER
+  // ─────────────────────────────────────────
   return (
-    <Card className="bg-gradient-to-r from-primary/10 to-purple-500/10 rounded-xl p-6 border shadow-sm mb-6">
+    <Card className="bg-gradient-to-r from-primary/10 to-purple-500/10 rounded-xl p-6 border mb-6">
       <CardHeader className="flex flex-row items-center justify-between mb-4 p-0">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-sky-600 rounded-xl"><Bot className="text-white h-5 w-5" /></div>
-          <div><CardTitle className="text-lg font-bold text-sky-900">Decision Intelligence</CardTitle><p className="text-xs text-slate-500">NLP Insights for {selectedSource.toUpperCase()}</p></div>
+        <div className="flex items-center">
+          <div className="p-3 bg-primary rounded-xl mr-4">
+            <Bot className="text-primary-foreground h-6 w-6" />
+          </div>
+          <div>
+            <CardTitle className="text-lg font-semibold">Decision Intelligence</CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Natural language analysis for{" "}
+              <span className="font-medium text-foreground">{displaySource}</span>
+              {filters.category && filters.category !== "All Categories" && (
+                <span className="text-primary font-medium"> · {filters.category}</span>
+              )}
+            </p>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          {aiUsage && <Badge variant="outline" className="text-[10px]">{aiUsage.used}/{aiUsage.limit >= UNLIMITED ? "∞" : aiUsage.limit}</Badge>}
-          <Button variant="ghost" size="sm" onClick={fetchIntelligence} disabled={loading || usageLimitReached} className="h-8 w-8 p-0 rounded-lg"><RefreshCw className={cn("h-4 w-4", loading && "animate-spin")} /></Button>
+
+        <div className="flex items-center space-x-2">
+          <Badge variant="secondary" className="bg-gradient-to-r from-purple-500/20 to-blue-500/20">
+            🤖 NLP Powered
+          </Badge>
+
+          {aiUsage && (
+            <Badge variant={usageLimitReached ? "destructive" : "outline"} className="text-xs">
+              {aiUsage.used}/{aiUsage.limit >= UNLIMITED ? "∞" : aiUsage.limit} Uses
+            </Badge>
+          )}
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={fetchIntelligence}
+            disabled={loading || usageLimitReached}
+            title={usageLimitReached ? "Monthly limit reached" : "Refresh insights"}
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+          </Button>
         </div>
       </CardHeader>
+
       <CardContent className="p-0">
+
+        {/* ── LOCKED ── */}
         {!hasAIRecommendations ? (
-          <div className="p-4 bg-amber-50 border border-amber-100 rounded-xl text-center"><p className="text-sm font-bold text-amber-900">AI Advisor Locked</p><Button size="sm" className="mt-2 bg-amber-600" onClick={() => window.location.href="/subscription"}>Upgrade Now</Button></div>
-        ) : usageLimitReached ? (
-          <div className="p-4 bg-rose-50 border border-rose-100 rounded-xl text-center"><p className="text-sm font-bold text-rose-900">Monthly Limit Reached</p><Button size="sm" variant="outline" className="mt-2 border-rose-200" onClick={() => window.location.href="/subscription"}>Upgrade Plan</Button></div>
-        ) : (
-          <div className="space-y-6">
-            <div className="flex items-start gap-4 p-4 bg-white/50 rounded-xl border border-sky-100">
-              <MomentumRing score={data?.momentum_score || 0} label={data?.momentum_label || ""} />
-              <div className="flex-1"><h4 className="text-sm font-bold text-sky-900 mb-1 flex items-center gap-2"><Lightbulb className="h-4 w-4 text-amber-500" /> Market Overview</h4><p className="text-xs text-slate-600 leading-relaxed">{data?.market_pulse || "Analyzing market signals..."}</p></div>
+          <div className="p-6 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <Lock className="w-5 h-5 text-amber-600 mt-1" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-amber-900">🤖 AI Business Advisor Locked</p>
+                <p className="text-sm text-amber-700 mt-1">
+                  Upgrade to {currentTier === "free" ? "Basic" : "Premium"} to unlock AI-powered recommendations.
+                </p>
+                <Button size="sm" variant="outline" className="mt-3 border-amber-400 text-amber-700 hover:bg-amber-100"
+                  onClick={() => window.location.href = "/subscription"}>
+                  <Crown className="w-4 h-4 mr-1" /> Upgrade Now
+                </Button>
+              </div>
             </div>
-            {data?.micro_insights && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {data.micro_insights.slice(0, 4).map((ins, i) => <MicroInsight key={i} text={ins} index={i} />)}
+          </div>
+
+          /* ── LIMIT REACHED ── */
+        ) : usageLimitReached ? (
+          <div className="p-6 bg-gradient-to-r from-red-50 to-orange-50 border border-red-200 rounded-lg">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 mt-1" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-red-900">Monthly AI Limit Reached</p>
+                <p className="text-sm text-red-700 mt-1">
+                  You've used all {aiUsage?.limit} AI requests for this month. Upgrade for more!
+                </p>
+                <Button size="sm" variant="outline" className="mt-3 border-red-400 text-red-700 hover:bg-red-100"
+                  onClick={() => window.location.href = "/subscription"}>
+                  <Crown className="w-4 h-4 mr-1" /> Upgrade Plan
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          /* ── MAIN CONTENT ── */
+        ) : (
+          <>
+            {/* ── TOP ROW: Momentum ring + Market Pulse ── */}
+            <div className="mb-5 p-4 bg-white/70 dark:bg-black/20 rounded-lg border border-primary/10">
+              <div className="flex items-start gap-4">
+
+                {/* Momentum Ring */}
+                <div className="shrink-0">
+                  {loading ? (
+                    <div className="w-16 h-16 rounded-full bg-gray-100 animate-pulse" />
+                  ) : (
+                    <MomentumRing
+                      score={data?.momentum_score ?? 0}
+                      label={data?.momentum_label ?? ""}
+                    />
+                  )}
+                </div>
+
+                {/* Market Pulse text */}
+                <div className="flex-1">
+                  <h3 className="font-semibold mb-2 flex items-center text-base">
+                    <Lightbulb className="h-4 w-4 mr-2 text-yellow-600" />
+                    Market Overview
+                  </h3>
+                  {loading ? (
+                    <div className="space-y-2">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-4 w-4/5" />
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {data?.market_pulse}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* ── MICRO INSIGHTS ── */}
+            {(loading || (data?.micro_insights && data.micro_insights.length > 0)) && (
+              <div className="mb-5">
+                <h3 className="font-semibold text-sm flex items-center mb-2">
+                  <BarChart2 className="h-4 w-4 mr-2 text-blue-600" />
+                  Data Signals
+                </h3>
+                {loading ? (
+                  <div className="space-y-2">
+                    {[0, 1, 2].map(i => <Skeleton key={i} className="h-10 w-full rounded-lg" />)}
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {data?.micro_insights.map((insight, i) => (
+                      <MicroInsight key={i} text={insight} index={i} />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <RecommendationCard icon={<Target className="h-4 w-4" />} title="Opportunity" description={data?.opportunity || ""} gradient="from-emerald-500 to-teal-600" />
-              <RecommendationCard icon={<ShieldAlert className="h-4 w-4" />} title="Risk Flag" description={data?.risk || ""} gradient="from-rose-500 to-red-600" />
+
+            {/* ── OPPORTUNITY + RISK cards ── */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              {loading ? (
+                Array.from({ length: 2 }).map((_, i) => (
+                  <div key={i} className="bg-white/70 rounded-lg p-4">
+                    <Skeleton className="h-5 w-5 mb-2" />
+                    <Skeleton className="h-4 w-32 mb-3" />
+                    <Skeleton className="h-3 w-full mb-2" />
+                    <Skeleton className="h-3 w-full mb-2" />
+                    <Skeleton className="h-3 w-2/3" />
+                  </div>
+                ))
+              ) : (
+                <>
+                  <RecommendationCard
+                    icon={cardStyles[0].icon}
+                    title={cardStyles[0].title}
+                    description={data?.opportunity || ""}
+                    gradient={cardStyles[0].gradient}
+                  />
+                  <div className="bg-gradient-to-br from-red-500 to-rose-600 rounded-lg p-4 text-white">
+                    <div className="flex items-center mb-2">
+                      <ShieldAlert className="h-5 w-5" />
+                      <h4 className="font-semibold ml-2">Risk Flag</h4>
+                    </div>
+                    <p className="text-sm text-white/90 leading-relaxed">{data?.risk}</p>
+                  </div>
+                </>
+              )}
             </div>
-            <div className="p-3 bg-sky-600 rounded-xl text-white shadow-md shadow-sky-100 flex items-start gap-3"><Zap className="h-4 w-4 mt-1 shrink-0" /><div><p className="text-[10px] font-bold uppercase opacity-80">Strategic Verdict</p><p className="text-sm font-medium">{data?.verdict}</p></div></div>
-          </div>
+
+            {/* ── VERDICT bar ── */}
+            <div className="p-3 bg-gradient-to-r from-primary/10 to-purple-500/10 border border-primary/20 rounded-lg flex items-start gap-2">
+              <Zap className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+              <div>
+                <p className="text-xs font-semibold text-primary mb-0.5">Strategic Verdict</p>
+                {loading
+                  ? <Skeleton className="h-4 w-full" />
+                  : <p className="text-sm text-foreground leading-relaxed">{data?.verdict}</p>
+                }
+              </div>
+            </div>
+
+            {/* ── Cache / data footer ── */}
+            {!loading && data && (
+              <p className="text-[10px] text-muted-foreground text-right mt-2">
+                {data.cached ? "⚡ Cached result" : `✓ Live · ${data.data_rows} data points analysed`}
+              </p>
+            )}
+          </>
         )}
       </CardContent>
     </Card>

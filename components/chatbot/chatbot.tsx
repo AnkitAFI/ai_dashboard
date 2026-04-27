@@ -18,8 +18,8 @@ import {
   DollarSign, BarChart3, Lock, Crown, LogIn, RefreshCw, Lightbulb,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useSubscriptionLimits, UNLIMITED } from "@/hooks/useSubscriptionLimits";
-import { useSubscriptionSync } from "@/hooks/useSubscriptionSync";
+import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
+import { useSubscriptionSync } from "@/hooks/use-subscription-sync";
 
 // ─────────────────────────────────────────────
 // TYPES

@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,8 +18,7 @@ import {
 import { Bar, Doughnut } from "react-chartjs-2";
 import { useFilters } from "@/components/dashboard/filters-context";
 import { useAISummary } from "@/hooks/use-ai-summary";
-import { useSubscriptionLimits } from "@/hooks/use-subscription-limits";
-import { cn } from "@/lib/utils";
+import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -39,14 +36,18 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
 
   return (
     <Card className="bg-card rounded-xl p-6 border hover:shadow-md transition-shadow">
-      <CardHeader className="flex flex-row items-center justify-between pb-6">
-        <CardTitle className="text-lg font-bold text-slate-800">{title}</CardTitle>
-        <Badge variant="secondary" className="text-xs">Live Data</Badge>
+      <CardHeader className="flex flex-row items-center justify-between pb-4">
+        <CardTitle className="text-lg font-semibold">{title}</CardTitle>
+        <Badge variant="secondary" className="text-xs">
+          Live Data
+        </Badge>
       </CardHeader>
       <CardContent className="p-0">
         <div className="chart-container relative h-80 w-full">
           {isLoading ? <Skeleton className="w-full h-full" /> : children}
         </div>
+
+        {/* AI Summary Section with Subscription Gates */}
         {hasAISummaries ? (
           summaryLoading ? (
             <div className="mt-3 text-sm text-muted-foreground italic flex items-center gap-2">
@@ -64,10 +65,22 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
             <div className="flex items-start gap-2">
               <Lock className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-xs font-medium text-amber-900">🎯 AI Chart Insights Locked</p>
-                <p className="text-xs text-amber-700 mt-1">Upgrade for AI-powered chart summaries.</p>
-                <Button size="sm" variant="outline" className="mt-2 text-xs h-7 border-amber-400 text-amber-700 hover:bg-amber-100" onClick={() => window.location.href = "/subscription"}>
-                  <Crown className="w-3 h-3 mr-1" /> Upgrade to {currentTier === 'free' ? 'Basic' : 'Premium'}
+                <p className="text-xs font-medium text-amber-900">
+                  🎯 AI Chart Insights Locked
+                </p>
+                <p className="text-xs text-amber-700 mt-1">
+                  {currentTier === 'free'
+                    ? 'Upgrade to Basic for AI-powered chart summaries and deeper insights'
+                    : 'Get instant AI analysis of your data patterns'}
+                </p>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="mt-2 text-xs h-7 border-amber-400 text-amber-700 hover:bg-amber-100"
+                  onClick={() => window.location.href = "/subscription"}
+                >
+                  <Crown className="w-3 h-3 mr-1" />
+                  Upgrade to {currentTier === 'free' ? 'Basic' : 'Premium'}
                 </Button>
               </div>
             </div>
@@ -79,7 +92,7 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
 }
 
 export default function ChartsGrid({ selectedSource }: { selectedSource: string }) {
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  const BASE_URL = "http://localhost:8000";
   const { filters } = useFilters();
   const { canAccessFeature } = useSubscriptionLimits();
   const router = useRouter();
@@ -96,15 +109,36 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
   const [amazonSalesProducts, setAmazonSalesProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const buildQueryParams = () => {
+  const buildQueryParams = (table: string) => {
     const params = new URLSearchParams();
-    if (filters.category && filters.category !== "All Categories") params.append("category", filters.category);
-    if (filters.priceRange[0] > 0) params.append("min_price", filters.priceRange[0].toString());
-    if (filters.priceRange[1] < 5000000) params.append("max_price", filters.priceRange[1].toString());
-    if (filters.rating > 0) params.append("min_rating", filters.rating.toString());
-    if (filters.dateRange !== "all") params.append("date_range", filters.dateRange);
-    if (filters.showTrendingOnly) params.append("trending_only", "true");
-    if (filters.sortBy) params.append("sort_by", filters.sortBy);
+
+    if (filters.category && filters.category !== "All Categories") {
+      params.append("category", filters.category);
+    }
+
+    if (filters.priceRange[0] > 0) {
+      params.append("min_price", filters.priceRange[0].toString());
+    }
+    if (filters.priceRange[1] < 5000000) {
+      params.append("max_price", filters.priceRange[1].toString());
+    }
+
+    if (filters.rating > 0) {
+      params.append("min_rating", filters.rating.toString());
+    }
+
+    if (filters.dateRange !== "all") {
+      params.append("date_range", filters.dateRange);
+    }
+
+    if (filters.showTrendingOnly) {
+      params.append("trending_only", "true");
+    }
+
+    if (filters.sortBy) {
+      params.append("sort_by", filters.sortBy);
+    }
+
     return params.toString();
   };
 
@@ -113,76 +147,101 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
       setIsLoading(true);
       try {
         const table = filters.table || selectedSource;
-        const queryParams = buildQueryParams();
+        const queryParams = buildQueryParams(table);
         const topN = filters.topN || 10;
 
-        if (table === "both") {
-          const [flipkartRes, amazonRes, flipkartCatRes, amazonCatRes, flipkartRatingsRes, amazonRatingsRes, flipkartSentimentRes, amazonSentimentRes, flipkartSalesRes, amazonSalesRes] = await Promise.all([
-            fetch(`${BASE_URL}/top?table=rapidapi_flipkart_products&n=${topN}&${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/top?table=rapidapi_amazon_products&n=${topN}&${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/flipkart/categories?${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi_amazon_products/categories?${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi_flipkart_products/ratings?${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi_amazon_products/ratings?${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi_flipkart_products/sentiment?${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi_amazon_products/sentiment?${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi/flipkart/top-sales?limit=${topN}&${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi/top-sales?limit=${topN}&${queryParams}`, { cache: 'no-store' }),
+        if (selectedSource === "both" || table === "both") {
+          const flipkartParams = buildQueryParams("rapidapi_flipkart_products");
+          const amazonParams = buildQueryParams("rapidapi_amazon_products");
+
+          const [
+            flipkartRes, amazonRes, flipkartCatRes, amazonCatRes,
+            flipkartRatingsRes, amazonRatingsRes, flipkartSentimentRes,
+            amazonSentimentRes, flipkartSalesRes, amazonSalesRes,
+          ] = await Promise.all([
+            fetch(`${BASE_URL}/top?table=rapidapi_flipkart_products&n=${topN}&${flipkartParams}`),
+            fetch(`${BASE_URL}/top?table=rapidapi_amazon_products&n=${topN}&${amazonParams}`),
+            fetch(`${BASE_URL}/flipkart/categories?${flipkartParams}`),
+            fetch(`${BASE_URL}/rapidapi_amazon_products/categories?${amazonParams}`),
+            fetch(`${BASE_URL}/rapidapi_flipkart_products/ratings?${flipkartParams}`),
+            fetch(`${BASE_URL}/rapidapi_amazon_products/ratings?${amazonParams}`),
+            fetch(`${BASE_URL}/rapidapi_flipkart_products/sentiment?${flipkartParams}`),
+            fetch(`${BASE_URL}/rapidapi_amazon_products/sentiment?${amazonParams}`),
+            fetch(`${BASE_URL}/rapidapi/flipkart/top-sales?limit=${topN}&${flipkartParams}`),
+            fetch(`${BASE_URL}/rapidapi/top-sales?limit=${topN}&${amazonParams}`),
           ]);
-          const fJson = await flipkartRes.json();
-          setFlipkartProducts(fJson.data || []);
-          const aJson = await amazonRes.json();
-          setAmazonProducts(aJson.data || []);
-          const fCatJson = await flipkartCatRes.json();
-          setFlipkartCategories(Array.isArray(fCatJson) ? fCatJson : (fCatJson?.data || []));
-          const aCatJson = await amazonCatRes.json();
-          setAmazonCategories(Array.isArray(aCatJson) ? aCatJson : (aCatJson?.data || []));
-          const fRatJson = await flipkartRatingsRes.json();
-          setFlipkartRatings(Array.isArray(fRatJson) ? fRatJson : (fRatJson?.data || []));
-          const aRatJson = await amazonRatingsRes.json();
-          setAmazonRatings(Array.isArray(aRatJson) ? aRatJson : (aRatJson?.data || []));
-          const fSentJson = await flipkartSentimentRes.json();
-          setFlipkartSentiments(Array.isArray(fSentJson) ? fSentJson : (fSentJson?.data || []));
-          const aSentJson = await amazonSentimentRes.json();
-          setAmazonSentiments(Array.isArray(aSentJson) ? aSentJson : (aSentJson?.data || []));
-          const fSalesJson = await flipkartSalesRes.json();
-          setFlipkartSalesProducts(fSalesJson.data || []);
-          const aSalesJson = await amazonSalesRes.json();
-          setAmazonSalesProducts(aSalesJson.data || []);
-        } else if (table === "amazon") {
-          const [productsRes, categoriesRes, ratingsRes, sentimentRes, salesRes] = await Promise.all([
-            fetch(`${BASE_URL}/top?table=rapidapi_amazon_products&n=${topN}&${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi_amazon_products/categories?${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi_amazon_products/ratings?${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi_amazon_products/sentiment?${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi/top-sales?limit=${topN}&${queryParams}`, { cache: 'no-store' }),
+
+          const [
+            flipkartJson, amazonJson, flipkartCatJson, amazonCatJson,
+            flipkartRatingsJson, amazonRatingsJson, flipkartSentimentJson,
+            amazonSentimentJson, flipkartSalesJson, amazonSalesJson,
+          ] = await Promise.all([
+            flipkartRes.json(), amazonRes.json(), flipkartCatRes.json(),
+            amazonCatRes.json(), flipkartRatingsRes.json(), amazonRatingsRes.json(),
+            flipkartSentimentRes.json(), amazonSentimentRes.json(),
+            flipkartSalesRes.json(), amazonSalesRes.json(),
           ]);
-          const [pJson, cJson, rJson, sentJson, sJson] = await Promise.all([
-            productsRes.json(), categoriesRes.json(), ratingsRes.json(), sentimentRes.json(), salesRes.json()
-          ]);
-          setAmazonProducts(pJson.data || []);
-          setAmazonCategories(Array.isArray(cJson) ? cJson : (cJson?.data || []));
-          setAmazonRatings(Array.isArray(rJson) ? rJson : (rJson?.data || []));
-          setAmazonSentiments(Array.isArray(sentJson) ? sentJson : (sentJson?.data || []));
-          setAmazonSalesProducts(sJson.data || []);
-          setFlipkartProducts([]); setFlipkartCategories([]); setFlipkartRatings([]); setFlipkartSentiments([]); setFlipkartSalesProducts([]);
+
+          setFlipkartProducts(flipkartJson.data || []);
+          setAmazonProducts(amazonJson.data || []);
+          setFlipkartCategories(flipkartCatJson || []);
+          setAmazonCategories(amazonCatJson || []);
+          setFlipkartRatings(flipkartRatingsJson || []);
+          setAmazonRatings(amazonRatingsJson || []);
+          setFlipkartSentiments(flipkartSentimentJson || []);
+          setAmazonSentiments(amazonSentimentJson || []);
+          setFlipkartSalesProducts(flipkartSalesJson.data || []);
+          setAmazonSalesProducts(amazonSalesJson.data || []);
+        } else if (table === "rapidapi_amazon_products" || table === "amazon") {
+          const [productsRes, categoriesRes, ratingsRes, sentimentRes, salesRes] =
+            await Promise.all([
+              fetch(`${BASE_URL}/top?table=rapidapi_amazon_products&n=${topN}&${queryParams}`),
+              fetch(`${BASE_URL}/rapidapi_amazon_products/categories?${queryParams}`),
+              fetch(`${BASE_URL}/rapidapi_amazon_products/ratings?${queryParams}`),
+              fetch(`${BASE_URL}/rapidapi_amazon_products/sentiment?${queryParams}`),
+              fetch(`${BASE_URL}/rapidapi/top-sales?limit=${topN}&${queryParams}`),
+            ]);
+
+          const [productsJson, categoriesJson, ratingsJson, sentimentJson, salesJson] =
+            await Promise.all([
+              productsRes.json(), categoriesRes.json(), ratingsRes.json(),
+              sentimentRes.json(), salesRes.json(),
+            ]);
+
+          setFlipkartProducts([]);
+          setAmazonProducts(productsJson.data || []);
+          setFlipkartCategories([]);
+          setAmazonCategories(categoriesJson || []);
+          setFlipkartRatings([]);
+          setAmazonRatings(ratingsJson || []);
+          setFlipkartSentiments([]);
+          setAmazonSentiments(sentimentJson || []);
+          setFlipkartSalesProducts([]);
+          setAmazonSalesProducts(salesJson.data || []);
         } else {
           const [productsRes, categoryRes, ratingsRes, sentimentRes, salesRes] = await Promise.all([
-            fetch(`${BASE_URL}/top?table=rapidapi_flipkart_products&n=${topN}&${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/flipkart/categories?${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi_flipkart_products/ratings?${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi_flipkart_products/sentiment?${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi/flipkart/top-sales?limit=${topN}&${queryParams}`, { cache: 'no-store' }),
+            fetch(`${BASE_URL}/top?table=rapidapi_flipkart_products&n=${topN}&${queryParams}`),
+            fetch(`${BASE_URL}/flipkart/categories?${queryParams}`),
+            fetch(`${BASE_URL}/rapidapi_flipkart_products/ratings?${queryParams}`),
+            fetch(`${BASE_URL}/rapidapi_flipkart_products/sentiment?${queryParams}`),
+            fetch(`${BASE_URL}/rapidapi/flipkart/top-sales?limit=${topN}&${queryParams}`),
           ]);
-          const [pJson, cJson, rJson, sentJson, sJson] = await Promise.all([
-            productsRes.json(), categoryRes.json(), ratingsRes.json(), sentimentRes.json(), salesRes.json()
+
+          const [productsJson, categoryJson, ratingsJson, sentimentJson, salesJson] = await Promise.all([
+            productsRes.json(), categoryRes.json(), ratingsRes.json(),
+            sentimentRes.json(), salesRes.json(),
           ]);
-          setFlipkartProducts(pJson.data || []);
-          setFlipkartCategories(Array.isArray(cJson) ? cJson : (cJson?.data || []));
-          setFlipkartRatings(Array.isArray(rJson) ? rJson : (rJson?.data || []));
-          setFlipkartSentiments(Array.isArray(sentJson) ? sentJson : (sentJson?.data || []));
-          setFlipkartSalesProducts(sJson.data || []);
-          setAmazonProducts([]); setAmazonCategories([]); setAmazonRatings([]); setAmazonSentiments([]); setAmazonSalesProducts([]);
+
+          setFlipkartProducts(productsJson.data || []);
+          setAmazonProducts([]);
+          setFlipkartCategories(categoryJson || []);
+          setAmazonCategories([]);
+          setFlipkartRatings(ratingsJson || []);
+          setAmazonRatings([]);
+          setFlipkartSentiments(sentimentJson || []);
+          setAmazonSentiments([]);
+          setFlipkartSalesProducts(salesJson.data || []);
+          setAmazonSalesProducts([]);
         }
       } catch (error) {
         console.error("Error fetching chart data:", error);
@@ -190,23 +249,196 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
         setIsLoading(false);
       }
     };
+
     fetchAll();
-  }, [selectedSource, filters, BASE_URL]);
+  }, [selectedSource, filters]);
 
+  // 🔹 AI Summaries - Only fetch if user has access
   const hasAISummaries = canAccessFeature('hasChartAISummaries');
-  const { summary: flipCatSum, loading: flipCatLoad } = useAISummary(hasAISummaries ? "Summarize Flipkart category distribution" : "", "rapidapi_flipkart_products", flipkartCategories, flipkartCategories.length, filters);
-  const { summary: flipRatSum, loading: flipRatLoad } = useAISummary(hasAISummaries ? "Summarize Flipkart rating distribution" : "", "rapidapi_flipkart_products", flipkartRatings, flipkartRatings.length, filters);
-  const { summary: flipSentSum, loading: flipSentLoad } = useAISummary(hasAISummaries ? "Summarize Flipkart sentiment distribution" : "", "rapidapi_flipkart_products", flipkartSentiments, flipkartSentiments.length, filters);
-  const { summary: flipSalesSum, loading: flipSalesLoad } = useAISummary(hasAISummaries ? "Summarize top selling Flipkart products" : "", "rapidapi_flipkart_products", flipkartSalesProducts, flipkartSalesProducts.length, filters);
 
-  const { summary: amzCatSum, loading: amzCatLoad } = useAISummary(hasAISummaries ? "Summarize Amazon category distribution" : "", "rapidapi_amazon_products", amazonCategories, amazonCategories.length, filters);
-  const { summary: amzRatSum, loading: amzRatLoad } = useAISummary(hasAISummaries ? "Summarize Amazon rating distribution" : "", "rapidapi_amazon_products", amazonRatings, amazonRatings.length, filters);
-  const { summary: amzSentSum, loading: amzSentLoad } = useAISummary(hasAISummaries ? "Summarize Amazon sentiment distribution" : "", "rapidapi_amazon_products", amazonSentiments, amazonSentiments.length, filters);
-  const { summary: amzSalesSum, loading: amzSalesLoad } = useAISummary(hasAISummaries ? "Summarize top selling Amazon products" : "", "rapidapi_amazon_products", amazonSalesProducts, amazonSalesProducts.length, filters);
+  const { summary: flipkartCategoriesSummary, loading: flipkartCategoriesLoading } =
+    useAISummary(
+      hasAISummaries ? "Summarize Flipkart category distribution" : "",
+      "rapidapi_flipkart_products",
+      flipkartCategories,
+      flipkartCategories.length,
+      filters
+    );
+
+  const { summary: flipkartRatingsSummary, loading: flipkartRatingsLoading } =
+    useAISummary(
+      hasAISummaries ? "Summarize Flipkart rating distribution" : "",
+      "rapidapi_flipkart_products",
+      flipkartRatings,
+      flipkartRatings.length,
+      filters
+    );
+
+  const { summary: flipkartSentimentsSummary, loading: flipkartSentimentsLoading } =
+    useAISummary(
+      hasAISummaries ? "Summarize Flipkart sentiment distribution" : "",
+      "rapidapi_flipkart_products",
+      flipkartSentiments,
+      flipkartSentiments.length,
+      filters
+    );
+
+  const { summary: flipkartSalesSummary, loading: flipkartSalesLoading } =
+    useAISummary(
+      hasAISummaries ? "Summarize top selling Flipkart products by daily sales volume" : "",
+      "rapidapi_flipkart_products",
+      flipkartSalesProducts,
+      flipkartSalesProducts.length,
+      filters
+    );
+
+  const { summary: amazonCategoriesSummary, loading: amazonCategoriesLoading } =
+    useAISummary(
+      hasAISummaries ? "Summarize Amazon category distribution" : "",
+      "rapidapi_amazon_products",
+      amazonCategories,
+      amazonCategories.length,
+      filters
+    );
+
+  const { summary: amazonRatingsSummary, loading: amazonRatingsLoading } =
+    useAISummary(
+      hasAISummaries ? "Summarize Amazon rating distribution" : "",
+      "rapidapi_amazon_products",
+      amazonRatings,
+      amazonRatings.length,
+      filters
+    );
+
+  const { summary: amazonSentimentsSummary, loading: amazonSentimentsLoading } =
+    useAISummary(
+      hasAISummaries ? "Summarize Amazon sentiment distribution" : "",
+      "rapidapi_amazon_products",
+      amazonSentiments,
+      amazonSentiments.length,
+      filters
+    );
+
+  const { summary: amazonSalesSummary, loading: amazonSalesLoading } =
+    useAISummary(
+      hasAISummaries ? "Summarize top selling Amazon products by daily sales volume" : "",
+      "rapidapi_amazon_products",
+      amazonSalesProducts,
+      amazonSalesProducts.length,
+      filters
+    );
+
+  // Click handlers and chart options remain the same...
+  const handleFlipkartCategoryClick = (index: number) => {
+    const category = flipkartCategories[index];
+    if (category && (category.category || category.category_name)) {
+      const categoryName = encodeURIComponent(category.category || category.category_name);
+      router.push(`/category-products/flipkart/${categoryName}?page=1&from=dashboard`);
+    }
+  };
+
+  const handleAmazonCategoryClick = (index: number) => {
+    const category = amazonCategories[index];
+    if (category && (category.category || category.category_name)) {
+      const categoryName = encodeURIComponent(category.category || category.category_name);
+      router.push(`/category-products/amazon/${categoryName}?page=1&from=dashboard`);
+    }
+  };
+
+  const handleFlipkartSalesProductClick = (index: number) => {
+    const product = flipkartSalesProducts[index];
+    if (product && product.product_title) {
+      const productName = encodeURIComponent(product.product_title);
+      router.push(`/product/${productName}?from=dashboard&source=flipkart`);
+    }
+  };
+
+  const handleAmazonSalesProductClick = (index: number) => {
+    const product = amazonSalesProducts[index];
+    if (product && product.product_title) {
+      const productName = encodeURIComponent(product.product_title);
+      router.push(`/product/${productName}?from=dashboard&source=amazon`);
+    }
+  };
+
+  const handleFlipkartSentimentClick = (index: number) => {
+    const sentiment = flipkartSentiments[index];
+    if (sentiment && sentiment.sentiment) {
+      const sentimentType = sentiment.sentiment.toLowerCase();
+      let url = `/sentiment-products/flipkart/${sentimentType}`;
+      const params = new URLSearchParams();
+
+      if (filters.category && filters.category !== "All Categories") {
+        params.append("category", filters.category);
+      }
+      if (filters.priceRange[0] > 0) {
+        params.append("min_price", filters.priceRange[0].toString());
+      }
+      if (filters.priceRange[1] < 5000000) {
+        params.append("max_price", filters.priceRange[1].toString());
+      }
+      if (filters.rating > 0) {
+        params.append("min_rating", filters.rating.toString());
+      }
+      if (filters.dateRange !== "all") {
+        params.append("date_range", filters.dateRange);
+      }
+      if (filters.showTrendingOnly) {
+        params.append("trending_only", "true");
+      }
+      if (filters.sortBy) {
+        params.append("sort_by", filters.sortBy);
+      }
+
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+
+      router.push(url);
+    }
+  };
+
+  const handleAmazonSentimentClick = (index: number) => {
+    const sentiment = amazonSentiments[index];
+    if (sentiment && sentiment.sentiment) {
+      const sentimentType = sentiment.sentiment.toLowerCase();
+      let url = `/sentiment-products/amazon/${sentimentType}`;
+      const params = new URLSearchParams();
+
+      if (filters.category && filters.category !== "All Categories") {
+        params.append("category", filters.category);
+      }
+      if (filters.priceRange[0] > 0) {
+        params.append("min_price", filters.priceRange[0].toString());
+      }
+      if (filters.priceRange[1] < 5000000) {
+        params.append("max_price", filters.priceRange[1].toString());
+      }
+      if (filters.rating > 0) {
+        params.append("min_rating", filters.rating.toString());
+      }
+      if (filters.dateRange !== "all") {
+        params.append("date_range", filters.dateRange);
+      }
+      if (filters.showTrendingOnly) {
+        params.append("trending_only", "true");
+      }
+      if (filters.sortBy) {
+        params.append("sort_by", filters.sortBy);
+      }
+
+      if (params.toString()) {
+        url += `?${params.toString()}`;
+      }
+
+      router.push(url);
+    }
+  };
 
   const createBarOptions = (clickHandler: (index: number) => void) => ({
-    responsive: true, maintainAspectRatio: false,
-    plugins: { 
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
       legend: { display: true, position: "bottom" as const },
       tooltip: {
         callbacks: {
@@ -214,7 +446,12 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
         }
       }
     },
-    onClick: (_: any, elements: any[]) => { if (elements.length > 0) clickHandler(elements[0].index); },
+    onClick: (_event: any, elements: any[]) => {
+      if (elements.length > 0) {
+        const index = elements[0].index;
+        clickHandler(index);
+      }
+    },
     onHover: (event: any, elements: any[]) => {
       const canvas = event.native?.target;
       if (canvas) {
@@ -223,117 +460,250 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
     }
   });
 
-  const truncateName = (name: string) => name.replace(/"/g, "").substring(0, 30) + (name.length > 30 ? "..." : "");
+  const createDoughnutOptions = (clickHandler: (index: number) => void) => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: "bottom" as const,
+        labels: {
+          padding: 15,
+          font: {
+            size: 12,
+            weight: 'bold' as const
+          }
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: (context: any) => {
+            const label = context.label || '';
+            const value = context.parsed || 0;
+            return `${label}: ${value} products`;
+          },
+          afterLabel: () => "👆 Click to view products"
+        },
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        padding: 12,
+        titleFont: {
+          size: 14,
+          weight: 'bold' as const
+        },
+        bodyFont: {
+          size: 12
+        }
+      }
+    },
+    onClick: (_event: any, elements: any[]) => {
+      if (elements.length > 0) {
+        const index = elements[0].index;
+        clickHandler(index);
+      }
+    },
+    onHover: (event: any, elements: any[]) => {
+      const canvas = event.native?.target;
+      if (canvas) {
+        canvas.style.cursor = elements.length > 0 ? 'pointer' : 'default';
+      }
+    },
+    animation: {
+      animateRotate: true,
+      animateScale: true
+    }
+  });
+
+  const truncateName = (name: string) => {
+    const cleaned = name.replace(/"/g, "");
+    return cleaned.substring(0, 30) + (cleaned.length > 30 ? "..." : "");
+  };
+
+  // Chart data configurations
+  const flipkartCategoriesChart = {
+    labels: flipkartCategories.map((c) => c.category || c.category_name || "Unknown"),
+    datasets: [{
+      label: "Flipkart Products",
+      data: flipkartCategories.map((c) => c.count || 0),
+      backgroundColor: "hsl(142,76%,36%)",
+      borderRadius: 8,
+    }],
+  };
+
+  const flipkartRatingsChart = {
+    labels: flipkartRatings.map((r) => `${r.rating}★`),
+    datasets: [{
+      label: "Number of Products",
+      data: flipkartRatings.map((r) => r.count || 0),
+      backgroundColor: "rgba(34,197,94,0.7)",
+    }],
+  };
+
+  const flipkartSentimentsChart = {
+    labels: flipkartSentiments.map((s) => {
+      const sentiment = s.sentiment || "Unknown";
+      return sentiment.charAt(0).toUpperCase() + sentiment.slice(1);
+    }),
+    datasets: [{
+      label: "Sentiment Count",
+      data: flipkartSentiments.map((s) => s.count || 0),
+      backgroundColor: ["rgba(34,197,94,0.9)", "rgba(234,179,8,0.9)", "rgba(239,68,68,0.9)"],
+      borderColor: "rgba(255,255,255,1)",
+      borderWidth: 3,
+      hoverOffset: 15,
+      hoverBorderWidth: 4,
+    }],
+  };
+
+  const flipkartSalesChart = {
+    labels: flipkartSalesProducts.map((p) => truncateName(p.product_title || "Unknown")),
+    datasets: [{
+      label: "Daily Sales",
+      data: flipkartSalesProducts.map((p) => p.daily_sales || 0),
+      backgroundColor: "rgba(34,197,94,0.8)",
+      borderRadius: 10,
+    }],
+  };
+
+  const amazonCategoriesChart = {
+    labels: amazonCategories.map((c) => c.category || c.category_name || "Unknown"),
+    datasets: [{
+      label: "Amazon Products",
+      data: amazonCategories.map((c) => c.count || c.product_count || 0),
+      borderRadius: 8,
+      backgroundColor: "rgba(245, 158, 11, 0.7)",
+    }],
+  };
+
+  const amazonRatingsChart = {
+    labels: amazonRatings.map((r) => `${r.rating}★`),
+    datasets: [{
+      label: "Number of Products",
+      data: amazonRatings.map((r) => r.count || 0),
+      backgroundColor: "rgba(59,130,246,0.7)",
+    }],
+  };
+
+  const amazonSentimentsChart = {
+    labels: amazonSentiments.map((s) => {
+      const sentiment = s.sentiment || "Unknown";
+      return sentiment.charAt(0).toUpperCase() + sentiment.slice(1);
+    }),
+    datasets: [{
+      label: "Sentiment Count",
+      data: amazonSentiments.map((s) => s.count || 0),
+      backgroundColor: ["rgba(34,197,94,0.9)", "rgba(234,179,8,0.9)", "rgba(239,68,68,0.9)"],
+      borderColor: "rgba(255,255,255,1)",
+      borderWidth: 3,
+      hoverOffset: 15,
+      hoverBorderWidth: 4,
+    }],
+  };
+
+  const amazonSalesChart = {
+    labels: amazonSalesProducts.map((p) => truncateName(p.product_title || "Unknown")),
+    datasets: [{
+      label: "Daily Sales",
+      data: amazonSalesProducts.map((p) => p.daily_sales || 0),
+      backgroundColor: "rgba(59,130,246,0.8)",
+      borderRadius: 10,
+    }],
+  };
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      {/* Flipkart Charts */}
       {flipkartCategories.length > 0 && (
-        <ChartCard title="Product Category Landscape (Flipkart)" isLoading={isLoading} summary={flipCatSum} summaryLoading={flipCatLoad}>
-          <Bar 
-            data={{ labels: flipkartCategories.map(c => c.category || c.category_name || "Unknown"), datasets: [{ label: "Products", data: flipkartCategories.map(c => c.count || 0), backgroundColor: "hsl(142,76%,36%)", borderRadius: 8 }] }} 
-            options={createBarOptions((index) => {
-              const category = flipkartCategories[index];
-              if (category && (category.category || category.category_name)) {
-                router.push(`/category-products/flipkart/${encodeURIComponent(category.category || category.category_name)}?page=1&from=dashboard`);
-              }
-            })} 
-          />
+        <ChartCard
+          title="Product Category Landscape (Flipkart)"
+          isLoading={isLoading}
+          summary={flipkartCategoriesSummary}
+          summaryLoading={flipkartCategoriesLoading}
+        >
+          <Bar data={flipkartCategoriesChart} options={createBarOptions(handleFlipkartCategoryClick)} />
         </ChartCard>
       )}
+
       {flipkartRatings.length > 0 && (
-        <ChartCard title="Customer Rating Profile (Flipkart)" isLoading={isLoading} summary={flipRatSum} summaryLoading={flipRatLoad}>
-          <Bar data={{ labels: flipkartRatings.map(r => `${r.rating}★`), datasets: [{ label: "Products", data: flipkartRatings.map(r => r.count || 0), backgroundColor: "rgba(34,197,94,0.7)" }] }} options={createBarOptions(() => {})} />
+        <ChartCard
+          title="Customer Rating Profile (Flipkart)"
+          isLoading={isLoading}
+          summary={flipkartRatingsSummary}
+          summaryLoading={flipkartRatingsLoading}
+        >
+          <Bar data={flipkartRatingsChart} options={createBarOptions(() => { })} />
         </ChartCard>
       )}
+
       {flipkartSentiments.length > 0 && (
-        <ChartCard title="Voice of the Customer (Flipkart)" isLoading={isLoading} summary={flipSentSum} summaryLoading={flipSentLoad}>
-          <Doughnut 
-            data={{ labels: flipkartSentiments.map(s => (s.sentiment || "Unknown")), datasets: [{ data: flipkartSentiments.map(s => s.count || 0), backgroundColor: ["rgba(34,197,94,0.9)", "rgba(234,179,8,0.9)", "rgba(239,68,68,0.9)"], borderWidth: 3 }] }} 
-            options={{ 
-              responsive: true, 
-              maintainAspectRatio: false,
-              onClick: (_: any, elements: any[]) => {
-                if (elements.length > 0) {
-                  const sentiment = flipkartSentiments[elements[0].index];
-                  if (sentiment && sentiment.sentiment) {
-                    router.push(`/sentiment-products/flipkart/${sentiment.sentiment.toLowerCase()}?from=dashboard`);
-                  }
-                }
-              },
-              onHover: (event: any, elements: any[]) => {
-                const canvas = event.native?.target;
-                if (canvas) canvas.style.cursor = elements.length > 0 ? 'pointer' : 'default';
-              }
-            }} 
-          />
-        </ChartCard>
-      )}
-      {flipkartSalesProducts.length > 0 && (
-        <ChartCard title="High-Velocity Products (Flipkart)" isLoading={isLoading} summary={flipSalesSum} summaryLoading={flipSalesLoad}>
-          <Bar 
-            data={{ labels: flipkartSalesProducts.map(p => truncateName(p.product_title || "Unknown")), datasets: [{ label: "Daily Sales", data: flipkartSalesProducts.map(p => p.daily_sales || 0), backgroundColor: "rgba(34,197,94,0.8)", borderRadius: 10 }] }} 
-            options={createBarOptions((index) => {
-              const product = flipkartSalesProducts[index];
-              if (product && product.product_title) {
-                router.push(`/product/${encodeURIComponent(product.product_title)}?from=dashboard&source=flipkart`);
-              }
-            })} 
+        <ChartCard
+          title="Voice of the Customer (Flipkart)"
+          isLoading={isLoading}
+          summary={flipkartSentimentsSummary}
+          summaryLoading={flipkartSentimentsLoading}
+        >
+          <Doughnut
+            data={flipkartSentimentsChart}
+            options={createDoughnutOptions(handleFlipkartSentimentClick)}
           />
         </ChartCard>
       )}
 
+      {flipkartSalesProducts.length > 0 && (
+        <ChartCard
+          title="High-Velocity Products (Flipkart)"
+          isLoading={isLoading}
+          summary={flipkartSalesSummary}
+          summaryLoading={flipkartSalesLoading}
+        >
+          <Bar data={flipkartSalesChart} options={createBarOptions(handleFlipkartSalesProductClick)} />
+        </ChartCard>
+      )}
+
+      {/* Amazon Charts */}
       {amazonCategories.length > 0 && (
-        <ChartCard title="Product Category Landscape (Amazon)" isLoading={isLoading} summary={amzCatSum} summaryLoading={amzCatLoad}>
-          <Bar 
-            data={{ labels: amazonCategories.map(c => c.category || c.category_name || "Unknown"), datasets: [{ label: "Products", data: amazonCategories.map(c => c.count || c.product_count || 0), backgroundColor: "rgba(245, 158, 11, 0.7)", borderRadius: 8 }] }} 
-            options={createBarOptions((index) => {
-              const category = amazonCategories[index];
-              if (category && (category.category || category.category_name)) {
-                router.push(`/category-products/amazon/${encodeURIComponent(category.category || category.category_name)}?page=1&from=dashboard`);
-              }
-            })} 
-          />
+        <ChartCard
+          title="Product Category Landscape (Amazon)"
+          isLoading={isLoading}
+          summary={amazonCategoriesSummary}
+          summaryLoading={amazonCategoriesLoading}
+        >
+          <Bar data={amazonCategoriesChart} options={createBarOptions(handleAmazonCategoryClick)} />
         </ChartCard>
       )}
+
       {amazonRatings.length > 0 && (
-        <ChartCard title="Customer Rating Profile (Amazon)" isLoading={isLoading} summary={amzRatSum} summaryLoading={amzRatLoad}>
-          <Bar data={{ labels: amazonRatings.map(r => `${r.rating}★`), datasets: [{ label: "Products", data: amazonRatings.map(r => r.count || 0), backgroundColor: "rgba(59,130,246,0.7)" }] }} options={createBarOptions(() => {})} />
+        <ChartCard
+          title="Customer Rating Profile (Amazon)"
+          isLoading={isLoading}
+          summary={amazonRatingsSummary}
+          summaryLoading={amazonRatingsLoading}
+        >
+          <Bar data={amazonRatingsChart} options={createBarOptions(() => { })} />
         </ChartCard>
       )}
+
       {amazonSentiments.length > 0 && (
-        <ChartCard title="Voice of the Customer (Amazon)" isLoading={isLoading} summary={amzSentSum} summaryLoading={amzSentLoad}>
-          <Doughnut 
-            data={{ labels: amazonSentiments.map(s => (s.sentiment || "Unknown")), datasets: [{ data: amazonSentiments.map(s => s.count || 0), backgroundColor: ["rgba(34,197,94,0.9)", "rgba(234,179,8,0.9)", "rgba(239,68,68,0.9)"], borderWidth: 3 }] }} 
-            options={{ 
-              responsive: true, 
-              maintainAspectRatio: false,
-              onClick: (_: any, elements: any[]) => {
-                if (elements.length > 0) {
-                  const sentiment = amazonSentiments[elements[0].index];
-                  if (sentiment && sentiment.sentiment) {
-                    router.push(`/sentiment-products/amazon/${sentiment.sentiment.toLowerCase()}?from=dashboard`);
-                  }
-                }
-              },
-              onHover: (event: any, elements: any[]) => {
-                const canvas = event.native?.target;
-                if (canvas) canvas.style.cursor = elements.length > 0 ? 'pointer' : 'default';
-              }
-            }} 
+        <ChartCard
+          title="Voice of the Customer (Amazon)"
+          isLoading={isLoading}
+          summary={amazonSentimentsSummary}
+          summaryLoading={amazonSentimentsLoading}
+        >
+          <Doughnut
+            data={amazonSentimentsChart}
+            options={createDoughnutOptions(handleAmazonSentimentClick)}
           />
         </ChartCard>
       )}
+
       {amazonSalesProducts.length > 0 && (
-        <ChartCard title="High-Velocity Products (Amazon)" isLoading={isLoading} summary={amzSalesSum} summaryLoading={amzSalesLoad}>
-          <Bar 
-            data={{ labels: amazonSalesProducts.map(p => truncateName(p.product_title || "Unknown")), datasets: [{ label: "Daily Sales", data: amazonSalesProducts.map(p => p.daily_sales || 0), backgroundColor: "rgba(59,130,246,0.8)", borderRadius: 10 }] }} 
-            options={createBarOptions((index) => {
-              const product = amazonSalesProducts[index];
-              if (product && product.product_title) {
-                router.push(`/product/${encodeURIComponent(product.product_title)}?from=dashboard&source=amazon`);
-              }
-            })} 
-          />
+        <ChartCard
+          title="High-Velocity Products (Amazon)"
+          isLoading={isLoading}
+          summary={amazonSalesSummary}
+          summaryLoading={amazonSalesLoading}
+        >
+          <Bar data={amazonSalesChart} options={createBarOptions(handleAmazonSalesProductClick)} />
         </ChartCard>
       )}
     </div>

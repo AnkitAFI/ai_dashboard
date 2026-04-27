@@ -1,15 +1,12 @@
-"use client";
-
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { TrendingUp, Lock, Sparkles } from "lucide-react";
+import { TrendingUp, Lock, Sparkles, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFilters } from "@/components/dashboard/filters-context";
 import { useAISummary } from "@/hooks/use-ai-summary";
-import { useSubscriptionLimits } from "@/hooks/use-subscription-limits";
+import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
 
 interface TrendingProduct {
   product_title?: string;
@@ -22,38 +19,72 @@ interface TrendingProduct {
   product_price?: number;
 }
 
-function ProductCard({ product, index, source }: { product: TrendingProduct; index: number; source: string }) {
-  const router = useRouter();
-  const colors = ["bg-emerald-500", "bg-sky-500", "bg-indigo-500"];
-  const gradients = ["from-emerald-50/50 to-emerald-100/50", "from-sky-50/50 to-sky-100/50", "from-indigo-50/50 to-indigo-100/50"];
-  const name = product.product_title || product.title || "Unknown Product";
-  const sales = product.daily_sales || product.total_daily_sales || product.estimated_sales || 0;
+function ProductCard({
+  product,
+  index,
+  source,
+}: {
+  product: TrendingProduct;
+  index: number;
+  source: string;
+}) {
+  const colors = ["bg-green-500", "bg-blue-500", "bg-purple-500"];
+  const gradients = [
+    "from-green-50 to-green-100",
+    "from-blue-50 to-blue-100",
+    "from-purple-50 to-purple-100",
+  ];
+
+  const productName = product.product_title || product.title || "Unknown Product";
+
+  const salesVolumeRaw = product.daily_sales || product.total_daily_sales || product.sales_volume || product.estimated_sales || 0;
+  const salesVolume = typeof salesVolumeRaw === 'string'
+    ? parseFloat(salesVolumeRaw.replace(/[^0-9.]/g, '')) || 0
+    : salesVolumeRaw;
+
   const price = product.avg_price || product.product_price || 0;
 
-  const handleClick = () => {
-    router.push(`/product/${encodeURIComponent(name)}?from=dashboard&source=${source.toLowerCase()}`);
-  };
-
   return (
-    <div 
-      onClick={handleClick}
-      className={cn("flex items-center justify-between p-3 rounded-lg bg-gradient-to-r gap-3", gradients[index % 3])}
+    <div
+      className={cn(
+        "flex items-center justify-between p-3 rounded-lg bg-gradient-to-r gap-3",
+        gradients[index % gradients.length]
+      )}
     >
-      <div className="flex items-center gap-3 flex-1 min-w-0">
-        <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold", colors[index % 3])}>{index + 1}</div>
-        <div className="min-w-0">
-          <p className="text-sm font-bold text-slate-800 truncate" title={name}>{name.replace(/"/g, "")}</p>
-          <p className="text-[10px] text-slate-500">{Math.round(Number(sales)).toLocaleString()} sales · ₹{price.toFixed(0)}</p>
+      <div className="flex items-center space-x-3 flex-1 min-w-0">
+        <div
+          className={cn(
+            "w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0",
+            colors[index % colors.length]
+          )}
+        >
+          {index + 1}
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="font-medium text-sm truncate" title={productName.replace(/"/g, "")}>
+            {productName.replace(/"/g, "")}
+          </p>
+          <p className="text-xs text-muted-foreground truncate">
+            {Math.round(salesVolume).toLocaleString()} sales • ₹{price.toFixed(0)}
+          </p>
         </div>
       </div>
-      <Badge variant="outline" className="text-[10px] font-bold uppercase border-slate-200 bg-white">{source}</Badge>
-      <TrendingUp className="h-4 w-4 text-emerald-600" />
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <Badge variant="outline" className="text-xs whitespace-nowrap">
+          {source === "flipkart" ? "Flipkart" : "Amazon"}
+        </Badge>
+        <TrendingUp className="h-5 w-5 text-green-600" />
+      </div>
     </div>
   );
 }
 
-export default function ProductRankings({ selectedSource }: { selectedSource: string }) {
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+export default function ProductRankings({
+  selectedSource,
+}: {
+  selectedSource: string;
+}) {
+  const BASE_URL = "http://localhost:8000";
   const { filters } = useFilters();
   const { canAccessFeature, currentTier } = useSubscriptionLimits();
 
@@ -63,13 +94,34 @@ export default function ProductRankings({ selectedSource }: { selectedSource: st
 
   const buildQueryParams = () => {
     const params = new URLSearchParams();
-    if (filters.category && filters.category !== "All Categories") params.append("category", filters.category);
-    if (filters.priceRange[0] > 0) params.append("min_price", filters.priceRange[0].toString());
-    if (filters.priceRange[1] < 5000000) params.append("max_price", filters.priceRange[1].toString());
-    if (filters.rating > 0) params.append("min_rating", filters.rating.toString());
-    if (filters.dateRange !== "all") params.append("date_range", filters.dateRange);
-    if (filters.showTrendingOnly) params.append("trending_only", "true");
-    if (filters.sortBy) params.append("sort_by", filters.sortBy);
+
+    if (filters.category && filters.category !== "All Categories") {
+      params.append("category", filters.category);
+    }
+
+    if (filters.priceRange[0] > 0) {
+      params.append("min_price", filters.priceRange[0].toString());
+    }
+    if (filters.priceRange[1] < 5000000) {
+      params.append("max_price", filters.priceRange[1].toString());
+    }
+
+    if (filters.rating > 0) {
+      params.append("min_rating", filters.rating.toString());
+    }
+
+    if (filters.dateRange !== "all") {
+      params.append("date_range", filters.dateRange);
+    }
+
+    if (filters.showTrendingOnly) {
+      params.append("trending_only", "true");
+    }
+
+    if (filters.sortBy) {
+      params.append("sort_by", filters.sortBy);
+    }
+
     return params.toString();
   };
 
@@ -80,52 +132,191 @@ export default function ProductRankings({ selectedSource }: { selectedSource: st
         const table = filters.table || selectedSource;
         const queryParams = buildQueryParams();
         const topN = filters.topN || 10;
+
         if (table === "both") {
           const halfN = Math.ceil(topN / 2);
-          const [fRes, aRes] = await Promise.all([
+          const [flipkartRes, amazonRes] = await Promise.all([
             fetch(`${BASE_URL}/rapidapi/flipkart/top-sales?limit=${halfN}&${queryParams}`),
-            fetch(`${BASE_URL}/rapidapi/top-sales?limit=${halfN}&${queryParams}`)
+            fetch(`${BASE_URL}/rapidapi/top-sales?limit=${halfN}&${queryParams}`),
           ]);
-          setFlipkartProducts((await fRes.json()).data || []);
-          setAmazonProducts((await aRes.json()).data || []);
-        } else if (table === "amazon") {
+
+          const [flipkartJson, amazonJson] = await Promise.all([
+            flipkartRes.json(),
+            amazonRes.json(),
+          ]);
+
+          setFlipkartProducts(flipkartJson.data || []);
+          setAmazonProducts(amazonJson.data || []);
+        } else if (table === "amazon" || table === "rapidapi_amazon_products") {
           const res = await fetch(`${BASE_URL}/rapidapi/top-sales?limit=${topN}&${queryParams}`);
-          setAmazonProducts((await res.json()).data || []);
+          const json = await res.json();
           setFlipkartProducts([]);
+          setAmazonProducts(json.data || []);
         } else {
           const res = await fetch(`${BASE_URL}/rapidapi/flipkart/top-sales?limit=${topN}&${queryParams}`);
-          setFlipkartProducts((await res.json()).data || []);
+          const json = await res.json();
+          setFlipkartProducts(json.data || []);
           setAmazonProducts([]);
         }
-      } catch (error) { console.error(error); } finally { setIsLoading(false); }
+      } catch (error) {
+        console.error("Error fetching trending products:", error);
+        setFlipkartProducts([]);
+        setAmazonProducts([]);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    fetchTrendingProducts();
-  }, [selectedSource, filters, BASE_URL]);
 
-  const allProducts = [...flipkartProducts, ...amazonProducts];
+    fetchTrendingProducts();
+  }, [selectedSource, filters]);
+
+  const table = filters.table || selectedSource;
+  const showBoth = table === "both";
+  const isAmazon = table === "amazon" || table === "rapidapi_amazon_products";
+
+  const allProducts = showBoth
+    ? [...flipkartProducts, ...amazonProducts]
+    : isAmazon
+      ? amazonProducts
+      : flipkartProducts;
+
   const hasAISummaries = canAccessFeature('hasChartAISummaries');
-  const { summary, loading: summaryLoading } = useAISummary(hasAISummaries ? "Summarize key patterns in trending products." : "", "market_movers", allProducts, allProducts.length, filters);
+
+  const question = showBoth
+    ? "Compare top selling Flipkart and Amazon products by sales volume."
+    : isAmazon
+      ? "Summarize key patterns and insights from top selling Amazon products by sales volume."
+      : "Summarize key patterns and insights from top selling Flipkart products by sales volume.";
+
+  const sourceTable = isAmazon
+    ? "rapidapi_amazon_products"
+    : table === "flipkart" || table === "rapidapi_flipkart_products"
+      ? "rapidapi_flipkart_products"
+      : "combined_sources";
+
+  const { summary, loading: summaryLoading } = useAISummary(
+    hasAISummaries ? question : "",
+    sourceTable,
+    allProducts,
+    allProducts.length,
+    filters
+  );
 
   return (
-    <Card className="bg-card rounded-xl p-6 border hover:shadow-md transition-shadow mb-8">
-      <CardHeader className="flex flex-row items-center justify-between mb-4 p-0">
-        <CardTitle className="text-lg font-bold text-slate-900">Market Movers</CardTitle>
-        <Badge variant="secondary" className="text-[10px] font-bold">LIVE</Badge>
-      </CardHeader>
-      <CardContent className="p-0 space-y-4">
-        {hasAISummaries ? (
-          summaryLoading ? <div className="text-xs text-slate-400 animate-pulse flex items-center gap-2"><Sparkles className="h-3 w-3" /> Generating insights...</div> :
-          summary && <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-xs text-indigo-900 leading-relaxed flex items-start gap-2"><Sparkles className="h-3 w-3 mt-0.5 shrink-0" />{summary}</div>
-        ) : (
-          <div className="p-3 bg-amber-50 border border-amber-100 rounded-xl text-xs text-amber-900 flex items-start gap-2"><Lock className="h-3 w-3 mt-0.5" /> Upgrade to {currentTier === 'free' ? 'Basic' : 'Premium'} for AI insights.</div>
-        )}
-        <div className="space-y-2">
-          {isLoading ? [1,2,3].map(i => <Skeleton key={i} className="h-14 w-full rounded-xl" />) : 
-            allProducts.length > 0 ? allProducts.map((p, i) => <ProductCard key={i} product={p} index={i} source={flipkartProducts.includes(p) ? "Flipkart" : "Amazon"} />) :
-            <div className="text-center py-6 text-slate-400 text-sm">No movers found</div>
-          }
-        </div>
-      </CardContent>
-    </Card>
+    <div className="grid grid-cols-1 gap-6 mb-8">
+      <Card className="bg-card rounded-xl p-6 border hover:shadow-md transition-shadow">
+        <CardHeader className="flex flex-row items-center justify-between mb-4 p-0">
+          <CardTitle className="text-lg font-semibold">
+            {showBoth
+              ? "Market Movers (Both Sources)"
+              : isAmazon
+                ? "Market Movers (Amazon)"
+                : "Market Movers (Flipkart)"}
+          </CardTitle>
+          <Badge variant="secondary" className="text-xs">
+            Live Data
+          </Badge>
+        </CardHeader>
+
+        <CardContent className="p-0">
+          {/* AI Summary Section with Subscription Gate */}
+          {hasAISummaries ? (
+            summaryLoading ? (
+              <div className="mb-3 text-sm text-muted-foreground italic flex items-center gap-2">
+                <Sparkles className="w-4 h-4 animate-pulse text-purple-500" />
+                Generating Smart summary...
+              </div>
+            ) : summary ? (
+              <div className="mb-3 text-sm font-medium p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200 flex items-start gap-2">
+                <Sparkles className="w-4 h-4 text-purple-600 flex-shrink-0 mt-0.5" />
+                <span className="text-slate-700">{summary}</span>
+              </div>
+            ) : null
+          ) : (
+            <div className="mb-3 p-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg">
+              <div className="flex items-start gap-2">
+                <Lock className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <p className="text-xs font-medium text-amber-900">
+                    🎯 AI Market Insights Locked
+                  </p>
+                  <p className="text-xs text-amber-700 mt-1">
+                    {currentTier === 'free'
+                      ? 'Upgrade to Basic to get AI-powered analysis of market trends and product performance'
+                      : 'Get instant insights on top-performing products'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-4">
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 bg-muted rounded-lg"
+                >
+                  <div className="flex items-center space-x-3">
+                    <Skeleton className="w-8 h-8 rounded-full" />
+                    <div>
+                      <Skeleton className="h-4 w-32 mb-1" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : showBoth ? (
+              <>
+                {flipkartProducts.length > 0 && (
+                  <>
+                    <h3 className="text-sm font-semibold text-muted-foreground mt-4 mb-2">
+                      Flipkart Top {flipkartProducts.length}
+                    </h3>
+                    {flipkartProducts.map((product, index) => (
+                      <ProductCard
+                        key={`flipkart-${index}`}
+                        product={product}
+                        index={index}
+                        source="flipkart"
+                      />
+                    ))}
+                  </>
+                )}
+
+                {amazonProducts.length > 0 && (
+                  <>
+                    <h3 className="text-sm font-semibold text-muted-foreground mt-4 mb-2">
+                      Amazon Top {amazonProducts.length}
+                    </h3>
+                    {amazonProducts.map((product, index) => (
+                      <ProductCard
+                        key={`amazon-${index}`}
+                        product={product}
+                        index={index}
+                        source="amazon"
+                      />
+                    ))}
+                  </>
+                )}
+              </>
+            ) : allProducts.length > 0 ? (
+              allProducts.map((product, index) => (
+                <ProductCard
+                  key={index}
+                  product={product}
+                  index={index}
+                  source={isAmazon ? "amazon" : "flipkart"}
+                />
+              ))
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <p>No trending products available</p>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

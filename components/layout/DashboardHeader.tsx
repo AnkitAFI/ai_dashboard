@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
-import { useSubscriptionLimits, UNLIMITED } from "@/hooks/useSubscriptionLimits";
+import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
 import { useRouter, usePathname } from "next/navigation";
 import { useAlerts, Notification, NotificationDetails } from "@/components/dashboard/alert-context";
 

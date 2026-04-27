@@ -1,7 +1,7 @@
 // ============================================
 // FILE 2: src/components/ai/ai-summary-display.tsx (CREATE THIS)
 // ============================================
-import { useAISummary } from "@/hooks/useAISummary";
+import { useAISummary } from "@/hooks/use-ai-summary";
 import { Sparkles } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 

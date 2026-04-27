@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -46,8 +44,8 @@ function MetricCard({ title, value, icon, color, isLoading }: MetricCardProps) {
 }
 
 export default function MetricsCards({ selectedSource }: { selectedSource: string }) {
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-  const { filters } = useFilters();
+  const BASE_URL = "http://localhost:8000";
+  const { filters } = useFilters(); // ✅ Get filters from context
 
   const [flipkartStats, setFlipkartStats] = useState<any>(null);
   const [amazonStats, setAmazonStats] = useState<any>(null);
@@ -55,14 +53,33 @@ export default function MetricsCards({ selectedSource }: { selectedSource: strin
   const [amazonCategories, setAmazonCategories] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  // ✅ Build query params from filters
   const buildQueryParams = () => {
     const params = new URLSearchParams();
-    if (filters.category && filters.category !== "All Categories") params.append("category", filters.category);
-    if (filters.priceRange[0] > 0) params.append("min_price", filters.priceRange[0].toString());
-    if (filters.priceRange[1] < 5000000) params.append("max_price", filters.priceRange[1].toString());
-    if (filters.rating > 0) params.append("min_rating", filters.rating.toString());
-    if (filters.dateRange !== "all") params.append("date_range", filters.dateRange);
-    if (filters.showTrendingOnly) params.append("trending_only", "true");
+
+    if (filters.category && filters.category !== "All Categories") {
+      params.append("category", filters.category);
+    }
+
+    if (filters.priceRange[0] > 0) {
+      params.append("min_price", filters.priceRange[0].toString());
+    }
+    if (filters.priceRange[1] < 5000000) {
+      params.append("max_price", filters.priceRange[1].toString());
+    }
+
+    if (filters.rating > 0) {
+      params.append("min_rating", filters.rating.toString());
+    }
+
+    if (filters.dateRange !== "all") {
+      params.append("date_range", filters.dateRange);
+    }
+
+    if (filters.showTrendingOnly) {
+      params.append("trending_only", "true");
+    }
+
     return params.toString();
   };
 
@@ -75,47 +92,69 @@ export default function MetricsCards({ selectedSource }: { selectedSource: strin
 
         if (table === "both") {
           const [flipkartStatsRes, amazonStatsRes, flipkartCatRes, amazonCatRes] = await Promise.all([
-            fetch(`${BASE_URL}/analytics-summary?source=flipkart&${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/analytics-summary?source=amazon&${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/flipkart/categories?${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi_amazon_products/categories?${queryParams}`, { cache: 'no-store' }),
+            fetch(`${BASE_URL}/analytics-summary?source=flipkart&${queryParams}`),
+            fetch(`${BASE_URL}/analytics-summary?source=amazon&${queryParams}`),
+            fetch(`${BASE_URL}/flipkart/categories?${queryParams}`),
+            fetch(`${BASE_URL}/rapidapi_amazon_products/categories?${queryParams}`),
           ]);
-          const [fStats, aStats, fCat, aCat] = await Promise.all([
-            flipkartStatsRes.json(), amazonStatsRes.json(), flipkartCatRes.json(), amazonCatRes.json()
+
+          const [flipkartStatsJson, amazonStatsJson, flipkartCatJson, amazonCatJson] = await Promise.all([
+            flipkartStatsRes.json(),
+            amazonStatsRes.json(),
+            flipkartCatRes.json(),
+            amazonCatRes.json(),
           ]);
-          setFlipkartStats(fStats);
-          setAmazonStats(aStats);
-          setFlipkartCategories(Array.isArray(fCat) ? fCat : (fCat?.data || []));
-          setAmazonCategories(Array.isArray(aCat) ? aCat : (aCat?.data || []));
+
+          setFlipkartStats(flipkartStatsJson);
+          setAmazonStats(amazonStatsJson);
+          setFlipkartCategories(Array.isArray(flipkartCatJson) ? flipkartCatJson : []);
+          setAmazonCategories(Array.isArray(amazonCatJson) ? amazonCatJson : []);
+
         } else if (table === "amazon") {
           const [statsRes, catsRes] = await Promise.all([
-            fetch(`${BASE_URL}/analytics-summary?source=amazon&${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/rapidapi_amazon_products/categories?${queryParams}`, { cache: 'no-store' }),
+            fetch(`${BASE_URL}/analytics-summary?source=amazon&${queryParams}`),
+            fetch(`${BASE_URL}/rapidapi_amazon_products/categories?${queryParams}`),
           ]);
-          const [aStats, aCat] = await Promise.all([statsRes.json(), catsRes.json()]);
-          setAmazonStats(aStats);
-          setAmazonCategories(Array.isArray(aCat) ? aCat : (aCat?.data || []));
+
+          const [statsJson, catsJson] = await Promise.all([
+            statsRes.json(),
+            catsRes.json(),
+          ]);
+
           setFlipkartStats(null);
+          setAmazonStats(statsJson);
           setFlipkartCategories([]);
+          setAmazonCategories(Array.isArray(catsJson) ? catsJson : []);
+
         } else {
           const [statsRes, catsRes] = await Promise.all([
-            fetch(`${BASE_URL}/analytics-summary?source=flipkart&${queryParams}`, { cache: 'no-store' }),
-            fetch(`${BASE_URL}/flipkart/categories?${queryParams}`, { cache: 'no-store' }),
+            fetch(`${BASE_URL}/analytics-summary?source=flipkart&${queryParams}`),
+            fetch(`${BASE_URL}/flipkart/categories?${queryParams}`),
           ]);
-          const [fStats, fCat] = await Promise.all([statsRes.json(), catsRes.json()]);
-          setFlipkartStats(fStats);
-          setFlipkartCategories(Array.isArray(fCat) ? fCat : (fCat?.data || []));
+
+          const [statsJson, catsJson] = await Promise.all([
+            statsRes.json(),
+            catsRes.json(),
+          ]);
+
+          setFlipkartStats(statsJson);
           setAmazonStats(null);
+          setFlipkartCategories(Array.isArray(catsJson) ? catsJson : []);
           setAmazonCategories([]);
         }
       } catch (error) {
         console.error("Error fetching metrics:", error);
+        setFlipkartStats(null);
+        setAmazonStats(null);
+        setFlipkartCategories([]);
+        setAmazonCategories([]);
       } finally {
         setIsLoading(false);
       }
     };
+
     fetchData();
-  }, [selectedSource, filters, BASE_URL]);
+  }, [selectedSource, filters]); // ✅ Re-fetch when filters change
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
@@ -142,30 +181,59 @@ export default function MetricsCards({ selectedSource }: { selectedSource: strin
       avgRating = ((flipkartRating * flipkartTotal) + (amazonRating * amazonTotal)) / totalReviews;
     }
     totalProducts = (flipkartStats?.total_products || 0) + (amazonStats?.total_products || 0);
-    totalCategories = (Array.isArray(flipkartCategories) ? flipkartCategories.length : 0) + (Array.isArray(amazonCategories) ? amazonCategories.length : 0);
+    totalCategories = flipkartCategories.length + amazonCategories.length;
+
   } else if (isAmazon) {
     totalReviews = amazonStats?.total_reviews || 0;
     avgRating = amazonStats?.avg_rating || amazonStats?.average_rating || 0;
     totalProducts = amazonStats?.total_products || 0;
-    totalCategories = Array.isArray(amazonCategories) ? amazonCategories.length : 0;
+    totalCategories = amazonCategories.length;
+
   } else {
     totalReviews = flipkartStats?.total_reviews || 0;
     avgRating = flipkartStats?.avg_rating || 0;
     totalProducts = flipkartStats?.total_products || 0;
-    totalCategories = Array.isArray(flipkartCategories) ? flipkartCategories.length : 0;
+    totalCategories = flipkartCategories.length;
   }
 
   const cards = [
-    { title: showBoth ? "Total Reviews (Both)" : isAmazon ? "Total Reviews (Amazon)" : "Total Reviews (Flipkart)", value: formatNumber(totalReviews), icon: <MessageSquare className="text-blue-600 h-6 w-6" />, color: "bg-blue-100" },
-    { title: showBoth ? "Average Rating (Both)" : isAmazon ? "Average Rating (Amazon)" : "Average Rating (Flipkart)", value: avgRating ? avgRating.toFixed(2) : "0.0", icon: <Star className="text-yellow-600 h-6 w-6" />, color: "bg-yellow-100" },
-    { title: showBoth ? "Products (Both)" : isAmazon ? "Products (Amazon)" : "Products (Flipkart)", value: totalProducts.toString(), icon: <ShoppingCart className="text-green-600 h-6 w-6" />, color: "bg-green-100" },
-    { title: showBoth ? "Categories (Both)" : isAmazon ? "Categories (Amazon)" : "Categories (Flipkart)", value: totalCategories.toString(), icon: <TrendingUp className="text-purple-600 h-6 w-6" />, color: "bg-purple-100" },
+    {
+      title: showBoth ? "Total Reviews (Both)" : isAmazon ? "Total Reviews (Amazon)" : "Total Reviews (Flipkart)",
+      value: formatNumber(totalReviews),
+      icon: <MessageSquare className="text-blue-600 h-6 w-6" />,
+      color: "bg-blue-100",
+    },
+    {
+      title: showBoth ? "Average Rating (Both)" : isAmazon ? "Average Rating (Amazon)" : "Average Rating (Flipkart)",
+      value: avgRating ? avgRating.toFixed(2) : "0.0",
+      icon: <Star className="text-yellow-600 h-6 w-6" />,
+      color: "bg-yellow-100",
+    },
+    {
+      title: showBoth ? "Products (Both)" : isAmazon ? "Products (Amazon)" : "Products (Flipkart)",
+      value: totalProducts.toString(),
+      icon: <ShoppingCart className="text-green-600 h-6 w-6" />,
+      color: "bg-green-100",
+    },
+    {
+      title: showBoth ? "Categories (Both)" : isAmazon ? "Categories (Amazon)" : "Categories (Flipkart)",
+      value: totalCategories.toString(),
+      icon: <TrendingUp className="text-purple-600 h-6 w-6" />,
+      color: "bg-purple-100",
+    },
   ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
       {cards.map((card, index) => (
-        <MetricCard key={index} title={card.title} value={card.value} icon={card.icon} color={card.color} isLoading={isLoading} />
+        <MetricCard
+          key={index}
+          title={card.title}
+          value={card.value}
+          icon={card.icon}
+          color={card.color}
+          isLoading={isLoading}
+        />
       ))}
     </div>
   );

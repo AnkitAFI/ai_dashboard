@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 
-import SellerIdInput from "@/components/dashboard/SellerIdInput";
+import SellerIdInput from "@/components/dashboard/seller-id-input";
 import { useAuth } from "@/lib/auth-context";
 import {
   Loader2, Search, Star,
