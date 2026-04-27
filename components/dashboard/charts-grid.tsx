@@ -38,7 +38,7 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
   const hasAISummaries = canAccessFeature('hasChartAISummaries');
 
   return (
-    <Card className="bg-card rounded-3xl p-6 sm:p-8 border hover:shadow-md transition-shadow">
+    <Card className="bg-card rounded-xl p-6 border hover:shadow-md transition-shadow">
       <CardHeader className="flex flex-row items-center justify-between pb-6">
         <CardTitle className="text-lg font-bold text-slate-800">{title}</CardTitle>
         <Badge variant="secondary" className="text-xs">Live Data</Badge>
@@ -129,16 +129,26 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
             fetch(`${BASE_URL}/rapidapi/flipkart/top-sales?limit=${topN}&${queryParams}`, { cache: 'no-store' }),
             fetch(`${BASE_URL}/rapidapi/top-sales?limit=${topN}&${queryParams}`, { cache: 'no-store' }),
           ]);
-          setFlipkartProducts((await flipkartRes.json()).data || []);
-          setAmazonProducts((await amazonRes.json()).data || []);
-          setFlipkartCategories(await flipkartCatRes.json());
-          setAmazonCategories(await amazonCatRes.json());
-          setFlipkartRatings(await flipkartRatingsRes.json());
-          setAmazonRatings(await amazonRatingsRes.json());
-          setFlipkartSentiments(await flipkartSentimentRes.json());
-          setAmazonSentiments(await amazonSentimentRes.json());
-          setFlipkartSalesProducts((await flipkartSalesRes.json()).data || []);
-          setAmazonSalesProducts((await amazonSalesRes.json()).data || []);
+          const fJson = await flipkartRes.json();
+          setFlipkartProducts(fJson.data || []);
+          const aJson = await amazonRes.json();
+          setAmazonProducts(aJson.data || []);
+          const fCatJson = await flipkartCatRes.json();
+          setFlipkartCategories(Array.isArray(fCatJson) ? fCatJson : (fCatJson?.data || []));
+          const aCatJson = await amazonCatRes.json();
+          setAmazonCategories(Array.isArray(aCatJson) ? aCatJson : (aCatJson?.data || []));
+          const fRatJson = await flipkartRatingsRes.json();
+          setFlipkartRatings(Array.isArray(fRatJson) ? fRatJson : (fRatJson?.data || []));
+          const aRatJson = await amazonRatingsRes.json();
+          setAmazonRatings(Array.isArray(aRatJson) ? aRatJson : (aRatJson?.data || []));
+          const fSentJson = await flipkartSentimentRes.json();
+          setFlipkartSentiments(Array.isArray(fSentJson) ? fSentJson : (fSentJson?.data || []));
+          const aSentJson = await amazonSentimentRes.json();
+          setAmazonSentiments(Array.isArray(aSentJson) ? aSentJson : (aSentJson?.data || []));
+          const fSalesJson = await flipkartSalesRes.json();
+          setFlipkartSalesProducts(fSalesJson.data || []);
+          const aSalesJson = await amazonSalesRes.json();
+          setAmazonSalesProducts(aSalesJson.data || []);
         } else if (table === "amazon") {
           const [productsRes, categoriesRes, ratingsRes, sentimentRes, salesRes] = await Promise.all([
             fetch(`${BASE_URL}/top?table=rapidapi_amazon_products&n=${topN}&${queryParams}`, { cache: 'no-store' }),
@@ -147,11 +157,14 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
             fetch(`${BASE_URL}/rapidapi_amazon_products/sentiment?${queryParams}`, { cache: 'no-store' }),
             fetch(`${BASE_URL}/rapidapi/top-sales?limit=${topN}&${queryParams}`, { cache: 'no-store' }),
           ]);
-          setAmazonProducts((await productsRes.json()).data || []);
-          setAmazonCategories(await categoriesRes.json());
-          setAmazonRatings(await ratingsRes.json());
-          setAmazonSentiments(await sentimentRes.json());
-          setAmazonSalesProducts((await salesRes.json()).data || []);
+          const [pJson, cJson, rJson, sentJson, sJson] = await Promise.all([
+            productsRes.json(), categoriesRes.json(), ratingsRes.json(), sentimentRes.json(), salesRes.json()
+          ]);
+          setAmazonProducts(pJson.data || []);
+          setAmazonCategories(Array.isArray(cJson) ? cJson : (cJson?.data || []));
+          setAmazonRatings(Array.isArray(rJson) ? rJson : (rJson?.data || []));
+          setAmazonSentiments(Array.isArray(sentJson) ? sentJson : (sentJson?.data || []));
+          setAmazonSalesProducts(sJson.data || []);
           setFlipkartProducts([]); setFlipkartCategories([]); setFlipkartRatings([]); setFlipkartSentiments([]); setFlipkartSalesProducts([]);
         } else {
           const [productsRes, categoryRes, ratingsRes, sentimentRes, salesRes] = await Promise.all([
@@ -161,11 +174,14 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
             fetch(`${BASE_URL}/rapidapi_flipkart_products/sentiment?${queryParams}`, { cache: 'no-store' }),
             fetch(`${BASE_URL}/rapidapi/flipkart/top-sales?limit=${topN}&${queryParams}`, { cache: 'no-store' }),
           ]);
-          setFlipkartProducts((await productsRes.json()).data || []);
-          setFlipkartCategories(await categoryRes.json());
-          setFlipkartRatings(await ratingsRes.json());
-          setFlipkartSentiments(await sentimentRes.json());
-          setFlipkartSalesProducts((await salesRes.json()).data || []);
+          const [pJson, cJson, rJson, sentJson, sJson] = await Promise.all([
+            productsRes.json(), categoryRes.json(), ratingsRes.json(), sentimentRes.json(), salesRes.json()
+          ]);
+          setFlipkartProducts(pJson.data || []);
+          setFlipkartCategories(Array.isArray(cJson) ? cJson : (cJson?.data || []));
+          setFlipkartRatings(Array.isArray(rJson) ? rJson : (rJson?.data || []));
+          setFlipkartSentiments(Array.isArray(sentJson) ? sentJson : (sentJson?.data || []));
+          setFlipkartSalesProducts(sJson.data || []);
           setAmazonProducts([]); setAmazonCategories([]); setAmazonRatings([]); setAmazonSentiments([]); setAmazonSalesProducts([]);
         }
       } catch (error) {
@@ -210,7 +226,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
   const truncateName = (name: string) => name.replace(/"/g, "").substring(0, 30) + (name.length > 30 ? "..." : "");
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       {flipkartCategories.length > 0 && (
         <ChartCard title="Product Category Landscape (Flipkart)" isLoading={isLoading} summary={flipCatSum} summaryLoading={flipCatLoad}>
           <Bar 

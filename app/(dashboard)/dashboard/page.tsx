@@ -147,15 +147,9 @@ function DashboardContent() {
       ) : (
         <>
           <MetricsCards selectedSource={selectedSource} />
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            <div className="xl:col-span-2 space-y-6">
-              <ChartsGrid selectedSource={selectedSource} />
-              <ProductRankings selectedSource={selectedSource} />
-            </div>
-            <div className="space-y-6">
-              <AIRecommendations selectedSource={selectedSource} />
-            </div>
-          </div>
+          <ChartsGrid selectedSource={selectedSource} />
+          <AIRecommendations selectedSource={selectedSource} />
+          <ProductRankings selectedSource={selectedSource} />
         </>
       )}
 

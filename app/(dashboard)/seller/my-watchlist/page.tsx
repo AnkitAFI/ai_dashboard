@@ -12,6 +12,8 @@ import {
   Calculator,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/components/layout/sidebar-context";
+import { Menu } from "lucide-react";
 
 const API = process.env.NEXT_PUBLIC_API_URL || (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api");
 
@@ -212,6 +214,7 @@ function TabSlider({
 export default function MyWatchlistPage() {
   const router = useRouter();
   const { user } = useAuth();
+  const { toggle } = useSidebar();
   const userId = user?.id;
 
   // ── White Space state ──────────────────────────────────────────────────────
@@ -346,8 +349,11 @@ export default function MyWatchlistPage() {
 
   return (
     <div className="flex-1 w-full min-h-screen flex flex-col">
-      <header className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-xl rounded-2xl px-6 py-4 mb-6 flex items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6">
+      <header className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-xl rounded-2xl px-6 py-4 mb-6 flex items-center justify-between sticky top-0 sm:top-4 z-20 mx-0 sm:mx-6">
         <div className="flex items-center gap-3">
+          <button onClick={toggle} className="lg:hidden p-2 rounded-lg hover:bg-violet-100 transition-colors">
+            <Menu className="w-5 h-5 text-violet-900" />
+          </button>
           <div className="w-11 h-11 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-xl flex items-center justify-center shadow-inner">
             <Bookmark className="h-5 w-5 text-violet-600 fill-violet-200" />
           </div>

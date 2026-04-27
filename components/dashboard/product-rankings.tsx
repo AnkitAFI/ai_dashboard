@@ -37,7 +37,7 @@ function ProductCard({ product, index, source }: { product: TrendingProduct; ind
   return (
     <div 
       onClick={handleClick}
-      className={cn("flex items-center justify-between p-3 rounded-xl bg-gradient-to-r border border-white shadow-sm cursor-pointer hover:shadow-md hover:scale-[1.02] transition-all", gradients[index % 3])}
+      className={cn("flex items-center justify-between p-3 rounded-lg bg-gradient-to-r gap-3", gradients[index % 3])}
     >
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold", colors[index % 3])}>{index + 1}</div>
@@ -107,12 +107,12 @@ export default function ProductRankings({ selectedSource }: { selectedSource: st
   const { summary, loading: summaryLoading } = useAISummary(hasAISummaries ? "Summarize key patterns in trending products." : "", "market_movers", allProducts, allProducts.length, filters);
 
   return (
-    <Card className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
-      <CardHeader className="bg-slate-50/50 border-b border-slate-100 flex flex-row items-center justify-between p-6 sm:p-8 pb-4 sm:pb-6">
+    <Card className="bg-card rounded-xl p-6 border hover:shadow-md transition-shadow mb-8">
+      <CardHeader className="flex flex-row items-center justify-between mb-4 p-0">
         <CardTitle className="text-lg font-bold text-slate-900">Market Movers</CardTitle>
         <Badge variant="secondary" className="text-[10px] font-bold">LIVE</Badge>
       </CardHeader>
-      <CardContent className="p-6 sm:p-8 space-y-4">
+      <CardContent className="p-0 space-y-4">
         {hasAISummaries ? (
           summaryLoading ? <div className="text-xs text-slate-400 animate-pulse flex items-center gap-2"><Sparkles className="h-3 w-3" /> Generating insights...</div> :
           summary && <div className="p-3 bg-indigo-50 border border-indigo-100 rounded-xl text-xs text-indigo-900 leading-relaxed flex items-start gap-2"><Sparkles className="h-3 w-3 mt-0.5 shrink-0" />{summary}</div>

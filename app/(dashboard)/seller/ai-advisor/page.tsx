@@ -1,9 +1,11 @@
 "use client";
 
 import Chatbot from "@/components/chatbot/chatbot";
-import { Sparkles, Bot } from "lucide-react";
+import { Sparkles, Bot, Menu } from "lucide-react";
+import { useSidebar } from "@/components/layout/sidebar-context";
 
 export default function AiAdvisorPage() {
+  const { toggle } = useSidebar();
   return (
     <div className="flex-1 w-full min-h-screen flex flex-col">
       {/* Header */}
@@ -17,6 +19,9 @@ export default function AiAdvisorPage() {
         sticky top-0 sm:top-4 
         z-20 mx-0 sm:mx-6">
         <div className="flex items-center gap-3 w-full sm:w-auto">
+          <button onClick={toggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors">
+            <Menu className="w-5 h-5 text-sky-900" />
+          </button>
           <div>
             <h2 className="text-xl sm:text-2xl font-bold text-sky-900 flex items-center gap-2">
               Insydz Advisor <Sparkles className="w-5 h-5 text-amber-500" />

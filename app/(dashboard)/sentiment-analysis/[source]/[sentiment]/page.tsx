@@ -5,13 +5,15 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, Star, AlertCircle, ChevronLeft, ChevronRight, X, Loader2, ShoppingBag, Filter, ShieldCheck, Zap } from "lucide-react";
+import { TrendingUp, Star, AlertCircle, ChevronLeft, ChevronRight, X, Loader2, ShoppingBag, Filter, ShieldCheck, Zap, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/components/layout/sidebar-context";
 
 function SentimentAnalysisPageContent() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { toggle } = useSidebar();
 
   const source = (params.source as string) || "flipkart";
   const sentiment = (params.sentiment as string) || "positive";
@@ -60,8 +62,11 @@ function SentimentAnalysisPageContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 animate-in fade-in duration-700">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 sticky top-0 z-20 bg-slate-50/80 backdrop-blur-md py-4 border-b border-slate-100">
         <div className="flex items-center gap-4">
+          <button onClick={toggle} className="lg:hidden p-2 rounded-lg hover:bg-slate-100 transition-colors">
+            <Menu className="w-5 h-5 text-slate-600" />
+          </button>
           <Button onClick={() => router.back()} variant="ghost" size="sm" className="rounded-xl hover:bg-slate-100 text-slate-500"><ChevronLeft className="w-5 h-5 mr-1" /> Back</Button>
           <div>
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight capitalize">{sentiment} Market Pulse</h1>

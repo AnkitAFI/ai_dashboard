@@ -4,6 +4,7 @@ import { AuthProvider } from "@/lib/auth-context";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://insydz.com"),
   title: "Insydz",
   description: "AI-Powered Ecommerce Analytics Software",
 };

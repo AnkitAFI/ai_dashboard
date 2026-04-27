@@ -1,18 +1,19 @@
 "use client";
 
 import { useState, useEffect, useMemo, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { useSidebar } from "@/components/layout/sidebar-context";
 import {
-  Lock, Crown, RefreshCw, Package,
-  Search, CheckCircle, AlertTriangle,
+  Lock, Crown, RefreshCw, Menu, X, Package,
+  Search, TrendingUp, CheckCircle, AlertTriangle,
   Zap, Target, BarChart2, ChevronDown, ChevronUp,
-  Lightbulb, FileText, Star,
-  Sparkles, Eye, EyeOff, Layers, Cpu,
+  Lightbulb, FileText, Star, ArrowRight, Info,
+  Sparkles, Eye, EyeOff, Filter, Layers, Cpu,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-const BASE_URL = ((process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")) || (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 // ── Cluster icon + colour map ─────────────────────────────────────────────────
 const CLUSTER_META: Record<string, { color: string; bg: string; border: string; emoji: string }> = {
@@ -65,7 +66,7 @@ function SemanticBadge({ sim }: { sim: number }) {
 function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
   const router = useRouter();
   return (
-    <div className="absolute inset-0 bg-background backdrop-blur-none rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
+    <div className="absolute inset-0 bg-white/88 backdrop-blur-[3px] rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
       <div className={`w-11 h-11 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? "bg-blue-50" : "bg-amber-50"}`}>
         <Lock className={`w-5 h-5 ${tier === "premium" ? "text-blue-500" : "text-amber-500"}`} />
       </div>
@@ -215,7 +216,7 @@ function Section({ title, icon: Icon, children, defaultOpen = true, count, accen
   );
 }
 
-// ── NEW: Semantic Gap Clusters ────────────────────────────────────────────────
+// ── Semantic Gap Clusters ────────────────────────────────────────────────
 function GapClusters({ clusters }: { clusters: Record<string, string[]> }) {
   const entries = Object.entries(clusters).filter(([, kws]) => kws.length > 0);
   if (entries.length === 0) return null;
@@ -237,18 +238,18 @@ function GapClusters({ clusters }: { clusters: Record<string, string[]> }) {
                   <span className={`text-xs font-black ${meta.color} flex items-center gap-1.5`}>
                     <span>{meta.emoji}</span> {name}
                   </span>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full bg-background border ${meta.border} ${meta.color}`}>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/70 border ${meta.border} ${meta.color}`}>
                     {kws.length} keyword{kws.length !== 1 ? "s" : ""}
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {kws.slice(0, 6).map((kw, i) => (
-                    <span key={i} className={`text-[10px] font-semibold font-mono px-1.5 py-0.5 rounded-md bg-background opacity-100 border ${meta.border} ${meta.color}`}>
+                    <span key={i} className={`text-[10px] font-semibold font-mono px-1.5 py-0.5 rounded-md bg-white/60 border ${meta.border} ${meta.color}`}>
                       {kw}
                     </span>
                   ))}
                   {kws.length > 6 && (
-                    <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-background opacity-100 ${meta.color}`}>
+                    <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-white/40 ${meta.color}`}>
                       +{kws.length - 6} more
                     </span>
                   )}
@@ -261,7 +262,7 @@ function GapClusters({ clusters }: { clusters: Record<string, string[]> }) {
   );
 }
 
-// ── Gap Keywords Table (updated with semantic_sim_to_yours) ───────────────────
+// ── Gap Keywords Table ───────────────────
 function GapKeywordsTable({ items }: { items: any[] }) {
   const [filter, setFilter]       = useState<"All" | "High" | "Medium" | "Low">("All");
   const [showBigrams, setShowBigrams] = useState(true);
@@ -358,10 +359,11 @@ function GapKeywordsTable({ items }: { items: any[] }) {
   );
 }
 
-function KeywordGapAnalysisContent() {
+function KeywordGapContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { user }       = useAuth();
+  const { user } = useAuth();
+  const { toggle } = useSidebar();
 
   const asin     = searchParams.get("asin")      || "";
   const sellerId = searchParams.get("seller_id") || user?.seller_id || "";
@@ -398,405 +400,501 @@ function KeywordGapAnalysisContent() {
   const embeddingModel = data?.embedding_model || null;
 
   return (
-    <div className="space-y-6">
-      {/* Status Bar */}
-      <div className="flex justify-between items-center bg-white p-4 rounded-2xl border border-sky-100 shadow-sm">
-        <div className="flex items-center gap-2">
-          <Search className="w-5 h-5 text-sky-600" />
-          <h2 className="text-lg font-bold text-sky-900">Keyword Gap Analysis</h2>
-        </div>
-        <div className="flex items-center gap-2">
-          {embeddingModel && embeddingModel !== "jaccard_fallback" && (
-            <span className="hidden sm:flex items-center gap-1 text-[10px] font-bold text-violet-600 bg-violet-50 border border-violet-200 px-2 py-1 rounded-full">
-              <Cpu className="w-3 h-3" /> Semantic AI
-            </span>
-          )}
-          <Badge className={`text-xs font-bold ${tier === "premium" ? "bg-blue-100 text-blue-700" : tier === "basic" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"}`}>
-            {tier.toUpperCase()}
-          </Badge>
-          {!isPremium && (
-            <button onClick={() => router.push("/subscription")}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-bold shadow hover:shadow-md transition-all">
-              <Crown className="w-3 h-3" /> Upgrade
+    <div className="min-h-screen flex flex-col bg-transparent">
+        <header className="bg-white/80 backdrop-blur-xl border-b border-sky-100 shadow-sm px-4 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-20 -mx-4 sm:-mx-6 lg:-mx-8">
+          <div className="flex items-center gap-3">
+            <button onClick={toggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100">
+              <Menu className="w-5 h-5 text-sky-900" />
             </button>
+            <div className="w-px h-5 bg-slate-200" />
+            <div>
+              <h2 className="text-lg sm:text-xl font-bold text-sky-900 flex items-center gap-2">
+                <Search className="w-5 h-5 text-sky-600" /> Keyword Gap Analysis
+              </h2>
+              <p className="text-xs text-slate-500 hidden sm:block">Discover keywords your competitors use that you don't</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {embeddingModel && embeddingModel !== "jaccard_fallback" && (
+              <span className="hidden sm:flex items-center gap-1 text-[10px] font-bold text-violet-600 bg-violet-50 border border-violet-200 px-2 py-1 rounded-full">
+                <Cpu className="w-3 h-3" /> Semantic AI
+              </span>
+            )}
+            <Badge className={`text-xs font-bold ${tier === "premium" ? "bg-blue-100 text-blue-700" : tier === "basic" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"}`}>
+              {tier.toUpperCase()}
+            </Badge>
+            {!isPremium && (
+              <button onClick={() => router.push("/subscription")}
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-bold shadow hover:shadow-md transition-all">
+                <Crown className="w-3 h-3" /> Upgrade
+              </button>
+            )}
+          </div>
+        </header>
+
+        <main className="flex-1 py-6 space-y-5">
+          {!asin && (
+            <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
+              <div className="w-16 h-16 bg-sky-100 rounded-full flex items-center justify-center">
+                <Search className="w-8 h-8 text-sky-400" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-slate-700">No product selected</p>
+                <p className="text-sm text-slate-400 mt-1">Select a product from My Products to analyse its keyword gaps.</p>
+              </div>
+              <button onClick={() => router.push("/seller/my-products")}
+                className="px-5 py-2 bg-sky-600 text-white rounded-full text-sm font-semibold hover:bg-sky-700 transition-colors">
+                Go to My Products
+              </button>
+            </div>
           )}
-        </div>
-      </div>
 
-      {/* ── No product selected ────────────────────────────────────── */}
-      {!asin && (
-        <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
-          <div className="w-16 h-16 bg-sky-100 rounded-full flex items-center justify-center">
-            <Search className="w-8 h-8 text-sky-400" />
-          </div>
-          <div>
-            <p className="text-lg font-bold text-slate-700">No product selected</p>
-            <p className="text-sm text-slate-400 mt-1">Select a product from My Products to analyse its keyword gaps.</p>
-          </div>
-          <button onClick={() => router.push("/seller/my-products")}
-            className="px-5 py-2 bg-sky-600 text-white rounded-full text-sm font-semibold hover:bg-sky-700 transition-colors">
-            Go to My Products
-          </button>
-        </div>
-      )}
-
-      {/* ── Loading ─────────────────────────────────────────────────── */}
-      {asin && loading && (
-        <div className="flex flex-col items-center justify-center h-64 gap-3">
-          <RefreshCw className="w-8 h-8 animate-spin text-sky-500" />
-          <div className="text-center">
-            <p className="text-slate-600 font-semibold">Analysing keyword gaps…</p>
-          </div>
-        </div>
-      )}
-
-      {/* ── Main content ─────────────────────────────────────────────── */}
-      {asin && !loading && data && (
-        <>
-          {/* Product card */}
-          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <div className="w-16 h-16 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-center overflow-hidden flex-shrink-0">
-              {data.product_photo
-                ? <img src={data.product_photo} alt={data.product_title} className="w-full h-full object-contain p-1" />
-                : <Package className="w-8 h-8 text-slate-300" />
-              }
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-bold text-slate-800 text-base line-clamp-2">{data.product_title}</p>
-              <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                <span className="text-xs text-slate-400 font-mono">{data.asin}</span>
-                {data.is_prime && <Badge className="text-[10px] bg-blue-50 text-blue-600 border-blue-200 px-1.5 py-0">PRIME</Badge>}
-                {data.is_best_seller && <Badge className="text-[10px] bg-orange-50 text-orange-600 border-orange-200 px-1.5 py-0">BEST SELLER</Badge>}
-                {data.data_quality === "live" && (
-                  <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    {data.competitor_count} competitors analysed
-                  </span>
-                )}
-                {data.data_quality === "limited" && (
-                  <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
-                    <AlertTriangle className="w-3 h-3" /> Limited data ({data.competitor_count})
-                  </span>
-                )}
-                {embeddingModel && embeddingModel !== "jaccard_fallback" && (
-                  <span className="flex items-center gap-1 text-[10px] font-semibold text-violet-600 bg-violet-50 border border-violet-200 px-2 py-0.5 rounded-full">
-                    <Cpu className="w-3 h-3" /> Semantic similarity
-                  </span>
-                )}
+          {asin && loading && (
+            <div className="flex flex-col items-center justify-center h-64 gap-3">
+              <RefreshCw className="w-8 h-8 animate-spin text-sky-500" />
+              <div className="text-center">
+                <p className="text-slate-600 font-semibold">Analysing keyword gaps…</p>
               </div>
             </div>
+          )}
 
-            {isBasic && data.coverage_score != null && (
-              <div className="flex-shrink-0">
-                <CoverageRing score={data.coverage_score} />
+          {asin && !loading && data && (
+            <>
+              {/* Product card */}
+              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <div className="w-16 h-16 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+                  {data.product_photo
+                    ? <img src={data.product_photo} alt={data.product_title} className="w-full h-full object-contain p-1" />
+                    : <Package className="w-8 h-8 text-slate-300" />
+                  }
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-slate-800 text-base line-clamp-2">{data.product_title}</p>
+                  <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                    <span className="text-xs text-slate-400 font-mono">{data.asin}</span>
+                    {data.is_prime && <Badge className="text-[10px] bg-blue-50 text-blue-600 border-blue-200 px-1.5 py-0">PRIME</Badge>}
+                    {data.is_best_seller && <Badge className="text-[10px] bg-orange-50 text-orange-600 border-orange-200 px-1.5 py-0">BEST SELLER</Badge>}
+                    {data.data_quality === "live" && (
+                      <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        {data.competitor_count} competitors analysed
+                      </span>
+                    )}
+                    {data.data_quality === "limited" && (
+                      <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                        <AlertTriangle className="w-3 h-3" /> Limited data ({data.competitor_count})
+                      </span>
+                    )}
+                    {embeddingModel && embeddingModel !== "jaccard_fallback" && (
+                      <span className="flex items-center gap-1 text-[10px] font-semibold text-violet-600 bg-violet-50 border border-violet-200 px-2 py-0.5 rounded-full">
+                        <Cpu className="w-3 h-3" /> Semantic similarity
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {isBasic && data.coverage_score != null && (
+                  <div className="flex-shrink-0">
+                    <CoverageRing score={data.coverage_score} />
+                  </div>
+                )}
+
+                {!isBasic && (
+                  <div className="flex-shrink-0 text-right">
+                    <p className="text-3xl font-black text-red-500">{data.gap_count_teaser ?? "—"}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">keyword gaps found</p>
+                    <button onClick={() => router.push("/subscription")}
+                      className="mt-2 text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 hover:bg-amber-100 transition-colors">
+                      Unlock all →
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
 
-            {!isBasic && (
-              <div className="flex-shrink-0 text-right">
-                <p className="text-3xl font-black text-red-500">{data.gap_count_teaser ?? "—"}</p>
-                <p className="text-xs text-slate-400 mt-0.5">keyword gaps found</p>
-                <button onClick={() => router.push("/subscription")}
-                  className="mt-2 text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 hover:bg-amber-100 transition-colors">
-                  Unlock all →
-                </button>
-              </div>
-            )}
-          </div>
+              {/* Your keywords */}
+              <Section title="Your Title Keywords" icon={FileText} count={data.your_keyword_count} defaultOpen={true}>
+                <p className="text-xs text-slate-400 mb-3">Every keyword extracted from your current product title</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {(data.your_keywords || []).map((kw: string, i: number) => (
+                    <KwPill key={i} kw={kw} variant="shared" />
+                  ))}
+                  {(data.your_keywords || []).length === 0 && (
+                    <p className="text-sm text-slate-400">No keywords found in title.</p>
+                  )}
+                </div>
+              </Section>
 
-          {/* ── Free: Your keywords ────────────────────────────────── */}
-          <Section title="Your Title Keywords" icon={FileText} count={data.your_keyword_count} defaultOpen={true}>
-            <p className="text-xs text-slate-400 mb-3">Every keyword extracted from your current product title</p>
-            <div className="flex flex-wrap gap-1.5">
-              {(data.your_keywords || []).map((kw: string, i: number) => (
-                <KwPill key={i} kw={kw} variant="shared" />
-              ))}
-              {(data.your_keywords || []).length === 0 && (
-                <p className="text-sm text-slate-400">No keywords found in title.</p>
+              {/* teaser gate */}
+              {!isBasic && (
+                <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm p-5 overflow-hidden">
+                  <TierGate tier="basic" feature="Full Keyword Gap Analysis" />
+                  <div className="blur-sm pointer-events-none">
+                    <div className="grid grid-cols-3 gap-4 mb-5">
+                      {[
+                        { label: "Gap Keywords", value: data.gap_count_teaser ?? "—", color: "text-red-500" },
+                        { label: "Coverage Score", value: "—/100", color: "text-amber-500" },
+                        { label: "Competitors Scanned", value: "—", color: "text-sky-600" },
+                      ].map((s) => (
+                        <div key={s.label} className="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
+                          <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
+                          <p className="text-xs text-slate-400 mt-0.5">{s.label}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="space-y-2">
+                      {["memory card", "high speed", "4k uhd", "class 10", "waterproof"].map((kw, i) => (
+                        <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-red-50 border border-red-100">
+                          <span className="text-xs font-mono font-bold text-slate-800 flex-1">{kw}</span>
+                          <span className="text-xs text-slate-500">3 competitors</span>
+                          <PriorityPill priority="High" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               )}
-            </div>
-          </Section>
 
-          {/* ── Free: teaser gate ─────────────────────────────────── */}
-          {!isBasic && (
-            <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm p-5 overflow-hidden">
-              <TierGate tier="basic" feature="Full Keyword Gap Analysis" />
-              <div className="blur-sm pointer-events-none">
-                <div className="grid grid-cols-3 gap-4 mb-5">
+              {/* Stats bar */}
+              {isBasic && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {[
-                    { label: "Gap Keywords", value: data.gap_count_teaser ?? "—", color: "text-red-500" },
-                    { label: "Coverage Score", value: "—/100", color: "text-amber-500" },
-                    { label: "Competitors Scanned", value: "—", color: "text-sky-600" },
+                    { label: "Gap Keywords",    value: String(data.gap_count_teaser ?? "—"), sub: "not in your title", color: "text-red-500" },
+                    { label: "Shared Keywords", value: String(sharedKeywords.length),        sub: "matching competitors", color: "text-emerald-600" },
+                    { label: "Your Unique KWs", value: String(uniqueKeywords.length),        sub: "only in your title", color: "text-purple-600" },
+                    { label: "Coverage Score",  value: `${data.coverage_score ?? "—"}/100`,  sub: "vs top 40 competitor KWs", color: "text-sky-600" },
                   ].map((s) => (
-                    <div key={s.label} className="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
-                      <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">{s.label}</p>
+                    <div key={s.label} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
+                      <p className="text-xs text-slate-400 font-medium mb-1">{s.label}</p>
+                      <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
+                      <p className="text-xs text-slate-400 mt-0.5">{s.sub}</p>
                     </div>
                   ))}
                 </div>
-                <div className="space-y-2">
-                  {["memory card", "high speed", "4k uhd", "class 10", "waterproof"].map((kw, i) => (
-                    <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-red-50 border border-red-100">
-                      <span className="text-xs font-mono font-bold text-slate-800 flex-1">{kw}</span>
-                      <span className="text-xs text-slate-500">3 competitors</span>
-                      <PriorityPill priority="High" />
+              )}
+
+              {/* Gap keywords */}
+              {isBasic && (
+                <Section title="Missing Keywords (Gap)" icon={AlertTriangle} count={gapKeywords.length}
+                  accent="bg-red-50" defaultOpen={true}>
+                  <p className="text-xs text-slate-400 mb-4">
+                    Keywords your competitors use that are absent from your title.
+                    <span className="ml-1 text-red-500 font-semibold">Red = High priority</span> (50%+ of competitors).
+                    Semantic badges show whether the concept is new or just rephrased.
+                  </p>
+                  {gapKeywords.length > 0
+                    ? <GapKeywordsTable items={gapKeywords} />
+                    : <p className="text-sm text-slate-400 text-center py-6">No gap keywords — excellent coverage!</p>
+                  }
+                </Section>
+              )}
+
+              {/* Semantic Gap Clusters */}
+              {isBasic && Object.keys(gapClusters).length > 0 && (
+                <GapClusters clusters={gapClusters} />
+              )}
+
+              {/* Keyword heatmap */}
+              {isBasic && (
+                <Section title="Competitor Keyword Heatmap" icon={BarChart2} defaultOpen={false}>
+                  <p className="text-xs text-slate-400 mb-4">
+                    How often each keyword appears across competitor titles.
+                    <span className="ml-1 text-sky-500 font-semibold">Blue = in your title</span>,
+                    <span className="ml-1 text-red-500 font-semibold">Red = high-frequency gap</span>.
+                  </p>
+                  <div className="space-y-0.5 max-h-80 overflow-y-auto pr-1">
+                    {heatmap.map((item: any, i: number) => (
+                      <HeatmapRow key={i} item={item} maxFreq={maxHeatFreq} />
+                    ))}
+                    {heatmap.length === 0 && <p className="text-sm text-slate-400 text-center py-4">No heatmap data.</p>}
+                  </div>
+                </Section>
+              )}
+
+              {/* Shared + Unique */}
+              {isBasic && (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                  <Section title="Shared Keywords" icon={CheckCircle} count={sharedKeywords.length} accent="bg-emerald-50" defaultOpen={false}>
+                    <p className="text-xs text-slate-400 mb-3">Keywords you share with competitors — good coverage here.</p>
+                    <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto">
+                      {sharedKeywords.map((s: any, i: number) => (
+                        <div key={i} className="flex items-center gap-1">
+                          <KwPill kw={s.keyword} variant="shared" />
+                          {s.comp_freq > 1 && <span className="text-[9px] text-slate-400">×{s.comp_freq}</span>}
+                        </div>
+                      ))}
+                      {sharedKeywords.length === 0 && <p className="text-sm text-slate-400">None found.</p>}
                     </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
+                  </Section>
 
-          {/* ── Basic+: Stats bar ─────────────────────────────────── */}
-          {isBasic && (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              {[
-                { label: "Gap Keywords",    value: String(data.gap_count_teaser ?? "—"), sub: "not in your title", color: "text-red-500" },
-                { label: "Shared Keywords", value: String(sharedKeywords.length),        sub: "matching competitors", color: "text-emerald-600" },
-                { label: "Your Unique KWs", value: String(uniqueKeywords.length),        sub: "only in your title", color: "text-purple-600" },
-                { label: "Coverage Score",  value: `${data.coverage_score ?? "—"}/100`,  sub: "vs top 40 competitor KWs", color: "text-sky-600" },
-              ].map((s) => (
-                <div key={s.label} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
-                  <p className="text-xs text-slate-400 font-medium mb-1">{s.label}</p>
-                  <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
-                  <p className="text-xs text-slate-400 mt-0.5">{s.sub}</p>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* ── Basic+: Gap keywords ──────────────────────────────── */}
-          {isBasic && (
-            <Section title="Missing Keywords (Gap)" icon={AlertTriangle} count={gapKeywords.length}
-              accent="bg-red-50" defaultOpen={true}>
-              <p className="text-xs text-slate-400 mb-4">
-                Keywords your competitors use that are absent from your title.
-                <span className="ml-1 text-red-500 font-semibold">Red = High priority</span> (50%+ of competitors).
-                Semantic badges show whether the concept is new or just rephrased.
-              </p>
-              {gapKeywords.length > 0
-                ? <GapKeywordsTable items={gapKeywords} />
-                : <p className="text-sm text-slate-400 text-center py-6">No gap keywords — excellent coverage!</p>
-              }
-            </Section>
-          )}
-
-          {/* ── Basic+: NEW Semantic Gap Clusters ────────────────── */}
-          {isBasic && Object.keys(gapClusters).length > 0 && (
-            <GapClusters clusters={gapClusters} />
-          )}
-
-          {/* ── Basic+: Keyword heatmap ───────────────────────────── */}
-          {isBasic && (
-            <Section title="Competitor Keyword Heatmap" icon={BarChart2} defaultOpen={false}>
-              <p className="text-xs text-slate-400 mb-4">
-                How often each keyword appears across competitor titles.
-                <span className="ml-1 text-sky-500 font-semibold">Blue = in your title</span>,
-                <span className="ml-1 text-red-500 font-semibold">Red = high-frequency gap</span>.
-              </p>
-              <div className="space-y-0.5 max-h-80 overflow-y-auto pr-1">
-                {heatmap.map((item: any, i: number) => (
-                  <HeatmapRow key={i} item={item} maxFreq={maxHeatFreq} />
-                ))}
-                {heatmap.length === 0 && <p className="text-sm text-slate-400 text-center py-4">No heatmap data.</p>}
-              </div>
-            </Section>
-          )}
-
-          {/* ── Basic+: Shared + Unique ───────────────────────────── */}
-          {isBasic && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              <Section title="Shared Keywords" icon={CheckCircle} count={sharedKeywords.length} accent="bg-emerald-50" defaultOpen={false}>
-                <p className="text-xs text-slate-400 mb-3">Keywords you share with competitors — good coverage here.</p>
-                <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto">
-                  {sharedKeywords.map((s: any, i: number) => (
-                    <div key={i} className="flex items-center gap-1">
-                      <KwPill kw={s.keyword} variant="shared" />
-                      {s.comp_freq > 1 && <span className="text-[9px] text-slate-400">×{s.comp_freq}</span>}
+                  <Section title="Your Unique Keywords" icon={Star} count={uniqueKeywords.length} accent="bg-purple-50" defaultOpen={false}>
+                    <p className="text-xs text-slate-400 mb-3">Keywords only in your title — your differentiators. Keep them.</p>
+                    <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto">
+                      {uniqueKeywords.map((kw: string, i: number) => (
+                        <KwPill key={i} kw={kw} variant="unique" />
+                      ))}
+                      {uniqueKeywords.length === 0 && <p className="text-sm text-slate-400">Closely aligned with competitors.</p>}
                     </div>
-                  ))}
-                  {sharedKeywords.length === 0 && <p className="text-sm text-slate-400">None found.</p>}
+                  </Section>
                 </div>
-              </Section>
+              )}
 
-              <Section title="Your Unique Keywords" icon={Star} count={uniqueKeywords.length} accent="bg-purple-50" defaultOpen={false}>
-                <p className="text-xs text-slate-400 mb-3">Keywords only in your title — your differentiators. Keep them.</p>
-                <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto">
-                  {uniqueKeywords.map((kw: string, i: number) => (
-                    <KwPill key={i} kw={kw} variant="unique" />
-                  ))}
-                  {uniqueKeywords.length === 0 && <p className="text-sm text-slate-400">Closely aligned with competitors.</p>}
-                </div>
-              </Section>
-            </div>
-          )}
-
-          {/* ── Basic+: Competitors analysed ──────────────────────── */}
-          {isBasic && competitors.length > 0 && (
-            <Section title="Competitors Analysed" icon={Eye} count={competitors.length} defaultOpen={false}>
-              <p className="text-xs text-slate-400 mb-4">
-                Products ranked by semantic similarity to your title.
-                {embeddingModel && embeddingModel !== "jaccard_fallback" &&
-                  <span className="ml-1 text-violet-500 font-semibold">Scores use AI embeddings.</span>
-                }
-              </p>
-              <div className="space-y-2">
-                {competitors.map((c: any, i: number) => (
-                  <div key={i} className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                    <div className="w-9 h-9 rounded-lg bg-white border border-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                      {c.photo
-                        ? <img src={c.photo} alt="" className="w-full h-full object-contain p-0.5" />
-                        : <Package className="w-4 h-4 text-slate-300" />
-                      }
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-semibold text-slate-700 line-clamp-1">{c.title}</p>
-                      <div className="flex items-center gap-1.5 mt-0.5">
-                        <span className="text-[10px] text-slate-400 font-mono">{c.asin}</span>
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
-                          c.similarity >= 0.5 ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                          : c.similarity >= 0.3 ? "bg-amber-50 text-amber-700 border-amber-200"
-                          : "bg-slate-50 text-slate-500 border-slate-200"
-                        }`}>
-                          {Math.round(c.similarity * 100)}% match
-                        </span>
-                        {c.is_prime && <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1 rounded">P</span>}
+              {/* Competitors analysed */}
+              {isBasic && competitors.length > 0 && (
+                <Section title="Competitors Analysed" icon={Eye} count={competitors.length} defaultOpen={false}>
+                  <p className="text-xs text-slate-400 mb-4">
+                    Products ranked by semantic similarity to your title.
+                    {embeddingModel && embeddingModel !== "jaccard_fallback" &&
+                      <span className="ml-1 text-violet-500 font-semibold">Scores use AI embeddings.</span>
+                    }
+                  </p>
+                  <div className="space-y-2">
+                    {competitors.map((c: any, i: number) => (
+                      <div key={i} className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-xl">
+                        <div className="w-9 h-9 rounded-lg bg-white border border-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                          {c.photo
+                            ? <img src={c.photo} alt="" className="w-full h-full object-contain p-0.5" />
+                            : <Package className="w-4 h-4 text-slate-300" />
+                          }
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-semibold text-slate-700 line-clamp-1">{c.title}</p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="text-[10px] text-slate-400 font-mono">{c.asin}</span>
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                              c.similarity >= 0.5 ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                              : c.similarity >= 0.3 ? "bg-amber-50 text-amber-700 border-amber-200"
+                              : "bg-slate-50 text-slate-500 border-slate-200"
+                            }`}>
+                              {Math.round(c.similarity * 100)}% match
+                            </span>
+                            {c.is_prime && <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1 rounded">P</span>}
+                          </div>
+                        </div>
+                        {c.star_rating && (
+                          <div className="text-right shrink-0">
+                            <p className="text-xs font-black text-amber-500">{c.star_rating}★</p>
+                            {c.num_ratings && <p className="text-[10px] text-slate-400">{c.num_ratings.toLocaleString()}</p>}
+                          </div>
+                        )}
                       </div>
+                    ))}
+                  </div>
+                </Section>
+              )}
+
+              {/* Review keywords */}
+              <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                {!isPremium && <TierGate tier="premium" feature="Customer Review Keyword Mining" />}
+                <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
+                  <div className="px-5 py-4 border-b border-slate-50 flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
+                      <Lightbulb className="w-4 h-4 text-blue-500" />
                     </div>
-                    {c.star_rating && (
-                      <div className="text-right shrink-0">
-                        <p className="text-xs font-black text-amber-500">{c.star_rating}★</p>
-                        {c.num_ratings && <p className="text-[10px] text-slate-400">{c.num_ratings.toLocaleString()}</p>}
+                    <span className="font-bold text-slate-800 text-sm">Customer Review Keyword Mining</span>
+                    {isPremium && <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{reviewKeywords.length}</span>}
+                  </div>
+                  <div className="px-5 pb-5 pt-3">
+                    <p className="text-xs text-slate-400 mb-4">
+                      Keywords your customers actually use in reviews — often missed in titles but highly converting.
+                    </p>
+                    {reviewKeywords.length > 0 ? (
+                      <div className="space-y-2">
+                        {reviewKeywords.map((rk: any, i: number) => (
+                          <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-blue-50 border border-blue-100 rounded-xl">
+                            <span className="text-xs font-mono font-bold text-slate-800 flex-1">{rk.keyword}</span>
+                            <span className="text-[10px] text-slate-500">{rk.review_freq} reviews</span>
+                            {rk.in_competitors > 0 && (
+                              <span className="text-[10px] text-sky-600 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded font-semibold">
+                                {rk.in_competitors} comp
+                              </span>
+                            )}
+                            <PriorityPill priority={rk.priority} />
+                          </div>
+                        ))}
+                      </div>
+                    ) : isPremium ? (
+                      <p className="text-sm text-slate-400 text-center py-4">No review-specific keywords found.</p>
+                    ) : (
+                      <div className="space-y-2">
+                        {["fast delivery", "works great", "easy setup", "good value", "highly recommend"].map((kw, i) => (
+                          <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-blue-50 border border-blue-100 rounded-xl">
+                            <span className="text-xs font-mono font-bold text-slate-800 flex-1">{kw}</span>
+                            <PriorityPill priority={i < 2 ? "High" : "Medium"} />
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
-                ))}
+                </div>
               </div>
-            </Section>
+
+              {/* AI opportunity scores */}
+              <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                {!isPremium && <TierGate tier="premium" feature="AI Keyword Opportunity Scores" />}
+                <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
+                  <div className="px-5 py-4 border-b border-slate-50 flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+                      <Sparkles className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="font-bold text-slate-800 text-sm">AI Keyword Opportunity Scores</span>
+                  </div>
+                  <div className="px-5 pb-5 pt-3">
+                    <p className="text-xs text-slate-400 mb-1">
+                      AI-ranked by opportunity value (1–10). Includes placement advice — where to add each keyword.
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      <PlacementBadge placement="title" />
+                      <PlacementBadge placement="bullets" />
+                      <PlacementBadge placement="backend" />
+                    </div>
+                    {aiScores.length > 0 ? (
+                      aiScores.map((s: any, i: number) => (
+                        <OpportunityBar key={i} score={s.score} keyword={s.keyword} reason={s.reason} add_to={s.add_to} is_spec={s.is_spec} />
+                      ))
+                    ) : isPremium ? (
+                      <p className="text-sm text-slate-400 text-center py-4">AI scoring not available — no gap keywords found.</p>
+                    ) : (
+                      [{ score: 9, keyword: "high speed", reason: "Used by 4/5 competitors; core search term", add_to: "title" },
+                       { score: 8, keyword: "class 10",   reason: "Specification term buyers search directly", add_to: "title" },
+                       { score: 6, keyword: "waterproof", reason: "Feature differentiator", add_to: "bullets" }].map((s, i) => (
+                        <OpportunityBar key={i} {...s} />
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* AI listing rewrite */}
+              <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                {!isPremium && <TierGate tier="premium" feature="AI Listing Rewrite Suggestion" />}
+                <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
+                  <div className="px-5 py-4 border-b border-slate-50 flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
+                      <Zap className="w-4 h-4 text-white" />
+                    </div>
+                    <span className="font-bold text-slate-800 text-sm">AI-Suggested Title Rewrite</span>
+                  </div>
+                  <div className="px-5 pb-5 pt-4">
+                    {data.ai_listing_rewrite ? (
+                      <>
+                        <div className="mb-3">
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">Current Title</p>
+                          <p className="text-sm text-slate-500 bg-slate-50 rounded-xl px-4 py-3 border border-slate-100">{data.product_title}</p>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-slate-300 mx-auto my-2" />
+                        <div>
+                          <p className="text-[10px] font-bold text-violet-500 uppercase tracking-wide mb-1.5">AI Suggested Title</p>
+                          <p className="text-sm font-semibold text-slate-800 bg-violet-50 rounded-xl px-4 py-3 border border-violet-200 leading-relaxed">
+                            {data.ai_listing_rewrite}
+                          </p>
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-3 flex items-center gap-1">
+                          <Info className="w-3 h-3" /> Always verify this complies with Amazon's title policy before using.
+                        </p>
+                      </>
+                    ) : isPremium ? (
+                      <p className="text-sm text-slate-400 text-center py-4">Rewrite not available — insufficient gap data.</p>
+                    ) : (
+                      <div>
+                        <div className="mb-3">
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">Current Title</p>
+                          <p className="text-sm text-slate-500 bg-slate-50 rounded-xl px-4 py-3 border border-slate-100 line-clamp-2">{data.product_title}</p>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-slate-300 mx-auto my-2" />
+                        <div>
+                          <p className="text-[10px] font-bold text-violet-500 uppercase tracking-wide mb-1.5">AI Suggested Title</p>
+                          <p className="text-sm font-semibold text-slate-400 bg-violet-50 rounded-xl px-4 py-3 border border-violet-100 blur-sm select-none">
+                            SANDISK 64GB Extreme PRO SDXC Memory Card High Speed Class 10 U3 V30 4K UHD Waterproof — SDSDXXU-064G
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Action plan */}
+              <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+                {!isPremium && <TierGate tier="premium" feature="AI Prioritised Action Plan" />}
+                <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
+                  <div className="px-5 py-4 border-b border-slate-50 flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
+                      <Target className="w-4 h-4 text-emerald-600" />
+                    </div>
+                    <span className="font-bold text-slate-800 text-sm">Prioritised Action Plan</span>
+                  </div>
+                  <div className="px-5 pb-5 pt-4">
+                    {actionPlan.length > 0 ? (
+                      <div className="space-y-3">
+                        {actionPlan.map((step: string, i: number) => (
+                          <div key={i} className="flex items-start gap-3 p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+                            <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <span className="text-xs font-black text-white">{i + 1}</span>
+                            </div>
+                            <p className="text-sm text-slate-700 leading-relaxed">{step}</p>
+                          </div>
+                        ))}
+                      </div>
+                    ) : isPremium ? (
+                      <p className="text-sm text-slate-400 text-center py-4">Action plan not available.</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {[
+                          "Add high-priority gap keywords to your title: \"high speed\", \"class 10\", \"4k uhd\"",
+                          "Use backend search terms in Seller Central for keywords that don't fit the title",
+                          "Keep your differentiators — they are unique to your listing",
+                        ].map((step, i) => (
+                          <div key={i} className="flex items-start gap-3 p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+                            <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                              <span className="text-xs font-black text-white">{i + 1}</span>
+                            </div>
+                            <p className="text-sm text-slate-500 leading-relaxed">{step}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Upgrade CTA */}
+              {!isPremium && (
+                <div className="bg-gradient-to-r from-blue-600 to-violet-600 rounded-2xl p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div>
+                    <p className="font-bold text-base">Unlock Full Keyword Intelligence</p>
+                    <p className="text-blue-100 text-sm mt-0.5">
+                      {!isBasic
+                        ? "Get gap keywords, semantic clusters, coverage score & heatmap — Basic · ₹1,999/mo"
+                        : "Get AI opportunity scores, listing rewrite, placement advice & action plan — Premium · ₹2,999/mo"}
+                    </p>
+                    <div className="flex flex-wrap gap-3 mt-2">
+                      {(!isBasic
+                        ? ["Gap keywords", "Semantic clusters", "Coverage score", "Keyword heatmap"]
+                        : ["AI opportunity scores", "Placement advice", "Listing rewrite", "Action plan"]
+                      ).map((f) => (
+                        <span key={f} className="flex items-center gap-1 text-xs text-blue-100">
+                          <CheckCircle className="w-3 h-3 text-blue-200" /> {f}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <button onClick={() => router.push("/subscription")}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-white text-blue-600 rounded-full font-bold text-sm shadow hover:shadow-md hover:scale-105 transition-all flex-shrink-0">
+                    <Crown className="w-4 h-4" /> Upgrade Now
+                  </button>
+                </div>
+              )}
+            </>
           )}
-
-          {/* ── Premium: Review keywords ──────────────────────────── */}
-          <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            {!isPremium && <TierGate tier="premium" feature="Customer Review Keyword Mining" />}
-            <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
-              <div className="px-5 py-4 border-b border-slate-50 flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
-                  <Lightbulb className="w-4 h-4 text-blue-500" />
-                </div>
-                <span className="font-bold text-slate-800 text-sm">Customer Review Keyword Mining</span>
-                {isPremium && <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{reviewKeywords.length}</span>}
-              </div>
-              <div className="px-5 pb-5 pt-3">
-                <p className="text-xs text-slate-400 mb-4">
-                  Keywords your customers actually use in reviews — often missed in titles but highly converting.
-                </p>
-                {reviewKeywords.length > 0 ? (
-                  <div className="space-y-2">
-                    {reviewKeywords.map((rk: any, i: number) => (
-                      <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-blue-50 border border-blue-100 rounded-xl">
-                        <span className="text-xs font-mono font-bold text-slate-800 flex-1">{rk.keyword}</span>
-                        <span className="text-[10px] text-slate-500">{rk.review_freq} reviews</span>
-                        {rk.in_competitors > 0 && (
-                          <span className="text-[10px] text-sky-600 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded font-semibold">
-                            {rk.in_competitors} comp
-                          </span>
-                        )}
-                        <PriorityPill priority={rk.priority} />
-                      </div>
-                    ))}
-                  </div>
-                ) : isPremium ? (
-                  <p className="text-sm text-slate-400 text-center py-4">No review-specific keywords found.</p>
-                ) : (
-                  <div className="space-y-2">
-                    {["fast delivery", "works great", "easy setup", "good value", "highly recommend"].map((kw, i) => (
-                      <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-blue-50 border border-blue-100 rounded-xl">
-                        <span className="text-xs font-mono font-bold text-slate-800 flex-1">{kw}</span>
-                        <PriorityPill priority={i < 2 ? "High" : "Medium"} />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* ── Premium: AI opportunity scores ────────────────────── */}
-          <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            {!isPremium && <TierGate tier="premium" feature="AI Keyword Opportunity Scores" />}
-            <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
-              <div className="px-5 py-4 border-b border-slate-50 flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-white" />
-                </div>
-                <span className="font-bold text-slate-800 text-sm">AI Keyword Opportunity Scores</span>
-              </div>
-              <div className="px-5 pb-5 pt-3">
-                <p className="text-xs text-slate-400 mb-1">
-                  AI-ranked by opportunity value (1–10). Includes placement advice — where to add each keyword.
-                </p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <PlacementBadge placement="title" />
-                  <PlacementBadge placement="bullets" />
-                  <PlacementBadge placement="backend" />
-                </div>
-                {aiScores.length > 0 ? (
-                  aiScores.map((s: any, i: number) => (
-                    <OpportunityBar key={i} score={s.score} keyword={s.keyword} reason={s.reason} add_to={s.add_to} is_spec={s.is_spec} />
-                  ))
-                ) : isPremium ? (
-                  <p className="text-sm text-slate-400 text-center py-4">AI scoring not available — no gap keywords found.</p>
-                ) : (
-                  [{ score: 9, keyword: "high speed", reason: "Used by 4/5 competitors; core search term", add_to: "title" },
-                   { score: 8, keyword: "class 10",   reason: "Specification term buyers search directly", add_to: "title" },
-                   { score: 6, keyword: "waterproof", reason: "Feature differentiator", add_to: "bullets" }].map((s, i) => (
-                    <OpportunityBar key={i} {...s} />
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* ── Premium: AI listing rewrite ───────────────────────── */}
-          <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            {!isPremium && <TierGate tier="premium" feature="AI Listing Rewrite Suggestion" />}
-            <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
-              <div className="px-5 py-4 border-b border-slate-50 flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-slate-900 flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-sky-400" />
-                </div>
-                <span className="font-bold text-slate-800 text-sm">AI Listing Rewrite Suggestion</span>
-              </div>
-              <div className="px-5 pb-5 pt-3">
-                <p className="text-xs text-slate-400 mb-4">
-                  Optimised title suggestion incorporating high-value gap keywords for maximum discoverability.
-                </p>
-                {actionPlan.length > 0 ? (
-                  <div className="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                    <p className="text-sm text-sky-300 font-mono italic leading-relaxed">
-                      "{actionPlan[0]?.suggestion || "Analysing gap data to generate optimised title..."}"
-                    </p>
-                  </div>
-                ) : (
-                  <div className="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                    <p className="text-sm text-slate-500 font-mono italic leading-relaxed">
-                      "Upgrade to Premium to generate an optimised title using your specific gap keywords."
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </>
-      )}
+        </main>
     </div>
   );
 }
 
 export default function KeywordGapAnalysisPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-[400px]"><RefreshCw className="w-8 h-8 animate-spin text-sky-500" /></div>}>
-      <KeywordGapAnalysisContent />
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>
+      <KeywordGapContent />
     </Suspense>
   );
 }

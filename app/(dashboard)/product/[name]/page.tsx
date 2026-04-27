@@ -17,6 +17,8 @@ import {
   Filler,
 } from "chart.js";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChevronLeft, Star, ShoppingBag, Menu } from "lucide-react";
+import { useSidebar } from "@/components/layout/sidebar-context";
 
 ChartJS.register(
   LineElement,
@@ -57,6 +59,7 @@ export default function ProductDetails() {
   const router = useRouter();
 
   const [fromCategory, setFromCategory] = useState("");
+  const { toggle } = useSidebar();
   const [fromPage, setFromPage] = useState(1);
   const [source, setSource] = useState("");
   const [fromDashboard, setFromDashboard] = useState(false);
@@ -255,12 +258,17 @@ export default function ProductDetails() {
 
   return (
     <div className="space-y-6">
-      <header className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-lg rounded-2xl px-4 sm:px-6 lg:px-8 py-4 lg:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="w-full sm:w-auto">
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-sky-900 break-words">{data.product_name}</h2>
-          <p className="text-xs sm:text-sm text-gray-500 mt-1">
-            Source: {isAmazon ? "Amazon" : "Flipkart"}
-          </p>
+      <header className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-lg rounded-2xl px-4 sm:px-6 lg:px-8 py-4 lg:py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sticky top-0 sm:top-4 z-20 mx-0 sm:mx-6">
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <button onClick={toggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors">
+            <Menu className="w-5 h-5 text-sky-900" />
+          </button>
+          <div className="flex-1 min-w-0">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-sky-900 break-words line-clamp-1">{data.product_name}</h2>
+            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+              Source: {isAmazon ? "Amazon" : "Flipkart"}
+            </p>
+          </div>
         </div>
         <button
           onClick={(e) => {

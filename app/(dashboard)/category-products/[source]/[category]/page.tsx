@@ -11,7 +11,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { ChevronLeft, Star, ShoppingBag } from "lucide-react";
+import { ChevronLeft, Star, ShoppingBag, Menu } from "lucide-react";
+import { useSidebar } from "@/components/layout/sidebar-context";
 
 interface Product {
   product_name: string;
@@ -30,6 +31,7 @@ export default function CategoryProducts() {
   const router = useRouter();
 
   const [products, setProducts] = useState<Product[]>([]);
+  const { toggle } = useSidebar();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
@@ -105,6 +107,9 @@ export default function CategoryProducts() {
       {/* Sticky Header */}
       <header className="bg-background border border-sky-100 shadow-lg rounded-2xl px-6 py-4 sm:py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sticky top-0 z-20">
         <div className="flex items-center gap-3 w-full sm:w-auto">
+          <button onClick={toggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors">
+            <Menu className="w-5 h-5 text-sky-900" />
+          </button>
           <button
             onClick={handleBackClick}
             className="flex items-center text-blue-600 hover:text-blue-800 transition text-sm font-medium"

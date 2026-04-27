@@ -78,8 +78,9 @@ export default function FiltersPanel() {
     try {
       const res = await fetch(`${BASE_URL}/categories?table=${table}`);
       const data = await res.json();
-      const cats = data.map((c: any) => c.category);
-      setCategories(["All Categories", ...cats]);
+      const categoriesArray = Array.isArray(data) ? data : (data?.data && Array.isArray(data.data) ? data.data : []);
+      const cats = categoriesArray.map((c: any) => typeof c === 'string' ? c : (c.category || c.category_name || ""));
+      setCategories(["All Categories", ...cats.filter(Boolean)]);
     } catch (err) {
       console.error("Failed to fetch categories:", err);
     }

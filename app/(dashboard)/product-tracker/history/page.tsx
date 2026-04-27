@@ -7,8 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth-context";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { History, Loader2, Trash2, Eye, Calendar, DollarSign, TrendingUp, AlertCircle, Menu, X, ChevronLeft, Package, AlertTriangle } from "lucide-react";
-import Sidebar from "@/components/layout/sidebar";
 import { usePathname, useRouter } from "next/navigation";
+import { useSidebar } from "@/components/layout/sidebar-context";
 
 
 interface HistoryItem {
@@ -70,7 +70,7 @@ export default function ProductTrackerHistory() {
   const [loading, setLoading] = useState(true);
   const [selectedAnalysis, setSelectedAnalysis] = useState<DetailedAnalysis | null>(null);
   const [detailsLoading, setDetailsLoading] = useState(false);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { toggle } = useSidebar();
   const [deleteDialog, setDeleteDialog] = useState<DeleteConfirmDialog>({
     isOpen: false,
     itemId: null,
@@ -245,39 +245,16 @@ export default function ProductTrackerHistory() {
         </>
       )}
 
-      {/* Mobile Menu Button */}
-      <button
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-background rounded-xl shadow-md"
-        onClick={() => setIsMobileMenuOpen(true)}
-      >
-        <Menu className="w-6 h-6 text-slate-700" />
-      </button>
-
-      {/* Desktop Sidebar */}
-      <aside className="hidden lg:block fixed inset-y-0 left-0 w-64 bg-white shadow-lg z-40">
-        <Sidebar />
-      </aside>
-
-      {/* Mobile Sidebar Overlay */}
-      {isMobileMenuOpen && (
-        <>
-          <div className="fixed inset-0 bg-slate-900/80 z-40 lg:hidden" onClick={() => setIsMobileMenuOpen(false)} />
-          <aside className="fixed inset-y-0 left-0 w-64 bg-white z-50 lg:hidden shadow-2xl">
-            <div className="flex justify-end p-4">
-              <button onClick={() => setIsMobileMenuOpen(false)}>
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            <Sidebar />
-          </aside>
-        </>
-      )}
+      {/* MAIN CONTENT handled by layout */}
 
       {/* MAIN CONTENT */}
       <div className="lg:ml-64 transition-all min-h-screen">
         {/* Compact Header Consolidated */}
-        <header className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-xl rounded-2xl px-6 py-4 mb-6 flex flex-col md:flex-row items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6 transition-all duration-300">
+        <header className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-xl rounded-2xl px-6 py-4 mb-6 flex flex-col md:flex-row items-center justify-between sticky top-0 sm:top-4 z-20 mx-0 sm:mx-6 transition-all duration-300">
           <div className="flex items-center gap-4 w-full md:w-auto mb-4 md:mb-0">
+            <button onClick={toggle} className="lg:hidden p-2 rounded-lg hover:bg-purple-100 transition-colors">
+              <Menu className="w-5 h-5 text-purple-900" />
+            </button>
             <div className="flex items-center gap-3">
               <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl shadow-inner border border-purple-50">
                 <History className="h-6 w-6 text-purple-600" />
