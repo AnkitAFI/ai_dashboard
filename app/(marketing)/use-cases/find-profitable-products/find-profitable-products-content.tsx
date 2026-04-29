@@ -18,10 +18,6 @@ import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
 
-
-
-
-
 type MenuItemWithBadge = { name: string; icon: JSX.Element; badge?: string; route?: string; };
 type NavigationMenu = {
   Solutions: MenuItemWithBadge[]; "Use Cases": MenuItemWithBadge[]; Features: MenuItemWithBadge[];
@@ -315,14 +311,6 @@ export default function FindProfitableProductsPage() {
                   Discover Profitable Products Free
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 sm:gap-6 pt-2 sm:pt-4">
-                {["Amazon & Flipkart data real Indian marketplace demand","AI profit predictions in INR before you source","Real-time opportunity alerts no credit card required"].map((t) => (
-                  <div key={t} className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" /><span>{t}</span>
-                  </div>
-                ))}
               </div>
             </div>
 

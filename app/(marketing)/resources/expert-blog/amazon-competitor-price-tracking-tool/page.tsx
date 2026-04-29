@@ -84,8 +84,9 @@ const schemaBlog = {
       "description": "Learn how Amazon competitor price tracking tools help sellers monitor pricing, analyze competitors, and optimize strategies to increase sales and win the Buy Box.",
       "image": "https://insydz.com/one.png",
       "author": {
-        "@type": "Organization",
-        "name": "Insydz Team"
+        "@type": "Person",
+        "name": "Vikrant Singh",
+        "url": "https://insydz.com/author/vikrant-singh"
       },
       "publisher": {
         "@id": "https://insydz.com/#organization"

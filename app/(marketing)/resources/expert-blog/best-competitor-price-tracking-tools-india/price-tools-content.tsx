@@ -90,8 +90,9 @@ const schemaBlogPriceTools = {
       "description": "Discover the best competitor price tracking tools for Amazon India and Flipkart sellers. Compare features and choose the right pricing intelligence tool.",
       "image": "https://insydz.com/assets/images/blog/competitor-price-tools-india.png",
       "author": {
-        "@type": "Organization",
-        "name": "Insydz Team"
+        "@type": "Person",
+        "name": "Vikrant Singh",
+        "url": "https://insydz.com/author/vikrant-singh"
       },
       "publisher": {
         "@id": "https://insydz.com/#organization"

@@ -52,7 +52,7 @@ const schemaBlogSEO = {
       "headline": "Amazon SEO Tool India – Complete Guide for Sellers",
       "description": "Discover how Amazon SEO tools in India help sellers find high-converting keywords, optimize listings, and improve rankings on Amazon search results.",
       "image": "https://insydz.com/assets/images/blog/amazon-seo-tool-india.png",
-      "author": { "@type": "Organization", "name": "Insydz Team" },
+      "author": { "@type": "Person", "name": "Vikrant Singh", "url": "https://insydz.com/author/vikrant-singh" },
       "publisher": { "@id": "https://insydz.com/#organization" },
       "datePublished": "2025-01-01",
       "dateModified": "2025-01-01",

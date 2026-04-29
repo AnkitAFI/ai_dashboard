@@ -153,6 +153,27 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "14",
+    title: "Insydz vs SellerApp: Which Amazon Seller Tool Actually Works for the Indian Market?",
+    excerpt: "A practitioner's comparison for ₹5L–50L/month Indian sellers — INR pricing vs USD billing, Flipkart-native vs Amazon-only. Read before you commit.",
+    category: "Tool Comparison & Reviews",
+    readTime: "10 min read",
+    image: "/insydz-vs-sellerapp-hero.png",
+    route: "/resources/expert-blog/insydz-vs-sellerapp-india",
+    featured: true,
+    popular: true
+  },
+  {
+    id: "13",
+    title: "Analyze Amazon Reviews Tool: The Complete Guide for Indian Sellers (2026)",
+    excerpt: "AI-powered Amazon review analysis for Indian D2C sellers — sentiment clustering, Hinglish support, RTO signals, and WhatsApp alerts.",
+    category: "Review Intelligence",
+    readTime: "12 min read",
+    image: "/amazon-review-analysis-hero.png",
+    route: "/resources/expert-blog/amazon-review-analysis-guide-india",
+    popular: true
+  },
+  {
     id: "12",
     title: "Manual vs Automated Competitor Tracking: What Works in 2026?",
     excerpt: "Indian ecommerce sellers spend 3–5 hours daily tracking competitor prices in Excel — and still react 24 hours too late.",
@@ -160,7 +181,6 @@ const articles: Article[] = [
     readTime: "8 min read",
     image: "/manual_vs_automated.png",
     route: "/resources/expert-blog/manual-vs-automated-competitor-tracking-tool",
-    featured: true,
     popular: true
   },
   {
@@ -171,7 +191,6 @@ const articles: Article[] = [
     readTime: "8 min read",
     image: "/amazon-vs-flipkart-hero-metrics.png",
     route: "/resources/expert-blog/amazon-vs-flipkart-india-seller",
-    featured: true,
     popular: true
   },
   {
@@ -218,7 +237,6 @@ const articles: Article[] = [
     readTime: "8 min read",
     image: "/one.png",
     route: "/resources/expert-blog/amazon-competitor-price-tracking-tool",
-    featured: true,
     popular: true
   },
   {

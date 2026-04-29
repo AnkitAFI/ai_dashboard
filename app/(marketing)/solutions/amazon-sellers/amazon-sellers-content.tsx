@@ -18,10 +18,6 @@ import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
 
-
-
-
-
 // ─── Navigation Menu Data ─────────────────────────────────────────────────────
 type MenuItemWithBadge = {
   name: string;
@@ -634,19 +630,6 @@ export default function AmazonSellersPage() {
                   See How It Works →
                 </Button>
               </div>
-
-              <div className="flex flex-wrap items-center gap-6 pt-4">
-                {[
-                  "Works with Indian pricing & Amazon.in categories",
-                  "WhatsApp alerts not ignored emails",
-                  "No credit card required",
-                ].map((t) => (
-                  <div key={t} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span>{t}</span>
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/* Hero Visual */}
@@ -739,7 +722,7 @@ export default function AmazonSellersPage() {
               Most Amazon sellers lose <span className="text-red-600">15–30% of profit every month</span>
             </p>
             <p className="text-gray-700 dark:text-gray-300 text-lg">
-              due to late pricing decisions, ignored review signals, and poor keyword visibility none of which show up in your Seller Central dashboard.
+              due to late pricing decisions, ignored review signals, and poor keyword visibility <br />none of which show up in your Seller Central dashboard.
             </p>
           </div>
         </div>
@@ -788,8 +771,8 @@ export default function AmazonSellersPage() {
           </div>
 
           <p className="text-center mt-6 text-sm text-gray-500">
-            <button onClick={() => router.push("/compare/insydzvshelium")} className="text-orange-600 underline hover:text-orange-700 font-medium">
-              See full Insydz vs Helium 10 comparison →
+            <button onClick={() => router.push("/compare/insydzvshelium")} className="text-orange-600 hover:text-orange-700 font-medium">
+              See full Insydz vs Helium 10 comparison
             </button>
           </p>
         </div>
@@ -870,7 +853,7 @@ export default function AmazonSellersPage() {
                     Connect your Amazon seller account or add your ASINs. Insydz automatically begins tracking your products, competitors, and entire category no manual configuration needed.
                   </p>
                   <div className="bg-orange-100 dark:bg-orange-900/20 rounded-2xl p-4">
-                    <ShoppingBag className="w-12 h-12 text-orange-600 mx-auto" />
+                    <ShoppingBag className="w-6 h-6 text-orange-600 mx-auto" />
                   </div>
                 </div>
               </div>
@@ -882,8 +865,8 @@ export default function AmazonSellersPage() {
                   <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6 min-h-[96px]">
                     Our AI scans prices, reviews, keyword rankings, and competitor trends across Amazon India 24/7, in real time. No manual data pulling. No Excel uploads.
                   </p>
-                  <div className="bg-purple-100 dark:bg-purple-900/20 rounded-2xl p-4">
-                    <BarChart3 className="w-12 h-12 text-purple-600 mx-auto animate-pulse" />
+                  <div className="bg-purple-100 dark:bg-purple-900/20 rounded-2xl p-4 mt-14">
+                    <BarChart3 className="w-6 h-6 text-purple-600 mx-auto animate-pulse" />
                   </div>
                 </div>
               </div>
@@ -895,16 +878,16 @@ export default function AmazonSellersPage() {
                   <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 min-h-[96px]">Instead of charts and confusing dashboards, you get direct, plain-language instructions:</p>
                   <div className="space-y-3 text-left">
                     <div className="flex items-start gap-2 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg p-3">
-                      <CheckCircle2 className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-gray-800 dark:text-gray-300">"Competitor dropped price by 12%"</span>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-red-600 flex-shrink-0 mt-0.5" />
+                      <span className="text-xs text-gray-800 dark:text-gray-300">Competitor dropped price by 12%</span>
                     </div>
                     <div className="flex items-start gap-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-300 dark:border-orange-700 rounded-lg p-3">
-                      <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-gray-800 dark:text-gray-300">"Keyword ranking fell from #8 to #21"</span>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-orange-600 flex-shrink-0 mt-0.5" />
+                      <span className="text-xs text-gray-800 dark:text-gray-300">Keyword ranking fell from 8 to 21</span>
                     </div>
                     <div className="flex items-start gap-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-lg p-3">
-                      <CheckCircle2 className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-gray-800 dark:text-gray-300">"342 reviews mention packaging issue"</span>
+                      <CheckCircle2 className="w-3.5 h-3.5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                      <span className="text-xs text-gray-800 dark:text-gray-300">342 reviews mention packaging issue</span>
                     </div>
                   </div>
                 </div>
@@ -916,15 +899,14 @@ export default function AmazonSellersPage() {
             <Button onClick={handleGetStarted} size="lg"
               className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-4 sm:px-12 py-6 text-sm sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group w-full sm:w-auto"
             >
-              Start Free & See Your First Insights
-              <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+              Start Free
             </Button>
           </div>
         </div>
       </section>
 
       {/* ── SECTION 6: ROI EXAMPLE ────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
+      <section className="py-12 px-4 bg-gray-100 dark:bg-gray-800">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">
@@ -975,28 +957,33 @@ export default function AmazonSellersPage() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 border-2 border-orange-400 rounded-2xl p-6 text-center">
-            <p className="text-2xl font-black text-gray-900 dark:text-white">
-              Net monthly value unlocked:
-              <span className="text-orange-600 ml-2">+₹2,45,000/month</span>
-            </p>
+            <div className="text-center">
+            <div className="inline-block bg-gradient-to-r from-orange-100 to-red-100 
+              dark:from-orange-900/30 dark:to-red-900/30 
+              border-2 border-orange-400 rounded-2xl px-6 py-4">
+              
+              <p className="text-xl font-black text-black-500 dark:text-white whitespace-nowrap">
+                Net monthly value unlocked:
+                <span className="text-orange-600 ml-2">+₹2,45,000/month</span>
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── STATS BAR ─────────────────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-white dark:bg-gray-950">
+      <section className="py-14 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { stat: "250K+", label: "Reviews Analysed on Amazon India", icon: <MessageCircle className="w-8 h-8" /> },
-              { stat: "24/7", label: "Real-Time Competitor Tracking", icon: <Clock className="w-8 h-8" /> },
-              { stat: "15–30%", label: "Average Profit Recovered", icon: <TrendingUp className="w-8 h-8" /> },
+              { stat: "250K+", label: "Reviews Analysed on Amazon India", icon: <MessageCircle className="w-4 h-4" /> },
+              { stat: "24/7", label: "Real-Time Competitor Tracking", icon: <Clock className="w-4 h-4" /> },
+              { stat: "15–30%", label: "Average Profit Recovered", icon: <TrendingUp className="w-4 h-4" /> },
             ].map((item, i) => (
-              <div key={i} className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-2 border-orange-200 dark:border-orange-700 rounded-2xl p-8 text-center hover:scale-105 hover:shadow-2xl transition-all">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg">{item.icon}</div>
-                <div className="text-5xl font-black bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent mb-2">{item.stat}</div>
-                <div className="text-gray-700 dark:text-gray-300 text-lg font-medium">{item.label}</div>
+              <div key={i} className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-2 border-orange-200 dark:border-orange-700 rounded-2xl p-8 text-center hover:scale-105 hover:shadow-xl transition-all">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg">{item.icon}</div>
+                <div className="text-4xl font-black bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent mb-2">{item.stat}</div>
+                <div className="text-gray-700 dark:text-gray-300 text-sm font-medium">{item.label}</div>
               </div>
             ))}
           </div>
@@ -1066,7 +1053,8 @@ export default function AmazonSellersPage() {
                 action: () => router.push("/demo"),
               },
             ].map((card, i) => (
-              <div key={i} className="bg-background opacity-100 backdrop-blur-none border border-white/20 rounded-2xl p-6 text-left">
+              <div key={i} className="bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all border border-white/20 rounded-2xl p-6 text-left 
+                flex flex-col h-full">
                 <p className="font-bold text-white mb-2">{card.label}</p>
                 <p className="text-white/80 text-sm mb-4">{card.desc}</p>
                 <button onClick={card.action} className="text-orange-200 font-semibold text-sm hover:text-white transition-colors underline">{card.cta}</button>

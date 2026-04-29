@@ -17,10 +17,6 @@ import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
 
-
-
-
-
 // Navigation Menu Data
 type MenuItemWithBadge = {
   name: string;
@@ -178,7 +174,7 @@ export default function FlipkartSellersPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
                 </span>
-                <span className="text-sm font-medium text-blue-700">Built for Indian Flipkart Sellers 🇮🇳</span>
+                <span className="text-sm font-medium text-blue-700">Flipkart Seller Analytics Tool</span>
               </div>
 
               <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
@@ -213,22 +209,6 @@ export default function FlipkartSellersPage() {
                 >
                   See How It Works →
                 </Button>
-              </div>
-
-              {/* Trust Signals */}
-              <div className="flex flex-wrap items-center gap-6 pt-4">
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <CheckCircle2 className="w-5 h-5 text-green-600" />
-                  <span>Flipkart-optimised tracking &amp; category intelligence</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <CheckCircle2 className="w-5 h-5 text-green-600" />
-                  <span>WhatsApp instant alerts not buried emails</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <CheckCircle2 className="w-5 h-5 text-green-600" />
-                  <span>No credit card required</span>
-                </div>
               </div>
             </div>
 
@@ -309,27 +289,23 @@ export default function FlipkartSellersPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {[
               {
-                icon: <TrendingDown className="w-8 h-8" />,
-                title: "Competitors change prices while you sleep",
-                desc: "and steal your sales rank",
+                icon: <TrendingDown className="w-6 h-6" />,
+                title: "Competitors change prices while you sleep and steal your sales rank",
                 color: "from-red-500 to-orange-500"
               },
               {
-                icon: <MessageCircle className="w-8 h-8" />,
-                title: "Bad reviews reveal problems too late",
-                desc: "after orders and ratings have already dropped",
+                icon: <MessageCircle className="w-6 h-6" />,
+                title: "Bad reviews reveal problems too late after orders and ratings have already dropped",
                 color: "from-orange-500 to-yellow-500"
               },
               {
-                icon: <Search className="w-8 h-8" />,
-                title: "Keyword rankings drop unnoticed",
-                desc: "you only find out when traffic disappears",
+                icon: <Search className="w-6 h-6" />,
+                title: "Keyword rankings drop unnoticed you only find out when traffic disappears",
                 color: "from-blue-500 to-indigo-500"
               },
               {
-                icon: <Clock className="w-8 h-8" />,
-                title: "Hours wasted on manual tracking",
-                desc: "that should be spent growing your business",
+                icon: <Clock className="w-6 h-6" />,
+                title: "Hours wasted on manual tracking that should be spent growing your business",
                 color: "from-indigo-500 to-purple-500"
               }
             ].map((pain, i) => (
@@ -338,7 +314,6 @@ export default function FlipkartSellersPage() {
                   {pain.icon}
                 </div>
                 <p className="text-gray-900 dark:text-white font-semibold leading-relaxed mb-1">{pain.title}</p>
-                <p className="text-gray-500 dark:text-gray-400 text-sm">{pain.desc}</p>
               </div>
             ))}
           </div>
@@ -350,7 +325,7 @@ export default function FlipkartSellersPage() {
               Flipkart sellers lose <span className="text-red-600">15–30% of profit annually</span>
             </p>
             <p className="text-gray-700 dark:text-gray-300 text-lg">
-              due to delayed pricing decisions, untracked reviews, and poor keyword visibility none of which your Flipkart Seller Hub shows you.
+              due to delayed pricing decisions, untracked reviews, and poor keyword visibility none of which <br />  your Flipkart Seller Hub shows you.
             </p>
           </div>
         </div>
@@ -374,12 +349,18 @@ export default function FlipkartSellersPage() {
           <div className="overflow-x-auto rounded-2xl border-2 border-gray-200 dark:border-gray-700 shadow-xl mb-10">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                  <th className="text-left px-6 py-4 font-bold text-base">Feature</th>
-                  <th className="px-6 py-4 font-bold text-base text-left">Insydz</th>
-                  <th className="px-6 py-4 font-bold text-base text-left">Flipkart Seller Hub</th>
-                </tr>
-              </thead>
+              <tr>
+                <th className="bg-black text-white text-left px-6 py-4 font-bold text-base">
+                  Feature
+                </th>
+                <th className="bg-black text-white px-6 py-4 font-bold text-base text-left">
+                  Insydz
+                </th>
+                <th className="bg-black text-white px-6 py-4 font-bold text-base text-left">
+                  Flipkart Seller Hub
+                </th>
+              </tr>
+            </thead>
               <tbody>
                 {[
                   { feature: "Competitor price tracking (real-time)", insydz: "✓", hub: "✗" },
@@ -408,7 +389,7 @@ export default function FlipkartSellersPage() {
               onClick={() => router.push('/compare/insydzvshelium')}
               className="text-blue-600 dark:text-blue-400 font-semibold hover:underline"
             >
-              → See how Insydz compares to other Flipkart seller tools
+            See how Insydz compares to other Flipkart seller tools
             </button>
           </div>
         </div>
@@ -525,7 +506,7 @@ export default function FlipkartSellersPage() {
                 onClick={() => router.push('/features/keyword-rank-tracking-feature')}
                 className="text-orange-600 dark:text-orange-400 font-semibold text-sm hover:underline"
               >
-                → Explore Flipkart keyword rank tracker
+              Explore Flipkart keyword rank tracker
               </button>
             </div>
 
@@ -587,7 +568,7 @@ export default function FlipkartSellersPage() {
                   Link your Flipkart seller account or add your product listings. Insydz automatically maps your catalogue, identifies your top competitors, and begins category-level tracking instantly.
                 </p>
                 <div className="bg-blue-100 dark:bg-blue-900/20 rounded-2xl p-4">
-                  <Store className="w-12 h-12 text-blue-600 mx-auto" />
+                  <Store className="w-6 h-6 text-blue-600 mx-auto" />
                 </div>
               </div>
 
@@ -599,7 +580,7 @@ export default function FlipkartSellersPage() {
                   Our AI continuously scans Flipkart for pricing changes, review patterns, keyword ranking shifts, and competitor strategies 24/7, in real time. No manual work. No spreadsheets.
                 </p>
                 <div className="bg-purple-100 dark:bg-purple-900/20 rounded-2xl p-4">
-                  <BarChart3 className="w-12 h-12 text-purple-600 mx-auto animate-pulse" />
+                  <BarChart3 className="w-6 h-6 text-purple-600 mx-auto animate-pulse" />
                 </div>
               </div>
 
@@ -608,18 +589,19 @@ export default function FlipkartSellersPage() {
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">3</div>
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Get Actionable Insights</h3>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">Instead of graphs and reports, you get plain-language actions delivered to your phone:</p>
-                <div className="space-y-3 text-left">
+                <div className="space-y-6 text-left">
+                  {/* <br/> */}
                   <div className="flex items-start gap-2 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg p-3">
-                    <CheckCircle2 className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-800 dark:text-gray-300">"Competitor dropped price by 15%"</span>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-xs text-gray-800 dark:text-gray-300">Competitor dropped price by 15%</span>
                   </div>
                   <div className="flex items-start gap-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-300 dark:border-orange-700 rounded-lg p-3">
-                    <CheckCircle2 className="w-5 h-5 text-orange-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-800 dark:text-gray-300">"Ranking slipped from #12 to #28"</span>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-orange-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-xs text-gray-800 dark:text-gray-300">Ranking slipped from 12 to 28</span>
                   </div>
                   <div className="flex items-start gap-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-lg p-3">
-                    <CheckCircle2 className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-sm text-gray-800 dark:text-gray-300">"189 reviews mention delivery issues"</span>
+                    <CheckCircle2 className="w-3.5 h-3.5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                    <span className="text-xs text-gray-800 dark:text-gray-300">189 reviews mention delivery issues</span>
                   </div>
                 </div>
               </div>
@@ -788,7 +770,7 @@ export default function FlipkartSellersPage() {
             <div className="bg-gradient-to-br from-blue-600 to-indigo-700 border-2 border-blue-500 rounded-3xl p-8 text-center shadow-2xl hover:shadow-3xl transition-all relative overflow-hidden">
               <div className="absolute top-4 right-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full">Most Popular</div>
               <div className="w-14 h-14 bg-background opacity-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <TrendingUp className="w-7 h-7 text-white" />
+                <TrendingUp className="w-7 h-7 text-blue" />
               </div>
               <h3 className="text-xl font-bold text-white mb-3">For Growing Sellers</h3>
               <p className="text-white/80 text-sm leading-relaxed mb-6">
@@ -820,13 +802,13 @@ export default function FlipkartSellersPage() {
               </Button>
             </div>
           </div>
-          <p className="text-white/80 mt-6 text-sm flex items-center justify-center gap-2 flex-wrap">
-  <span>✓ No credit card required</span>
-  <span className="text-white/40">·</span>
-  <span>✓ Setup in 2 minutes</span>
-  <span className="text-white/40">·</span>
-  <span>✓ Cancel anytime</span>
-</p>
+          <p className="text-black/80 mt-6 text-sm flex items-center justify-center gap-2 flex-wrap">
+          <span>✓ No credit card required</span>
+          <span className="text-black/40">·</span>
+          <span>✓ Setup in 2 minutes</span>
+          <span className="text-black/40">·</span>
+          <span>✓ Cancel anytime</span>
+        </p>
         </div>
       </section>
       {/* Footer */}

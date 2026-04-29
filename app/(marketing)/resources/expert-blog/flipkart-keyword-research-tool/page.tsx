@@ -55,7 +55,7 @@ const schemaFlipkartKeyword = {
       "headline": "Flipkart Keyword Research Tool & SEO Optimization Guide for Sellers (2026)",
       "description": "Master Flipkart keyword research and SEO optimization. Discover how India's top Flipkart sellers use AI-powered keyword tracking and search visibility tools.",
       "image": "https://insydz.com/assets/images/blog/flipkart-keyword-research-tool.png",
-      "author": { "@type": "Organization", "name": "Insydz Team" },
+      "author": { "@type": "Person", "name": "Vikrant Singh", "url": "https://insydz.com/author/vikrant-singh" },
       "publisher": { "@id": "https://insydz.com/#organization" },
       "datePublished": "2026-01-20",
       "dateModified": "2026-01-20",
