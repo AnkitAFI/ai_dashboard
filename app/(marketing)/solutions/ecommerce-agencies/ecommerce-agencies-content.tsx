@@ -603,15 +603,6 @@ export default function EcommerceAgenciesContent() {
                   See How It Works →
                 </Button>
               </div>
-
-              <div className="flex flex-wrap items-center gap-6 pt-4">
-                {["Multi-client dashboard all accounts in one place", "White-label reports with your agency's branding", "Agency pricing available no credit card required"].map(t => (
-                  <div key={t} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                    <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
-                    <span>{t}</span>
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/* Hero Visual */}
@@ -871,14 +862,14 @@ export default function EcommerceAgenciesContent() {
     num: "1",
     title: "Onboard All Your Clients",
     desc: "Add unlimited clients to your agency dashboard. Each gets their own workspace with full tracking for Amazon, Flipkart, and competitor data. Onboarding a new client takes under 10 minutes.",
-    icon: <Users className="w-12 h-12 text-cyan-600" />,
+    icon: <Users className="w-6 h-6 text-cyan-600" />,
     bg: "bg-cyan-100 dark:bg-cyan-900/20"
   },
   {
     num: "2",
     title: "Automated Intelligence Gathering",
     desc: "Insydz monitors all clients 24/7 tracking competitors, prices, reviews, keyword rankings, and market trends automatically. Your team stops collecting data and starts acting on it.",
-    icon: <Brain className="w-12 h-12 text-blue-600 animate-pulse" />,
+    icon: <Brain className="w-6 h-6 text-blue-600 animate-pulse" />,
     bg: "bg-blue-100 dark:bg-blue-900/20"
   },
   {
@@ -912,6 +903,8 @@ export default function EcommerceAgenciesContent() {
       {step.desc && (
         <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
           {step.desc}
+          {step.num === "1" && <span className="block h-4"></span>}
+          {step.num === "2" && <span className="block h-10"></span>}
         </p>
       )}
 
@@ -926,14 +919,14 @@ export default function EcommerceAgenciesContent() {
 
       {/* Bullets */}
       {step.bullets && (
-        <div className="mt-4 w-full space-y-3 text-left">
+        <div className="mt-1 w-full space-y-3 text-left">
           {step.bullets.map((text, j) => (
             <div
               key={j}
               className="flex items-start gap-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3"
             >
-              <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-              <span className="text-gray-700 dark:text-gray-300 text-sm">
+              <CheckCircle2 className="w-3.5 h-3.5 text-green-500 flex-shrink-0 mt-0.5" />
+              <span className="text-gray-700 dark:text-gray-300 text-xs">
                 {text}
               </span>
             </div>
@@ -951,7 +944,7 @@ export default function EcommerceAgenciesContent() {
             <Button onClick={handleGetStarted} size="lg"
               className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold px-4 sm:px-12 py-6 text-sm sm:text-lg rounded-full shadow-2xl hover:shadow-cyan-500/50 transition-all group w-full sm:w-auto"
             >
-              Start Free Agency Account
+              Start Free Trial
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -959,7 +952,7 @@ export default function EcommerceAgenciesContent() {
       </section>
 
       {/* ── SECTION 7: ROI EXAMPLE ────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-white dark:bg-gray-950">
+      <section className="py-10 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">
@@ -1009,17 +1002,19 @@ export default function EcommerceAgenciesContent() {
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-cyan-100 to-blue-100 dark:from-cyan-900/30 dark:to-blue-900/30 border-2 border-cyan-400 rounded-2xl p-6 text-center">
-            <p className="text-2xl font-black text-gray-900 dark:text-white">
-              Net agency value unlocked by Insydz:
-              <span className="text-cyan-600 ml-2">+₹4,83,000/month</span>
-            </p>
+          <div className="text-center">
+            <div className="inline-block bg-gradient-to-r from-cyan-100 to-blue-100 dark:from-cyan-900/30 dark:to-blue-900/30 border-2 border-cyan-400 rounded-2xl p-6 text-center">
+              <p className="text-xl font-black text-black-500 dark:text-white whitespace-nowrap">
+                Net monthly value unlocked:
+                <span className="text-cyan-600 ml-2">+₹4,83,000/month</span>
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── STATS BAR ─────────────────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
+      <section className="py-16 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Trusted by Growing Agencies</h2>
@@ -1027,13 +1022,13 @@ export default function EcommerceAgenciesContent() {
           </div>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { stat: "40–60hrs", label: "Saved Per Month on Manual Work", icon: <Clock className="w-8 h-8" /> },
-              { stat: "10x", label: "Faster Client Reporting Cycles", icon: <FileText className="w-8 h-8" /> },
-              { stat: "85%", label: "Client Retention Rate", icon: <Award className="w-8 h-8" /> },
+              { stat: "40–60hrs", label: "Saved Per Month on Manual Work", icon: <Clock className="w-4 h-4" /> },
+              { stat: "10x", label: "Faster Client Reporting Cycles", icon: <FileText className="w-4 h-4" /> },
+              { stat: "85%", label: "Client Retention Rate", icon: <Award className="w-4 h-4" /> },
             ].map((item, i) => (
               <div key={i} className="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 border-2 border-cyan-200 dark:border-cyan-700 rounded-2xl p-8 text-center hover:scale-105 hover:shadow-2xl transition-all">
-                <div className="w-16 h-16 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg">{item.icon}</div>
-                <div className="text-5xl font-black bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent mb-2">{item.stat}</div>
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg">{item.icon}</div>
+                <div className="text-4xl font-black bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent mb-2">{item.stat}</div>
                 <div className="text-gray-700 dark:text-gray-300 text-lg font-medium">{item.label}</div>
               </div>
             ))}
@@ -1102,7 +1097,8 @@ export default function EcommerceAgenciesContent() {
                 action: () => router.push("/demo")
               }
             ].map((card, i) => (
-              <div key={i} className="bg-background opacity-100 backdrop-blur-none border border-white/20 rounded-2xl p-6 text-left">
+              <div key={i} className="bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all border border-white/20 rounded-2xl p-6 text-left 
+                flex flex-col h-full">
               
                 <p className="font-bold text-white mb-2">{card.label}</p>
                 <p className="text-white/80 text-sm mb-4">{card.desc}</p>
@@ -1115,7 +1111,7 @@ export default function EcommerceAgenciesContent() {
             <Button onClick={handleGetStarted} size="lg"
               className="bg-white hover:bg-gray-100 text-cyan-700 font-bold px-12 py-6 text-lg rounded-full shadow-2xl group"
             >
-              Start Free Agency Account
+              Start Free
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>

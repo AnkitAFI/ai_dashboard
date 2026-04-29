@@ -60,7 +60,7 @@ const schemaManualVsAuto = {
       "headline": "Manual vs Automated Competitor Tracking: What Works in 2026?",
       "description": "Indian ecommerce sellers spend 3–5 hours daily tracking competitor prices in Excel and still react 24 hours too late. A data-backed comparison of manual vs AI-powered automated competitor tracking for Indian sellers.",
       "image": "https://insydz.com/assets/images/blog/manual-vs-automated-competitor-tracking.png",
-      "author": { "@type": "Organization", "name": "Insydz Team" },
+      "author": { "@type": "Person", "name": "Vikrant Singh", "url": "https://insydz.com/author/vikrant-singh" },
       "publisher": { "@id": "https://insydz.com/#organization" },
       "datePublished": "2026-01-20",
       "dateModified": "2026-01-20",

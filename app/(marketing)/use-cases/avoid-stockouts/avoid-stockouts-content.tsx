@@ -15,9 +15,6 @@ import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
 
-
-
-
 // ─── JSON-LD Schemas ──────────────────────────────────────────────────────────
 
 // ─── Navigation Menu Data ─────────────────────────────────────────────────────
@@ -544,18 +541,6 @@ export default function AvoidStockoutsPage() {
                 >
                   See How It Works →
                 </Button>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-5 pt-2">
-                {[
-                  "Stockout prediction based on real sales velocity not guesswork",
-                  "WhatsApp alerts 14 days before you run out",
-                  "Amazon India, Flipkart no credit card required",
-                ].map((t) => (
-                  <div key={t} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                    <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" /><span>{t}</span>
-                  </div>
-                ))}
               </div>
             </div>
 

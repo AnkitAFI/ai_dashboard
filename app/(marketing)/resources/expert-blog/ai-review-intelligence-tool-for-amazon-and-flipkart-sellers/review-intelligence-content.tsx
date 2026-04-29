@@ -72,8 +72,9 @@ const schemaBlogReviewAI = {
       "description": "AI tools analyze customer reviews to identify sentiment, patterns, and improve conversions.",
       "image": "https://insydz.com/assets/images/blog/ai-review-intelligence.png",
       "author": {
-        "@type": "Organization",
-        "name": "Insydz Team"
+        "@type": "Person",
+        "name": "Vikrant Singh",
+        "url": "https://insydz.com/author/vikrant-singh"
       },
       "publisher": {
         "@id": "https://insydz.com/#organization"

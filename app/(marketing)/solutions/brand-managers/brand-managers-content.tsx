@@ -18,10 +18,6 @@ import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
 
-
-
-
-
 // Navigation Menu Data
 type MenuItemWithBadge = {
   name: string;
@@ -161,7 +157,7 @@ export default function BrandManagersPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-600"></span>
                 </span>
-                <span className="text-sm font-medium text-purple-700">Built for Strategic Brand Leaders</span>
+                <span className="text-sm font-medium text-purple-700">Brand Monitoring Tool</span>
               </div>
 
               <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
@@ -185,18 +181,6 @@ export default function BrandManagersPage() {
                 <Button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} size="lg" variant="outline" className="border-2 border-purple-600 text-purple-700 dark:text-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20 font-semibold px-8 py-6 text-lg rounded-full">
                   See How It Works →
                 </Button>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-6 pt-4">
-                {[
-                  "Multi-brand portfolio tracking across Amazon & Flipkart",
-                  "Executive-ready reports one click, no manual work",
-                  "No credit card required"
-                ].map((t, i) => (
-                  <div key={i} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                    <CheckCircle2 className="w-5 h-5 text-green-600" /><span>{t}</span>
-                  </div>
-                ))}
               </div>
             </div>
 
@@ -308,9 +292,9 @@ export default function BrandManagersPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-                  <th className="text-left px-6 py-4 font-bold text-base">Feature</th>
-                  <th className="px-6 py-4 font-bold text-base text-left">Insydz</th>
-                  <th className="px-6 py-4 font-bold text-base text-left">Social Listening Tools</th>
+                  <th className="bg-black text-white text-left px-6 py-4 font-bold text-base">Feature</th>
+                  <th className="bg-black text-white text-left px-6 py-4 font-bold text-base">Insydz</th>
+                  <th className="bg-black text-white text-left px-6 py-4 font-bold text-base">Social Listening Tools</th>
                 </tr>
               </thead>
               <tbody>
@@ -338,7 +322,7 @@ export default function BrandManagersPage() {
 
           <div className="text-center">
             <button onClick={() => router.push('/compare/insydzvshelium')} className="text-purple-600 dark:text-purple-400 font-semibold hover:underline">
-              → See how Insydz compares as a marketplace brand intelligence platform
+            See how Insydz compares as a marketplace brand intelligence platform
             </button>
           </div>
         </div>
@@ -452,7 +436,7 @@ export default function BrandManagersPage() {
                 </p>
               </div>
               <button onClick={() => router.push('/features/ai-recommendations-feature')} className="text-orange-600 dark:text-orange-400 font-semibold text-sm hover:underline">
-                → Explore performance analytics software for brand leaders
+              Explore performance analytics software for brand leaders
               </button>
             </div>
 
@@ -535,38 +519,41 @@ export default function BrandManagersPage() {
                 {
                   num: "1", title: "Connect Your Brand Portfolio",
                   desc: "Add your brands and key competitors across Amazon and Flipkart. Insydz automatically tracks pricing, reviews, rankings, and market trends across your entire product catalogue and category.",
-                  icon: <Layers className="w-12 h-12 text-purple-600" />, bg: "bg-purple-100 dark:bg-purple-900/20"
+                  icon: <Layers className="w-6 h-6 text-purple-600" />, bg: "bg-purple-100 dark:bg-purple-900/20"
                 },
                 {
                   num: "2", title: "AI Analyses Market Dynamics",
                   desc: "Our AI continuously monitors market share shifts, pricing strategies, customer sentiment, and competitive positioning across your categories 24/7, in real time, in INR.",
-                  icon: <Brain className="w-12 h-12 text-pink-600 animate-pulse" />, bg: "bg-pink-100 dark:bg-pink-900/20"
+                  icon: <Brain className="w-6 h-6 text-pink-600 animate-pulse" />, bg: "bg-pink-100 dark:bg-pink-900/20"
                 },
                 {
                   num: "3", title: "Get Strategic Recommendations", desc: "Instead of raw data, you receive decision-ready intelligence:", icon: null, bg: null
                 }
               ].map((step, i) => (
                 <div key={i} className="bg-white dark:bg-gray-900 border-2 border-purple-300 dark:border-purple-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all">
-                  <div className="w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">{step.num}</div>
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">{step.num}</div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{step.title}</h3>
-                  {step.desc && <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">{step.desc}</p>}
+                  {step.desc && <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">{step.desc}
+                    {step.num === "1" && <div className="h-2" />}
+                    {step.num === "2" && <div className="h-8" />}
+  </p>}
                   {step.icon && (
-  <div className={`${step.bg} rounded-2xl p-4 flex items-center justify-center`}>
-    <div className="flex items-center justify-center w-12 h-12">
-      {step.icon}
-    </div>
-  </div>
-)}
+                <div className={`${step.bg} rounded-2xl p-4 flex items-center justify-center`}>
+                  <div className="flex items-center justify-center w-6 h-6">
+                    {step.icon}
+                  </div>
+                </div>
+              )}
                   {i === 2 && (
                     <div className="space-y-3 text-left">
                       {[
-                        { text: '"Competitor X launched at 25% discount"', color: "red" },
-                        { text: '"Brand Y market share up 12% this month"', color: "orange" },
-                        { text: '"Recommend 10% price adjustment on SKU Z"', color: "blue" }
+                        { text: 'Competitor X launched at 25% discount', color: "red" },
+                        { text: 'Brand Y market share up 12% this month', color: "orange" },
+                        { text: 'Recommend 10% price adjustment on SKU Z', color: "blue" }
                       ].map((item, j) => (
                         <div key={j} className={`flex items-start gap-2 bg-${item.color}-50 dark:bg-${item.color}-900/20 border border-${item.color}-300 dark:border-${item.color}-700 rounded-lg p-3`}>
-                          <CheckCircle2 className={`w-5 h-5 text-${item.color}-600 flex-shrink-0 mt-0.5`} />
-                          <span className="text-sm text-gray-800 dark:text-gray-300">{item.text}</span>
+                          <CheckCircle2 className={`w-3.5 h-3.5 text-${item.color}-600 flex-shrink-0 mt-0.5`} />
+                          <span className="text-xs text-gray-800 dark:text-gray-300">{item.text}</span>
                         </div>
                       ))}
                     </div>
@@ -711,6 +698,7 @@ export default function BrandManagersPage() {
               <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-6">
                 Building your brand on Indian marketplaces? Get competitor intelligence and market positioning data from day one. The free plan requires no credit card and gives new brand managers the visibility they need before making their first major strategic decision.
               </p>
+              <br />
               <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-full">
                 Start Free No Card Needed →
               </Button>
@@ -720,12 +708,13 @@ export default function BrandManagersPage() {
             <div className="bg-gradient-to-br from-purple-600 to-pink-700 border-2 border-purple-500 rounded-3xl p-8 text-center shadow-2xl hover:shadow-3xl transition-all relative overflow-hidden">
               <div className="absolute top-4 right-4 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full">Most Popular</div>
               <div className="w-14 h-14 bg-background opacity-100 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <TrendingUp className="w-7 h-7 text-white" />
+                <TrendingUp className="w-7 h-7 text-black" />
               </div>
               <h3 className="text-xl font-bold text-white mb-3">For Growing Brands</h3>
               <p className="text-white/80 text-sm leading-relaxed mb-6">
-                Managing ₹50L–₹5Cr/month GMV? At your brand's scale, every market share point is worth lakhs. The Growth Plan gives you full real-time brand tracking, AI-powered competitive intelligence, price elasticity analysis, and executive reporting.
+                Managing ₹50L–₹5Cr/month GMV? At your brand's scale, every market share point is worth lakhs. The Growth Plan gives you full real-time brand tracking, AI-powered competitive intelligence, price elasticity analysis, and executive reporting. 
               </p>
+              <br /><br />
               <Button onClick={() => router.push('/pricing')} className="w-full bg-white hover:bg-gray-100 text-purple-700 font-bold rounded-full">
                 Try Brand Growth Plan →
               </Button>

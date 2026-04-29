@@ -16,9 +16,6 @@ import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
 
-
-
-
 type MenuItemWithBadge = { name: string; icon: JSX.Element; badge?: string; route?: string; };
 type NavigationMenu = {
   Solutions: MenuItemWithBadge[]; "Use Cases": MenuItemWithBadge[]; Features: MenuItemWithBadge[];
@@ -315,14 +312,6 @@ export default function AnalyzeCustomerReviewsPage() {
                 <Button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} size="lg" variant="outline" className="border-2 border-purple-600 text-purple-700 dark:text-purple-500 hover:bg-purple-50 dark:hover:bg-purple-900/20 font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full">
                   See How It Works →
                 </Button>
-              </div>
-
-              <div className="flex flex-col gap-2 sm:gap-3 pt-1 sm:pt-2">
-                {["Reads Hindi, Hinglish & regional language reviews","250,000+ reviews analysed daily across Indian marketplaces","Analyse your listings and any competitor free to start"].map((t, i) => (
-                  <div key={i} className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" /><span>{t}</span>
-                  </div>
-                ))}
               </div>
             </div>
 

@@ -485,9 +485,9 @@ export default function FlipkartKeywordContent() {
           </p>
           <div className="flex flex-wrap items-center gap-6 pb-8 border-b border-gray-200 dark:border-gray-800 text-sm text-gray-500 dark:text-gray-400">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-950 flex items-center justify-center text-orange-600 font-bold">IT</div>
+              <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-950 flex items-center justify-center text-orange-600 font-bold">VS</div>
               <div>
-                <div className="text-gray-900 dark:text-gray-100 font-bold">Insydz Team</div>
+                <div className="text-gray-900 dark:text-gray-100 font-bold hover:text-orange-500 transition-colors cursor-pointer" onClick={() => router.push("/author/vikrant-singh")}>Vikrant Singh</div>
                 <div className="text-xs">Ecommerce Growth Experts</div>
               </div>
             </div>
