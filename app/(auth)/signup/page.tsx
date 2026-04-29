@@ -47,7 +47,7 @@ const BUSINESS_INTERESTS = [
   { id: "office", label: "Office Supplies" },
   { id: "pet", label: "Pet Supplies" },
 ];
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function Signup() {
   const router = useRouter();

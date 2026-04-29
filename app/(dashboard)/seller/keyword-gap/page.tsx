@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 // ── Cluster icon + colour map ─────────────────────────────────────────────────
 const CLUSTER_META: Record<string, { color: string; bg: string; border: string; emoji: string }> = {

@@ -17,6 +17,7 @@ from app.api.v1.routes.comparison_router import router as comparison_router
 from app.api.v1.routes.white_space import router as white_space_router
 from app.api.v1.routes.keyword_tracker_router import router as keyword_tracker_router
 from app.api.v1.routes.keyword_gap_router import router as keyword_gap_router
+from app.api.v1.routes.onboarding_router import router as onboarding_router
 
 api_router = APIRouter()
 
@@ -33,5 +34,6 @@ api_router.include_router(white_space_router, prefix="/white-space", tags=["whit
 api_router.include_router(keyword_tracker_router)
 api_router.include_router(comparison_router) 
 api_router.include_router(keyword_gap_router)
+api_router.include_router(onboarding_router, tags=["Onboarding"])
 api_router.include_router(payment_order_router, prefix="/payments", tags=["Payment Order"])
 api_router.include_router(seller_router, prefix="/seller", tags=["Seller Dashboard"])

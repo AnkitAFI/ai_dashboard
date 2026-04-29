@@ -28,7 +28,7 @@ const TARGET_MARKETS = [
   { value: "local", label: "Local (Mumbai Metro)" },
 ];
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 export default function Settings() {
   const { toast } = useToast();

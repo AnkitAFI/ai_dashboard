@@ -33,7 +33,7 @@ export default function Categories() {
 
   useEffect(() => {
     axios
-      .get("https://api.insydz.com/analytics/category")
+      .get("http://localhost:8000/analytics/category")
       .then((res) => setCategories(res.data.categories))
       .catch(() => setError("Failed to fetch category data"))
       .finally(() => setLoading(false));

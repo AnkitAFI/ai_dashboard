@@ -21,10 +21,9 @@ app = FastAPI(title="AI Dashboard API", version="1.0.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
         "https://*.razorpay.com",
         "http://localhost:3000",
+        "https://insydz.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],

@@ -92,7 +92,7 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
 }
 
 export default function ChartsGrid({ selectedSource }: { selectedSource: string }) {
-  const BASE_URL = "https://api.insydz.com";
+  const BASE_URL = "http://localhost:8000";
   const { filters } = useFilters();
   const { canAccessFeature } = useSubscriptionLimits();
   const router = useRouter();
@@ -365,7 +365,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
     const sentiment = flipkartSentiments[index];
     if (sentiment && sentiment.sentiment) {
       const sentimentType = sentiment.sentiment.toLowerCase();
-      let url = `/sentiment-products/flipkart/${sentimentType}`;
+      let url = `/sentiment-analysis/flipkart/${sentimentType}`;
       const params = new URLSearchParams();
 
       if (filters.category && filters.category !== "All Categories") {
@@ -402,7 +402,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
     const sentiment = amazonSentiments[index];
     if (sentiment && sentiment.sentiment) {
       const sentimentType = sentiment.sentiment.toLowerCase();
-      let url = `/sentiment-products/amazon/${sentimentType}`;
+      let url = `/sentiment-analysis/amazon/${sentimentType}`;
       const params = new URLSearchParams();
 
       if (filters.category && filters.category !== "All Categories") {

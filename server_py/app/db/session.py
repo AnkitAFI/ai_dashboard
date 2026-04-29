@@ -13,7 +13,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 # Database URL - get directly from environment
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://seller-db:Seller!db@122.176.108.253:5432/db1")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres123@localhost:5434/mydatabase")
 
 # Remove quotes if present in DATABASE_URL
 if DATABASE_URL.startswith('"') and DATABASE_URL.endswith('"'):
@@ -24,7 +24,7 @@ engine = create_engine(
     DATABASE_URL,
     poolclass=QueuePool,
     pool_size=5,
-    max_overflow=10,
+    max_overflow=5,
     pool_pre_ping=True,  # Verify connections before using them
     pool_recycle=3600,   # Recycle connections after 1 hour
     echo=False,

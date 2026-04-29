@@ -95,7 +95,7 @@ export default function ProductDetails() {
   const [activeTab, setActiveTab] = useState("1y");
   const [isAmazon, setIsAmazon] = useState(false);
 
-  const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+  const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
   useEffect(() => {
     if (!productName) return;
