@@ -59,7 +59,7 @@ const schemaBlogComparison = {
       "headline": "Insydz vs Helium 10 India – Which Tool is Better for Amazon Sellers?",
       "description": "Detailed comparison of Insydz and Helium 10 tools for Amazon India sellers.",
       "image": "https://insydz.com/assets/images/blog/insydz-vs-helium10.png",
-      "author": { "@type": "Organization", "name": "Insydz Team" },
+      "author": { "@type": "Person", "name": "Vikrant Singh", "url": "https://insydz.com/author/vikrant-singh" },
       "publisher": { "@id": "https://insydz.com/#organization" },
       "datePublished": "2025-01-01",
       "dateModified": "2025-01-01",

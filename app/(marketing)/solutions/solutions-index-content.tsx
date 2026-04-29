@@ -17,9 +17,6 @@ import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
 
-
-
-
 // ─── Schema Injection (runs once on mount) ───────────────────────────────────
 const SCHEMAS = [
   {
@@ -242,7 +239,6 @@ export default function SolutionsPage() {
         'AI-powered review mining across your category',
         'Pricing AI to protect margin without losing rank'
       ],
-      // microScenario: 'Ravi, a Delhi-based reseller doing ₹18L/month, stabilised his Buy Box hold rate by over 60% in the first month using Insydz price alerts.',
       outcome: 'Sell smarter, react faster, protect your margins.',
       link: '/solutions/amazon-sellers',
       color: 'from-orange-500 to-red-500'
@@ -272,8 +268,8 @@ export default function SolutionsPage() {
       whoItsFor: 'Agencies managing multiple seller accounts',
       pain: 'Managing 8 seller accounts with 8 separate Excel trackers 30% of every week on reporting instead of strategy.',
       problems: [
-        'Centralised multi-client reporting one dashboard, all clients, no manual pulls',
-        'Aggregated competitor data, keyword trends & review signals across accounts',
+        'Centralised multi-client reporting one dashboard, all clients and no manual pulls',
+        'Aggregated competitor data, keyword trends and review signals across accounts',
         'Data-backed reports clients can actually understand'
       ],
       microScenario: null,
@@ -429,15 +425,6 @@ export default function SolutionsPage() {
                 >
                   Find My Solution →
                 </Button>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-6 pt-4">
-                {['Amazon & Flipkart ready', 'Works for all seller types', 'No credit card required'].map(t => (
-                  <div key={t} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                    <CheckCircle2 className="w-5 h-5 text-green-600" />
-                    <span>{t}</span>
-                  </div>
-                ))}
               </div>
             </div>
 
@@ -878,11 +865,11 @@ export default function SolutionsPage() {
               }
             ].map((card, i) => (
               <div
-            key={i}
-            className="bg-background opacity-100 backdrop-blur-none border border-white/20 rounded-2xl p-6 text-left 
-            flex flex-col h-full"
-          >
-            <p className="font-bold text-white mb-2">{card.label}</p>
+                key={i}
+                className="bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all border border-white/20 rounded-2xl p-6 text-left 
+                flex flex-col h-full"
+              >
+                <p className="font-bold text-white mb-2">{card.label}</p>
 
             <p className="text-white/80 text-sm mb-4">
               {card.desc}

@@ -54,7 +54,7 @@ const schemaAmazonVsFlipkart = {
       "headline": "Amazon vs Flipkart: Which Marketplace is Better in India? (2026)",
       "description": "Complete 2026 guide for Indian sellers comparing Amazon.in vs Flipkart on commission fees, search traffic, seller competition, Buy Box mechanics, pricing behavior and profit margins.",
       "image": "https://insydz.com/assets/images/blog/amazon-vs-flipkart-india-sellers.png",
-      "author": { "@type": "Organization", "name": "Insydz Team" },
+      "author": { "@type": "Person", "name": "Vikrant Singh", "url": "https://insydz.com/author/vikrant-singh" },
       "publisher": { "@id": "https://insydz.com/#organization" },
       "datePublished": "2026-01-15",
       "dateModified": "2026-01-15",

@@ -24,7 +24,7 @@ engine = create_engine(
     DATABASE_URL,
     poolclass=QueuePool,
     pool_size=5,
-    max_overflow=10,
+    max_overflow=5,
     pool_pre_ping=True,  # Verify connections before using them
     pool_recycle=3600,   # Recycle connections after 1 hour
     echo=False,

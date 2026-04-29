@@ -17,9 +17,6 @@ import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
 
-
-
-
 type MenuItemWithBadge = {
   name: string;
   icon: JSX.Element;
@@ -500,14 +497,6 @@ const UseCasesPage = () => {
                 <Button onClick={() => document.getElementById('use-cases-grid')?.scrollIntoView({ behavior: 'smooth' })} size="lg" variant="outline" className="border-2 border-orange-600 text-orange-700 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full">
                   See How It Works →
                 </Button>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3 sm:gap-6 pt-2 sm:pt-4">
-                {["Amazon & Flipkart ready Indian data, INR pricing","Real seller problems solved not just dashboards","No credit card required"].map((t, i) => (
-                  <div key={i} className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" /><span>{t}</span>
-                  </div>
-                ))}
               </div>
             </div>
 

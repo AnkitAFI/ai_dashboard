@@ -53,7 +53,7 @@ const schemaReviewAnalysis = {
       "headline": "Best Review Analysis Tools for Indian Sellers: Complete Guide (2026)",
       "description": "Your customers are telling you exactly what to fix inside every review.",
       "image": "https://insydz.com/assets/images/blog/review-analysis-hero.png",
-      "author": { "@type": "Organization", "name": "Insydz Team" },
+      "author": { "@type": "Person", "name": "Vikrant Singh", "url": "https://insydz.com/author/vikrant-singh" },
       "publisher": { "@id": "https://insydz.com/#organization" },
       "datePublished": "2026-01-15",
       "dateModified": "2026-01-15",

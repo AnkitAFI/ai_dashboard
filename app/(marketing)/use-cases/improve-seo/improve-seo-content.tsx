@@ -14,9 +14,6 @@ import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
 
-
-
-
 // Navigation Menu Data
 type MenuItemWithBadge = {
   name: string;

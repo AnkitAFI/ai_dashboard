@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
@@ -27,22 +28,24 @@ import { toast } from "@/hooks/use-toast";
 import { useAlerts, Notification, NotificationDetails } from "@/components/dashboard/alert-context";
 import { useRouter } from "next/navigation";
 
-// Type definitions
-// Types are now imported from alert-context
-
 type AlertType = "price_drop" | "price_increase" | "review_spike" | "sales_spike" | "new_product" | string;
 type SeverityType = "high" | "medium" | "low" | string;
+
+// Maps onboarding marketplace id → filter table value
+const MARKETPLACE_FILTER_MAP: Record<string, string> = {
+  amazon_india: "amazon",
+  flipkart:     "flipkart",
+  both:         "amazon", // default to amazon when both
+};
 
 function DashboardContent() {
   const router = useRouter();
   const { selectedAlert, isAlertDialogOpen, closeAlertDialog } = useAlerts();
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
 
-  // Seller Mode state
   const [sidebarMode, setSidebarMode] = useState<string>("explorer");
   const [localSellerId, setLocalSellerId] = useState<string | null>(null);
 
-  // Subscription hooks
   const { limits, canAccessFeature, currentTier } = useSubscriptionLimits();
   const { updateSubscriptionInDB } = useSubscriptionSync();
   const { user, refreshUser } = useAuth();
@@ -52,12 +55,14 @@ function DashboardContent() {
 
   const selectedSource = filters.table || "amazon";
 
+  // Open onboarding if not completed
   useEffect(() => {
     if (user && !user.onboardingCompleted) {
       setIsOnboardingOpen(true);
     }
   }, [user]);
 
+  // Sync sidebar mode from localStorage
   useEffect(() => {
     const handleStorageChange = () => {
       if (typeof window !== "undefined") {
@@ -81,19 +86,50 @@ function DashboardContent() {
   const handleOnboardingComplete = async (data: OnboardingData) => {
     if (!user) return;
     try {
-      const res = await fetch(`${BASE_URL}/update-profile`, {
+      const res = await fetch(`${BASE_URL}/api/auth/onboarding`, {
         method: 'POST',
+        credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          email: user.email,
-          onboarding_data: data,
-          onboarding_completed: true
-        })
+          onboarding_goal:        data.onboarding_goal,
+          onboarding_marketplace: data.onboarding_marketplace,
+          onboarding_details:     data.onboarding_details,
+          seller_id:              data.seller_id || null,
+        }),
       });
+
       if (res.ok) {
         setIsOnboardingOpen(false);
         refreshUser();
-        toast({ title: "Profile updated", description: "Your dashboard is being personalized." });
+
+        // ── Apply selections as live dashboard filters ──
+        if (data.onboarding_goal === "new_seller") {
+          const tableValue = MARKETPLACE_FILTER_MAP[data.onboarding_marketplace] ?? "amazon";
+
+          const newFilters: Record<string, string> = {
+            table: tableValue,
+          };
+
+          // Apply category only if user actually picked one (not skipped)
+          if (data.onboarding_details && data.onboarding_details !== "general") {
+            newFilters.category = data.onboarding_details;
+          }
+
+          setFilters((prev: typeof filters) => ({ ...prev, ...newFilters }));
+
+          toast({
+            title: "Dashboard personalized!",
+            description: data.onboarding_details !== "general"
+              ? `Showing ${data.onboarding_details} on ${tableValue.charAt(0).toUpperCase() + tableValue.slice(1)}.`
+              : "Your dashboard is ready. Explore away!",
+          });
+        } else {
+          // existing_seller — no category filter, just show dashboard
+          toast({
+            title: "Profile updated",
+            description: "Your dashboard is being personalized.",
+          });
+        }
       }
     } catch (err) {
       console.error("Error updating profile:", err);
@@ -104,23 +140,23 @@ function DashboardContent() {
 
   const getAlertIcon = (type: AlertType) => {
     switch (type) {
-      case "price_drop": return <TrendingDown className="w-4 h-4 text-red-500" />;
+      case "price_drop":    return <TrendingDown className="w-4 h-4 text-red-500" />;
       case "price_increase": return <TrendingUp className="w-4 h-4 text-green-500" />;
-      case "review_spike": return <Star className="w-4 h-4 text-yellow-500" />;
-      case "sales_spike": return <TrendingUp className="w-4 h-4 text-blue-500" />;
-      case "new_product": return <Package className="w-4 h-4 text-purple-500" />;
-      case "upgrade": return <Crown className="w-4 h-4 text-amber-500" />;
-      default: return <AlertCircle className="w-4 h-4 text-gray-500" />;
+      case "review_spike":  return <Star className="w-4 h-4 text-yellow-500" />;
+      case "sales_spike":   return <TrendingUp className="w-4 h-4 text-blue-500" />;
+      case "new_product":   return <Package className="w-4 h-4 text-purple-500" />;
+      case "upgrade":       return <Crown className="w-4 h-4 text-amber-500" />;
+      default:              return <AlertCircle className="w-4 h-4 text-gray-500" />;
     }
   };
 
   const getSeverityColor = (severity: SeverityType) => {
     switch (severity) {
-      case "high": return "bg-red-100 text-red-800 border-red-200";
+      case "high":   return "bg-red-100 text-red-800 border-red-200";
       case "medium": return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "low": return "bg-blue-100 text-blue-800 border-blue-200";
-      case "info": return "bg-amber-100 text-amber-800 border-amber-200";
-      default: return "bg-gray-100 text-gray-800 border-gray-200";
+      case "low":    return "bg-blue-100 text-blue-800 border-blue-200";
+      case "info":   return "bg-amber-100 text-amber-800 border-amber-200";
+      default:       return "bg-gray-100 text-gray-800 border-gray-200";
     }
   };
 
@@ -129,7 +165,6 @@ function DashboardContent() {
       handleUpgradeClick();
       return;
     }
-    // Now handled by AlertContext global showAlertDetails
   };
 
   return (
@@ -140,7 +175,6 @@ function DashboardContent() {
         ) : (
           <SellerIdInput onSaved={(id) => {
             setLocalSellerId(id);
-            // In Next.js we might want to refresh the page or update context
             window.location.reload();
           }} />
         )
@@ -153,10 +187,10 @@ function DashboardContent() {
         </>
       )}
 
-      <OnboardingModal 
-        isOpen={isOnboardingOpen} 
+      <OnboardingModal
+        isOpen={isOnboardingOpen}
         onClose={() => setIsOnboardingOpen(false)}
-        onComplete={handleOnboardingComplete} 
+        onComplete={handleOnboardingComplete}
       />
     </div>
   );
@@ -164,7 +198,11 @@ function DashboardContent() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" />
+      </div>
+    }>
       <DashboardContent />
     </Suspense>
   );
