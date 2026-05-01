@@ -45,7 +45,7 @@ export default function SentimentProductsPage() {
 
   const source = (params?.source as string) || "flipkart";
   const sentiment = (params?.sentiment as string) || "positive";
-  const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+  const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
   const urlParams = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
   const categoryFilter = urlParams.get('category');

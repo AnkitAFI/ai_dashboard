@@ -58,7 +58,7 @@ const MARKETPLACE_API_MAP: Record<string, string> = {
 async function fetchCategories(marketplace: string): Promise<string[]> {
   const param = MARKETPLACE_API_MAP[marketplace] ?? "amazon";
   const res = await fetch(
-    `https://api.insydz.com/api/onboarding/categories?marketplace=${param}`
+    `http://localhost:8000/api/onboarding/categories?marketplace=${param}`
   );
   if (!res.ok) return [];
   const data = await res.json();
@@ -66,7 +66,7 @@ async function fetchCategories(marketplace: string): Promise<string[]> {
 }
 
 async function connectSellerAccount(sellerId: string, country: string): Promise<void> {
-  const response = await fetch("https://api.insydz.com/api/seller/update-seller-id", {
+  const response = await fetch("http://localhost:8000/api/seller/update-seller-id", {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },

@@ -12,7 +12,7 @@
 // import { Input } from "@/components/ui/input";
 // import { cn } from "@/lib/utils";
 
-// const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+// const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 // export default function SellerProductsPage() {
 //   const { user, refreshUser } = useAuth();
@@ -302,6 +302,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { useSelectedProduct } from "@/lib/selected-product-context";
 
 function SellerProductsContent() {
   const { user, refreshUser } = useAuth();
@@ -320,7 +321,7 @@ function SellerProductsContent() {
     if (!activeSellerId) return;
     setLoading(true);
     try {
-      const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+      const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
       const resp = await fetch(
         `${BASE_URL}/api/seller/products?seller_id=${activeSellerId}`,
         { credentials: "include" }
@@ -340,6 +341,8 @@ function SellerProductsContent() {
     if (activeSellerId) fetchProducts();
   }, [activeSellerId]);
 
+  const { setSelected } = useSelectedProduct();
+
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
       p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -355,6 +358,7 @@ function SellerProductsContent() {
 
   const handleRowClick = (p: any) => {
     setSelectedAsin(p.asin);
+    setSelected({ asin: p.asin, sellerId: activeSellerId || "" });
     const params = new URLSearchParams({ asin: p.asin, seller_id: activeSellerId || "" });
     // Navigate to price comparison by default; user can switch tabs there
     router.push(`/seller/price-comparison?${params}`);

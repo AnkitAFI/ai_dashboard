@@ -19,7 +19,7 @@ import {
   Package, Flame, SortAsc, ChevronRight, Bookmark,
 } from "lucide-react";
 
-const API = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com") + "/api";
+const API = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000") + "/api";
 
 const CHART_STYLE = {
   backgroundColor: "rgba(255,255,255,0.97)",

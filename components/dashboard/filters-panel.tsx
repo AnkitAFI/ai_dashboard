@@ -77,7 +77,7 @@ export default function FiltersPanel() {
   // ------------------ Fetch Categories ------------------
   const fetchCategories = async (table: string) => {
     try {
-      const res = await fetch(`https://api.insydz.com/categories?table=${table}`);
+      const res = await fetch(`http://localhost:8000/categories?table=${table}`);
       const data = await res.json();
       const cats = data.map((c: any) => c.category);
 
