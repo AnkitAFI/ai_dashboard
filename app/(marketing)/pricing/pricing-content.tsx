@@ -818,7 +818,7 @@ export default function PricingContent() {
       </section>
 
       {/* Pricing Cards Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 -mt-20 relative z-20">
+      <section className="pt-12 pb-12 px-4 sm:px-6 lg:px-8 -mt-20 relative z-20">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {SUBSCRIPTION_PLANS.map((plan) => (
             <Card 
@@ -881,8 +881,8 @@ export default function PricingContent() {
                   <Button 
                     className={`w-full h-12 rounded-xl font-bold text-base transition-all ${
                       plan.isPopular 
-                        ? 'bg-orange-600 hover:bg-orange-700 shadow-lg shadow-orange-600/20' 
-                        : 'bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100'
+                        ? 'bg-orange-600 hover:bg-orange-700 text-white shadow-lg shadow-orange-600/20' 
+                        : 'bg-slate-900 text-white hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100'
                     }`}
                     onClick={() => router.push("/login")}
                   >
@@ -897,7 +897,7 @@ export default function PricingContent() {
       </section>
 
       {/* Comparison Table Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-gray-900/50">
+      <section className="pt-12 pb-12 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-gray-900/50">
         <div className="max-w-4xl mx-auto text-center mb-16">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Compare Features</h2>
           <p className="text-slate-600 dark:text-slate-400">Detailed breakdown of what you get with each plan.</p>
@@ -959,9 +959,9 @@ export default function PricingContent() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-950">
+      <section className="pt-12 pb-12 px-4 sm:px-6 lg:px-8 bg-white dark:bg-gray-950">
         <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-16">
+          <div className="text-center mb-10">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Frequently Asked Questions</h2>
             <p className="text-slate-600 dark:text-slate-400">Everything you need to know about our pricing and plans.</p>
           </div>
@@ -982,7 +982,7 @@ export default function PricingContent() {
       </section>
 
       {/* Final CTA Section */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-orange-600 to-red-600 text-white overflow-hidden relative">
+      <section className="pt-12 pb-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-orange-500 to-red-500 text-white overflow-hidden relative">
         <div className="absolute top-0 left-0 w-full h-full opacity-10">
           <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
