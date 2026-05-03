@@ -1,40 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
 export default function PrivacyPolicyContent() {
-  const router = useRouter();
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-900 dark:via-background dark:to-gray-900">
-      {/* Header */}
-      <header className="bg-background dark:bg-gray-900/80 backdrop-blur-none shadow-lg sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <img 
-                src="/logo.png" 
-                alt="Insydz Logo" 
-                className="w-10 h-10 rounded-xl object-contain"
-              />
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Insydz
-              </span>
-            </div>
-            <Button
-              onClick={() => router.push("/")}
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Home
-            </Button>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-gray-900 dark:via-background dark:to-gray-900 pt-32">
       {/* Content */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
@@ -238,15 +206,6 @@ export default function PrivacyPolicyContent() {
           </section>
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 dark:bg-black text-white py-8 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-gray-400">
-            © 2026 <span className="text-purple-400 font-bold">Insydz</span>. All rights reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }

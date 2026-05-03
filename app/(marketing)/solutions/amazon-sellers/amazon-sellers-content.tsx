@@ -1,97 +1,17 @@
 "use client";
 
-
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { 
   TrendingDown, ArrowRight, CheckCircle2, Target, Zap, 
   Bell, TrendingUp, MessageCircle, Search, Package, 
   BarChart3, ChevronRight, Star, AlertCircle, Clock,
-  ShoppingBag, IndianRupee, Smartphone, Menu, X, Sun, Moon,
-  ChevronDown, Store, Briefcase, Users, Code, Globe, Trophy,
-  ArrowLeft, BookOpen, Video, FileText,
-  Flame,
-  Presentation, LayoutGrid, Lightbulb, Facebook, Instagram, Linkedin, Twitter
+  ShoppingBag, Smartphone, Sun, Moon, ChevronDown, Lightbulb
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
-
-// ─── Navigation Menu Data ─────────────────────────────────────────────────────
-type MenuItemWithBadge = {
-  name: string;
-  icon: JSX.Element;
-  badge?: string;
-  route?: string;
-};
-
-type NavigationMenu = {
-  Solutions: MenuItemWithBadge[];
-  "Use Cases": MenuItemWithBadge[];
-  Features: MenuItemWithBadge[];
-  "Free Tools": MenuItemWithBadge[];
-  Resources: MenuItemWithBadge[];
-  Integrations: MenuItemWithBadge[];
-  Compare: MenuItemWithBadge[];
-  About: MenuItemWithBadge[];
-};
-
-const navigationMenu: NavigationMenu = {
-  Solutions: [
-    { name: "All Solutions (Overview)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions" },
-    { name: "For Amazon Sellers (India)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions/amazon-sellers" },
-    { name: "For Flipkart Sellers", icon: <Store className="w-4 h-4" />, route: "/solutions/flipkart-sellers" },
-    { name: "For E-commerce Agencies", icon: <Briefcase className="w-4 h-4" />, route: "/solutions/ecommerce-agencies" },
-    { name: "For Brand Managers", icon: <Users className="w-4 h-4" />, route: "/solutions/brand-managers" },
-  ],
-  "Use Cases": [
-    { name: "All Use Cases", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases" },
-    { name: "Track Competitor Prices", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases/track-competitor-prices" },
-    { name: "Find Profitable Products", icon: <Target className="w-4 h-4" />, route: "/use-cases/find-profitable-products" },
-    { name: "Analyze Customer Reviews", icon: <MessageCircle className="w-4 h-4" />, route: "/use-cases/analyze-customer-reviews" },
-    { name: "Improve Amazon & Flipkart SEO", icon: <Search className="w-4 h-4" />, route: "/use-cases/improve-seo" },
-    { name: "Avoid Stockouts & Missed Sales", icon: <Package className="w-4 h-4" />, route: "/use-cases/avoid-stockouts" },
-  ],
-  Features: [
-    { name: "All Features", icon: <LayoutGrid className="w-4 h-4" />, route: "/features" },
-    { name: "Competitor Price Tracking", icon: <TrendingDown className="w-4 h-4" />, route: "/features/competitor-price-tracking-feature" },
-    { name: "Review Analytics", icon: <MessageCircle className="w-4 h-4" />, route: "/features/review-analytics-feature" },
-    { name: "Price Optimization", icon: <TrendingUp className="w-4 h-4" />, route: "/features/price-optimization-feature" },
-    { name: "Keyword & Rank Tracking", icon: <Search className="w-4 h-4" />, route: "/features/keyword-rank-tracking-feature" },
-    { name: "Product Research", icon: <Package className="w-4 h-4" />, route: "/features/product-research-feature" },
-    { name: "AI Recommendations", icon: <Zap className="w-4 h-4" />, route: "/features/ai-recommendations-feature" },
-    { name: "WhatsApp Alerts", icon: <Bell className="w-4 h-4" />, badge: "NEW", route: "/features/whatsapp-alerts-feature" },
-    { name: "Festive Trend Intelligence", icon: <Flame className="w-4 h-4" />, badge: "UPCOMING", route: "/features/festive-trend-feature" },
-  ],
-  "Free Tools": [
-    { name: "Free Amazon Product Analyzer", icon: <BarChart3 className="w-4 h-4" />, route: "/free-tools/free-amazon-product-analyzer" },
-    { name: "Free Review Sentiment Checker", icon: <MessageCircle className="w-4 h-4" />, route: "/free-tools/free-review-sentiment-checker" },
-    { name: "Free Competitor Price Checker", icon: <TrendingDown className="w-4 h-4" />, route: "/free-tools/free-competitor-price-checker" },
-    { name: "Free Keyword Rank Checker", icon: <Search className="w-4 h-4" />, badge: "NEW", route: "/free-tools/free-keyword-rank-checker" },
-  ],
-  Resources: [
-    { name: "Expert Blog", icon: <BookOpen className="w-4 h-4" />, route: "/resources/expert-blog" },
-  ],
-  Integrations: [
-    { name: "Amazon", icon: <ShoppingBag className="w-4 h-4" /> },
-    { name: "Flipkart", icon: <Store className="w-4 h-4" /> },
-    { name: "Shopify", icon: <Globe className="w-4 h-4" /> },
-    { name: "API Documentation", icon: <Code className="w-4 h-4" /> },
-  ],
-  Compare: [
-    { name: "Insydz vs Helium 10", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvshelium" },
-    { name: "Insydz vs Jungle Scout", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsjunglescout" },
-    { name: "Insydz vs Viral Launch", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsvirallaunch" },
-  ],
-  About: [
-    { name: "Our Vision", icon: <Presentation className="w-4 h-4" />, route: "/about/our-vision" },
-    { name: "Careers", icon: <Globe className="w-4 h-4" />, route: "/about/careers" },
-    { name: "Contact Us", icon: <Users className="w-4 h-4" />, route: "/about/contact-us" },
-  ],
-};
-
-
 
 // ─── Page Data ────────────────────────────────────────────────────────────────
 
@@ -219,369 +139,14 @@ const faqs = [
   },
 ];
 
-
-export default function AmazonSellersPage() {
+export default function AmazonSellersContent() {
   const router = useRouter();
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
-  const [scrolled, setScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
-
-  useEffect(() => {
-    const handleScroll = () => { setScrolled(window.scrollY > 20); };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const html = document.documentElement;
-    isDarkMode ? html.classList.add("dark") : html.classList.remove("dark");
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setActiveDropdown(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleGetStarted = () => { router.push("/login"); };
-  const toggleMobileMenu = (menuName: string) => {
-    setMobileActiveMenu(mobileActiveMenu === menuName ? null : menuName);
-  };
-  const handleMenuItemClick = (item: MenuItemWithBadge) => {
-    if (item.route) { router.push(item.route); setActiveDropdown(null); setIsMenuOpen(false); }
-  };
-  const scrollToSection = (sectionId: string) => {
-    router.push("/");
-    setTimeout(() => {
-      const element = document.getElementById(sectionId);
-      if (element) element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }, 100);
-  };
+  const handleGetStarted = () => router.push("/signup");
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
-      
-      {/* ── NAVIGATION ────────────────────────────────────────────────────────── */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-
-            {/* Logo */}
-            <div className="flex items-center space-x-3">
-              <a href="/" className="flex items-center space-x-1 group">
-  <div className="relative">
-    <img 
-      src="/logo.png" 
-      alt="Insydz Logo" 
-      className="w-10 h-auto shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain"
-    />
-    <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse"></div>
-  </div>
-  <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-    Insydz
-  </span>
-</a>              
-            </div>
-
-            {/* Desktop Menu */}
-            <div className="hidden lg:flex items-center space-x-3" ref={dropdownRef}>
-              
-
-              {/* Solutions — highlighted orange */}
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown("Solutions")}
-                  className="px-3 py-2 text-sm text-orange-600 dark:text-orange-500 hover:text-orange-700 dark:hover:text-orange-400 font-semibold rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all flex items-center gap-1"
-                >Solutions <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === "Solutions" ? "rotate-180" : ""}`} /></button>
-                {activeDropdown === "Solutions" && (
-                  <div onMouseLeave={() => setActiveDropdown(null)}
-                    className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
-                  >
-                    {navigationMenu.Solutions.map((item, i) => (
-  item.route ? (
-    <Link href={item.route} key={i} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }}
-      className="w-full px-4 py-3 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-colors flex items-center gap-3 group"
-    >
-      <span className="text-orange-600 dark:text-orange-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-      <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-orange-600 dark:group-hover:text-orange-400 flex-1">{item.name}</span>
-    </Link>
-  ) : (
-    <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-      <span className="text-orange-600 dark:text-orange-400">{item.icon}</span>
-      <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-    </span>
-  )
-))}
-                  </div>
-                )}
-              </div>
-
-              {/* Use Cases */}
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown("Use Cases")}
-                  className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1"
-                >Use Cases <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === "Use Cases" ? "rotate-180" : ""}`} /></button>
-                {activeDropdown === "Use Cases" && (
-                  <div onMouseLeave={() => setActiveDropdown(null)}
-                    className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
-                  >
-                    {navigationMenu["Use Cases"].map((item, i) => (
-  item.route ? (
-    <Link href={item.route} key={i} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }}
-      className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group"
-    >
-      <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-      <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400">{item.name}</span>
-    </Link>
-  ) : (
-    <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-      <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-      <span className="text-sm text-gray-700 dark:text-gray-300">{item.name}</span>
-    </span>
-  )
-))}
-                  </div>
-                )}
-              </div>
-
-              {/* Features */}
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown("Features")}
-                  className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1"
-                >Features <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === "Features" ? "rotate-180" : ""}`} /></button>
-                {activeDropdown === "Features" && (
-                  <div onMouseLeave={() => setActiveDropdown(null)}
-                    className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
-                  >
-                    {navigationMenu.Features.map((item, i) => (
-  item.route ? (
-    <Link href={item.route} key={i} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }}
-      className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group"
-    >
-      <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-      <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">{item.name}</span>
-      {item.badge && (
-        <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold">{item.badge}</span>
-      )}
-    </Link>
-  ) : (
-    <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-      <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-      <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-    </span>
-  )
-))}
-                  </div>
-                )}
-              </div>
-
-              <Link href="/pricing" onMouseEnter={() => setActiveDropdown(null)}
-  className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all"
->
-  Pricing
-</Link>
-              {/* Free Tools */}
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown("Free Tools")}
-                  className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1"
-                >Free Tools <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === "Free Tools" ? "rotate-180" : ""}`} /></button>
-                {activeDropdown === "Free Tools" && (
-                  <div onMouseLeave={() => setActiveDropdown(null)}
-                    className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
-                  >
-                    {navigationMenu["Free Tools"].map((item, i) => (
-  item.route ? (
-    <Link href={item.route} key={i} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }}
-      className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group"
-    >
-      <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-      <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">{item.name}</span>
-      {item.badge && (
-        <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold">{item.badge}</span>
-      )}
-    </Link>
-  ) : (
-    <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-      <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-      <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-    </span>
-  )
-))}
-                  </div>
-                )}
-              </div>
-
-              {/* Compare */}
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown("Compare")}
-                  className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1"
-                >Compare <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === "Compare" ? "rotate-180" : ""}`} /></button>
-                {activeDropdown === "Compare" && (
-                  <div onMouseLeave={() => setActiveDropdown(null)}
-                    className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
-                  >
-                    {navigationMenu["Compare"].map((item, i) => (
-  item.route ? (
-    <Link href={item.route} key={i} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }}
-      className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group"
-    >
-      <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-      <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">{item.name}</span>
-      {item.badge && (
-        <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold">{item.badge}</span>
-      )}
-    </Link>
-  ) : (
-    <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-      <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-      <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-    </span>
-  )
-))}
-                  </div>
-                )}
-              </div>
-
-              {/* Resources */}
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown("Resources")}
-                  className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1"
-                >Resources <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === "Resources" ? "rotate-180" : ""}`} /></button>
-                {activeDropdown === "Resources" && (
-                  <div onMouseLeave={() => setActiveDropdown(null)}
-                    className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
-                  >
-                    {navigationMenu["Resources"].map((item, i) => (
-  item.route ? (
-    <Link href={item.route} key={i} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }}
-      className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group"
-    >
-      <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-      <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">{item.name}</span>
-      {item.badge && (
-        <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold">{item.badge}</span>
-      )}
-    </Link>
-  ) : (
-    <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-      <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-      <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-    </span>
-  )
-))}
-                  </div>
-                )}
-              </div>
-
-              {/* About */}
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown("About")}
-                  className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1"
-                >About <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === "About" ? "rotate-180" : ""}`} /></button>
-                {activeDropdown === "About" && (
-                  <div onMouseLeave={() => setActiveDropdown(null)}
-                    className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
-                  >
-                    {navigationMenu["About"].map((item, i) => (
-  item.route ? (
-    <Link href={item.route} key={i} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }}
-      className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group"
-    >
-      <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-      <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">{item.name}</span>
-      {item.badge && (
-        <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold">{item.badge}</span>
-      )}
-    </Link>
-  ) : (
-    <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-      <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-      <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-    </span>
-  )
-))}
-                  </div>
-                )}
-              </div>
-
-              <Link href="/login" onMouseEnter={() => setActiveDropdown(null)} className="ml-2 text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-  Login
-</Link>
-              <button className="ml-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" onClick={() => setIsDarkMode(!isDarkMode)}>
-                {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-800" />}
-              </button>
-            </div>
-
-            <button className="lg:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100vh-5rem)] overflow-y-auto">
-            <div className="px-4 py-4 space-y-2">
-              <a href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium">
-  <ArrowLeft className="w-4 h-4" /> Back to Home
-</a>
-              {(["Solutions", "Use Cases", "Features", "Free Tools", "Compare", "Resources", "About"] as (keyof NavigationMenu)[]).map((key) => (
-                <div key={key}>
-                  <button onClick={() => toggleMobileMenu(key)}
-                    className={`flex items-center justify-between w-full px-4 py-2 rounded-lg font-medium ${
-                      key === "Solutions"
-                        ? "text-orange-600 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                    }`}
-                  >
-                    {key}
-                    <ChevronDown className={`w-4 h-4 transition-transform ${mobileActiveMenu === key ? "rotate-180" : ""}`} />
-                  </button>
-                  {mobileActiveMenu === key && (
-                    <div className="ml-4 mt-2 space-y-1">
-                      {(navigationMenu[key] as MenuItemWithBadge[]).map((item, i) => (
-  item.route ? (
-    <Link href={item.route} key={i} onClick={() => setIsMenuOpen(false)}
-      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg"
-    >
-      {item.icon} {item.name}
-      {item.badge && <span className="ml-auto text-xs bg-purple-600 text-white px-2 py-0.5 rounded-full">{item.badge}</span>}
-    </Link>
-  ) : (
-    <span key={i} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg opacity-60">
-      {item.icon} {item.name}
-    </span>
-  )
-))}
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              <Link href="/pricing" onClick={() => setIsMenuOpen(false)} className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium">
-  Pricing
-</Link>
-              <a href="/login" onClick={() => setIsMenuOpen(false)} className="w-full mt-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-center py-2 rounded-lg font-semibold block">
-  Login
-</a>
-              <button className="mt-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors w-full flex justify-center items-center" onClick={() => setIsDarkMode(!isDarkMode)}>
-                {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-800" />}
-              </button>
-            </div>
-          </div>
-        )}
-      </nav>
-
+    <div className="min-h-screen bg-white dark:bg-gray-950 pt-20">
       {/* ── SECTION 1: HERO ──────────────────────────────────────────────────── */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-red-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
         <div className="absolute inset-0 opacity-30">
@@ -600,7 +165,7 @@ export default function AmazonSellersPage() {
                 <span className="text-sm font-medium text-orange-700">India's #1 Amazon Seller Analytics Tool 🇮🇳</span>
               </div>
 
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
+              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
                 Stop Guessing on Amazon.
                 <br />
                 <span className="bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 bg-clip-text text-transparent">
@@ -617,7 +182,7 @@ export default function AmazonSellersPage() {
 
               <div className="flex flex-col sm:flex-row gap-4 w-full">
                 <Button onClick={handleGetStarted} size="lg"
-                  className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group"
+                  className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-12 py-5 text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group"
                 >
                   Start Free for Amazon Sellers
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
@@ -625,7 +190,7 @@ export default function AmazonSellersPage() {
                 <Button
                   onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
                   size="lg" variant="outline"
-                  className="w-full sm:w-auto border-2 border-orange-600 text-orange-700 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full"
+                  className="w-full sm:w-auto border-2 border-orange-600 text-orange-700 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold px-8 py-5 text-lg rounded-full transition-all"
                 >
                   See How It Works →
                 </Button>
@@ -634,15 +199,15 @@ export default function AmazonSellersPage() {
 
             {/* Hero Visual */}
             <div className="relative">
-              <div className="relative bg-white dark:bg-gray-900 border-2 border-orange-200 dark:border-orange-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
-                <div className="space-y-4">
+              <div className="relative bg-white dark:bg-gray-900 border-2 border-orange-200 dark:border-orange-800 rounded-3xl p-8 shadow-2xl transition-all hover:shadow-orange-500/10">
+                <div className="space-y-6">
                   <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-700 rounded-2xl p-4">
                     <div className="flex items-start gap-4">
-                      <div className="w-14 h-14 sm:w-20 sm:h-20 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <div className="w-16 h-16 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
                         <ShoppingBag className="w-10 h-10 text-white" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-gray-900 dark:text-white mb-1">Premium Wireless Earbuds</h3>
+                        <h3 className="font-bold text-gray-900 dark:text-white mb-1 leading-relaxed">Premium Wireless Earbuds</h3>
                         <div className="flex items-center gap-2">
                           <div className="flex items-center">
                             {[...Array(5)].map((_, i) => (
@@ -655,31 +220,31 @@ export default function AmazonSellersPage() {
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-l-4 border-red-500 rounded-r-2xl p-4 shadow-md">
+                  <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-l-4 border-red-500 rounded-r-2xl p-5 shadow-md">
                     <div className="flex items-start gap-3">
                       <TrendingDown className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
                       <div>
-                        <p className="font-bold text-gray-900 dark:text-white">Competitor Price Drop Alert!</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300">Top competitor reduced price by <span className="text-red-600 font-bold">12%</span></p>
+                        <p className="font-bold text-gray-900 dark:text-white leading-relaxed">Competitor Price Drop Alert!</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">Top competitor reduced price by <span className="text-red-600 font-bold">12%</span></p>
                         <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">₹1,999 → ₹1,759</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-400 rounded-2xl p-4">
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-400 rounded-2xl p-4 shadow-sm">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
                         <Smartphone className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <p className="font-bold text-gray-900 dark:text-white text-sm">WhatsApp Alert Sent</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">Instant notification on your phone</p>
+                        <p className="font-bold text-gray-900 dark:text-white text-sm leading-relaxed">WhatsApp Alert Sent</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed font-medium">Instant notification on your phone</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="absolute -top-4 right-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl px-4 py-2 shadow-xl">
-                  <p className="text-white font-bold text-sm">Live Tracking</p>
+                  <p className="text-white font-bold text-sm leading-relaxed">Live Tracking</p>
                 </div>
               </div>
             </div>
@@ -690,8 +255,8 @@ export default function AmazonSellersPage() {
       {/* ── SECTION 2: PAIN POINTS ────────────────────────────────────────────── */}
       <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white leading-relaxed">
               Why Most Amazon Sellers
               <br />
               <span className="text-red-600">Lose Money</span> (Without Realising It)
@@ -701,27 +266,27 @@ export default function AmazonSellersPage() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
             {[
               { icon: <TrendingDown className="w-8 h-8" />, title: "You don't know when competitors change prices until it's too late", color: "from-red-500 to-orange-500" },
               { icon: <MessageCircle className="w-8 h-8" />, title: "You discover bad reviews days after your sales have already dropped", color: "from-orange-500 to-yellow-500" },
               { icon: <Search className="w-8 h-8" />, title: "You guess keywords instead of tracking where your rankings actually stand", color: "from-yellow-500 to-orange-500" },
               { icon: <Clock className="w-8 h-8" />, title: "Manual tracking wastes 8–12 hours every week that should go toward growing", color: "from-orange-500 to-red-500" },
             ].map((pain, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 hover:border-orange-400 hover:shadow-lg transition-all group">
-                <div className={`w-16 h-16 bg-gradient-to-br ${pain.color} rounded-2xl flex items-center justify-center mb-4 text-white group-hover:scale-110 transition-transform shadow-md`}>
+              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-8 hover:border-orange-400 hover:shadow-xl transition-all group shadow-sm flex flex-col h-full">
+                <div className={`w-16 h-16 bg-gradient-to-br ${pain.color} rounded-2xl flex items-center justify-center mb-6 text-white group-hover:scale-110 transition-transform shadow-md flex-shrink-0`}>
                   {pain.icon}
                 </div>
-                <p className="text-gray-700 dark:text-gray-300 font-medium leading-relaxed">{pain.title}</p>
+                <p className="text-gray-900 dark:text-white font-bold leading-relaxed">{pain.title}</p>
               </div>
             ))}
           </div>
 
           <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-3xl p-8 text-center shadow-lg">
-            <p className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <p className="text-2xl font-black text-gray-900 dark:text-white mb-2 leading-relaxed">
               Most Amazon sellers lose <span className="text-red-600">15–30% of profit every month</span>
             </p>
-            <p className="text-gray-700 dark:text-gray-300 text-lg">
+            <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed font-medium">
               due to late pricing decisions, ignored review signals, and poor keyword visibility <br />none of which show up in your Seller Central dashboard.
             </p>
           </div>
@@ -731,8 +296,8 @@ export default function AmazonSellersPage() {
       {/* ── SECTION 3: DIFFERENTIATION / COMPARISON ──────────────────────────── */}
       <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white leading-relaxed">
               Foreign Tools Were
               <br />
               <span className="text-red-600">Never Built for Indian Sellers</span>
@@ -742,38 +307,38 @@ export default function AmazonSellersPage() {
             </p>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border-2 border-gray-200 dark:border-gray-700 shadow-xl">
+          <div className="overflow-hidden rounded-3xl border-2 border-gray-200 dark:border-gray-700 shadow-2xl">
             <div className="grid grid-cols-3">
-              <div className="bg-gray-100 dark:bg-gray-800 px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700">
-                <p className="font-bold text-gray-700 dark:text-gray-300 text-sm">Feature</p>
+              <div className="bg-gray-100 dark:bg-gray-800 px-6 py-5 border-b-2 border-gray-200 dark:border-gray-700">
+                <p className="font-black text-gray-700 dark:text-gray-300 text-sm uppercase tracking-wider">Feature</p>
               </div>
-              <div className="bg-orange-500 px-6 py-4 border-b-2 border-orange-400">
-                <p className="font-bold text-white text-sm text-left">✓ Insydz</p>
+              <div className="bg-orange-500 px-6 py-5 border-b-2 border-orange-400 shadow-inner">
+                <p className="font-black text-white text-sm text-left uppercase tracking-wider">✓ Insydz</p>
               </div>
-              <div className="bg-gray-100 dark:bg-gray-800 px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700">
-                <p className="font-bold text-gray-500 text-sm text-left">Helium 10 / Jungle Scout</p>
+              <div className="bg-gray-100 dark:bg-gray-800 px-6 py-5 border-b-2 border-gray-200 dark:border-gray-700">
+                <p className="font-black text-gray-500 text-sm text-left uppercase tracking-wider">Global Tools</p>
               </div>
 
               {comparisonRows.map((row, i) => (
-                <>
-                  <div key={`f-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">{row.feature}</p>
+                <div key={i} className="contents">
+                  <div className={`px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex items-center ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}>
+                    <p className="text-sm text-gray-900 dark:text-gray-300 font-bold leading-relaxed">{row.feature}</p>
                   </div>
-                  <div key={`i-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 text-left ${i % 2 === 0 ? "bg-orange-50 dark:bg-orange-900/10" : "bg-orange-50/50 dark:bg-orange-900/10"}`}>
-                    <p className="text-sm text-orange-700 dark:text-orange-400 font-semibold">{row.insydz}</p>
+                  <div className={`px-6 py-5 border-b border-gray-100 dark:border-gray-800 text-left flex items-center ${i % 2 === 0 ? "bg-orange-50 dark:bg-orange-900/10" : "bg-orange-50/50 dark:bg-orange-900/10"}`}>
+                    <p className="text-sm text-orange-700 dark:text-orange-400 font-black leading-relaxed">{row.insydz}</p>
                   </div>
-                  <div key={`o-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 text-left ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}>
-                    <p className="text-sm text-gray-500">{row.others}</p>
+                  <div className={`px-6 py-5 border-b border-gray-100 dark:border-gray-800 text-left flex items-center ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}>
+                    <p className="text-sm text-gray-500 font-medium leading-relaxed">{row.others}</p>
                   </div>
-                </>
+                </div>
               ))}
             </div>
           </div>
 
-          <p className="text-center mt-6 text-sm text-gray-500">
-            <button onClick={() => router.push("/compare/insydzvshelium")} className="text-orange-600 hover:text-orange-700 font-medium">
-              See full Insydz vs Helium 10 comparison
-            </button>
+          <p className="text-center mt-8 text-sm">
+            <Link href="/compare/insydzvshelium" className="text-orange-600 hover:text-orange-700 font-black underline underline-offset-4 decoration-2">
+              See full Helium 10 comparison →
+            </Link>
           </p>
         </div>
       </section>
@@ -782,44 +347,46 @@ export default function AmazonSellersPage() {
       <section className="py-20 px-4 bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-900 dark:to-gray-800">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white leading-relaxed">
               Your Amazon Seller Intelligence Brain
               <br />
               <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Built for India</span>
             </h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Insydz is not another dashboard. It's an AI-powered decision engine. Instead of showing you numbers,
-              <span className="text-orange-700 font-semibold"> it tells you exactly what to do and when to do it.</span>
+              <span className="text-orange-700 dark:text-orange-400 font-bold"> it tells you exactly what to do and when to do it.</span>
             </p>
           </div>
 
           <div className="space-y-12">
             {coreFeatures.map((feat, i) => (
               <div key={i} className="grid lg:grid-cols-2 gap-10 items-start">
-                <div className={`bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-3xl p-8 shadow-xl hover:border-orange-400 transition-all ${i % 2 === 1 ? "lg:order-2" : ""}`}>
-                  <div className={`w-16 h-16 bg-gradient-to-br ${feat.color} rounded-2xl flex items-center justify-center mb-6 text-white shadow-lg`}>
+                <div className={`bg-white dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-8 shadow-xl hover:border-orange-400 transition-all group ${i % 2 === 1 ? "lg:order-2" : ""}`}>
+                  <div className={`w-16 h-16 bg-gradient-to-br ${feat.color} rounded-2xl flex items-center justify-center mb-6 text-white shadow-lg group-hover:scale-110 transition-transform`}>
                     {feat.icon}
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">{feat.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-5">{feat.desc}</p>
-                  <ul className="space-y-2 mb-5">
+                  <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3 leading-relaxed">{feat.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6 font-medium">{feat.desc}</p>
+                  <ul className="space-y-3 mb-8">
                     {feat.bullets.map((b, j) => (
-                      <li key={j} className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-green-600 mt-1 flex-shrink-0" />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">{b}</span>
+                      <li key={j} className="flex items-start gap-3">
+                        <CheckCircle2 className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-sm text-gray-700 dark:text-gray-300 font-medium">{b}</span>
                       </li>
                     ))}
                   </ul>
-                  <button onClick={() => router.push(feat.link)} className="text-sm font-semibold text-orange-600 hover:text-orange-700 underline">
+                  <Link href={feat.link} className="text-sm font-black text-orange-600 hover:text-orange-700 flex items-center gap-2 group/link">
                     {feat.linkLabel}
-                  </button>
+                    <ArrowRight className="w-4 h-4 group-hover/link:translate-x-1 transition-transform" />
+                  </Link>
                 </div>
 
-                <div className={`bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/20 dark:to-red-900/20 border-2 border-orange-300 dark:border-orange-700 rounded-3xl p-8 ${i % 2 === 1 ? "lg:order-1" : ""}`}>
+                <div className={`bg-gradient-to-br from-orange-100 to-red-100 dark:from-orange-900/20 dark:to-red-900/20 border-2 border-orange-300 dark:border-orange-700 rounded-3xl p-8 shadow-inner ${i % 2 === 1 ? "lg:order-1" : ""}`}>
                   <div className="flex items-center gap-2 mb-4">
-                    <p className="text-sm font-bold text-orange-700 dark:text-orange-400 uppercase tracking-wider">Real Scenario</p>
+                    <Lightbulb className="w-5 h-5 text-orange-600" />
+                    <p className="text-sm font-black text-orange-700 dark:text-orange-400 uppercase tracking-widest">Real Scenario</p>
                   </div>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed italic text-base">{feat.scenario}</p>
+                  <p className="text-gray-900 dark:text-gray-200 leading-relaxed italic text-lg font-medium">"{feat.scenario}"</p>
                 </div>
               </div>
             ))}
@@ -831,189 +398,125 @@ export default function AmazonSellersPage() {
       <section id="how-it-works" className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white leading-relaxed">
               How Insydz Works
               <br />
               <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">for Amazon Sellers</span>
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
               You don't need a tech team. Setup takes 2 minutes. Intelligence starts flowing immediately.
             </p>
           </div>
 
-          <div className="relative">
-            <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 -translate-y-1/2"></div>
-            <div className="grid lg:grid-cols-3 gap-12 relative items-stretch">
-
-              <div className="relative">
-                <div className="bg-white dark:bg-gray-900 border-2 border-orange-300 dark:border-orange-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all h-full flex flex-col">
-                  <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">1</div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">Connect Your Amazon Store</h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6 min-h-[96px]">
-                    Connect your Amazon seller account or add your ASINs. Insydz automatically begins tracking your products, competitors, and entire category no manual configuration needed.
-                  </p>
-                  <div className="bg-orange-100 dark:bg-orange-900/20 rounded-2xl p-4">
-                    <ShoppingBag className="w-6 h-6 text-orange-600 mx-auto" />
-                  </div>
-                </div>
+          <div className="grid lg:grid-cols-3 gap-12">
+            {[
+              { step: "1", title: "Connect Store", desc: "Connect your Amazon account or add ASINs. Insydz automatically begins tracking your entire category.", icon: <ShoppingBag className="w-10 h-10" />, color: "bg-orange-100 text-orange-600" },
+              { step: "2", title: "AI Analysis", desc: "Our AI scans prices, reviews, and rankings across Amazon India 24/7. No manual Excel work required.", icon: <BarChart3 className="w-10 h-10" />, color: "bg-purple-100 text-purple-600" },
+              { step: "3", title: "Actionable Steps", desc: "Get direct, plain-language instructions on price changes, rank drops, and review issues on WhatsApp.", icon: <Zap className="w-10 h-10" />, color: "bg-green-100 text-green-600" },
+            ].map((item, i) => (
+              <div key={i} className="bg-gray-50 dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-8 text-center shadow-lg hover:border-orange-400 transition-all group flex flex-col h-full">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 text-xl font-black text-white shadow-md">{item.step}</div>
+                <div className={`${item.color} rounded-2xl p-6 mb-6 flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0 shadow-sm`}>{item.icon}</div>
+                <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-4 leading-relaxed">{item.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 leading-relaxed font-medium">{item.desc}</p>
               </div>
-
-              <div className="relative">
-                <div className="bg-white dark:bg-gray-900 border-2 border-orange-300 dark:border-orange-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all h-full flex flex-col">
-                  <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">2</div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">AI Analyses Everything</h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6 min-h-[96px]">
-                    Our AI scans prices, reviews, keyword rankings, and competitor trends across Amazon India 24/7, in real time. No manual data pulling. No Excel uploads.
-                  </p>
-                  <div className="bg-purple-100 dark:bg-purple-900/20 rounded-2xl p-4 mt-14">
-                    <BarChart3 className="w-6 h-6 text-purple-600 mx-auto animate-pulse" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative">
-                <div className="bg-white dark:bg-gray-900 border-2 border-orange-300 dark:border-orange-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all h-full flex flex-col">
-                  <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">3</div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">You Get Clear Actions</h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 min-h-[96px]">Instead of charts and confusing dashboards, you get direct, plain-language instructions:</p>
-                  <div className="space-y-3 text-left">
-                    <div className="flex items-start gap-2 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg p-3">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-red-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-xs text-gray-800 dark:text-gray-300">Competitor dropped price by 12%</span>
-                    </div>
-                    <div className="flex items-start gap-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-300 dark:border-orange-700 rounded-lg p-3">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-orange-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-xs text-gray-800 dark:text-gray-300">Keyword ranking fell from 8 to 21</span>
-                    </div>
-                    <div className="flex items-start gap-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-lg p-3">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-yellow-600 flex-shrink-0 mt-0.5" />
-                      <span className="text-xs text-gray-800 dark:text-gray-300">342 reviews mention packaging issue</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-16">
             <Button onClick={handleGetStarted} size="lg"
-              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-4 sm:px-12 py-6 text-sm sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group w-full sm:w-auto"
+              className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-black px-12 py-6 text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group w-full sm:w-auto"
             >
-              Start Free
+              Start Free Today
+              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
         </div>
       </section>
 
       {/* ── SECTION 6: ROI EXAMPLE ────────────────────────────────────────────── */}
-      <section className="py-12 px-4 bg-gray-100 dark:bg-gray-800">
+      <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl lg:text-4xl font-black mb-4 text-gray-900 dark:text-white leading-relaxed">
               What Insydz Is Worth to a Seller
               <br />
               <span className="text-orange-600">Doing ₹15L/Month</span>
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400">A conservative look at what Indian sellers recover when they stop flying blind on Amazon.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
-            {/* Before */}
-            <div className="rounded-2xl border-2 border-red-300 dark:border-red-700 overflow-hidden shadow-lg">
-              <div className="bg-red-50 dark:bg-red-900/30 px-6 py-4">
-                <p className="font-bold text-red-700 dark:text-red-400 text-lg">❌ Before Insydz — Monthly Profit Leakage</p>
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            <div className="rounded-3xl border-2 border-red-200 dark:border-red-900 overflow-hidden shadow-xl bg-white dark:bg-gray-950">
+              <div className="bg-red-50 dark:bg-red-900/30 px-6 py-5 border-b border-red-100 dark:border-red-900">
+                <p className="font-black text-red-700 dark:text-red-400 uppercase tracking-wider flex items-center gap-2">
+                  <TrendingDown className="w-5 h-5" /> Monthly Profit Leakage
+                </p>
               </div>
-              <div className="bg-white dark:bg-gray-900">
+              <div className="divide-y divide-gray-100 dark:divide-gray-800">
                 {roiLeakage.map((row, i) => (
-                  <div key={i} className={`flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 !== 0 ? "bg-gray-50 dark:bg-gray-800/50" : ""}`}>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1">{row.label}</p>
-                    <p className="text-sm font-bold text-red-600 ml-4 whitespace-nowrap">{row.value}</p>
+                  <div key={i} className="flex items-center justify-between px-6 py-5">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 font-bold">{row.label}</p>
+                    <p className="text-sm font-black text-red-600 ml-4">{row.value}</p>
                   </div>
                 ))}
-                <div className="flex items-center justify-between px-6 py-4 bg-red-50 dark:bg-red-900/20">
-                  <p className="font-bold text-gray-900 dark:text-white">Total Monthly Leakage</p>
-                  <p className="font-black text-red-700 text-lg">−₹1,33,000</p>
+                <div className="flex items-center justify-between px-6 py-5 bg-red-50/50 dark:bg-red-900/10">
+                  <p className="font-black text-gray-900 dark:text-white">Total Leakage</p>
+                  <p className="font-black text-red-700 text-xl">−₹1,33,000</p>
                 </div>
               </div>
             </div>
 
-            {/* After */}
-            <div className="rounded-2xl border-2 border-green-300 dark:border-green-700 overflow-hidden shadow-lg">
-              <div className="bg-green-50 dark:bg-green-900/30 px-6 py-4">
-                <p className="font-bold text-green-700 dark:text-green-400 text-lg">✅ After Insydz — Monthly Recovery</p>
+            <div className="rounded-3xl border-2 border-green-200 dark:border-green-900 overflow-hidden shadow-xl bg-white dark:bg-gray-950">
+              <div className="bg-green-50 dark:bg-green-900/30 px-6 py-5 border-b border-green-100 dark:border-green-900">
+                <p className="font-black text-green-700 dark:text-green-400 uppercase tracking-wider flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" /> Monthly Recovery
+                </p>
               </div>
-              <div className="bg-white dark:bg-gray-900">
+              <div className="divide-y divide-gray-100 dark:divide-gray-800">
                 {roiRecovery.map((row, i) => (
-                  <div key={i} className={`flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 !== 0 ? "bg-gray-50 dark:bg-gray-800/50" : ""}`}>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1">{row.label}</p>
-                    <p className="text-sm font-bold text-green-600 ml-4 whitespace-nowrap">{row.value}</p>
+                  <div key={i} className="flex items-center justify-between px-6 py-5">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 font-bold">{row.label}</p>
+                    <p className="text-sm font-black text-green-600 ml-4">{row.value}</p>
                   </div>
                 ))}
-                <div className="flex items-center justify-between px-6 py-4 bg-green-50 dark:bg-green-900/20">
-                  <p className="font-bold text-gray-900 dark:text-white">Net Monthly Gain</p>
-                  <p className="font-black text-green-700 text-lg">+₹1,12,000</p>
+                <div className="flex items-center justify-between px-6 py-5 bg-green-50/50 dark:bg-green-900/10">
+                  <p className="font-black text-gray-900 dark:text-white">Total Recovery</p>
+                  <p className="font-black text-green-700 text-xl">+₹1,12,000</p>
                 </div>
               </div>
             </div>
           </div>
 
-            <div className="text-center">
-            <div className="inline-block bg-gradient-to-r from-orange-100 to-red-100 
-              dark:from-orange-900/30 dark:to-red-900/30 
-              border-2 border-orange-400 rounded-2xl px-6 py-4">
-              
-              <p className="text-xl font-black text-black-500 dark:text-white whitespace-nowrap">
-                Net monthly value unlocked:
-                <span className="text-orange-600 ml-2">+₹2,45,000/month</span>
-              </p>
-            </div>
+          <div className="bg-gradient-to-r from-orange-500 to-red-600 rounded-3xl p-8 text-center shadow-2xl">
+            <p className="text-white text-lg font-bold mb-2 opacity-90 uppercase tracking-widest">Net Value Unlocked</p>
+            <p className="text-white text-4xl sm:text-5xl font-black mb-2 leading-tight">₹2,45,000 / month</p>
+            <p className="text-white/80 font-medium">Conservative estimate based on actual seller data from Amazon India</p>
           </div>
         </div>
       </section>
 
-      {/* ── STATS BAR ─────────────────────────────────────────────────────────── */}
-      <section className="py-14 px-4 bg-white dark:bg-gray-950">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { stat: "250K+", label: "Reviews Analysed on Amazon India", icon: <MessageCircle className="w-4 h-4" /> },
-              { stat: "24/7", label: "Real-Time Competitor Tracking", icon: <Clock className="w-4 h-4" /> },
-              { stat: "15–30%", label: "Average Profit Recovered", icon: <TrendingUp className="w-4 h-4" /> },
-            ].map((item, i) => (
-              <div key={i} className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-2 border-orange-200 dark:border-orange-700 rounded-2xl p-8 text-center hover:scale-105 hover:shadow-xl transition-all">
-                <div className="w-12 h-12 bg-gradient-to-br from-orange-600 to-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg">{item.icon}</div>
-                <div className="text-4xl font-black bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent mb-2">{item.stat}</div>
-                <div className="text-gray-700 dark:text-gray-300 text-sm font-medium">{item.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── SECTION 7: FAQ ────────────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
+      {/* ── FAQ ────────────────────────────────────────────────────── */}
+      <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-4xl lg:text-5xl font-black mb-4 text-center text-gray-900 dark:text-white">
+          <h2 className="text-3xl lg:text-4xl font-black text-center text-gray-900 dark:text-white mb-12 leading-relaxed">
             Frequently Asked Questions
           </h2>
-          <p className="text-center text-gray-500 mb-12 text-lg">About Amazon Seller Tools in India</p>
-
           <div className="space-y-4">
             {faqs.map((faq) => (
-              <div key={faq.id} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-orange-300 transition-all">
+              <div key={faq.id} className="bg-gray-50 dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-orange-400 transition-all shadow-sm">
                 <button
                   onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
-                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors gap-4"
                 >
-                  <span className="font-bold text-gray-900 dark:text-white pr-4 text-lg">{faq.q}</span>
+                  <span className="font-bold text-gray-900 dark:text-white text-sm sm:text-base md:text-lg leading-relaxed">{faq.q}</span>
                   {expandedFaq === faq.id
                     ? <ChevronDown className="w-5 h-5 text-orange-500 flex-shrink-0" />
                     : <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
                   }
                 </button>
                 {expandedFaq === faq.id && (
-                  <div className="px-6 pb-5 bg-gray-50 dark:bg-gray-700/30">
-                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{faq.a}</p>
+                  <div className="px-6 pb-6 bg-orange-50/30 dark:bg-orange-900/10 border-t border-gray-50 dark:border-gray-800">
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed pt-5 font-medium">{faq.a}</p>
                   </div>
                 )}
               </div>
@@ -1022,100 +525,53 @@ export default function AmazonSellersPage() {
         </div>
       </section>
 
-      {/* ── SECTION 8: ICP-BASED CTAs ─────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-gradient-to-br from-orange-600 via-red-600 to-orange-700">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl lg:text-5xl font-black mb-6 text-white">
+      {/* ── FINAL CTA ─────────────────────────────────────────── */}
+      <section className="py-16 sm:py-24 px-4 bg-gradient-to-br from-orange-600 via-red-600 to-orange-700 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+        <div className="relative max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-6 leading-tight">
             Ready to Stop Losing Money on Amazon?
           </h2>
-          <p className="text-xl text-white/90 mb-12 leading-relaxed">
-            Whether you're just starting out or running a ₹50L/month operation, there's a plan built for where you are right now.
+          <p className="text-white/90 text-lg sm:text-xl mb-12 leading-relaxed max-w-2xl mx-auto font-medium">
+            Join thousands of Indian sellers who use Insydz to recover profits and scale their Amazon business.
           </p>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-10">
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
             {[
-              {
-                label: "New Sellers (Free Plan)",
-                desc: "Just launched on Amazon India? Get your first competitor insights and keyword rankings without spending a rupee. Learn the market before you scale.",
-                cta: "Start Free — No Card Needed →",
-                action: handleGetStarted,
-              },
-              {
-                label: "Growing Sellers (₹5L–₹50L/month)",
-                desc: "At your scale, every pricing mistake and ranking drop costs real money. Get full competitor tracking, AI recommendations, and WhatsApp alerts.",
-                cta: "Try Growth Plan →",
-                action: () => router.push("/pricing"),
-              },
-              {
-                label: "Agencies & Brand Managers",
-                desc: "Managing multiple brands? Multi-account intelligence, white-label reporting, and portfolio-level competitor analysis built for scale.",
-                cta: "Book a Demo →",
-                action: () => router.push("/demo"),
-              },
+              { label: "New Sellers", desc: "Just starting? Get free category insights.", cta: "Start Free", action: handleGetStarted },
+              { label: "Growing Sellers", desc: "Scale with AI pricing and SEO.", cta: "View Pricing", action: () => router.push("/pricing") },
+              { label: "Agencies", desc: "Manage portfolios with ease.", cta: "Book Demo", action: () => router.push("/demo") },
             ].map((card, i) => (
-              <div key={i} className="bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all border border-white/20 rounded-2xl p-6 text-left 
-                flex flex-col h-full">
-                <p className="font-bold text-white mb-2">{card.label}</p>
-                <p className="text-white/80 text-sm mb-4">{card.desc}</p>
-                <button onClick={card.action} className="text-orange-200 font-semibold text-sm hover:text-white transition-colors underline">{card.cta}</button>
+              <div key={i} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-left flex flex-col h-full hover:bg-white/20 transition-all group">
+                <p className="font-black text-white mb-2 uppercase tracking-wider text-xs">{card.label}</p>
+                <p className="text-white/80 text-sm mb-6 leading-relaxed font-medium">{card.desc}</p>
+                <button onClick={card.action} className="mt-auto text-orange-200 font-black text-sm hover:text-white transition-colors underline underline-offset-4 decoration-2">
+                  {card.cta} →
+                </button>
               </div>
             ))}
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button onClick={handleGetStarted} size="lg"
-              className="bg-white hover:bg-gray-100 text-orange-700 font-bold px-12 py-6 text-lg rounded-full shadow-2xl group"
+              className="bg-white hover:bg-gray-100 text-orange-700 font-black px-12 py-6 text-lg rounded-full shadow-2xl group transition-all hover:scale-105"
             >
               Start Free for Amazon Sellers
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
-          <p className="text-white/80 mt-6 text-sm flex items-center justify-center gap-2 flex-wrap">
-  <span>✓ No credit card required</span>
-  <span className="text-white/40">·</span>
-  <span>✓ Setup in 2 minutes</span>
-  <span className="text-white/40">·</span>
-  <span>✓ Cancel anytime</span>
-</p>
+          <p className="text-white/80 mt-10 text-sm font-medium">✓ No credit card required &nbsp;·&nbsp; ✓ Setup in 2 minutes &nbsp;·&nbsp; ✓ Native support</p>
         </div>
       </section>
-      {/* Footer */}
-      
- 
-      <style>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-        .delay-1000 {
-          animation-delay: 1s;
-        }
-      `}</style>
+
+      {/* STICKY MOBILE CTA */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-orange-300 dark:border-orange-700 p-4 shadow-2xl z-40" style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom, 0px))" }}>
+        <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-black py-4 rounded-full shadow-xl text-base">
+          Start Free for Amazon Sellers
+        </Button>
+      </div>
+
+      <div className="lg:hidden h-20" />
     </div>
   );
 }
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
