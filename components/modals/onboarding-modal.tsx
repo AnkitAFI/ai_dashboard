@@ -397,7 +397,7 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
                       </div>
                       <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-100 rounded-xl text-xs text-amber-700 font-medium">
                         <Clock className="w-3 h-3" />
-                        Expected: Q3 2025
+                        Expected: 2026
                       </div>
                       <button
                         type="button"

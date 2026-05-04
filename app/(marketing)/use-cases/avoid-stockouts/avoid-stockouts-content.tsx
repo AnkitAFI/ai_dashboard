@@ -1,96 +1,19 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowRight, Package, AlertCircle, TrendingUp, ChevronRight, Bell, Clock,
-  ChevronDown, Menu, Sun, Moon, ArrowLeft, BookOpen, Video, FileText,
-  ShoppingBag, Store, Briefcase, Users, Code, Globe, Trophy,
-  TrendingDown, MessageCircle, Search, Target, Zap, X,
-  Flame, Presentation, CheckCircle2, Check, BarChart3, Smartphone,
-  Shield, RefreshCw, Eye, LayoutGrid, Facebook, Instagram, Twitter, Linkedin
+  ChevronDown, ArrowLeft,
+  TrendingDown, MessageCircle, Search, Target, Zap,
+  Flame, CheckCircle2, BarChart3, Smartphone,
+  RefreshCw, Eye, Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
 
-// ─── JSON-LD Schemas ──────────────────────────────────────────────────────────
-
-// ─── Navigation Menu Data ─────────────────────────────────────────────────────
-type MenuItemWithBadge = {
-  name: string;
-  icon: JSX.Element;
-  badge?: string;
-  route?: string;
-};
-
-type NavigationMenu = {
-  Solutions: MenuItemWithBadge[];
-  "Use Cases": MenuItemWithBadge[];
-  Features: MenuItemWithBadge[];
-  "Free Tools": MenuItemWithBadge[];
-  Resources: MenuItemWithBadge[];
-  Integrations: MenuItemWithBadge[];
-  Compare: MenuItemWithBadge[];
-  About: MenuItemWithBadge[];
-};
-
-const navigationMenu: NavigationMenu = {
-  Solutions: [
-    { name: "All Solutions (Overview)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions" },
-    { name: "For Amazon Sellers (India)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions/amazon-sellers" },
-    { name: "For Flipkart Sellers", icon: <Store className="w-4 h-4" />, route: "/solutions/flipkart-sellers" },
-    { name: "For E-commerce Agencies", icon: <Briefcase className="w-4 h-4" />, route: "/solutions/ecommerce-agencies" },
-    { name: "For Brand Managers", icon: <Users className="w-4 h-4" />, route: "/solutions/brand-managers" },
-  ],
-  "Use Cases": [
-    { name: "All Use Cases", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases" },
-    { name: "Track Competitor Prices", icon: <TrendingDown className="w-4 h-4" />, route: "/use-cases/track-competitor-prices" },
-    { name: "Find Profitable Products", icon: <Target className="w-4 h-4" />, route: "/use-cases/find-profitable-products" },
-    { name: "Analyze Customer Reviews", icon: <MessageCircle className="w-4 h-4" />, route: "/use-cases/analyze-customer-reviews" },
-    { name: "Improve Amazon & Flipkart SEO", icon: <Search className="w-4 h-4" />, route: "/use-cases/improve-seo" },
-    { name: "Avoid Stockouts & Missed Sales", icon: <Package className="w-4 h-4" />, route: "/use-cases/avoid-stockouts" },
-  ],
-  Features: [
-    { name: "All Features", icon: <LayoutGrid className="w-4 h-4" />, route: "/features" },
-    { name: "Competitor Price Tracking", icon: <TrendingDown className="w-4 h-4" />, route: "/features/competitor-price-tracking-feature" },
-    { name: "Review Analytics", icon: <MessageCircle className="w-4 h-4" />, route: "/features/review-analytics-feature" },
-    { name: "Price Optimization", icon: <TrendingUp className="w-4 h-4" />, route: "/features/price-optimization-feature" },
-    { name: "Keyword & Rank Tracking", icon: <Search className="w-4 h-4" />, route: "/features/keyword-rank-tracking-feature" },
-    { name: "Product Research", icon: <Package className="w-4 h-4" />, route: "/features/product-research-feature" },
-    { name: "AI Recommendations", icon: <Zap className="w-4 h-4" />, route: "/features/ai-recommendations-feature" },
-    { name: "WhatsApp Alerts", icon: <Bell className="w-4 h-4" />, badge: "NEW", route: "/features/whatsapp-alerts-feature" },
-    { name: "Festive Trend Intelligence", icon: <Flame className="w-4 h-4" />, badge: "UPCOMING", route: "/features/festive-trend-feature" },
-  ],
-  "Free Tools": [
-    { name: "Free Amazon Product Analyzer", icon: <Target className="w-4 h-4" />, route: "/free-tools/free-amazon-product-analyzer" },
-    { name: "Free Review Sentiment Checker", icon: <MessageCircle className="w-4 h-4" />, route: "/free-tools/free-review-sentiment-checker" },
-    { name: "Free Competitor Price Checker", icon: <TrendingDown className="w-4 h-4" />, route: "/free-tools/free-competitor-price-checker" },
-    { name: "Free Keyword Rank Checker", icon: <Search className="w-4 h-4" />, badge: "NEW", route: "/free-tools/free-keyword-rank-checker" },
-  ],
-  Resources: [
-    { name: "Expert Blog", icon: <BookOpen className="w-4 h-4" />, route: "/resources/expert-blog" },
-  ],
-  Integrations: [
-    { name: "Amazon", icon: <ShoppingBag className="w-4 h-4" /> },
-    { name: "Flipkart", icon: <Store className="w-4 h-4" /> },
-    { name: "Shopify", icon: <Globe className="w-4 h-4" /> },
-    { name: "API Documentation", icon: <Code className="w-4 h-4" /> },
-  ],
-  Compare: [
-    { name: "Insydz vs Helium 10", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvshelium" },
-    { name: "Insydz vs Jungle Scout", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsjunglescout" },
-    { name: "Insydz vs Viral Launch", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsvirallaunch" },
-  ],
-  About: [
-    { name: "Our Vision", icon: <Presentation className="w-4 h-4" />, route: "/about/our-vision" },
-    { name: "Careers", icon: <Globe className="w-4 h-4" />, route: "/about/careers" },
-    { name: "Contact Us", icon: <Users className="w-4 h-4" />, route: "/about/contact-us" },
-  ],
-};
-
-// ─── Page Data ────────────────────────────────────────────────────────────────
 const comparisonRows = [
   { feature: "Stockout prediction", manual: "Static reorder point", insydz: "Real-time velocity + acceleration + festive multipliers" },
   { feature: "Festive demand planning", manual: "Based on last year's sales", insydz: "India festive multipliers applied automatically" },
@@ -125,7 +48,7 @@ const faqs = [
   {
     id: "faq-2",
     q: "What happens to my Amazon India ranking when I go out of stock?",
-    a: "Your listing becomes inactive disappearing from search entirely. When you restock, Amazon treats it as a new listing. Rankings built over weeks can drop 5–15 positions immediately. Recovery takes 4–8 weeks and requires extra ad spend. Preventing stockouts is far more valuable than recovering from them.",
+    a: "Your listing becomes inactive disappearing from search entirely. When you restock, Amazon treats it as a new listing. Rankings built over weeks can drop 5–15 positions immediately. Recovery after restocking takes 4–8 weeks and requires extra ad spend. Preventing stockouts is far more valuable than recovering from them.",
   },
   {
     id: "faq-3",
@@ -197,308 +120,11 @@ const inventoryCapabilities = [
 export default function AvoidStockoutsPage() {
   const router = useRouter();
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
-  const [scrolled, setScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const html = document.documentElement;
-    isDarkMode ? html.classList.add("dark") : html.classList.remove("dark");
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setActiveDropdown(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const handleGetStarted = () => router.push("/login");
-  const toggleMobileMenu = (menuName: string) => {
-    setMobileActiveMenu(mobileActiveMenu === menuName ? null : menuName);
-  };
-  const handleMenuItemClick = (item: MenuItemWithBadge) => {
-    if (item.route) { router.push(item.route); setActiveDropdown(null); setIsMenuOpen(false); }
-  };
-  const scrollToSection = (sectionId: string) => {
-    router.push('/');
-    setTimeout(() => document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-  };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
-      
-      {/* ── NAVIGATION ────────────────────────────────────────────────────────── */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"
-      }`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center space-x-3">
-              
-              <a href="/" className="flex items-center space-x-1 group">
-                <div className="relative">
-                  <img src="/logo.png" alt="Insydz Logo" className="w-12 h-12 rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain" />
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse"></div>
-                </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Insydz</span>
-              </a>
-            </div>
-
-            {/* Desktop Menu */}
-            <div className="hidden lg:flex items-center space-x-3" ref={dropdownRef}>
-             
-              {/* Solutions */}
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown("Solutions")} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1">
-                  Solutions <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === "Solutions" ? "rotate-180" : ""}`} />
-                </button>
-                {activeDropdown === "Solutions" && (
-                  <div onMouseLeave={() => setActiveDropdown(null)} className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                  {navigationMenu.Solutions.map((item, i) => (
-                      item.route ? (
-                        <Link key={i} href={item.route} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }} className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group">
-                          <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">{item.name}</span>
-                          {item.badge && <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold">{item.badge}</span>}
-                        </Link>
-                      ) : (
-                        <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-                          <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-                        </span>
-                      )
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Use Cases — highlighted red */}
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown("Use Cases")} className="px-3 py-2 text-sm text-red-600 dark:text-red-500 hover:text-red-700 dark:hover:text-red-400 font-semibold rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-all flex items-center gap-1">
-                  Use Cases <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === "Use Cases" ? "rotate-180" : ""}`} />
-                </button>
-                {activeDropdown === "Use Cases" && (
-                  <div onMouseLeave={() => setActiveDropdown(null)} className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                    {navigationMenu["Use Cases"].map((item, i) => (
-                      item.route ? (
-                        <Link key={i} href={item.route} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }} className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group">
-                          <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">{item.name}</span>
-                          {item.badge && <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold">{item.badge}</span>}
-                        </Link>
-                      ) : (
-                        <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-                          <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-                        </span>
-                      )
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Features */}
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown("Features")} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1">
-                  Features <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === "Features" ? "rotate-180" : ""}`} />
-                </button>
-                {activeDropdown === "Features" && (
-                  <div onMouseLeave={() => setActiveDropdown(null)} className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                    {navigationMenu.Features.map((item, i) => (
-                      item.route ? (
-                        <Link key={i} href={item.route} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }} className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group">
-                          <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">{item.name}</span>
-                          {item.badge && <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold">{item.badge}</span>}
-                        </Link>
-                      ) : (
-                        <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-                          <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-                        </span>
-                      )
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <Link href="/pricing" className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all">Pricing</Link>
-
-              {/* Free Tools */}
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown("Free Tools")} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1">
-                  Free Tools <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === "Free Tools" ? "rotate-180" : ""}`} />
-                </button>
-                {activeDropdown === "Free Tools" && (
-                  <div onMouseLeave={() => setActiveDropdown(null)} className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                    {navigationMenu["Free Tools"].map((item, i) => (
-                      item.route ? (
-                        <Link key={i} href={item.route} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }} className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group">
-                          <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">{item.name}</span>
-                          {item.badge && <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold">{item.badge}</span>}
-                        </Link>
-                      ) : (
-                        <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-                          <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-                        </span>
-                      )
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Compare */}
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown("Compare")} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1">
-                  Compare <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === "Compare" ? "rotate-180" : ""}`} />
-                </button>
-                {activeDropdown === "Compare" && (
-                  <div onMouseLeave={() => setActiveDropdown(null)} className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                    {navigationMenu.Compare.map((item, i) => (
-                      item.route ? (
-                        <Link key={i} href={item.route} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }} className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group">
-                          <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">{item.name}</span>
-                          {item.badge && <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold">{item.badge}</span>}
-                        </Link>
-                      ) : (
-                        <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-                          <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-                        </span>
-                      )
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Resources */}
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown("Resources")} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1">
-                  Resources <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === "Resources" ? "rotate-180" : ""}`} />
-                </button>
-                {activeDropdown === "Resources" && (
-                  <div onMouseLeave={() => setActiveDropdown(null)} className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                    {navigationMenu.Resources.map((item, i) => (
-                      item.route ? (
-                        <Link key={i} href={item.route} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }} className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group">
-                          <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">{item.name}</span>
-                          {item.badge && <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold">{item.badge}</span>}
-                        </Link>
-                      ) : (
-                        <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-                          <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-                        </span>
-                      )
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* About */}
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown("About")} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1">
-                  About <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === "About" ? "rotate-180" : ""}`} />
-                </button>
-                {activeDropdown === "About" && (
-                  <div onMouseLeave={() => setActiveDropdown(null)} className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                    {navigationMenu.About.map((item, i) => (
-                      item.route ? (
-                        <Link key={i} href={item.route} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }} className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group">
-                          <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">{item.name}</span>
-                          {item.badge && <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold">{item.badge}</span>}
-                        </Link>
-                      ) : (
-                        <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-                          <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-                        </span>
-                      )
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <Link href="/login" className="ml-2 text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">Login</Link>
-              <button className="ml-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" onClick={() => setIsDarkMode(!isDarkMode)}>
-                {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-800" />}
-              </button>
-            </div>
-
-            <button className="lg:hidden p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100vh-5rem)] overflow-y-auto">
-            <div className="px-4 py-4 space-y-2">
-              <a href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium">
-                <ArrowLeft className="w-4 h-4" /> Back to Home
-              </a>
-              {(["Solutions", "Use Cases", "Features", "Free Tools", "Compare", "Resources", "About"] as (keyof NavigationMenu)[]).map((key) => (
-                <div key={key}>
-                  <button onClick={() => toggleMobileMenu(key)}
-                    className={`flex items-center justify-between w-full px-4 py-2 rounded-lg font-medium ${
-                      key === "Use Cases" ? "text-red-600 dark:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 font-semibold"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                    }`}
-                  >
-                    {key} <ChevronDown className={`w-4 h-4 transition-transform ${mobileActiveMenu === key ? "rotate-180" : ""}`} />
-                  </button>
-                  {mobileActiveMenu === key && (
-                    <div className="ml-4 mt-2 space-y-1">
-                      {(navigationMenu[key] as MenuItemWithBadge[]).map((item, i) => (
-                         item.route ? (
-                          <Link key={i} href={item.route} onClick={() => setIsMenuOpen(false)}
-                            className={`flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg ${
-                              key === "Use Cases" ? "hover:bg-red-50 dark:hover:bg-red-900/20" : "hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                            }`}
-                          >
-                            {item.icon} {item.name}
-                            {item.badge && <span className="ml-auto text-xs bg-purple-600 text-white px-2 py-0.5 rounded-full">{item.badge}</span>}
-                          </Link>
-                        ) : (
-                          <span key={i} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg opacity-60">
-                            {item.icon} {item.name}
-                          </span>
-                        )
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              <Link href="/pricing" onClick={() => setIsMenuOpen(false)} className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium">Pricing</Link>
-              <a href="/login" onClick={() => setIsMenuOpen(false)} className="w-full mt-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-center py-2 rounded-lg font-semibold block">Login</a>
-              <button className="mt-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 w-full flex justify-center items-center" onClick={() => setIsDarkMode(!isDarkMode)}>
-                {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-800" />}
-              </button>
-            </div>
-          </div>
-        )}
-      </nav>
-
+    <div className="min-h-screen bg-white dark:bg-gray-950 pt-20">
       {/* ── SECTION 1: HERO ──────────────────────────────────────────────────── */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden bg-gradient-to-br from-red-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
         <div className="absolute inset-0 opacity-20">
@@ -517,7 +143,7 @@ export default function AvoidStockoutsPage() {
                 <span className="text-sm font-medium text-red-700">India's #1 AI Inventory Management Tool 🇮🇳</span>
               </div>
 
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
+              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
                 Never Run Out of Stock
                 <br />
                 <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">& Miss Sales Again</span>
@@ -537,7 +163,7 @@ export default function AvoidStockoutsPage() {
                 </Button>
                 <Button onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
                   size="lg" variant="outline"
-                  className="border-2 border-red-600 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-semibold px-8 py-6 text-lg rounded-full"
+                  className="border-2 border-red-600 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-semibold px-8 py-6 text-lg rounded-full transition-all"
                 >
                   See How It Works →
                 </Button>
@@ -546,9 +172,9 @@ export default function AvoidStockoutsPage() {
 
             {/* Hero Visual */}
             <div className="relative">
-              <div className="bg-white dark:bg-gray-900 border-2 border-red-200 dark:border-red-800 rounded-3xl p-6 shadow-2xl">
+              <div className="bg-white dark:bg-gray-900 border-2 border-red-200 dark:border-red-800 rounded-3xl p-6 shadow-2xl transition-all hover:shadow-red-500/10">
                 <div className="flex items-center justify-between mb-5">
-                  <h3 className="font-bold text-gray-900 dark:text-white">Inventory Intelligence Dashboard</h3>
+                  <h3 className="font-bold text-gray-900 dark:text-white leading-relaxed">Inventory Intelligence Dashboard</h3>
                   <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">Live</span>
                 </div>
                 <div className="space-y-3">
@@ -557,49 +183,49 @@ export default function AvoidStockoutsPage() {
                     <div className="flex items-start gap-3">
                       <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
                       <div className="flex-1">
-                        <p className="font-bold text-gray-900 dark:text-white text-sm">🔴 Critical Stock Alert</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300">Premium Earbuds — 12 units left</p>
-                        <p className="text-xs text-red-600 dark:text-red-400 font-semibold mt-1">Selling 4/day — will run out in <strong>3 days</strong></p>
+                        <p className="font-bold text-gray-900 dark:text-white text-sm leading-relaxed">🔴 Critical Stock Alert</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">Premium Earbuds — 12 units left</p>
+                        <p className="text-xs text-red-600 dark:text-red-400 font-semibold mt-1 leading-relaxed">Selling 4/day — will run out in <strong>3 days</strong></p>
                       </div>
                     </div>
                   </div>
                   {/* Warning */}
-                  <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-xl p-4">
+                  <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-xl p-4 transition-all">
                     <div className="flex items-start gap-3">
                       <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
                       <div className="flex-1">
-                        <p className="font-bold text-gray-900 dark:text-white text-sm">🟡 Low Stock Warning</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300">Smart Watch — 45 units remaining</p>
-                        <p className="text-xs text-yellow-600 dark:text-yellow-400 font-semibold mt-1">Velocity increasing — restock in 7 days</p>
+                        <p className="font-bold text-gray-900 dark:text-white text-sm leading-relaxed">🟡 Low Stock Warning</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">Smart Watch — 45 units remaining</p>
+                        <p className="text-xs text-yellow-600 dark:text-yellow-400 font-semibold mt-1 leading-relaxed">Velocity increasing — restock in 7 days</p>
                       </div>
                     </div>
                   </div>
                   {/* Healthy */}
-                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-300 dark:border-green-700 rounded-xl p-4">
+                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-300 dark:border-green-700 rounded-xl p-4 transition-all">
                     <div className="flex items-start gap-3">
                       <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
                       <div className="flex-1">
-                        <p className="font-bold text-gray-900 dark:text-white text-sm">🟢 Stock Healthy</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300">USB-C Cables — 280 units</p>
-                        <p className="text-xs text-green-600 dark:text-green-400 font-semibold mt-1">42 days stock at current velocity — reorder due in 28 days</p>
+                        <p className="font-bold text-gray-900 dark:text-white text-sm leading-relaxed">🟢 Stock Healthy</p>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">USB-C Cables — 280 units</p>
+                        <p className="text-xs text-green-600 dark:text-green-400 font-semibold mt-1 leading-relaxed">42 days stock at current velocity — reorder due in 28 days</p>
                       </div>
                     </div>
                   </div>
                   {/* WhatsApp */}
-                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-400 dark:border-green-600 rounded-xl p-3">
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-400 dark:border-green-600 rounded-xl p-3 transition-all">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
                         <Smartphone className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <p className="font-bold text-gray-900 dark:text-white text-xs">WhatsApp Alert Sent</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">"Premium Earbuds — 3 days to stockout. Reorder now."</p>
+                        <p className="font-bold text-gray-900 dark:text-white text-xs leading-relaxed">WhatsApp Alert Sent</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">"Premium Earbuds — 3 days to stockout. Reorder now."</p>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="absolute -top-4 -right-4 bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl px-4 py-2 shadow-xl">
-                  <p className="text-white font-bold text-sm">Live Prediction</p>
+                  <p className="text-white font-bold text-sm leading-relaxed">Live Prediction</p>
                 </div>
               </div>
             </div>
@@ -611,7 +237,7 @@ export default function AvoidStockoutsPage() {
       <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white leading-relaxed">
               Why Stockouts
               <span className="text-red-600"> Kill Your Business</span>
             </h2>
@@ -641,39 +267,39 @@ export default function AvoidStockoutsPage() {
                 color: "from-yellow-500 to-red-500",
               },
             ].map((p, i) => (
-              <div key={i} className="bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 hover:border-red-400 hover:shadow-lg transition-all group">
-                <div className={`w-16 h-16 bg-gradient-to-br ${p.color} rounded-2xl flex items-center justify-center mb-4 text-white group-hover:scale-110 transition-transform shadow-md`}>{p.icon}</div>
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2">{p.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{p.desc}</p>
+              <div key={i} className="bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 hover:border-red-400 hover:shadow-lg transition-all group flex flex-col h-full">
+                <div className={`w-16 h-16 bg-gradient-to-br ${p.color} rounded-2xl flex items-center justify-center mb-4 text-white group-hover:scale-110 transition-transform shadow-md flex-shrink-0`}>{p.icon}</div>
+                <h3 className="font-bold text-gray-900 dark:text-white mb-2 leading-relaxed">{p.title}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed flex-grow">{p.desc}</p>
               </div>
             ))}
           </div>
 
           {/* Ranking Timeline */}
-          <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-300 dark:border-red-700 rounded-3xl p-8 mb-10">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center">Keyword Ranking Timeline During a Stockout</h3>
+          <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-300 dark:border-red-700 rounded-3xl p-8 mb-10 shadow-md">
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center leading-relaxed">Keyword Ranking Timeline During a Stockout</h3>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {[
-                { stage: "Before Stockout", rank: "#5", status: "Page 1 strong velocity", color: "bg-green-100 border-green-300 text-green-800" },
-                { stage: "Day of Stockout", rank: "#18", status: "Listing becomes inactive", color: "bg-yellow-100 border-yellow-300 text-yellow-800" },
-                { stage: "Day 3 Out of Stock", rank: "#34", status: "Algorithm further demotes", color: "bg-orange-100 border-orange-300 text-orange-800" },
-                { stage: "Day 7+", rank: "Page 4+", status: "Virtually invisible", color: "bg-red-100 border-red-300 text-red-800" },
+                { stage: "Before Stockout", rank: "#5", status: "Page 1 strong velocity", color: "bg-green-100 border-green-300 text-green-800 dark:bg-green-900/30 dark:border-green-700 dark:text-green-300" },
+                { stage: "Day of Stockout", rank: "#18", status: "Listing becomes inactive", color: "bg-yellow-100 border-yellow-300 text-yellow-800 dark:bg-yellow-900/30 dark:border-yellow-700 dark:text-yellow-300" },
+                { stage: "Day 3 Out of Stock", rank: "#34", status: "Algorithm further demotes", color: "bg-orange-100 border-orange-300 text-orange-800 dark:bg-orange-900/30 dark:border-orange-700 dark:text-orange-300" },
+                { stage: "Day 7+", rank: "Page 4+", status: "Virtually invisible", color: "bg-red-100 border-red-300 text-red-800 dark:bg-red-900/30 dark:border-red-700 dark:text-red-300" },
                 { stage: "After Restock", rank: "#22", status: "4–8 weeks to recover", color: "bg-gray-100 border-gray-300 text-gray-700 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300" },
               ].map((t, i) => (
-                <div key={i} className={`border-2 rounded-xl p-3 text-center ${t.color}`}>
-                  <p className="text-xs font-semibold mb-1">{t.stage}</p>
-                  <p className="text-xl font-black">{t.rank}</p>
+                <div key={i} className={`border-2 rounded-xl p-3 text-center transition-all hover:scale-105 ${t.color}`}>
+                  <p className="text-xs font-semibold mb-1 leading-relaxed">{t.stage}</p>
+                  <p className="text-xl font-black leading-relaxed">{t.rank}</p>
                   <p className="text-xs mt-1 leading-tight">{t.status}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-2xl p-6 text-center">
-            <p className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-2xl p-6 text-center shadow-md">
+            <p className="text-xl font-bold text-gray-900 dark:text-white mb-2 leading-relaxed">
               The most expensive stockout isn't the 3-day gap.
             </p>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
+            <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
               It's the <strong>6 weeks of rebuilding keyword rankings</strong> after you restock. For a seller at ₹3L/month revenue, one bad stockout during Big Billion Days can cost ₹60,000–₹90,000 in lost sales then another ₹30,000–₹45,000 in additional ad spend. All for a restocking failure that cost ₹8,000 to prevent.
             </p>
           </div>
@@ -684,12 +310,12 @@ export default function AvoidStockoutsPage() {
       <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white leading-relaxed">
               Why Spreadsheets and Manual Counts
               <br />
               <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Always Fail at the Worst Moment</span>
             </h2>
-            <p className="text-1xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
               Every Indian seller starts with a spreadsheet or a mental note. Here's exactly why that approach breaks down always at the worst possible time, like the night before Diwali.
             </p>
           </div>
@@ -717,13 +343,13 @@ export default function AvoidStockoutsPage() {
                 desc: "Placing a reorder at 5 days of stock means nothing if your supplier needs 12 days. Manual tracking doesn't auto-factor your supplier lead times into reorder calculations.",
               },
             ].map((gap, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 hover:border-red-300 hover:shadow-lg transition-all">
+              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 hover:border-red-300 hover:shadow-lg transition-all h-full">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-xl flex items-center justify-center text-red-600 dark:text-red-400 flex-shrink-0">
                     {gap.icon}
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-900 dark:text-white mb-2">{gap.title}</h3>
+                    <h3 className="font-bold text-gray-900 dark:text-white mb-2 leading-relaxed">{gap.title}</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{gap.desc}</p>
                   </div>
                 </div>
@@ -731,8 +357,8 @@ export default function AvoidStockoutsPage() {
             ))}
           </div>
 
-          <div className="bg-white dark:bg-gray-800 border-l-4 border-red-500 rounded-r-2xl p-6 shadow-md">
-            <p className="font-bold text-red-700 dark:text-red-400 mb-2">What most stock management tools don't tell you:</p>
+          <div className="bg-white dark:bg-gray-800 border-l-4 border-red-500 rounded-r-2xl p-6 shadow-md transition-all hover:translate-x-1">
+            <p className="font-bold text-red-700 dark:text-red-400 mb-2 leading-relaxed">What most stock management tools don't tell you:</p>
             <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
               Most inventory tools show current stock levels with a simple reorder threshold. Insydz calculates days-of-stock remaining using real-time sales velocity accounting for acceleration, competitor stockout signals, and Indian festive demand multipliers. The gap between <em>"you have 45 units"</em> and <em>"you have 7 days of stock before running out during Diwali week"</em> is the difference between a reorder and a crisis.
             </p>
@@ -744,12 +370,12 @@ export default function AvoidStockoutsPage() {
       <section id="how-it-works" className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white">
+            <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white leading-relaxed">
               How Stock Monitoring Works
               <br />
               <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">with Insydz</span>
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
               From product connection to stockout prevention automated, accurate, and delivered where you'll actually act on it.
             </p>
           </div>
@@ -778,29 +404,29 @@ export default function AvoidStockoutsPage() {
                   isAlerts: true,
                 },
               ].map((step, i) => (
-                <div key={i} className="bg-white dark:bg-gray-800 border-2 border-red-300 dark:border-red-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all">
+                <div key={i} className="bg-white dark:bg-gray-800 border-2 border-red-300 dark:border-red-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all h-full">
                   <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">{step.step}</div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{step.title}</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 leading-relaxed">{step.title}</h3>
                   {step.isAlerts ? (
                     <div className="space-y-3 text-left">
-                      <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg p-3">
-                        <span className="text-red-600 font-bold text-sm">14 days</span>
-                        <span className="text-xs text-gray-700 dark:text-gray-300"> Early warning. Time to reorder.</span>
+                      <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg p-3 transition-all hover:translate-x-1">
+                        <span className="text-red-600 font-bold text-sm leading-relaxed">14 days</span>
+                        <span className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed"> Early warning. Time to reorder.</span>
                       </div>
-                      <div className="flex items-center gap-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-300 dark:border-orange-700 rounded-lg p-3">
-                        <span className="text-orange-600 font-bold text-sm">7 days</span>
-                        <span className="text-xs text-gray-700 dark:text-gray-300"> Low stock. Confirm order placed.</span>
+                      <div className="flex items-center gap-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-300 dark:border-orange-700 rounded-lg p-3 transition-all hover:translate-x-1">
+                        <span className="text-orange-600 font-bold text-sm leading-relaxed">7 days</span>
+                        <span className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed"> Low stock. Confirm order placed.</span>
                       </div>
-                      <div className="flex items-center gap-2 bg-red-100 dark:bg-red-900/30 border-2 border-red-400 dark:border-red-600 rounded-lg p-3">
-                        <span className="text-red-700 font-bold text-sm">3 days</span>
-                        <span className="text-xs text-gray-700 dark:text-gray-300"> Critical. Escalate immediately.</span>
+                      <div className="flex items-center gap-2 bg-red-100 dark:bg-red-900/30 border-2 border-red-400 dark:border-red-600 rounded-lg p-3 transition-all hover:translate-x-1">
+                        <span className="text-red-700 font-bold text-sm leading-relaxed">3 days</span>
+                        <span className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed"> Critical. Escalate immediately.</span>
                       </div>
-                      <p className="text-xs text-gray-500 text-center pt-1">Each alert includes stock level, velocity & AI reorder qty</p>
+                      <p className="text-xs text-gray-500 text-center pt-1 leading-relaxed">Each alert includes stock level, velocity & AI reorder qty</p>
                     </div>
                   ) : (
                     <>
-                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6 text-sm">{step.desc}</p>
-                      <div className={`${step.bg} rounded-2xl p-4`}>{step.visual}</div>
+                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6 text-sm sm:text-base">{step.desc}</p>
+                      <div className={`${step.bg} rounded-2xl p-4 transition-all hover:scale-105`}>{step.visual}</div>
                     </>
                   )}
                 </div>
@@ -809,291 +435,182 @@ export default function AvoidStockoutsPage() {
           </div>
 
           <div className="text-center mt-12">
-            <Button onClick={handleGetStarted} size="lg"
-              className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold px-12 py-6 text-lg rounded-full shadow-2xl hover:shadow-red-500/50 transition-all group"
-            >
-              Never Miss Sales Again
+            <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold px-12 py-6 text-lg rounded-full shadow-2xl transition-all group">
+               Start Preventing Stockouts Free
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
         </div>
       </section>
 
-      {/* ── SECTION 5: 6 INVENTORY CAPABILITIES ──────────────────────────────── */}
+      {/* ── SECTION 5: CAPABILITIES ────────────────────────────────────────── */}
       <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">
-              Everything You Need to
+            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white leading-relaxed">
+              Full Inventory Intelligence
               <br />
-              <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Stay Ahead of Stockouts</span>
+              <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Capabilities</span>
             </h2>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {inventoryCapabilities.map((cap, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 hover:border-red-400 hover:shadow-xl transition-all">
-                <div className={`w-14 h-14 bg-gradient-to-br ${cap.color} rounded-xl flex items-center justify-center text-white mb-4 shadow-md`}>
-                  {cap.icon}
-                </div>
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2">{cap.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-3">{cap.desc}</p>
+              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 hover:border-red-400 hover:shadow-lg transition-all flex flex-col h-full">
+                <div className={`w-14 h-14 bg-gradient-to-br ${cap.color} rounded-2xl flex items-center justify-center mb-4 text-white shadow-md flex-shrink-0`}>{cap.icon}</div>
+                <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2 leading-relaxed">{cap.title}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4 flex-grow">{cap.desc}</p>
+                <Link href="/features" className="text-xs font-semibold text-red-600 hover:text-red-700 underline transition-colors">See {cap.linkLabel} →</Link>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── SECTION 6: INDIA-FIRST + REAL SELLER SCENARIO ────────────────────── */}
+      {/* ── SECTION 6: ROI ───────────────────────────────────────────────────── */}
       <section className="py-20 px-4 bg-white dark:bg-gray-950">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">
-              How Insydz Is Different
-              <br />
-              <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Built for Indian Festive Commerce</span>
-            </h2>
-          </div>
-
-          {/* Festive Stats */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {[
-              { stat: "3–5×", label: "Diwali demand multiplier", desc: "Average for consumer electronics and home goods vs standard weekly velocity" },
-              { stat: "6–10×", label: "Big Billion Days spike", desc: "Personal care, fashion, home decor routinely exhaust a month's supply in 48 hours" },
-              { stat: "14+ days", label: "Advance planning needed", desc: "Insydz issues festive demand alerts 4–6 weeks before Indian sale events" },
-            ].map((s, i) => (
-              <div key={i} className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-200 dark:border-red-700 rounded-2xl p-6 text-center">
-                <p className="text-4xl font-black text-red-600 dark:text-red-400 mb-1">{s.stat}</p>
-                <p className="font-bold text-gray-900 dark:text-white mb-2">{s.label}</p>
-                <p className="text-sm text-gray-500 leading-relaxed">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Real Seller Scenario */}
-          <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-2 border-orange-300 dark:border-orange-700 rounded-3xl p-8 mb-12 shadow-lg">
-            <div className="flex items-center gap-3 mb-6">
-              <div>
-                <p className="text-sm font-bold text-orange-700 dark:text-orange-400 uppercase tracking-wider">Real Seller Scenario</p>
-                <p className="font-bold text-gray-900 dark:text-white">Electronics Seller, Bengaluru</p>
-              </div>
-            </div>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-              Vikram sells Bluetooth speakers on Amazon India. Going into October, he had stocked 400 units for Big Billion Days based on last year's sales. He felt confident.
-            </p>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-              Two weeks before the event, Insydz flagged something he hadn't noticed: three of the top five competitors had already gone out of stock on their primary listings. Demand was being redistributed his listing was seeing 2.3× normal velocity, and his 400 units were projected to last only 5 days into the 10-day sale event.
-            </p>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
-              With 14 days to spare, Vikram placed an urgent order for 250 additional units. They arrived 3 days before Big Billion Days. He sold through all 650 units across the full 10-day window. Without Insydz, he would have stocked out on day 6 and missed the back half entirely.
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {[
-                { label: "Incremental Revenue", value: "₹5.2L" },
-                { label: "Additional Units Sourced", value: "250 units" },
-                { label: "Days Lead Time Available", value: "14 days" },
-              ].map((stat, i) => (
-                <div key={i} className="bg-white dark:bg-gray-900 border border-orange-200 dark:border-orange-700 rounded-xl p-4 text-center">
-                  <p className="text-2xl font-black text-red-600 dark:text-red-400">{stat.value}</p>
-                  <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Comparison Table */}
-          <div className="overflow-hidden rounded-2xl border-2 border-gray-200 dark:border-gray-700 shadow-xl">
-            <div className="grid grid-cols-3">
-              <div className="bg-gray-100 dark:bg-gray-800 px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700"><p className="font-bold text-gray-700 dark:text-gray-300 text-sm">Capability</p></div>
-              <div className="bg-gray-100 dark:bg-gray-800 px-6 py-4 border-b-2 border-gray-200 dark:border-gray-700"><p className="font-bold text-gray-500 text-sm text-left">Manual Tracking</p></div>
-              <div className="bg-red-500 px-6 py-4 border-b-2 border-red-400"><p className="font-bold text-white text-sm text-left">✓ Insydz</p></div>
-              {comparisonRows.map((row, i) => (
-                <>
-                  <div key={`f-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}><p className="text-sm text-gray-700 dark:text-gray-300 font-medium">{row.feature}</p></div>
-                  <div key={`m-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 text-center ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}><p className="text-sm text-gray-500 flex items-left justify-left gap-1"><X className="w-3 h-3 text-red-500 flex-shrink-0" />{row.manual}</p></div>
-                  <div key={`s-${i}`} className={`px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 === 0 ? "bg-red-50 dark:bg-red-900/10" : "bg-red-50/50 dark:bg-red-900/10"}`}><p className="text-sm text-red-700 dark:text-red-400 font-semibold flex items-left justify-left gap-1"><Check className="w-3 h-3 text-green-600 flex-shrink-0" />{row.insydz}</p></div>
-                </>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── SECTION 7: ROI EXAMPLE ────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">
-              What One Preventable Stockout
-              <br />
-              <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Costs an Indian Seller</span>
+            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white leading-relaxed">
+              The ROI of
+              <span className="text-red-600"> Zero Stockouts</span>
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              A single stockout during a peak period preventable with a 14-day advance alert triggers a chain of costs most sellers never fully calculate.
+            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
+              Two identical products on Amazon India. One uses Insydz's <strong>stockout alert tool</strong>. One relies on manual reorders. Here's what happens over a 90-day period including Big Billion Days.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 mb-8">
-            <div className="rounded-2xl border-2 border-red-300 dark:border-red-700 overflow-hidden shadow-lg">
-              <div className="bg-red-50 dark:bg-red-900/30 px-6 py-4">
-                <p className="font-bold text-red-700 dark:text-red-400 text-lg">Without Insydz Cost of One Festive Season Stockout</p>
-              </div>
-              <div className="bg-white dark:bg-gray-900">
+          <div className="grid sm:grid-cols-2 gap-8 mb-10">
+            {/* Without */}
+            <div className="rounded-2xl border-2 border-red-300 dark:border-red-700 overflow-hidden shadow-lg flex flex-col h-full">
+              <div className="bg-red-50 dark:bg-red-900/30 px-6 py-4 flex-shrink-0"><p className="font-bold text-red-700 dark:text-red-400 leading-relaxed">Manual Inventory Outcome (90 Days)</p></div>
+              <div className="bg-white dark:bg-gray-900 flex-grow">
                 {roiWithout.map((row, i) => (
                   <div key={i} className={`flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 !== 0 ? "bg-gray-50 dark:bg-gray-800/50" : ""}`}>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 pr-2">{row.label}</p>
-                    <p className="text-sm font-bold text-red-600 whitespace-nowrap">{row.value}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{row.label}</p>
+                    <p className="text-sm font-bold text-red-600 whitespace-nowrap leading-relaxed">{row.value}</p>
                   </div>
                 ))}
-                <div className="flex items-center justify-between px-6 py-4 bg-red-50 dark:bg-red-900/20">
-                  <p className="font-bold text-gray-900 dark:text-white">Total Cost of One Preventable Stockout</p>
-                  <p className="font-black text-red-700 text-lg ml-2 whitespace-nowrap">−₹6,55,000+</p>
+                <div className="flex items-center justify-between px-6 py-5 bg-red-50 dark:bg-red-900/20">
+                  <p className="font-bold text-gray-900 dark:text-white leading-relaxed">Total Cost of Stockouts</p>
+                  <p className="font-black text-red-700 text-xl leading-relaxed">−₹3,55,000+</p>
                 </div>
               </div>
             </div>
-
-            <div className="rounded-2xl border-2 border-green-300 dark:border-green-700 overflow-hidden shadow-lg">
-              <div className="bg-green-50 dark:bg-green-900/30 px-6 py-4">
-                <p className="font-bold text-green-700 dark:text-green-400 text-lg">With Insydz Same Festive Period, Stockout Prevented</p>
-              </div>
-              <div className="bg-white dark:bg-gray-900">
+            {/* With */}
+            <div className="rounded-2xl border-2 border-green-300 dark:border-green-700 overflow-hidden shadow-lg flex flex-col h-full">
+              <div className="bg-green-50 dark:bg-green-900/30 px-6 py-4 flex-shrink-0"><p className="font-bold text-green-700 dark:text-green-400 leading-relaxed">Insydz Automated Outcome (90 Days)</p></div>
+              <div className="bg-white dark:bg-gray-900 flex-grow">
                 {roiWith.map((row, i) => (
                   <div key={i} className={`flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 !== 0 ? "bg-gray-50 dark:bg-gray-800/50" : ""}`}>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 flex-1 pr-2">{row.label}</p>
-                    <p className="text-sm font-bold text-green-600 whitespace-nowrap">{row.value}</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{row.label}</p>
+                    <p className="text-sm font-bold text-green-600 whitespace-nowrap leading-relaxed">{row.value}</p>
                   </div>
                 ))}
-                <div className="flex items-center justify-between px-6 py-4 bg-green-50 dark:bg-green-900/20">
-                  <p className="font-bold text-gray-900 dark:text-white">Total Value vs Unmanaged Stockout</p>
-                  <p className="font-black text-green-700 text-lg ml-2 whitespace-nowrap">+₹11,75,000</p>
+                <div className="flex items-center justify-between px-6 py-5 bg-green-50 dark:bg-green-900/20">
+                  <p className="font-bold text-gray-900 dark:text-white leading-relaxed">Net Incremental Revenue</p>
+                  <p className="font-black text-green-700 text-xl leading-relaxed">+₹5,65,000</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30 border-2 border-red-400 rounded-2xl p-6 text-center">
-            <p className="text-2xl font-black text-gray-900 dark:text-white mb-2">₹12.3L swing on one event</p>
-            <p className="text-gray-600 dark:text-gray-400">Between a seller who had Insydz's 14-day advance warning and acted on it versus one who discovered the stockout in real time. Same category, same product, same Big Billion Days. The difference: an <strong>inventory management tool</strong> that looks forward, not just backward.</p>
+          <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30 border-2 border-red-400 rounded-2xl p-6 text-center shadow-md">
+            <p className="text-2xl font-black text-gray-900 dark:text-white mb-2 leading-relaxed">₹9.2 Lakhs Revenue Gap</p>
+            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">Same product. Same category. Same marketplaces. The only difference: one seller used <strong>inventory tracker software</strong> to prevent stockouts while the other reacted too late. Don't be the seller who loses 40% of their annual revenue to a preventable shipping delay.</p>
           </div>
         </div>
       </section>
 
-      {/* ── SECTION 8: FREE PLAN ──────────────────────────────────────────────── */}
+      {/* ── SECTION 7: START FREE ────────────────────────────────────────────── */}
       <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white">
-            Stop Losing Sales to Stockouts.
-            <br />
-            <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Stay Ahead.</span>
+          <h2 className="text-5xl font-black mb-4 text-gray-900 dark:text-white leading-relaxed">
+            Start Preventing Stockouts Free
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-10">Free Plan — ₹0 / Forever No credit card required</p>
+          <p className="text-xl text-gray-600 dark:text-gray-400 mb-10 leading-relaxed">Free Plan — ₹0 / Forever No credit card required</p>
 
           <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-300 dark:border-red-700 rounded-3xl p-8 mb-8 text-left shadow-xl">
-            <h3 className="font-bold text-gray-900 dark:text-white text-xl mb-6 text-center">Free Plan Includes:</h3>
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
+            <h3 className="font-bold text-gray-900 dark:text-white text-xl mb-6 text-center leading-relaxed">Free Plan Includes:</h3>
+            <div className="grid sm:grid-cols-2 gap-4">
               {[
-                "Inventory tracking (limited products) on Amazon India & Flipkart",
-                "Sales velocity monitoring real-time",
-                "Stockout prediction days remaining calculated live",
-                "Basic WhatsApp restock alerts",
-                "Inventory health dashboard",
+                "Connect up to 5 products for real-time velocity tracking",
+                "Basic stockout prediction dates",
+                "Standard email reorder alerts",
+                "Single marketplace view (Amazon India or Flipkart)",
+                "Daily stock status updates",
+                "Historical inventory reports (last 30 days)",
               ].map((feature, i) => (
-                <div key={i} className="flex items-start gap-3 bg-white dark:bg-gray-900 rounded-lg p-4">
+                <div key={i} className="flex items-start gap-3">
                   <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 dark:text-gray-300 text-sm">{feature}</span>
+                  <span className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{feature}</span>
                 </div>
               ))}
             </div>
-            <div className="bg-white dark:bg-gray-900 border border-red-200 dark:border-red-700 rounded-xl p-4">
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                <span className="font-bold text-red-600">Upgrade teaser:</span> Paid plans unlock full catalogue tracking, <Link href="/features/inventory-dashboard" className="underline font-semibold hover:text-red-700">competitor stock monitoring</Link>,               <Link href="/features/demand-forecasting" className="underline font-semibold hover:text-red-700">festive demand intelligence</Link>, multi-tier WhatsApp alerts (14/7/3 days), supplier lead time integration support.
-              </p>
-            </div>
           </div>
 
-          <Button onClick={handleGetStarted} size="lg"
-            className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold px-12 py-6 text-lg rounded-full shadow-2xl group"
-          >
-            Prevent Stockouts Free
+          <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 mb-10 text-left shadow-sm">
+            <p className="text-sm text-gray-600 dark:text-gray-400 flex items-start gap-2 leading-relaxed">
+              <Zap className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
+              <span><strong className="text-gray-900 dark:text-white">Upgrade teaser:</strong> Paid plans unlock unlimited products, WhatsApp alerts, competitor stock monitoring, Indian festive multipliers, multi-platform unified view, and advanced AI reorder quantity suggestions.</span>
+            </p>
+          </div>
+
+          <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold px-12 py-6 text-lg rounded-full shadow-2xl transition-all group">
+             Prevent Your First Stockout Free
             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
         </div>
       </section>
 
-      {/* ── SECTION 9: ICP-BASED CTAs ─────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-gradient-to-br from-red-600 via-orange-600 to-red-700">
+      {/* ── SECTION 8: ICP CTA ───────────────────────────────────────────────── */}
+      <section className="py-20 px-4 bg-gradient-to-br from-red-600 via-orange-500 to-red-600">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl lg:text-5xl font-black mb-4 text-white">Stop Losing Sales.</h2>
-          <p className="text-xl text-white/90 mb-12">Stay Ahead of Stockouts — Pick Your Path</p>
+          <h2 className="text-4xl lg:text-5xl font-black mb-6 text-white leading-relaxed">Your Rankings Are Too Valuable<br />To Lose To a Stockout</h2>
+          <p className="text-xl text-white/90 mb-12 leading-relaxed">Join 12,000+ sellers who protect their Amazon India and Flipkart businesses with AI stockout prediction.</p>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-10">
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
             {[
-              {
-                label: "New Sellers (Free Plan)",
-                desc: "Even with 2–3 products, the free plan shows how fast your inventory is moving and when to reorder so you don't run out during your first festive season and lose the momentum you've built.",
-                cta: "Start Free No Card Needed →",
-                action: handleGetStarted,
-              },
-              {
-                label: "Growing Sellers (Growth Plan)",
-                desc: "At ₹5L+ monthly, one stockout during Big Billion Days or Diwali can cost more than a full month's profit. Growth Plan: full catalogue tracking, competitor stock alerts, festive demand intelligence, multi-tier WhatsApp alerts.",
-                cta: "Try Growth Plan →",
-                action: () => router.push("/pricing"),
-              },
-              {
-                label: "D2C Brands / Agencies (Demo)",
-                desc: "Unified inventory intelligence across Amazon India, Flipkart cross-channel stockout prioritisation, white-label inventory reports, API access for supply chain integrations.",
-                cta: "Book a Demo →",
-                action: () => router.push("/demo"),
-              },
+              { label: "New Sellers", desc: "The free plan protects your core SKUs while you scale. No risk, no cost, just data.", cta: "Start Free Now →" },
+              { label: "Growing Sellers", desc: "Managing 10+ SKUs? Automate everything with the Growth Plan and never check a spreadsheet again.", cta: "Try Growth Plan →" },
+              { label: "Agencies & Brands", desc: "Managing multiple client accounts? Unified dashboard, white-label alerts, and bulk reorder planning.", cta: "Book Demo →" },
             ].map((card, i) => (
-              <div key={i} className="bg-background opacity-100 backdrop-blur-none border border-white/20 rounded-2xl p-6 text-left">
-                <p className="font-bold text-white mb-2">{card.label}</p>
-                <p className="text-white/80 text-sm mb-4">{card.desc}</p>
+              <div key={i} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-left transition-all hover:bg-white/15 h-full flex flex-col">
+                <p className="font-bold text-white mb-2 leading-relaxed">{card.label}</p>
+                <p className="text-white/80 text-sm mb-4 leading-relaxed flex-grow">{card.desc}</p>
                 {card.cta === "Try Growth Plan →" ? (
-                  <Link href="/pricing" className="text-orange-100 font-semibold text-sm hover:text-white transition-colors underline">{card.cta}</Link>
-                ) : card.cta === "Book a Demo →" ? (
-                  <Link href="/demo" className="text-orange-100 font-semibold text-sm hover:text-white transition-colors underline">{card.cta}</Link>
+                  <Link href="/pricing" className="text-white font-semibold hover:underline transition-colors">{card.cta}</Link>
+                ) : card.cta === "Book Demo →" ? (
+                  <Link href="/about/contact-us" className="text-white font-semibold hover:underline transition-colors">{card.cta}</Link>
                 ) : (
-                  <a href="/login" className="text-orange-100 font-semibold text-sm hover:text-white transition-colors underline">{card.cta}</a>
+                  <Link href="/login" className="text-white font-semibold hover:underline transition-colors">{card.cta}</Link>
                 )}
               </div>
             ))}
           </div>
 
-          <Button onClick={handleGetStarted} size="lg"
-            className="bg-white hover:bg-gray-100 text-red-700 font-bold px-12 py-6 text-lg rounded-full shadow-2xl group"
-          >
-            Prevent Stockouts Free
+          <Button onClick={handleGetStarted} size="lg" className="bg-white hover:bg-gray-100 text-red-700 font-bold px-12 py-6 text-lg rounded-full shadow-2xl transition-all group">
+             Prevent Stockouts Free
             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
-          <p className="text-white/80 mt-6 text-sm">✓ No credit card required  ✓ Setup in 5 minutes  ✓ Cancel anytime</p>
+          <p className="text-white/80 mt-6 text-sm leading-relaxed">✓ 2-minute setup  ✓ No credit card required  ✓ Cancel anytime</p>
         </div>
       </section>
 
-      {/* ── SECTION 10: FAQ ───────────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-white dark:bg-gray-950">
+      {/* ── SECTION 9: FAQ ───────────────────────────────────────────────────── */}
+      <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-4xl lg:text-5xl font-black mb-4 text-center text-gray-900 dark:text-white">
-            Inventory Management FAQs
-          </h2>
-          <p className="text-center text-gray-500 mb-12 text-lg">Everything about AI-powered stockout prevention for Indian sellers</p>
-
+          <h2 className="text-4xl lg:text-5xl font-black mb-4 text-center text-gray-900 dark:text-white leading-relaxed">Inventory Management FAQs</h2>
+          <p className="text-center text-gray-500 mb-12 text-lg leading-relaxed">About Preventing Stockouts on Amazon & Flipkart India</p>
           <div className="space-y-4">
             {faqs.map((faq) => (
-              <div key={faq.id} className="bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-red-300 transition-all">
-                <button
-                  onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
-                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
-                >
-                  <span className="font-bold text-gray-900 dark:text-white pr-4 text-lg">{faq.q}</span>
-                  {expandedFaq === faq.id
-                    ? <ChevronDown className="w-5 h-5 text-red-500 flex-shrink-0" />
-                    : <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                  }
+              <div key={faq.id} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-red-300 transition-all shadow-sm">
+                <button onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)} className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <span className="font-bold text-gray-900 dark:text-white pr-4 leading-relaxed">{faq.q}</span>
+                  {expandedFaq === faq.id ? <ChevronDown className="w-5 h-5 text-red-500 flex-shrink-0" /> : <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />}
                 </button>
                 {expandedFaq === faq.id && (
-                  <div className="px-6 pb-5 bg-white dark:bg-gray-700/30">
+                  <div className="px-6 pb-6 bg-gray-50 dark:bg-gray-700/30">
                     <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{faq.a}</p>
                   </div>
                 )}
@@ -1103,81 +620,15 @@ export default function AvoidStockoutsPage() {
         </div>
       </section>
 
-      {/* ── RELATED USE CASES ─────────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">Related Seller Use Cases</h2>
-            <p className="text-gray-600 dark:text-gray-400">Explore more ways to grow your ecommerce business</p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { title: "Track Competitor Prices", icon: <TrendingDown className="w-8 h-8" />, color: "from-orange-500 to-red-500", route: "/use-cases/track-competitor-prices" },
-              { title: "Find Profitable Products", icon: <Target className="w-8 h-8" />, color: "from-blue-500 to-cyan-500", route: "/use-cases/find-profitable-products" },
-              { title: "Analyse Customer Reviews", icon: <MessageCircle className="w-8 h-8" />, color: "from-purple-500 to-pink-500", route: "/use-cases/analyze-customer-reviews" },
-              { title: "Improve Amazon & Flipkart SEO", icon: <Search className="w-8 h-8" />, color: "from-green-500 to-emerald-500", route: "/use-cases/improve-seo" },
-            ].map((uc, i) => (
-                <Link key={i} href={uc.route} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-6 hover:border-red-400 hover:shadow-lg transition-all cursor-pointer group block">
-                <div className={`w-14 h-14 bg-gradient-to-br ${uc.color} rounded-xl flex items-center justify-center mb-4 text-white group-hover:scale-110 transition-transform shadow-md`}>{uc.icon}</div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-red-600 transition-colors">{uc.title}</h3>
-                <ArrowRight className="w-5 h-5 text-red-600 mt-2 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── STICKY MOBILE CTA ─────────────────────────────────────────────────── */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-red-300 dark:border-red-700 p-4 shadow-2xl z-40">
-        <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold py-4 rounded-full shadow-xl">
-          Prevent Stockouts Free
+      {/* ── STICKY MOBILE CTA ────────────────────────────────────────────────── */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-red-300 dark:border-red-700 p-4 shadow-2xl z-40" style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom, 0px))" }}>
+        <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold py-4 rounded-full shadow-xl transition-all">
+           Prevent Stockouts Free
         </Button>
       </div>
 
-      {/* Footer */}
-      
- 
-      <style>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-        .delay-1000 {
-          animation-delay: 1s;
-        }
-      `}</style>
+      {/* Spacer so sticky CTA doesn't cover footer content */}
+      <div className="lg:hidden h-20" />
     </div>
   );
 }
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

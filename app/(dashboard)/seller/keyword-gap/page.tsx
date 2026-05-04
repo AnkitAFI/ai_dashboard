@@ -12,6 +12,7 @@ import {
   Sparkles, Eye, EyeOff, Filter, Layers, Cpu,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useSelectedProduct } from "@/lib/selected-product-context";
 
 const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
 
@@ -364,9 +365,10 @@ function KeywordGapContent() {
   const router = useRouter();
   const { user } = useAuth();
   const { toggle } = useSidebar();
+  const { selected } = useSelectedProduct();
 
-  const asin     = searchParams.get("asin")      || "";
-  const sellerId = searchParams.get("seller_id") || user?.seller_id || "";
+  const asin     = searchParams.get("asin")      || selected?.asin     || "";
+  const sellerId = searchParams.get("seller_id") || selected?.sellerId || user?.seller_id || "";
 
   const [data, setData]         = useState<any>(null);
   const [loading, setLoading]   = useState(false);

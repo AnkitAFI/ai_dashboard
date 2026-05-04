@@ -651,4 +651,96 @@ class KwAlertSettings(Base):
     whatsapp_number  = Column(String(20), nullable=True)
     updated_at       = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
  
-    tracked_kw = relationship("KwTracked", back_populates="alert")    
+    tracked_kw = relationship("KwTracked", back_populates="alert")   
+
+
+
+class RankTrackedKeyword(Base):
+    """
+    One row per (seller_id, asin, keyword).
+    Stores which keywords a seller wants to track for a specific product.
+    Named rank_tracked_keywords — does NOT conflict with kw_tracked.
+    """
+    __tablename__ = "rank_tracked_keywords"
+    __table_args__ = (
+        UniqueConstraint("seller_id", "asin", "keyword", name="uq_rank_tracked_kw"),
+    )
+ 
+    id         = Column(Integer, primary_key=True, autoincrement=True)
+    seller_id  = Column(String(120), nullable=False, index=True)
+    asin       = Column(String(20),  nullable=False, index=True)
+    user_email = Column(String(255), nullable=True,  index=True)
+    keyword    = Column(String(300), nullable=False)
+    country    = Column(String(10),  nullable=True,  default="US")
+    added_at   = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.utcnow(),
+    )
+ 
+ 
+class RankSnapshot(Base):
+    """
+    One row per rank check of a (seller_id, asin, keyword).
+    Append-only history — never updated, only inserted.
+    Named rank_snapshots — does NOT conflict with competitor_snapshots.
+    """
+    __tablename__ = "rank_snapshots"
+ 
+    id            = Column(Integer, primary_key=True, autoincrement=True)
+    seller_id     = Column(String(120), nullable=False, index=True)
+    asin          = Column(String(20),  nullable=False, index=True)
+    user_email    = Column(String(255), nullable=True)
+    keyword       = Column(String(300), nullable=False, index=True)
+    rank_position = Column(Integer,     nullable=True)   # NULL = not found in top 100
+    page_number   = Column(Integer,     nullable=True)
+    is_sponsored  = Column(Boolean,     default=False)
+    country       = Column(String(10),  nullable=True, default="US")
+    checked_at    = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.utcnow(),
+        index=True,
+    )
+ 
+ 
+class RankCompetitorPosition(Base):
+    """
+    Competitor rank for the same keyword at check time.
+    Premium only — populated when a premium seller runs a rank check.
+    Named rank_competitor_positions — does NOT conflict with kw_competitors.
+    """
+    __tablename__ = "rank_competitor_positions"
+ 
+    id               = Column(Integer, primary_key=True, autoincrement=True)
+    seller_id        = Column(String(120), nullable=False, index=True)
+    asin             = Column(String(20),  nullable=False, index=True)
+    keyword          = Column(String(300), nullable=False, index=True)
+    competitor_asin  = Column(String(20),  nullable=False)
+    competitor_title = Column(Text,        nullable=True)
+    rank_position    = Column(Integer,     nullable=True)
+    checked_at       = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.utcnow(),
+    )
+ 
+ 
+class RankAlertLog(Base):
+    """
+    Fired rank alert events — one row per alert event.
+    Premium only — written when a rank drop / top10 entry / lost event is detected.
+    Named rank_alert_log — does NOT conflict with kw_alert_settings.
+    """
+    __tablename__ = "rank_alert_log"
+ 
+    id         = Column(Integer, primary_key=True, autoincrement=True)
+    seller_id  = Column(String(120), nullable=False, index=True)
+    asin       = Column(String(20),  nullable=False)
+    user_email = Column(String(255), nullable=True)
+    keyword    = Column(String(300), nullable=False)
+    alert_type = Column(String(50),  nullable=False)  # drop | enter_top10 | lost
+    alert_msg  = Column(Text,        nullable=True)
+    old_rank   = Column(Integer,     nullable=True)
+    new_rank   = Column(Integer,     nullable=True)
+    fired_at   = Column(
+        DateTime(timezone=True),
+        default=lambda: datetime.utcnow(),
+    )     

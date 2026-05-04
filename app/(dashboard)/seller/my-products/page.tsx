@@ -302,6 +302,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { useSelectedProduct } from "@/lib/selected-product-context";
 
 function SellerProductsContent() {
   const { user, refreshUser } = useAuth();
@@ -340,6 +341,8 @@ function SellerProductsContent() {
     if (activeSellerId) fetchProducts();
   }, [activeSellerId]);
 
+  const { setSelected } = useSelectedProduct();
+
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
       p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -355,6 +358,7 @@ function SellerProductsContent() {
 
   const handleRowClick = (p: any) => {
     setSelectedAsin(p.asin);
+    setSelected({ asin: p.asin, sellerId: activeSellerId || "" });
     const params = new URLSearchParams({ asin: p.asin, seller_id: activeSellerId || "" });
     // Navigate to price comparison by default; user can switch tabs there
     router.push(`/seller/price-comparison?${params}`);

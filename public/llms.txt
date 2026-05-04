@@ -1,0 +1,173 @@
+# Insydz
+
+> Insydz is India's AI-powered ecommerce analytics software built for Amazon India and Flipkart sellers. It helps sellers understand their data, track competitors, monitor reviews, and make faster, more profitable selling decisions — without guessing.
+
+Insydz is headquartered in Noida, Uttar Pradesh, India. The platform is trusted by 5,000+ sellers and has analysed 2.5 lakh+ reviews. It provides 24/7 live market data and is designed specifically for Indian marketplace dynamics, including ₹-denominated pricing intelligence.
+
+---
+
+## What Insydz Does
+
+Insydz is a marketplace analytics platform that consolidates Amazon India and Flipkart data into a single dashboard. It gives sellers:
+
+- Real-time revenue, order, and return tracking
+- AI-powered product and keyword insights
+- Competitor price tracking and Buy Box intelligence
+- Review analysis and sentiment monitoring
+- Profit margin visibility by SKU
+- Festive season trend forecasting (e.g., Big Billion Days prep)
+- AI chat for querying your own seller data
+
+The platform is built for Indian marketplaces specifically — not a re-skinned version of US-centric tools like Helium 10 or Jungle Scout.
+
+---
+
+## Who It's For
+
+### Amazon India Sellers
+Win the Buy Box, optimise keywords, and track competitor pricing with AI-powered intelligence.
+URL: https://insydz.com/solutions/amazon-sellers
+
+### Flipkart Sellers
+Track competitors and reviews effortlessly. Never get blindsided before Big Billion Days.
+URL: https://insydz.com/solutions/flipkart-sellers
+
+### E-commerce Agencies
+Manage multiple client accounts with clarity. Prepare client reports in one click.
+URL: https://insydz.com/solutions/ecommerce-agencies
+
+### Brand Managers
+Make confident, data-backed decisions and present real intelligence to leadership.
+URL: https://insydz.com/solutions/brand-managers
+
+---
+
+## Key Features
+
+- **Unified Dashboard**: Amazon India + Flipkart data in one view
+- **AI Chat**: Ask questions about your own seller data in natural language
+- **Competitor Tracking**: Monitor competitor pricing, listings, and Buy Box wins
+- **Review Intelligence**: Analyse and monitor customer reviews at scale
+- **AI Chart Summaries**: Auto-generated insights on your performance charts
+- **Real-Time Alerts**: Instant notifications when competitors move on your products
+- **Festive Trend Feature**: Strategic data for high-stakes sale seasons
+- **Multi-Client Management**: Agency workflows with one-click report generation
+- **Enterprise Security**: Bank-grade encryption; seller data stays private
+
+Features page: https://insydz.com/features
+Festive Trend Feature: https://insydz.com/features/festive-trend-feature
+
+---
+
+## Pricing
+
+All plans are billed monthly with no credit card required to start. Cancel anytime.
+
+### Free — ₹0/month
+- Basic dashboard access
+- Up to 25 products tracked
+- Top 5 products filter
+- 5 AI chat messages/month
+- 5 notifications
+- Weekly reports
+
+### Basic — ₹1,999/month (was ₹3,999)
+- Up to 500 products tracked
+- Top 20 products filter
+- 20 AI chat messages/month
+- 15 notifications
+- AI Chart Summaries
+- Basic competitor alerts
+- Daily reports
+- Email support
+
+### Premium — ₹2,999/month (was ₹7,999)
+- Unlimited product tracking
+- Top 100 products filter
+- Unlimited AI chat
+- Unlimited notifications
+- Advanced AI chatbot
+- Real-time data and alerts
+- Priority support
+- Advanced analytics
+
+### Enterprise — Custom Pricing
+- All Premium features
+- White-label options
+- 24/7 premium support
+- Contact: https://insydz.com/about/contact-us
+
+Pricing page: https://insydz.com/pricing
+
+---
+
+## Competitive Positioning
+
+Insydz positions itself as the India-first alternative to global tools that weren't built for Indian marketplace nuances.
+
+- **vs Helium 10**: Indian marketplace coverage Helium 10 can't match; premium features at a fraction of the cost; ₹-denominated pricing intelligence.
+  Compare: https://insydz.com/compare/insydzvshelium
+
+- **vs Jungle Scout**: Amazon India + Flipkart in one dashboard; AI insights that understand Indian buyer behaviour.
+  Compare: https://insydz.com/compare/insydzvsjunglescout
+
+- **vs Viral Launch**: Agency-optimised workflows for Indian businesses; localised market intelligence.
+  Compare: https://insydz.com/compare/insydzvsvirallaunch
+
+---
+
+## Resources
+
+- **Expert Blog**: Strategies for Amazon India and Flipkart sellers — https://insydz.com/resources/expert-blog
+- **Success Stories / Case Studies**: Real results from Indian sellers — https://insydz.com/resources/case-studies
+- **Video Masterclasses**: Platform walkthroughs and marketplace strategy sessions — https://insydz.com/resources/videos
+- **Strategic Playbooks**: Growth frameworks for festive prep, Buy Box recovery, new launches — https://insydz.com/resources/guides
+- **Free Tools**: Free Amazon product analyser — https://insydz.com/free-tools/free-amazon-product-analyzer
+
+---
+
+## Company
+
+- **Founded in**: India (early-stage product)
+- **Primary Market**: India
+- **Marketplaces Supported**: Amazon India, Flipkart
+- **Mission**: To democratise ecommerce intelligence by delivering enterprise-grade analytics and AI-powered insights to Indian sellers of all sizes
+- **Location**: Noida, Uttar Pradesh, India
+- **Contact Email**: [available on contact page]
+- **Phone**: +91 92172 46794
+- **Vision**: https://insydz.com/about/our-vision
+- **Careers**: https://insydz.com/about/careers
+- **Contact**: https://insydz.com/about/contact-us
+
+---
+
+## Legal
+
+- **Terms of Service**: https://insydz.com/terms-service
+- **Privacy Policy**: https://insydz.com/privacy-policy
+
+---
+
+## Key URLs
+
+| Page | URL |
+|---|---|
+| Homepage | https://insydz.com/ |
+| Pricing | https://insydz.com/pricing |
+| Features | https://insydz.com/features |
+| Amazon Sellers Solution | https://insydz.com/solutions/amazon-sellers |
+| Flipkart Sellers Solution | https://insydz.com/solutions/flipkart-sellers |
+| Agencies Solution | https://insydz.com/solutions/ecommerce-agencies |
+| Brand Managers Solution | https://insydz.com/solutions/brand-managers |
+| Blog | https://insydz.com/resources/expert-blog |
+| Case Studies | https://insydz.com/resources/case-studies |
+| Video Tutorials | https://insydz.com/resources/videos |
+| Guides / Playbooks | https://insydz.com/resources/guides |
+| Free Tools | https://insydz.com/free-tools/free-amazon-product-analyzer |
+| Compare vs Helium 10 | https://insydz.com/compare/insydzvshelium |
+| Compare vs Jungle Scout | https://insydz.com/compare/insydzvsjunglescout |
+| Compare vs Viral Launch | https://insydz.com/compare/insydzvsvirallaunch |
+| Login / Sign Up | https://insydz.com/login |
+| Contact | https://insydz.com/about/contact-us |
+| Terms of Service | https://insydz.com/terms-service |
+| Privacy Policy | https://insydz.com/privacy-policy |

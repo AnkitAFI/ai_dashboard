@@ -1,82 +1,18 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { 
   TrendingDown, ArrowRight, CheckCircle2, Target, Zap, 
   Bell, TrendingUp, MessageCircle, Search, Package, 
   BarChart3, ChevronRight, AlertCircle, Clock,
-  ShoppingBag, Smartphone, X, Check,
-  RefreshCw, FileSpreadsheet, Shield, Eye,
-  ChevronDown, Menu, Sun, Moon, ArrowLeft, BookOpen, 
-  Video, FileText, Store, Briefcase, Users, Code, Globe, Trophy,
-  Flame, Presentation, DollarSign, LayoutGrid, Facebook, Instagram, Linkedin, Twitter
+  Smartphone, X, Check,
+  RefreshCw, FileSpreadsheet, Shield, Eye, ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
-
-type MenuItemWithBadge = { name: string; icon: JSX.Element; badge?: string; route?: string; };
-type NavigationMenu = {
-  Solutions: MenuItemWithBadge[]; "Use Cases": MenuItemWithBadge[]; Features: MenuItemWithBadge[];
-  "Free Tools": MenuItemWithBadge[]; Resources: MenuItemWithBadge[]; Integrations: MenuItemWithBadge[];
-  Compare: MenuItemWithBadge[]; About: MenuItemWithBadge[];
-};
-
-const navigationMenu: NavigationMenu = {
-  Solutions: [
-    { name: "All Solutions (Overview)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions" },
-    { name: "For Amazon Sellers (India)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions/amazon-sellers" },
-    { name: "For Flipkart Sellers", icon: <Store className="w-4 h-4" />, route: "/solutions/flipkart-sellers" },
-    { name: "For E-commerce Agencies", icon: <Briefcase className="w-4 h-4" />, route: "/solutions/ecommerce-agencies" },
-    { name: "For Brand Managers", icon: <Users className="w-4 h-4" />, route: "/solutions/brand-managers" },
-  ],
-  "Use Cases": [
-    { name: "All Use Cases", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases" },
-    { name: "Track Competitor Prices", icon: <TrendingDown className="w-4 h-4" />, route: "/use-cases/track-competitor-prices" },
-    { name: "Find Profitable Products", icon: <Target className="w-4 h-4" />, route: "/use-cases/find-profitable-products" },
-    { name: "Analyze Customer Reviews", icon: <MessageCircle className="w-4 h-4" />, route: "/use-cases/analyze-customer-reviews" },
-    { name: "Improve Amazon & Flipkart SEO", icon: <Search className="w-4 h-4" />, route: "/use-cases/improve-seo" },
-    { name: "Avoid Stockouts & Missed Sales", icon: <Package className="w-4 h-4" />, route: "/use-cases/avoid-stockouts" },
-  ],
-  Features: [
-    { name: "All Features", icon: <LayoutGrid className="w-4 h-4" />, route: "/features" },
-    { name: "Competitor Price Tracking", icon: <TrendingDown className="w-4 h-4" />, route: "/features/competitor-price-tracking-feature" },
-    { name: "Review Analytics", icon: <MessageCircle className="w-4 h-4" />, route: "/features/review-analytics-feature" },
-    { name: "Price Optimization", icon: <TrendingUp className="w-4 h-4" />, route: "/features/price-optimization-feature" },
-    { name: "Keyword & Rank Tracking", icon: <Search className="w-4 h-4" />, route: "/features/keyword-rank-tracking-feature" },
-    { name: "Product Research", icon: <Package className="w-4 h-4" />, route: "/features/product-research-feature" },
-    { name: "AI Recommendations", icon: <Zap className="w-4 h-4" />, route: "/features/ai-recommendations-feature" },
-    { name: "WhatsApp Alerts", icon: <Bell className="w-4 h-4" />, badge: "NEW", route: "/features/whatsapp-alerts-feature" },
-    { name: "Festive Trend Intelligence", icon: <Flame className="w-4 h-4" />, badge: "UPCOMING", route: "/features/festive-trend-feature" },
-  ],
-  "Free Tools": [
-    { name: "Free Amazon Product Analyzer", icon: <BarChart3 className="w-4 h-4" />, route: "/free-tools/free-amazon-product-analyzer" },
-    { name: "Free Review Sentiment Checker", icon: <MessageCircle className="w-4 h-4" />, route: "/free-tools/free-review-sentiment-checker" },
-    { name: "Free Competitor Price Checker", icon: <TrendingDown className="w-4 h-4" />, route: "/free-tools/free-competitor-price-checker" },
-    { name: "Free Keyword Rank Checker", icon: <Search className="w-4 h-4" />, badge: "NEW", route: "/free-tools/free-keyword-rank-checker" },
-  ],
-  Resources: [
-    { name: "Expert Blog", icon: <BookOpen className="w-4 h-4" />, route: "/resources/expert-blog" },
-  ],
-  Integrations: [
-    { name: "Amazon", icon: <ShoppingBag className="w-4 h-4" /> },
-    { name: "Flipkart", icon: <Store className="w-4 h-4" /> },
-    { name: "Shopify", icon: <Globe className="w-4 h-4" /> },
-    { name: "API Documentation", icon: <Code className="w-4 h-4" /> },
-  ],
-  Compare: [
-    { name: "Insydz vs Helium 10", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvshelium" },
-    { name: "Insydz vs Jungle Scout", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsjunglescout" },
-    { name: "Insydz vs Viral Launch", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsvirallaunch" },
-  ],
-  About: [
-    { name: "Our Vision", icon: <Presentation className="w-4 h-4" />, route: "/about/our-vision" },
-    { name: "Careers", icon: <Globe className="w-4 h-4" />, route: "/about/careers" },
-    { name: "Contact Us", icon: <Users className="w-4 h-4" />, route: "/about/contact-us" },
-  ],
-};
 
 const comparisonRows = [
   { feature: "Monitoring", manual: "Checking listings manually", insydz: "Automatic 24/7 tracking" },
@@ -107,209 +43,54 @@ const faqs = [
   { id: "faq-3", q: "Will constant price changes hurt my margins?", a: "Not with Insydz. The platform shows your margin floor alongside every competitor price drop alert, so you always know the minimum price you can go to without selling at a loss. The AI recommends a response price that protects your Buy Box while keeping your margin intact — not just matching the lowest price blindly." },
   { id: "faq-4", q: "Can I track multiple competitors per product?", a: "Yes. Insydz tracks up to 100+ competitors per product. You can monitor all sellers in your product category simultaneously — including new entrants. You'll be alerted when any seller makes a significant price change, not just the top 3." },
   { id: "faq-5", q: "Is the free plan limited for competitor price tracking?", a: "The free plan lets you track a limited number of products with real-time competitor price alerts and Amazon & Flipkart data — no credit card required. Paid plans unlock tracking across your full catalogue, more competitors per product, 90-day historical price trends, advanced Buy Box monitoring, and AI pricing recommendations." },
-  { id: "faq-6", q: "Do I get WhatsApp alerts for competitor price changes?", a: "Yes. Every significant competitor price change triggers an instant WhatsApp notification with the competitor name, their old price, new price, percentage drop, and an AI-suggested response price for your product in INR." },
+  { id: "faq-6", q: "Do I get WhatsApp alerts for competitor price changes?", a: "Yes. Every significant competitor price change triggers an instant WhatsApp notification with the competitor name, old price, new price, percentage drop, and an AI-suggested response price for your product in INR." },
 ];
 
-export default function TrackCompetitorPricesPage() {
+export default function TrackCompetitorPricesContent() {
   const router = useRouter();
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
-  const [scrolled, setScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    isDarkMode ? document.documentElement.classList.add("dark") : document.documentElement.classList.remove("dark");
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    const h = (e: MouseEvent) => { if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setActiveDropdown(null); };
-    document.addEventListener("mousedown", h);
-    return () => document.removeEventListener("mousedown", h);
-  }, []);
-
-  useEffect(() => {
-    const handleResize = () => { if (window.innerWidth >= 1024) setIsMenuOpen(false); };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const handleGetStarted = () => router.push("/login");
-  const toggleMobileMenu = (name: string) => setMobileActiveMenu(mobileActiveMenu === name ? null : name);
-  const handleMenuItemClick = (item: MenuItemWithBadge) => {
-    if (item.route) { router.push(item.route); setActiveDropdown(null); setIsMenuOpen(false); }
-  };
-    const scrollToSection = (sectionId: string) => {
-    router.push('/');
-    setTimeout(() => document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-  };
-
-  const DesktopDropdown = ({ label, menuKey, accent = "purple" }: { label: string; menuKey: keyof NavigationMenu; accent?: "purple" | "orange" }) => {
-    const items = navigationMenu[menuKey];
-    const isActive = activeDropdown === label;
-    const ac = accent === "orange";
-    return (
-      <div className="relative">
-        <button onMouseEnter={() => setActiveDropdown(label)} className={`px-2 xl:px-3 py-2 text-xs xl:text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${isActive ? (ac ? "text-orange-600 font-semibold" : "text-purple-600 font-semibold") : (ac ? "text-orange-600 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20" : "text-gray-700 dark:text-gray-300 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20")}`}>
-          {label}<ChevronDown className={`w-3 h-3 xl:w-3.5 xl:h-3.5 transition-transform ${isActive ? "rotate-180" : ""}`} />
-        </button>
-        {isActive && (
-          <div onMouseLeave={() => setActiveDropdown(null)} className="absolute top-full left-0 mt-2 w-64 xl:w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 z-50">
-            {items.map((item, i) => (
-              item.route ? (
-                <Link
-                  key={i}
-                  href={item.route}
-                  onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }}
-                  className={`w-full px-4 py-2.5 flex items-center gap-3 group transition-colors ${
-                    ac ? "hover:bg-orange-50 dark:hover:bg-orange-900/20" : "hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                  }`}
-                >
-                  <span className={`flex-shrink-0 ${ac ? "text-orange-600 dark:text-orange-400" : "text-purple-600 dark:text-purple-400"}`}>{item.icon}</span>
-                  <span className="text-xs xl:text-sm text-gray-700 dark:text-gray-300 flex-1 text-left">{item.name}</span>
-                  {item.badge && <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-1.5 py-0.5 rounded-full font-semibold flex-shrink-0">{item.badge}</span>}
-                </Link>
-              ) : (
-                <span
-                  key={i}
-                  className={`w-full px-4 py-2.5 flex items-center gap-3 opacity-60 cursor-default`}
-                >
-                  <span className={`flex-shrink-0 ${ac ? "text-orange-600 dark:text-orange-400" : "text-purple-600 dark:text-purple-400"}`}>{item.icon}</span>
-                  <span className="text-xs xl:text-sm text-gray-700 dark:text-gray-300 flex-1 text-left">{item.name}</span>
-                </span>
-              )
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 overflow-x-hidden">
-      
-
-      {/* ══ NAV ══ */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}>
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
-            <a href="/" className="flex items-center space-x-1 group">
-  <div className="relative">
-    <img src="/logo.png" alt="Insydz Logo" className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-xl sm:rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain" />
-    <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
-  </div>
-  <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent ml-1 sm:ml-2">Insydz</span>
-</a>
-            <div className="hidden lg:flex items-center space-x-0.5 xl:space-x-3" ref={dropdownRef}>
-              <DesktopDropdown label="Solutions"  menuKey="Solutions" />
-              <DesktopDropdown label="Use Cases"  menuKey="Use Cases" accent="orange" />
-              <DesktopDropdown label="Features"   menuKey="Features" />
-              <Link href="/pricing" onMouseEnter={() => setActiveDropdown(null)} className="px-2 xl:px-3 py-2 text-xs xl:text-sm text-gray-700 dark:text-gray-300 hover:text-orange-600 font-medium rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all">Pricing</Link>
-              <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
-              <DesktopDropdown label="Compare"    menuKey="Compare" />
-              <DesktopDropdown label="Resources"  menuKey="Resources" />
-              <DesktopDropdown label="About"      menuKey="About" />
-              <Link href="/login" onMouseEnter={() => setActiveDropdown(null)} className="ml-1 text-xs xl:text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-4 xl:px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">Login</Link>
-              <button className="ml-1 p-1.5 xl:p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex-shrink-0" onClick={() => setIsDarkMode(!isDarkMode)} aria-label="Toggle dark mode">
-                {isDarkMode ? <Sun className="w-4 h-4 xl:w-5 xl:h-5 text-yellow-400" /> : <Moon className="w-4 h-4 xl:w-5 xl:h-5 text-gray-800" />}
-              </button>
-            </div>
-
-            <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
-              <button className="p-1.5 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" onClick={() => setIsDarkMode(!isDarkMode)} aria-label="Toggle dark mode">
-                {isDarkMode ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4 text-gray-800 dark:text-gray-200" />}
-              </button>
-              <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
-                {isMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-gray-300" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-gray-300" />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {isMenuOpen && (
-          <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100vh-4rem)] overflow-y-auto">
-            <div className="px-3 sm:px-4 py-3 sm:py-4 space-y-1.5">
-              <a href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 w-full px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium text-sm">
-  <ArrowLeft className="w-4 h-4 flex-shrink-0" /> Back to Home
-</a>
-              {(["Solutions","Use Cases","Features","Free Tools","Compare","Resources","About"] as (keyof NavigationMenu)[]).map((key) => (
-                <div key={key}>
-                  <button onClick={() => toggleMobileMenu(key)} className={`flex items-center justify-between w-full px-3 sm:px-4 py-2 rounded-lg font-medium text-sm ${key === "Use Cases" ? "text-orange-600 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold" : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"}`}>
-                    {key}<ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${mobileActiveMenu === key ? "rotate-180" : ""}`} />
-                  </button>
-                  {mobileActiveMenu === key && (
-                    <div className="ml-3 sm:ml-4 mt-0.5 space-y-0.5">
-                      {(navigationMenu[key] as MenuItemWithBadge[]).map((item, i) => (
-                        item.route ? (
-                          <Link key={i} href={item.route} onClick={() => setIsMenuOpen(false)} className={`flex items-center gap-2 w-full px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 rounded-lg ${key === 'Use Cases' ? 'hover:bg-orange-50 dark:hover:bg-orange-900/20' : 'hover:bg-purple-50 dark:hover:bg-purple-900/20'}`}>
-                            <span className="flex-shrink-0">{item.icon}</span>
-                            <span className="text-left flex-1">{item.name}</span>
-                            {item.badge && <span className="ml-auto text-xs bg-purple-600 text-white px-1.5 py-0.5 rounded-full flex-shrink-0">{item.badge}</span>}
-                          </Link>
-                        ) : (
-                          <span key={i} className="flex items-center gap-2 w-full px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 rounded-lg opacity-60">
-                            <span className="flex-shrink-0">{item.icon}</span>
-                            <span className="text-left flex-1">{item.name}</span>
-                          </span>
-                        )
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              <Link href="/pricing" onClick={() => setIsMenuOpen(false)} className="block w-full text-left px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium text-sm">Pricing</Link>
-              <a href="/login" onClick={() => setIsMenuOpen(false)} className="w-full mt-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-center text-sm py-2 rounded-lg font-semibold block">Login</a>
-            </div>
-          </div>
-        )}
-      </nav>
-
+    <div className="min-h-screen bg-white dark:bg-gray-950 pt-20">
       {/* ══ HERO ══ */}
-      <section className="relative pt-24 sm:pt-28 lg:pt-32 pb-12 sm:pb-16 lg:pb-20 px-4 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-red-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
+      <section className="relative pt-32 pb-12 sm:pb-16 lg:pb-20 px-4 overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
         <div className="absolute inset-0 opacity-20 sm:opacity-30">
-          <div className="absolute top-20 left-4 sm:left-10 w-48 h-48 sm:w-72 sm:h-72 bg-orange-400 rounded-full blur-3xl" />
-          <div className="absolute top-32 right-4 sm:right-10 w-64 h-64 sm:w-96 sm:h-96 bg-red-400 rounded-full blur-3xl" />
+          <div className="absolute top-20 left-4 sm:left-10 w-48 h-48 sm:w-72 sm:h-72 bg-blue-400 rounded-full blur-3xl" />
+          <div className="absolute top-32 right-4 sm:right-10 w-64 h-64 sm:w-96 sm:h-96 bg-indigo-400 rounded-full blur-3xl" />
         </div>
 
         <div className="relative max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
             <div className="space-y-5 sm:space-y-6 lg:space-y-8">
-              <div className="inline-flex items-center gap-2 bg-orange-100 border border-orange-300 rounded-full px-3 sm:px-4 py-1.5 sm:py-2">
+              <div className="inline-flex items-center gap-2 bg-blue-100 border border-blue-300 rounded-full px-3 sm:px-4 py-1.5 sm:py-2">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600" />
                 </span>
-                <span className="text-xs sm:text-sm font-medium text-orange-700">India's #1 Competitor Price Tracking Tool 🇮🇳</span>
+                <span className="text-xs sm:text-sm font-medium text-blue-700">India's #1 Competitor Price Tracking Tool</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
-                Track Competitor Prices in Real Time.
-                <br />
-                <span className="bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 bg-clip-text text-transparent">Never Lose Sales</span>
-                <br />
-                to Sudden Price Drops.
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
+                <span className="block mb-2">
+                  <span className="font-medium">Track </span>
+                  <span className="font-black">Competitor Prices</span>
+                  <span className="font-medium"> in Real Time</span>
+                </span>
               </h1>
 
               <p className="text-base sm:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
                 India's most powerful <strong>competitor price tracking tool</strong> for Amazon and Flipkart sellers. Monitor rival pricing automatically and react instantly
-                <span className="text-orange-700 font-semibold"> without manual tracking or Excel chaos.</span>
+                <span className="text-blue-700 font-semibold"> without manual tracking or Excel chaos.</span>
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group">
-                  Start Free Price Tracking
+                <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all group">
+                  Start Free
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
-                <Button onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })} size="lg" variant="outline" className="border-2 border-orange-600 text-orange-700 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full">
+                <Button onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })} size="lg" variant="outline" className="border-2 border-blue-600 text-blue-700 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full transition-all">
                   See How It Works →
                 </Button>
               </div>
@@ -317,61 +98,45 @@ export default function TrackCompetitorPricesPage() {
 
             {/* Hero Visual */}
             <div className="relative mt-4 lg:mt-0">
-              <div className="relative bg-white dark:bg-gray-900 border-2 border-orange-200 dark:border-orange-800 rounded-2xl sm:rounded-3xl p-5 sm:p-6 lg:p-8 shadow-2xl">
-                <div className="space-y-3 sm:space-y-4">
-                  <div className="flex items-center gap-2 sm:gap-3 pb-3 sm:pb-4 border-b border-gray-200 dark:border-gray-700">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 dark:bg-orange-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600 dark:text-orange-400" />
+              <div className="relative bg-white dark:bg-gray-900 border-2 border-blue-200 dark:border-blue-800 rounded-2xl sm:rounded-3xl p-5 sm:p-6 lg:p-8 shadow-2xl transition-all hover:shadow-blue-500/10">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-gray-800">
+                    <h3 className="font-bold text-gray-900 dark:text-white leading-relaxed">Competitor Price Alert</h3>
+                    <span className="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-bold">Buy Box Risk</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center text-blue-600">
+                        <TrendingDown className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900 dark:text-white text-sm leading-relaxed">Top Rival Jaipur</p>
+                        <p className="text-xs text-gray-500 leading-relaxed">Dropped price by 12%</p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <h3 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Premium Wireless Earbuds</h3>
-                      <p className="text-xs text-gray-500">Tracking 5 competitors</p>
+                    <div className="text-right">
+                      <p className="text-xs text-gray-400 line-through leading-relaxed">₹1,499</p>
+                      <p className="text-sm font-bold text-red-600 leading-relaxed">₹1,299</p>
                     </div>
                   </div>
-
-                  <div className="space-y-2 sm:space-y-3">
-                    <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-2.5 sm:p-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Your Price</span>
-                        <span className="text-base sm:text-lg font-bold text-green-700 dark:text-green-400">₹1,199</span>
-                      </div>
+                  <div className="bg-blue-50 dark:bg-blue-900/30 rounded-xl p-4 border border-blue-100 dark:border-blue-800">
+                    <p className="text-xs font-bold text-blue-800 dark:text-blue-300 mb-2 leading-relaxed">AI Recommendation</p>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-blue-700 dark:text-blue-400 leading-relaxed">New Buy Box Price:</p>
+                      <p className="text-sm font-black text-blue-800 dark:text-blue-200 leading-relaxed">₹1,295</p>
                     </div>
-                    <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-400 dark:border-red-600 rounded-lg p-2.5 sm:p-3 animate-pulse">
-                      <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-                        <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Competitor A</span>
-                        <div className="flex items-center gap-1.5 sm:gap-2">
-                          <span className="text-xs sm:text-sm text-gray-400 line-through">₹1,199</span>
-                          <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600" />
-                          <span className="text-base sm:text-lg font-bold text-red-600">₹999</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3 text-red-600 flex-shrink-0" />
-                        <p className="text-xs text-red-600 font-semibold">Price dropped 17% — Buy Box at risk</p>
-                      </div>
-                    </div>
-                    <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-2.5 sm:p-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">Competitor B</span>
-                        <span className="text-base sm:text-lg font-bold text-gray-700 dark:text-gray-300">₹1,299</span>
-                      </div>
+                    <div className="flex items-center justify-between mt-1">
+                      <p className="text-[10px] text-blue-600 dark:text-blue-400 leading-relaxed">Projected Margin:</p>
+                      <p className="text-[10px] font-bold text-green-600 leading-relaxed">₹420 (22%)</p>
                     </div>
                   </div>
-
-                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-400 dark:border-green-600 rounded-xl sm:rounded-2xl p-3 sm:p-4">
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Smartphone className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-bold text-gray-900 dark:text-white text-xs sm:text-sm">WhatsApp Alert Sent — 9:04pm</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">"Competitor A dropped to ₹999 — AI suggests ₹1,049"</p>
-                      </div>
-                    </div>
+                  <div className="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-2.5">
+                    <Smartphone className="w-4 h-4 text-green-600" />
+                    <p className="text-[10px] text-green-800 dark:text-green-300 font-medium leading-relaxed">WhatsApp notification sent to your phone</p>
                   </div>
                 </div>
-                <div className="absolute -top-3 sm:-top-4 -right-3 sm:-right-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-1.5 sm:py-2 shadow-xl">
-                  <p className="text-white font-bold text-xs sm:text-sm">Live Tracking</p>
+                <div className="absolute -top-4 -right-4 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl px-4 py-2 shadow-xl">
+                  <p className="text-white font-bold text-sm leading-relaxed">Live Monitoring</p>
                 </div>
               </div>
             </div>
@@ -379,392 +144,277 @@ export default function TrackCompetitorPricesPage() {
         </div>
       </section>
 
-      {/* ══ WHY MANUAL FAILS ══ */}
+      {/* ══ PROBLEM SECTION ══ */}
       <section className="py-12 sm:py-16 lg:py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white leading-relaxed">
               Why Manual Price Tracking
               <br />
-              <span className="text-red-600">Is Killing Your Profits</span>
+              <span className="text-red-600 dark:text-red-500">Costs You Money Every Day</span>
             </h2>
             <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              Most Amazon and Flipkart sellers still check competitor prices by hand. Here's why that approach fails, every time.
+              Indian marketplaces move fast. Checking prices manually once or twice a day means you're already too late to respond.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
             {[
-              { icon: <RefreshCw className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Competitors change prices multiple times a day you can't keep up manually", color: "from-red-500 to-orange-500" },
-              { icon: <Clock className="w-6 h-6 sm:w-8 sm:h-8" />, title: "You notice price drops too late after your Buy Box rank has already fallen", color: "from-orange-500 to-yellow-500" },
-              { icon: <FileSpreadsheet className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Excel tracking is outdated within hours the data is stale before you use it", color: "from-yellow-500 to-orange-500" },
-              { icon: <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Price wars silently eat your margins panic discounting costs more than the lost sale", color: "from-orange-500 to-red-500" },
-            ].map((pain, i) => (
-              <div key={i} className="bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-5 sm:p-6 hover:border-orange-400 hover:shadow-lg transition-all group">
-                <div className={`w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br ${pain.color} rounded-2xl flex items-center justify-center mb-3 sm:mb-4 text-white group-hover:scale-110 transition-transform shadow-md`}>{pain.icon}</div>
-                <p className="text-gray-700 dark:text-gray-300 font-medium leading-relaxed text-sm sm:text-base">{pain.title}</p>
+              { icon: <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Buy Box Hijacks", desc: "Competitors drop prices at night and steal your sales before you wake up.", color: "from-red-500 to-orange-500" },
+              { icon: <Clock className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Hours Wasted", desc: "Checking 10 competitors across 20 listings takes 15+ hours of manual work every week.", color: "from-orange-500 to-yellow-500" },
+              { icon: <AlertCircle className="w-8 h-8" />, title: "Inaccurate Data", desc: "Excel sheets are stale the second you save them. Prices change while you're still typing.", color: "from-purple-500 to-pink-500" },
+              { icon: <Zap className="w-8 h-8" />, title: "Panic Decisions", desc: "Dropping prices blindly without knowing your real margin floors or competitor history.", color: "from-blue-500 to-indigo-500" },
+            ].map((p, i) => (
+              <div key={i} className="bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-4 sm:p-6 hover:border-blue-400 hover:shadow-lg transition-all group flex flex-col h-full">
+                <div className={`w-10 h-10 sm:w-16 sm:h-16 bg-gradient-to-br ${p.color} rounded-2xl flex items-center justify-center mb-3 sm:mb-4 text-white group-hover:scale-110 transition-transform shadow-md flex-shrink-0`}>{p.icon}</div>
+                <h3 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base mb-1.5 leading-relaxed">{p.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm leading-relaxed flex-grow">{p.desc}</p>
               </div>
             ))}
           </div>
 
-          <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-lg mb-8 sm:mb-12">
-            <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Most sellers lose <span className="text-red-600">20–40% of potential revenue annually</span>
+          <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-300 dark:border-red-700 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-lg">
+            <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mb-2 leading-relaxed">
+              Sellers lose <span className="text-red-600 dark:text-red-400">up to 35% of their Buy Box time</span>
             </p>
-            <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-lg">
-              ...because they react late to competitor price changes or don't react at all until the damage is  <span className="text-red-600">already visible in their sales report.</span>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
+              ...due to delayed responses to competitor price drops. On high-velocity products, even a 4-hour delay in matching a price drop can cost ₹15,000–₹20,000 in lost revenue.
             </p>
-          </div>
-
-          {/* Manual vs Insydz */}
-          <div className="grid sm:grid-cols-2 gap-5 sm:gap-8">
-            <div className="bg-red-50 dark:bg-red-900/10 border-2 border-red-300 dark:border-red-700 rounded-2xl p-6 sm:p-8">
-              <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0"><X className="w-5 h-5 sm:w-6 sm:h-6 text-white" /></div>
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Manual Tracking</h3>
-              </div>
-              <ul className="space-y-2 sm:space-y-3">
-                {["Constantly refreshing product listings to check prices","Excel sheets become chaos within days","Missed Buy Box opportunities every night","No margin data available when repricing","Hours wasted every single week"].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
-                    <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 flex-shrink-0 mt-0.5" />{item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="bg-green-50 dark:bg-green-900/10 border-2 border-green-300 dark:border-green-700 rounded-2xl p-6 sm:p-8">
-              <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0"><Check className="w-5 h-5 sm:w-6 sm:h-6 text-white" /></div>
-                <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">With Insydz</h3>
-              </div>
-              <ul className="space-y-2 sm:space-y-3">
-                {["Automatic 24/7 competitor monitoring no manual checks needed","Instant WhatsApp alerts when any competitor changes price","Never miss a price change even at 2am during Big Billion Days","AI shows your margin floor before you reprice","Set it once monitor forever"].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
-                    <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600 flex-shrink-0 mt-0.5" />{item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══ HALF THE JOB ══ */}
-      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white">
-              Tracking Prices Is Only Half the Job.
-              <br />
-              <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">The Other Half Is Knowing How to React.</span>
-            </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              Most competitor price tracking tools give you a spreadsheet of price changes. Insydz gives you the price change and the recommended response with your margin floor already calculated.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 gap-5 sm:gap-8">
-            {[
-              { icon: <Eye className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Real-Time Price Monitoring", desc: "Insydz tracks competitor pricing across Amazon India and Flipkart continuously. Price changes are detected within minutes not at the end of the day when you check your dashboard.", link: "/features/price-tracker", linkLabel: "marketplace price tracking dashboard", color: "from-blue-500 to-cyan-500" },
-              { icon: <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Historical Price Trends", desc: "See how competitor prices have moved over the last 30, 60, or 90 days. Spot recurring pricing patterns like weekend flash drops or pre-sale inflation before they catch you off guard again.", link: "/features/price-history", linkLabel: "historical price tracker", color: "from-purple-500 to-pink-500" },
-              { icon: <Shield className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Buy Box Risk Alerts", desc: "Insydz monitors Buy Box eligibility signals in real time. When a competitor's price drops close to your threshold, you get an alert before you lose the Buy Box not after your sales velocity has already dropped.", link: "/features/buy-box-alerts", linkLabel: "buy box monitoring software", color: "from-red-500 to-orange-500" },
-              { icon: <Bell className="w-6 h-6 sm:w-8 sm:h-8" />, title: "WhatsApp Notifications", desc: "Indian sellers don't monitor email dashboards. Insydz delivers every critical price alert directly to your WhatsApp with the competitor name, old price, new price, percentage drop, and an AI-suggested response price in INR.", link: "/features/whatsapp-alerts-feature", linkLabel: "WhatsApp price alerts", color: "from-green-500 to-emerald-500" },
-            ].map((item, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 sm:p-8 hover:border-orange-400 hover:shadow-xl transition-all">
-                <div className="flex items-start gap-3 sm:gap-4">
-                  <div className={`w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center text-white shadow-lg flex-shrink-0`}>{item.icon}</div>
-                  <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1.5 sm:mb-2">{item.title}</h3>
-                    <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm leading-relaxed mb-2 sm:mb-3">{item.desc}</p>
-                    <button onClick={() => router.push(item.link)} className="text-xs font-semibold text-orange-600 hover:text-orange-700 underline">See {item.linkLabel} →</button>
-                  </div>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </section>
 
       {/* ══ HOW IT WORKS ══ */}
-      <section id="how-it-works" className="py-12 sm:py-16 lg:py-20 px-4 bg-white dark:bg-gray-950">
+      <section id="how-it-works" className="py-12 sm:py-16 lg:py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 sm:mb-6 text-gray-900 dark:text-white">
-              Competitor Price Tracking
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 sm:mb-6 text-gray-900 dark:text-white leading-relaxed">
+              How Price Tracking Works
               <br />
-              <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Done Automatically</span>
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">with Insydz</span>
             </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Insydz continuously tracks competitor prices across Amazon & Flipkart and alerts you the moment something changes.
-            </p>
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 leading-relaxed">From listing link to automated monitoring in under 2 minutes.</p>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12 relative">
-            <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 via-red-500 to-orange-500 -translate-y-1/2 z-0" />
+            <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 -translate-y-1/2 z-0" />
             {[
-              { step: 1, title: "Add Your Product", desc: "Enter your ASIN or Flipkart listing. Insydz automatically identifies 100+ competitors in your category. Setup: under 2 minutes.", visual: <ShoppingBag className="w-10 h-10 sm:w-12 sm:h-12 text-orange-600 mx-auto" />, bg: "bg-orange-100 dark:bg-orange-900/20", isAlerts: false },
-              { step: 2, title: "AI Monitors Prices 24/7", desc: "We track competitor price changes, discounts, and stock signals continuously overnight, weekends, and during festive sale events.", visual: <Eye className="w-10 h-10 sm:w-12 sm:h-12 text-purple-600 mx-auto animate-pulse" />, bg: "bg-purple-100 dark:bg-purple-900/20", isAlerts: false },
-              { step: 3, title: "Get Instant Alerts & Actions", desc: "", visual: null, bg: "", isAlerts: true },
+              { step: "1", title: "Add Listing Link", desc: "Paste your Amazon India or Flipkart listing link. Insydz automatically identifies your top 5–20 competitors in seconds.", visual: <Package className="w-10 h-10 text-blue-600 mx-auto" />, bg: "bg-blue-100 dark:bg-blue-900/20" },
+              { step: "2", title: "Automated 24/7 Monitoring", desc: "Our system monitors every competitor price change multiple times per hour — even during night hours and festive sales.", visual: <BarChart3 className="w-10 h-10 text-purple-600 mx-auto animate-pulse" />, bg: "bg-purple-100 dark:bg-purple-900/20" },
+              { step: "3", title: "Instant WhatsApp Alerts", desc: "The second a competitor drops their price, you get a WhatsApp alert with an AI-suggested response price to protect your Buy Box.", visual: <Bell className="w-10 h-10 text-indigo-600 mx-auto" />, bg: "bg-indigo-100 dark:bg-indigo-900/20" },
             ].map((step, i) => (
-              <div key={i} className="relative z-10">
-                <div className="bg-white dark:bg-gray-800 border-2 border-orange-300 dark:border-orange-700 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-xl hover:shadow-2xl transition-all">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-orange-600 to-red-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 text-xl sm:text-2xl font-black text-white shadow-lg">{step.step}</div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">{step.title}</h3>
-                  {step.isAlerts ? (
-                    <div className="space-y-2 sm:space-y-3 text-left">
-                      {[
-                        { cls: "bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700", icon: "text-red-600", text: '"Competitor dropped price by 11%"' },
-                        { cls: "bg-orange-50 dark:bg-orange-900/20 border-orange-300 dark:border-orange-700", icon: "text-orange-600", text: '"Lowest price changed Buy Box at risk"' },
-                        { cls: "bg-green-50 dark:bg-green-900/20 border-green-300 dark:border-green-700", icon: "text-green-600", text: '"AI suggests: ₹1,049 protects margin & Buy Box"' },
-                      ].map((a, ai) => (
-                        <div key={ai} className={`flex items-start gap-2 ${a.cls} border rounded-lg p-2.5 sm:p-3`}>
-                          <CheckCircle2 className={`w-4 h-4 sm:w-5 sm:h-5 ${a.icon} flex-shrink-0 mt-0.5`} />
-                          <span className="text-xs sm:text-sm text-gray-800 dark:text-gray-300">{a.text}</span>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <>
-                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">{step.desc}</p>
-                      <div className={`${step.bg} rounded-2xl p-3 sm:p-4`}>{step.visual}</div>
-                    </>
-                  )}
-                </div>
+              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-blue-300 dark:border-blue-700 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all h-full flex flex-col">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 text-xl sm:text-2xl font-black text-white shadow-lg flex-shrink-0">{step.step}</div>
+                <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 leading-relaxed">{step.title}</h3>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base flex-grow">{step.desc}</p>
+                <div className={`${step.bg} rounded-2xl p-4 transition-all hover:scale-105`}>{step.visual}</div>
               </div>
             ))}
           </div>
 
           <div className="text-center mt-8 sm:mt-12">
-            <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group">
-              Track Your First Competitor Free
+            <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all group">
+              Track Your Competitors Free
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
         </div>
       </section>
 
-      {/* ══ WHAT SELLERS DO ══ */}
-      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gray-50 dark:bg-gray-900">
+      {/* ══ CAPABILITIES ══ */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white">
-              What Sellers Do with
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 sm:mb-6 text-gray-900 dark:text-white leading-relaxed">
+              Price Tracking Capabilities
               <br />
-              <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Competitor Price Insights</span>
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Built for India</span>
             </h2>
-            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Real-time pricing intelligence is only valuable if it drives action. Here's what Indian sellers actually do once they have it.
-            </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
             {[
-              { icon: <Zap className="w-5 h-5 sm:w-7 sm:h-7" />, title: "React Instantly to Price Drops", desc: "WhatsApp alert arrives within minutes of a competitor drop. Reprice from your phone before your Buy Box rank slips even at 11pm during sale season."},
-              { icon: <Shield className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Protect Buy Box Without Panic Discounting", desc: "See your margin floor alongside every alert. Make informed price decisions not desperate ones knowing exactly how low you can go without selling at a loss."},
-              { icon: <Eye className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Identify Fake Price Wars", desc: "Historical price trend data reveals which competitor drops are temporary tactics and which represent a real market shift so you don't cut prices unnecessarily."},
-              { icon: <Clock className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Time Discounts Intelligently", desc: "Spot recurring competitor pricing patterns weekend drops, pre-sale inflation and time your own promotional pricing to maximise impact and margin."},
-              { icon: <TrendingUp className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Increase Profit Without Losing Volume", desc: "When all competitors raise prices, you see it immediately and can adjust upward with confidence capturing higher margins without losing market share."},
-              { icon: <Target className="w-5 h-5 sm:w-7 sm:h-7" />, title: "Stay Competitive in Your Category", desc: "Never be the seller who finds out about a price war on Monday morning after losing the whole weekend's orders."},
-            ].map((uc, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-5 sm:p-6 hover:border-orange-400 hover:shadow-lg transition-all">
-                <div className="flex items-center justify-between mb-2 sm:mb-3">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-100 dark:bg-orange-900/20 rounded-xl flex items-center justify-center text-orange-600 dark:text-orange-400">{uc.icon}</div>
-                </div>
-                <h3 className="font-bold text-gray-900 dark:text-white mb-1.5 sm:mb-2 text-sm sm:text-base">{uc.title}</h3>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{uc.desc}</p>
+              { icon: <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Automated Rival Price Monitoring", desc: "No more manual checking. Track any number of competitors across Amazon India and Flipkart automatically.", link: "/features/competitor-price-tracking-feature", linkLabel: "rival price tracking tool", color: "from-blue-500 to-cyan-500" },
+              { icon: <Zap className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Instant Buy Box Risk Alerts", desc: "Get notified the second a competitor drops their price into your 'risk zone' so you can respond before losing sales.", link: "/features/price-optimization-feature", linkLabel: "price optimization tool", color: "from-purple-500 to-pink-500" },
+              { icon: <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8" />, title: "AI Recommender & Margin Guard", desc: "Insydz shows your real-time margin floor for every price recommendation. Never sell at a loss while matching rivals.", link: "/features/price-optimization-feature", linkLabel: "ai pricing tool", color: "from-indigo-500 to-purple-500" },
+              { icon: <Smartphone className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Instant WhatsApp Notifications", desc: "Critical price drop alerts delivered to your phone in INR. No need to keep checking the dashboard.", link: "/features/whatsapp-alerts-feature", linkLabel: "whatsapp price alerts", color: "from-green-500 to-emerald-500" },
+              { icon: <RefreshCw className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Festive Season Priority Monitoring", desc: "Higher frequency tracking during Big Billion Days and Great Indian Festival to match rapid price changes.", link: "/features/festive-trend-feature", linkLabel: "festive intelligence tool", color: "from-orange-500 to-red-500" },
+              { icon: <FileSpreadsheet className="w-6 h-6 sm:w-8 sm:h-8" />, title: "90-Day Historical Price Trends", desc: "See patterns in how your rivals price their products over time — identify weekend vs weekday strategies.", link: "/features/competitor-price-tracking-feature", linkLabel: "price history tool", color: "from-blue-600 to-indigo-600" },
+            ].map((feature, i) => (
+              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-5 sm:p-6 hover:border-blue-400 hover:shadow-lg transition-all h-full flex flex-col group">
+                <div className={`w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center mb-3 sm:mb-4 text-white shadow-md flex-shrink-0 group-hover:scale-110 transition-transform`}>{feature.icon}</div>
+                <h3 className="font-bold text-gray-900 dark:text-white text-base sm:text-lg mb-1.5 sm:mb-2 leading-relaxed">{feature.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm leading-relaxed mb-4 flex-grow">{feature.desc}</p>
+                <Link href={feature.link} className="text-xs font-semibold text-blue-600 hover:text-blue-700 underline transition-colors leading-relaxed">See {feature.linkLabel} →</Link>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══ INDIA-FIRST + SELLER SCENARIO ══ */}
-      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-white dark:bg-gray-950">
-        <div className="max-w-6xl mx-auto">
+      {/* ══ COMPARISON TABLE ══ */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-5xl mx-auto">
           <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white">
-              How Insydz Is Different
-              <br />
-              <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Built for Indian Marketplace Sellers</span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 sm:mb-6 text-gray-900 dark:text-white leading-relaxed">
+              Manual vs Automated Tracking
             </h2>
-            <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Global price tracking tools weren't designed for the way Indian marketplaces work. Insydz is built specifically for Amazon.in and Flipkart with Indian seller behaviour, INR data, and WhatsApp-first alerts at its core.
-            </p>
           </div>
 
-          {/* Scenario */}
-          <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-2 border-orange-300 dark:border-orange-700 rounded-2xl sm:rounded-3xl p-6 sm:p-8 mb-8 sm:mb-12 shadow-lg">
-            <div className="flex items-center gap-3 mb-4 sm:mb-6">
-              <div>
-                <p className="text-xs sm:text-sm font-bold text-orange-700 dark:text-orange-400 uppercase tracking-wider">Real Seller Scenario</p>
-                <p className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">Kitchenware Seller, Noida</p>
-              </div>
-            </div>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">Ravi sells premium non-stick cookware on Amazon India. Every Monday his sales would inexplicably drop but by Tuesday, they were back. For months, he assumed it was an algorithm issue.</p>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">When he started using Insydz, the pattern revealed itself immediately: a competitor was running a Sunday-night-to-Monday-morning flash price drop going from ₹1,299 to ₹899 at 10pm on Sundays and reverting by Tuesday morning.</p>
-            <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">With Insydz, he set a price alert for that competitor. The next Sunday at 10:07pm, his WhatsApp buzzed. He repriced from his phone in 3 minutes. By Monday morning, his Buy Box was secure.</p>
-            <div className="grid grid-cols-3 gap-2 sm:gap-4">
-              {[{ label: "Saved in First Month", value: "₹18,000" },{ label: "Response Time", value: "3 minutes" },{ label: "Alert Received", value: "10:07pm Sunday" }].map((stat, i) => (
-                <div key={i} className="bg-white dark:bg-gray-900 border border-orange-200 dark:border-orange-700 rounded-xl p-3 sm:p-4 text-center">
-                  <p className="text-lg sm:text-2xl font-black text-orange-600 dark:text-orange-400">{stat.value}</p>
-                  <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Comparison Table */}
-          <div className="overflow-x-auto rounded-2xl border-2 border-gray-200 dark:border-gray-700 shadow-xl -webkit-overflow-scrolling-touch">
-            <div className="min-w-[480px]">
-              <div className="grid grid-cols-3">
-                <div className="bg-gray-100 dark:bg-gray-800 px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-gray-200 dark:border-gray-700"><p className="font-bold text-gray-700 dark:text-gray-300 text-xs sm:text-sm">Task</p></div>
-                <div className="bg-gray-100 dark:bg-gray-800 px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-gray-200 dark:border-gray-700"><p className="font-bold text-gray-500 text-xs sm:text-sm text-left">Manual Tracking</p></div>
-                <div className="bg-orange-500 px-4 sm:px-6 py-3 sm:py-4 border-b-2 border-orange-400"><p className="font-bold text-white text-xs sm:text-sm text-left">✓ Insydz</p></div>
+          <div className="overflow-x-auto rounded-2xl border-2 border-gray-200 dark:border-gray-700 shadow-xl">
+            <table className="w-full text-sm min-w-[480px]">
+              <thead>
+                <tr className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                  <th className="text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base">Capability</th>
+                  <th className="px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left">Manual Reading</th>
+                  <th className="px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left">Insydz</th>
+                </tr>
+              </thead>
+              <tbody>
                 {comparisonRows.map((row, i) => (
-                  <>
-                    <div key={`f-${i}`} className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}><p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 font-medium">{row.feature}</p></div>
-                    <div key={`m-${i}`} className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 text-center ${i % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50 dark:bg-gray-800/50"}`}><p className="text-xs sm:text-sm text-gray-500 flex items-left justify-left gap-1"><X className="w-3 h-3 text-red-500 flex-shrink-0" />{row.manual}</p></div>
-                    <div key={`s-${i}`} className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 === 0 ? "bg-orange-50 dark:bg-orange-900/10" : "bg-orange-50/50 dark:bg-orange-900/10"}`}><p className="text-xs sm:text-sm text-orange-700 dark:text-orange-400 font-semibold flex items-left justify-left gap-1"><Check className="w-3 h-3 text-green-600 flex-shrink-0" />{row.insydz}</p></div>
-                  </>
+                  <tr key={i} className={`border-t border-gray-200 dark:border-gray-700 transition-colors ${i % 2 === 0 ? 'bg-white dark:bg-gray-950' : 'bg-gray-50 dark:bg-gray-900'}`}>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-700 dark:text-gray-300 font-medium text-xs sm:text-sm leading-relaxed">{row.feature}</td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-left text-red-500 dark:text-red-400 font-medium text-xs sm:text-sm leading-relaxed">{row.manual}</td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-left text-green-600 dark:text-green-400 font-semibold text-xs sm:text-sm leading-relaxed">{row.insydz}</td>
+                  </tr>
                 ))}
-              </div>
-            </div>
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
 
       {/* ══ ROI ══ */}
-      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gray-50 dark:bg-gray-900">
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-5xl mx-auto">
           <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white">
-              What Real-Time Price Tracking
-              <br />
-              <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Is Worth to Your Business</span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white leading-relaxed">
+              The ROI of
+              <span className="text-blue-600"> Real-Time Responses</span>
             </h2>
-            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-              Two sellers in the same Flipkart category. Same products. Same pricing. The only difference: one has Insydz, one doesn't.
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
+              Two sellers in the same category on Amazon India. One uses <strong>competitor price tracking software</strong>. One doesn't.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-5 sm:gap-8 mb-6 sm:mb-8">
-            {[
-              { title: "Without Insydz Monthly Cost", rows: roiWithout, total: "Total Monthly Cost of Slow Reactions", totalValue: "−₹42,000", headerCls: "bg-red-50 dark:bg-red-900/30", textCls: "text-red-700 dark:text-red-400", valueCls: "text-red-600", totalBg: "bg-red-50 dark:bg-red-900/20", totalTextCls: "text-red-700", borderCls: "border-red-300 dark:border-red-700" },
-              { title: "With Insydz Same Month", rows: roiWith, total: "Net Monthly Value with Insydz", totalValue: "+₹51,700", headerCls: "bg-green-50 dark:bg-green-900/30", textCls: "text-green-700 dark:text-green-400", valueCls: "text-green-600", totalBg: "bg-green-50 dark:bg-green-900/20", totalTextCls: "text-green-700", borderCls: "border-green-300 dark:border-green-700" },
-            ].map((panel, pi) => (
-              <div key={pi} className={`rounded-2xl border-2 ${panel.borderCls} overflow-hidden shadow-lg`}>
-                <div className={`${panel.headerCls} px-4 sm:px-6 py-3 sm:py-4`}><p className={`font-bold ${panel.textCls} text-sm sm:text-lg`}>{panel.title}</p></div>
-                <div className="bg-white dark:bg-gray-900">
-                  {panel.rows.map((row, i) => (
-                    <div key={i} className={`flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100 dark:border-gray-800 gap-2 ${i % 2 !== 0 ? "bg-gray-50 dark:bg-gray-800/50" : ""}`}>
-                      <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 flex-1">{row.label}</p>
-                      <p className={`text-xs sm:text-sm font-bold ${panel.valueCls} whitespace-nowrap flex-shrink-0`}>{row.value}</p>
-                    </div>
-                  ))}
-                  <div className={`flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 ${panel.totalBg} gap-2`}>
-                    <p className="font-bold text-gray-900 dark:text-white text-xs sm:text-sm flex-1">{panel.total}</p>
-                    <p className={`font-black ${panel.totalTextCls} text-base sm:text-lg ml-2 whitespace-nowrap flex-shrink-0`}>{panel.totalValue}</p>
+          <div className="grid sm:grid-cols-2 gap-5 sm:gap-8 mb-8 sm:mb-10">
+            {/* Without */}
+            <div className="rounded-2xl border-2 border-red-300 dark:border-red-700 overflow-hidden shadow-lg flex flex-col h-full transition-all hover:shadow-2xl">
+              <div className="bg-red-50 dark:bg-red-900/30 px-6 py-4 flex-shrink-0"><p className="font-bold text-red-700 dark:text-red-400 leading-relaxed">Manual Monitoring (Monthly)</p></div>
+              <div className="bg-white dark:bg-gray-900 flex-grow">
+                {roiWithout.map((row, i) => (
+                  <div key={i} className={`flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 !== 0 ? "bg-gray-50 dark:bg-gray-800/50" : ""}`}>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{row.label}</p>
+                    <p className="text-xs sm:text-sm font-bold text-red-600 whitespace-nowrap leading-relaxed">{row.value}</p>
                   </div>
+                ))}
+                <div className="flex items-center justify-between px-6 py-5 bg-red-50 dark:bg-red-900/20">
+                  <p className="font-bold text-gray-900 dark:text-white text-xs sm:text-sm leading-relaxed">Total Revenue Lost</p>
+                  <p className="font-black text-red-700 text-lg sm:text-xl leading-relaxed">−₹56,000+</p>
                 </div>
               </div>
-            ))}
+            </div>
+            {/* With */}
+            <div className="rounded-2xl border-2 border-green-300 dark:border-green-700 overflow-hidden shadow-lg flex flex-col h-full transition-all hover:shadow-2xl">
+              <div className="bg-green-50 dark:bg-green-900/30 px-6 py-4 flex-shrink-0"><p className="font-bold text-green-700 dark:text-green-400 leading-relaxed">Insydz Automated (Monthly)</p></div>
+              <div className="bg-white dark:bg-gray-900 flex-grow">
+                {roiWith.map((row, i) => (
+                  <div key={i} className={`flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 !== 0 ? "bg-gray-50 dark:bg-gray-800/50" : ""}`}>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{row.label}</p>
+                    <p className="text-xs sm:text-sm font-bold text-green-600 whitespace-nowrap leading-relaxed">{row.value}</p>
+                  </div>
+                ))}
+                <div className="flex items-center justify-between px-6 py-5 bg-green-50 dark:bg-green-900/20">
+                  <p className="font-bold text-gray-900 dark:text-white text-xs sm:text-sm leading-relaxed">Total Revenue Gained</p>
+                  <p className="font-black text-green-700 text-lg sm:text-xl leading-relaxed">+₹51,700</p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/30 dark:to-red-900/30 border-2 border-orange-400 rounded-2xl p-5 sm:p-6 text-center">
-            <p className="text-lg sm:text-2xl font-black text-gray-900 dark:text-white mb-2">₹93,700/month difference between a seller with real-time price intelligence and one without it</p>
-            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Same category. Same products. The only variable: whether you have a <strong>competitor price tracking tool</strong> working for you 24/7.</p>
+          <div className="bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 border-2 border-blue-400 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-lg">
+            <p className="text-xl sm:text-3xl font-black text-gray-900 dark:text-white mb-2 leading-relaxed">₹1.07 Lakhs monthly gap</p>
+            <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-lg leading-relaxed">...between being reactive and being proactive with rival pricing. On Indian marketplaces, speed isn't a luxury — it's your primary competitive advantage.</p>
           </div>
         </div>
       </section>
 
       {/* ══ FREE PLAN ══ */}
-      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-white dark:bg-gray-950">
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white leading-relaxed">
             Start Free.
             <br />
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">See Real Price Movements</span>
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Track Rivals Now.</span>
           </h2>
-          <p className="text-base sm:text-xl text-gray-600 dark:text-gray-400 mb-8 sm:mb-10">Free Plan — ₹0 / Forever No credit card required</p>
+          <p className="text-base sm:text-xl text-gray-600 dark:text-gray-400 mb-8 sm:mb-10 leading-relaxed">Free Plan — ₹0 / Forever No credit card required</p>
 
-          <div className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-2 border-orange-300 dark:border-orange-700 rounded-2xl sm:rounded-3xl p-6 sm:p-8 mb-6 sm:mb-8 text-left shadow-xl">
-            <h3 className="font-bold text-gray-900 dark:text-white text-lg sm:text-xl mb-4 sm:mb-6 text-center">Free Plan Includes:</h3>
-            <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
-              {["Track limited products on Amazon India and Flipkart","Competitor price alerts via WhatsApp","Amazon & Flipkart data in INR","No credit card required"].map((feature, i) => (
-                <div key={i} className="flex items-start gap-2 sm:gap-3 bg-white dark:bg-gray-900 rounded-lg p-3 sm:p-4">
-                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">{feature}</span>
+          <div className="bg-white dark:bg-gray-900 border-2 border-blue-200 dark:border-blue-800 rounded-2xl sm:rounded-3xl p-7 sm:p-10 shadow-xl transition-all hover:shadow-2xl">
+            <h3 className="font-bold text-gray-900 dark:text-white text-lg sm:text-xl mb-4 sm:mb-6 text-center leading-relaxed">Free Plan Includes:</h3>
+            <div className="grid sm:grid-cols-2 gap-3 sm:gap-4 mb-6 sm:mb-8 text-left">
+              {[
+                "Track up to 5 products for rival price monitoring",
+                "Instant WhatsApp & email alerts for price changes",
+                "Amazon India & Flipkart support",
+                "AI margin floor protection",
+                "Basic 7-day price history",
+                "Buy Box risk detection",
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-2 sm:gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+                  <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm leading-relaxed">{item}</span>
                 </div>
               ))}
             </div>
-            <div className="bg-white dark:bg-gray-900 border border-orange-200 dark:border-orange-700 rounded-xl p-3 sm:p-4">
-              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                <span className="font-bold text-orange-600">Upgrade teaser:</span> Paid plans unlock deeper tracking, more competitors per product, 90-day historical price trends, advanced Buy Box monitoring, and AI pricing recommendations.
-              </p>
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl sm:rounded-2xl p-4 sm:p-5 mb-6 sm:mb-8 shadow-sm">
+              <p className="text-xs sm:text-sm font-bold text-blue-700 dark:text-blue-300 mb-1.5 sm:mb-2 leading-relaxed text-left">Upgrade to unlock:</p>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed text-left">Unlimited product tracking, up to 100 competitors per product, 90-day price trends, advanced Buy Box history, and AI-powered pricing strategy recommendations.</p>
             </div>
+            <Button onClick={handleGetStarted} size="lg" className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl group transition-all">
+              Track Your Rivals Free — No Card Needed
+              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
           </div>
-
-          <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl group">
-            Start Free Price Tracking
-            <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-          </Button>
         </div>
       </section>
 
-      {/* ══ WHO SHOULD USE ══ */}
-      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-8 sm:mb-12 text-center text-gray-900 dark:text-white">
-            Who Should Use
+      {/* ══ FINAL CTA ══ */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gradient-to-br from-blue-600 via-indigo-600 to-blue-700 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+        <div className="relative max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 sm:mb-6 text-white leading-relaxed">
+            Stop Guessing. Respond Instantly.
             <br />
-            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Competitor Price Tracking?</span>
+            <span className="text-blue-100">Own the Buy Box.</span>
           </h2>
-          <div className="grid sm:grid-cols-2 gap-5 sm:gap-8">
-            <div className="bg-green-50 dark:bg-green-900/10 border-2 border-green-300 dark:border-green-700 rounded-2xl p-6 sm:p-8">
-              <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0"><Check className="w-5 h-5 sm:w-6 sm:h-6 text-white" /></div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Best For</h3>
-              </div>
-              <ul className="space-y-3 sm:space-y-4">
-                {["Amazon India and Flipkart active sellers in any category","Sellers in competitive, price-sensitive product categories","Sellers with Buy Box-sensitive products (electronics, personal care, home goods)","Sellers actively protecting their margins during sale events","D2C brands tracking category price positioning on Indian marketplaces","Agencies managing multiple Amazon/Flipkart client accounts"].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 sm:gap-3">
-                    <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="bg-red-50 dark:bg-red-900/10 border-2 border-red-300 dark:border-red-700 rounded-2xl p-6 sm:p-8">
-              <div className="flex items-center gap-3 mb-4 sm:mb-6">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0"><X className="w-5 h-5 sm:w-6 sm:h-6 text-white" /></div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Not Ideal For</h3>
-              </div>
-              <ul className="space-y-3 sm:space-y-4">
-                {["One-time sellers with no growth plan","Fixed-price government or regulated categories","Sellers not actively monitoring competition"].map((item, i) => (
-                  <li key={i} className="flex items-start gap-2 sm:gap-3">
-                    <X className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm">{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
+          <p className="text-base sm:text-lg lg:text-xl text-white/90 mb-6 sm:mb-8 leading-relaxed">
+            India's most powerful competitor price tracking tool for Amazon and Flipkart — free to start.
+          </p>
+          <Button onClick={handleGetStarted} size="lg" className="bg-white hover:bg-gray-100 text-blue-700 font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl group transition-all">
+            Track Rivals Free
+            <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+          </Button>
+          <p className="text-white/80 mt-4 sm:mt-6 text-xs sm:text-sm leading-relaxed">✓ No credit card required &nbsp;·&nbsp; ✓ Setup in 60 seconds &nbsp;·&nbsp; ✓ Cancel anytime</p>
         </div>
       </section>
 
       {/* ══ FAQ ══ */}
-      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-white dark:bg-gray-950">
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-2 sm:mb-4 text-center text-gray-900 dark:text-white">Competitor Price Tracking FAQs</h2>
-          <p className="text-center text-gray-500 mb-8 sm:mb-12 text-base sm:text-lg">Everything about tracking rival pricing on Amazon India & Flipkart</p>
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white leading-relaxed">
+              Price Tracking <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">FAQs</span>
+            </h2>
+          </div>
           <div className="space-y-3 sm:space-y-4">
             {faqs.map((faq) => (
-              <div key={faq.id} className="bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-orange-300 transition-all">
-                <button onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)} className="w-full px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between text-left hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
-                  <span className="font-bold text-gray-900 dark:text-white pr-3 sm:pr-4 text-sm sm:text-base lg:text-lg">{faq.q}</span>
-                  {expandedFaq === faq.id ? <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500 flex-shrink-0" /> : <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 flex-shrink-0" />}
+              <div key={faq.id} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-blue-300 transition-all shadow-sm">
+                <button onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)} className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <span className="font-bold text-gray-900 dark:text-white pr-4 leading-relaxed text-sm sm:text-base lg:text-lg">{faq.q}</span>
+                  {expandedFaq === faq.id ? <ChevronDown className="w-5 h-5 text-blue-500 flex-shrink-0" /> : <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />}
                 </button>
                 {expandedFaq === faq.id && (
-                  <div className="px-4 sm:px-6 pb-4 sm:pb-5 bg-white dark:bg-gray-700/30">
+                  <div className="px-6 pb-6 bg-gray-50 dark:bg-gray-700/30">
                     <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-xs sm:text-sm sm:text-base">{faq.a}</p>
                   </div>
                 )}
@@ -774,99 +424,15 @@ export default function TrackCompetitorPricesPage() {
         </div>
       </section>
 
-      {/* ══ ICP CTAs ══ */}
-      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gradient-to-br from-orange-500 via-red-500 to-orange-600">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-2 sm:mb-4 text-white">Three Paths </h2>
-          <p className="text-base sm:text-xl text-white/90 mb-8 sm:mb-12">Based on Where You Are Now</p>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
-            {[
-              { label: "New Sellers (Free Plan)", desc: "The free plan gives you real competitor pricing data from day one so you launch knowing what price the market will actually bear. No credit card required.", cta: "Start Free Price Tracking →", action: handleGetStarted },
-              { label: "Growing Sellers (Growth Plan)", desc: "Doing ₹5L+ monthly? Every day of slow price reaction is costing you measurable revenue. The Growth Plan gives you full competitor tracking across your entire catalogue.", cta: "Try Growth Plan →", action: () => router.push("/pricing") },
-              { label: "Agencies & Brand Managers (Demo)", desc: "Managing multiple seller accounts? Run competitor price tracking across all clients from one dashboard with white-label reporting per account.", cta: "Book a Demo →", action: () => router.push("/demo") },
-            ].map((card, i) => (
-              <div key={i} className="bg-background opacity-100 backdrop-blur-none border border-white/20 rounded-2xl p-5 sm:p-6 text-left">
-                <p className="font-bold text-white mb-1.5 sm:mb-2 text-sm sm:text-base">{card.label}</p>
-                <p className="text-white/80 text-xs sm:text-sm mb-3 sm:mb-4">{card.desc}</p>
-                <button onClick={card.action} className="text-orange-100 font-semibold text-xs sm:text-sm hover:text-white transition-colors underline">{card.cta}</button>
-              </div>
-            ))}
-          </div>
-
-          <Button onClick={handleGetStarted} size="lg" className="bg-white hover:bg-gray-100 text-orange-700 font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl group">
-            Start Free Price Tracking
-            <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-          </Button>
-          <p className="text-white/80 mt-4 sm:mt-6 text-xs sm:text-sm">✓ No credit card required  ✓ Setup in 2 minutes  ✓ Cancel anytime</p>
-        </div>
-      </section>
-
-      {/* ══ RELATED USE CASES ══ */}
-      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Related Seller Use Cases</h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Explore more ways to grow your ecommerce business</p>
-          </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {[
-              { title: "Find Profitable Products", icon: <Target className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-blue-500 to-cyan-500", route: "/use-cases/find-profitable-products" },
-              { title: "Analyse Customer Reviews", icon: <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-purple-500 to-pink-500", route: "/use-cases/analyze-customer-reviews" },
-              { title: "Improve Amazon & Flipkart SEO", icon: <Search className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-green-500 to-emerald-500", route: "/use-cases/improve-seo" },
-              { title: "Avoid Stockouts & Missed Sales", icon: <Package className="w-6 h-6 sm:w-8 sm:h-8" />, color: "from-orange-500 to-red-500", route: "/use-cases/avoid-stockouts" },
-            ].map((uc, i) => (
-              <div key={i} onClick={() => router.push(uc.route)} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl p-4 sm:p-6 hover:border-orange-400 hover:shadow-lg transition-all cursor-pointer group">
-                <div className={`w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br ${uc.color} rounded-xl flex items-center justify-center mb-3 sm:mb-4 text-white group-hover:scale-110 transition-transform shadow-md`}>{uc.icon}</div>
-                <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-900 dark:text-white group-hover:text-orange-600 transition-colors">{uc.title}</h3>
-                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600 mt-1.5 sm:mt-2 group-hover:translate-x-1 transition-transform" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ══ STICKY MOBILE CTA ══ */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-orange-300 dark:border-orange-700 p-3 sm:p-4 shadow-2xl z-40" style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}>
-        <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-3.5 sm:py-4 rounded-full shadow-xl text-sm sm:text-base">
-         Start Free Price Tracking
+      {/* STICKY MOBILE CTA */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-blue-300 dark:border-blue-700 p-3 sm:p-4 shadow-2xl z-40" style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}>
+        <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 sm:py-4 rounded-full shadow-xl text-sm sm:text-base transition-all">
+          Track Rivals Free
         </Button>
       </div>
 
-      {/* Spacer so sticky CTA doesn't cover footer content on mobile */}
+      {/* Spacer so sticky CTA doesn't cover footer content */}
       <div className="lg:hidden h-16 sm:h-20" />
-
-      {/* Footer */}
-      
- 
-      <style>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-        .delay-1000 {
-          animation-delay: 1s;
-        }
-      `}</style>
     </div>
   );
 }
- 
-
-
-
-
-
-
-
-
-

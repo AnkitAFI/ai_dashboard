@@ -1144,6 +1144,8 @@ def get_context(session_id: str):
     """Returns what Insydz knows about this seller so far."""
     return {"session_id": session_id, "context": load_context(session_id)}
 
+
+
 # @app.post("/ai/analyze-chart")
 # def analyze_chart_data(request: AIChartAnalysis):
 #     """
@@ -16936,6 +16938,9 @@ async def sitemap():
         "/resources/expert-blog/best-amazon-keyword-research-tool-india",
         "/resources/expert-blog/best-flipkart-analytics-tool",
         "/resources/expert-blog/flipkart-keyword-research-tool",
+        "/resources/expert-blog/insydz-vs-sellerapp-india",
+        "/resources/expert-blog/amazon-review-analysis-guide-india",
+        "/resources/expert-blog/manual-vs-automated-competitor-tracking-tool",
         "/about/our-vision",
         "/about/careers",
         "/about/contact-us",

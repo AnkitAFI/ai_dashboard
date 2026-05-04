@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Brain, ChartLine, Globe, Shield, Users, Zap, Target, Award } from "lucide-react";
@@ -58,175 +57,151 @@ const TEAM_VALUES = [
 ];
 
 export default function AboutContent() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   return (
-    <div className="min-h-screen bg-background flex flex-col lg:flex-row">
-      {/* Main Content */}
-      <div className="flex-1 w-full lg:ml-64 min-h-screen flex flex-col">
-        {/* Header */}
-        <header className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-lg rounded-2xl px-6 sm:px-12 py-4 sm:py-6 mb-6 flex items-center justify-between sticky top-4 z-20 mx-0 sm:mx-6">
-          <div className="flex items-center gap-3 w-full sm:w-auto">
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors"
-            >
-              <span className="text-xl font-bold">☰</span>
-            </button>
-            <div>
-              <h2 className="text-3xl font-bold text-sky-900">About Insydz</h2>
-              <p className="text-slate-600 text-sm sm:text-base mt-1">
-                Revolutionizing e-commerce with AI-powered analytics and insights
-              </p>
-            </div>
+    <div className="min-h-screen bg-background flex flex-col pt-32">
+      <main className="px-4 sm:px-6 flex-1 pb-12 space-y-12">
+        {/* Hero Section */}
+        <div className="text-center space-y-6">
+          <div className="inline-flex items-center justify-center w-24 h-24 bg-background backdrop-blur-none rounded-2xl mb-4 shadow-sm mx-auto">
+            <Brain className="h-12 w-12 text-primary" />
           </div>
-        </header>
+          <h1 className="text-4xl font-bold text-sky-900">About Insydz</h1>
+          <p className="text-xl text-slate-600 max-w-4xl mx-auto">
+            We're democratizing e-commerce intelligence by making advanced analytics and AI-powered insights accessible to businesses of all sizes.
+          </p>
+        </div>
 
-        {/* Main Scrollable Content */}
-        <main className="px-4 sm:px-6 flex-1 overflow-y-auto pb-6 space-y-12">
-          {/* Hero Section */}
-          <div className="text-center space-y-6">
-            <div className="inline-flex items-center justify-center w-24 h-24 bg-background backdrop-blur-none rounded-2xl mb-4 shadow-sm mx-auto">
-              <Brain className="h-12 w-12 text-primary" />
-            </div>
-            <h1 className="text-4xl font-bold text-sky-900">About Insydz</h1>
-            <p className="text-xl text-slate-600 max-w-4xl mx-auto">
-              We're democratizing e-commerce intelligence by making advanced analytics and AI-powered insights accessible to businesses of all sizes.
+        {/* Mission */}
+        <Card className="bg-gradient-to-r from-primary/10 to-purple-500/10 border-none">
+          <CardContent className="p-8 text-center">
+            <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
+            <p className="text-lg text-slate-700 leading-relaxed">
+              To democratize e-commerce intelligence by making advanced analytics and AI-powered insights accessible to businesses of all sizes, helping them compete and thrive in the digital marketplace.
             </p>
-          </div>
+          </CardContent>
+        </Card>
 
-          {/* Mission */}
-          <Card className="bg-gradient-to-r from-primary/10 to-purple-500/10 border-none">
-            <CardContent className="p-8 text-center">
-              <h2 className="text-2xl font-bold mb-4">Our Mission</h2>
-              <p className="text-lg text-slate-700 leading-relaxed">
-                To democratize e-commerce intelligence by making advanced analytics and AI-powered insights accessible to businesses of all sizes, helping them compete and thrive in the digital marketplace.
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Features */}
-          <div>
-            <h2 className="text-2xl font-bold text-center mb-8">What We Offer</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {FEATURES.map((feature, index) => (
-                <Card key={index} className="h-full shadow-md border border-slate-200 rounded-2xl">
-                  <CardHeader>
-                    <div className="w-12 h-12 bg-background rounded-xl flex items-center justify-center mb-4">
-                      {feature.icon}
-                    </div>
-                    <CardTitle className="text-lg font-semibold">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-slate-700">{feature.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-
-          {/* Stats */}
-          <div>
-            <h2 className="text-2xl font-bold text-center mb-8">Our Impact</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {STATS.map((stat, index) => (
-                <Card key={index} className="text-center p-6 shadow-md border border-slate-200 rounded-2xl">
-                  <div className="flex justify-center mb-3">
-                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                      {stat.icon}
-                    </div>
+        {/* Features */}
+        <div>
+          <h2 className="text-2xl font-bold text-center mb-8">What We Offer</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {FEATURES.map((feature, index) => (
+              <Card key={index} className="h-full shadow-md border border-slate-200 rounded-2xl">
+                <CardHeader>
+                  <div className="w-12 h-12 bg-background rounded-xl flex items-center justify-center mb-4">
+                    {feature.icon}
                   </div>
-                  <div className="text-2xl font-bold text-primary mb-1">{stat.value}</div>
-                  <div className="text-sm text-slate-600">{stat.label}</div>
-                </Card>
-              ))}
-            </div>
+                  <CardTitle className="text-lg font-semibold">{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-700">{feature.description}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
+        </div>
 
-          {/* Team Values */}
-          <div>
-            <h2 className="text-2xl font-bold text-center mb-8">Our Values</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {TEAM_VALUES.map((value, index) => (
-                <Card key={index} className="text-center p-6 shadow-md border border-slate-200 rounded-2xl">
-                  <div className="flex justify-center mb-4">{value.icon}</div>
-                  <h3 className="text-lg font-semibold mb-3">{value.title}</h3>
-                  <p className="text-sm text-slate-600">{value.description}</p>
-                </Card>
-              ))}
-            </div>
-          </div>
-
-          {/* Technology */}
-          <Card className="shadow-md border border-slate-200 rounded-9xl">
-            <CardHeader>
-              <CardTitle className="text-xl">Our Technology</CardTitle>
-              <CardDescription>
-                Built with cutting-edge technologies for reliability and performance
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-2 gap-4 text-center">
-                {["AI/ML", "Real-time", "Secure", "Scalable"].map((tech) => (
-                  <div key={tech}>
-                    <Badge variant="secondary" className="mb-2">{tech}</Badge>
-                    <p className="text-sm text-slate-600">
-                      {tech === "AI/ML"
-                        ? "Advanced machine learning algorithms"
-                        : tech === "Real-time"
-                        ? "Live data processing and analytics"
-                        : tech === "Secure"
-                        ? "Enterprise-grade security"
-                        : "Built to handle millions of products"}
-                    </p>
+        {/* Stats */}
+        <div>
+          <h2 className="text-2xl font-bold text-center mb-8">Our Impact</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {STATS.map((stat, index) => (
+              <Card key={index} className="text-center p-6 shadow-md border border-slate-200 rounded-2xl">
+                <div className="flex justify-center mb-3">
+                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                    {stat.icon}
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                </div>
+                <div className="text-2xl font-bold text-primary mb-1">{stat.value}</div>
+                <div className="text-sm text-slate-600">{stat.label}</div>
+              </Card>
+            ))}
+          </div>
+        </div>
 
-          {/* Contact */}
-          <Card className="bg-muted/50 shadow-md border border-slate-200 rounded-2xl">
-            <CardContent className="p-8 text-center">
-              <h2 className="text-xl font-semibold mb-4">Get in Touch</h2>
-              <p className="text-slate-600 mb-6">
-                Have questions about Insydz? We'd love to hear from you and help you succeed in your e-commerce journey.
+        {/* Team Values */}
+        <div>
+          <h2 className="text-2xl font-bold text-center mb-8">Our Values</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {TEAM_VALUES.map((value, index) => (
+              <Card key={index} className="text-center p-6 shadow-md border border-slate-200 rounded-2xl">
+                <div className="flex justify-center mb-4">{value.icon}</div>
+                <h3 className="text-lg font-semibold mb-3">{value.title}</h3>
+                <p className="text-sm text-slate-600">{value.description}</p>
+              </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* Technology */}
+        <Card className="shadow-md border border-slate-200 rounded-3xl">
+          <CardHeader>
+            <CardTitle className="text-xl">Our Technology</CardTitle>
+            <CardDescription>
+              Built with cutting-edge technologies for reliability and performance
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-4 text-center">
+              {["AI/ML", "Real-time", "Secure", "Scalable"].map((tech) => (
+                <div key={tech}>
+                  <Badge variant="secondary" className="mb-2">{tech}</Badge>
+                  <p className="text-sm text-slate-600">
+                    {tech === "AI/ML"
+                      ? "Advanced machine learning algorithms"
+                      : tech === "Real-time"
+                      ? "Live data processing and analytics"
+                      : tech === "Secure"
+                      ? "Enterprise-grade security"
+                      : "Built to handle millions of products"}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Contact */}
+        <Card className="bg-muted/50 shadow-md border border-slate-200 rounded-2xl">
+          <CardContent className="p-8 text-center">
+            <h2 className="text-xl font-semibold mb-4">Get in Touch</h2>
+            <p className="text-slate-600 mb-6">
+              Have questions about Insydz? We'd love to hear from you and help you succeed in your e-commerce journey.
+            </p>
+            <div className="space-y-2 text-sm">
+              <p>
+                <strong>Email:</strong>{" "}
+                <a 
+                  href="mailto:contact@insydz.com" 
+                  className="text-blue-600 hover:underline"
+                >
+                  contact@insydz.com
+                </a>
               </p>
-              <div className="space-y-2 text-sm">
-                <p>
-                  <strong>Email:</strong>{" "}
-                  <a 
-                    href="mailto:contact@insydz.com" 
-                    className="text-blue-600 hover:underline"
-                  >
-                    contact@insydz.com
-                  </a>
-                </p>
 
-                <p>
-                  <strong>Support:</strong>{" "}
-                  <a 
-                    href="mailto:support@insydz.com" 
-                    className="text-blue-600 hover:underline"
-                  >
-                    support@insydz.com
-                  </a>
-                </p>
+              <p>
+                <strong>Support:</strong>{" "}
+                <a 
+                  href="mailto:support@insydz.com" 
+                  className="text-blue-600 hover:underline"
+                >
+                  support@insydz.com
+                </a>
+              </p>
 
-                <p>
-                  <strong>Phone:</strong>{" "}
-                  <a 
-                    href="tel:+911234567890" 
-                    className="text-blue-600 hover:underline"
-                  >
-                    +91 (0) 123 456 7890
-                  </a>
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </main>
-      </div>
+              <p>
+                <strong>Phone:</strong>{" "}
+                <a 
+                  href="tel:+911234567890" 
+                  className="text-blue-600 hover:underline"
+                >
+                  +91 (0) 123 456 7890
+                </a>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </main>
     </div>
   );
 }

@@ -48,78 +48,7 @@ export const dynamic = "force-static";
 
 
 
-// Define types for menu items
-type MenuItemWithBadge = {
-  name: string;
-  icon: JSX.Element;
-  badge?: string;
-  route?: string;
-};
 
-type NavigationMenu = {
-  Solutions: MenuItemWithBadge[];
-  "Use Cases": MenuItemWithBadge[];
-  Features: MenuItemWithBadge[];
-  "Free Tools": MenuItemWithBadge[];
-  Resources: MenuItemWithBadge[];
-  Integrations: MenuItemWithBadge[];
-  Compare: MenuItemWithBadge[];
-  About: MenuItemWithBadge[];
-};
-
-const navigationMenu: NavigationMenu = {
-  Solutions: [
-    { name: "All Solutions (Overview)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions" },
-    { name: "For Amazon Sellers (India)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions/amazon-sellers" },
-    { name: "For Flipkart Sellers", icon: <Store className="w-4 h-4" />, route: "/solutions/flipkart-sellers" },
-    { name: "For E-commerce Agencies", icon: <Briefcase className="w-4 h-4" />, route: "/solutions/ecommerce-agencies" },
-    { name: "For Brand Managers", icon: <Users className="w-4 h-4" />, route: "/solutions/brand-managers" },
-  ],
-  "Use Cases": [
-    { name: "All Use Cases", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases" },
-    { name: "Track Competitor Prices", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases/track-competitor-prices" },
-    { name: "Find Profitable Products", icon: <Target className="w-4 h-4" />, route: "/use-cases/find-profitable-products" },
-    { name: "Analyze Customer Reviews", icon: <MessageCircle className="w-4 h-4" />, route: "/use-cases/analyze-customer-reviews" },
-    { name: "Improve Amazon & Flipkart SEO", icon: <Search className="w-4 h-4" />, route: "/use-cases/improve-seo" },
-    { name: "Avoid Stockouts & Missed Sales", icon: <Package className="w-4 h-4" />, route: "/use-cases/avoid-stockouts" },
-  ],
-  Features: [
-    { name: "All Features", icon: <LayoutGrid className="w-4 h-4" />, route: "/features" },
-    { name: "Competitor Price Tracking", icon: <DollarSign className="w-4 h-4" />, route: "/features/competitor-price-tracking-feature" },
-    { name: "Review Analytics", icon: <MessageCircle className="w-4 h-4" />, route: "/features/review-analytics-feature" },
-    { name: "Price Optimization", icon: <TrendingUp className="w-4 h-4" />, route: "/features/price-optimization-feature" },
-    { name: "Keyword & Rank Tracking", icon: <Search className="w-4 h-4" />, route: "/features/keyword-rank-tracking-feature" },
-    { name: "Product Research", icon: <Package className="w-4 h-4" />, route: "/features/product-research-feature" },
-    { name: "AI Recommendations", icon: <Zap className="w-4 h-4" />, route: "/features/ai-recommendations-feature" },
-    { name: "WhatsApp Alerts", icon: <Bell className="w-4 h-4" />, badge: "NEW", route: "/features/whatsapp-alerts-feature" },
-    { name: "Festive Trend Intelligence", icon: <Flame className="w-4 h-4" />, badge: "UPCOMING", route: "/features/festive-trend-feature" },
-  ],
-  "Free Tools": [
-    { name: "Free Amazon Product Analyzer", icon: <BarChart3 className="w-4 h-4" />, route: "/free-tools/free-amazon-product-analyzer" },
-    { name: "Free Review Sentiment Checker", icon: <MessageCircle className="w-4 h-4" />, route: "/free-tools/free-review-sentiment-checker" },
-    { name: "Free Competitor Price Checker", icon: <DollarSign className="w-4 h-4" />, route: "/free-tools/free-competitor-price-checker" },
-    { name: "Free Keyword Rank Checker", icon: <Search className="w-4 h-4" />, badge: "NEW", route: "/free-tools/free-keyword-rank-checker" },
-  ],
-  Resources: [
-    { name: "Expert Blog", icon: <BookOpen className="w-4 h-4" />, route: "/resources/expert-blog" },
-  ],
-  Integrations: [
-    { name: "Amazon", icon: <ShoppingBag className="w-4 h-4" /> },
-    { name: "Flipkart", icon: <Store className="w-4 h-4" /> },
-    { name: "Shopify", icon: <Globe className="w-4 h-4" /> },
-    { name: "API Documentation", icon: <Code className="w-4 h-4" /> },
-  ],
-  Compare: [
-    { name: "Insydz vs Helium 10", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvshelium" },
-    { name: "Insydz vs Jungle Scout", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsjunglescout" },
-    { name: "Insydz vs Viral Launch", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsvirallaunch" },
-  ],
-  About: [
-    { name: "Our Vision", icon: <Presentation className="w-4 h-4" />, route: "/about/our-vision" },
-    { name: "Careers", icon: <Globe className="w-4 h-4" />, route: "/about/careers" },
-    { name: "Contact Us", icon: <Users className="w-4 h-4" />, route: "/about/contact-us" },
-  ],
-};
 
 // Types
 type BlogCategory =
@@ -361,48 +290,7 @@ export default function ExpertBlog() {
   };
 
   const [currentPage, setCurrentPage] = useState(getPageFromUrl);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Sync pagination with browser back/forward buttons
-  useEffect(() => {
-    const handlePopState = () => {
-      setCurrentPage(getPageFromUrl());
-    };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
-  }, []);
-
-  useEffect(() => {
-    const html = document.documentElement;
-    if (isDarkMode) {
-      html.classList.add("dark");
-    } else {
-      html.classList.remove("dark");
-    }
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setActiveDropdown(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   const categories: BlogCategory[] = [
     "All Articles",
@@ -471,27 +359,7 @@ export default function ExpertBlog() {
     window.scrollTo({ top: 400, behavior: 'smooth' });
   };
 
-  const toggleMobileMenu = (menuName: string) => {
-    setMobileActiveMenu(mobileActiveMenu === menuName ? null : menuName);
-  };
 
-  const handleMenuItemClick = (item: MenuItemWithBadge) => {
-    if (item.route) {
-      router.push(item.route);
-      setActiveDropdown(null);
-      setIsMenuOpen(false);
-    }
-  };
-
-  const scrollToSection = (sectionId: string) => {
-    router.push('/');
-    setTimeout(() => {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
-  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
@@ -643,7 +511,7 @@ export default function ExpertBlog() {
                     className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800 transform hover:-translate-y-2 cursor-pointer flex flex-col h-full"
                   >
                     {/* Popular card image — standardized ratio */}
-                    <div className="blog-card-thumb">
+                    <div className="blog-card-thumb relative">
                       {article.image ? (
                         <img
                           src={article.image}
@@ -655,7 +523,7 @@ export default function ExpertBlog() {
                         </div>
                       )}
                       <div className="absolute top-3 right-3">
-                        <span className="bg-background dark:bg-gray-950/90 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-none">
+                        <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
                           {article.category}
                         </span>
                       </div>
@@ -696,7 +564,7 @@ export default function ExpertBlog() {
                   className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800 transform hover:-translate-y-2 cursor-pointer flex flex-col h-full"
                 >
                   {/* Latest grid image — standardized ratio */}
-                  <div className="blog-card-thumb">
+                  <div className="blog-card-thumb relative">
                     {article.image ? (
                       <img
                         src={article.image}
@@ -707,12 +575,14 @@ export default function ExpertBlog() {
                         <BarChart3 className="w-24 h-24 text-orange-200 dark:text-orange-900 opacity-30" />
                       </div>
                     )}
+                    <div className="absolute top-3 right-3">
+                      <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                        {article.category}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="p-6 flex flex-col flex-grow">
-                    <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-400 px-3 py-1 rounded-full text-xs font-semibold mb-4">
-                      {article.category}
-                    </div>
 
                     <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-500 transition-colors">
                       {article.title}
@@ -898,7 +768,7 @@ export default function ExpertBlog() {
         .delay-1000 {
           animation-delay: 1s;
         }
-        .blog-card-thumb { width:100%; aspect-ratio:2.4 / 1; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+        .blog-card-thumb { position: relative; width:100%; aspect-ratio:2.4 / 1; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
         .blog-card-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
       `}</style>
     </div>
