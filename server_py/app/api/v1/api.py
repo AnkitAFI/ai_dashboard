@@ -19,6 +19,7 @@ from app.api.v1.routes.keyword_tracker_router import router as keyword_tracker_r
 from app.api.v1.routes.keyword_gap_router import router as keyword_gap_router
 from app.api.v1.routes.onboarding_router import router as onboarding_router
 from app.api.v1.routes.seller_optimizer_router import router as seller_optimizer_router
+from app.api.v1.routes.rank_tracker_router import router as rank_tracker_router
 
 api_router = APIRouter()
 
@@ -39,3 +40,4 @@ api_router.include_router(onboarding_router, tags=["Onboarding"])
 api_router.include_router(payment_order_router, prefix="/payments", tags=["Payment Order"])
 api_router.include_router(seller_router, prefix="/seller", tags=["Seller Dashboard"])
 api_router.include_router(seller_optimizer_router, tags=["AI"])
+api_router.include_router(rank_tracker_router)
