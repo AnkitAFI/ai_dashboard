@@ -101,23 +101,22 @@ const navigationMenu: NavigationMenu = {
 
 
 
+import { useTheme } from "next-themes";
+
 export function MarketingHeader() {
   const router = useRouter();
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  // Avoid hydration mismatch
   useEffect(() => {
-    const html = document.documentElement;
-    if (isDarkMode) {
-      html.classList.add("dark");
-    } else {
-      html.classList.remove("dark");
-    }
-  }, [isDarkMode]);
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -280,10 +279,10 @@ export function MarketingHeader() {
 
             <button
               className="ml-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-              onClick={() => setIsDarkMode(!isDarkMode)}
+              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
               aria-label="Toggle dark mode"
             >
-              {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400"/> : <Moon className="w-5 h-5 text-gray-800"/>}
+              {mounted && (resolvedTheme === "dark" ? <Sun className="w-5 h-5 text-yellow-400"/> : <Moon className="w-5 h-5 text-gray-800"/>)}
             </button>
           </div>
 
@@ -348,10 +347,20 @@ export function MarketingHeader() {
 
             <button
               className="mt-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors w-full flex justify-center items-center"
-              onClick={() => setIsDarkMode(!isDarkMode)}
+              onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
               aria-label="Toggle dark mode"
             >
-              {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400"/> : <Moon className="w-5 h-5 text-gray-800"/>}
+              {mounted && (resolvedTheme === "dark" ? (
+                <div className="flex items-center gap-2">
+                  <Sun className="w-5 h-5 text-yellow-400"/>
+                  <span className="text-sm font-medium text-gray-300">Switch to Light Mode</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <Moon className="w-5 h-5 text-gray-800"/>
+                  <span className="text-sm font-medium text-gray-700">Switch to Dark Mode</span>
+                </div>
+              ))}
             </button>
           </div>
         </div>
