@@ -68,8 +68,8 @@ export default function Sales() {
     setLoading(true);
     const url =
       source === "flipkart"
-        ? "http://localhost:8000/top?table=rapidapi_flipkart_products&n=500"
-        : "http://localhost:8000/rapidapi/top-sales?limit=500";
+        ? "https://api.insydz.com/top?table=rapidapi_flipkart_products&n=500"
+        : "https://api.insydz.com/rapidapi/top-sales?limit=500";
 
     axios
       .get(url)

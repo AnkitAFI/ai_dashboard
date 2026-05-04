@@ -11,7 +11,8 @@ import {
   Sparkles, ChevronDown, LineChart, Award,
   Lightbulb, Package, DollarSign, Users,
   Layers, ThumbsUp, MessageCircle, Star,
-  LayoutGrid, Flame, ArrowLeft
+  LayoutGrid, Flame, ArrowLeft,
+  Clock, Filter, Brain
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

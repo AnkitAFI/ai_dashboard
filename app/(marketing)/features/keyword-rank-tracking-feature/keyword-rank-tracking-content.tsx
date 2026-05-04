@@ -10,7 +10,7 @@ import {
   Search, X, Check, RefreshCw, Eye, 
   Sparkles, ChevronDown, LineChart, Award,
   Hash, Activity, Users, DollarSign,
-  Package, LayoutGrid, Flame
+  Package, LayoutGrid, Flame, Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

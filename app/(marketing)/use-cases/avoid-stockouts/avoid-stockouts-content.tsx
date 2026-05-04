@@ -8,7 +8,7 @@ import {
   ChevronDown, ArrowLeft,
   TrendingDown, MessageCircle, Search, Target, Zap,
   Flame, CheckCircle2, BarChart3, Smartphone,
-  RefreshCw, Eye
+  RefreshCw, Eye, Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { 
   TrendingDown, ArrowRight, CheckCircle2, Target, Zap, 
-  TrendingUp, Search, Package, 
+  TrendingUp, Search, Package, MessageCircle,
   BarChart3, ChevronRight, AlertCircle, Clock,
   Check, DollarSign, Eye, Sparkles,
   ChevronDown, Filter, MapPin, Flame

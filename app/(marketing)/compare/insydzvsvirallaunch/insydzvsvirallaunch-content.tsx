@@ -6,7 +6,7 @@ import {
   ChevronDown, ChevronRight, Check, ArrowRight,
   CheckCircle2, DollarSign, Globe, Smartphone, BarChart3, Package, Shield,
   Zap, Search, MessageCircle, TrendingDown,
-  Flame, Mail, IndianRupee, AlertCircle
+  Flame, Mail, IndianRupee, AlertCircle, Users
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import Link from "next/link";

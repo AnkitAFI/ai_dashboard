@@ -12,7 +12,7 @@ import {
   Brain, Package, DollarSign,
   ThumbsUp, MessageCircle, Star,
   Clock, Maximize2, Gauge,
-  LayoutGrid, Flame
+  LayoutGrid, Flame, Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

@@ -23,6 +23,7 @@ export const dynamic = "force-static";
 
 export default function EcommerceAgenciesContent() {
   const router = useRouter();
+  const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
   const handleGetStarted = () => { router.push("/login"); };
 
 

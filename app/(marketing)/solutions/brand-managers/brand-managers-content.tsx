@@ -418,10 +418,10 @@ export default function BrandManagersPage() {
                 <div key={i} className="bg-white dark:bg-gray-900 border-2 border-purple-300 dark:border-purple-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all">
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">{step.num}</div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">{step.title}</h3>
-                  {step.desc && <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">{step.desc}
+                  {step.desc && <div className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">{step.desc}
                     {step.num === "1" && <div className="h-2" />}
                     {step.num === "2" && <div className="h-8" />}
-  </p>}
+                  </div>}
                   {step.icon && (
                 <div className={`${step.bg} rounded-2xl p-4 flex items-center justify-center`}>
                   <div className="flex items-center justify-center w-6 h-6">
