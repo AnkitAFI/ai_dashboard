@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   TrendingUp, Menu, X, Sun, Moon, Trophy, Target, DollarSign, Globe, BookOpen, 
   Users, ChevronDown, ShoppingBag, TrendingDown, MessageCircle, Search, Package, 
@@ -105,6 +105,7 @@ import { useTheme } from "next-themes";
 
 export function MarketingHeader() {
   const router = useRouter();
+  const pathname = usePathname();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -153,6 +154,11 @@ export function MarketingHeader() {
     setMobileActiveMenu(mobileActiveMenu === menuName ? null : menuName);
   };
 
+  const isSectionActive = (menuName: string) => {
+    const sectionPath = "/" + menuName.toLowerCase().replace(/\s+/g, '-');
+    return pathname === sectionPath || pathname.startsWith(sectionPath + "/");
+  };
+
   const DropdownItem = ({ item }: { item: MenuItemWithBadge }) => {
     if (!item.route) {
       return (
@@ -167,16 +173,22 @@ export function MarketingHeader() {
         </span>
       );
     }
+    const isActive = item.route ? pathname === item.route : false;
+
     return (
       <Link
         href={item.route}
         onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }}
-        className="w-full px-4 py-3 text-left hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group"
+        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 group ${
+          isActive 
+            ? "bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" 
+            : "hover:bg-purple-50 dark:hover:bg-purple-900/20 text-gray-700 dark:text-gray-300"
+        }`}
       >
-        <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+        <span className={`transition-transform group-hover:scale-110 ${isActive ? "text-purple-600 dark:text-purple-400" : "text-purple-600 dark:text-purple-400"}`}>
           {item.icon}
         </span>
-        <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">
+        <span className={`text-sm flex-1 ${isActive ? "font-semibold text-purple-600 dark:text-purple-400" : "group-hover:text-purple-600 dark:group-hover:text-purple-400"}`}>
           {item.name}
         </span>
         {item.badge && (
@@ -243,7 +255,11 @@ export function MarketingHeader() {
                   onMouseEnter={() => setActiveDropdown(menu)}
                   aria-haspopup="true"
                   aria-expanded={activeDropdown === menu}
-                  className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1"
+                  className={`px-3 py-2 text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${
+                    isSectionActive(menu)
+                      ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                      : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                  }`}
                 >
                   {menu}
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === menu ? 'rotate-180' : ''}`} />
@@ -264,7 +280,11 @@ export function MarketingHeader() {
             <Link
               href="/pricing"
               onMouseEnter={() => setActiveDropdown(null)}
-              className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all"
+              className={`px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                pathname === "/pricing"
+                  ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                  : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+              }`}
             >
               Pricing
             </Link>
@@ -304,7 +324,11 @@ export function MarketingHeader() {
           <div className="px-4 py-4 space-y-2">
             <button
               onClick={() => scrollToSection('Home')}
-              className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium"
+              className={`block w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${
+                pathname === "/"
+                  ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+              }`}
             >
               Home
             </button>
@@ -314,7 +338,11 @@ export function MarketingHeader() {
                 <button
                   onClick={() => toggleMobileMenu(menuName)}
                   aria-expanded={mobileActiveMenu === menuName}
-                  className="flex items-center justify-between w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium"
+                  className={`flex items-center justify-between w-full px-4 py-2 rounded-lg font-medium transition-colors ${
+                    isSectionActive(menuName)
+                      ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                  }`}
                 >
                   {menuName}
                   <ChevronDown className={`w-4 h-4 transition-transform ${mobileActiveMenu === menuName ? 'rotate-180' : ''}`} />
@@ -332,7 +360,11 @@ export function MarketingHeader() {
             <Link
               href="/pricing"
               onClick={() => setIsMenuOpen(false)}
-              className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium"
+              className={`block w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${
+                pathname === "/pricing"
+                  ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+              }`}
             >
               Pricing
             </Link>

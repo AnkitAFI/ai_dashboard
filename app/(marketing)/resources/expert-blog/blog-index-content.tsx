@@ -511,7 +511,7 @@ export default function ExpertBlog() {
                     className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800 transform hover:-translate-y-2 cursor-pointer flex flex-col h-full"
                   >
                     {/* Popular card image — standardized ratio */}
-                    <div className="blog-card-thumb">
+                    <div className="blog-card-thumb relative">
                       {article.image ? (
                         <img
                           src={article.image}
@@ -523,7 +523,7 @@ export default function ExpertBlog() {
                         </div>
                       )}
                       <div className="absolute top-3 right-3">
-                        <span className="bg-background dark:bg-gray-950/90 text-gray-700 dark:text-gray-300 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-none">
+                        <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
                           {article.category}
                         </span>
                       </div>
@@ -564,7 +564,7 @@ export default function ExpertBlog() {
                   className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800 transform hover:-translate-y-2 cursor-pointer flex flex-col h-full"
                 >
                   {/* Latest grid image — standardized ratio */}
-                  <div className="blog-card-thumb">
+                  <div className="blog-card-thumb relative">
                     {article.image ? (
                       <img
                         src={article.image}
@@ -575,12 +575,14 @@ export default function ExpertBlog() {
                         <BarChart3 className="w-24 h-24 text-orange-200 dark:text-orange-900 opacity-30" />
                       </div>
                     )}
+                    <div className="absolute top-3 right-3">
+                      <span className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                        {article.category}
+                      </span>
+                    </div>
                   </div>
 
                   <div className="p-6 flex flex-col flex-grow">
-                    <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-400 px-3 py-1 rounded-full text-xs font-semibold mb-4">
-                      {article.category}
-                    </div>
 
                     <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-500 transition-colors">
                       {article.title}
@@ -766,7 +768,7 @@ export default function ExpertBlog() {
         .delay-1000 {
           animation-delay: 1s;
         }
-        .blog-card-thumb { width:100%; aspect-ratio:2.4 / 1; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+        .blog-card-thumb { position: relative; width:100%; aspect-ratio:2.4 / 1; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
         .blog-card-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
       `}</style>
     </div>
