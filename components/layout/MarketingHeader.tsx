@@ -1,12 +1,12 @@
 "use client";
+
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
-  TrendingUp, Menu, X, BarChart3, Zap, Shield, Check, Crown, Building2, Sun, Moon,
-  Trophy, Target, DollarSign, Globe, BookOpen, Video, FileText, Users, Linkedin,
-  ChevronDown, ShoppingBag, TrendingDown, MessageCircle, Search, Package, Bell,
-  Code, BarChart, Briefcase, Store, ShoppingCart, Flame, LayoutGrid
+  TrendingUp, Menu, X, Sun, Moon, Trophy, Target, DollarSign, Globe, BookOpen, 
+  Users, ChevronDown, ShoppingBag, TrendingDown, MessageCircle, Search, Package, 
+  Bell, Code, Briefcase, Store, Flame, LayoutGrid, Layers
 } from "lucide-react";
 
 // Define types for menu items
@@ -28,6 +28,23 @@ type NavigationMenu = {
   About: MenuItemWithBadge[];
 };
 
+const Zap = ({ className }: { className?: string }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width="24" 
+    height="24" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+  </svg>
+);
+
 const navigationMenu: NavigationMenu = {
   Solutions: [
     { name: "All Solutions (Overview)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions" },
@@ -37,7 +54,7 @@ const navigationMenu: NavigationMenu = {
     { name: "For Brand Managers", icon: <Users className="w-4 h-4" />, route: "/solutions/brand-managers" },
   ],
   "Use Cases": [
-    { name: "All Use Cases", icon: <TrendingDown className="w-4 h-4" />, route: "/use-cases" },
+    { name: "All Use Cases", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases" },
     { name: "Track Competitor Prices", icon: <TrendingDown className="w-4 h-4" />, route: "/use-cases/track-competitor-prices" },
     { name: "Find Profitable Products", icon: <Target className="w-4 h-4" />, route: "/use-cases/find-profitable-products" },
     { name: "Analyze Customer Reviews", icon: <MessageCircle className="w-4 h-4" />, route: "/use-cases/analyze-customer-reviews" },
@@ -45,8 +62,8 @@ const navigationMenu: NavigationMenu = {
     { name: "Avoid Stockouts & Missed Sales", icon: <Package className="w-4 h-4" />, route: "/use-cases/avoid-stockouts" },
   ],
   Features: [
-    { name: "All Features", icon: <LayoutGrid className="w-4 h-4" />, route: "/features" },
-    { name: "Competitor Price Tracking", icon: <DollarSign className="w-4 h-4" />, route: "/features/competitor-price-tracking-feature" },
+    { name: "All Features (Overview)", icon: <Layers className="w-4 h-4" />, route: "/features" },
+    { name: "Competitor Price Tracking", icon: <TrendingDown className="w-4 h-4" />, route: "/features/competitor-price-tracking-feature" },
     { name: "Review Analytics", icon: <MessageCircle className="w-4 h-4" />, route: "/features/review-analytics-feature" },
     { name: "Price Optimization", icon: <TrendingUp className="w-4 h-4" />, route: "/features/price-optimization-feature" },
     { name: "Keyword & Rank Tracking", icon: <Search className="w-4 h-4" />, route: "/features/keyword-rank-tracking-feature" },
@@ -56,7 +73,7 @@ const navigationMenu: NavigationMenu = {
     { name: "Festive Trend Intelligence", icon: <Flame className="w-4 h-4" />, badge: "UPCOMING", route: "/features/festive-trend-feature" },
   ],
   "Free Tools": [
-    { name: "Free Amazon Product Analyzer", icon: <BarChart className="w-4 h-4" />, route: "/free-tools/free-amazon-product-analyzer" },
+    { name: "Free Amazon Product Analyzer", icon: <LayoutGrid className="w-4 h-4" />, route: "/free-tools/free-amazon-product-analyzer" },
     { name: "Free Review Sentiment Checker", icon: <MessageCircle className="w-4 h-4" />, route: "/free-tools/free-review-sentiment-checker" },
     { name: "Free Competitor Price Checker", icon: <DollarSign className="w-4 h-4" />, route: "/free-tools/free-competitor-price-checker" },
     { name: "Free Keyword Rank Checker", icon: <Search className="w-4 h-4" />, badge: "NEW", route: "/free-tools/free-keyword-rank-checker" },
@@ -82,8 +99,13 @@ const navigationMenu: NavigationMenu = {
   ],
 };
 
-export function Navbar() {
+
+
+import { useTheme } from "next-themes";
+
+export function MarketingHeader() {
   const router = useRouter();
+  const pathname = usePathname();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -116,19 +138,27 @@ export function Navbar() {
   }, []);
 
   const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      setIsMenuOpen(false);
-      setActiveDropdown(null);
+    if (window.location.pathname !== "/") {
+      router.push(`/#${sectionId}`);
+    } else {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     }
+    setIsMenuOpen(false);
+    setActiveDropdown(null);
   };
 
   const toggleMobileMenu = (menuName: string) => {
     setMobileActiveMenu(mobileActiveMenu === menuName ? null : menuName);
   };
 
-  // ─── SEO helper: dropdown items rendered as <Link> so crawlers follow them ───
+  const isSectionActive = (menuName: string) => {
+    const sectionPath = "/" + menuName.toLowerCase().replace(/\s+/g, '-');
+    return pathname === sectionPath || pathname.startsWith(sectionPath + "/");
+  };
+
   const DropdownItem = ({ item }: { item: MenuItemWithBadge }) => {
     if (!item.route) {
       return (
@@ -143,16 +173,22 @@ export function Navbar() {
         </span>
       );
     }
+    const isActive = item.route ? pathname === item.route : false;
+
     return (
       <Link
         href={item.route}
         onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }}
-        className="w-full px-4 py-3 text-left hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group"
+        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 group ${
+          isActive 
+            ? "bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" 
+            : "hover:bg-purple-50 dark:hover:bg-purple-900/20 text-gray-700 dark:text-gray-300"
+        }`}
       >
-        <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">
+        <span className={`transition-transform group-hover:scale-110 ${isActive ? "text-purple-600 dark:text-purple-400" : "text-purple-600 dark:text-purple-400"}`}>
           {item.icon}
         </span>
-        <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">
+        <span className={`text-sm flex-1 ${isActive ? "font-semibold text-purple-600 dark:text-purple-400" : "group-hover:text-purple-600 dark:group-hover:text-purple-400"}`}>
           {item.name}
         </span>
         {item.badge && (
@@ -164,7 +200,6 @@ export function Navbar() {
     );
   };
 
-  // Mobile dropdown item — same anchor-based approach
   const MobileDropdownItem = ({ item }: { item: MenuItemWithBadge }) => {
     if (!item.route) {
       return (
@@ -198,8 +233,7 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          {/* ── Logo: <a> so crawlers pick up the homepage link ── */}
-          <a href="/" className="flex items-center space-x-3 group" aria-label="Insydz – Home">
+          <Link href="/" className="flex items-center space-x-3 group" aria-label="Insydz – Home">
             <div className="relative">
               <img
                 src="/logo.png"
@@ -211,179 +245,49 @@ export function Navbar() {
             <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
               Insydz
             </span>
-          </a>
+          </Link>
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center space-x-3" ref={dropdownRef}>
-
-            {/* Solutions Dropdown */}
-            <div className="relative">
-              <button
-                onMouseEnter={() => setActiveDropdown('Solutions')}
-                aria-haspopup="true"
-                aria-expanded={activeDropdown === 'Solutions'}
-                className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1"
-              >
-                Solutions
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'Solutions' ? 'rotate-180' : ''}`} />
-              </button>
-              {activeDropdown === 'Solutions' && (
-                <div
-                  onMouseLeave={() => setActiveDropdown(null)}
-                  className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
+            {(["Solutions", "Use Cases", "Features", "Free Tools", "Compare", "Resources", "About"] as const).map((menu) => (
+              <div key={menu} className="relative">
+                <button
+                  onMouseEnter={() => setActiveDropdown(menu)}
+                  aria-haspopup="true"
+                  aria-expanded={activeDropdown === menu}
+                  className={`px-3 py-2 text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${
+                    isSectionActive(menu)
+                      ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                      : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                  }`}
                 >
-                  {navigationMenu.Solutions.map((item, i) => (
-                    <DropdownItem key={i} item={item} />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Use Cases Dropdown */}
-            <div className="relative">
-              <button
-                onMouseEnter={() => setActiveDropdown('Use Cases')}
-                aria-haspopup="true"
-                aria-expanded={activeDropdown === 'Use Cases'}
-                className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1"
-              >
-                Use Cases
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'Use Cases' ? 'rotate-180' : ''}`} />
-              </button>
-              {activeDropdown === 'Use Cases' && (
-                <div
-                  onMouseLeave={() => setActiveDropdown(null)}
-                  className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
-                >
-                  {navigationMenu["Use Cases"].map((item, i) => (
-                    <DropdownItem key={i} item={item} />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Features Dropdown */}
-            <div className="relative">
-              <button
-                onMouseEnter={() => setActiveDropdown('Features')}
-                aria-haspopup="true"
-                aria-expanded={activeDropdown === 'Features'}
-                className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1"
-              >
-                Features
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'Features' ? 'rotate-180' : ''}`} />
-              </button>
-              {activeDropdown === 'Features' && (
-                <div
-                  onMouseLeave={() => setActiveDropdown(null)}
-                  className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
-                >
-                  {navigationMenu.Features.map((item, i) => (
-                    <DropdownItem key={i} item={item} />
-                  ))}
-                </div>
-              )}
-            </div>
+                  {menu}
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === menu ? 'rotate-180' : ''}`} />
+                </button>
+                {activeDropdown === menu && (
+                  <div
+                    onMouseLeave={() => setActiveDropdown(null)}
+                    className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
+                  >
+                    {navigationMenu[menu].map((item, i) => (
+                      <DropdownItem key={i} item={item} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
 
             <Link
               href="/pricing"
               onMouseEnter={() => setActiveDropdown(null)}
-              className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all"
+              className={`px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                pathname === "/pricing"
+                  ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                  : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+              }`}
             >
               Pricing
             </Link>
-
-            {/* Free Tools Dropdown */}
-            <div className="relative">
-              <button
-                onMouseEnter={() => setActiveDropdown('Free Tools')}
-                aria-haspopup="true"
-                aria-expanded={activeDropdown === 'Free Tools'}
-                className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1"
-              >
-                Free Tools
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'Free Tools' ? 'rotate-180' : ''}`} />
-              </button>
-              {activeDropdown === 'Free Tools' && (
-                <div
-                  onMouseLeave={() => setActiveDropdown(null)}
-                  className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
-                >
-                  {navigationMenu["Free Tools"].map((item, i) => (
-                    <DropdownItem key={i} item={item} />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Compare Dropdown */}
-            <div className="relative">
-              <button
-                onMouseEnter={() => setActiveDropdown('Compare')}
-                aria-haspopup="true"
-                aria-expanded={activeDropdown === 'Compare'}
-                className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1"
-              >
-                Compare
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'Compare' ? 'rotate-180' : ''}`} />
-              </button>
-              {activeDropdown === 'Compare' && (
-                <div
-                  onMouseLeave={() => setActiveDropdown(null)}
-                  className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
-                >
-                  {navigationMenu.Compare.map((item, i) => (
-                    <DropdownItem key={i} item={item} />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Resources Dropdown */}
-            <div className="relative">
-              <button
-                onMouseEnter={() => setActiveDropdown('Resources')}
-                aria-haspopup="true"
-                aria-expanded={activeDropdown === 'Resources'}
-                className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1"
-              >
-                Resources
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'Resources' ? 'rotate-180' : ''}`} />
-              </button>
-              {activeDropdown === 'Resources' && (
-                <div
-                  onMouseLeave={() => setActiveDropdown(null)}
-                  className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
-                >
-                  {navigationMenu.Resources.map((item, i) => (
-                    <DropdownItem key={i} item={item} />
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* About Dropdown */}
-            <div className="relative">
-              <button
-                onMouseEnter={() => setActiveDropdown('About')}
-                aria-haspopup="true"
-                aria-expanded={activeDropdown === 'About'}
-                className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1"
-              >
-                About
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'About' ? 'rotate-180' : ''}`} />
-              </button>
-              {activeDropdown === 'About' && (
-                <div
-                  onMouseLeave={() => setActiveDropdown(null)}
-                  className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200"
-                >
-                  {navigationMenu.About.map((item, i) => (
-                    <DropdownItem key={i} item={item} />
-                  ))}
-                </div>
-              )}
-            </div>
 
             <Link
               href="/login"
@@ -418,20 +322,27 @@ export function Navbar() {
       {isMenuOpen && (
         <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100vh-5rem)] overflow-y-auto">
           <div className="px-4 py-4 space-y-2">
-            <a
-              href="/"
-              onClick={(e) => { e.preventDefault(); scrollToSection('Home'); }}
-              className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium"
+            <button
+              onClick={() => scrollToSection('Home')}
+              className={`block w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${
+                pathname === "/"
+                  ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+              }`}
             >
               Home
-            </a>
+            </button>
 
-            {(["Solutions", "Use Cases", "Features", "Free Tools", "Integrations", "Compare", "Resources", "About"] as const).map((menuName) => (
+            {(["Solutions", "Use Cases", "Features", "Free Tools", "Compare", "Resources", "About"] as const).map((menuName) => (
               <div key={menuName}>
                 <button
                   onClick={() => toggleMobileMenu(menuName)}
                   aria-expanded={mobileActiveMenu === menuName}
-                  className="flex items-center justify-between w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium"
+                  className={`flex items-center justify-between w-full px-4 py-2 rounded-lg font-medium transition-colors ${
+                    isSectionActive(menuName)
+                      ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                      : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                  }`}
                 >
                   {menuName}
                   <ChevronDown className={`w-4 h-4 transition-transform ${mobileActiveMenu === menuName ? 'rotate-180' : ''}`} />
@@ -449,7 +360,11 @@ export function Navbar() {
             <Link
               href="/pricing"
               onClick={() => setIsMenuOpen(false)}
-              className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium"
+              className={`block w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${
+                pathname === "/pricing"
+                  ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
+                  : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+              }`}
             >
               Pricing
             </Link>

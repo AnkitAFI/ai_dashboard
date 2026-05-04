@@ -11,139 +11,19 @@ import {
   Menu, Sun, Moon, ShoppingBag, Store, Briefcase,
   Code, Trophy, ArrowLeft, BookOpen, Video, FileText,
   Search, MessageCircle, TrendingDown, X,
-  LogIn, Lock, BarChart2, RefreshCw, ArrowDownUp, ArrowDown, Flame, Mail, LayoutGrid, Facebook, Instagram, Linkedin, Twitter
+  LogIn, Lock, BarChart2, RefreshCw, ArrowDownUp, ArrowDown, Flame, Mail, LayoutGrid
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
-
 export const dynamic = "force-static";
-
-
-
-
-type MenuItemWithBadge = {
-  name: string;
-  icon: JSX.Element;
-  badge?: string;
-  route?: string;
-};
-
-type NavigationMenu = {
-  Solutions: MenuItemWithBadge[];
-  "Use Cases": MenuItemWithBadge[];
-  Features: MenuItemWithBadge[];
-  "Free Tools": MenuItemWithBadge[];
-  Resources: MenuItemWithBadge[];
-  Integrations: MenuItemWithBadge[];
-  Compare: MenuItemWithBadge[];
-  About: MenuItemWithBadge[];
-};
-
-const navigationMenu: NavigationMenu = {
-  Solutions: [
-    { name: "All Solutions (Overview)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions" },
-    { name: "For Amazon Sellers (India)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions/amazon-sellers" },
-    { name: "For Flipkart Sellers", icon: <Store className="w-4 h-4" />, route: "/solutions/flipkart-sellers" },
-    { name: "For E-commerce Agencies", icon: <Briefcase className="w-4 h-4" />, route: "/solutions/ecommerce-agencies" },
-    { name: "For Brand Managers", icon: <Users className="w-4 h-4" />, route: "/solutions/brand-managers" },
-  ],
-  "Use Cases": [
-    { name: "All Use Cases", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases" },
-    { name: "Track Competitor Prices", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases/track-competitor-prices" },
-    { name: "Find Profitable Products", icon: <Target className="w-4 h-4" />, route: "/use-cases/find-profitable-products" },
-    { name: "Analyze Customer Reviews", icon: <MessageCircle className="w-4 h-4" />, route: "/use-cases/analyze-customer-reviews" },
-    { name: "Improve Amazon & Flipkart SEO", icon: <Search className="w-4 h-4" />, route: "/use-cases/improve-seo" },
-    { name: "Avoid Stockouts & Missed Sales", icon: <Package className="w-4 h-4" />, route: "/use-cases/avoid-stockouts" },
-  ],
-  Features: [
-    { name: "All Features", icon: <LayoutGrid className="w-4 h-4" />, route: "/features" },
-    { name: "Competitor Price Tracking", icon: <TrendingDown className="w-4 h-4" />, route: "/features/competitor-price-tracking-feature" },
-    { name: "Review Analytics", icon: <MessageCircle className="w-4 h-4" />, route: "/features/review-analytics-feature" },
-    { name: "Price Optimization", icon: <TrendingUp className="w-4 h-4" />, route: "/features/price-optimization-feature" },
-    { name: "Keyword & Rank Tracking", icon: <Search className="w-4 h-4" />, route: "/features/keyword-rank-tracking-feature" },
-    { name: "Product Research", icon: <Package className="w-4 h-4" />, route: "/features/product-research-feature" },
-    { name: "AI Recommendations", icon: <Zap className="w-4 h-4" />, route: "/features/ai-recommendations-feature" },
-    { name: "WhatsApp Alerts", icon: <Bell className="w-4 h-4" />, badge: "NEW", route: "/features/whatsapp-alerts-feature" },
-    { name: "Festive Trend Intelligence", icon: <Flame className="w-4 h-4" />, badge: "UPCOMING", route: "/features/festive-trend-feature" },
-  ],
-  "Free Tools": [
-    { name: "Free Amazon Product Analyzer", icon: <BarChart3 className="w-4 h-4" />, route: "/free-tools/free-amazon-product-analyzer" },
-    { name: "Free Review Sentiment Checker", icon: <MessageCircle className="w-4 h-4" />, route: "/free-tools/free-review-sentiment-checker" },
-    { name: "Free Competitor Price Checker", icon: <TrendingDown className="w-4 h-4" />, route: "/free-tools/free-competitor-price-checker" },
-    { name: "Free Keyword Rank Checker", icon: <Search className="w-4 h-4" />, badge: "NEW", route: "/free-tools/free-keyword-rank-checker" },
-  ],
-  Resources: [
-    { name: "Expert Blog", icon: <BookOpen className="w-4 h-4" />, route: "/resources/expert-blog" },
-  ],
-  Integrations: [
-    { name: "Amazon", icon: <ShoppingBag className="w-4 h-4" /> },
-    { name: "Flipkart", icon: <Store className="w-4 h-4" /> },
-    { name: "Shopify", icon: <Globe className="w-4 h-4" /> },
-    { name: "API Documentation", icon: <Code className="w-4 h-4" /> },
-  ],
-  Compare: [
-    { name: "Insydz vs Helium 10", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvshelium" },
-    { name: "Insydz vs Jungle Scout", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsjunglescout" },
-    { name: "Insydz vs Viral Launch", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsvirallaunch" },
-  ],
-  About: [
-    { name: "Our Vision", icon: <Globe className="w-4 h-4" />, route: "/about/our-vision" },
-    { name: "Careers", icon: <Users className="w-4 h-4" />, route: "/about/careers" },
-    { name: "Contact Us", icon: <Mail className="w-4 h-4" />, route: "/about/contact-us" },
-  ],
-};
 
 export default function FreeCompetitorPriceCheckerPage() {
   const router = useRouter();
   const [expandedFaq, setExpandedFaq] = useState<string | null>('faq-1');
-  const [scrolled, setScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
-  const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
   const [asinInput, setAsinInput] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [analyzed, setAnalyzed] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  useEffect(() => {
-    const html = document.documentElement;
-    isDarkMode ? html.classList.add('dark') : html.classList.remove('dark');
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setActiveDropdown(null);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleGetStarted = () => router.push('/signup');
-  const toggleMobileMenu = (menuName: string) =>
-    setMobileActiveMenu(mobileActiveMenu === menuName ? null : menuName);
-
-  const handleMenuItemClick = (item: MenuItemWithBadge) => {
-    if (item.route) {
-      router.push(item.route);
-      setActiveDropdown(null);
-      setIsMenuOpen(false);
-    }
-  };
-
-  const scrollToSection = (sectionId: string) => {
-    router.push('/');
-    setTimeout(() => document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
-  };
 
   const handleCheck = () => {
     if (!isLoggedIn) { router.push('/login'); return; }
@@ -181,205 +61,7 @@ export default function FreeCompetitorPriceCheckerPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950">
-
-      {/* ── SEO HEAD ── */}
-      
-
-      {/* ─── NAVIGATION ─── */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center space-x-3">
-               <a href="/" className="flex items-center space-x-1 group">
-                <div className="relative">
-                  <img src="/logo.png" alt="Insydz Logo" className="w-12 h-12 rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain" />
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse"></div>
-                </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">Insydz</span>
-              </a>
-            </div>
-
-            {/* Desktop Nav */}
-            <div className="hidden lg:flex items-center space-x-3" ref={dropdownRef}>
-              {(['Solutions', 'Use Cases', 'Features'] as const).map((key) => (
-                <div className="relative" key={key}>
-                  <button onMouseEnter={() => setActiveDropdown(key)} className={`px-3 py-2 text-sm font-medium rounded-lg hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all flex items-center gap-1 ${key === 'Solutions' ? 'text-teal-600 dark:text-teal-500 font-semibold' : 'text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400'}`}>
-                    {key} <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === key ? 'rotate-180' : ''}`} />
-                  </button>
-                  {activeDropdown === key && (
-                    <div onMouseLeave={() => setActiveDropdown(null)} className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                      {(navigationMenu[key] as MenuItemWithBadge[]).map((item, i) => (
-                          item.route ? (
-                          <Link key={i} href={item.route} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }} className="w-full px-4 py-3 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors flex items-center gap-3 group">
-                            <span className="text-teal-600 dark:text-teal-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-                            <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 flex-1">{item.name}</span>
-                            {item.badge && <span className="text-xs bg-gradient-to-r from-teal-500 to-cyan-500 text-white px-2 py-0.5 rounded-full font-semibold">{item.badge}</span>}
-                          </Link>
-                        ) : (
-                          <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-                            <span className="text-teal-600 dark:text-teal-400">{item.icon}</span>
-                            <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-                          </span>
-                        )
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              <Link href="/pricing" onMouseEnter={() => setActiveDropdown(null)} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 font-medium rounded-lg hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all">Pricing</Link>
-
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown('Free Tools')} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1">
-                  Free Tools <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'Free Tools' ? 'rotate-180' : ''}`} />
-                </button>
-                {activeDropdown === 'Free Tools' && (
-                  <div onMouseLeave={() => setActiveDropdown(null)} className="absolute top-full right-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                    {navigationMenu["Free Tools"].map((item, i) => (
-                      item.route ? (
-                        <Link key={i} href={item.route} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }} className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group">
-                          <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">{item.name}</span>
-                          {item.badge && <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold">{item.badge}</span>}
-                        </Link>
-                      ) : (
-                        <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-                          <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-                        </span>
-                      )
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {(['Compare', 'Resources'] as const).map((key) => (
-                <div className="relative" key={key}>
-                  <button onMouseEnter={() => setActiveDropdown(key)} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-teal-600 dark:hover:text-teal-400 font-medium rounded-lg hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all flex items-center gap-1">
-                    {key} <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === key ? 'rotate-180' : ''}`} />
-                  </button>
-                  {activeDropdown === key && (
-                    <div onMouseLeave={() => setActiveDropdown(null)} className={`absolute top-full mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200 ${key === 'Compare' ? 'right-0' : 'left-0'}`}>
-                      {(navigationMenu[key] as MenuItemWithBadge[]).map((item, i) => (
-                         item.route ? (
-                          <Link key={i} href={item.route} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }} className="w-full px-4 py-3 hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-colors flex items-center gap-3 group">
-                            <span className="text-teal-600 dark:text-teal-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-                            <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-teal-600 dark:group-hover:text-teal-400 flex-1">{item.name}</span>
-                          </Link>
-                        ) : (
-                          <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-                            <span className="text-teal-600 dark:text-teal-400">{item.icon}</span>
-                            <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-                          </span>
-                        )
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-
-              <div className="relative">
-                <button onMouseEnter={() => setActiveDropdown('About')} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all flex items-center gap-1">
-                  About <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === 'About' ? 'rotate-180' : ''}`} />
-                </button>
-                {activeDropdown === 'About' && (
-                  <div onMouseLeave={() => setActiveDropdown(null)} className="absolute top-full left-0 mt-2 w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
-                    {navigationMenu.About.map((item, i) => (
-                        item.route ? (
-                        <Link key={i} href={item.route} onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }} className="w-full px-4 py-3 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-3 group">
-                          <span className="text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-purple-600 dark:group-hover:text-purple-400 flex-1">{item.name}</span>
-                        </Link>
-                      ) : (
-                        <span key={i} className="w-full px-4 py-3 flex items-center gap-3 opacity-60 cursor-default">
-                          <span className="text-purple-600 dark:text-purple-400">{item.icon}</span>
-                          <span className="text-sm text-gray-700 dark:text-gray-300 flex-1">{item.name}</span>
-                        </span>
-                      )
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <a href="/login" onMouseEnter={() => setActiveDropdown(null)} className="ml-2 text-sm bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-semibold px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 inline-block">
-                Login
-              </a>
-
-              <button className="ml-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" onClick={() => setIsDarkMode(!isDarkMode)}>
-                {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-800" />}
-              </button>
-            </div>
-
-            {/* Mobile controls */}
-            <div className="lg:hidden flex items-center gap-2">
-              <button className="p-2 rounded-full bg-gray-200 dark:bg-gray-700" onClick={() => setIsDarkMode(!isDarkMode)}>
-                {isDarkMode ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4 text-gray-700" />}
-              </button>
-              <button className="p-2" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100vh-5rem)] overflow-y-auto">
-            <div className="px-4 py-4 space-y-2">
-              <a href="/" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-teal-50 dark:hover:bg-teal-900/20 rounded-lg font-medium">
-                <ArrowLeft className="w-4 h-4" /> Back to Home
-              </a>
-              {(['Solutions', 'Use Cases', 'Features', 'Free Tools', 'Compare', 'Resources'] as const).map((menuKey) => (
-                <div key={menuKey}>
-                  <button onClick={() => toggleMobileMenu(menuKey)} className="flex items-center justify-between w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-teal-50 dark:hover:bg-teal-900/20 rounded-lg font-medium">
-                    {menuKey} <ChevronDown className={`w-4 h-4 transition-transform ${mobileActiveMenu === menuKey ? 'rotate-180' : ''}`} />
-                  </button>
-                  {mobileActiveMenu === menuKey && (
-                    <div className="ml-4 mt-2 space-y-1 border-l-2 border-teal-100 dark:border-teal-900 pl-3">
-                      {(navigationMenu[menuKey] as MenuItemWithBadge[]).map((item, i) => (
-                          item.route ? (
-                          <Link key={i} href={item.route} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-teal-50 dark:hover:bg-teal-900/20 rounded-lg">
-                            {item.icon} {item.name}
-                            {item.badge && <span className="ml-auto text-xs bg-teal-500 text-white px-2 py-0.5 rounded-full">{item.badge}</span>}
-                          </Link>
-                        ) : (
-                          <span key={i} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg opacity-60">
-                            {item.icon} {item.name}
-                          </span>
-                        )
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              <Link href="/pricing" onClick={() => setIsMenuOpen(false)} className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-teal-50 dark:hover:bg-teal-900/20 rounded-lg font-medium">Pricing</Link>
-              <div>
-                <button onClick={() => toggleMobileMenu('About')} className="flex items-center justify-between w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium">
-                  About <ChevronDown className={`w-4 h-4 transition-transform ${mobileActiveMenu === 'About' ? 'rotate-180' : ''}`} />
-                </button>
-                {mobileActiveMenu === 'About' && (
-                  <div className="ml-4 mt-2 space-y-1 border-l-2 border-purple-100 dark:border-purple-900 pl-3">
-                    {navigationMenu.About.map((item, i) => (
-                       item.route ? (
-                        <Link key={i} href={item.route} onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg">
-                          {item.icon} {item.name}
-                        </Link>
-                      ) : (
-                        <span key={i} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 rounded-lg opacity-60">
-                          {item.icon} {item.name}
-                        </span>
-                      )
-                    ))}
-                  </div>
-                )}
-              </div>
-             <a href="/login" onClick={() => setIsMenuOpen(false)} className="w-full mt-2 bg-gradient-to-r from-teal-500 to-cyan-500 text-white text-center py-2 rounded-xl font-semibold block">Login</a>
-            </div>
-          </div>
-        )}
-      </nav>
-
+    <div className="min-h-screen bg-white dark:bg-gray-950 pt-20">
       {/* ─── HERO ─── */}
       <section className="relative pt-32 pb-20 px-4 overflow-hidden bg-gradient-to-br from-teal-50 via-white to-cyan-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
         <div className="absolute inset-0 opacity-20 pointer-events-none">
@@ -439,7 +121,7 @@ export default function FreeCompetitorPriceCheckerPage() {
       <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">Tool Overview</div>
+            <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4 leading-relaxed">Tool Overview</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">What This Free Price Checker <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Shows You</span></h2>
             <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Four pricing intelligence signals every Amazon India seller needs to stay competitive whether setting a launch price, defending the Buy Box, or protecting margins during a festive sale.</p>
           </div>
@@ -467,7 +149,7 @@ export default function FreeCompetitorPriceCheckerPage() {
       <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-12">
-            <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">Why It Matters</div>
+            <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4 leading-relaxed">Why It Matters</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Why Competitor Price Tracking Is <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Critical</span></h2>
             <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Price is one of the top factors in Amazon's Buy Box algorithm. Sellers who don't track competitor pricing consistently lose sales to better-positioned rivals often without realising why.</p>
           </div>
@@ -475,7 +157,7 @@ export default function FreeCompetitorPriceCheckerPage() {
             {["Lose the Buy Box to lower-priced competitors", "Price too high and miss high-volume sales windows", "Price too low and erode all your profit margins", "Miss competitor price drops and promotions from rivals"].map((reason, i) => (
               <div key={i} className="flex items-center gap-3 bg-white dark:bg-gray-800 border border-red-100 dark:border-red-900/30 rounded-xl px-5 py-4 shadow-sm">
                 <div className="w-2 h-2 bg-red-500 rounded-full shrink-0"></div>
-                <span className="text-sm text-gray-700 dark:text-gray-300">{reason}</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{reason}</span>
               </div>
             ))}
           </div>
@@ -485,11 +167,11 @@ export default function FreeCompetitorPriceCheckerPage() {
               {["Competitors undercut you and take your sales", "Your listings stagnate with no Buy Box rotation", "You're last to know about aggressive price drops", "You reprice manually too slow, too late"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <X className="w-4 h-4 text-red-500 mt-0.5 shrink-0" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{item}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{item}</span>
                 </div>
               ))}
             </div>
-            <p className="text-center text-gray-500 dark:text-gray-400 text-sm italic border-t border-red-200 dark:border-red-800/50 pt-4">Most sellers only reprice after losing significant sales. Don't be that seller.</p>
+            <p className="text-center text-gray-500 dark:text-gray-400 text-sm italic border-t border-red-200 dark:border-red-800/50 pt-4 leading-relaxed">Most sellers only reprice after losing significant sales. Don't be that seller.</p>
           </div>
         </div>
       </section>
@@ -500,7 +182,7 @@ export default function FreeCompetitorPriceCheckerPage() {
       <section className="py-20 px-4 bg-white dark:bg-gray-950" id="how-it-works">
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">How It Works</div>
+            <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4 leading-relaxed">How It Works</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">How It <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Works</span></h2>
             <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Three steps. Under two minutes. Paste any Amazon India product URL or ASIN yours or a competitor's and see the full price landscape instantly.</p>
           </div>
@@ -520,7 +202,7 @@ export default function FreeCompetitorPriceCheckerPage() {
             ))}
           </div>
           <div className="text-center mt-10">
-            <button onClick={() => { if (!isLoggedIn) router.push('/signup'); else window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-bold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+            <button onClick={() => { if (!isLoggedIn) router.push('/signup'); else window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="inline-flex items-center gap-2 bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-bold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105 leading-relaxed">
               Check Competitor Prices Free <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -533,7 +215,7 @@ export default function FreeCompetitorPriceCheckerPage() {
       <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-4xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">Example Output</div>
+            <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4 leading-relaxed">Example Output</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Example Competitor Price <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Report</span></h2>
             <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Here's what a real Amazon India price intelligence snapshot looks like so you know exactly what you're getting before you sign in.</p>
           </div>
@@ -541,10 +223,10 @@ export default function FreeCompetitorPriceCheckerPage() {
           <div className="bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-3xl overflow-hidden shadow-2xl">
             <div className="bg-gradient-to-r from-teal-500 to-cyan-500 px-8 py-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <p className="text-teal-100 text-xs font-bold uppercase tracking-wider mb-1">Competitor Price Report</p>
-                <p className="text-white font-bold text-lg">Stainless Steel Water Bottle · B09EXAMPLE</p>
+                <p className="text-teal-100 text-xs font-bold uppercase tracking-wider mb-1 leading-relaxed">Competitor Price Report</p>
+                <p className="text-white font-bold text-lg leading-relaxed">Stainless Steel Water Bottle · B09EXAMPLE</p>
               </div>
-              <span className="bg-background opacity-100 border border-white/30 text-white text-xs font-semibold px-3 py-1 rounded-full">Amazon India</span>
+              <span className="bg-background opacity-100 border border-white/30 text-white text-xs font-semibold px-3 py-1 rounded-full leading-relaxed">Amazon India</span>
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-gray-100 dark:divide-gray-700">
               {[
@@ -554,9 +236,9 @@ export default function FreeCompetitorPriceCheckerPage() {
                 { label: "👥 Seller Count", value: "14", sub: "Active sellers competing", color: "text-teal-500" },
               ].map((m, i) => (
                 <div key={i} className="p-5 sm:p-6">
-                  <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-2">{m.label}</p>
-                  <p className={`text-2xl font-black ${m.color}`}>{m.value}</p>
-                  <p className="text-xs text-gray-400 mt-1">{m.sub}</p>
+                  <p className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-2 leading-relaxed">{m.label}</p>
+                  <p className={`text-2xl font-black ${m.color} leading-relaxed`}>{m.value}</p>
+                  <p className="text-xs text-gray-400 mt-1 leading-relaxed">{m.sub}</p>
                 </div>
               ))}
             </div>
@@ -566,43 +248,43 @@ export default function FreeCompetitorPriceCheckerPage() {
           <div className="mt-14">
             <div className="text-center mb-10">
               <h2 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-3">Visual Price Landscape <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Snapshot</span></h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">See the full price spread across competitors at a glance distribution, Buy Box zone, and trend direction.</p>
+              <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">See the full price spread across competitors at a glance distribution, Buy Box zone, and trend direction.</p>
             </div>
             <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-6 sm:p-9 shadow-lg">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                  <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2"><BarChart2 className="w-4 h-4 text-teal-500" /> Price Distribution</p>
+                  <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2 leading-relaxed"><BarChart2 className="w-4 h-4 text-teal-500" /> Price Distribution</p>
                   <div className="space-y-2.5">
                     {[{ range: "₹300–₹499", count: 2, pct: 28 }, { range: "₹500–₹699", count: 5, pct: 42 }, { range: "₹700–₹899", count: 3, pct: 36 }, { range: "₹900–₹1,099", count: 3, pct: 25 }, { range: "₹1,100+", count: 1, pct: 10 }].map((row) => (
                       <div key={row.range} className="flex items-center gap-2">
-                        <span className="text-xs text-gray-500 dark:text-gray-400 w-24 shrink-0">{row.range}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 w-24 shrink-0 leading-relaxed">{row.range}</span>
                         <div className="flex-1 h-2.5 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                           <div className="h-full bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full" style={{ width: `${row.pct}%` }}></div>
                         </div>
-                        <span className="text-xs text-gray-400 w-4 shrink-0 text-right">{row.count}</span>
+                        <span className="text-xs text-gray-400 w-4 shrink-0 text-right leading-relaxed">{row.count}</span>
                       </div>
                     ))}
                   </div>
                 </div>
                 <div className="flex flex-col items-center">
-                  <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2 self-start"><Target className="w-4 h-4 text-cyan-500" /> Buy Box Price Zone</p>
+                  <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2 self-start leading-relaxed"><Target className="w-4 h-4 text-cyan-500" /> Buy Box Price Zone</p>
                   <div className="relative w-28 h-28 my-2">
                     <div className="absolute inset-0 rounded-full" style={{ background: 'conic-gradient(#0CCFB0 0% 65%, #e5e7eb 65% 100%)' }}></div>
                     <div className="absolute inset-3 bg-white dark:bg-gray-800 rounded-full flex flex-col items-center justify-center">
                       <span className="text-2xl font-black text-teal-500">65%</span>
-                      <span className="text-xs text-gray-400">win chance</span>
+                      <span className="text-xs text-gray-400 leading-relaxed">win chance</span>
                     </div>
                   </div>
-                  <p className="text-xs text-teal-600 dark:text-teal-400 mt-3 font-semibold">At ₹749 — competitive zone</p>
+                  <p className="text-xs text-teal-600 dark:text-teal-400 mt-3 font-semibold leading-relaxed">At ₹749 — competitive zone</p>
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2"><ArrowDown className="w-4 h-4 text-blue-500" /> 30-Day Price Trend</p>
+                  <p className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center gap-2 leading-relaxed"><ArrowDown className="w-4 h-4 text-blue-500" /> 30-Day Price Trend</p>
                   <div className="flex items-end gap-1.5 h-20">
                     {[32, 38, 42, 40, 45, 42, 38, 36, 34, 30].map((h, i) => (
                       <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${h}px`, background: i === 9 ? '#0CCFB0' : '#99F6E4', opacity: 0.85 }}></div>
                     ))}
                   </div>
-                  <p className="text-xs text-blue-500 mt-3 font-semibold">↓ Avg. price declining 8% this month</p>
+                  <p className="text-xs text-blue-500 mt-3 font-semibold leading-relaxed">↓ Avg. price declining 8% this month</p>
                 </div>
               </div>
             </div>
@@ -610,13 +292,13 @@ export default function FreeCompetitorPriceCheckerPage() {
 
           {/* Upsell */}
           <div className="mt-14 bg-white dark:bg-gray-900 border-2 border-teal-200 dark:border-teal-900/50 rounded-3xl p-8 sm:p-12 max-w-xl mx-auto text-center shadow-lg">
-            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-3">Unlock the Full Price Intelligence Report</h2>
+            <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-3 leading-relaxed">Unlock the Full Price Intelligence Report</h2>
             <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-7 max-w-sm mx-auto">Sign in to access seller-level pricing breakdown, historical trend data, and Buy Box positioning insights plus daily monitoring and WhatsApp alerts when a competitor drops price.</p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-               <a href="/login" className="px-6 py-3 bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-105">
+               <a href="/login" className="px-6 py-3 bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all hover:scale-105 leading-relaxed">
                 <LogIn className="w-4 h-4" /> Log In to Access
               </a>
-              <a href="/signup" className="px-6 py-3 border-2 border-teal-300 dark:border-teal-700 text-teal-600 dark:text-teal-400 font-bold rounded-xl hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all">
+              <a href="/signup" className="px-6 py-3 border-2 border-teal-300 dark:border-teal-700 text-teal-600 dark:text-teal-400 font-bold rounded-xl hover:bg-teal-50 dark:hover:bg-teal-900/20 transition-all leading-relaxed">
                 Sign Up Free
               </a>
             </div>
@@ -630,14 +312,14 @@ export default function FreeCompetitorPriceCheckerPage() {
       <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-4xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">Real Seller Story</div>
+            <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4 leading-relaxed">Real Seller Story</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">What Most Price Tools <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Don't Tell You</span></h2>
             <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Most Amazon price comparison tools show a static number. A free competitor price checker that shows the Buy Box zone, seller distribution, and trend direction tells you something far more useful: where to price right now, not just what others are charging.</p>
           </div>
 
           <div className="rounded-3xl p-6 sm:p-10 text-white" style={{ background: 'linear-gradient(135deg, #0F2027, #0A3D3A)' }}>
-            <h3 className="font-black text-lg sm:text-xl mb-1" style={{ color: '#5EEAD4' }}>Suresh's Big Billion Days Buy Box — ₹2.8L Recovered in 6 Hours</h3>
-            <p className="text-sm mb-8" style={{ color: 'rgba(255,255,255,0.4)' }}>Electronics accessories, Pune | Amazon India | Bluetooth speakers ₹1,199 | Big Billion Days week | 18 active competing sellers</p>
+            <h3 className="font-black text-lg sm:text-xl mb-1 leading-relaxed" style={{ color: '#5EEAD4' }}>Suresh's Big Billion Days Buy Box — ₹2.8L Recovered in 6 Hours</h3>
+            <p className="text-sm mb-8 leading-relaxed" style={{ color: 'rgba(255,255,255,0.4)' }}>Electronics accessories, Pune | Amazon India | Bluetooth speakers ₹1,199 | Big Billion Days week | 18 active competing sellers</p>
             <div className="space-y-4">
               {[
                 { label: "The Problem — Day Before Sale", text: "Suresh had been holding his Bluetooth speakers at ₹1,199 for 3 weeks a price that had been earning him the Buy Box consistently. The day before Big Billion Days, he checked his dashboard and saw sales had dropped 60% in 4 hours. He didn't know why. He assumed it was site traffic. It wasn't." },
@@ -646,7 +328,7 @@ export default function FreeCompetitorPriceCheckerPage() {
                 { label: "The Outcome (Big Billion Days)", text: "Buy Box held for 83% of the 48-hour sale window. Total Big Billion Days revenue: ₹4.1L vs ₹1.3L in the previous year's equivalent period. The difference wasn't his product, his ads, or his reviews. It was knowing the Buy Box zone at the right moment and acting on it in 14 minutes." },
               ].map((item, i) => (
                 <div key={i} className="rounded-xl p-5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderLeft: '3px solid #0CCFB0' }}>
-                  <p className="text-xs font-bold uppercase tracking-wider mb-2" style={{ color: '#5EEAD4' }}>{item.label}</p>
+                  <p className="text-xs font-bold uppercase tracking-wider mb-2 leading-relaxed" style={{ color: '#5EEAD4' }}>{item.label}</p>
                   <p className="text-sm leading-relaxed" style={{ color: 'rgba(255,255,255,0.8)' }}>{item.text}</p>
                 </div>
               ))}
@@ -654,8 +336,8 @@ export default function FreeCompetitorPriceCheckerPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
               {[{ num: "83%", label: "Buy Box hold rate during 48-hr sale window" }, { num: "₹4.1L", label: "Big Billion Days revenue (vs ₹1.3L prior year)" }, { num: "14 min", label: "Time from price check to Buy Box recovery" }].map((item, i) => (
                 <div key={i} className="rounded-2xl p-5 text-center" style={{ background: 'rgba(12,207,176,0.1)', border: '1px solid rgba(12,207,176,0.2)' }}>
-                  <span className="block text-3xl font-black mb-1" style={{ color: '#5EEAD4' }}>{item.num}</span>
-                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>{item.label}</span>
+                  <span className="block text-3xl font-black mb-1 leading-relaxed" style={{ color: '#5EEAD4' }}>{item.num}</span>
+                  <span className="text-xs leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{item.label}</span>
                 </div>
               ))}
             </div>
@@ -671,22 +353,22 @@ export default function FreeCompetitorPriceCheckerPage() {
       {/* ─── DATA CREDIBILITY ─── */}
       <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">Data Quality</div>
+          <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4 leading-relaxed">Data Quality</div>
           <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Powered by Real Marketplace <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Pricing Data</span></h2>
           <p className="text-gray-500 dark:text-gray-400 mb-10 max-w-xl mx-auto leading-relaxed">This is live market pricing not estimated guesswork. The free Amazon competitor price checker pulls current data from all active sellers on an ASIN at the time of your check.</p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-5">
             {["Tracks pricing across all active sellers per ASIN", "Monitors Buy Box price changes in near-real time", "Built for Amazon India ₹ pricing dynamics", "Benchmarks pricing against category averages"].map((point, i) => (
               <div key={i} className="flex items-center gap-3 bg-white dark:bg-gray-800 border border-green-100 dark:border-green-900/30 rounded-xl px-5 py-4 shadow-sm">
                 <CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" />
-                <span className="text-sm text-gray-700 dark:text-gray-300 text-left">{point}</span>
+                <span className="text-sm text-gray-700 dark:text-gray-300 text-left leading-relaxed">{point}</span>
               </div>
             ))}
           </div>
-          <p className="text-sm text-gray-400 dark:text-gray-500 mb-10">Used by sellers managing pricing across Amazon India categories.</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 mb-10 leading-relaxed">Used by sellers managing pricing across Amazon India categories.</p>
           <div className="bg-teal-50 dark:bg-teal-900/20 border-2 border-teal-100 dark:border-teal-900/40 rounded-3xl p-8 sm:p-12 max-w-lg mx-auto">
-            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3">Want Daily Pricing Alerts?</h3>
+            <h3 className="text-2xl font-black text-gray-900 dark:text-white mb-3 leading-relaxed">Want Daily Pricing Alerts?</h3>
             <p className="text-gray-600 dark:text-gray-400 mb-7 text-sm leading-relaxed">This free checker gives you a one-time snapshot. Upgrade to get daily price movement alerts, historical trend tracking, and automated repricing recommendations sent to WhatsApp.</p>
-            <a href="/signup" className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-bold px-10 py-3 rounded-full shadow-xl inline-flex items-center">
+            <a href="/signup" className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white font-bold px-10 py-3 rounded-full shadow-xl inline-flex items-center leading-relaxed">
               Start Free Full Access <ArrowRight className="ml-2" />
             </a>
           </div>
@@ -699,14 +381,14 @@ export default function FreeCompetitorPriceCheckerPage() {
       <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-xl mx-auto mb-14">
-            <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">Fit Assessment</div>
+            <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4 leading-relaxed">Fit Assessment</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Who Should Use <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">This Tool</span></h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
             <div className="bg-white dark:bg-gray-800 border-2 border-green-100 dark:border-green-800 rounded-3xl p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center text-green-600 font-bold">✓</div>
-                <h3 className="font-black text-gray-900 dark:text-white text-lg">Best For</h3>
+                <h3 className="font-black text-gray-900 dark:text-white text-lg leading-relaxed">Best For</h3>
               </div>
               {["Sellers who want to win the Buy Box consistently — not just occasionally", "Resellers tracking multiple competitors per ASIN across categories", "Private label brands setting launch pricing in a new category", "Agencies managing pricing strategy for multiple seller clients", "Sellers preparing for festive sales (Big Billion Days, Great Indian Festival) who want to enter at the right price point"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
@@ -718,7 +400,7 @@ export default function FreeCompetitorPriceCheckerPage() {
             <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 font-bold">!</div>
-                <h3 className="font-black text-gray-900 dark:text-white text-lg">Not Ideal For</h3>
+                <h3 className="font-black text-gray-900 dark:text-white text-lg leading-relaxed">Not Ideal For</h3>
               </div>
               {["Sellers doing only offline or non-Amazon retail", "Businesses selling on marketplaces outside India where pricing dynamics differ", "Sellers with a single product and fewer than 3 active competitors on the ASIN"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
@@ -736,21 +418,21 @@ export default function FreeCompetitorPriceCheckerPage() {
       {/* ─── BUILT FOR INDIA ─── */}
       <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-5xl mx-auto text-center">
-          <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">India-First Design</div>
+          <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4 leading-relaxed">India-First Design</div>
           <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Built for <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Indian Marketplace Reality</span></h2>
           <p className="text-gray-500 dark:text-gray-400 mb-12 max-w-xl mx-auto leading-relaxed">Global repricing tools don't understand Indian pricing patterns, festive sale dynamics, or how the Amazon India Buy Box algorithm differs from Amazon.com. This one does.</p>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
             {[{ icon: "🇮🇳", text: "Amazon India data focus" }, { icon: "₹", text: "₹ pricing norms & benchmarks" }, { icon: "🎯", text: "Buy Box intelligence built in" }, { icon: "🔗", text: "Connected to full Insydz platform" }].map((item, i) => (
               <div key={i} className="bg-white dark:bg-gray-800 border-2 border-teal-50 dark:border-teal-900/30 rounded-2xl p-6 shadow-sm hover:shadow-lg hover:border-teal-200 dark:hover:border-teal-700 hover:-translate-y-1 transition-all">
-                <div className="text-3xl mb-3">{item.icon}</div>
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200">{item.text}</p>
+                <div className="text-3xl mb-3 leading-relaxed">{item.icon}</div>
+                <p className="text-sm font-semibold text-gray-800 dark:text-gray-200 leading-relaxed">{item.text}</p>
               </div>
             ))}
           </div>
           <div className="bg-white dark:bg-gray-800 border-2 border-teal-100 dark:border-teal-900/40 rounded-2xl p-6 sm:p-9 max-w-3xl mx-auto text-left">
-            <p className="font-bold text-teal-600 dark:text-teal-400 mb-3 text-sm">What most tools don't tell you:</p>
+            <p className="font-bold text-teal-600 dark:text-teal-400 mb-3 text-sm leading-relaxed">What most tools don't tell you:</p>
             <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-3">Keepa shows historical price charts. Helium 10 gives Buy Box estimates for Amazon.com. Neither is built for the specific pricing dynamics of Amazon India where festive sale seasons (Diwali, Big Billion Days, Holi) create 48–72 hour repricing windows that can shift average category prices by 20–35% in hours. A free Amazon competitor price analysis tool built for India reads these patterns. A US-built tool doesn't.</p>
-            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed">This is also why the free Amazon price comparison tool matters most in the 48–72 hours before and during major sales: the Buy Box moves continuously, and sellers who check prices once a day are already behind.</p>
+            <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed leading-relaxed">This is also why the free Amazon price comparison tool matters most in the 48–72 hours before and during major sales: the Buy Box moves continuously, and sellers who check prices once a day are already behind.</p>
           </div>
         </div>
       </section>
@@ -761,13 +443,13 @@ export default function FreeCompetitorPriceCheckerPage() {
       <section className="py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4">Free vs Paid</div>
+            <div className="inline-block text-xs font-bold uppercase tracking-widest text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 border border-teal-200 dark:border-teal-800 px-4 py-1.5 rounded-full mb-4 leading-relaxed">Free vs Paid</div>
             <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">What the Free Tool Shows And <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">What Goes Deeper</span></h2>
             <p className="text-gray-500 dark:text-gray-400 leading-relaxed">The free competitor price checker is a powerful point-in-time snapshot. Here's exactly what's included and what unlocks with a paid Insydz plan.</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
             <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-8">
-              <h3 className="font-black text-gray-900 dark:text-white mb-6">✓ Free Forever Included</h3>
+              <h3 className="font-black text-gray-900 dark:text-white mb-6 leading-relaxed">✓ Free Forever Included</h3>
               {["Lowest, highest, and average competitor price in INR", "Active seller count on the ASIN", "Price distribution by price band (seller count at each price range)", "Buy Box win probability at current price", "30-day price trend direction", "Works on your products and competitor products", "Limited checks per day"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
                   <div className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-2 shrink-0"></div>
@@ -776,7 +458,7 @@ export default function FreeCompetitorPriceCheckerPage() {
               ))}
             </div>
             <div className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-8">
-              <h3 className="font-black text-gray-900 dark:text-white mb-6">Paid Plans — ₹1,999/month</h3>
+              <h3 className="font-black text-gray-900 dark:text-white mb-6 leading-relaxed">Paid Plans — ₹1,999/month</h3>
               {["Daily price monitoring across your full catalogue automated, not manual", "WhatsApp alerts when a competitor drops price below your threshold", "Historical price trend data 90 days of competitor pricing history", "Seller-level breakdown see exactly which competitor is undercutting you", "Festive sale mode heightened monitoring during Big Billion Days and Great Indian Festival", "AI repricing recommendations suggested price to maximise Buy Box hold and margin", "Unlimited checks across all your ASINs"].map((item, i) => (
                 <div key={i} className="flex items-start gap-3 mb-3 last:mb-0">
                   <div className="w-1.5 h-1.5 rounded-full bg-teal-500 mt-2 shrink-0"></div>
@@ -794,86 +476,54 @@ export default function FreeCompetitorPriceCheckerPage() {
       <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4">Frequently Asked <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Questions</span></h2>
-            <p className="text-gray-500 dark:text-gray-400">Answers to what Indian sellers ask before using the free Amazon competitor price checker.</p>
+            <h2 className="text-3xl sm:text-4xl font-black text-gray-900 dark:text-white mb-4 leading-relaxed">Frequently Asked <span className="bg-gradient-to-r from-teal-500 to-cyan-500 bg-clip-text text-transparent">Questions</span></h2>
+            <p className="text-gray-500 dark:text-gray-400 leading-relaxed">Answers to what Indian sellers ask before using the free Amazon competitor price checker.</p>
           </div>
           <div className="space-y-4">
             {faqs.map((faq) => (
-              <div key={faq.id} className={`bg-white dark:bg-gray-800 border-2 ${expandedFaq === faq.id ? 'border-teal-300 dark:border-teal-700' : 'border-gray-200 dark:border-gray-700'} rounded-2xl overflow-hidden hover:border-teal-300 dark:hover:border-teal-700 transition-colors`}>
-                <button onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)} className="w-full px-6 py-5 flex items-center justify-between text-left gap-4">
-                  <span className="font-bold text-gray-900 dark:text-white text-sm sm:text-base">{faq.question}</span>
-                  <span className="text-xl text-teal-500 shrink-0 font-light">{expandedFaq === faq.id ? '−' : '+'}</span>
+              <div key={faq.id} className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-teal-200 dark:hover:border-teal-700 transition-colors">
+                <button onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)} className="w-full px-6 py-5 flex items-center justify-between text-left">
+                  <span className="font-bold text-gray-900 dark:text-white pr-4 leading-relaxed">{faq.question}</span>
+                  {expandedFaq === faq.id ? <ChevronDown className="w-5 h-5 text-teal-500" /> : <ChevronRight className="w-5 h-5 text-gray-400" />}
                 </button>
                 {expandedFaq === faq.id && (
-                  <div className="px-6 pb-6">
+                  <div className="px-6 pb-5">
                     <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{faq.answer}</p>
                   </div>
                 )}
               </div>
             ))}
           </div>
-          <p className="text-center text-xs text-gray-400 dark:text-gray-600 mt-8 max-w-lg mx-auto leading-relaxed">
-            This free Amazon competitor price checker helps Indian sellers track competitor pricing, understand Buy Box dynamics, and make smarter pricing decisions before and after launching products. Ideal for Amazon India sellers, resellers, private label brands, and D2C businesses looking to price competitively and protect their margins.
-          </p>
+        </div>
+      </section>
+
+      {/* ─── SEO PARAGRAPH ─── */}
+      <section className="py-10 px-4 bg-white dark:bg-gray-950">
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-xs text-gray-400 dark:text-gray-600 leading-relaxed">The free Amazon India competitor price checker by Insydz is designed to help sellers monitor market price movements, track Buy Box positioning, and protect profit margins on amazon.in. Ideal for FBA sellers, resellers, and brands competing in high-volume Indian categories like Electronics, Home & Kitchen, and Fashion. Benchmark your pricing against competitors and stay ahead of daily market fluctuations.</p>
         </div>
       </section>
 
       {/* ─── FINAL CTA ─── */}
-      <section className="py-24 px-4 bg-gradient-to-br from-teal-500 to-cyan-500">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl sm:text-5xl font-black mb-4 text-white">Stop Guessing. Know Your Competitors' Prices.</h2>
-          <p className="text-teal-100 text-lg mb-10">One price check today could be the difference between winning or losing the Buy Box.</p>
-          <button onClick={() => { if (!isLoggedIn) { router.push('/login'); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); } }} className="bg-white text-teal-600 font-black px-10 sm:px-14 py-5 rounded-full shadow-2xl hover:scale-105 transition-all text-lg inline-flex items-center gap-3">
+      <section className="py-24 px-4 bg-gradient-to-br from-teal-500 to-cyan-600 text-center mb-20 lg:mb-0">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-4xl sm:text-5xl font-black text-white mb-6 leading-relaxed">Stop Guessing. Win the Buy Box Today.</h2>
+          <p className="text-teal-50 text-lg mb-10 leading-relaxed">Analyze any Amazon India listing for free and see the price landscape instantly.</p>
+          <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="bg-white text-teal-600 font-black px-10 py-5 rounded-full shadow-2xl hover:shadow-3xl transition-all transform hover:scale-105 inline-flex items-center gap-3 text-lg leading-relaxed">
             Check Competitor Prices Now <ArrowRight className="w-5 h-5" />
           </button>
-
-          {/* ICP Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 max-w-3xl mx-auto mt-12">
-            {[
-              { type: "New Seller", msg: "Set a launch price with data check the Buy Box zone before you go live, not after your first week of zero sales.", cta: "Start Free →", href: "/signup" },
-              { type: "Growing Seller", msg: "Stop repricing after losing sales. Get daily pricing alerts and WhatsApp notifications on the Growth Plan.", cta: "Try Growth Plan →", href: "/signup?plan=growth" },
-              { type: "Agency", msg: "Run live competitor price checks in client strategy sessions show the Buy Box zone in real time before recommending a repricing strategy.", cta: "Book Demo →", href: "/about/contact-us" },
-            ].map((icp, i) => (
-              <div key={i} className="bg-background opacity-100 border border-white/30 rounded-2xl p-6 text-left backdrop-blur-none">
-                <p className="text-xs font-bold uppercase tracking-widest text-white/65 mb-2">{icp.type}</p>
-                <p className="text-sm text-white/90 leading-relaxed mb-4">{icp.msg}</p>
-                 <a href={icp.href} className="text-sm font-bold text-white border-b border-white/40 hover:border-white pb-0.5 transition-colors">{icp.cta}</a>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
       {/* ─── STICKY MOBILE CTA ─── */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white dark:bg-gray-900 border-t-2 border-teal-200 dark:border-teal-800 px-4 py-3 shadow-2xl">
-        <button onClick={() => { if (!isLoggedIn) { router.push('/login'); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); } }} className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2">
-          {isLoggedIn ? <><TrendingDown className="w-4 h-4" /> Check Competitor Prices Free</> : <><LogIn className="w-4 h-4" /> Log In to Check Prices</>}
+      <div className="fixed bottom-0 left-0 right-0 z-40 lg:hidden bg-white dark:bg-gray-900 border-t-2 border-teal-100 dark:border-teal-800 px-4 py-3 shadow-2xl">
+        <button
+          onClick={() => { if (!isLoggedIn) { router.push('/login'); } else { window.scrollTo({ top: 0, behavior: 'smooth' }); } }}
+          className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-bold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 leading-relaxed"
+        >
+          {isLoggedIn ? <><TrendingDown className="w-4 h-4" /> Check Competitor Prices Free</> : <><LogIn className="w-4 h-4" /> Log In to Check Free</>}
         </button>
       </div>
-
-      {/* Footer */}
-      
- 
-      <style>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-        .delay-1000 {
-          animation-delay: 1s;
-        }
-      `}</style>
     </div>
   );
 }
- 
-
