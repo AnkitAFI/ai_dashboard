@@ -281,13 +281,6 @@ export default function Sales() {
           Next
         </Button>
       </div>
-
-      {/* Legal Disclaimer */}
-      <div className="mt-12 pt-6 border-t border-slate-200">
-        <p className="text-[9px] leading-tight text-slate-400 text-center max-w-5xl mx-auto">
-          <span className="font-semibold">DISCLAIMER:</span> Sales data represents different time periods (Flipkart: lifetime, Amazon: past month). All information sourced from third-party APIs is for informational purposes only and may not be accurate or current. <span className="font-semibold">Not affiliated with any retailer.</span> Use at your own risk.
-        </p>
-      </div>
     </div>
   );
 }

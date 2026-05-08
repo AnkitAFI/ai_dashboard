@@ -289,3 +289,4 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
     </header>
   );
 }
+

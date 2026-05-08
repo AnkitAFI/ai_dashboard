@@ -5967,6 +5967,7 @@ def signup_user(user_data: schemas.UserCreate, response: Response, db: Session =
             business_name=user_data.business_name,
             location=user_data.location,
             business_interests=user_data.business_interests,
+            mobile_number=user_data.mobile_number,
             subscription_tier='free',
             ai_chat_used=0,
             ai_chat_month=current_month,
@@ -6147,6 +6148,7 @@ def get_me(
         "business_name": current_user.business_name,
         "location": current_user.location,
         "business_interests": current_user.business_interests,
+        "mobile_number": current_user.mobile_number,
 
         "subscription_tier": current_user.subscription_tier,
         "subscription_expires_at": current_user.subscription_expires_at,
@@ -6227,6 +6229,7 @@ def get_user_profile(
         "business_name": user.business_name,
         "location": user.location,
         "business_interests": user.business_interests,
+        "mobile_number": user.mobile_number,
         "subscription_tier": user.subscription_tier or 'free',
         "ai_chat_used": user.ai_chat_used or 0,
         "ai_chat_month": user.ai_chat_month or current_month,
@@ -6260,18 +6263,50 @@ def get_admin_stats(
     # all users with details
     users = db.query(models.User).order_by(models.User.created_at.desc()).all()
     user_list = [
-        {
-            "id": u.id,
-            "email": u.email,
-            "first_name": u.first_name,
-            "last_name": u.last_name,
-            "subscription_tier": u.subscription_tier or 'free',
-            "is_verified": u.is_verified,
-            "ai_chat_used": u.ai_chat_used or 0,
-            "created_at": str(u.created_at),
-        }
-        for u in users
-    ]
+    {
+        "id": u.id,
+        "email": u.email,
+        "first_name": u.first_name,
+        "last_name": u.last_name,
+
+        "subscription_tier": u.subscription_tier or "free",
+        "is_verified": u.is_verified,
+        "is_active": u.is_active,
+
+        "ai_chat_used": u.ai_chat_used or 0,
+        "ai_chat_month": u.ai_chat_month,
+
+        "analysis_used": u.analysis_used or 0,
+        "analysis_month": u.analysis_month,
+
+        "sov_used": u.sov_used or 0,
+        "sov_month": u.sov_month,
+
+        "keyword_tracker_used": u.keyword_tracker_used or 0,
+        "keyword_tracker_month": u.keyword_tracker_month,
+
+        "business_name": u.business_name,
+        "location": u.location,
+        "business_interests": u.business_interests,
+
+        "subscription_expires_at": str(u.subscription_expires_at) if u.subscription_expires_at else None,
+        "scheduled_downgrade_to": u.scheduled_downgrade_to,
+
+        "onboarding_completed": u.onboarding_completed,
+        "onboarding_goal": u.onboarding_goal,
+        "onboarding_marketplace": u.onboarding_marketplace,
+        "onboarding_details": u.onboarding_details,
+
+        "seller_id": u.seller_id,
+        "seller_sync_status": u.seller_sync_status,
+
+        "mobile_number": u.mobile_number,
+
+        "created_at": str(u.created_at),
+        "updated_at": str(u.updated_at),
+    }
+    for u in users
+]
 
     return {
         "stats": {

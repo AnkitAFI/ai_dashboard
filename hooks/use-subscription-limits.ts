@@ -36,7 +36,7 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     hasCustomIntegrations: false,
     hasCompetitorAnalysis: false,
     reportFrequency: 'weekly',
-    hasAIChatbot: true,
+    hasAIChatbot: false,
     hasDedicatedManager: false,
     canExportData: false,
     maxDashboardWidgets: 4,
@@ -45,7 +45,7 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     hasChartAISummaries: false,
     maxNotifications: 5,
     maxFullAnalysesPerMonth: 5, // ✅ 5 product analyses per month
-    maxAIChatMessagesPerMonth: 5, // 5 AI chat messages per month
+    maxAIChatMessagesPerMonth: 0, // 0 AI chat messages for free tier (must pay)
   },
   basic: {
     productTrackingLimit: 1000,

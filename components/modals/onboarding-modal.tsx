@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -203,7 +204,7 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
             <span className="text-amber-500 text-xs font-semibold uppercase tracking-wider">
               Step {currentStep} of 3
             </span>
-            <h2 className="text-2xl font-bold text-white">{steps[currentStep - 1].title}</h2>
+            <DialogTitle className="text-2xl font-bold text-white">{steps[currentStep - 1].title}</DialogTitle>
             <p className="text-slate-400 text-sm">{steps[currentStep - 1].subtitle}</p>
           </div>
         </div>

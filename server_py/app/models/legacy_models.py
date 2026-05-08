@@ -225,6 +225,7 @@ class User(Base):
     onboarding_details = Column(String(500), nullable=True)
     seller_id = Column(String(100), nullable=True)
     seller_sync_status = Column(String(20), default='IDLE') # IDLE, SYNCING, COMPLETED, FAILED
+    mobile_number = Column(String, nullable=False)
 
     watchlist_items = relationship("WhiteSpaceWatchlist", back_populates="user", cascade="all, delete-orphan")   
     # Relationships

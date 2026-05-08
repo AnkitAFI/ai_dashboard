@@ -298,10 +298,13 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
     }
 
     if (limits.maxAIChatMessagesPerMonth < UNLIMITED && aiUsage.used >= aiUsage.limit) {
+      const upgradeMsg = currentTier === 'free'
+        ? "🔒 Unlock AI Advisor with Basic or Premium plan to start chatting!"
+        : `🔒 You've reached your ${aiUsage.limit} AI chat limit for this month.\n\nUpgrade to ${currentTier === "basic" ? "Premium (unlimited)" : "a higher plan"} to continue.`;
+
       setMessages(prev => [...prev, {
         id: Date.now().toString(),
-        message: `🔒 You've reached your ${aiUsage.limit} AI chat limit for this month.\n\nUpgrade to ${currentTier === "free" ? "Basic (20 chats)" : "Premium (unlimited)"
-          } to continue.`,
+        message: upgradeMsg,
         isUser: false, timestamp: new Date(),
       }]);
       return;
@@ -496,7 +499,7 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                 <span className="font-medium">
                   {!isAuthenticated ? "Login Required"
                     : aiUsage.limit >= UNLIMITED ? "Unlimited AI Chats"
-                      : isChatLocked ? "Limit Reached"
+                      : isChatLocked ? (currentTier === 'free' ? "Unlock with Basic or Premium" : "Limit Reached")
                         : `${aiUsage.used}/${aiUsage.limit} chats used`}
                 </span>
                 {sessionId && isAuthenticated && !isChatLocked && (
@@ -622,7 +625,7 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                     onKeyDown={(e) => e.key === "Enter" && !isChatLocked && sendMessage()}
                     placeholder={
                       !isAuthenticated ? "Please login to unlock AI Advisor..."
-                        : isChatLocked ? "Usage limit reached. Upgrade to continue..."
+                        : isChatLocked ? (currentTier === 'free' ? "Unlock with Basic or Premium plan..." : "Usage limit reached. Upgrade to continue...")
                           : "Type your query here (e.g., 'What are the top electronics trending on Flipkart?')..."
                     }
                     className="flex-1 text-sm bg-white border-slate-200 focus:ring-primary h-11 rounded-xl shadow-sm"
@@ -675,7 +678,11 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
 
               {isAuthenticated && isChatLocked && (
                 <div className="max-w-4xl mx-auto bg-gradient-to-r from-orange-50 to-red-50 border border-orange-100 rounded-xl p-3 flex items-center justify-between">
-                  <p className="text-xs text-orange-900 font-medium">⚠️ AI Chat usage limit ({aiUsage.limit}) reached for this month</p>
+                  <p className="text-xs text-orange-900 font-medium">
+                    {currentTier === 'free' 
+                      ? "🔒 Unlock AI Advisor with Basic or Premium plan."
+                      : `⚠️ AI Chat usage limit (${aiUsage.limit}) reached for this month`}
+                  </p>
                   <a href="/subscription">
                     <Button size="sm" className="bg-orange-600 hover:bg-orange-700 h-8 shadow-sm">
                       <Crown className="h-3.5 w-3.5 mr-2" /> Upgrade
