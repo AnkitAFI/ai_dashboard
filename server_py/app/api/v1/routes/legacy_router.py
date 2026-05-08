@@ -5880,7 +5880,7 @@ def login_user(login_data: UserLogin, response: Response, db: Session = Depends(
             secure=SESSION_COOKIE_SECURE,
             samesite="lax",
             max_age=max_age,
-            # domain=".insydz.com"
+            domain=".insydz.com"
         )
         
         response_data = {
@@ -6090,7 +6090,7 @@ def verify_email(request: VerifyOTPRequest, response: Response, db: Session = De
             secure=SESSION_COOKIE_SECURE,
             samesite="lax",
             max_age=SESSION_EXPIRE_DAYS_NO_REMEMBER * 24 * 60 * 60,
-            # domain=".insydz.com"
+            domain=".insydz.com"
         )
         
         current_month = datetime.now().strftime("%Y-%m")
