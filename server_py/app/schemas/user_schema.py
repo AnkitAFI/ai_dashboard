@@ -10,6 +10,7 @@ class UserCreate(BaseModel):
     business_name: Optional[str] = Field(None, example="My Business")
     location: str = Field(..., example="mumbai")
     business_interests: List[str] = Field(..., example=["electronics", "books"])
+    mobile_number: str = str 
 
 class UserOut(BaseModel):
     id: int
