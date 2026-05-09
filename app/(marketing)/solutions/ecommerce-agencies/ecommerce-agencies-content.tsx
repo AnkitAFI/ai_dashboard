@@ -169,10 +169,10 @@ export default function EcommerceAgenciesContent() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-500 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-600"></span>
                 </span>
-                <span className="text-sm font-medium text-cyan-700">India's #1 Ecommerce Analytics Platform for Agencies</span>
+                <h1 className="text-sm font-medium text-cyan-700">Ecommerce Analytics Platform for Agencies</h1>
               </div>
 
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
+              <div className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
                 Scale Your Agency.
                 <br />
                 <span className="bg-gradient-to-r from-cyan-600 via-blue-600 to-cyan-700 bg-clip-text text-transparent">
@@ -180,7 +180,7 @@ export default function EcommerceAgenciesContent() {
                 </span>
                 <br />
                 That Wow Clients.
-              </h1>
+              </div>
 
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
                 Insydz is India's most powerful <strong>ecommerce analytics platform for agencies</strong> built to manage multiple clients effortlessly. Deliver data-driven strategies that drive real ROI, automate competitive intelligence across Amazon and Flipkart,

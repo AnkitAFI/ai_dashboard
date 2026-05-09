@@ -45,10 +45,10 @@ export default function FlipkartSellersPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
                 </span>
-                <span className="text-sm font-medium text-blue-700">Flipkart Seller Analytics Tool</span>
+                <h1 className="text-sm font-medium text-blue-700">Flipkart Seller Analytics Tool</h1>
               </div>
 
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
+              <div className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
                 Dominate Flipkart.
                 <br />
                 <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 bg-clip-text text-transparent">
@@ -56,7 +56,7 @@ export default function FlipkartSellersPage() {
                 </span>
                 <br />
                 Not Guesswork.
-              </h1>
+              </div>
 
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
                 Insydz is India's most powerful <strong>Flipkart seller analytics tool</strong> built for full-time sellers doing ₹5L to ₹50L a month. Track competitors, decode reviews, and recover keyword rankings{" "}

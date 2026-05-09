@@ -4,228 +4,160 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  ArrowRight, Package, AlertCircle, TrendingUp, ChevronRight, Bell, Clock,
-  ChevronDown, ArrowLeft,
-  TrendingDown, MessageCircle, Search, Target, Zap,
-  Flame, CheckCircle2, BarChart3, Smartphone,
-  RefreshCw, Eye, Users
+  ArrowRight, CheckCircle2, Target, Zap,
+  Bell, TrendingUp, AlertCircle, ChevronDown,
+  ChevronRight, Star, Award, TrendingDown,
+  Briefcase, Globe, Package, AlertTriangle,
+  BarChart3, RefreshCw, Clock, Filter
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
 
-const comparisonRows = [
-  { feature: "Stockout prediction", manual: "Static reorder point", insydz: "Real-time velocity + acceleration + festive multipliers" },
-  { feature: "Festive demand planning", manual: "Based on last year's sales", insydz: "India festive multipliers applied automatically" },
-  { feature: "Competitor stock monitoring", manual: "None", insydz: "Monitors competitor stockout signals in real time" },
-  { feature: "Alert delivery", manual: "You remember to check", insydz: "WhatsApp at 14 days, 7 days, 3 days" },
-  { feature: "Supplier lead time", manual: "Mental calculation", insydz: "Reorder date auto-calculated per product" },
-  { feature: "Multi-platform", manual: "One platform manually", insydz: "Amazon India + Flipkart unified" },
-];
-
-const roiWithout = [
-  { label: "5 days out of stock during Big Billion Days (₹50K/day)", value: "−₹2,50,000" },
-  { label: "Keyword rank drops page 1 #5 → page 4 in 7 days", value: "Rankings destroyed" },
-  { label: "4–8 weeks to recover rank (weekly organic loss)", value: "−₹60,000/week" },
-  { label: "Extra ad spend to rebuild ranking momentum (6 weeks)", value: "−₹45,000" },
-  { label: "Permanent customer loss to competitors", value: "Long-term damage" },
-];
-
-const roiWith = [
-  { label: "Competitor stockout signal detected 14 days before event", value: "14 days secured" },
-  { label: "250 additional units sourced before demand spike", value: "Stock secured" },
-  { label: "Full 10-day event covered zero stockout days", value: "0 days lost" },
-  { label: "Incremental revenue from additional units", value: "+₹5,20,000" },
-  { label: "Keyword ranking maintained — no recovery spend needed", value: "+₹45,000 saved" },
-];
-
-const faqs = [
-  {
-    id: "faq-1",
-    q: "How does Insydz predict when I will run out of stock?",
-    a: "Insydz combines current inventory level with real sales velocity (last 7, 14, and 30 days), accounts for velocity acceleration, and applies festive demand multipliers for Indian sale events. Your first WhatsApp alert fires when your projected stockout is 14 days away early enough to reorder from most Indian suppliers before running out.",
-  },
-  {
-    id: "faq-2",
-    q: "What happens to my Amazon India ranking when I go out of stock?",
-    a: "Your listing becomes inactive disappearing from search entirely. When you restock, Amazon treats it as a new listing. Rankings built over weeks can drop 5–15 positions immediately. Recovery after restocking takes 4–8 weeks and requires extra ad spend. Preventing stockouts is far more valuable than recovering from them.",
-  },
-  {
-    id: "faq-3",
-    q: "Can Insydz monitor competitor stock levels on Amazon India and Flipkart?",
-    a: "Yes. Insydz monitors competitor stock status signals on both platforms detecting when top rivals are running low or going out of stock. When a competitor stocks out, demand shifts to remaining sellers including you. Insydz alerts you to act and capture that demand before they restock.",
-  },
-  {
-    id: "faq-4",
-    q: "How is Insydz different from Amazon's built-in inventory management?",
-    a: "Amazon's tools show current stock levels and basic reorder alerts. Insydz predicts stockout dates using actual velocity trends (not static averages), monitors competitor stock signals, applies Indian festive demand multipliers, and delivers WhatsApp alerts. Works across Amazon India, Flipkart from a single dashboard.",
-  },
-  {
-    id: "faq-5",
-    q: "How far in advance does Insydz alert me before a stockout?",
-    a: "First alert at 14 days remaining. Second critical alert at 7 days. Final urgent alert at 3 days. All customisable based on your supplier lead times if your supplier needs 18 days, your first alert fires at 21 days.",
-  },
-  {
-    id: "faq-6",
-    q: "Does Insydz work for and D2C sellers?",
-    a: "Yes. Insydz supports inventory tracking and stockout prediction across Amazon India, Flipkart from a single dashboard. D2C brands get a unified view of stock levels and projected stockout dates by product so you can prioritise restocking for the channel with the highest velocity and most to lose.",
-  },
-];
-
-const inventoryCapabilities = [
-  {
-    icon: <TrendingUp className="w-7 h-7" />,
-    title: "Real-Time Sales Velocity Tracking",
-    desc: "Tracks how fast products are actually selling updated continuously. When velocity accelerates, predicted stockout date adjusts automatically.",
-    linkLabel: "inventory management tool",
-    color: "from-blue-500 to-cyan-500",
-  },
-  {
-    icon: <Bell className="w-7 h-7" />,
-    title: "Multi-Tier Stockout Alert Tool",
-    desc: "Three-tier WhatsApp alert system: 14-day early warning, 7-day low stock alert, 3-day critical alert. Each includes stock level, days remaining, velocity, and AI-suggested reorder quantity.",
-    linkLabel: "stockout alert tool",
-    color: "from-red-500 to-orange-500",
-  },
-  {
-    icon: <Eye className="w-7 h-7" />,
-    title: "Competitor Stock Monitoring",
-    desc: "Monitors when top competitors are running low or going out of stock a leading indicator that demand for your product is about to spike. Get ahead before you run out yourself.",
-    linkLabel: "competitor stock monitoring",
-    color: "from-purple-500 to-pink-500",
-  },
-  {
-    icon: <Flame className="w-7 h-7" />,
-    title: "Festive Demand Intelligence",
-    desc: "India-specific festive demand multipliers for Diwali, Big Billion Days, Great Indian Festival, Navratri, and Republic Day Sales applied automatically 4–6 weeks before each event.",
-    linkLabel: "festive demand intelligence",
-    color: "from-orange-500 to-yellow-500",
-  },
-  {
-    icon: <BarChart3 className="w-7 h-7" />,
-    title: "Inventory Management Analysis Dashboard",
-    desc: "Full portfolio view sorted by urgency. Critical, healthy, and attention-needed products across Amazon India, Flipkart from one unified dashboard.",
-    linkLabel: "inventory tracker software dashboard",
-    color: "from-green-500 to-emerald-500",
-  },
-  {
-    icon: <Clock className="w-7 h-7" />,
-    title: "Supplier Lead Time Planning",
-    desc: "Set your supplier lead time per product. Insydz back-calculates your reorder date automatically so alerts fire when you need to act, not when it's already too late.",
-    linkLabel: "stock management tool",
-    color: "from-indigo-500 to-blue-500",
-  },
-];
+const FAQItem = ({
+  q, a, index, openFaq, toggleFaq
+}: {
+  q: string; a: string; index: number; openFaq: number | null; toggleFaq: (i: number) => void;
+}) => (
+  <div className="bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-orange-300 dark:hover:border-orange-600 transition-all shadow-sm">
+    <button
+      onClick={() => toggleFaq(index)}
+      className="w-full px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between text-left hover:bg-orange-50 dark:hover:bg-orange-900/10 transition-colors"
+    >
+      <span className="font-bold text-gray-900 dark:text-white pr-3 sm:pr-4 text-sm sm:text-base lg:text-lg leading-relaxed">{q}</span>
+      <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 text-orange-600 dark:text-orange-400 flex-shrink-0 transition-transform ${openFaq === index ? "rotate-180" : ""}`} />
+    </button>
+    {openFaq === index && (
+      <div className="px-4 sm:px-6 pb-4 sm:pb-5 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
+        <p className="text-gray-600 dark:text-gray-400 leading-relaxed pt-3 sm:pt-4 text-xs sm:text-sm sm:text-base">{a}</p>
+      </div>
+    )}
+  </div>
+);
 
 export default function AvoidStockoutsPage() {
   const router = useRouter();
-  const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const handleGetStarted = () => router.push("/login");
+  const toggleFaq = (index: number) => setOpenFaq(openFaq === index ? null : index);
+
+  const faqs = [
+    {
+      q: "How does Insydz predict when you will run out of stock?",
+      a: "Insydz's AI inventory management tool combines your current stock level, historical daily sales velocity, upcoming festive demand forecasts, and competitor stock signals to calculate the exact date each SKU will run out. The model updates every 24 hours and recalibrates automatically when sales velocity changes — for example during a flash sale or when a competitor goes out of stock.",
+    },
+    {
+      q: "What happens to inventory rankings when you go out of stock?",
+      a: "Amazon and Flipkart deprioritise out-of-stock listings immediately in search rankings. Sellers report an average drop of 3 to 5 positions on primary keywords within 72 hours of going out of stock. Recovering those positions after restocking requires 4 to 6 weeks of elevated PPC spend. The cost of ranking recovery often exceeds the revenue lost during the stockout itself.",
+    },
+    {
+      q: "Does Insydz work for Amazon India and Flipkart inventory management?",
+      a: "Yes. Insydz is the only inventory management tool that covers Amazon India and Flipkart in a single dashboard. You can set separate reorder thresholds for each marketplace, track festive demand independently across both platforms, and receive unified WhatsApp alerts regardless of which marketplace is at risk.",
+    },
+    {
+      q: "How is Insydz different from inventory tracking inside Amazon Seller Central?",
+      a: "Amazon Seller Central shows you current stock levels. Insydz predicts when you will run out. Seller Central is a lagging indicator — it tells you when you already have a problem. Insydz's inventory tracker software is a leading indicator — it tells you 14 to 21 days before you have a problem, giving you enough time to reorder and receive stock before going out of stock.",
+    },
+    {
+      q: "Does the stockout alert tool send WhatsApp alerts before a stockout becomes critical?",
+      a: "Yes. Insydz's stockout alert tool sends a tiered set of WhatsApp alerts: a 21-day planning alert, a 10-day reorder alert, and a 3-day critical alert if no action has been taken. Each alert includes the recommended reorder quantity, your supplier lead time, and the festive demand forecast for the next 30 days — all in a single message.",
+    },
+    {
+      q: "Can Insydz alert me when competitor stock affects my sales velocity?",
+      a: "Yes. Insydz monitors stock levels of your top competitors in real time. When a major competitor goes out of stock, the system flags the opportunity and recalibrates your own demand forecast upward so your reorder plan accounts for the incoming buyers. When competitors restock aggressively, you are notified so you can prepare pricing and inventory accordingly.",
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 pt-20">
-      {/* ── SECTION 1: HERO ──────────────────────────────────────────────────── */}
-      <section className="relative pt-32 pb-20 px-4 overflow-hidden bg-gradient-to-br from-red-50 via-white to-orange-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-red-400 rounded-full blur-3xl"></div>
-          <div className="absolute top-40 right-10 w-96 h-96 bg-orange-400 rounded-full blur-3xl"></div>
-        </div>
 
+      {/* ══ HERO ══ */}
+      <section className="relative pt-24 sm:pt-28 lg:pt-32 pb-12 sm:pb-16 lg:pb-20 px-4 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-amber-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
+        <div className="absolute inset-0 opacity-15 sm:opacity-20">
+          <div className="absolute top-20 left-4 sm:left-10 w-48 h-48 sm:w-72 sm:h-72 bg-orange-400 rounded-full blur-3xl" />
+          <div className="absolute top-32 right-4 sm:right-10 w-64 h-64 sm:w-96 sm:h-96 bg-amber-400 rounded-full blur-3xl" />
+        </div>
         <div className="relative max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 bg-red-100 border border-red-300 rounded-full px-4 py-2">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-12 items-center">
+            <div className="space-y-5 sm:space-y-6 lg:space-y-8">
+
+              {/* Primary keyword badge above H1 */}
+              <div className="inline-flex items-center gap-2 bg-orange-100 border border-orange-300 rounded-full px-3 sm:px-4 py-1.5 sm:py-2">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-red-600"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600" />
                 </span>
-                <span className="text-sm font-medium text-red-700">India's #1 AI Inventory Management Tool 🇮🇳</span>
+                <h1 className="text-xs sm:text-sm font-medium text-orange-700">Inventory Management Tool</h1>
               </div>
 
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
+              <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
                 Never Run Out of Stock
                 <br />
-                <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">& Miss Sales Again</span>
-              </h1>
+                <span className="bg-gradient-to-r from-orange-600 via-red-500 to-orange-700 bg-clip-text text-transparent">
+                  and Miss Sales Again
+                </span>
+              </div>
 
-              <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
-                India's most powerful <strong>AI inventory management tool</strong> for Amazon, Flipkart sellers. Insydz predicts exactly when you'll run out of stock and alerts you before it's too late
-                <span className="text-red-700 dark:text-red-400 font-semibold"> so you never lose sales, rankings, or momentum to a stockout.</span>
+              <p className="text-base sm:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
+                India's most powerful <strong>AI inventory management tool</strong> built for Amazon India and Flipkart sellers. Insydz predicts exactly when you will run out of stock and delivers alerts before you lose
+                <span className="text-orange-700 dark:text-orange-400 font-semibold"> a single sale to an out-of-stock listing.</span>
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Button onClick={handleGetStarted} size="lg"
-                  className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold px-8 py-6 text-lg rounded-full shadow-2xl hover:shadow-red-500/50 transition-all group"
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                <Button
+                  onClick={handleGetStarted}
+                  size="lg"
+                  className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white font-bold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group"
                 >
-                   Prevent Stockouts Free
+                  Prevent Stockouts Free
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
-                <Button onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
-                  size="lg" variant="outline"
-                  className="border-2 border-red-600 text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-semibold px-8 py-6 text-lg rounded-full transition-all"
+                <Button
+                  onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-orange-600 text-orange-700 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full transition-all"
                 >
-                  See How It Works →
+                  See How It Works
                 </Button>
               </div>
             </div>
 
-            {/* Hero Visual */}
-            <div className="relative">
-              <div className="bg-white dark:bg-gray-900 border-2 border-red-200 dark:border-red-800 rounded-3xl p-6 shadow-2xl transition-all hover:shadow-red-500/10">
-                <div className="flex items-center justify-between mb-5">
-                  <h3 className="font-bold text-gray-900 dark:text-white leading-relaxed">Inventory Intelligence Dashboard</h3>
-                  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">Live</span>
+            {/* Hero Visual — inventory dashboard */}
+            <div className="relative mt-4 lg:mt-0">
+              <div className="relative bg-white dark:bg-gray-900 border-2 border-orange-200 dark:border-orange-800 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl transition-all hover:shadow-orange-500/10">
+                <div className="absolute -top-3 sm:-top-4 -right-3 sm:-right-4 bg-gradient-to-r from-orange-600 to-red-500 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-1.5 sm:py-2 shadow-xl z-10">
+                  <p className="text-white font-bold text-xs sm:text-sm leading-relaxed">AI-Powered</p>
                 </div>
-                <div className="space-y-3">
-                  {/* Critical */}
-                  <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-400 dark:border-red-600 rounded-xl p-4 animate-pulse">
-                    <div className="flex items-start gap-3">
-                      <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-                      <div className="flex-1">
-                        <p className="font-bold text-gray-900 dark:text-white text-sm leading-relaxed">🔴 Critical Stock Alert</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">Premium Earbuds — 12 units left</p>
-                        <p className="text-xs text-red-600 dark:text-red-400 font-semibold mt-1 leading-relaxed">Selling 4/day — will run out in <strong>3 days</strong></p>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Warning */}
-                  <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-xl p-4 transition-all">
-                    <div className="flex items-start gap-3">
-                      <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
-                      <div className="flex-1">
-                        <p className="font-bold text-gray-900 dark:text-white text-sm leading-relaxed">🟡 Low Stock Warning</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">Smart Watch — 45 units remaining</p>
-                        <p className="text-xs text-yellow-600 dark:text-yellow-400 font-semibold mt-1 leading-relaxed">Velocity increasing — restock in 7 days</p>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Healthy */}
-                  <div className="bg-green-50 dark:bg-green-900/20 border border-green-300 dark:border-green-700 rounded-xl p-4 transition-all">
-                    <div className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                      <div className="flex-1">
-                        <p className="font-bold text-gray-900 dark:text-white text-sm leading-relaxed">🟢 Stock Healthy</p>
-                        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">USB-C Cables — 280 units</p>
-                        <p className="text-xs text-green-600 dark:text-green-400 font-semibold mt-1 leading-relaxed">42 days stock at current velocity — reorder due in 28 days</p>
-                      </div>
-                    </div>
-                  </div>
-                  {/* WhatsApp */}
-                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-2 border-green-400 dark:border-green-600 rounded-xl p-3 transition-all">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                        <Smartphone className="w-4 h-4 text-white" />
-                      </div>
-                      <div>
-                        <p className="font-bold text-gray-900 dark:text-white text-xs leading-relaxed">WhatsApp Alert Sent</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">"Premium Earbuds — 3 days to stockout. Reorder now."</p>
-                      </div>
-                    </div>
-                  </div>
+
+                {/* topbar */}
+                <div className="bg-gradient-to-r from-orange-600 to-red-500 px-4 sm:px-5 py-3 flex items-center justify-between">
+                  <span className="text-white font-bold text-xs sm:text-sm leading-relaxed">Inventory Intelligence Dashboard</span>
+                  <span className="text-xs font-semibold bg-white/20 text-white px-2 py-0.5 rounded-full flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse inline-block" /> Live
+                  </span>
                 </div>
-                <div className="absolute -top-4 -right-4 bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl px-4 py-2 shadow-xl">
-                  <p className="text-white font-bold text-sm leading-relaxed">Live Prediction</p>
+
+                <div className="p-4 sm:p-5 space-y-2.5">
+                  {[
+                    { name: "Steel Water Bottle 1L", days: "42 days left", tag: "Stock Healthy", bg: "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700", tagCls: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400", dayCls: "text-green-600 dark:text-green-400" },
+                    { name: "Yoga Mat 6mm", days: "12 days left", tag: "Reorder Soon", bg: "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700", tagCls: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400", dayCls: "text-yellow-600 dark:text-yellow-400" },
+                    { name: "Bluetooth Earphones", days: "4 days left", tag: "Critical Alert", bg: "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700", tagCls: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400", dayCls: "text-red-600 dark:text-red-400" },
+                    { name: "Phone Stand Desk", days: "9 days left", tag: "Reorder Now", bg: "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-700", tagCls: "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400", dayCls: "text-yellow-600 dark:text-yellow-400" },
+                  ].map((row, i) => (
+                    <div key={i} className={`flex items-center justify-between p-2.5 sm:p-3 ${row.bg} border rounded-xl`}>
+                      <span className="text-xs sm:text-sm font-semibold text-gray-900 dark:text-white leading-relaxed">{row.name}</span>
+                      <span className={`text-xs font-bold ${row.dayCls} mx-2`}>{row.days}</span>
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${row.tagCls}`}>{row.tag}</span>
+                    </div>
+                  ))}
+
+                  <div className="bg-gradient-to-r from-orange-600 to-red-500 rounded-xl p-3 sm:p-4">
+                    <p className="text-white text-xs sm:text-sm leading-relaxed font-medium">
+                      WhatsApp sent: Bluetooth Earphones will stock out in 4 days. Diwali demand forecast is 3.2x normal. Reorder 420 units today.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -233,402 +165,468 @@ export default function AvoidStockoutsPage() {
         </div>
       </section>
 
-      {/* ── SECTION 2: WHY STOCKOUTS KILL YOUR BUSINESS ──────────────────────── */}
-      <section className="py-20 px-4 bg-white dark:bg-gray-950">
+      {/* ══ WHY STOCKOUTS KILL ══ */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white leading-relaxed">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white leading-relaxed">
               Why Stockouts
-              <span className="text-red-600"> Kill Your Business</span>
+              <br />
+              <span className="text-red-600 dark:text-red-500">Kill Your Business</span>
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              Running out of stock feels like a small operational problem. It isn't. A stockout on Amazon India or Flipkart starts a chain reaction that costs far more than the units you couldn't sell.
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
+              Running out of stock here is not a one-off operational problem. It sets off a chain reaction of costs that compounds for months in a row.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
             {[
-              {
-                icon: <TrendingDown className="w-8 h-8" />,
-                title: "Lost Sales & Revenue",
-                desc: "Every day out of stock is zero revenue on that product. A ₹50,000/month product loses ₹8,000–₹10,000 in direct sales for a 5-day stockout before accounting for ranking damage.",
-                color: "from-red-500 to-orange-500",
-              },
-              {
-                icon: <AlertCircle className="w-8 h-8" />,
-                title: "Rankings Drop Instantly",
-                desc: "Amazon's algorithm reads a stockout as a signal that your product is no longer viable. Keyword rankings built over weeks fall immediately. Recovery after restocking takes 4–8 weeks and requires extra ad spend.",
-                color: "from-orange-500 to-yellow-500",
-              },
-              {
-                icon: <Users className="w-8 h-8" />,
-                title: "Customers Buy from Competitors",
-                desc: "Buyers don't wait. They buy from whoever is available. Once a customer orders from a competitor and has a good experience, you've lost that buyer not just that order.",
-                color: "from-yellow-500 to-red-500",
-              },
-            ].map((p, i) => (
-              <div key={i} className="bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 hover:border-red-400 hover:shadow-lg transition-all group flex flex-col h-full">
-                <div className={`w-16 h-16 bg-gradient-to-br ${p.color} rounded-2xl flex items-center justify-center mb-4 text-white group-hover:scale-110 transition-transform shadow-md flex-shrink-0`}>{p.icon}</div>
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2 leading-relaxed">{p.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed flex-grow">{p.desc}</p>
+              { icon: <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Lost Sales and Revenue", desc: "Every hour your listing shows out of stock, buyers click on a competitor permanently", color: "from-red-500 to-orange-500" },
+              { icon: <AlertTriangle className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Rankings Drop Instantly", desc: "Keyword rankings fall 3 to 5 positions within 72 hours and take 4 to 6 weeks to recover", color: "from-orange-500 to-yellow-500" },
+              { icon: <AlertCircle className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Customers Buy Competitors", desc: "68% of Indian buyers do not return to your listing even after you restock", color: "from-yellow-500 to-amber-500" },
+              { icon: <Star className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Festive Revenue Lost Forever", desc: "Going out of stock 3 days before Diwali means that entire festive window is gone for the year", color: "from-amber-500 to-orange-600" },
+            ].map((pain, i) => (
+              <div key={i} className="bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-4 sm:p-6 hover:border-orange-400 hover:shadow-lg transition-all group flex flex-col h-full">
+                <div className={`w-10 h-10 sm:w-16 sm:h-16 bg-gradient-to-br ${pain.color} rounded-2xl flex items-center justify-center mb-3 sm:mb-4 text-white group-hover:scale-110 transition-transform shadow-md flex-shrink-0`}>{pain.icon}</div>
+                <p className="text-gray-900 dark:text-white font-semibold leading-relaxed mb-1 text-xs sm:text-base">{pain.title}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm leading-relaxed flex-grow">{pain.desc}</p>
               </div>
             ))}
           </div>
 
-          {/* Ranking Timeline */}
-          <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-300 dark:border-red-700 rounded-3xl p-8 mb-10 shadow-md">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 text-center leading-relaxed">Keyword Ranking Timeline During a Stockout</h3>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          {/* Keyword ranking timeline */}
+          <div className="bg-gray-50 dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-2xl sm:rounded-3xl p-5 sm:p-7 mb-6 sm:mb-8">
+            <p className="text-sm font-bold text-gray-900 dark:text-white mb-4 sm:mb-5 leading-relaxed">Keyword Ranking Timeline During a Stockout</p>
+            <div className="space-y-3 sm:space-y-4">
               {[
-                { stage: "Before Stockout", rank: "#5", status: "Page 1 strong velocity", color: "bg-green-100 border-green-300 text-green-800 dark:bg-green-900/30 dark:border-green-700 dark:text-green-300" },
-                { stage: "Day of Stockout", rank: "#18", status: "Listing becomes inactive", color: "bg-yellow-100 border-yellow-300 text-yellow-800 dark:bg-yellow-900/30 dark:border-yellow-700 dark:text-yellow-300" },
-                { stage: "Day 3 Out of Stock", rank: "#34", status: "Algorithm further demotes", color: "bg-orange-100 border-orange-300 text-orange-800 dark:bg-orange-900/30 dark:border-orange-700 dark:text-orange-300" },
-                { stage: "Day 7+", rank: "Page 4+", status: "Virtually invisible", color: "bg-red-100 border-red-300 text-red-800 dark:bg-red-900/30 dark:border-red-700 dark:text-red-300" },
-                { stage: "After Restock", rank: "#22", status: "4–8 weeks to recover", color: "bg-gray-100 border-gray-300 text-gray-700 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300" },
-              ].map((t, i) => (
-                <div key={i} className={`border-2 rounded-xl p-3 text-center transition-all hover:scale-105 ${t.color}`}>
-                  <p className="text-xs font-semibold mb-1 leading-relaxed">{t.stage}</p>
-                  <p className="text-xl font-black leading-relaxed">{t.rank}</p>
-                  <p className="text-xs mt-1 leading-tight">{t.status}</p>
+                { label: "Before stockout", rank: "Page 1 (#8)", pct: 85, color: "bg-green-500", textCls: "text-green-600 dark:text-green-400" },
+                { label: "Day 3 out of stock", rank: "Page 2 (#21)", pct: 52, color: "bg-orange-500", textCls: "text-orange-600 dark:text-orange-400" },
+                { label: "Day 7 out of stock", rank: "Page 4 (#42)", pct: 24, color: "bg-red-500", textCls: "text-red-600 dark:text-red-400" },
+                { label: "After restock", rank: "Page 3 (#31)", pct: 38, color: "bg-yellow-500", textCls: "text-yellow-600 dark:text-yellow-400" },
+              ].map((row, i) => (
+                <div key={i} className="grid grid-cols-[120px_1fr_100px] sm:grid-cols-[140px_1fr_110px] items-center gap-3 sm:gap-4">
+                  <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{row.label}</span>
+                  <div className="h-2 sm:h-2.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                    <div className={`h-full ${row.color} rounded-full`} style={{ width: `${row.pct}%` }} />
+                  </div>
+                  <span className={`text-xs sm:text-sm font-bold ${row.textCls} text-right leading-relaxed`}>{row.rank}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-400 dark:border-red-600 rounded-2xl p-6 text-center shadow-md">
-            <p className="text-xl font-bold text-gray-900 dark:text-white mb-2 leading-relaxed">
-              The most expensive stockout isn't the 3-day gap.
+          <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-2 border-amber-300 dark:border-amber-700 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-lg mb-5 sm:mb-6">
+            <p className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white text-center mb-2 sm:mb-3 leading-relaxed">
+              The most expensive stockout is the <span className="text-orange-600 dark:text-orange-400">3-day gap.</span>
             </p>
-            <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-              It's the <strong>6 weeks of rebuilding keyword rankings</strong> after you restock. For a seller at ₹3L/month revenue, one bad stockout during Big Billion Days can cost ₹60,000–₹90,000 in lost sales then another ₹30,000–₹45,000 in additional ad spend. All for a restocking failure that cost ₹8,000 to prevent.
+            <p className="text-gray-700 dark:text-gray-300 text-center leading-relaxed text-sm sm:text-base">
+              It takes 5 weeks of rebuilding keyword rankings after you restock. For a Flipkart seller earning Rs 2,50,000 per month, one stockout during Big Billion Days costs Rs 80,000 in additional ad spend alone. A reliable <strong>inventory management tool</strong> prevents this entirely.
+            </p>
+          </div>
+
+          <div className="bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-5 sm:p-6 shadow-sm">
+            <p className="text-xs sm:text-sm font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wide mb-1.5 sm:mb-2 leading-relaxed">What most stock management tools do not tell you:</p>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-xs sm:text-sm sm:text-base">
+              Most inventory tools track what you have. Insydz predicts what you will need — factoring in demand trends, festive spikes, competitor stock levels, and your supplier lead times simultaneously. That is the difference between reactive and preventive inventory management.
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── SECTION 3: WHY MANUAL TRACKING FAILS ─────────────────────────────── */}
-      <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
+      {/* ══ WHY SPREADSHEETS FAIL ══ */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white leading-relaxed">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white leading-relaxed">
               Why Spreadsheets and Manual Counts
               <br />
-              <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Always Fail at the Worst Moment</span>
+              <span className="bg-gradient-to-r from-orange-600 to-red-500 bg-clip-text text-transparent">Always Fail at the Worst Moment</span>
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              Every Indian seller starts with a spreadsheet or a mental note. Here's exactly why that approach breaks down always at the worst possible time, like the night before Diwali.
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
+              Every Indian seller starts with a spreadsheet or a mental note. Here is exactly why they always miss before Diwali.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6 mb-10">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
             {[
-              {
-                icon: <RefreshCw className="w-7 h-7" />,
-                title: "Static Data in a Dynamic World",
-                desc: "A spreadsheet shows stock levels as of the last update. It doesn't account for sales acceleration when your product suddenly sells 3× faster due to a competitor stocking out, a festive promotion, or a ranking improvement. By the time you notice, you're already critical.",
-              },
-              {
-                icon: <Flame className="w-7 h-7" />,
-                title: "No Festive Season Intelligence",
-                desc: "Manual planning uses last year's sales as baseline. But Indian festive demand doesn't follow a smooth curve a product selling 50 units/day in October last year might sell 150/day this year. Static reorder points miss these spikes every single time.",
-              },
-              {
-                icon: <Eye className="w-7 h-7" />,
-                title: "Zero Competitor Stock Visibility",
-                desc: "When a top competitor goes out of stock, demand for your product spikes. Manual tracking has no way to monitor competitor stock levels so when the spike hits, you're already running lean.",
-              },
-              {
-                icon: <Clock className="w-7 h-7" />,
-                title: "Supplier Lead Time Blindness",
-                desc: "Placing a reorder at 5 days of stock means nothing if your supplier needs 12 days. Manual tracking doesn't auto-factor your supplier lead times into reorder calculations.",
-              },
-            ].map((gap, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 hover:border-red-300 hover:shadow-lg transition-all h-full">
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-red-100 dark:bg-red-900/20 rounded-xl flex items-center justify-center text-red-600 dark:text-red-400 flex-shrink-0">
-                    {gap.icon}
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-gray-900 dark:text-white mb-2 leading-relaxed">{gap.title}</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{gap.desc}</p>
-                  </div>
-                </div>
+              { icon: <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Static Data in a Dynamic World", desc: "A spreadsheet updated last Tuesday does not account for a 3x demand spike this Friday ahead of a sale event", color: "from-red-500 to-orange-500" },
+              { icon: <RefreshCw className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Zero Competitor Stock Visibility", desc: "When competitors run out buyers flood your listing. Without real-time signals you are always reacting too late", color: "from-orange-500 to-amber-500" },
+              { icon: <Clock className="w-6 h-6 sm:w-8 sm:h-8" />, title: "No Festive Lead-Time Awareness", desc: "Supplier lead time of 8 days plus 3 days transit means you must reorder 11 days before running out. Manual calculation always misses this", color: "from-amber-500 to-yellow-500" },
+              { icon: <Package className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Invalid Lead-Time Dilemma", desc: "Holding too much stock ties up capital and inflates storage fees. Only a purpose-built stockout alert tool finds the exact balance automatically", color: "from-yellow-500 to-orange-500" },
+            ].map((pain, i) => (
+              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-4 sm:p-6 hover:border-orange-400 hover:shadow-lg transition-all group flex flex-col h-full">
+                <div className={`w-10 h-10 sm:w-16 sm:h-16 bg-gradient-to-br ${pain.color} rounded-2xl flex items-center justify-center mb-3 sm:mb-4 text-white group-hover:scale-110 transition-transform shadow-md flex-shrink-0`}>{pain.icon}</div>
+                <p className="text-gray-900 dark:text-white font-semibold leading-relaxed mb-1 text-xs sm:text-base">{pain.title}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm leading-relaxed flex-grow">{pain.desc}</p>
               </div>
             ))}
           </div>
 
-          <div className="bg-white dark:bg-gray-800 border-l-4 border-red-500 rounded-r-2xl p-6 shadow-md transition-all hover:translate-x-1">
-            <p className="font-bold text-red-700 dark:text-red-400 mb-2 leading-relaxed">What most stock management tools don't tell you:</p>
-            <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-              Most inventory tools show current stock levels with a simple reorder threshold. Insydz calculates days-of-stock remaining using real-time sales velocity accounting for acceleration, competitor stockout signals, and Indian festive demand multipliers. The gap between <em>"you have 45 units"</em> and <em>"you have 7 days of stock before running out during Diwali week"</em> is the difference between a reorder and a crisis.
+          <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-2xl p-5 sm:p-6 shadow-sm">
+            <p className="text-xs sm:text-sm font-bold text-red-600 dark:text-red-400 uppercase tracking-wide mb-1.5 sm:mb-2 leading-relaxed">What basic stock management tools do not tell you:</p>
+            <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-xs sm:text-sm sm:text-base">
+              Basic inventory trackers show you stock levels. They cannot tell you that Diwali demand for your category runs 3.2x higher than September, that your supplier takes 11 days to deliver, or that you should have placed that order 14 days ago. The <strong>inventory management analysis tool</strong> inside Insydz does all three — automatically and continuously.
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── SECTION 4: HOW IT WORKS ───────────────────────────────────────────── */}
-      <section id="how-it-works" className="py-20 px-4 bg-white dark:bg-gray-950">
+      {/* ══ HOW IT WORKS ══ */}
+      <section id="how-it-works" className="py-12 sm:py-16 lg:py-20 px-4 bg-white dark:bg-gray-950">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-black mb-6 text-gray-900 dark:text-white leading-relaxed">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 sm:mb-6 text-gray-900 dark:text-white leading-relaxed">
               How Stock Monitoring Works
               <br />
-              <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">with Insydz</span>
+              <span className="bg-gradient-to-r from-orange-600 to-red-500 bg-clip-text text-transparent">with Insydz</span>
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-              From product connection to stockout prevention automated, accurate, and delivered where you'll actually act on it.
-            </p>
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 leading-relaxed">From permission to stockout prediction, accurate and delivered where you will actually act on it.</p>
           </div>
 
-          <div className="relative">
-            <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-red-600 via-orange-500 to-red-600 -translate-y-1/2"></div>
-            <div className="grid lg:grid-cols-3 gap-12 relative">
-              {[
-                {
-                  step: 1,
-                  title: "Connect Inventory",
-                  desc: "Link Amazon India, Flipkart inventory automatically. Insydz reads current stock levels and begins tracking real-time sales velocity across all products. Setup: under 5 minutes no manual data entry.",
-                  visual: <Package className="w-12 h-12 text-red-600 mx-auto" />,
-                  bg: "bg-red-100 dark:bg-red-900/20",
-                },
-                {
-                  step: 2,
-                  title: "AI Predicts Stockouts",
-                  desc: "Calculates exactly when you'll run out based on actual sales velocity, velocity acceleration trends, competitor stock signals, and Indian festive demand multipliers. Not a static reorder point. A live, updating prediction.",
-                  visual: <Zap className="w-12 h-12 text-orange-600 mx-auto animate-pulse" />,
-                  bg: "bg-orange-100 dark:bg-orange-900/20",
-                },
-                {
-                  step: 3,
-                  title: "Get Early Alerts",
-                  isAlerts: true,
-                },
-              ].map((step, i) => (
-                <div key={i} className="bg-white dark:bg-gray-800 border-2 border-red-300 dark:border-red-700 rounded-3xl p-8 text-center relative z-10 shadow-xl hover:shadow-2xl transition-all h-full">
-                  <div className="w-16 h-16 bg-gradient-to-br from-red-600 to-orange-600 rounded-full flex items-center justify-center mx-auto mb-6 text-2xl font-black text-white shadow-lg">{step.step}</div>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 leading-relaxed">{step.title}</h3>
-                  {step.isAlerts ? (
-                    <div className="space-y-3 text-left">
-                      <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded-lg p-3 transition-all hover:translate-x-1">
-                        <span className="text-red-600 font-bold text-sm leading-relaxed">14 days</span>
-                        <span className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed"> Early warning. Time to reorder.</span>
-                      </div>
-                      <div className="flex items-center gap-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-300 dark:border-orange-700 rounded-lg p-3 transition-all hover:translate-x-1">
-                        <span className="text-orange-600 font-bold text-sm leading-relaxed">7 days</span>
-                        <span className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed"> Low stock. Confirm order placed.</span>
-                      </div>
-                      <div className="flex items-center gap-2 bg-red-100 dark:bg-red-900/30 border-2 border-red-400 dark:border-red-600 rounded-lg p-3 transition-all hover:translate-x-1">
-                        <span className="text-red-700 font-bold text-sm leading-relaxed">3 days</span>
-                        <span className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed"> Critical. Escalate immediately.</span>
-                      </div>
-                      <p className="text-xs text-gray-500 text-center pt-1 leading-relaxed">Each alert includes stock level, velocity & AI reorder qty</p>
-                    </div>
-                  ) : (
-                    <>
-                      <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6 text-sm sm:text-base">{step.desc}</p>
-                      <div className={`${step.bg} rounded-2xl p-4 transition-all hover:scale-105`}>{step.visual}</div>
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
+            {[
+              { step: "1", title: "Connect Inventory", desc: "Connect your Amazon India or Flipkart seller account. Insydz imports your current stock levels, sales velocity, and historical demand patterns in under 2 minutes. No spreadsheet setup required.", icon: <Filter className="w-8 h-8 sm:w-10 sm:h-10 text-orange-600" />, bg: "bg-orange-50 dark:bg-orange-900/20" },
+              { step: "2", title: "AI Predicts Stockouts", desc: "The AI inventory management tool analyses your sales velocity, festive demand forecasts, competitor stock movements, and lead times to calculate the exact reorder date for every SKU in your catalogue.", icon: <Zap className="w-8 h-8 sm:w-10 sm:h-10 text-red-600" />, bg: "bg-red-50 dark:bg-red-900/20" },
+              { step: "3", title: "Get Early Alerts", desc: "Receive a WhatsApp alert 14 days before your critical reorder date, with the recommended order quantity, supplier lead time buffer, and festive demand adjustment already calculated. Act immediately.", icon: <Award className="w-8 h-8 sm:w-10 sm:h-10 text-orange-600" />, bg: "bg-orange-50 dark:bg-orange-900/20" },
+            ].map((item, i) => (
+              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-orange-300 dark:border-orange-700 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-xl hover:shadow-2xl transition-all h-full flex flex-col">
+                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-orange-600 to-red-500 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 text-xl sm:text-2xl font-black text-white shadow-lg flex-shrink-0">{item.step}</div>
+                <h3 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 leading-relaxed">{item.title}</h3>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base flex-grow">{item.desc}</p>
+                <div className={`${item.bg} rounded-2xl p-3 sm:p-4 flex justify-center mt-auto`}>{item.icon}</div>
+              </div>
+            ))}
           </div>
 
-          <div className="text-center mt-12">
-            <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold px-12 py-6 text-lg rounded-full shadow-2xl transition-all group">
-               Start Preventing Stockouts Free
+          <div className="text-center mt-8 sm:mt-12">
+            <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group">
+              Start Preventing Stockouts Free
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
         </div>
       </section>
 
-      {/* ── SECTION 5: CAPABILITIES ────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
+      {/* ══ CAPABILITIES ══ */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white leading-relaxed">
-              Full Inventory Intelligence
+          <div className="text-center mb-8 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 sm:mb-6 text-gray-900 dark:text-white leading-relaxed">
+              Stop Guessing When to Reorder.
               <br />
-              <span className="bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">Capabilities</span>
+              <span className="bg-gradient-to-r from-orange-600 to-red-500 bg-clip-text text-transparent">Know for Sure.</span>
             </h2>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {inventoryCapabilities.map((cap, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-6 hover:border-red-400 hover:shadow-lg transition-all flex flex-col h-full">
-                <div className={`w-14 h-14 bg-gradient-to-br ${cap.color} rounded-2xl flex items-center justify-center mb-4 text-white shadow-md flex-shrink-0`}>{cap.icon}</div>
-                <h3 className="font-bold text-gray-900 dark:text-white text-lg mb-2 leading-relaxed">{cap.title}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-4 flex-grow">{cap.desc}</p>
-                <Link href="/features" className="text-xs font-semibold text-red-600 hover:text-red-700 underline transition-colors">See {cap.linkLabel} →</Link>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
+            {[
+              { icon: <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8" />, badge: "Real-Time Tracking", title: "1. Real-Time Sales Velocity", desc: "Know exactly how fast each SKU is selling right now. Velocity changes during festive seasons are detected within hours, giving you time to reorder before running out.", link: { text: "See how inventory tracking works", href: "/features/competitor-price-tracking-feature" }, color: "from-orange-500 to-amber-500" },
+              { icon: <Bell className="w-6 h-6 sm:w-8 sm:h-8" />, badge: "Stockout Alert Tool", title: "2. Multi-Tier Stockout Alerts", desc: "Three-tier WhatsApp alert system: 21-day early warning, 10-day reorder alert, and 3-day critical notification. Each includes recommended order quantity and festive demand adjustment.", link: null, color: "from-red-500 to-orange-500" },
+              { icon: <Target className="w-6 h-6 sm:w-8 sm:h-8" />, badge: "Competitive Intelligence", title: "3. Competitor Stock Monitoring", desc: "Track when top competitors run low or go out of stock. Receive alerts when a window opens to capture their buyers — so you are always stocked when rivals are not.", link: null, color: "from-amber-500 to-yellow-500" },
+              { icon: <Star className="w-6 h-6 sm:w-8 sm:h-8" />, badge: "Festive Demand Forecasting", title: "4. Festive Demand Intelligence", desc: "Insydz models demand for Diwali, Big Billion Days, Republic Day Sale, and Great Indian Festival 15 days ahead. Stock the right quantity before demand spikes — not after you run out mid-sale.", link: null, color: "from-orange-600 to-red-600" },
+              { icon: <BarChart3 className="w-6 h-6 sm:w-8 sm:h-8" />, badge: "Inventory Management Analysis Tool", title: "5. Full Inventory Analysis", desc: "Complete SKU-level analysis of sell-through rate, days-on-hand, and reorder frequency. The inventory management analysis tool identifies which products tie up capital and which generate the highest return per rupee invested.", link: null, color: "from-blue-500 to-cyan-500" },
+              { icon: <Package className="w-6 h-6 sm:w-8 sm:h-8" />, badge: "Inventory Tracker Software", title: "6. Supplier Lead-Time Planning", desc: "Set supplier lead times once. Insydz calculates your reorder dates automatically, factoring in transit time, quality check buffer, and Amazon or Flipkart inbound processing windows.", link: null, color: "from-green-500 to-emerald-500" },
+            ].map((feature, i) => (
+              <div key={i} className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl p-5 sm:p-6 hover:border-orange-400 hover:shadow-xl transition-all group flex flex-col h-full">
+                <div className={`w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center mb-3 sm:mb-4 text-white group-hover:scale-110 transition-transform shadow-lg flex-shrink-0`}>{feature.icon}</div>
+                <span className="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wide leading-relaxed">{feature.badge}</span>
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mt-1 mb-2 sm:mb-3 leading-relaxed">{feature.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm leading-relaxed flex-grow">{feature.desc}</p>
+                {feature.link && (
+                  <button onClick={() => router.push(feature.link!.href)} className="mt-2 sm:mt-3 text-orange-600 dark:text-orange-400 text-xs sm:text-sm font-semibold hover:underline text-left leading-relaxed">{feature.link.text}</button>
+                )}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── SECTION 6: ROI ───────────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-white dark:bg-gray-950">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl lg:text-5xl font-black mb-4 text-gray-900 dark:text-white leading-relaxed">
-              The ROI of
-              <span className="text-red-600"> Zero Stockouts</span>
+      {/* ══ INDIA-FIRST ══ */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white leading-relaxed">
+              How Insydz Is Different
+              <br />
+              <span className="bg-gradient-to-r from-orange-600 to-red-500 bg-clip-text text-transparent">Built on Indian Marketplace Data</span>
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
-              Two identical products on Amazon India. One uses Insydz's <strong>stockout alert tool</strong>. One relies on manual reorders. Here's what happens over a 90-day period including Big Billion Days.
-            </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-8 mb-10">
-            {/* Without */}
-            <div className="rounded-2xl border-2 border-red-300 dark:border-red-700 overflow-hidden shadow-lg flex flex-col h-full">
-              <div className="bg-red-50 dark:bg-red-900/30 px-6 py-4 flex-shrink-0"><p className="font-bold text-red-700 dark:text-red-400 leading-relaxed">Manual Inventory Outcome (90 Days)</p></div>
-              <div className="bg-white dark:bg-gray-900 flex-grow">
-                {roiWithout.map((row, i) => (
-                  <div key={i} className={`flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 !== 0 ? "bg-gray-50 dark:bg-gray-800/50" : ""}`}>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{row.label}</p>
-                    <p className="text-sm font-bold text-red-600 whitespace-nowrap leading-relaxed">{row.value}</p>
-                  </div>
-                ))}
-                <div className="flex items-center justify-between px-6 py-5 bg-red-50 dark:bg-red-900/20">
-                  <p className="font-bold text-gray-900 dark:text-white leading-relaxed">Total Cost of Stockouts</p>
-                  <p className="font-black text-red-700 text-xl leading-relaxed">−₹3,55,000+</p>
-                </div>
+          {/* Real scenario */}
+          <div className="bg-white dark:bg-gray-900 border-2 border-orange-200 dark:border-orange-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl mb-8 sm:mb-12 transition-all hover:shadow-2xl">
+            <div className="flex flex-col md:flex-row items-start gap-4 sm:gap-6">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-orange-600 to-red-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg mb-4 md:mb-0">
+                <Star className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
               </div>
-            </div>
-            {/* With */}
-            <div className="rounded-2xl border-2 border-green-300 dark:border-green-700 overflow-hidden shadow-lg flex flex-col h-full">
-              <div className="bg-green-50 dark:bg-green-900/30 px-6 py-4 flex-shrink-0"><p className="font-bold text-green-700 dark:text-green-400 leading-relaxed">Insydz Automated Outcome (90 Days)</p></div>
-              <div className="bg-white dark:bg-gray-900 flex-grow">
-                {roiWith.map((row, i) => (
-                  <div key={i} className={`flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 ${i % 2 !== 0 ? "bg-gray-50 dark:bg-gray-800/50" : ""}`}>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{row.label}</p>
-                    <p className="text-sm font-bold text-green-600 whitespace-nowrap leading-relaxed">{row.value}</p>
-                  </div>
-                ))}
-                <div className="flex items-center justify-between px-6 py-5 bg-green-50 dark:bg-green-900/20">
-                  <p className="font-bold text-gray-900 dark:text-white leading-relaxed">Net Incremental Revenue</p>
-                  <p className="font-black text-green-700 text-xl leading-relaxed">+₹5,65,000</p>
-                </div>
+              <div>
+                <p className="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest mb-2 sm:mb-3 leading-relaxed">Real Seller Scenario — Electronics Seller, Hyderabad</p>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base mb-3 sm:mb-4">
+                  Karan sells Bluetooth earphones on Amazon India. During the 2023 Great Indian Festival, he ran out of stock on Day 4 of a 7-day event. He had no <strong className="text-gray-900 dark:text-white">inventory management tool</strong> in place — just a spreadsheet updated every Sunday. His listing dropped from position 6 to position 38 in 5 days. He missed an estimated Rs 1,40,000 in festive revenue and spent Rs 32,000 on PPC over the next 6 weeks just to recover his organic ranking. Total cost of one stockout: Rs 1,72,000.
+                </p>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-sm sm:text-base">
+                  When he started using Insydz the following year, the AI inventory management tool predicted his Big Billion Days demand at 3.4x his September baseline. He reordered 380 units 15 days before the sale. <strong className="text-gray-900 dark:text-white">He sold 362 units. Zero stockout. Rs 2,17,200 in 7 days.</strong>
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30 border-2 border-red-400 rounded-2xl p-6 text-center shadow-md">
-            <p className="text-2xl font-black text-gray-900 dark:text-white mb-2 leading-relaxed">₹9.2 Lakhs Revenue Gap</p>
-            <p className="text-gray-600 dark:text-gray-400 leading-relaxed text-lg">Same product. Same category. Same marketplaces. The only difference: one seller used <strong>inventory tracker software</strong> to prevent stockouts while the other reacted too late. Don't be the seller who loses 40% of their annual revenue to a preventable shipping delay.</p>
+          <div className="text-center mb-10">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-relaxed">4 India-First Advantages</h2>
+            <p className="text-gray-600 dark:text-gray-400 mt-3 max-w-2xl mx-auto leading-relaxed">Built specifically for Indian marketplaces, festive demand cycles, and supplier realities.</p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
+            {[
+              { icon: <Globe className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Indian Domain Data", desc: "Demand and velocity data sourced directly from Amazon India and Flipkart — not extrapolated from Amazon.com or US market trends", color: "from-orange-500 to-amber-500" },
+              { icon: <Star className="w-6 h-6 sm:w-8 sm:h-8" />, title: "15-Day Festive Forecasting", desc: "Models demand for Diwali, Big Billion Days, Republic Day Sale, and Great Indian Festival from 15 days ahead with Indian consumer behaviour patterns", color: "from-red-500 to-orange-500" },
+              { icon: <Target className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Supplier Lead-Time Integration", desc: "Set your supplier lead time once and Insydz automatically calculates reorder dates accounting for Indian logistics realities — monsoon delays, courier strikes, customs clearance", color: "from-amber-500 to-yellow-500" },
+              { icon: <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Competitor Stock Monitoring", desc: "Tracks competitor inventory levels on both marketplaces simultaneously — alerts you when rivals run out and when they restock aggressively", color: "from-orange-600 to-red-600" },
+            ].map((item, i) => (
+              <div key={i} className="bg-white dark:bg-gray-900 border-2 border-orange-200 dark:border-orange-700 rounded-2xl p-5 sm:p-6 hover:shadow-lg transition-all h-full flex flex-col">
+                <div className={`w-10 h-10 sm:w-14 sm:h-14 bg-gradient-to-br ${item.color} rounded-2xl flex items-center justify-center mb-3 sm:mb-4 text-white shadow-lg flex-shrink-0`}>{item.icon}</div>
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-1.5 sm:mb-2 leading-relaxed">{item.title}</h3>
+                <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm leading-relaxed flex-grow">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Comparison table */}
+          <div className="overflow-x-auto rounded-2xl border-2 border-orange-200 dark:border-orange-800 shadow-xl">
+            <table className="w-full text-sm min-w-[480px]">
+              <thead>
+                <tr className="bg-gradient-to-r from-orange-600 to-red-500 text-white">
+                  <th className="text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Capability</th>
+                  <th className="px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left leading-relaxed">Spreadsheet or Manual</th>
+                  <th className="px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left leading-relaxed">Insydz</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  { capability: "Stockout prediction", manual: "Not possible — reactive only", insydz: "14 to 21 days ahead per SKU" },
+                  { capability: "Festive demand forecast", manual: "Manual guess or none", insydz: "Diwali, BBD, Republic Day modelled 15 days ahead" },
+                  { capability: "Competitor stock visibility", manual: "Not available", insydz: "Real-time tracking on Amazon India and Flipkart" },
+                  { capability: "WhatsApp alerts", manual: "Not available", insydz: "3-tier alerts at 21, 10, and 3 days before stockout" },
+                  { capability: "Supplier lead-time integration", manual: "Mental calculation", insydz: "Automated per SKU with buffer calculations" },
+                  { capability: "Time to set up", manual: "Ongoing manual effort", insydz: "Under 2 minutes initial setup" },
+                ].map((row, i) => (
+                  <tr key={i} className={`border-t border-gray-200 dark:border-gray-700 transition-colors ${i % 2 === 0 ? "bg-white dark:bg-gray-950" : "bg-gray-50 dark:bg-gray-900"}`}>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-gray-700 dark:text-gray-300 font-medium text-xs sm:text-sm leading-relaxed">{row.capability}</td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-left text-red-500 dark:text-red-400 font-medium text-xs sm:text-sm leading-relaxed">{row.manual}</td>
+                    <td className="px-4 sm:px-6 py-3 sm:py-4 text-left text-green-600 dark:text-green-400 font-semibold text-xs sm:text-sm leading-relaxed">{row.insydz}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </section>
 
-      {/* ── SECTION 7: START FREE ────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-white dark:bg-gray-950">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-5xl font-black mb-4 text-gray-900 dark:text-white leading-relaxed">
-            Start Preventing Stockouts Free
-          </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 mb-10 leading-relaxed">Free Plan — ₹0 / Forever No credit card required</p>
+      {/* ══ ROI ══ */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-white dark:bg-gray-950">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white leading-relaxed">
+              The ROI of
+              <br />
+              <span className="bg-gradient-to-r from-orange-600 to-red-500 bg-clip-text text-transparent">Zero Stockouts</span>
+            </h2>
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed">
+              One seller in electronics. One 90-day period. Here is what September through November looked like with and without the right <strong>inventory management tool</strong>.
+            </p>
+          </div>
 
-          <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 border-2 border-red-300 dark:border-red-700 rounded-3xl p-8 mb-8 text-left shadow-xl">
-            <h3 className="font-bold text-gray-900 dark:text-white text-xl mb-6 text-center leading-relaxed">Free Plan Includes:</h3>
-            <div className="grid sm:grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 gap-5 sm:gap-8 mb-8 sm:mb-10">
+            {[
+              {
+                title: "Manual Inventory Tracking — 90 Days",
+                icon: <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6" />,
+                titleCls: "text-red-600 dark:text-red-400",
+                borderCls: "border-red-200 dark:border-red-800",
+                rows: [
+                  { label: "Products going out of stock", value: "3 of 8 products" },
+                  { label: "Average days out of stock per SKU", value: "11 days" },
+                  { label: "Revenue lost during stockout period", value: "Rs 74,000" },
+                  { label: "Ad spend to recover rankings after restock", value: "Rs 22,000" },
+                  { label: "Revenue missed during festive window", value: "Rs 1,40,000" },
+                ],
+                totalLabel: "Total cost of stockouts across 90 days",
+                totalValue: "Rs 2,33,000",
+                totalValueCls: "text-red-600 dark:text-red-400",
+                totalBorderCls: "border-red-200 dark:border-red-800",
+                valueCls: "text-red-600 dark:text-red-400",
+              },
+              {
+                title: "With Insydz AI Inventory Management — 90 Days",
+                icon: <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" />,
+                titleCls: "text-green-600 dark:text-green-400",
+                borderCls: "border-green-200 dark:border-green-800",
+                rows: [
+                  { label: "Stockout events during the period", value: "0 events" },
+                  { label: "WhatsApp reorder alerts triggered", value: "7 alerts" },
+                  { label: "Revenue protected from stockouts", value: "Rs 74,000" },
+                  { label: "Ad spend avoided through ranking protection", value: "Rs 22,000 saved" },
+                  { label: "Festive window revenue captured in full", value: "Rs 1,40,000" },
+                ],
+                totalLabel: "Net revenue recovered vs the manual approach",
+                totalValue: "+Rs 2,36,000",
+                totalValueCls: "text-green-600 dark:text-green-400",
+                totalBorderCls: "border-green-200 dark:border-green-800",
+                valueCls: "text-green-600 dark:text-green-400",
+              },
+            ].map((panel, pi) => (
+              <div key={pi} className={`bg-white dark:bg-gray-900 border-2 ${panel.borderCls} rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col h-full transition-all hover:shadow-2xl`}>
+                <h3 className={`text-base sm:text-xl font-black ${panel.titleCls} mb-4 sm:mb-6 flex items-center gap-2 leading-relaxed`}>{panel.icon} {panel.title}</h3>
+                <div className="space-y-2 sm:space-y-3 flex-grow">
+                  {panel.rows.map((item, i) => (
+                    <div key={i} className="flex items-center justify-between py-2 sm:py-3 border-b border-gray-100 dark:border-gray-800 last:border-0 gap-2">
+                      <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 flex-1 leading-relaxed">{item.label}</span>
+                      <span className={`font-bold ${panel.valueCls} flex-shrink-0 text-xs sm:text-sm leading-relaxed`}>{item.value}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className={`flex items-center justify-between pt-4 sm:pt-6 border-t-2 ${panel.totalBorderCls} gap-2 mt-4`}>
+                  <span className="font-black text-gray-900 dark:text-white text-xs sm:text-sm flex-1 leading-relaxed">{panel.totalLabel}</span>
+                  <span className={`font-black ${panel.totalValueCls} text-base sm:text-xl ml-2 sm:ml-4 flex-shrink-0 leading-relaxed`}>{panel.totalValue}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="bg-gradient-to-r from-orange-100 to-amber-100 dark:from-orange-900/20 dark:to-amber-900/20 border-2 border-orange-300 dark:border-orange-700 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-lg">
+            <p className="text-2xl sm:text-3xl font-black text-orange-700 dark:text-orange-300 mb-2 leading-relaxed">Rs 2.3 Lakhs Revenue Gap</p>
+            <p className="text-gray-700 dark:text-gray-300 text-sm sm:text-lg leading-relaxed">between one seller using the right <strong>inventory management tool</strong> and one seller using a spreadsheet and mental notes. The tool costs Rs 1,999 per month.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ FREE PLAN ══ */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8 sm:mb-10">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white leading-relaxed">
+              Start Preventing Stockouts Free
+            </h2>
+          </div>
+
+          <div className="bg-white dark:bg-gray-900 border-2 border-orange-200 dark:border-orange-800 rounded-2xl sm:rounded-3xl p-7 sm:p-10 shadow-xl transition-all hover:shadow-2xl">
+            <div className="flex items-center gap-3 mb-4 sm:mb-6">
+              <span className="text-2xl sm:text-3xl font-black text-orange-600 dark:text-orange-400 leading-relaxed">Rs 0</span>
+              <span className="text-gray-500 dark:text-gray-400 text-base sm:text-lg leading-relaxed">/ Forever — No credit card required</span>
+            </div>
+            <p className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-4 sm:mb-6 leading-relaxed">Free Plan Includes:</p>
+            <div className="grid sm:grid-cols-2 gap-2.5 sm:gap-3 mb-6 sm:mb-8">
               {[
-                "Connect up to 5 products for real-time velocity tracking",
-                "Basic stockout prediction dates",
-                "Standard email reorder alerts",
-                "Single marketplace view (Amazon India or Flipkart)",
-                "Daily stock status updates",
-                "Historical inventory reports (last 30 days)",
-              ].map((feature, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">{feature}</span>
+                "10 SKUs tracked with full predictions",
+                "Stockout alert tool with 14-day warnings",
+                "Festive demand forecasting included",
+                "Competitor stock monitoring — 3 competitors",
+                "WhatsApp alerts for critical SKUs",
+                "Inventory management analysis tool access",
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-2 sm:gap-3">
+                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+                  <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm leading-relaxed">{item}</span>
                 </div>
               ))}
             </div>
+            <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-xl sm:rounded-2xl p-4 sm:p-5 mb-6 sm:mb-8 shadow-sm">
+              <p className="text-xs sm:text-sm font-bold text-orange-700 dark:text-orange-400 mb-1.5 sm:mb-2 leading-relaxed">Upgrade to unlock:</p>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Unlimited SKUs, multi-supplier lead time planning, full inventory tracker software, 12-month demand history, and the complete AI inventory management tool with agency-level multi-account access.</p>
+            </div>
+            <Button onClick={handleGetStarted} size="lg" className="w-full bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white font-bold py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group">
+              Prevent Stockouts Free — No Card Required
+              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+            </Button>
           </div>
-
-          <div className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 mb-10 text-left shadow-sm">
-            <p className="text-sm text-gray-600 dark:text-gray-400 flex items-start gap-2 leading-relaxed">
-              <Zap className="w-4 h-4 text-orange-500 flex-shrink-0 mt-0.5" />
-              <span><strong className="text-gray-900 dark:text-white">Upgrade teaser:</strong> Paid plans unlock unlimited products, WhatsApp alerts, competitor stock monitoring, Indian festive multipliers, multi-platform unified view, and advanced AI reorder quantity suggestions.</span>
-            </p>
-          </div>
-
-          <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold px-12 py-6 text-lg rounded-full shadow-2xl transition-all group">
-             Prevent Your First Stockout Free
-            <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-          </Button>
         </div>
       </section>
 
-      {/* ── SECTION 8: ICP CTA ───────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-gradient-to-br from-red-600 via-orange-500 to-red-600">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-4xl lg:text-5xl font-black mb-6 text-white leading-relaxed">Your Rankings Are Too Valuable<br />To Lose To a Stockout</h2>
-          <p className="text-xl text-white/90 mb-12 leading-relaxed">Join 12,000+ sellers who protect their Amazon India and Flipkart businesses with AI stockout prediction.</p>
-
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {[
-              { label: "New Sellers", desc: "The free plan protects your core SKUs while you scale. No risk, no cost, just data.", cta: "Start Free Now →" },
-              { label: "Growing Sellers", desc: "Managing 10+ SKUs? Automate everything with the Growth Plan and never check a spreadsheet again.", cta: "Try Growth Plan →" },
-              { label: "Agencies & Brands", desc: "Managing multiple client accounts? Unified dashboard, white-label alerts, and bulk reorder planning.", cta: "Book Demo →" },
-            ].map((card, i) => (
-              <div key={i} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-left transition-all hover:bg-white/15 h-full flex flex-col">
-                <p className="font-bold text-white mb-2 leading-relaxed">{card.label}</p>
-                <p className="text-white/80 text-sm mb-4 leading-relaxed flex-grow">{card.desc}</p>
-                {card.cta === "Try Growth Plan →" ? (
-                  <Link href="/pricing" className="text-white font-semibold hover:underline transition-colors">{card.cta}</Link>
-                ) : card.cta === "Book Demo →" ? (
-                  <Link href="/about/contact-us" className="text-white font-semibold hover:underline transition-colors">{card.cta}</Link>
-                ) : (
-                  <Link href="/login" className="text-white font-semibold hover:underline transition-colors">{card.cta}</Link>
-                )}
+      {/* ══ ICP CTAs ══ */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-white dark:bg-gray-950">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white leading-relaxed">Your Rankings Are Too Valuable to Lose to a Stockout.</h2>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+            <div className="bg-white dark:bg-gray-900 border-2 border-orange-200 dark:border-orange-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-xl hover:shadow-2xl transition-all flex flex-col h-full">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg flex-shrink-0">
+                <Target className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
               </div>
-            ))}
-          </div>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1 leading-relaxed">For Solo Sellers</h3>
+              <p className="text-xs font-semibold text-orange-600 dark:text-orange-400 mb-2 sm:mb-3 leading-relaxed">Free Plan</p>
+              <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm leading-relaxed mb-6 flex-grow">One seller, 8 to 50 SKUs on Amazon India and Flipkart. Never miss a festive window again. The free inventory management tool covers 10 SKUs with full prediction and WhatsApp alerts.</p>
+              <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white font-bold rounded-full text-sm py-5 transition-all">Start Free — No Card Needed</Button>
+            </div>
 
-          <Button onClick={handleGetStarted} size="lg" className="bg-white hover:bg-gray-100 text-red-700 font-bold px-12 py-6 text-lg rounded-full shadow-2xl transition-all group">
-             Prevent Stockouts Free
-            <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-          </Button>
-          <p className="text-white/80 mt-6 text-sm leading-relaxed">✓ 2-minute setup  ✓ No credit card required  ✓ Cancel anytime</p>
+            <div className="bg-gradient-to-br from-orange-600 to-red-600 border-2 border-orange-500 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-2xl transition-all relative overflow-hidden flex flex-col h-full group hover:scale-[1.02]">
+              <div className="absolute top-3 sm:top-4 right-3 sm:right-4 bg-yellow-400 text-yellow-900 text-[10px] sm:text-xs font-bold px-2 sm:px-3 py-1 rounded-full shadow-md z-10">Most Popular</div>
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg flex-shrink-0">
+                <TrendingUp className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-1 leading-relaxed">For Growing Sellers</h3>
+              <p className="text-xs font-semibold text-orange-100 mb-2 sm:mb-3 leading-relaxed">Growth Plan</p>
+              <p className="text-white/80 text-xs sm:text-sm leading-relaxed mb-6 flex-grow">Scaling past Rs 5 lakh per month on Indian marketplaces. Every stockout now costs serious money. Get the full AI inventory management tool with unlimited SKUs and festive demand intelligence.</p>
+              <Link href="/pricing" className="w-full bg-white hover:bg-gray-100 text-orange-700 font-bold rounded-full text-sm inline-block text-center py-2.5 px-4 transition-all">Try Growth Plan</Link>
+            </div>
+
+            <div className="bg-white dark:bg-gray-900 border-2 border-amber-200 dark:border-amber-800 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-xl hover:shadow-2xl transition-all sm:col-span-2 lg:col-span-1 flex flex-col h-full">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-orange-500 to-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg flex-shrink-0">
+                <Briefcase className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+              </div>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1 leading-relaxed">For D2C Brands and Agencies</h3>
+              <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 mb-2 sm:mb-3 leading-relaxed">Strategic Demo</p>
+              <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm leading-relaxed mb-6 flex-grow">Multiple brands, dozens of SKUs, critical festive windows. Full portfolio inventory intelligence, white-label reporting, and API access for agency-level management.</p>
+              <Link href="/solutions/ecommerce-agencies" className="w-full border-2 border-orange-600 text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-bold rounded-full text-sm inline-block text-center py-2 px-4 transition-all">Book a Demo</Link>
+            </div>
+          </div>
+          <p className="text-center text-gray-500 dark:text-gray-400 mt-6 sm:mt-8 text-xs sm:text-sm leading-relaxed">No credit card required &nbsp;·&nbsp; Setup in 2 minutes &nbsp;·&nbsp; Cancel anytime</p>
         </div>
       </section>
 
-      {/* ── SECTION 9: FAQ ───────────────────────────────────────────────────── */}
-      <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
+      {/* ══ FAQ ══ */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-4xl lg:text-5xl font-black mb-4 text-center text-gray-900 dark:text-white leading-relaxed">Inventory Management FAQs</h2>
-          <p className="text-center text-gray-500 mb-12 text-lg leading-relaxed">About Preventing Stockouts on Amazon & Flipkart India</p>
-          <div className="space-y-4">
-            {faqs.map((faq) => (
-              <div key={faq.id} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-red-300 transition-all shadow-sm">
-                <button onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)} className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                  <span className="font-bold text-gray-900 dark:text-white pr-4 leading-relaxed">{faq.q}</span>
-                  {expandedFaq === faq.id ? <ChevronDown className="w-5 h-5 text-red-500 flex-shrink-0" /> : <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />}
-                </button>
-                {expandedFaq === faq.id && (
-                  <div className="px-6 pb-6 bg-gray-50 dark:bg-gray-700/30">
-                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{faq.a}</p>
-                  </div>
-                )}
-              </div>
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-3 sm:mb-4 text-gray-900 dark:text-white leading-relaxed">
+              Inventory Management <span className="bg-gradient-to-r from-orange-600 to-red-500 bg-clip-text text-transparent">FAQs</span>
+            </h2>
+          </div>
+          <div className="space-y-3 sm:space-y-4">
+            {faqs.map((faq, i) => (
+              <FAQItem key={i} q={faq.q} a={faq.a} index={i} openFaq={openFaq} toggleFaq={toggleFaq} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── STICKY MOBILE CTA ────────────────────────────────────────────────── */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-red-300 dark:border-red-700 p-4 shadow-2xl z-40" style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom, 0px))" }}>
-        <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold py-4 rounded-full shadow-xl transition-all">
-           Prevent Stockouts Free
+      {/* ══ FINAL CTA ══ */}
+      <section className="py-12 sm:py-16 lg:py-20 px-4 bg-gradient-to-br from-orange-600 via-red-500 to-orange-700 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
+        <div className="relative max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black mb-4 sm:mb-6 text-white leading-relaxed">
+            Never Run Out of Stock Again.
+            <br />
+            <span className="text-orange-100">Know for Sure.</span>
+          </h2>
+          <p className="text-base sm:text-lg lg:text-xl text-white/90 mb-6 sm:mb-8 leading-relaxed">
+            India's most powerful inventory management tool for Amazon India and Flipkart — free to start.
+          </p>
+          <Button onClick={handleGetStarted} size="lg" className="bg-white hover:bg-gray-100 text-orange-700 font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl group transition-all">
+            Prevent Stockouts Free
+            <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+          </Button>
+          <p className="text-white/80 mt-4 sm:mt-6 text-xs sm:text-sm leading-relaxed">No credit card required &nbsp;·&nbsp; Setup in 2 minutes &nbsp;·&nbsp; Cancel anytime</p>
+        </div>
+      </section>
+
+      {/* STICKY MOBILE CTA */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-orange-300 dark:border-orange-700 p-3 sm:p-4 shadow-2xl z-40" style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}>
+        <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white font-bold py-3.5 sm:py-4 rounded-full shadow-xl text-sm sm:text-base transition-all">
+          Prevent Stockouts Free
         </Button>
       </div>
 
-      {/* Spacer so sticky CTA doesn't cover footer content */}
-      <div className="lg:hidden h-20" />
+      <div className="lg:hidden h-16 sm:h-20" />
     </div>
   );
 }

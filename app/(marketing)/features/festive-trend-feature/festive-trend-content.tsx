@@ -72,20 +72,15 @@ export default function FestiveTrendFeaturePage() {
             <div className="space-y-8">
               <div className="flex flex-wrap items-center gap-3">
                 <div className="inline-flex items-center gap-2 bg-orange-100 border border-orange-300 rounded-full px-4 py-2">
-                  <Flame className="w-4 h-4 text-orange-600" />
-                  <span className="text-sm font-medium text-orange-700">Feature Spotlight</span>
-                </div>
-                <div className="inline-flex items-center gap-2 bg-amber-100 dark:bg-amber-900/30 border border-amber-400 dark:border-amber-600 rounded-full px-4 py-2 animate-pulse">
-                  <Clock className="w-4 h-4 text-amber-700 dark:text-amber-400" />
-                  <span className="text-sm font-bold text-amber-800 dark:text-amber-300">Coming Soon 2026</span>
+                  <h1 className="text-sm font-medium text-orange-700">Festive Deal Forecasting Tool for Amazon Flipkart Sellers</h1>
                 </div>
               </div>
 
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
+              <div className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
                 Festive Trend Intelligence
                 <br />
                 <span className="bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600 bg-clip-text text-transparent">Sell Before the Season Peaks</span>
-              </h1>
+              </div>
 
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
                 India's first festive deal forecasting tool for Amazon & Flipkart sellers predicting demand spikes for Diwali, Holi, Eid, and every major Indian festive season,{" "}
@@ -332,9 +327,14 @@ export default function FestiveTrendFeaturePage() {
               Join Waitlist
               <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Link href="/signup" className="bg-orange-700 hover:bg-orange-800 text-white font-bold px-12 py-5 rounded-full border-2 border-orange-400 shadow-xl text-lg transition-all inline-flex items-center justify-center">
-              Try Core Features Free →
-            </Link>
+            <Button
+                  onClick={() => router.push("/signup")}
+                  size="lg"
+                  variant="outline"
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-5 text-lg rounded-full transition-all"
+                >
+                  Start Free →
+                </Button>
           </div>
           <p className="text-white/80 mt-8 text-sm leading-relaxed">✓ Early access for waitlist members &nbsp;·&nbsp; ✓ Native Amazon & Flipkart support</p>
         </div>

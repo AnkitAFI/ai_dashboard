@@ -508,16 +508,16 @@ export default function AllFeaturesPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600" />
                 </span>
-                <span className="text-xs sm:text-sm font-medium text-orange-700">Built for Indian Sellers 🇮🇳</span>
+                <h1 className="text-xs sm:text-sm font-medium text-orange-700">All In One Seller Tool India</h1>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
+              <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
                 The Only All-in-One
                 <br />
                 <span className="bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 bg-clip-text text-transparent">
                   Seller Tool Built for India
                 </span>
-              </h1>
+              </div>
 
               <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
                 Stop juggling 5 different dashboards to run your Amazon or Flipkart business. Insydz combines competitor tracking, review intelligence, keyword ranking, AI pricing, and WhatsApp alerts

@@ -277,9 +277,9 @@ export default function SolutionsPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left */}
             <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 bg-orange-100 border border-orange-300 rounded-full px-4 py-2">
-                <span className="text-sm font-medium text-orange-700">India's AI Ecommerce Analytics Software </span>
-              </div> 
+              <h1 className="inline-flex items-center gap-2 bg-orange-100 border border-orange-300 rounded-full px-4 py-2">
+                <span className="text-sm font-medium text-orange-700"> Ecommerce analytics platform</span>
+              </h1> 
 
               <h2 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
                 The Ecommerce Analytics Platform Built for 

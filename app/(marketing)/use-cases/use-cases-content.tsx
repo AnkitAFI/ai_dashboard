@@ -165,10 +165,10 @@ const UseCasesPage = () => {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600" />
                 </span>
-                <span className="text-xs sm:text-sm font-medium text-orange-700">Ecommerce Seller Analytics Software </span>
+                <h1 className="text-xs sm:text-sm font-medium text-orange-700">Ecommerce Seller Analytics Software </h1>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
+              <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
                 How Sellers Use Insydz
                 <br />
                 <span className="bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 bg-clip-text text-transparent">
@@ -176,7 +176,7 @@ const UseCasesPage = () => {
                 </span>
                 <br />
                 Decisions.
-              </h1>
+              </div>
 
               <p className="text-base sm:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
                 India's most trusted <strong>ecommerce seller analytics software</strong> built around how sellers actually think. From tracking competitor prices to preventing festive season stockouts, Insydz solves real, everyday marketplace problems.
@@ -370,7 +370,7 @@ const UseCasesPage = () => {
 
           <div className="text-center">
             <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group">
-              Start Free & Explore
+              Start a Free Trial
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>

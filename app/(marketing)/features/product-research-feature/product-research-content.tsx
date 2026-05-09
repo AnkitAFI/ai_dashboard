@@ -45,25 +45,27 @@ export default function ProductResearchFeaturePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 bg-indigo-100 border border-indigo-300 rounded-full px-4 py-2">
-                <Target className="w-4 h-4 text-indigo-600" />
-                <span className="text-sm font-medium text-indigo-700">Feature Spotlight</span>
+                <h1 className="text-sm font-medium text-indigo-700">Product Research Software</h1>
               </div>
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
+              <div className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
                 AI Product Research
                 <br />
                 <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 bg-clip-text text-transparent">Find Winners</span>
                 <br />
                 Before Competitors Do
-              </h1>
+              </div>
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
                 AI discovers high-demand, low-competition products with real profit potential.
                 <span className="text-indigo-700 font-semibold"> Stop guessing. Start selling products that actually make money.</span>
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/signup" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold px-12 py-5 text-lg rounded-full shadow-2xl hover:shadow-indigo-500/50 transition-all inline-flex items-center justify-center group">
-                  Discover Products Free
-                  <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                <Button
+                  onClick={() => router.push("/signup")}
+                  size="lg"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-5 text-lg rounded-full transition-all"
+                >
+                  Start Free →
+                </Button>
                 <Button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} size="lg" variant="outline" className="border-2 border-indigo-600 text-indigo-700 dark:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 font-semibold px-8 py-5 text-lg rounded-full transition-all">
                   See How It Works →
                 </Button>

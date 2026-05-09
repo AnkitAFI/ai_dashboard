@@ -120,25 +120,28 @@ export default function WhatsAppAlertsFeaturePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 bg-green-100 border border-green-300 rounded-full px-4 py-2">
-                <Bell className="w-4 h-4 text-green-600" />
-                <span className="text-sm font-medium text-green-700">Feature Spotlight • NEW</span>
+                <h1 className="text-sm font-medium text-green-700">Amazon Seller WhatsApp Notification Tool</h1>
               </div>
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
+              <div className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
                 WhatsApp Alerts
                 <br />
                 <span className="bg-gradient-to-r from-green-600 via-emerald-600 to-green-700 bg-clip-text text-transparent">Get Notified</span>
                 <br />
                 Where You Actually Look
-              </h1>
+              </div>
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
                 India's only Amazon seller WhatsApp notification tool delivers instant price alerts, Buy Box warnings, stockout signals, and bad review flags straight to the app you check 50 times a day.
                 <span className="text-green-700 font-semibold"> Because you check WhatsApp 50× a day not your email.</span>
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                 <Link href="/signup" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-12 py-5 text-lg rounded-full shadow-2xl transition-all inline-flex items-center justify-center group">
-                  Enable WhatsApp Alerts Free
-                  <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                <Button
+                  onClick={() => router.push("/signup")}
+                  size="lg"
+                  variant="outline"
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-5 text-lg rounded-full transition-all"
+                >
+                  Start Free →
+                </Button>
                 <Button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} size="lg" variant="outline" className="border-2 border-green-600 text-green-700 dark:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 font-semibold px-8 py-5 text-lg rounded-full transition-all">
                   See How It Works →
                 </Button>

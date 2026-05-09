@@ -15,6 +15,7 @@ import {
   LayoutGrid, Flame, Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Users } from "lucide-react";
 
 export const dynamic = "force-static";
 
@@ -46,16 +47,15 @@ export default function AIRecommendationsFeaturePage() {
           <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="space-y-5 sm:space-y-6 md:space-y-8">
               <div className="inline-flex items-center gap-2 bg-pink-100 border border-pink-300 rounded-full px-3 sm:px-4 py-1.5 sm:py-2">
-                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-pink-600" />
-                <span className="text-xs sm:text-sm font-medium text-pink-700">Feature Spotlight</span>
+                <h1 className="text-xs sm:text-sm font-medium text-pink-700">AI Recommendation Software</h1>
               </div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
+              <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
                 AI Recommendations
                 <br />
                 <span className="bg-gradient-to-r from-pink-600 via-rose-600 to-pink-700 bg-clip-text text-transparent">Get Smart Actions,</span>
                 <br />
                 <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl">Not Just Data</span>
-              </h1>
+              </div>
               <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
                 AI analyzes your products and tells you exactly what to do next.
                 <span className="text-pink-700 font-semibold"> Pricing, keywords, inventory, listing optimization all personalized to your business.</span>

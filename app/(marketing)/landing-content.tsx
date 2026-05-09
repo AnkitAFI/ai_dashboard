@@ -44,9 +44,9 @@ export default function LandingContent() {
             {/* Left Content */}
             <div className="flex flex-col space-y-6 text-left mt-4 lg:mt-0">
               {/* Pill */}
-              <div className="inline-flex w-max items-center px-4 py-2 rounded-full border border-purple-200 bg-purple-50 text-purple-700 text-sm font-semibold shadow-sm">
-                AI Ecommerce Analytical Software for Indian Sellers
-              </div>
+              <h1 className="inline-flex w-max items-center px-4 py-2 rounded-full border border-purple-200 bg-purple-50 text-purple-700 text-sm font-semibold shadow-sm">
+                Ecommerce Analytics Software
+              </h1>
 
               {/* Platforms */}
               <div className="flex items-center space-x-3 text-sm text-gray-500 font-medium">
@@ -56,12 +56,12 @@ export default function LandingContent() {
               </div>
 
               {/* Heading */}
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight text-gray-900 dark:text-white">
+              <div className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight text-gray-900 dark:text-white">
                 <span className="text-6xl block mb-2 text-gray-900">Stop Guessing.</span>
                 <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text leading-tight text-transparent block mb-2">Make Selling</span>
                 <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block mb-2">Decisions</span>
                 <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block">Better & Faster</span>
-              </h1>
+              </div>
 
               {/* Paragraphs */}
               <div className="space-y-4 text-gray-600 dark:text-gray-400 text-lg max-w-xl">
