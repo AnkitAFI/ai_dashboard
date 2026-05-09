@@ -836,7 +836,7 @@ export default function AmazonVineProgramContent() {
               The <strong>amazon vine program india</strong> is an invitation-only programme where Amazon's most trusted reviewers — Vine Voices — receive free products and write honest, verified reviews. Amazon India launched it for brand-registered sellers in 2023. It is the only legitimate pre-launch review channel available to Indian sellers today.
             </p>
 
-            <div className="box box-teal" style={{ background:"#F0FDFA", borderLeft:"4px solid #0ABFA4", borderRadius:8, padding:20, margin:"24px 0" }} className="dark:bg-teal-900/20">
+            <div className="box box-teal dark:bg-teal-900/20" style={{ background:"#F0FDFA", borderLeft:"4px solid #0ABFA4", borderRadius:8, padding:20, margin:"24px 0" }}>
               <div style={{ fontSize:11, fontWeight:700, color:"#0D9488", textTransform:"uppercase", letterSpacing:1, marginBottom:8, fontFamily:"'Sora',sans-serif", display:"flex", alignItems:"center", gap:6 }}>
                 💡 THE CORE PROBLEM VINE SOLVES
               </div>
@@ -951,7 +951,7 @@ export default function AmazonVineProgramContent() {
                 { n:4, t:"Confirm the ₹19,200 Fee and Submit", d:"Amazon shows the fee before you confirm. Check listing quality one final time — this is non-refundable. Vine Voices start claiming within 24-72 hours of submission." },
                 { n:5, t:"Monitor the Vine Dashboard Weekly", d:"Reviews typically appear 2-6 weeks after a Vine Voice claims the unit. Track keyword rankings in Insydz alongside review count to measure actual search impact." },
               ].map(s => (
-                <div className="step" key={s.n} style={{ border:"1px solid #E2E8F0", borderRadius:12, padding:24, marginBottom:16, background:"white", display:"flex", gap:16, alignItems:"flex-start" }} className="dark:bg-gray-800/30 dark:border-gray-700">
+                <div className="step dark:bg-gray-800/30 dark:border-gray-700" key={s.n} style={{ border:"1px solid #E2E8F0", borderRadius:12, padding:24, marginBottom:16, background:"white", display:"flex", gap:16, alignItems:"flex-start" }}>
                   <div style={{ background:"#F4500A", color:"white", width:32, height:32, borderRadius:16, display:"flex", alignItems:"center", justifyContent:"center", fontWeight:800, fontSize:14, flexShrink:0, marginTop:2 }}>{s.n}</div>
                   <div className="step-body" style={{ marginLeft:0 }}>
                     <h4 style={{ fontSize:17, fontWeight:800, color:"#0A0F1A", marginBottom:8, fontFamily:"'Sora',sans-serif", border:"none", padding:0 }} className="dark:text-white">{s.t}</h4>

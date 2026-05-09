@@ -15,7 +15,6 @@ import {
   LayoutGrid, Flame, Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Users } from "lucide-react";
 
 export const dynamic = "force-static";
 
