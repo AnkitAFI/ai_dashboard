@@ -69,16 +69,16 @@ export default function TrackCompetitorPricesContent() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600" />
                 </span>
-                <span className="text-xs sm:text-sm font-medium text-blue-700">India's #1 Competitor Price Tracking Tool</span>
+                <h1 className="text-xs sm:text-sm font-medium text-blue-700">Competitor Price Tracking Tool</h1>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
+              <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
                 <span className="block mb-2">
                   <span className="font-medium">Track </span>
                   <span className="font-black">Competitor Prices</span>
                   <span className="font-medium"> in Real Time</span>
                 </span>
-              </h1>
+              </div>
 
               <p className="text-base sm:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
                 India's most powerful <strong>competitor price tracking tool</strong> for Amazon and Flipkart sellers. Monitor rival pricing automatically and react instantly

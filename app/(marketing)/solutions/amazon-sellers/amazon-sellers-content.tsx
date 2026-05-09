@@ -162,10 +162,10 @@ export default function AmazonSellersContent() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600"></span>
                 </span>
-                <span className="text-sm font-medium text-orange-700">India's #1 Amazon Seller Analytics Tool 🇮🇳</span>
+                <h1 className="text-sm font-medium text-orange-700">Amazon Seller Analytics Tool</h1>
               </div>
 
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
+              <div className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
                 Stop Guessing on Amazon.
                 <br />
                 <span className="bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 bg-clip-text text-transparent">
@@ -173,7 +173,7 @@ export default function AmazonSellersContent() {
                 </span>
                 <br />
                 with Real-Time Seller Intelligence.
-              </h1>
+              </div>
 
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
                 Insydz is India's most comprehensive <strong>Amazon seller analytics tool</strong> built for sellers doing ₹5L to ₹50L a month. Track competitors, decode reviews, and fix keyword rankings

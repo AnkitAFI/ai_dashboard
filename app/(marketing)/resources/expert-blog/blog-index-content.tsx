@@ -86,6 +86,16 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "15",
+    title: "Amazon Vine Program for Indian Sellers in 2026: Is It Worth the Cost?",
+    excerpt: "Learn the flat fee per ASIN, enrollment criteria, and strategic benefits of Amazon Vine India in 2026. Get 30 verified reviews and boost your launch velocity.",
+    category: "Seller Tools & Strategy",
+    readTime: "11 min read",
+    image: "/manual_vs_automated.png",
+    route: "/resources/expert-blog/amazon-vine-program-india-2026",
+    popular: true
+  },
+  {
     id: "14",
     title: "Insydz vs SellerApp: Which Amazon Seller Tool Actually Works for the Indian Market?",
     excerpt: "A practitioner's comparison for ₹5L–50L/month Indian sellers — INR pricing vs USD billing, Flipkart-native vs Amazon-only. Read before you commit.",

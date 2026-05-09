@@ -13,6 +13,7 @@ import {
   Package, LayoutGrid, Flame
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Clock } from "lucide-react";
 
 export const dynamic = "force-static";
 
@@ -43,25 +44,27 @@ export default function KeywordRankTrackingFeaturePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 bg-blue-100 border border-blue-300 rounded-full px-4 py-2">
-                <Search className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium text-blue-700">Feature Spotlight</span>
+                <h1 className="text-sm font-medium text-blue-700">Keyword Rank Tracking Tool</h1>
               </div>
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
+              <div className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
                 Keyword & Rank Tracking
                 <br />
                 <span className="bg-gradient-to-r from-blue-600 via-cyan-600 to-blue-700 bg-clip-text text-transparent">Know Where You Rank</span>
                 <br />
                 for Every Keyword
-              </h1>
+              </div>
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
                 Track rankings for target keywords across Amazon & Flipkart automatically.
                 <span className="text-blue-700 font-semibold"> See what's working, find opportunities, and optimize for maximum visibility.</span>
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/signup" className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-bold px-12 py-5 text-lg rounded-full shadow-2xl hover:shadow-blue-500/50 transition-all inline-flex items-center justify-center group">
-                  Start Tracking Rankings Free
-                  <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                <Button
+                  onClick={() => router.push("/signup")}
+                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-5 text-lg rounded-full transition-all"
+                >
+                  Start Free →
+                </Button>
                 <Button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} size="lg" variant="outline" className="border-2 border-blue-600 text-blue-700 dark:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 font-semibold px-8 py-5 text-lg rounded-full transition-all">
                   See How It Works →
                 </Button>

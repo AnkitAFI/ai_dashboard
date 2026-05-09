@@ -173,11 +173,10 @@ export default function CompetitorPriceTrackingFeaturePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 bg-orange-100 border border-orange-300 rounded-full px-4 py-2">
-                <span className="text-lg">🇮🇳</span>
-                <span className="text-sm font-medium text-orange-700">Built for Indian Sellers</span>
+                <h1 className="text-sm font-medium text-orange-700">Competitor Price Tracking Software</h1>
               </div>
 
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
+              <div className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
                 Stop Losing the Buy Box.
                 <br />
                 <span className="bg-gradient-to-r from-orange-500 via-red-500 to-orange-600 bg-clip-text text-transparent">
@@ -185,7 +184,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
                 </span>
                 <br />
                 Before They Cost You Sales.
-              </h1>
+              </div>
 
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
                 Insydz <strong>competitor price tracking software</strong> monitors every competing

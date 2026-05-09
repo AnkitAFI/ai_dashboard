@@ -42,16 +42,16 @@ export default function BrandManagersPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-600"></span>
                 </span>
-                <span className="text-sm font-medium text-purple-700">Brand Monitoring Tool</span>
+                <h1 className="text-sm font-medium text-purple-700">Brand Monitoring Tool</h1>
               </div>
 
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
+              <div className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
                 Make Confident
                 <br />
                 <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 bg-clip-text text-transparent">Data-Backed</span>
                 <br />
                 Brand Decisions.
-              </h1>
+              </div>
 
               <p className="text-lg sm:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
                 Insydz is India's most powerful <strong>brand monitoring tool</strong> for brand managers on Amazon and Flipkart
