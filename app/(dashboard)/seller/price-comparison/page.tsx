@@ -17,7 +17,7 @@
 //   Tooltip, ResponsiveContainer, ReferenceLine,
 // } from "recharts";
 
-// const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+// const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 // function fmt(val: number | null | undefined, currency = "USD"): string {
 //   if (val == null) return "—";
@@ -521,7 +521,7 @@ import {
   Tooltip, ResponsiveContainer, ReferenceLine,
 } from "recharts";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 function fmt(val: number | null | undefined, currency = "USD"): string {
   if (val == null) return "—";

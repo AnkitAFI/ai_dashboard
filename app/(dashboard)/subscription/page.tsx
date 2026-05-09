@@ -11,7 +11,7 @@ import { Check, X, Crown, Zap, Building2, Loader2, AlertCircle, Sparkles, Infini
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import PaymentModal, { type PaymentPlan } from "@/components/payment/payment-modal";
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 interface SubscriptionPlan {
   id: string;
@@ -44,7 +44,6 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "Basic dashboard access",
       "25 product tracking",
       "Top 5 products filter",
-      "5 AI chat messages/month",
       "5 notifications",
       "Weekly reports",
     ],

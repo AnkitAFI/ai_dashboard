@@ -94,7 +94,7 @@ const EXPLORER_SECTIONS: NavSection[] = [
     icon: Activity,
     items: [
       { href: "/explorer/whatsapp-alerts", label: "WhatsApp Alerts", icon: MessageSquare, badge: "NEW" },
-      { href: "/explorer/festive-trends", label: "Festive Trends", icon: Star, badge: "NEW", disabled: true },
+      { href: "/explorer/festive-trends", label: "Festive Trends", icon: Star, badge: "NEW",},
       { href: "/explorer/my-watchlist", label: "My Watchlist", icon: Bookmark, badge: "NEW" },
     ],
   },

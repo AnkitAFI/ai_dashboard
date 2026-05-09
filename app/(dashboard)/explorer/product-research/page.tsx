@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useRouter } from "next/navigation";
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 function ProductResearchContent() {
   const { user } = useAuth();

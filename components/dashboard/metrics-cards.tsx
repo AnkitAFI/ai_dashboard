@@ -44,7 +44,7 @@ function MetricCard({ title, value, icon, color, isLoading }: MetricCardProps) {
 }
 
 export default function MetricsCards({ selectedSource }: { selectedSource: string }) {
-  const BASE_URL = "https://api.insydz.com";
+  const BASE_URL = "http://localhost:8000";
   const { filters } = useFilters(); // ✅ Get filters from context
 
   const [flipkartStats, setFlipkartStats] = useState<any>(null);
