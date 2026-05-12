@@ -12,7 +12,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import ANALYZE_AMAZON_REVIEWS_1 from "public/analyze_amazon_reviews_1.png";
+import ANALYZE_AMAZON_REVIEWS_1 from "public/01_hero_review_intelligence_banner.png";
+import INDIA_RTO_REALITY from "public/02_india_rto_reality_3markets.png";
+import FIVE_STEP_LOOP from "public/03_5step_ai_review_loop.png";
+import WEEKLY_MODEL from "public/04_know_your_position_weekly_model.png";
+import TOOL_COMPARISON from "public/05_top_products_ranked_tool_comparison.png";
 import ANALYZE_AMAZON_REVIEWS_2 from "public/analyze_amazon_reviews_2.png";
 
 export const dynamic = "force-static";
@@ -143,6 +147,51 @@ export default function AmazonReviewAnalysisContent() {
   const handleMenuItemClick = (item: MenuItemWithBadge) => { if (item.route) { router.push(item.route); setActiveDropdown(null); setIsMenuOpen(false); } };
   const toggleMobileMenu = (name: string) => setMobileActiveMenu(p => p === name ? null : name);
 
+  const ReviewDashboardUI = () => (
+    <div className="dash-mockup">
+      <div className="dash-header">
+        <div className="dash-title">Insydz — Review Intelligence Dashboard</div>
+        <div className="dash-badges">
+          <div className="dash-badge badge-live">
+            <span className="live-dot" /> Live
+          </div>
+          <div className="dash-badge badge-plat">Amazon.in</div>
+          <div className="dash-badge badge-plat">Flipkart</div>
+        </div>
+      </div>
+
+      <div className="dash-grid">
+        <div className="dash-card">
+          <div className="card-label">REVIEWS ANALYZED</div>
+          <div className="card-val">1,247</div>
+          <div className="card-sub text-up">+184 this week</div>
+        </div>
+        <div className="dash-card">
+          <div className="card-label">SENTIMENT SCORE</div>
+          <div className="card-val">4.3</div>
+          <div className="card-sub text-up">↑ 0.2 vs last month</div>
+        </div>
+        <div className="dash-card">
+          <div className="card-label">THEME CLUSTERS</div>
+          <div className="card-val">14</div>
+          <div className="card-sub text-warn">3 RTO-driving</div>
+        </div>
+        <div className="dash-card">
+          <div className="card-label">COMPETITOR GAPS</div>
+          <div className="card-val text-insydz">7</div>
+          <div className="card-sub">Listings to outperform</div>
+        </div>
+      </div>
+
+      <div className="dash-alert">
+        <div className="alert-content">
+          <strong>Sentiment Alert:</strong> "Battery drains in 4 hours" mentioned in 18 reviews this week — recommend updating bullet 2 with realistic playback claim. Estimated rating recovery: <span className="text-up">+0.3</span>
+        </div>
+        <button onClick={() => router.push("/login")} className="alert-btn">Apply Fix</button>
+      </div>
+    </div>
+  );
+
   const DesktopDropdown = ({ label, menuKey, accent = "purple" }: { label: string; menuKey: keyof NavigationMenu; accent?: "purple" | "orange" }) => {
     const items = navigationMenu[menuKey];
     const isActive = activeDropdown === label;
@@ -221,6 +270,33 @@ export default function AmazonReviewAnalysisContent() {
         .dark .p-red { background: #450a0a; color: #f87171; }
         .dark .p-green { background: #064e3b; color: #34d399; }
         .dark .p-orange { background: #431407; color: #fb923c; }
+
+        .dash-mockup { background: #0b0f1a; border-radius: 20px; padding: 32px; margin: 40px 0; border: 1px solid rgba(255,255,255,0.05); color: white; font-family: 'Sora', sans-serif; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+        .dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+        .dash-title { font-size: 18px; font-weight: 700; }
+        .dash-badges { display: flex; gap: 8px; }
+        .dash-badge { font-size: 11px; font-weight: 700; padding: 4px 12px; rounded-full; border-radius: 20px; }
+        .badge-live { background: rgba(34,197,94,0.1); color: #22c55e; border: 1px solid rgba(34,197,94,0.2); display: flex; align-items: center; gap: 6px; }
+        .live-dot { w: 6px; h: 6px; width: 6px; height: 6px; background: #22c55e; border-radius: 50%; animation: pulse 2s infinite; }
+        .badge-plat { background: rgba(255,255,255,0.05); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); }
+        
+        .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        @media (max-width: 768px) { .dash-grid { grid-template-columns: repeat(2, 1fr); } }
+        .dash-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 12px; }
+        .card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 12px; font-weight: 600; }
+        .card-val { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+        .card-sub { font-size: 12px; color: #64748b; font-weight: 500; }
+        .text-up { color: #22c55e; }
+        .text-warn { color: #f97316; }
+        .text-insydz { color: #8b5cf6; }
+
+        .dash-alert { background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); border-radius: 12px; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+        @media (max-width: 640px) { .dash-alert { flex-direction: column; align-items: flex-start; } }
+        .alert-content { font-size: 14px; line-height: 1.6; color: #cbd5e1; }
+        .alert-btn { background: #8b5cf6; color: white; font-weight: 700; padding: 10px 20px; border-radius: 8px; font-size: 13px; white-space: nowrap; transition: all 0.2s; }
+        .alert-btn:hover { background: #7c3aed; transform: translateY(-1px); }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
       `}</style>
 
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
@@ -378,6 +454,11 @@ export default function AmazonReviewAnalysisContent() {
           </p>
 
           <h2 id="critical">Why is Review Analysis Critical for Indian D2C Sellers?</h2>
+          <ArticleImg 
+            src={INDIA_RTO_REALITY}
+            alt="India D2C RTO Reality - 3 Markets 1 Tool" 
+            caption="Real outcome from review intelligence: a Mumbai D2C brand cut RTO from 28% to 19% and rating climbed 0.3 points — all triggered by a single review cluster fix." 
+          />
           <h3 className="text-lg font-bold text-slate-900 dark:text-white mt-8 mb-4" style={{ fontFamily: "'Sora', sans-serif" }}>India's Returns Reality Hides in the Reviews</h3>
           <p>
             Indian e-commerce runs on a brutal RTO economics: return-to-origin rates of 25–35% are common for COD-heavy categories, and during festive quarters COD returns can hit 58%. A ₹10 crore D2C brand at 25% RTO loses roughly ₹3.25 crore a year to failed deliveries and returns — and a third of those returns are seeded by complaints already buried in your existing reviews.
@@ -425,10 +506,12 @@ export default function AmazonReviewAnalysisContent() {
           </p>
           
           <ArticleImg 
-            src={ANALYZE_AMAZON_REVIEWS_2}
+            src={FIVE_STEP_LOOP}
             alt="How AI Amazon Review Analysis Work" 
             caption="The 5-step automated review intelligence loop from ASIN connection to WhatsApp-delivered sentiment alerts and AI listing recommendations." 
           />
+
+          <ReviewDashboardUI />
 
           <div className="space-y-6 my-10">
             {[
@@ -489,20 +572,20 @@ export default function AmazonReviewAnalysisContent() {
               <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
                 <tr>
                   <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white text-xs font-semibold tracking-wide uppercase px-4 py-3">
-      INSIGHT TYPE
-    </th>
-    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white text-xs font-semibold tracking-wide uppercase px-4 py-3">
-      EXAMPLE (INDIA)
-    </th>
-    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white text-xs font-semibold tracking-wide uppercase px-4 py-3">
-      VOLUME
-    </th>
-    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white text-xs font-semibold tracking-wide uppercase px-4 py-3">
-      REVENUE IMPACT
-    </th>
-    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white text-xs font-semibold tracking-wide uppercase px-4 py-3">
-      PRIORITY
-    </th>
+                    INSIGHT TYPE
+                  </th>
+                  <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white text-xs font-semibold tracking-wide uppercase px-4 py-3">
+                    EXAMPLE (INDIA)
+                  </th>
+                  <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white text-xs font-semibold tracking-wide uppercase px-4 py-3">
+                    VOLUME
+                  </th>
+                  <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white text-xs font-semibold tracking-wide uppercase px-4 py-3">
+                    REVENUE IMPACT
+                  </th>
+                  <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white text-xs font-semibold tracking-wide uppercase px-4 py-3">
+                    PRIORITY
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -640,6 +723,12 @@ export default function AmazonReviewAnalysisContent() {
             The Indian D2C founders who get the most out of review analysis don't run it as a quarterly project. They build a daily–weekly–monthly rhythm that compounds insights into listing edits without requiring a dedicated analyst.
           </p>
 
+          <ArticleImg 
+            src={WEEKLY_MODEL}
+            alt="Weekly Execution Model for Indian D2C Sellers" 
+            caption="The Daily-Weekly-Monthly rhythm for high-growth Indian D2C brands: turning review signals into listing updates and SKU roadmaps." 
+          />
+
           <div className="space-y-6 my-10">
             <div className="p-6 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900/50 shadow-sm">
               <div className="flex gap-4 mb-4">
@@ -738,6 +827,12 @@ export default function AmazonReviewAnalysisContent() {
           <p className="mb-8">
             Helium 10's Review Insights and Jungle Scout's review tools were built around Amazon.com sentiment patterns and English-only review text. Adapting them for India means your sentiment scores get distorted by Hinglish reviews flagged as neutral, your Flipkart reviews are simply absent, and your RTO-driving complaints — which look very different from the US returns profile — get clustered under the wrong themes.
           </p>
+
+          <ArticleImg 
+            src={TOOL_COMPARISON}
+            alt="Amazon Review Analysis Tool Comparison 2026" 
+            caption="2026 tool comparison for Indian D2C sellers — only Insydz provides native Flipkart coverage, Hinglish NLP, and WhatsApp alerts in one platform." 
+          />
 
           <div className="tbl-wrap">
             <table className="dt">

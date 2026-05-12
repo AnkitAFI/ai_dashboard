@@ -52,7 +52,7 @@ const schemaReviewAnalysis = {
       "@id": "https://insydz.com/resources/expert-blog/amazon-review-analysis-guide-india#article",
       "headline": "Analyze Amazon Reviews Tool: The Complete Guide for Indian Sellers (2026)",
       "description": "How to Analyze 1000+ Amazon Reviews in Minutes: India Seller Guide for 2026",
-      "image": "https://insydz.com/amazon-review-analysis-hero.png",
+      "image": "https://insydz.com/01_hero_review_intelligence_banner.png",
       "author": { "@type": "Person", "name": "Vikrant Singh", "url": "https://insydz.com/author/vikrant-singh" },
       "publisher": { "@id": "https://insydz.com/#organization" },
       "datePublished": "2026-04-22",

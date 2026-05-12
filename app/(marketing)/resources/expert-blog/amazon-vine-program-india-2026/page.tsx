@@ -52,7 +52,7 @@ const schemaVineProgram = {
       "@id": "https://insydz.com/resources/expert-blog/amazon-vine-program-india-2026#article",
       "headline": "Amazon Vine Program for Indian Sellers in 2026: Is It Worth the Cost and How to Get Started",
       "description": "Amazon Vine reviews help new products gain traction. Here's how to enroll and maximize results in 2026.",
-      "image": "https://insydz.com/assets/images/blog/amazon-vine-program-india-2026.png",
+      "image": "https://insydz.com/Amazon-Vine-India-image1.png",
       "author": { "@type": "Organization", "name": "Insydz Research Team", "url": "https://insydz.com" },
       "publisher": { "@id": "https://insydz.com/#organization" },
       "datePublished": "2026-05-08",

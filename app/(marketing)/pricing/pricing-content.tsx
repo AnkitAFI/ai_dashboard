@@ -29,8 +29,6 @@ import { useRouter } from "next/navigation";
 
 
 interface SubscriptionPlan {
-
-interface SubscriptionPlan {
   id: string;
   name: string;
   price?: number;

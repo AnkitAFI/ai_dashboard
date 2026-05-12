@@ -247,7 +247,7 @@ export default function AnalyzeCustomerReviewsPage() {
 
           <div className="text-center mt-8 sm:mt-12">
             <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-purple-500/50 transition-all group">
-              Analyse Your First Product Free
+              Start a Free Trial
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -339,11 +339,11 @@ export default function AnalyzeCustomerReviewsPage() {
           {/* Comparison table */}
           <div className="overflow-x-auto rounded-2xl border-2 border-purple-200 dark:border-purple-800 shadow-xl">
             <table className="w-full text-sm min-w-[480px]">
-              <thead>
+              <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
                 <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-                  <th className="text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Capability</th>
-                  <th className="px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left leading-relaxed">Manual Reading</th>
-                  <th className="px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left leading-relaxed">Insydz</th>
+                  <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Capability</th>
+                  <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left leading-relaxed">Manual Reading</th>
+                  <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left leading-relaxed">Insydz</th>
                 </tr>
               </thead>
               <tbody>
@@ -480,10 +480,12 @@ export default function AnalyzeCustomerReviewsPage() {
               <p className="text-xs sm:text-sm font-bold text-purple-700 dark:text-purple-400 mb-1.5 sm:mb-2 leading-relaxed">Upgrade to unlock:</p>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Unlimited product analysis, competitor ASIN review analysis, continuous monitoring, WhatsApp alerts for new complaint patterns, full 90-day review trend history, and access to the <strong>competitor price tracking tool</strong> — all in one Growth Plan.</p>
             </div>
-            <Button onClick={handleGetStarted} size="lg" className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-purple-500/50 transition-all group">
-              Analyse Reviews Free — No Card Needed
+            <div className="flex justify-center">
+            <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-purple-500/50 transition-all group">
+              Start a Free Trial
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
+          </div>
           </div>
         </div>
       </section>
@@ -502,7 +504,7 @@ export default function AnalyzeCustomerReviewsPage() {
               <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1 leading-relaxed">For New Sellers</h3>
               <p className="text-xs font-semibold text-purple-600 dark:text-purple-400 mb-2 sm:mb-3 leading-relaxed">Free Plan</p>
               <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm leading-relaxed mb-6 flex-grow">Before you list, analyse competitor reviews to understand what buyers already complain about. Build those fixes into your product from day one. Launch with proven differentiation — not guesswork.</p>
-              <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-full text-sm py-5 transition-all">Start Free — No Card Needed</Button>
+              <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-full text-sm py-5 transition-all">Start a Free Trial</Button>
             </div>
 
             <div className="bg-gradient-to-br from-purple-600 to-pink-700 border-2 border-purple-500 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center shadow-2xl transition-all relative overflow-hidden flex flex-col h-full group hover:scale-[1.02]">

@@ -14,6 +14,8 @@ import {
   Presentation, LayoutGrid, Lightbulb, Facebook, Instagram, Linkedin, Twitter
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FAQAccordion, TrustBadges, FadeInStyles } from "@/components/solutions";
+import type { FAQItem } from "@/components/solutions";
 
 export const dynamic = "force-static";
 
@@ -601,7 +603,7 @@ export default function FlipkartSellersPage() {
                 a: "Insydz addresses four core Flipkart seller problems: slow response to competitor price drops, undetected review quality deterioration, invisible keyword ranking slippage, and time wasted on manual market tracking. All four are automated — delivered to your WhatsApp as clear, actionable alerts."
               },
             ].map((faq, i) => (
-              <FAQItem key={i} question={faq.q} answer={faq.a} />
+              <FAQAccordion key={i} faqs={[{ q: faq.q, a: faq.a }]} accentColor="blue" variant="default" />
             ))}
           </div>
         </div>
@@ -673,77 +675,12 @@ export default function FlipkartSellersPage() {
               </Button>
             </div>
           </div>
-          <p className="text-black/80 mt-6 text-sm flex items-center justify-center gap-2 flex-wrap">
-          <span>✓ No credit card required</span>
-          <span className="text-black/40">·</span>
-          <span>✓ Setup in 2 minutes</span>
-          <span className="text-black/40">·</span>
-          <span>✓ Cancel anytime</span>
-        </p>
+          <TrustBadges theme="dark" />
         </div>
       </section>
       {/* Footer */}
-      
- 
-      <style>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-        .delay-1000 {
-          animation-delay: 1s;
-        }
-      `}</style>
+
+      <FadeInStyles />
     </div>
   );
 }
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// FAQ Accordion Component
-function FAQItem({ question, answer }: { question: string; answer: string }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="border-2 border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-6 py-5 text-left bg-white dark:bg-gray-900 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-colors"
-      >
-        <span className="font-semibold text-gray-900 dark:text-white pr-4">{question}</span>
-        <ChevronDown className={`w-5 h-5 text-blue-600 flex-shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
-      </button>
-      {open && (
-        <div className="px-6 pb-5 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
-          <p className="text-gray-700 dark:text-gray-300 leading-relaxed pt-4">{answer}</p>
-        </div>
-      )}
-    </div>
-  );
-}
-

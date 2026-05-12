@@ -32,7 +32,7 @@ export default function LandingContent() {
       {/* Hero Section */}
       <section
         id="Home"
-        className="relative min-h-screen flex items-center justify-center pt-32 lg:pt-40 pb-16 lg:pb-24 bg-gradient-to-br from-purple-50/40 via-white to-pink-50/20 dark:from-gray-900 dark:via-background dark:to-gray-900 overflow-hidden"
+        className="relative min-h-screen flex items-center justify-center pt-28 lg:pt-32 pb-12 lg:pb-16 bg-gradient-to-br from-purple-50/40 via-white to-pink-50/20 dark:from-gray-900 dark:via-background dark:to-gray-900 overflow-hidden"
       >
         {/* Abstract Background Shapes */}
         <div className="absolute top-1/4 left-0 w-96 h-96 bg-purple-300/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
@@ -210,7 +210,7 @@ export default function LandingContent() {
       </section>
 
       {/* Built For Section */}
-      <section id="" className="py-24 bg-gradient-to-br from-white-50 to-white-50 dark:from-gray-800 dark:to-gray-900">
+      <section id="" className="py-16 bg-gradient-to-br from-white-50 to-white-50 dark:from-gray-800 dark:to-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
@@ -307,7 +307,7 @@ export default function LandingContent() {
       </section>
 
       {/* Compare Section */}
-      <section id="Compare" className="py-24 bg-gradient-to-br from-pink-50 to-pink-50 dark:from-gray-800 dark:to-gray-900">
+      <section id="Compare" className="py-16 bg-gradient-to-br from-pink-50 to-pink-50 dark:from-gray-800 dark:to-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -451,7 +451,7 @@ export default function LandingContent() {
       </section>
 
       {/* Resources Section */}
-      <section id="Resources" className="py-24 bg-white dark:bg-gray-900">
+      <section id="Resources" className="py-16 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -531,7 +531,7 @@ export default function LandingContent() {
       </section>
 
       {/* About Section */}
-      <section id="About" className="py-24 bg-background dark:bg-gray-800/50">
+      <section id="About" className="py-16 bg-background dark:bg-gray-800/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
@@ -569,30 +569,234 @@ export default function LandingContent() {
               <p className="text-gray-600 dark:text-gray-300">
                 Beyond just tracking, we provide AI recommendations that help you act on data before your competitors do.
               </p>
-            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+      {/* Trust Indicators Section - Full Width */}
+      <section className="py-16 bg-[#FDF4FF] dark:bg-gray-900/50 w-full overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-6 leading-tight tracking-tight">
+              Building India's Most Trusted <span className="text-[#B53BA3]">Seller Analytics Platform</span>
+            </h2>
+            <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-medium">
+              Supporting data driven decisions for Indian sellers across every marketplace
+            </p>
           </div>
 
-          <div className="mt-20 bg-gradient-to-r from-purple-900 to-pink-900 rounded-3xl p-12 text-center text-white relative overflow-hidden shadow-2xl">
-            {/* Background elements */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32"></div>
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24"></div>
-            
-            <h3 className="text-3xl font-bold mb-6 relative z-10">Ready to dominate the marketplace?</h3>
-            <p className="text-xl text-purple-100 mb-10 max-w-2xl mx-auto relative z-10">
-              Join thousands of Indian sellers who use Insydz to grow their revenue and profit every single day.
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
+            {[
+              { title: "Early", subtitle: "Product Stage" },
+              { title: "India", subtitle: "Primary Market" },
+              { title: "Multiple", subtitle: "Marketplaces Supported" },
+              { title: "Growing", subtitle: "Seller Adoption" }
+            ].map((stat, index) => (
+              <div 
+                key={index} 
+                className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-sm border border-gray-50 dark:border-gray-800 flex flex-col items-center justify-center text-center transition-all hover:shadow-md"
+              >
+                <div className="text-4xl md:text-5xl font-extrabold text-[#B53BA3] mb-4">
+                  {stat.title}
+                </div>
+                <div className="text-gray-500 dark:text-gray-400 font-medium text-sm md:text-base">
+                  {stat.subtitle}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Subscription Plans Section */}
+      <section id="Pricing" className="py-16 bg-white dark:bg-gray-900 relative">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-6xl font-black mb-6">
+              <span className="bg-gradient-to-r from-[#8B5CF6] via-[#D946EF] to-[#EC4899] bg-clip-text text-transparent">Subscription Plans</span>
+            </h2>
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">
+              Subscription Plans That Grow With Your Business
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 max-w-2xl mx-auto text-lg">
+              Transform raw marketplace data into actionable insights. Cancel anytime.
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4 relative z-10">
-              <Link href="/login"
-                className="bg-white text-purple-900 font-bold px-10 py-4 rounded-full shadow-xl hover:bg-purple-50 transition-colors"
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch">
+            {/* Free Plan */}
+            <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] p-10 border border-gray-100 dark:border-gray-700 shadow-[0_20px_50px_rgba(0,0,0,0.04)] flex flex-col items-center text-center transition-all hover:scale-[1.02] hover:border-purple-500 dark:hover:border-purple-400">
+              <div className="w-16 h-16 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center mb-8">
+                <Zap className="w-8 h-8 text-blue-500" />
+              </div>
+              <h4 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Free</h4>
+              <div className="flex items-baseline mb-3">
+                <span className="text-3xl font-black text-gray-900 dark:text-white">₹0</span>
+                <span className="text-gray-400 text-base ml-1">/month</span>
+              </div>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-10 font-medium">Perfect for getting started</p>
+              <ul className="space-y-4 mb-6 text-left w-full">
+                {[
+                  "Basic dashboard access",
+                  "Up to 25 products tracking",
+                  "Top 5 products filter",
+                  "5 AI chat messages/month",
+                  "5 notifications",
+                  "Weekly reports"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start text-gray-600 dark:text-gray-300 text-sm font-medium">
+                    <Check className="w-4 h-4 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <button 
+                onClick={handleGetStarted}
+                className="w-full py-4 border-2 border-gray-100 dark:border-gray-700 rounded-2xl font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all mt-auto"
               >
-                Create Free Account
-              </Link>
-              <Link href="/about/our-vision"
-                className="border-2 border-white/30 hover:border-white text-white font-bold px-10 py-4 rounded-full transition-colors"
-              >
-                Our Mission
-              </Link>
+                Get Started Free
+              </button>
             </div>
+
+            {/* Basic Plan */}
+            <div className="relative bg-white dark:bg-gray-800 rounded-[2.5rem] p-10 border-2 border-[#D946EF] shadow-[0_30px_60px_rgba(217,70,239,0.15)] flex flex-col items-center text-center transform lg:scale-105 z-10 transition-all hover:border-[#8B5CF6] hover:shadow-[0_40px_80px_rgba(217,70,239,0.2)]">
+              <div className="absolute -top-5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] text-white text-sm font-bold px-6 py-2 rounded-full shadow-lg">
+                Most Popular
+              </div>
+              <div className="w-16 h-16 bg-purple-50 dark:bg-purple-900/20 rounded-xl flex items-center justify-center mb-8">
+                <Crown className="w-8 h-8 text-purple-500" />
+              </div>
+              <h4 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Basic</h4>
+              <div className="flex items-baseline mb-2">
+                <span className="text-3xl font-black text-gray-900 dark:text-white">₹1,999</span>
+                <span className="ml-2 text-xs font-medium">
+                  <span className="text-gray-400 line-through">₹3,999</span>
+                  <span className="text-gray-400">/month</span>
+                </span>
+              </div>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-10 font-medium">Ideal for growing businesses</p>
+              <ul className="space-y-4 mb-12 text-left w-full">
+                {[
+                  "All Free plan features",
+                  "Up to 500 products tracking",
+                  "Top 20 products filter",
+                  "20 AI chat messages/month",
+                  "15 notifications",
+                  "AI Chart Summaries",
+                  "Basic competitor alerts",
+                  "Daily reports",
+                  "Email support"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start text-gray-600 dark:text-gray-300 text-sm font-medium">
+                    <Check className="w-4 h-4 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <button 
+                onClick={() => handlePlanSelect('basic')}
+                className="w-full py-4 bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] rounded-xl font-bold text-white shadow-xl shadow-purple-500/20 hover:opacity-90 transition-opacity mt-auto"
+              >
+                Upgrade to Basic
+              </button>
+            </div>
+
+            {/* Premium Plan */}
+            <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] p-10 border border-gray-100 dark:border-gray-700 shadow-[0_20px_50px_rgba(0,0,0,0.04)] flex flex-col items-center text-center transition-all hover:scale-[1.02] hover:border-purple-500 dark:hover:border-purple-400">
+              <div className="w-16 h-16 bg-yellow-50 dark:bg-yellow-900/20 rounded-2xl flex items-center justify-center mb-8">
+                <Crown className="w-8 h-8 text-yellow-500" />
+              </div>
+              <h4 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Premium</h4>
+              <div className="flex items-baseline mb-2">
+                <span className="text-3xl font-black text-gray-900 dark:text-white">₹2,999</span>
+                <span className="ml-2 text-xs font-medium">
+                  <span className="text-gray-400 line-through">₹7,999</span>
+                  <span className="text-gray-400">/month</span>
+                </span>
+              </div>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-10 font-medium">For serious professionals</p>
+              <ul className="space-y-4 mb-12 text-left w-full">
+                {[
+                  "All Basic plan features",
+                  "Unlimited product tracking",
+                  "Top 100 products filter",
+                  "Unlimited AI chat",
+                  "Unlimited notifications",
+                  "Advanced AI chatbot",
+                  "Real-time data & alerts",
+                  "Priority support",
+                  "Advanced analytics"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start text-gray-600 dark:text-gray-300 text-sm font-medium">
+                    <Check className="w-4 h-4 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <button 
+                onClick={() => handlePlanSelect('premium')}
+                className="w-full py-4 bg-gradient-to-r from-orange-400 to-orange-600 rounded-xl font-bold text-white shadow-xl shadow-orange-500/20 hover:opacity-90 transition-opacity mt-auto"
+              >
+                Upgrade to Premium
+              </button>
+            </div>
+
+            {/* Enterprise Plan */}
+            <div className="bg-white dark:bg-gray-800 rounded-[2.5rem] p-10 border border-gray-100 dark:border-gray-700 shadow-[0_20px_50px_rgba(0,0,0,0.04)] flex flex-col items-center text-center transition-all hover:scale-[1.02] hover:border-purple-500 dark:hover:border-purple-400">
+              <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center mb-8">
+                <Building2 className="w-8 h-8 text-indigo-500" />
+              </div>
+              <h4 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">Enterprise</h4>
+              <div className="mb-4">
+                <span className="text-xl font-black bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] bg-clip-text text-transparent">Custom Pricing</span>
+              </div>
+              <p className="text-gray-500 dark:text-gray-400 text-sm mb-10 font-medium">Tailored for SMBs & agencies</p>
+              <ul className="space-y-4 mb-12 text-left w-full">
+                {[
+                  "All Premium plan features",
+                  "White-label options",
+                  "24/7 premium support"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start text-gray-600 dark:text-gray-300 text-sm font-medium">
+                    <Check className="w-4 h-4 text-green-500 mr-3 mt-0.5 flex-shrink-0" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+              <button 
+                onClick={handleGetStarted}
+                className="w-full py-4 border-2 border-gray-100 dark:border-gray-700 rounded-xl font-bold text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all mt-auto"
+              >
+                Contact Sales
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA Section - Full Width */}
+      <section className="py-16 bg-gradient-to-r from-purple-900 to-pink-900 relative overflow-hidden shadow-2xl">
+        {/* Background elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -mr-48 -mt-48 blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-72 h-72 bg-white/5 rounded-full -ml-36 -mb-36 blur-2xl"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white relative z-10">
+          <h3 className="text-4xl md:text-5xl font-black mb-8">Ready to dominate the marketplace?</h3>
+          <p className="text-xl md:text-2xl text-purple-100 mb-12 max-w-3xl mx-auto font-medium">
+            Join thousands of Indian sellers who use Insydz to grow their revenue and profit every single day.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-6">
+            <Link href="/login"
+              className="bg-white text-purple-900 font-bold px-12 py-5 rounded-full shadow-2xl hover:bg-purple-50 transition-all hover:scale-105"
+            >
+              Create Free Account
+            </Link>
+            <Link href="/about/our-vision"
+              className="border-2 border-white/40 hover:border-white text-white font-bold px-12 py-5 rounded-full transition-all hover:bg-white/5"
+            >
+              Our Mission
+            </Link>
           </div>
         </div>
       </section>

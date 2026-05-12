@@ -62,7 +62,7 @@ export default function AIRecommendationsFeaturePage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full">
                 <Button onClick={handleGetStarted} size="lg" className="w-full sm:w-auto bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white font-bold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base md:text-lg rounded-full shadow-2xl hover:shadow-pink-500/50 transition-all group">
-                  Get AI Recommendations Free
+                  Start Free
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })} size="lg" variant="outline" className="w-full sm:w-auto border-2 border-pink-600 text-pink-700 dark:text-pink-500 hover:bg-pink-50 dark:hover:bg-pink-900/20 font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base md:text-lg rounded-full transition-all">
@@ -276,12 +276,12 @@ export default function AIRecommendationsFeaturePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button onClick={handleGetStarted} size="lg" className="bg-white hover:bg-gray-100 text-pink-700 font-bold px-12 py-5 rounded-full shadow-2xl text-lg transition-all hover:scale-105 group">
-              Start Free
+              Start a Free Trial
               <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Link href="/pricing" className="bg-pink-700 hover:bg-pink-800 text-white font-bold px-12 py-5 rounded-full border-2 border-pink-400 shadow-xl text-lg transition-all inline-flex items-center justify-center">
+            {/* <Link href="/pricing" className="bg-pink-700 hover:bg-pink-800 text-white font-bold px-12 py-5 rounded-full border-2 border-pink-400 shadow-xl text-lg transition-all inline-flex items-center justify-center">
               View Pricing →
-            </Link>
+            </Link> */}
           </div>
           <p className="text-white/80 mt-8 text-sm leading-relaxed">✓ No credit card required &nbsp;·&nbsp; ✓ Setup in 2 minutes &nbsp;·&nbsp; ✓ Cancel anytime</p>
         </div>

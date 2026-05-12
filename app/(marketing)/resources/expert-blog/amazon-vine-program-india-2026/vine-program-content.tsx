@@ -56,7 +56,7 @@ const schemaVineProgram = {
       "@id": "https://insydz.com/resources/expert-blog/amazon-vine-program-india-2026#article",
       "headline": "Amazon Vine Program India 2026: Everything You Need to Know",
       "description": "A comprehensive guide to the Amazon Vine Program in India for 2026. Replicating the success of top sellers with authentic reviews.",
-      "image": "https://insydz.com/assets/images/blog/amazon-vine-program-india-2026.png",
+      "image": "https://insydz.com/Amazon-Vine-India-image1.png",
       "author": { "@type": "Person", "name": "Vikrant Singh", "url": "https://insydz.com/author/vikrant-singh" },
       "publisher": { "@id": "https://insydz.com/#organization" },
       "datePublished": "2026-05-08",
@@ -140,7 +140,8 @@ const TOC = [
   { id:"how-to-enrol", label:"How to Enrol Step-by-Step" },
   { id:"mistakes",     label:"Common Mistakes to Avoid" },
   { id:"compare",      label:"Vine vs Other Review Options" },
-  { id:"real-cost",    label:"Real Cost of Not Using Vine" },
+  { id:"real-cost",    label:"Measuring Rank Impact" },
+  { id:"real-results", label:"D2C Brand Case Study" },
   { id:"after-vine",   label:"Post-Review Strategy" },
   { id:"faq",          label:"Frequently Asked Questions" },
 ];
@@ -743,7 +744,7 @@ export default function AmazonVineProgramContent() {
 
         {/* Hero image placeholder - replication asked for same UI */}
         <img
-          src="/manual-vs-automated-hero.png" 
+          src="/Amazon-Vine-India-image1.png" 
           alt="Amazon Vine Program India 2026 guide for sellers"
           style={{ width:"100%", borderRadius:16, marginBottom:10, display:"block" }}
         />
@@ -860,6 +861,11 @@ export default function AmazonVineProgramContent() {
             <p>
               The fee is <strong>₹19,200 per ASIN</strong> — fixed, regardless of how many Vine reviews you receive, up to a maximum of 30. It charges to your seller account at submission.
             </p>
+            <img
+              src="/Amazon-Vine-India-Cover-Image.png" 
+              alt="Amazon Vine India Cost Breakdown"
+              style={{ width:"100%", borderRadius:12, margin:"20px 0", display:"block" }}
+            />
 
             {/* S3: Vine Math Table */}
             <h2 id="full-compare">When Does the Vine Math Work for Indian Sellers?</h2>
@@ -943,6 +949,11 @@ export default function AmazonVineProgramContent() {
               ))}
             </div>
 
+            <img
+              src="/Amazon Vine India enrolment.png" 
+              alt="Amazon Vine India Enrolment Dashboard"
+              style={{ width:"100%", borderRadius:12, margin:"24px 0", display:"block" }}
+            />
             <div className="steps" style={{ margin:"32px 0" }}>
               {[
                 { n:1, t:"Go to Advertising > Vine in Seller Central", d:"Log into sellercentral.amazon.in. Click Advertising in the top nav, select Vine. You land on the Vine ASIN management dashboard." },
@@ -1114,6 +1125,17 @@ export default function AmazonVineProgramContent() {
                 </tbody>
               </table>
             </div>
+
+            <h2 id="real-results">What Real Results Did an Indian D2C Brand Get From Amazon Vine?</h2>
+            
+            <img
+              src="/Amazon-Vine-India-2026_image7.png" 
+              alt="Amazon Vine Case Study Results"
+              style={{ width:"100%", borderRadius:16, margin:"24px 0 12px", display:"block" }}
+            />
+            <p className="hero-img-cap" style={{ marginBottom:48 }}>
+              Insydz rank tracking before and after Amazon Vine — a Jaipur D2C kitchenware seller moved from #34 to #11 on "steel tiffin box" after 14 Vine reviews over 6 weeks.
+            </p>
 
             <h3>The Before / Action / After</h3>
             
