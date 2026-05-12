@@ -70,7 +70,7 @@ function portFile(filename) {
   );
 
   // Vite env -> Next.js env
-  content = content.replace(/import\.meta\.env\.VITE_API_URL/g, '(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")');
+  content = content.replace(/import\.meta\.env\.VITE_API_URL/g, '(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")');
   content = content.replace(/import\.meta\.env\.VITE_ADMIN_EMAIL/g, '(process.env.NEXT_PUBLIC_ADMIN_EMAIL || "")');
   content = content.replace(/import\.meta\.env\.VITE_(\w+)/g, 'process.env.NEXT_PUBLIC_$1');
   content = content.replace(/import\.meta\.env\.(\w+)/g, 'process.env.$1');

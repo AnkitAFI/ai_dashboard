@@ -92,7 +92,7 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
 }
 
 export default function ChartsGrid({ selectedSource }: { selectedSource: string }) {
-  const BASE_URL = "http://localhost:8000";
+  const BASE_URL = "https://api.insydz.com";
   const { filters } = useFilters();
   const { canAccessFeature } = useSubscriptionLimits();
   const router = useRouter();

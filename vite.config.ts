@@ -59,7 +59,7 @@ export default defineConfig({
 
       "/api": {
 
-        target: "http://localhost:8000",
+        target: "https://api.insydz.com",
 
         changeOrigin: true,
 

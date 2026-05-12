@@ -11,13 +11,13 @@ function walk(dir) {
       
       // Replace hardcoded localhost URLs with env-based ones
       // Use a regex that catches variations
-      c = c.replace(/["']http:\/\/localhost:8000(\/api)?["']/g, '(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")$1');
+      c = c.replace(/["']http:\/\/localhost:8000(\/api)?["']/g, '(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")$1');
       
       // Specifically handle template strings
-      c = c.replace(/`http:\/\/localhost:8000([^`]*)`/g, '`${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")}$1`');
+      c = c.replace(/`http:\/\/localhost:8000([^`]*)`/g, '`${(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")}$1`');
       
       // Clean up potential double process.env if already partially handled
-      c = c.replace(/\(process\.env\.NEXT_PUBLIC_API_URL \|\| "http:\/\/localhost:8000"\) \|\| "http:\/\/localhost:8000"/g, '(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")');
+      c = c.replace(/\(process\.env\.NEXT_PUBLIC_API_URL \|\| "http:\/\/localhost:8000"\) \|\| "http:\/\/localhost:8000"/g, '(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")');
 
       if (c !== original) {
         fs.writeFileSync(p, c);

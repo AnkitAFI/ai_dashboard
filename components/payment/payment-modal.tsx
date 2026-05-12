@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = "https://api.insydz.com";
 
 export interface PaymentPlan {
   id: string;

@@ -10,11 +10,11 @@ function walk(dir) {
       let original = c;
       
       // Fix the corrupted ones from the previous run
-      // pattern: (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")/api
-      c = c.replace(/\(process\.env\.NEXT_PUBLIC_API_URL \|\| "http:\/\/localhost:8000"\)\/api/g, '(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api")');
+      // pattern: (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")/api
+      c = c.replace(/\(process\.env\.NEXT_PUBLIC_API_URL \|\| "http:\/\/localhost:8000"\)\/api/g, '(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com/api")');
       
       // Clean up redundant double wraps
-      c = c.replace(/process\.env\.NEXT_PUBLIC_API_URL \|\| \(process\.env\.NEXT_PUBLIC_API_URL \|\| "http:\/\/localhost:8000"\)/g, '(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")');
+      c = c.replace(/process\.env\.NEXT_PUBLIC_API_URL \|\| \(process\.env\.NEXT_PUBLIC_API_URL \|\| "http:\/\/localhost:8000"\)/g, '(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")');
 
       if (c !== original) {
         fs.writeFileSync(p, c);

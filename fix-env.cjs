@@ -10,7 +10,7 @@ function walk(dir) {
       let original = c;
 
       // Replace Vite env vars with Next.js env vars
-      c = c.replace(/import\.meta\.env\.VITE_API_URL/g, 'process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"');
+      c = c.replace(/import\.meta\.env\.VITE_API_URL/g, 'process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com"');
       c = c.replace(/import\.meta\.env\.VITE_ADMIN_EMAIL/g, 'process.env.NEXT_PUBLIC_ADMIN_EMAIL || ""');
       // Catch any remaining import.meta.env
       c = c.replace(/import\.meta\.env\.VITE_(\w+)/g, 'process.env.NEXT_PUBLIC_$1');
