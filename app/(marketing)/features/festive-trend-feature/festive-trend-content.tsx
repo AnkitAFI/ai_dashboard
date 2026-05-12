@@ -253,10 +253,10 @@ export default function FestiveTrendFeaturePage() {
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border-2 border-gray-200 dark:border-gray-700">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[480px]">
-                <thead>
-                  <tr className="bg-gradient-to-r from-orange-500 to-amber-500">
-                    <th className="px-6 py-5 text-left text-sm font-bold text-white uppercase tracking-wider">Situation (Without Insydz)</th>
-                    <th className="px-6 py-5 text-left text-sm font-bold text-white uppercase tracking-wider">Monthly / Seasonal Impact</th>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] px-6 py-5 text-left text-sm font-bold text-white uppercase tracking-wider">Situation (Without Insydz)</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] px-6 py-5 text-left text-sm font-bold text-white uppercase tracking-wider">Monthly / Seasonal Impact</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -323,15 +323,11 @@ export default function FestiveTrendFeaturePage() {
             Join the waitlist for Festive Trend Intelligence and win Diwali before it even starts.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white hover:bg-gray-100 text-orange-700 font-bold px-12 py-5 rounded-full shadow-2xl text-lg transition-all hover:scale-105 group">
-              Join Waitlist
-              <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </Button>
             <Button
                   onClick={() => router.push("/signup")}
                   size="lg"
                   variant="outline"
-                  className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-5 text-lg rounded-full transition-all"
+                  className="bg-white hover:bg-white text-black font-semibold px-8 py-5 text-lg rounded-full transition-all"
                 >
                   Start Free →
                 </Button>

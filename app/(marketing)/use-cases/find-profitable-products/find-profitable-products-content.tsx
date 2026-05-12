@@ -437,7 +437,7 @@ export default function FindProfitableProductsPage() {
               <div className="inline-flex items-center gap-2 bg-blue-100 border border-blue-300 rounded-full px-4 py-2 mb-6">
                 <span className="w-2 h-2 bg-blue-500 rounded-full" />
                 <h1 className="text-xs font-medium text-blue-700 tracking-widest">
-                  Product profitability analysis software
+                  Product Profitability Analysis Software
                 </h1>
               </div>
               <div className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white mb-6">
@@ -458,7 +458,7 @@ export default function FindProfitableProductsPage() {
                 size="lg"
                 className="bg-gradient-to-r from-blue-600 to-sky-500 text-white font-bold px-8 py-6 rounded-full shadow-2xl group"
               >
-                Discover Profitable Products Free <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+                Start Free <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </div>
             <OpportunityCard />
@@ -576,7 +576,7 @@ export default function FindProfitableProductsPage() {
           </div>
           <div className="text-center">
             <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-blue-600 to-sky-500 text-white font-bold px-8 py-6 rounded-full shadow-xl group">
-              Find Your First Profitable Product Free <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+              Start a Free Trial <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
         </div>
@@ -789,7 +789,7 @@ export default function FindProfitableProductsPage() {
             India's only platform that combines product profitability analysis software, real demand data, and margin intelligence built for Amazon India and Flipkart.
           </p>
           <Button onClick={handleGetStarted} size="lg" className="bg-white text-blue-700 font-bold px-12 py-6 rounded-full shadow-2xl group hover:bg-blue-50 mb-12">
-            Discover Profitable Products Free <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+            Start Free <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
           <div className="flex justify-center gap-6 flex-wrap">
             {[

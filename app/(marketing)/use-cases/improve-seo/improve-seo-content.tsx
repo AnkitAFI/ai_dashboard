@@ -786,7 +786,8 @@ export default function ImproveAmazonFlipkartSEOPage() {
             India's only platform that combines an SEO optimization tool, live keyword data, and rank tracking built for Amazon India and Flipkart sellers.
           </p>
           <Button onClick={handleGetStarted} size="lg" className="bg-white text-green-700 font-bold px-12 py-6 rounded-full shadow-2xl group hover:bg-green-50 mb-12">
-            Improve SEO Free <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+            Start a Free Trial
+            <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
           <div className="flex justify-center gap-6 flex-wrap">
             {[

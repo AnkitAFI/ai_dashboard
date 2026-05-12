@@ -54,7 +54,7 @@ const articles: Article[] = [
     excerpt: "A practitioner's comparison for ₹5L–50L/month Indian sellers — INR pricing vs USD billing, Flipkart-native vs Amazon-only. Read before you commit.",
     category: "Tool Comparison & Reviews",
     readTime: "10 min read",
-    image: "/insydz-vs-sellerapp-hero.png",
+    image: "/insydz-vs-seller-hero-guide.png",
     route: "/resources/expert-blog/insydz-vs-sellerapp-india",
     featured: true,
     popular: true

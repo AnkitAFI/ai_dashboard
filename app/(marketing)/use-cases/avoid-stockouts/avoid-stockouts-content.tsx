@@ -110,7 +110,7 @@ export default function AvoidStockoutsPage() {
                   size="lg"
                   className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white font-bold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group"
                 >
-                  Prevent Stockouts Free
+                  Start Free
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button
@@ -300,7 +300,7 @@ export default function AvoidStockoutsPage() {
 
           <div className="text-center mt-8 sm:mt-12">
             <Button onClick={handleGetStarted} size="lg" className="bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group">
-              Start Preventing Stockouts Free
+              Start a Free Trial
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -393,11 +393,11 @@ export default function AvoidStockoutsPage() {
           {/* Comparison table */}
           <div className="overflow-x-auto rounded-2xl border-2 border-orange-200 dark:border-orange-800 shadow-xl">
             <table className="w-full text-sm min-w-[480px]">
-              <thead>
+              <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
                 <tr className="bg-gradient-to-r from-orange-600 to-red-500 text-white">
-                  <th className="text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Capability</th>
-                  <th className="px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left leading-relaxed">Spreadsheet or Manual</th>
-                  <th className="px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left leading-relaxed">Insydz</th>
+                  <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Capability</th>
+                  <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left leading-relaxed">Spreadsheet or Manual</th>
+                  <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left leading-relaxed">Insydz</th>
                 </tr>
               </thead>
               <tbody>
@@ -533,10 +533,16 @@ export default function AvoidStockoutsPage() {
               <p className="text-xs sm:text-sm font-bold text-orange-700 dark:text-orange-400 mb-1.5 sm:mb-2 leading-relaxed">Upgrade to unlock:</p>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">Unlimited SKUs, multi-supplier lead time planning, full inventory tracker software, 12-month demand history, and the complete AI inventory management tool with agency-level multi-account access.</p>
             </div>
-            <Button onClick={handleGetStarted} size="lg" className="w-full bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white font-bold py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group">
-              Prevent Stockouts Free — No Card Required
-              <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <div className="flex justify-center">
+              <Button
+                onClick={handleGetStarted}
+                size="lg"
+                className="inline-flex w-auto bg-gradient-to-r from-orange-600 to-red-500 hover:from-orange-700 hover:to-red-600 text-white font-bold px-6 py-3 text-sm sm:text-base rounded-full shadow-2xl hover:shadow-orange-500/50 transition-all group"
+              >
+                Prevent Stockouts Free
+                <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
           </div>
         </div>
       </section>
@@ -612,7 +618,7 @@ export default function AvoidStockoutsPage() {
             India's most powerful inventory management tool for Amazon India and Flipkart — free to start.
           </p>
           <Button onClick={handleGetStarted} size="lg" className="bg-white hover:bg-gray-100 text-orange-700 font-bold px-8 sm:px-12 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl group transition-all">
-            Prevent Stockouts Free
+            Start Free
             <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
           <p className="text-white/80 mt-4 sm:mt-6 text-xs sm:text-sm leading-relaxed">No credit card required &nbsp;·&nbsp; Setup in 2 minutes &nbsp;·&nbsp; Cancel anytime</p>

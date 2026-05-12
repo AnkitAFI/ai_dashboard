@@ -10,6 +10,8 @@ import {
   ShoppingBag, Smartphone, Sun, Moon, ChevronDown, Lightbulb
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FAQAccordion, StickyMobileCTA } from "@/components/solutions";
+import type { FAQItem } from "@/components/solutions";
 
 export const dynamic = "force-static";
 
@@ -101,7 +103,7 @@ const roiRecovery = [
   { label: "Time saved → reinvested in growth", value: "+₹18,000" },
 ];
 
-const faqs = [
+const faqs: FAQItem[] = [
   {
     id: "faq-1",
     q: "What is the best Amazon seller analytics tool in India?",
@@ -141,7 +143,6 @@ const faqs = [
 
 export default function AmazonSellersContent() {
   const router = useRouter();
-  const [expandedFaq, setExpandedFaq] = useState<string | null>(null);
 
   const handleGetStarted = () => router.push("/signup");
 
@@ -501,27 +502,7 @@ export default function AmazonSellersContent() {
           <h2 className="text-3xl lg:text-4xl font-black text-center text-gray-900 dark:text-white mb-12 leading-relaxed">
             Frequently Asked Questions
           </h2>
-          <div className="space-y-4">
-            {faqs.map((faq) => (
-              <div key={faq.id} className="bg-gray-50 dark:bg-gray-900 border-2 border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-orange-400 transition-all shadow-sm">
-                <button
-                  onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
-                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-100 dark:hover:bg-gray-800/50 transition-colors gap-4"
-                >
-                  <span className="font-bold text-gray-900 dark:text-white text-sm sm:text-base md:text-lg leading-relaxed">{faq.q}</span>
-                  {expandedFaq === faq.id
-                    ? <ChevronDown className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                    : <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                  }
-                </button>
-                {expandedFaq === faq.id && (
-                  <div className="px-6 pb-6 bg-orange-50/30 dark:bg-orange-900/10 border-t border-gray-50 dark:border-gray-800">
-                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed pt-5 font-medium">{faq.a}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          <FAQAccordion faqs={faqs} accentColor="orange" variant="card" />
         </div>
       </section>
 
@@ -565,13 +546,12 @@ export default function AmazonSellersContent() {
       </section>
 
       {/* STICKY MOBILE CTA */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-orange-300 dark:border-orange-700 p-4 shadow-2xl z-40" style={{ paddingBottom: "calc(1rem + env(safe-area-inset-bottom, 0px))" }}>
-        <Button onClick={handleGetStarted} className="w-full bg-gradient-to-r from-orange-500 to-red-500 text-white font-black py-4 rounded-full shadow-xl text-base">
-          Start Free for Amazon Sellers
-        </Button>
-      </div>
-
-      <div className="lg:hidden h-20" />
+      <StickyMobileCTA
+        label="Start Free for Amazon Sellers"
+        href="/signup"
+        gradient="from-orange-500 to-red-500"
+        borderColor="border-orange-300 dark:border-orange-700"
+      />
     </div>
   );
 }

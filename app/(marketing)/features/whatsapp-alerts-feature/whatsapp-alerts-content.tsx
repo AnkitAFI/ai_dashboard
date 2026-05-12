@@ -319,7 +319,7 @@ export default function WhatsAppAlertsFeaturePage() {
               <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-3xl p-8 hover:border-green-400 hover:shadow-lg transition-all group shadow-sm">
                 <div className="flex items-center justify-between mb-6">
                   <div className={`w-14 h-14 bg-green-50 dark:bg-green-900/20 rounded-2xl flex items-center justify-center ${outcome.color} shadow-sm group-hover:scale-110 transition-transform`}>{outcome.icon}</div>
-                  <ThumbsUp className="w-6 h-6 text-green-500 opacity-50" />
+                  {/* <ThumbsUp className="w-6 h-6 text-green-500 opacity-50" /> */}
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 leading-relaxed">{outcome.title}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed font-medium">{outcome.detail}</p>
