@@ -198,18 +198,1036 @@ def analytics_by_category(db: Session = Depends(get_db)):
     return {"categories": categories}
 
 
+# import json
+# import re
+# import hashlib
+# import time
+# from concurrent.futures import ThreadPoolExecutor, as_completed
+# from typing import Any, Dict, List, Optional, Tuple
+# from fastapi import HTTPException, Depends
+# from fastapi.responses import StreamingResponse
+# from sqlalchemy.orm import Session
+# from sqlalchemy import text
+# from pydantic import BaseModel
+# import requests
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # SCHEMAS
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# class Message(BaseModel):
+#     role:    str   # "user" | "assistant"
+#     content: str
+ 
+# class AIQuery(BaseModel):
+#     source:         str
+#     question:       str
+#     filters:        Optional[Dict[str, Any]] = {}
+#     limit:          Optional[int]            = 100
+#     session_id:     Optional[str]            = None
+#     seller_profile: Optional[Dict]           = {}
+#     stream:         Optional[bool]           = False
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # REDIS MEMORY
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# MAX_HISTORY_TURNS = 8
+# HISTORY_TTL       = 3600   # 1 hour (up from 30 min)
+# CONTEXT_TTL       = 3600
+ 
+# def _history_key(sid: str) -> str:  return f"chat_history:{sid}"
+# def _context_key(sid: str) -> str:  return f"chat_context:{sid}"
+ 
+# def load_history(sid: str) -> List[Message]:
+#     raw = r.get(_history_key(sid))
+#     if not raw: return []
+#     try:
+#         return [Message(**m) for m in json.loads(raw)]
+#     except Exception:
+#         return []
+ 
+# def save_history(sid: str, history: List[Message]) -> None:
+#     trimmed = history[-(MAX_HISTORY_TURNS * 2):]
+#     r.setex(_history_key(sid), HISTORY_TTL, json.dumps([m.dict() for m in trimmed]))
+ 
+# def append_turn(sid: str, user_msg: str, assistant_msg: str) -> None:
+#     history = load_history(sid)
+#     history.append(Message(role="user",      content=user_msg))
+#     history.append(Message(role="assistant", content=assistant_msg))
+#     save_history(sid, history)
+ 
+# # ── Seller journey context (persists across turns) ──
+# def load_context(sid: str) -> Dict:
+#     raw = r.get(_context_key(sid))
+#     if not raw: return {}
+#     try:
+#         return json.loads(raw)
+#     except Exception:
+#         return {}
+ 
+# def save_context(sid: str, ctx: Dict) -> None:
+#     r.setex(_context_key(sid), CONTEXT_TTL, json.dumps(ctx))
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # DEEP CONTEXT EXTRACTOR
+# # Pulls product name, category, price target from raw natural language
+# # e.g. "I want to sell wireless earbuds under 2000" → structured data
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# PRODUCT_EXTRACT_PATTERNS = [
+#     r"\b(?:sell|selling|launch|start selling|list|want to sell)\s+([a-zA-Z0-9 \-]+?)(?:\s+(?:on|for|at|in|under|below|price|₹|rs)|\.|,|$)",
+#     r"\b(?:i have|i got|i make|i manufacture|i import)\s+([a-zA-Z0-9 \-]+?)(?:\s+(?:and|for|to sell|,)|\.|$)",
+#     r"\bhow (?:will|would|does|is)\s+([a-zA-Z0-9 \-]+?)\s+(?:perform|sell|do|fare)",
+#     r"\b(?:viability|potential|scope|market) (?:of|for)\s+([a-zA-Z0-9 \-]+)",
+# ]
+ 
+# PRICE_TARGET_PATTERN = re.compile(
+#     r"(?:under|below|less than|around|at|for|upto|up to)\s*(?:₹|rs\.?|inr)?\s*(\d[\d,]*)",
+#     re.IGNORECASE
+# )
+ 
+# CATEGORY_HINTS = {
+#     "phone|mobile|smartphone|earbu|headphone|charger|cable|power bank|speaker|laptop|tablet|keyboard|mouse": "electronics",
+#     "shirt|kurta|saree|dress|jeans|shoes|sandal|bag|wallet|watch|jewel|ring|necklace": "fashion",
+#     "face wash|serum|moistur|lipstick|foundation|shampoo|conditioner|oil|lotion|skincare|haircare": "beauty",
+#     "toy|game|puzzle|doll|cycle|scooter|kids|children|baby": "toys & games",
+#     "kitchen|cookware|utensil|mixer|pressure cooker|pan|knife|bottle|container": "kitchen",
+#     "book|notebook|pen|pencil|stationery|diary|planner": "stationery",
+#     "yoga mat|dumbbell|protein|supplement|gym|fitness|sport|cricket|football": "sports & fitness",
+#     "sofa|bed|chair|table|almirah|curtain|pillow|mattress|decor": "home & furniture",
+#     "biscuit|chips|snack|juice|tea|coffee|spice|oil|grocery": "food & grocery",
+# }
+ 
+# def extract_product_from_question(question: str, history: List[Message]) -> Dict:
+#     """Extract product name, inferred category, and price target from natural language."""
+#     combined = question
+#     # Also look at recent history for context
+#     for m in history[-3:]:
+#         if m.role == "user":
+#             combined = m.content + " " + combined
+ 
+#     result = {"product": None, "category": None, "price_target": None}
+ 
+#     # Extract product name
+#     for pattern in PRODUCT_EXTRACT_PATTERNS:
+#         match = re.search(pattern, question, re.IGNORECASE)
+#         if match:
+#             raw = match.group(1).strip().lower()
+#             # Filter noise
+#             if len(raw) > 2 and raw not in ("it", "this", "that", "them", "these"):
+#                 result["product"] = raw
+#                 break
+ 
+#     # Infer category from product name or full question
+#     text_lower = (result["product"] or question).lower()
+#     for keywords, cat in CATEGORY_HINTS.items():
+#         if re.search(keywords, text_lower, re.IGNORECASE):
+#             result["category"] = cat
+#             break
+ 
+#     # Extract price target
+#     price_match = PRICE_TARGET_PATTERN.search(question)
+#     if price_match:
+#         result["price_target"] = int(price_match.group(1).replace(",", ""))
+ 
+#     return result
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # CONVERSATION MODE DETECTOR
+# # research   → exploring market, asking general questions
+# # viability  → "can I sell X / will X perform / I want to sell X"
+# # decision   → comparing options, asking which is better
+# # execution  → ready to sell, asking HOW to do specific things
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# VIABILITY_PATTERN = re.compile(
+#     r"\b(can i sell|will .* sell|should i sell|is .* profitable|viability|"
+#     r"want to sell|thinking of selling|planning to sell|i sell|i have .* to sell|"
+#     r"how will .* perform|scope of|potential of|worth selling|is it good to sell)\b",
+#     re.IGNORECASE
+# )
+# DECISION_PATTERN = re.compile(
+#     r"\b(which is better|what should i choose|vs|compare|between .* and|"
+#     r"recommend|suggest|what would you pick|which one)\b",
+#     re.IGNORECASE
+# )
+# EXECUTION_PATTERN = re.compile(
+#     r"\b(how do i|how to|what should i|steps to|help me|set up|get started|"
+#     r"start selling|create listing|price my|optimize|improve my)\b",
+#     re.IGNORECASE
+# )
+ 
+# def detect_conversation_mode(question: str, history: List[Message]) -> str:
+#     q = question.lower()
+#     if VIABILITY_PATTERN.search(q): return "viability"
+#     if DECISION_PATTERN.search(q):  return "decision"
+#     if EXECUTION_PATTERN.search(q): return "execution"
+#     # Check if previous conversation established a product context
+#     if history and any(VIABILITY_PATTERN.search(m.content) for m in history[-4:] if m.role == "user"):
+#         return "deep_dive"
+#     return "research"
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # MARKET ENTRY SCORER
+# # Takes aggregated data and produces a 0-100 score on 3 dimensions
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# def compute_market_score(data: List[Dict], price_target: Optional[int] = None) -> Optional[Dict]:
+#     """Returns competition_score, demand_score, margin_score, overall."""
+#     if not data:
+#         return None
+ 
+#     total_listings  = sum(r.get("listings", 0) or 0 for r in data)
+#     total_reviews   = sum(r.get("total_reviews", 0) or 0 for r in data)
+#     avg_rating      = sum(r.get("avg_rating", 0) or 0 for r in data if r.get("avg_rating")) / max(len([r for r in data if r.get("avg_rating")]), 1)
+#     avg_sales       = sum(r.get("avg_sales", 0) or 0 for r in data if r.get("avg_sales")) / max(len([r for r in data if r.get("avg_sales")]), 1)
+#     avg_price       = sum(r.get("avg_price", 0) or 0 for r in data if r.get("avg_price")) / max(len([r for r in data if r.get("avg_price")]), 1)
+ 
+#     # Competition score: fewer listings + lower reviews = easier to enter (higher score)
+#     comp_raw = min(total_listings / 50, 1.0)   # normalize: 50 listings = saturated
+#     competition_score = round((1 - comp_raw) * 100)
+ 
+#     # Demand score: more reviews + sales = more demand (higher score)
+#     demand_raw   = min(total_reviews / 10000, 1.0)
+#     demand_score = round(demand_raw * 100)
+ 
+#     # Margin score: based on price vs likely cost assumption (rough)
+#     if price_target and avg_price > 0:
+#         fit = 1.0 if (avg_price * 0.6) <= price_target <= (avg_price * 1.4) else 0.5
+#     else:
+#         fit = 0.75
+#     # Higher avg price generally = better margin room
+#     price_score  = min(avg_price / 2000, 1.0)
+#     margin_score = round(((price_score * 0.5) + (fit * 0.5)) * 100)
+ 
+#     overall = round((competition_score * 0.35 + demand_score * 0.40 + margin_score * 0.25))
+ 
+#     return {
+#         "competition_score": competition_score,
+#         "demand_score":      demand_score,
+#         "margin_score":      margin_score,
+#         "overall_score":     overall,
+#         "avg_price":         round(avg_price),
+#         "avg_rating":        round(avg_rating, 2),
+#         "avg_sales":         round(avg_sales),
+#         "total_listings":    total_listings,
+#         "verdict":           (
+#             "Strong opportunity" if overall >= 70 else
+#             "Decent opportunity" if overall >= 50 else
+#             "Tough market"       if overall >= 35 else
+#             "Very competitive — enter carefully"
+#         )
+#     }
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # FOLLOW-UP QUESTION GENERATOR
+# # Generates 3 contextual next questions based on current mode + data
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# FOLLOWUP_BY_MODE = {
+#     "viability": [
+#         "Who are the top brands selling this?",
+#         "What price range should I target?",
+#         "What rating do I need to compete?",
+#     ],
+#     "decision": [
+#         "Which category has higher margins?",
+#         "What does the demand look like long-term?",
+#         "Which is easier to get into right now?",
+#     ],
+#     "execution": [
+#         "What listing title works best for this?",
+#         "How do I price against existing sellers?",
+#         "What's a realistic sales target for month 1?",
+#     ],
+#     "deep_dive": [
+#         "What are the biggest risks here?",
+#         "Should I focus on budget or premium segment?",
+#         "How does this perform during festive season?",
+#     ],
+#     "research": [
+#         "What's the most profitable category right now?",
+#         "Which products have the least competition?",
+#         "Where's the biggest market gap today?",
+#     ],
+# }
+ 
+# def generate_followup_questions(mode: str, intents: List[str], product: Optional[str], data: List[Dict]) -> List[str]:
+#     base = FOLLOWUP_BY_MODE.get(mode, FOLLOWUP_BY_MODE["research"]).copy()
+ 
+#     # Personalise with product name if known
+#     if product:
+#         p = product.title()
+#         if mode == "viability":
+#             base[0] = f"Who are the top brands selling {p}?"
+#             base[1] = f"What's the sweet spot price for {p}?"
+#         elif mode == "research":
+#             base[0] = f"What does {p} demand look like?"
+#             base[1] = f"Is {p} more popular on Flipkart or Amazon?"
+ 
+#     # Add data-driven suggestion if we have outlier data
+#     if data:
+#         top = data[0]
+#         cat = top.get("category_name", "")
+#         if cat and mode in ("research", "viability"):
+#             base.append(f"Tell me more about {cat}")
+ 
+#     return base[:3]
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # INTENT DETECTION
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# INTENT_PATTERNS = {
+#     "price_analysis":    r"\b(price|pricing|cost|cheap|expensive|afford|budget|range|₹|rs\.?|rupee)\b",
+#     "top_products":      r"\b(best|top|popular|trending|most sold|highest rated|recommend|suggest)\b",
+#     "category_insights": r"\b(categor|segment|niche|market|space|vertical)\b",
+#     "competitor":        r"\b(competitor|vs|compare|versus|better than|alternative|rival)\b",
+#     "opportunity":       r"\b(opportunit|gap|underserved|potential|untapped|enter|launch|start selling)\b",
+#     "rating_quality":    r"\b(rating|review|quality|feedback|trust|reputation|star)\b",
+#     "sales_volume":      r"\b(sales|volume|demand|selling|sold|units|revenue|turnover)\b",
+#     "brand_analysis":    r"\b(brand|seller|vendor|manufacturer|who sells|which brand)\b",
+#     "profit_margin":     r"\b(profit|margin|markup|net|gross|earn|make money|worth it)\b",
+#     "seasonal":          r"\b(season|festival|diwali|holi|summer|winter|monsoon|trend)\b",
+#     "listing_tips":      r"\b(listing|title|description|image|photo|seo|keyword|rank|visibility)\b",
+#     "logistics":         r"\b(shipping|delivery|logistic|warehouse|fulfil|return|dispatch|courier)\b",
+#     "general_advice":    r"\b(advice|tip|strategy|how to|should i|what to|guide|help|explain|tell me)\b",
+# }
+ 
+# TONE_SIGNALS = {
+#     "frustrated": r"\b(not working|useless|wrong|bad|terrible|why is|i don'?t understand|makes no sense|wtf|ugh|worst)\b",
+#     "excited":    r"\b(amazing|great|wow|love|excited|awesome|can'?t wait|perfect|finally|yes!)\b",
+#     "confused":   r"\b(confused|don'?t get|what does|what is|explain|i'?m lost|unclear|huh\??|means?)\b",
+#     "urgent":     r"\b(asap|urgent|quickly|right now|immediately|today|tonight|deadline|fast|hurry)\b",
+#     "beginner":   r"\b(new to|just started|beginner|don'?t know|never sold|first time|how do i even|basics)\b",
+#     "expert":     r"\b(roi|cac|ltv|cogs|margin|logistics|fulfilment|api|inventory|wholesale|b2b)\b",
+# }
+ 
+# def detect_intent(question: str) -> List[str]:
+#     q = question.lower()
+#     return [i for i, p in INTENT_PATTERNS.items() if re.search(p, q)] or ["general_advice"]
+ 
+# def detect_tone(question: str, history: List[Message]) -> Dict[str, bool]:
+#     combined = question.lower()
+#     for m in history[-4:]:
+#         if m.role == "user": combined += " " + m.content.lower()
+#     return {t: bool(re.search(p, combined)) for t, p in TONE_SIGNALS.items()}
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # WHERE CLAUSE BUILDER
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# def build_where_clause(filters: Dict[str, Any], source: str, extra_category: str = "") -> str:
+#     conditions = []
+ 
+#     category = filters.get("category", "") or extra_category
+#     if category and category != "All Categories":
+#         safe_cat  = category.replace("'", "''")
+#         cat_field = "category" if source == "flipkart" else "category_name"
+#         conditions.append(f"LOWER({cat_field}) LIKE LOWER('%{safe_cat}%')")
+ 
+#     price_range = filters.get("priceRange", [0, 5_000_000])
+#     price_field = "price" if source == "flipkart" else "product_price_numeric"
+#     if price_range[0] > 0:   conditions.append(f"{price_field} >= {price_range[0]}")
+#     if price_range[1] < 5_000_000: conditions.append(f"{price_field} <= {price_range[1]}")
+ 
+#     rating = filters.get("rating", 0)
+#     if rating > 0:
+#         rating_field = "rating" if source == "flipkart" else "product_star_rating_numeric"
+#         conditions.append(f"{rating_field} >= {rating}")
+ 
+#     if filters.get("showTrendingOnly") and source == "amazon":
+#         conditions.append("sales_volume IS NOT NULL AND sales_volume != ''")
+ 
+#     return " AND ".join(conditions) if conditions else "1=1"
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # PRODUCT-SPECIFIC SQL
+# # When a product is detected, run a keyword search on product_title
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# def build_product_sql(source: str, product: str, limit: int) -> str:
+#     safe = product.replace("'", "''")
+#     if source == "flipkart":
+#         return f"""
+#             SELECT product_title, brand, category_name,
+#                 ROUND(product_price,0) AS price,
+#                 product_star_rating AS rating,
+#                 product_rating_count AS review_count,
+#                 ROUND(estimated_sales,0) AS sales
+#             FROM rapidapi_flipkart_products
+#             WHERE product_title ILIKE '%{safe}%'
+#                OR brand ILIKE '%{safe}%'
+#             ORDER BY product_rating_count DESC NULLS LAST
+#             LIMIT {limit}
+#         """
+#     else:
+#         return f"""
+#             SELECT product_title, category_name,
+#                 ROUND(product_price_numeric,0) AS price,
+#                 product_star_rating_numeric AS rating,
+#                 product_num_ratings AS review_count,
+#                 ROUND(avg_sales_volume,0) AS sales
+#             FROM rapidapi_amazon_products
+#             WHERE product_title ILIKE '%{safe}%'
+#             ORDER BY product_num_ratings DESC NULLS LAST
+#             LIMIT {limit}
+#         """
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # AGGREGATED SQL FAN-OUT  (intent-driven)
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# def build_smart_sql(source: str, where_clause: str, intents: List[str], limit: int) -> Tuple[str, str]:
+#     if source == "flipkart":
+#         platform = "Flipkart"
+#         if any(i in intents for i in ["brand_analysis", "competitor"]):
+#             sql = f"""
+#                 SELECT brand, category_name, COUNT(*) AS listings,
+#                     ROUND(AVG(product_price),0) AS avg_price,
+#                     ROUND(MIN(product_price),0) AS min_price,
+#                     ROUND(MAX(product_price),0) AS max_price,
+#                     ROUND(AVG(product_star_rating),2) AS avg_rating,
+#                     SUM(product_rating_count) AS total_reviews,
+#                     ROUND(AVG(estimated_sales),0) AS avg_sales
+#                 FROM rapidapi_flipkart_products
+#                 WHERE product_title IS NOT NULL AND {where_clause}
+#                 GROUP BY brand, category_name
+#                 ORDER BY total_reviews DESC LIMIT {limit}
+#             """
+#         elif "price_analysis" in intents:
+#             sql = f"""
+#                 SELECT category_name, brand, COUNT(*) AS listings,
+#                     ROUND(MIN(product_price),0) AS min_price,
+#                     ROUND(PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY product_price),0) AS p25_price,
+#                     ROUND(AVG(product_price),0) AS avg_price,
+#                     ROUND(PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY product_price),0) AS p75_price,
+#                     ROUND(MAX(product_price),0) AS max_price,
+#                     ROUND(AVG(product_star_rating),2) AS avg_rating
+#                 FROM rapidapi_flipkart_products
+#                 WHERE product_title IS NOT NULL AND {where_clause}
+#                 GROUP BY category_name, brand
+#                 ORDER BY listings DESC LIMIT {limit}
+#             """
+#         else:
+#             sql = f"""
+#                 SELECT category_name, brand, COUNT(*) AS listings,
+#                     ROUND(MIN(product_price),0) AS min_price,
+#                     ROUND(MAX(product_price),0) AS max_price,
+#                     ROUND(AVG(product_price),0) AS avg_price,
+#                     ROUND(AVG(product_star_rating),2) AS avg_rating,
+#                     SUM(product_rating_count) AS total_reviews,
+#                     ROUND(AVG(estimated_sales),0) AS avg_sales
+#                 FROM rapidapi_flipkart_products
+#                 WHERE product_title IS NOT NULL AND {where_clause}
+#                 GROUP BY category_name, brand
+#                 ORDER BY total_reviews DESC LIMIT {limit}
+#             """
+#     else:
+#         platform = "Amazon"
+#         sql = f"""
+#             SELECT category_name, COUNT(*) AS listings,
+#                 ROUND(MIN(product_price_numeric),0) AS min_price,
+#                 ROUND(MAX(product_price_numeric),0) AS max_price,
+#                 ROUND(AVG(product_price_numeric),0) AS avg_price,
+#                 ROUND(AVG(product_star_rating_numeric),2) AS avg_rating,
+#                 SUM(product_num_ratings) AS total_reviews,
+#                 ROUND(AVG(avg_sales_volume),0) AS avg_sales
+#             FROM rapidapi_amazon_products
+#             WHERE product_title IS NOT NULL AND {where_clause}
+#             GROUP BY category_name
+#             ORDER BY total_reviews DESC LIMIT {limit}
+#         """
+ 
+#     return sql.strip(), platform
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # PROACTIVE INSIGHT INJECTOR
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# def generate_proactive_insight(data: List[Dict], intents: List[str]) -> str:
+#     if not data: return ""
+#     insights = []
+ 
+#     rated = [row for row in data if row.get("avg_rating") and row.get("total_reviews")]
+#     if rated:
+#         gem = min(rated, key=lambda x: x.get("total_reviews", 9_999_999))
+#         if gem.get("avg_rating", 0) >= 4.0 and gem.get("total_reviews", 0) < 500:
+#             insights.append(
+#                 f"Hidden gem: '{gem.get('category_name', gem.get('brand','?'))}' "
+#                 f"has {gem['avg_rating']}★ but only {gem['total_reviews']} reviews — "
+#                 f"low competition with proven quality."
+#             )
+ 
+#     for row in data[:5]:
+#         mx  = row.get("max_price", 0) or 0
+#         avg = row.get("avg_price", 0) or 0
+#         if mx > 0 and avg > 0 and mx / avg > 4:
+#             insights.append(
+#                 f"Big price gap in '{row.get('category_name','?')}': "
+#                 f"₹{int(row.get('min_price',0)):,}–₹{int(mx):,} (avg ₹{int(avg):,}) — "
+#                 f"premium positioning is viable here."
+#             )
+#             break
+ 
+#     for row in data[:5]:
+#         sales  = row.get("avg_sales", 0) or 0
+#         rating = row.get("avg_rating", 0) or 0
+#         if sales > 100 and 0 < rating < 3.8:
+#             insights.append(
+#                 f"Quality gap in '{row.get('category_name','?')}': "
+#                 f"~{int(sales)} avg monthly sales but only {rating}★ — "
+#                 f"a better product here could dominate quickly."
+#             )
+#             break
+ 
+#     return insights[0] if insights else ""
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # MASTER PROMPT BUILDER  —  mode-aware, context-rich
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# def build_master_prompt(
+#     question:        str,
+#     history:         List[Message],
+#     agg_data:        List[Dict],
+#     product_data:    List[Dict],
+#     platform:        str,
+#     intents:         List[str],
+#     tone:            Dict[str, bool],
+#     filters:         Dict,
+#     seller_profile:  Dict,
+#     proactive:       str,
+#     mode:            str,
+#     extracted:       Dict,
+#     market_score:    Optional[Dict],
+#     session_context: Dict,
+# ) -> str:
+ 
+#     # ── Seller identity ──
+#     name   = seller_profile.get("name") or session_context.get("seller_name", "")
+#     cat    = seller_profile.get("category") or session_context.get("product_of_interest", "")
+#     exp    = seller_profile.get("experience", "")
+#     budget = seller_profile.get("budget", "")
+ 
+#     identity_lines = []
+#     if name:   identity_lines.append(f"Name: {name}")
+#     if cat:    identity_lines.append(f"Interested in selling: {cat}")
+#     if exp:    identity_lines.append(f"Experience: {exp}")
+#     if budget: identity_lines.append(f"Budget: {budget}")
+#     identity_block = "\n".join(identity_lines)
+ 
+#     # ── Conversation history ──
+#     history_lines = []
+#     for m in history[-(MAX_HISTORY_TURNS * 2):]:
+#         prefix = "Seller" if m.role == "user" else "Insydz"
+#         history_lines.append(f"{prefix}: {m.content}")
+#     history_block = "\n".join(history_lines)
+ 
+#     # ── Filter context ──
+#     filter_parts = []
+#     fc = filters.get("category", "")
+#     if fc and fc != "All Categories": filter_parts.append(f"Category: {fc}")
+#     pr = filters.get("priceRange", [0, 5_000_000])
+#     if pr[0] > 0 or pr[1] < 5_000_000:
+#         filter_parts.append(f"Price: ₹{pr[0]:,}–₹{pr[1]:,}")
+#     if filters.get("rating", 0) > 0:
+#         filter_parts.append(f"Min rating: {filters['rating']}★")
+#     filter_block = ", ".join(filter_parts) or "Full catalog"
+ 
+#     # ── Market score block ──
+#     score_block = ""
+#     if market_score:
+#         score_block = f"""
+# Market Entry Scores for this product/category:
+# - Overall opportunity:  {market_score['overall_score']}/100  ({market_score['verdict']})
+# - Demand score:         {market_score['demand_score']}/100
+# - Competition score:    {market_score['competition_score']}/100  (higher = less competition)
+# - Margin potential:     {market_score['margin_score']}/100
+# - Avg market price:     ₹{market_score['avg_price']:,}
+# - Avg market rating:    {market_score['avg_rating']}★
+# - Avg monthly sales:    ~{market_score['avg_sales']} units
+# - Total listings found: {market_score['total_listings']}
+# """
+ 
+#     # ── Product-specific data ──
+#     product_block = ""
+#     if product_data:
+#         top5 = product_data[:5]
+#         product_block = f"\nActual matching products in database (top 5):\n{json.dumps(top5, indent=2, default=str)}"
+ 
+#     # ── Aggregated market data ──
+#     agg_block = ""
+#     if agg_data:
+#         agg_block = f"\nMarket aggregation data:\n{json.dumps(agg_data[:8], indent=2, default=str)}"
+ 
+#     # ── Tone instruction ──
+#     tone_map = {
+#         "frustrated": "They seem frustrated — acknowledge briefly, then be extra clear.",
+#         "confused":   "They seem confused — break it down simply, no jargon.",
+#         "excited":    "They're excited — match the energy but stay sharp and factual.",
+#         "urgent":     "They need this fast — most important point first, no preamble.",
+#         "beginner":   "They're new to selling — no assumed knowledge, explain from basics.",
+#         "expert":     "They're experienced — skip basics, go straight to metrics and tactics.",
+#     }
+#     tone_instruction = next((v for k, v in tone_map.items() if tone.get(k)), "")
+ 
+#     # ── Mode-specific instructions ──
+#     mode_instructions = {
+#         "viability": (
+#             "The seller wants to know if they can successfully sell a specific product.\n"
+#             "Use the market score data. Be honest — if it's competitive, say so clearly.\n"
+#             "Cover: demand level, competition level, realistic entry price, and one key risk.\n"
+#             "End with a clear YES / YES BUT / NO UNLESS verdict."
+#         ),
+#         "decision": (
+#             "The seller is choosing between options.\n"
+#             "Compare directly using the data — don't be vague.\n"
+#             "Pick a winner and explain exactly why with numbers."
+#         ),
+#         "execution": (
+#             "The seller has decided what to sell and wants to know HOW.\n"
+#             "Give concrete, actionable steps they can execute today.\n"
+#             "Use exact prices, ratings benchmarks, and platform-specific tactics."
+#         ),
+#         "deep_dive": (
+#             "This is a follow-up on something already discussed.\n"
+#             "Go deeper than before — they already know the basics.\n"
+#             "Use conversation history to stay consistent."
+#         ),
+#         "research": (
+#             "The seller is exploring the market.\n"
+#             "Surface the most interesting data points.\n"
+#             "Help them discover something they didn't know they were looking for."
+#         ),
+#     }
+#     mode_instruction = mode_instructions.get(mode, mode_instructions["research"])
+ 
+#     # ── Intent focus ──
+#     intent_focus_map = {
+#         "price_analysis":    "Focus on price bands and optimal entry price.",
+#         "top_products":      "Lead with top performers by reviews and sales.",
+#         "opportunity":       "Find the gap: low competition + real demand.",
+#         "competitor":        "Compare directly — who's stronger and why.",
+#         "rating_quality":    "Analyse quality signals and rating distribution.",
+#         "brand_analysis":    "Dissect brand presence and pricing strategy.",
+#         "sales_volume":      "Quantify demand with actual numbers.",
+#         "profit_margin":     "Estimate realistic margins based on the data.",
+#         "seasonal":          "Connect to Indian festival and seasonal demand cycles.",
+#         "listing_tips":      "Give concrete listing optimisation advice.",
+#         "logistics":         "Give practical shipping/fulfilment advice.",
+#         "general_advice":    "Give the most useful strategic insight from the data.",
+#     }
+#     focus_lines  = [intent_focus_map[i] for i in intents if i in intent_focus_map]
+#     focus_block  = "\n".join(f"• {l}" for l in focus_lines) or "• Answer directly and helpfully."
+ 
+#     # ── Proactive insight ──
+#     proactive_block = f"\nSurprising thing you noticed in the data — work it in naturally:\n{proactive}" if proactive else ""
+ 
+#     # ── Extracted context ──
+#     extracted_block = ""
+#     if extracted.get("product"):
+#         extracted_block = f"\nProduct the seller is asking about: {extracted['product']}"
+#     if extracted.get("price_target"):
+#         extracted_block += f"\nTheir target price: ₹{extracted['price_target']:,}"
+ 
+#     # ════════════════════════════════════════════
+#     # THE PROMPT
+#     # ════════════════════════════════════════════
+#     prompt = f"""You are Insydz, a sharp and friendly e-commerce expert helping Indian sellers on {platform}.
+ 
+# Your personality:
+# - Talk like a real person — direct, confident, zero corporate fluff
+# - Use phrases like "look", "honestly", "here's the thing", "the data tells a different story"
+# - Share opinions when you have them — don't hedge everything
+# - Always use ₹, never $ or USD
+# - Max 220 words. Short punchy paragraphs. No overloading with bullets.
+# - NEVER open with "Great question!", "Certainly!", "Of course!", or "Sure!"
+# - NEVER repeat the question back to the user
+# - If data is limited, give your best expert take confidently
+ 
+# {f"About this seller:{chr(10)}{identity_block}{chr(10)}" if identity_block else ""}
+# Filters active: {filter_block}
+# {extracted_block}
+# {f"Conversation so far:{chr(10)}{history_block}{chr(10)}" if history_block else ""}
+# {score_block}
+# {product_block}
+# {agg_block}
+# {proactive_block}
+ 
+# Conversation mode: {mode.upper()}
+# What this means: {mode_instruction}
+ 
+# Response focus:
+# {focus_block}
+ 
+# {f"Tone: {tone_instruction}" if tone_instruction else ""}
+ 
+# Seller asks: {question}
+ 
+# Insydz:"""
+ 
+#     return prompt
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # POST-PROCESSOR
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# BAD_OPENERS = re.compile(
+#     r"^(great question[!.]?|certainly[!.]?|of course[!.]?|absolutely[!.]?|"
+#     r"sure[!.]?|hello[!.]?|hi there[!.]?|as an ai[,.]?|i'?m an? ai[,.]?|"
+#     r"thank you for [^.]+\.|thanks for [^.]+\.)\s*",
+#     re.IGNORECASE
+# )
+# SELF_REF    = re.compile(r"\b(as insydz|insydz here|this is insydz)\b", re.IGNORECASE)
+# PROMPT_LEAK = re.compile(r"(seller asks:|insydz:|your focus|tone note|market data|conversation mode)", re.IGNORECASE)
+ 
+# def post_process(text: str) -> str:
+#     text = text.strip()
+#     text = BAD_OPENERS.sub("", text).strip()
+#     if text: text = text[0].upper() + text[1:]
+#     text = SELF_REF.sub("", text)
+#     m = PROMPT_LEAK.search(text)
+#     if m: text = text[:m.start()].strip()
+#     text = re.sub(r"\n{3,}", "\n\n", text)
+#     return text.strip()
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # OLLAMA
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# OLLAMA_PARAMS = {
+#     "temperature":    0.72,
+#     "top_p":          0.88,
+#     "top_k":          45,
+#     "repeat_penalty": 1.15,
+#     "num_predict":    450,
+#     "stop":           ["\n\nSeller", "\n\nInsydz", "Seller asks:", "Your focus", "Conversation mode:"]
+# }
+ 
+# def call_ollama(prompt: str, stream: bool = False):
+#     return requests.post(
+#         f"{OLLAMA_API_URL}/api/generate",
+#         json={"model": MODEL_NAME, "prompt": prompt, "stream": stream, "options": OLLAMA_PARAMS},
+#         stream=stream,
+#         timeout=120
+#     )
+ 
+# def stream_ollama(prompt: str):
+#     try:
+#         resp = call_ollama(prompt, stream=True)
+#         resp.raise_for_status()
+#         for line in resp.iter_lines():
+#             if not line: continue
+#             try:
+#                 chunk = json.loads(line)
+#                 token = chunk.get("response", "")
+#                 yield token
+#                 if chunk.get("done"): break
+#             except Exception:
+#                 continue
+#     except Exception as e:
+#         yield "\n\n⚠️ **AI Advisor is currently offline.**\n\nIt looks like the local AI engine (**Ollama**) is not running or accessible. \n\n**To fix this:**\n1. Ensure Ollama is installed and running on your machine.\n2. Make sure the model `llama3.2:3b` is downloaded (`ollama run llama3.2:3b`).\n3. Refresh this page and try again."
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # MAIN ENDPOINT  —  /ai/query
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# @router.post("/ai/query")
+# def ask_ai(query: AIQuery, db: Session = Depends(get_db)):
+ 
+#     # ── Validate ──
+#     raw_source = (query.source or "").lower().strip()
+#     if raw_source not in ("amazon", "flipkart"):
+#         raise HTTPException(400, f"Invalid source '{query.source}'.")
+#     source = raw_source
+ 
+#     question = (query.question or "").strip()
+#     if not question:
+#         raise HTTPException(422, "Question cannot be empty.")
+ 
+#     filters        = query.filters or {}
+#     seller_profile = query.seller_profile or {}
+#     session_id     = query.session_id or hashlib.md5(f"{question}{time.time()}".encode()).hexdigest()[:12]
+ 
+#     # ── Load memory ──
+#     history         = load_history(session_id)
+#     session_context = load_context(session_id)
+ 
+#     # ── Detect everything ──
+#     intents   = detect_intent(question)
+#     tone      = detect_tone(question, history)
+#     mode      = detect_conversation_mode(question, history)
+#     extracted = extract_product_from_question(question, history)
+ 
+#     # ── Update session context with discovered info ──
+#     if extracted.get("product"):
+#         session_context["product_of_interest"] = extracted["product"]
+#     if extracted.get("category"):
+#         session_context["category_of_interest"] = extracted["category"]
+#     if extracted.get("price_target"):
+#         session_context["price_target"] = extracted["price_target"]
+#     if seller_profile.get("name"):
+#         session_context["seller_name"] = seller_profile["name"]
+#     save_context(session_id, session_context)
+ 
+#     # ── Cache check (skip for product-specific / viability queries) ──
+#     is_product_query = bool(extracted.get("product")) or mode == "viability"
+#     if not query.stream and not is_product_query:
+#         cache_key = f"ai_v3:{source}:{json.dumps(filters, sort_keys=True)}:{question}"
+#         cached = r.get(cache_key)
+#         if cached:
+#             raw = cached.decode() if isinstance(cached, bytes) else cached
+#             try:
+#                 return json.loads(raw)
+#             except Exception:
+#                 return {"answer": raw, "cached": True, "session_id": session_id}
+ 
+#     # ── Build SQL queries ──
+#     limit           = min(query.limit or 100, 120)
+#     extra_category  = extracted.get("category") or session_context.get("category_of_interest", "")
+#     where_clause    = build_where_clause(filters, source, extra_category)
+#     agg_sql, platform = build_smart_sql(source, where_clause, intents, limit)
+ 
+#     # ── Execute queries (product + aggregated in parallel) ──
+#     agg_data     = []
+#     product_data = []
+
+#     try:
+#         rows     = db.execute(text(agg_sql)).all()
+#         agg_data = [dict(r._mapping) for r in rows]
+#     except Exception as e:
+#         raise HTTPException(500, f"Database error (agg): {str(e)}")
+
+#     try:
+#         if extracted.get("product"):
+#             psql         = build_product_sql(source, extracted["product"], 20)
+#             rows         = db.execute(text(psql)).all()
+#             product_data = [dict(r._mapping) for r in rows]
+#     except Exception as e:
+#         product_data = []
+ 
+#     # ── Market entry score (for viability mode) ──
+#     score_data   = product_data or agg_data
+#     market_score = compute_market_score(score_data, extracted.get("price_target")) if mode in ("viability", "decision") else None
+ 
+#     # ── Proactive insight ──
+#     proactive = generate_proactive_insight(agg_data or product_data, intents)
+ 
+#     # ── Follow-up suggestions ──
+#     followups = generate_followup_questions(mode, intents, extracted.get("product"), agg_data)
+ 
+#     # ── Build prompt ──
+#     prompt = build_master_prompt(
+#         question=question,
+#         history=history,
+#         agg_data=agg_data,
+#         product_data=product_data,
+#         platform=platform,
+#         intents=intents,
+#         tone=tone,
+#         filters=filters,
+#         seller_profile=seller_profile,
+#         proactive=proactive,
+#         mode=mode,
+#         extracted=extracted,
+#         market_score=market_score,
+#         session_context=session_context,
+#     )
+ 
+#     # ═══════════════════════════════════
+#     # STREAMING MODE
+#     # ═══════════════════════════════════
+#     if query.stream:
+#         def event_stream():
+#             full = ""
+#             for token in stream_ollama(prompt):
+#                 full += token
+#                 yield f"data: {json.dumps({'token': token})}\n\n"
+ 
+#             clean = post_process(full)
+#             append_turn(session_id, question, clean)
+ 
+#             meta = {
+#                 "done":                  True,
+#                 "session_id":            session_id,
+#                 "intents":               intents,
+#                 "mode":                  mode,
+#                 "followup_questions":    followups,
+#                 "market_score":          market_score,
+#                 "had_proactive_insight": bool(proactive),
+#                 "extracted_product":     extracted.get("product"),
+#             }
+#             yield f"data: {json.dumps(meta)}\n\n"
+ 
+#         return StreamingResponse(event_stream(), media_type="text/event-stream")
+ 
+#     # ═══════════════════════════════════
+#     # STANDARD MODE
+#     # ═══════════════════════════════════
+#     try:
+#         resp       = call_ollama(prompt, stream=False)
+#         resp.raise_for_status()
+#         raw_answer = resp.json().get("response", "").strip()
+#         answer     = post_process(raw_answer) or "I wasn't able to generate a response. Try rephrasing."
+#     except requests.exceptions.Timeout:
+#         answer = "Took too long — try a more focused question."
+#     except requests.exceptions.ConnectionError:
+#         answer = "Can't reach the AI service right now."
+#     except Exception as e:
+#         answer = f"Unexpected error: {str(e)}"
+ 
+#     append_turn(session_id, question, answer)
+ 
+#     result = {
+#         "answer":                answer,
+#         "cached":                False,
+#         "session_id":            session_id,
+#         "platform":              platform,
+#         "intents":               intents,
+#         "mode":                  mode,
+#         "tone":                  {k: v for k, v in tone.items() if v},
+#         "followup_questions":    followups,
+#         "market_score":          market_score,
+#         "data_rows":             len(agg_data),
+#         "product_rows":          len(product_data),
+#         "had_proactive_insight": bool(proactive),
+#         "extracted_product":     extracted.get("product"),
+#     }
+ 
+#     # Cache only non-product, non-viability queries
+#     if not is_product_query:
+#         cache_key = f"ai_v3:{source}:{json.dumps(filters, sort_keys=True)}:{question}"
+#         r.setex(cache_key, HISTORY_TTL, json.dumps(result, default=str))
+ 
+#     return result
+ 
+ 
+# # ──────────────────────────────────────────────────────────────────────
+# # BONUS ENDPOINTS
+# # ──────────────────────────────────────────────────────────────────────
+ 
+# class ResetRequest(BaseModel):
+#     session_id: str
+ 
+# @router.post("/ai/reset")
+# def reset_session(req: ResetRequest):
+#     r.delete(_history_key(req.session_id))
+#     r.delete(_context_key(req.session_id))
+#     return {"status": "ok", "message": f"Session {req.session_id} cleared."}
+ 
+# @router.get("/ai/history/{session_id}")
+# def get_history_endpoint(session_id: str):
+#     return {
+#         "session_id": session_id,
+#         "messages":   [m.dict() for m in load_history(session_id)],
+#         "context":    load_context(session_id),
+#     }
+ 
+# @router.get("/ai/context/{session_id}")
+# def get_context(session_id: str):
+#     """Returns what Insydz knows about this seller so far."""
+#     return {"session_id": session_id, "context": load_context(session_id)}
+
+
+
 import json
 import re
 import hashlib
 import time
+import tempfile
+import os
+import subprocess
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict, List, Optional, Tuple
-from fastapi import HTTPException, Depends
-from fastapi.responses import StreamingResponse
+from fastapi import HTTPException, Depends, UploadFile, File, Form, BackgroundTasks
+from fastapi.responses import StreamingResponse, FileResponse
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from pydantic import BaseModel
 import requests
+ 
+ 
+STT_MODEL_SIZE   = os.getenv("WHISPER_MODEL", "base")   # tiny|base|small|medium
+STT_DEVICE       = os.getenv("WHISPER_DEVICE", "cpu")   # cpu|cuda
+STT_COMPUTE_TYPE = "int8"                                # fastest on CPU
+
+# Get the absolute path to the 'server_py' directory
+# legacy_router.py is in server_py/app/api/v1/routes/
+SERVER_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+
+KOKORO_MODEL_PATH  = os.getenv("KOKORO_MODEL", os.path.join(SERVER_DIR, "ai_models/kokoro/kokoro-v1.0.onnx"))
+KOKORO_VOICES_PATH = os.getenv("KOKORO_VOICES", os.path.join(SERVER_DIR, "ai_models/kokoro/voices-v1.0.bin"))
+PIPER_HINDI_MODEL  = os.path.join(SERVER_DIR, "ai_models/hindi/hindi.onnx")
+PIPER_HINDI_CONFIG = os.path.join(SERVER_DIR, "ai_models/hindi/hindi.onnx.json")
+
+# Lazy-loaded models (loaded once on first use)
+_stt_model    = None
+_kokoro_model = None
+_piper_model  = None
+
+
+def get_stt_model():
+    """Lazy-load faster-whisper model (downloaded once, cached locally)."""
+    global _stt_model
+    if _stt_model is None:
+        try:
+            from faster_whisper import WhisperModel
+            _stt_model = WhisperModel(
+                STT_MODEL_SIZE,
+                device=STT_DEVICE,
+                compute_type=STT_COMPUTE_TYPE,
+            )
+        except ImportError:
+            raise HTTPException(
+                500,
+                "faster-whisper not installed. Run: pip install faster-whisper"
+            )
+    return _stt_model
+
+
+def get_kokoro_model():
+    """Lazy-load kokoro-onnx model (100% local, no server needed)."""
+    global _kokoro_model
+    if _kokoro_model is None:
+        try:
+            from kokoro_onnx import Kokoro
+            if not os.path.exists(KOKORO_MODEL_PATH) or not os.path.exists(KOKORO_VOICES_PATH):
+                return None
+            _kokoro_model = Kokoro(KOKORO_MODEL_PATH, KOKORO_VOICES_PATH)
+        except Exception:
+            return None
+    return _kokoro_model
+
+
+def get_piper_hindi_model():
+    """Lazy-load piper-tts model for Hindi."""
+    global _piper_model
+    if _piper_model is None:
+        try:
+            from piper.voice import PiperVoice
+            if not os.path.exists(PIPER_HINDI_MODEL):
+                return None
+            _piper_model = PiperVoice.load(PIPER_HINDI_MODEL, PIPER_HINDI_CONFIG)
+        except Exception:
+            return None
+    return _piper_model
+ 
  
 # ──────────────────────────────────────────────────────────────────────
 # SCHEMAS
@@ -227,6 +1245,14 @@ class AIQuery(BaseModel):
     session_id:     Optional[str]            = None
     seller_profile: Optional[Dict]           = {}
     stream:         Optional[bool]           = False
+    tts:            Optional[bool]           = False   # NEW: return audio with response
+    voice:          Optional[str]            = "af_bella"
+ 
+class TTSRequest(BaseModel):
+    text:       str
+    voice:      Optional[str] = "af_bella"   # Kokoro voice name
+    speed:      Optional[float] = 1.0
+    session_id: Optional[str]  = None
  
  
 # ──────────────────────────────────────────────────────────────────────
@@ -234,7 +1260,7 @@ class AIQuery(BaseModel):
 # ──────────────────────────────────────────────────────────────────────
  
 MAX_HISTORY_TURNS = 8
-HISTORY_TTL       = 3600   # 1 hour (up from 30 min)
+HISTORY_TTL       = 3600
 CONTEXT_TTL       = 3600
  
 def _history_key(sid: str) -> str:  return f"chat_history:{sid}"
@@ -258,7 +1284,6 @@ def append_turn(sid: str, user_msg: str, assistant_msg: str) -> None:
     history.append(Message(role="assistant", content=assistant_msg))
     save_history(sid, history)
  
-# ── Seller journey context (persists across turns) ──
 def load_context(sid: str) -> Dict:
     raw = r.get(_context_key(sid))
     if not raw: return {}
@@ -273,8 +1298,6 @@ def save_context(sid: str, ctx: Dict) -> None:
  
 # ──────────────────────────────────────────────────────────────────────
 # DEEP CONTEXT EXTRACTOR
-# Pulls product name, category, price target from raw natural language
-# e.g. "I want to sell wireless earbuds under 2000" → structured data
 # ──────────────────────────────────────────────────────────────────────
  
 PRODUCT_EXTRACT_PATTERNS = [
@@ -302,33 +1325,27 @@ CATEGORY_HINTS = {
 }
  
 def extract_product_from_question(question: str, history: List[Message]) -> Dict:
-    """Extract product name, inferred category, and price target from natural language."""
     combined = question
-    # Also look at recent history for context
     for m in history[-3:]:
         if m.role == "user":
             combined = m.content + " " + combined
  
     result = {"product": None, "category": None, "price_target": None}
  
-    # Extract product name
     for pattern in PRODUCT_EXTRACT_PATTERNS:
         match = re.search(pattern, question, re.IGNORECASE)
         if match:
             raw = match.group(1).strip().lower()
-            # Filter noise
             if len(raw) > 2 and raw not in ("it", "this", "that", "them", "these"):
                 result["product"] = raw
                 break
  
-    # Infer category from product name or full question
     text_lower = (result["product"] or question).lower()
     for keywords, cat in CATEGORY_HINTS.items():
         if re.search(keywords, text_lower, re.IGNORECASE):
             result["category"] = cat
             break
  
-    # Extract price target
     price_match = PRICE_TARGET_PATTERN.search(question)
     if price_match:
         result["price_target"] = int(price_match.group(1).replace(",", ""))
@@ -338,10 +1355,6 @@ def extract_product_from_question(question: str, history: List[Message]) -> Dict
  
 # ──────────────────────────────────────────────────────────────────────
 # CONVERSATION MODE DETECTOR
-# research   → exploring market, asking general questions
-# viability  → "can I sell X / will X perform / I want to sell X"
-# decision   → comparing options, asking which is better
-# execution  → ready to sell, asking HOW to do specific things
 # ──────────────────────────────────────────────────────────────────────
  
 VIABILITY_PATTERN = re.compile(
@@ -366,7 +1379,6 @@ def detect_conversation_mode(question: str, history: List[Message]) -> str:
     if VIABILITY_PATTERN.search(q): return "viability"
     if DECISION_PATTERN.search(q):  return "decision"
     if EXECUTION_PATTERN.search(q): return "execution"
-    # Check if previous conversation established a product context
     if history and any(VIABILITY_PATTERN.search(m.content) for m in history[-4:] if m.role == "user"):
         return "deep_dive"
     return "research"
@@ -374,11 +1386,9 @@ def detect_conversation_mode(question: str, history: List[Message]) -> str:
  
 # ──────────────────────────────────────────────────────────────────────
 # MARKET ENTRY SCORER
-# Takes aggregated data and produces a 0-100 score on 3 dimensions
 # ──────────────────────────────────────────────────────────────────────
  
 def compute_market_score(data: List[Dict], price_target: Optional[int] = None) -> Optional[Dict]:
-    """Returns competition_score, demand_score, margin_score, overall."""
     if not data:
         return None
  
@@ -388,20 +1398,16 @@ def compute_market_score(data: List[Dict], price_target: Optional[int] = None) -
     avg_sales       = sum(r.get("avg_sales", 0) or 0 for r in data if r.get("avg_sales")) / max(len([r for r in data if r.get("avg_sales")]), 1)
     avg_price       = sum(r.get("avg_price", 0) or 0 for r in data if r.get("avg_price")) / max(len([r for r in data if r.get("avg_price")]), 1)
  
-    # Competition score: fewer listings + lower reviews = easier to enter (higher score)
-    comp_raw = min(total_listings / 50, 1.0)   # normalize: 50 listings = saturated
+    comp_raw = min(total_listings / 50, 1.0)
     competition_score = round((1 - comp_raw) * 100)
  
-    # Demand score: more reviews + sales = more demand (higher score)
     demand_raw   = min(total_reviews / 10000, 1.0)
     demand_score = round(demand_raw * 100)
  
-    # Margin score: based on price vs likely cost assumption (rough)
     if price_target and avg_price > 0:
         fit = 1.0 if (avg_price * 0.6) <= price_target <= (avg_price * 1.4) else 0.5
     else:
         fit = 0.75
-    # Higher avg price generally = better margin room
     price_score  = min(avg_price / 2000, 1.0)
     margin_score = round(((price_score * 0.5) + (fit * 0.5)) * 100)
  
@@ -427,7 +1433,6 @@ def compute_market_score(data: List[Dict], price_target: Optional[int] = None) -
  
 # ──────────────────────────────────────────────────────────────────────
 # FOLLOW-UP QUESTION GENERATOR
-# Generates 3 contextual next questions based on current mode + data
 # ──────────────────────────────────────────────────────────────────────
  
 FOLLOWUP_BY_MODE = {
@@ -461,7 +1466,6 @@ FOLLOWUP_BY_MODE = {
 def generate_followup_questions(mode: str, intents: List[str], product: Optional[str], data: List[Dict]) -> List[str]:
     base = FOLLOWUP_BY_MODE.get(mode, FOLLOWUP_BY_MODE["research"]).copy()
  
-    # Personalise with product name if known
     if product:
         p = product.title()
         if mode == "viability":
@@ -471,7 +1475,6 @@ def generate_followup_questions(mode: str, intents: List[str], product: Optional
             base[0] = f"What does {p} demand look like?"
             base[1] = f"Is {p} more popular on Flipkart or Amazon?"
  
-    # Add data-driven suggestion if we have outlier data
     if data:
         top = data[0]
         cat = top.get("category_name", "")
@@ -552,7 +1555,6 @@ def build_where_clause(filters: Dict[str, Any], source: str, extra_category: str
  
 # ──────────────────────────────────────────────────────────────────────
 # PRODUCT-SPECIFIC SQL
-# When a product is detected, run a keyword search on product_title
 # ──────────────────────────────────────────────────────────────────────
  
 def build_product_sql(source: str, product: str, limit: int) -> str:
@@ -585,7 +1587,7 @@ def build_product_sql(source: str, product: str, limit: int) -> str:
  
  
 # ──────────────────────────────────────────────────────────────────────
-# AGGREGATED SQL FAN-OUT  (intent-driven)
+# AGGREGATED SQL FAN-OUT
 # ──────────────────────────────────────────────────────────────────────
  
 def build_smart_sql(source: str, where_clause: str, intents: List[str], limit: int) -> Tuple[str, str]:
@@ -696,7 +1698,7 @@ def generate_proactive_insight(data: List[Dict], intents: List[str]) -> str:
  
  
 # ──────────────────────────────────────────────────────────────────────
-# MASTER PROMPT BUILDER  —  mode-aware, context-rich
+# MASTER PROMPT BUILDER
 # ──────────────────────────────────────────────────────────────────────
  
 def build_master_prompt(
@@ -716,7 +1718,6 @@ def build_master_prompt(
     session_context: Dict,
 ) -> str:
  
-    # ── Seller identity ──
     name   = seller_profile.get("name") or session_context.get("seller_name", "")
     cat    = seller_profile.get("category") or session_context.get("product_of_interest", "")
     exp    = seller_profile.get("experience", "")
@@ -729,14 +1730,12 @@ def build_master_prompt(
     if budget: identity_lines.append(f"Budget: {budget}")
     identity_block = "\n".join(identity_lines)
  
-    # ── Conversation history ──
     history_lines = []
     for m in history[-(MAX_HISTORY_TURNS * 2):]:
         prefix = "Seller" if m.role == "user" else "Insydz"
         history_lines.append(f"{prefix}: {m.content}")
     history_block = "\n".join(history_lines)
  
-    # ── Filter context ──
     filter_parts = []
     fc = filters.get("category", "")
     if fc and fc != "All Categories": filter_parts.append(f"Category: {fc}")
@@ -747,7 +1746,6 @@ def build_master_prompt(
         filter_parts.append(f"Min rating: {filters['rating']}★")
     filter_block = ", ".join(filter_parts) or "Full catalog"
  
-    # ── Market score block ──
     score_block = ""
     if market_score:
         score_block = f"""
@@ -762,18 +1760,15 @@ Market Entry Scores for this product/category:
 - Total listings found: {market_score['total_listings']}
 """
  
-    # ── Product-specific data ──
     product_block = ""
     if product_data:
         top5 = product_data[:5]
         product_block = f"\nActual matching products in database (top 5):\n{json.dumps(top5, indent=2, default=str)}"
  
-    # ── Aggregated market data ──
     agg_block = ""
     if agg_data:
         agg_block = f"\nMarket aggregation data:\n{json.dumps(agg_data[:8], indent=2, default=str)}"
  
-    # ── Tone instruction ──
     tone_map = {
         "frustrated": "They seem frustrated — acknowledge briefly, then be extra clear.",
         "confused":   "They seem confused — break it down simply, no jargon.",
@@ -784,7 +1779,6 @@ Market Entry Scores for this product/category:
     }
     tone_instruction = next((v for k, v in tone_map.items() if tone.get(k)), "")
  
-    # ── Mode-specific instructions ──
     mode_instructions = {
         "viability": (
             "The seller wants to know if they can successfully sell a specific product.\n"
@@ -815,7 +1809,6 @@ Market Entry Scores for this product/category:
     }
     mode_instruction = mode_instructions.get(mode, mode_instructions["research"])
  
-    # ── Intent focus ──
     intent_focus_map = {
         "price_analysis":    "Focus on price bands and optimal entry price.",
         "top_products":      "Lead with top performers by reviews and sales.",
@@ -833,19 +1826,14 @@ Market Entry Scores for this product/category:
     focus_lines  = [intent_focus_map[i] for i in intents if i in intent_focus_map]
     focus_block  = "\n".join(f"• {l}" for l in focus_lines) or "• Answer directly and helpfully."
  
-    # ── Proactive insight ──
     proactive_block = f"\nSurprising thing you noticed in the data — work it in naturally:\n{proactive}" if proactive else ""
  
-    # ── Extracted context ──
     extracted_block = ""
     if extracted.get("product"):
         extracted_block = f"\nProduct the seller is asking about: {extracted['product']}"
     if extracted.get("price_target"):
         extracted_block += f"\nTheir target price: ₹{extracted['price_target']:,}"
  
-    # ════════════════════════════════════════════
-    # THE PROMPT
-    # ════════════════════════════════════════════
     prompt = f"""You are Insydz, a sharp and friendly e-commerce expert helping Indian sellers on {platform}.
  
 Your personality:
@@ -907,6 +1895,108 @@ def post_process(text: str) -> str:
  
  
 # ──────────────────────────────────────────────────────────────────────
+# TTS HELPERS  (open-source, local, free)
+# ──────────────────────────────────────────────────────────────────────
+ 
+def _strip_markdown(text: str) -> str:
+    """Remove markdown so TTS speaks clean sentences."""
+    text = re.sub(r"\*{1,2}([^*]+)\*{1,2}", r"\1", text)   # bold/italic
+    text = re.sub(r"`[^`]+`", "", text)                      # inline code
+    text = re.sub(r"#+\s*", "", text)                        # headers
+    text = re.sub(r"[-•]\s+", "", text)                      # bullets
+    text = re.sub(r"\n{2,}", ". ", text)                     # paragraph breaks → pause
+    text = re.sub(r"₹(\d)", r"rupees \1", text)              # ₹ → "rupees"
+    text = re.sub(r"(\d),(\d)", r"\1\2", text)               # remove thousands comma
+    return text.strip()
+ 
+ 
+def translate_to_hindi(text: str) -> str:
+    """Use local Ollama to translate English text to Hindi."""
+    try:
+        prompt = f"Translate the following English text to Hindi. Return ONLY the Hindi translation, no extra text: {text}"
+        resp = requests.post(
+            f"{OLLAMA_API_URL}/api/generate",
+            json={
+                "model": MODEL_NAME, 
+                "prompt": prompt, 
+                "stream": False,
+                "options": {"temperature": 0.3}
+            },
+            timeout=10
+        )
+        resp.raise_for_status()
+        hindi_text = resp.json().get("response", text).strip()
+        print(f"DEBUG: Translated text to Hindi: {hindi_text}")
+        return hindi_text
+    except Exception as e:
+        print(f"DEBUG: Translation failed: {e}")
+        return text  # Fallback to original text if translation fails
+
+
+def synthesize_speech(text: str, voice: str = "af_bella", speed: float = 1.0) -> bytes:
+    """
+    Convert text to speech using local kokoro-onnx.
+    If voice is 'hindi', it translates text to Hindi first.
+    Returns WAV bytes.
+    """
+    import io
+    import soundfile as sf
+    
+    clean = _strip_markdown(text)
+    
+    # Handle hidden translation for Hindi
+    if voice == "hindi":
+        clean = translate_to_hindi(clean)
+        
+        # Try using the real Hindi voice (Piper)
+        piper_model = get_piper_hindi_model()
+        if piper_model:
+            import io
+            import wave
+            try:
+                buf = io.BytesIO()
+                # Synthesize directly to WAV bytes
+                with wave.open(buf, "wb") as wav_file:
+                    wav_file.setnchannels(1)
+                    wav_file.setsampwidth(2)
+                    wav_file.setframerate(piper_model.config.sample_rate)
+                    # The correct attribute name is audio_int16_bytes
+                    for chunk in piper_model.synthesize(clean):
+                        wav_file.writeframes(chunk.audio_int16_bytes)
+                
+                audio_data = buf.getvalue()
+                print(f"DEBUG: Piper synthesis successful, size={len(audio_data)} bytes")
+                return audio_data
+            except Exception as e:
+                print(f"DEBUG: PIPER ERROR: {e}")
+                pass # Fallback to Kokoro English voice
+                
+        voice_name = "af_bella" # English fallback
+    else:
+        voice_name = voice or "af_bella"
+
+    model = get_kokoro_model()
+    if not model:
+        raise FileNotFoundError("Kokoro model files not found.")
+    
+    try:
+        samples, sample_rate = model.create(
+            clean, 
+            voice=voice_name, 
+            speed=speed, 
+            lang="en-us"
+        )
+        
+        # Convert numpy samples to WAV bytes
+        buf = io.BytesIO()
+        sf.write(buf, samples, sample_rate, format='WAV')
+        return buf.getvalue()
+        
+    except Exception as e:
+        raise RuntimeError(f"Kokoro synthesis failed: {str(e)}")
+ 
+ 
+# ──────────────────────────────────────────────────────────────────────
 # OLLAMA
 # ──────────────────────────────────────────────────────────────────────
  
@@ -943,9 +2033,100 @@ def stream_ollama(prompt: str):
     except Exception as e:
         yield "\n\n⚠️ **AI Advisor is currently offline.**\n\nIt looks like the local AI engine (**Ollama**) is not running or accessible. \n\n**To fix this:**\n1. Ensure Ollama is installed and running on your machine.\n2. Make sure the model `llama3.2:3b` is downloaded (`ollama run llama3.2:3b`).\n3. Refresh this page and try again."
  
+
+@router.post("/ai/stt")
+async def speech_to_text(
+    audio:      UploadFile = File(...),
+    language:   str        = Form(default=""),     # "" = auto-detect
+    session_id: str        = Form(default=""),
+):
+    """
+    Transcribe uploaded audio using faster-whisper (local Whisper model).
+    Supports Indian English, Hindi, and all other Whisper languages.
+    Runs fully offline — no API keys needed.
+    """
+    # Validate file type
+    allowed_mime = {
+        "audio/wav", "audio/wave", "audio/webm", "audio/ogg",
+        "audio/mpeg", "audio/mp4", "audio/m4a", "audio/flac",
+        "video/webm",
+        "audio/webm;codecs=opus",  # Added for browser support
+        "audio/ogg;codecs=opus",
+    }
+    content_type = audio.content_type or ""
+    if content_type and content_type not in allowed_mime:
+        raise HTTPException(415, f"Unsupported audio format: {content_type}")
+ 
+    # Save to temp file (faster-whisper needs a file path)
+    suffix = os.path.splitext(audio.filename or "audio.wav")[1] or ".wav"
+    with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+        tmp.write(await audio.read())
+        tmp_path = tmp.name
+ 
+    try:
+        model = get_stt_model()
+        segments, info = model.transcribe(
+            tmp_path,
+            language=language or None,          # None → auto-detect
+            beam_size=5,
+            vad_filter=True,                    # silence removal
+            vad_parameters={"min_silence_duration_ms": 500},
+            word_timestamps=False,
+        )
+        transcript = " ".join(seg.text.strip() for seg in segments).strip()
+        detected_lang = info.language
+        duration      = round(info.duration, 2)
+    except Exception as e:
+        raise HTTPException(500, f"Transcription failed: {str(e)}")
+    finally:
+        os.unlink(tmp_path)
+ 
+    if not transcript:
+        raise HTTPException(422, "Could not detect any speech in the audio.")
+ 
+    return {
+        "transcript":        transcript,
+        "language":          detected_lang,
+        "duration_seconds":  duration,
+        "session_id":        session_id or None,
+        "model":             f"whisper-{STT_MODEL_SIZE}",
+    }
+
+@router.post("/ai/tts")
+def text_to_speech(req: TTSRequest):
+    """
+    Convert text to speech using piper-tts or Kokoro (both local, free).
+    Returns a WAV audio file.
+    """
+    if not req.text or not req.text.strip():
+        raise HTTPException(422, "Text cannot be empty.")
+ 
+    text_input = req.text[:2000]  # cap at 2000 chars to keep latency low
+ 
+    try:
+        wav_bytes = synthesize_speech(
+            text=text_input,
+            voice=req.voice or "af_bella",
+            speed=req.speed or 1.0,
+        )
+    except FileNotFoundError:
+        raise HTTPException(
+            503,
+            "TTS model files not found. "
+            f"Ensure {KOKORO_MODEL_PATH} and {KOKORO_VOICES_PATH} exist."
+        )
+    except RuntimeError as e:
+        raise HTTPException(503, f"TTS synthesis failed: {str(e)}")
+ 
+    return StreamingResponse(
+        iter([wav_bytes]),
+        media_type="audio/wav",
+        headers={"Content-Disposition": "inline; filename=insydz_response.wav"},
+    )
+ 
  
 # ──────────────────────────────────────────────────────────────────────
-# MAIN ENDPOINT  —  /ai/query
+# MAIN ENDPOINT  —  /ai/query  (now with optional TTS output)
 # ──────────────────────────────────────────────────────────────────────
  
 @router.post("/ai/query")
@@ -975,7 +2156,7 @@ def ask_ai(query: AIQuery, db: Session = Depends(get_db)):
     mode      = detect_conversation_mode(question, history)
     extracted = extract_product_from_question(question, history)
  
-    # ── Update session context with discovered info ──
+    # ── Update session context ──
     if extracted.get("product"):
         session_context["product_of_interest"] = extracted["product"]
     if extracted.get("category"):
@@ -986,9 +2167,9 @@ def ask_ai(query: AIQuery, db: Session = Depends(get_db)):
         session_context["seller_name"] = seller_profile["name"]
     save_context(session_id, session_context)
  
-    # ── Cache check (skip for product-specific / viability queries) ──
+    # ── Cache check ──
     is_product_query = bool(extracted.get("product")) or mode == "viability"
-    if not query.stream and not is_product_query:
+    if not query.stream and not is_product_query and not query.tts:
         cache_key = f"ai_v3:{source}:{json.dumps(filters, sort_keys=True)}:{question}"
         cached = r.get(cache_key)
         if cached:
@@ -1004,16 +2185,16 @@ def ask_ai(query: AIQuery, db: Session = Depends(get_db)):
     where_clause    = build_where_clause(filters, source, extra_category)
     agg_sql, platform = build_smart_sql(source, where_clause, intents, limit)
  
-    # ── Execute queries (product + aggregated in parallel) ──
+    # ── Execute queries ──
     agg_data     = []
     product_data = []
-
+ 
     try:
         rows     = db.execute(text(agg_sql)).all()
         agg_data = [dict(r._mapping) for r in rows]
     except Exception as e:
         raise HTTPException(500, f"Database error (agg): {str(e)}")
-
+ 
     try:
         if extracted.get("product"):
             psql         = build_product_sql(source, extracted["product"], 20)
@@ -1022,7 +2203,7 @@ def ask_ai(query: AIQuery, db: Session = Depends(get_db)):
     except Exception as e:
         product_data = []
  
-    # ── Market entry score (for viability mode) ──
+    # ── Market score ──
     score_data   = product_data or agg_data
     market_score = compute_market_score(score_data, extracted.get("price_target")) if mode in ("viability", "decision") else None
  
@@ -1063,6 +2244,16 @@ def ask_ai(query: AIQuery, db: Session = Depends(get_db)):
             clean = post_process(full)
             append_turn(session_id, question, clean)
  
+            # Optionally synthesize TTS for the final answer
+            audio_b64 = None
+            if query.tts:
+                try:
+                    import base64
+                    wav = synthesize_speech(clean, voice=query.voice or "af_bella")
+                    audio_b64 = base64.b64encode(wav).decode()
+                except Exception:
+                    pass  # TTS failure doesn't break the stream
+ 
             meta = {
                 "done":                  True,
                 "session_id":            session_id,
@@ -1072,6 +2263,7 @@ def ask_ai(query: AIQuery, db: Session = Depends(get_db)):
                 "market_score":          market_score,
                 "had_proactive_insight": bool(proactive),
                 "extracted_product":     extracted.get("product"),
+                "audio_base64":          audio_b64,   # WAV as base64 (if tts=true)
             }
             yield f"data: {json.dumps(meta)}\n\n"
  
@@ -1094,6 +2286,16 @@ def ask_ai(query: AIQuery, db: Session = Depends(get_db)):
  
     append_turn(session_id, question, answer)
  
+    # ── Optional TTS: synthesize and return audio_base64 ──
+    audio_b64 = None
+    if query.tts:
+        try:
+            import base64
+            wav       = synthesize_speech(answer, voice=query.voice or "af_bella")
+            audio_b64 = base64.b64encode(wav).decode()
+        except Exception as tts_err:
+            audio_b64 = None  # TTS failure is non-fatal; text answer still returned
+ 
     result = {
         "answer":                answer,
         "cached":                False,
@@ -1108,10 +2310,11 @@ def ask_ai(query: AIQuery, db: Session = Depends(get_db)):
         "product_rows":          len(product_data),
         "had_proactive_insight": bool(proactive),
         "extracted_product":     extracted.get("product"),
+        "audio_base64":          audio_b64,  # WAV as base64, or null
+        "audio_mime":            "audio/wav" if audio_b64 else None,
     }
  
-    # Cache only non-product, non-viability queries
-    if not is_product_query:
+    if not is_product_query and not query.tts:
         cache_key = f"ai_v3:{source}:{json.dumps(filters, sort_keys=True)}:{question}"
         r.setex(cache_key, HISTORY_TTL, json.dumps(result, default=str))
  
@@ -1119,7 +2322,7 @@ def ask_ai(query: AIQuery, db: Session = Depends(get_db)):
  
  
 # ──────────────────────────────────────────────────────────────────────
-# BONUS ENDPOINTS
+# BONUS ENDPOINTS (unchanged)
 # ──────────────────────────────────────────────────────────────────────
  
 class ResetRequest(BaseModel):
@@ -1141,9 +2344,7 @@ def get_history_endpoint(session_id: str):
  
 @router.get("/ai/context/{session_id}")
 def get_context(session_id: str):
-    """Returns what Insydz knows about this seller so far."""
     return {"session_id": session_id, "context": load_context(session_id)}
-
 
 
 # @app.post("/ai/analyze-chart")

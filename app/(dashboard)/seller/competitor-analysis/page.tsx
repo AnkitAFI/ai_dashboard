@@ -589,7 +589,7 @@ function CompetitorAnalysisContent() {
                   <div className="space-y-3">
                     {competitors.map((comp: any, i: number) => (
                       <CompetitorCard
-                        key={comp.asin}
+                        key={`${comp.asin}-${i}`}
                         comp={comp}
                         showThreat
                         isPinned={pinned.has(comp.asin)}
@@ -623,8 +623,8 @@ function CompetitorAnalysisContent() {
                   <p className="text-xs text-slate-400 mb-4">Pin 3–5 rivals to track. Use the 📌 icon on any competitor card to add them here.</p>
                   {isPremium && watchList.length > 0 ? (
                     <div className="space-y-3">
-                      {watchList.map((comp: any) => (
-                        <CompetitorCard key={comp.asin} comp={comp} isPinned onPin={() => togglePin(comp.asin)} showThreat currency={currency} />
+                      {watchList.map((comp: any, i: number) => (
+                        <CompetitorCard key={`${comp.asin}-${i}`} comp={comp} isPinned onPin={() => togglePin(comp.asin)} showThreat currency={currency} />
                       ))}
                     </div>
                   ) : isPremium ? (

@@ -83,3 +83,7 @@ fetch_changes.log
 /.next/
 /out/
 .env*.local
+
+# AI Models (Large files)
+server_py/ai_models/**/*.onnx
+server_py/ai_models/**/*.bin

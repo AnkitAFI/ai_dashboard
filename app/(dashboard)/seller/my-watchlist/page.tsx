@@ -240,9 +240,7 @@ export default function MyWatchlistPage() {
     if (!userId) { setWsLoading(false); return; }
     setWsLoading(true);
     try {
-      const res = await axios.get(`${API}/white-space/watchlist`, {
-        params: { user_id: userId.toString() },
-      });
+      const res = await axios.get(`${API}/white-space/watchlist`);
       setItems(res.data.watchlist as WatchlistItem[]);
     } catch { /* silent */ }
     finally { setWsLoading(false); }
@@ -253,7 +251,7 @@ export default function MyWatchlistPage() {
     if (!userId) { setProfitLoading(false); return; }
     setProfitLoading(true);
     try {
-      const res = await axios.get(`${API}/profitability/saved/${userId}`);
+      const res = await axios.get(`${API}/profitability/saved`);
       setSavedProducts(res.data as SavedProductDB[]);
     } catch { /* silent */ }
     finally { setProfitLoading(false); }
@@ -272,7 +270,7 @@ export default function MyWatchlistPage() {
     setItems((prev) => prev.filter((i) => i.niche !== item.niche));
     try {
       await axios.post(`${API}/white-space/watchlist/toggle`, {
-        user_id: userId.toString(), niche: item.niche, score: item.score,
+        niche: item.niche, score: item.score,
         category: item.category, platform: item.platform, avg_price: item.avg_price,
         avg_rating: item.avg_rating, competitor_count: item.competitor_count,
         est_revenue_max: item.est_revenue_max, top_keyword: item.top_keyword,
@@ -291,7 +289,7 @@ export default function MyWatchlistPage() {
     const original = [...savedProducts];
     setSavedProducts((prev) => prev.filter((p) => p.id !== id));
     try {
-      await axios.delete(`${API}/profitability/saved/${userId}/${id}`);
+      await axios.delete(`${API}/profitability/saved/${id}`);
     } catch {
       setSavedProducts(original);
     } finally {
@@ -309,7 +307,7 @@ export default function MyWatchlistPage() {
       await Promise.all(
         snapshot.map((item) =>
           axios.delete(`${API}/white-space/watchlist/remove`, {
-            params: { user_id: userId.toString(), niche: item.niche },
+            params: { niche: item.niche },
           })
         )
       );

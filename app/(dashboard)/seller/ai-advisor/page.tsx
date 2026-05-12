@@ -251,9 +251,9 @@ function ContextPanel({ context, selectedAsin, onSelectProduct }: {
           >
             All products
           </button>
-          {context.products.map((p) => (
+          {context.products.map((p, i) => (
             <button
-              key={p.asin}
+              key={`${p.asin}-${i}`}
               onClick={() => onSelectProduct(p.asin, p.title)}
               className={`w-full text-left px-2.5 py-2 rounded-xl text-xs transition-all ${
                 selectedAsin === p.asin

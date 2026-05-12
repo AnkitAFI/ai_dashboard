@@ -10,13 +10,13 @@ from sqlalchemy import text
 import json, uuid
 
 from app.db.session import get_db
+from app.api.deps import get_current_user_id
 from app.services.profitability_service import get_user_tier, TIER_FEATURES
 
 router = APIRouter(prefix="/profitability/saved", tags=["Saved Products"])
 
 
 class SaveProductRequest(BaseModel):
-    user_id: str
     name: str
     inputs: dict
     calc_snapshot: dict
@@ -55,8 +55,11 @@ def ensure_table(db: Session):
     db.commit()
 
 
-@router.get("/{user_id}", response_model=List[SavedProduct])
-def list_saved(user_id: str, db: Session = Depends(get_db)):
+@router.get("", response_model=List[SavedProduct])
+def list_saved(
+    db: Session = Depends(get_db),
+    user_id: str = Depends(get_current_user_id)
+):
     ensure_table(db)
     rows = db.execute(text("""
         SELECT id, user_id, name, inputs, calc_snapshot,
@@ -82,16 +85,20 @@ def list_saved(user_id: str, db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=SavedProduct)
-def save_product(req: SaveProductRequest, db: Session = Depends(get_db)):
+def save_product(
+    req: SaveProductRequest,
+    db: Session = Depends(get_db),
+    user_id: str = Depends(get_current_user_id)
+):
     ensure_table(db)
 
-    tier = get_user_tier(req.user_id, db)
+    tier = get_user_tier(user_id, db)
     limit = TIER_FEATURES[tier]["save_limit"]
 
     if limit != 9999:
         count = db.execute(text("""
             SELECT COUNT(*) FROM profitability_saved_products WHERE user_id = :uid
-        """), {"uid": req.user_id}).scalar()
+        """), {"uid": user_id}).scalar()
         if (count or 0) >= limit:
             raise HTTPException(status_code=403, detail={
                 "error": "save_limit_reached",
@@ -107,7 +114,7 @@ def save_product(req: SaveProductRequest, db: Session = Depends(get_db)):
              profit_per_unit, net_margin_pct, monthly_profit)
         VALUES (:id, :uid, :name, :inp, :snap, :p, :m, :mo)
     """), {
-        "id": pid, "uid": req.user_id, "name": req.name.strip(),
+    "id": pid, "uid": user_id, "name": req.name.strip(),
         "inp": json.dumps(req.inputs),
         "snap": json.dumps(req.calc_snapshot),
         "p":  float(req.calc_snapshot.get("profit_per_unit", 0) or 0),
@@ -133,8 +140,12 @@ def save_product(req: SaveProductRequest, db: Session = Depends(get_db)):
     )
 
 
-@router.delete("/{user_id}/{product_id}")
-def delete_saved(user_id: str, product_id: str, db: Session = Depends(get_db)):
+@router.delete("/{product_id}")
+def delete_saved(
+    product_id: str,
+    db: Session = Depends(get_db),
+    user_id: str = Depends(get_current_user_id)
+):
     ensure_table(db)
     result = db.execute(text("""
         DELETE FROM profitability_saved_products

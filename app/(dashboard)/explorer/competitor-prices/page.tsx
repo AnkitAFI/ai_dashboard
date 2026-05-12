@@ -136,7 +136,6 @@ function PriceComparisonContent() {
     if (!asin || !sellerId) return;
     setLoading(true);
     const params = new URLSearchParams({ asin, seller_id: sellerId });
-    if (user?.email) params.append("user_email", user.email);
     fetch(`${BASE_URL}/api/comparison/price?${params}`, { credentials: "include" })
       .then((r) => r.ok ? r.json() : null)
       .then((d) => d && setData(d))
