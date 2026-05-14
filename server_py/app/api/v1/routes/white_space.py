@@ -320,6 +320,8 @@ from app.schemas.white_space_finder_schema import (
 router = APIRouter()
 logger = logging.getLogger(__name__)
 
+from app.api.deps import r
+
 # ── Ollama config ─────────────────────────────────────────────────────────────
 
 OLLAMA_URL = "http://localhost:11434/api/generate"
@@ -934,6 +936,17 @@ def scan_white_spaces(
             scans_used = 0
 
     cfg = _get_tier_config(tier)
+    
+    # ⚡ Redis Cache Check
+    cache_key_raw = f"white_space:scan:{req.query}:{req.category}:{req.platform}:{tier}"
+    cache_key = f"white_space:scan:{hashlib.md5(cache_key_raw.encode()).hexdigest()}"
+    try:
+        cached = r.get(cache_key)
+        if cached:
+            return json.loads(cached)
+    except Exception as e:
+        logger.warning(f"Redis error (get): {e}")
+
     if scans_used >= cfg["scans_limit"]:
         raise HTTPException(status_code=429, detail="Monthly scan limit reached. Upgrade for more scans.")
 
@@ -1145,7 +1158,7 @@ def scan_white_spaces(
         except Exception:
             pass
 
-    return ScanResult(
+    result = ScanResult(
         query=req.query,
         category=req.category or "all",
         platform=req.platform,
@@ -1157,6 +1170,13 @@ def scan_white_spaces(
         locked_count=locked_n,
         ai_market_summary=ai_market_summary,
     )
+
+    try:
+        r.setex(cache_key, 1800, json.dumps(result.dict()))  # 30 min cache
+    except Exception as e:
+        logger.warning(f"Redis error (set): {e}")
+
+    return result
 
 
 # ── Watchlist endpoints ───────────────────────────────────────────────────────

@@ -1940,6 +1940,15 @@ def keyword_gap_analyse(
     """
     Full keyword gap analysis, tiered by subscription.
     """
+    from app.api.deps import r
+    cache_key = f"keyword_gap:analyse:{asin}:{seller_id}:{current_user.email}"
+    try:
+        cached = r.get(cache_key)
+        if cached:
+            return json.loads(cached)
+    except Exception as e:
+        logger.warning("Redis error (get): %s", e)
+
     tier       = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
     is_basic   = tier in ("basic", "premium")
     is_premium = tier == "premium"
@@ -2178,6 +2187,11 @@ def keyword_gap_analyse(
                     "and refresh backend search terms with newly trending terms."
                 )
             result["ai_action_plan"] = fallback[:3]
+
+    try:
+        r.setex(cache_key, 900, json.dumps(result))  # 15 min cache
+    except Exception as e:
+        logger.warning("Redis error (set): %s", e)
 
     return result
 

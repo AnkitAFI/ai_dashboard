@@ -457,6 +457,15 @@ def get_seller_context(
     Load seller store context for the chat UI sidebar.
     Returns products list, avg rating, currency.
     """
+    from app.api.deps import r
+    cache_key = f"ai_advisor:context:{seller_id}"
+    try:
+        cached = r.get(cache_key)
+        if cached:
+            return json.loads(cached)
+    except Exception as e:
+        logger.warning("Redis error (get): %s", e)
+
     tier = _get_user_tier_by_obj(current_user)
 
     context = _load_seller_context(
@@ -467,7 +476,7 @@ def get_seller_context(
     )
 
     # Return slim version for sidebar
-    return {
+    result = {
         "seller_id":      seller_id,
         "total_products": context["total_products"],
         "avg_rating":     context["avg_rating"],
@@ -483,6 +492,13 @@ def get_seller_context(
             for p in context["products"]
         ],
     }
+
+    try:
+        r.setex(cache_key, 600, json.dumps(result))  # 10 min cache
+    except Exception as e:
+        logger.warning("Redis error (set): %s", e)
+
+    return result
 
 
 @router.post("/chat")

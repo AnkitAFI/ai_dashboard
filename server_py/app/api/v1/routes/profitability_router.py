@@ -19,7 +19,8 @@ from app.services.profitability_service import (
     compute_health,
     TIER_FEATURES,
 )
-from app.api.deps import get_current_user_id, validate_session
+from app.api.deps import get_current_user_id, validate_session, r
+import json
 
 # Optional auth helper for profitability routes
 def get_optional_user_id(
@@ -52,8 +53,23 @@ def get_categories(
     db: Session = Depends(get_db),
 ):
     """Pull distinct categories directly from the DB table."""
+    cache_key = f"profitability:categories:{marketplace}"
+    try:
+        cached = r.get(cache_key)
+        if cached:
+            return json.loads(cached)
+    except Exception as e:
+        print(f"Redis error: {e}")
+
     categories = get_categories_from_db(marketplace, db)
-    return {"categories": categories, "marketplace": marketplace}
+    result = {"categories": categories, "marketplace": marketplace}
+    
+    try:
+        r.setex(cache_key, 86400, json.dumps(result))  # 24 hour cache
+    except Exception as e:
+        print(f"Redis error: {e}")
+        
+    return result
 
 
 # ── GET /profitability/tier-info ──────────────────────────────────────────────
@@ -150,6 +166,14 @@ def market_intel(
     except PermissionError:
         raise _upgrade_error("premium")
 
+    cache_key = f"profitability:market-intel:{category}:{marketplace}:{selling_price}"
+    try:
+        cached = r.get(cache_key)
+        if cached:
+            return json.loads(cached)
+    except Exception as e:
+        print(f"Redis error: {e}")
+
     try:
         benchmarks, price_bands, price_position, insight = get_market_intel(
             category, marketplace, selling_price, db
@@ -157,7 +181,7 @@ def market_intel(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    return {
+    result = {
         "category":           category,
         "marketplace":        marketplace,
         "benchmarks":         benchmarks.dict(),
@@ -166,6 +190,13 @@ def market_intel(
         "your_price":         selling_price,
         "insight":            insight,
     }
+
+    try:
+        r.setex(cache_key, 1800, json.dumps(result))  # 30 min cache
+    except Exception as e:
+        print(f"Redis error: {e}")
+
+    return result
 
 
 # ── POST /profitability/health ────────────────────────────────────────────────

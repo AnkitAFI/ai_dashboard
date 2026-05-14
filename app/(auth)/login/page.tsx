@@ -704,53 +704,124 @@ export default function Login() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [otpTimer, setOtpTimer] = useState(0);
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   setErrorMessage("");
+  //   if (!formData.email || !formData.password) {
+  //     setErrorMessage("Please fill in all required fields.");
+  //     return;
+  //   }
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/users/login`, {
+  //       method: "POST",
+  //       credentials: "include",
+  //       headers: { "Content-Type": "application/json", Accept: "application/json" },
+  //       body: JSON.stringify({ email: formData.email, password: formData.password, remember_me: rememberMe }),
+  //     });
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       if (response.status === 404) {
+  //         setErrorMessage("No account found with this email. Please sign up first.");
+  //       } else if (response.status === 401) {
+  //         setErrorMessage("Incorrect password. Click 'Forgot Password' to reset.");
+  //       } else if (response.status === 403) {
+  //         const detail = errorData.detail || "";
+  //         if (detail.includes("verify your email")) {
+  //           document.cookie = `verify_email=${formData.email}; path=/; max-age=600; SameSite=Strict`;
+  //           toast({ title: "Email not verified", description: "Please verify your email to continue.", variant: "destructive" });
+  //           setIsLoading(false);
+  //           router.push("/verify-email");
+  //           return;
+  //         } else {
+  //           setErrorMessage("Account is deactivated. Please contact support.");
+  //         }
+  //       } else {
+  //         setErrorMessage(errorData.detail || "Login failed. Please try again.");
+  //       }
+  //       setIsLoading(false);
+  //       return;
+  //     }
+  //     toast({ title: "Welcome back!", description: "Successfully logged in." });
+  //     await refreshUser();
+  //     router.push("/dashboard");
+  //   } catch (error: any) {
+  //     setErrorMessage("Network error. Please check your connection and try again.");
+  //     setIsLoading(false);
+  //   }
+  // };
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMessage("");
-    if (!formData.email || !formData.password) {
-      setErrorMessage("Please fill in all required fields.");
+  e.preventDefault();
+  setErrorMessage("");
+
+  if (!formData.email || !formData.password) {
+    setErrorMessage("Please fill in all required fields.");
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/login`, {
+      method: "POST",
+      credentials: "include",
+      headers: { 
+        "Content-Type": "application/json", 
+        Accept: "application/json" 
+      },
+      body: JSON.stringify({ 
+        email: formData.email, 
+        password: formData.password, 
+        remember_me: rememberMe 
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      
+      if (response.status === 404) {
+        setErrorMessage("No account found with this email. Please sign up first.");
+      } else if (response.status === 401) {
+        setErrorMessage("Incorrect password. Click 'Forgot Password' to reset.");
+      } else if (response.status === 403) {
+        const detail = errorData.detail || "";
+        if (detail.includes("verify")) {
+          document.cookie = `verify_email=${formData.email}; path=/; max-age=600; SameSite=Strict`;
+          toast({ title: "Email not verified", description: "Please verify your email to continue.", variant: "destructive" });
+          router.push("/verify-email");
+          return;
+        } else {
+          setErrorMessage("Account is deactivated. Please contact support.");
+        }
+      } else {
+        setErrorMessage(errorData.detail || "Login failed. Please try again.");
+      }
       return;
     }
-    setIsLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/users/login`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ email: formData.email, password: formData.password, remember_me: rememberMe }),
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (response.status === 404) {
-          setErrorMessage("No account found with this email. Please sign up first.");
-        } else if (response.status === 401) {
-          setErrorMessage("Incorrect password. Click 'Forgot Password' to reset.");
-        } else if (response.status === 403) {
-          const detail = errorData.detail || "";
-          if (detail.includes("verify your email")) {
-            document.cookie = `verify_email=${formData.email}; path=/; max-age=600; SameSite=Strict`;
-            toast({ title: "Email not verified", description: "Please verify your email to continue.", variant: "destructive" });
-            setIsLoading(false);
-            router.push("/verify-email");
-            return;
-          } else {
-            setErrorMessage("Account is deactivated. Please contact support.");
-          }
-        } else {
-          setErrorMessage(errorData.detail || "Login failed. Please try again.");
-        }
-        setIsLoading(false);
-        return;
-      }
-      toast({ title: "Welcome back!", description: "Successfully logged in." });
-      await refreshUser();
-      router.push("/dashboard");
-    } catch (error: any) {
-      setErrorMessage("Network error. Please check your connection and try again.");
-      setIsLoading(false);
-    }
-  };
 
+    // ==================== SUCCESS ====================
+    const data = await response.json();
+
+    toast({ 
+      title: "Welcome back!", 
+      description: "Successfully logged in." 
+    });
+
+    // Non-blocking refresh (this fixes the delay)
+    refreshUser().catch((err) => {
+      console.warn("Refresh user after login failed (non-critical)", err);
+    });
+
+    // Redirect immediately
+    router.push("/dashboard");
+
+  } catch (error: any) {
+    console.error("Login error:", error);
+    setErrorMessage("Network error. Please check your connection and try again.");
+  } finally {
+    setIsLoading(false);     // ← Always reset loading
+  }
+};
   const handleRequestOTP = async () => {
     if (!forgotEmail) { toast({ title: "Email required", description: "Please enter your email address", variant: "destructive" }); return; }
     setIsProcessing(true);
