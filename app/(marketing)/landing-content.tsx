@@ -3,10 +3,124 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { TrendingUp, Menu, X, Facebook, Twitter, Instagram, BarChart3, Zap, Shield, Mail, Phone, MapPin, Check, Crown, Building2, Sun, Moon, Trophy, Target, DollarSign, Globe, BookOpen, Video, FileText, Users, Presentation, Linkedin, ChevronDown, ShoppingBag, TrendingDown, MessageCircle, Search, Package, Bell, Code, BarChart, Briefcase, Store, ShoppingCart, Flame, LayoutGrid } from "lucide-react";
+import { TrendingUp, Menu, X, Facebook, Twitter, Instagram, BarChart3, Zap, Shield, Mail, Phone, MapPin, Check, Crown, Building2, Sun, Moon, Trophy, Target, DollarSign, Globe, BookOpen, Video, FileText, Users, Presentation, Linkedin, ChevronDown, ShoppingBag, TrendingDown, MessageCircle, Search, Package, Bell, Code, BarChart, Briefcase, Store, ShoppingCart, Flame, LayoutGrid, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 
+
+// const testimonials = [
+//   {
+//     logo: "hulu",
+//     logoColor: "text-[#1CE783]",
+//     rating: "4.9",
+//     text: "The progress tracker is fantastic. It's motivating to see how much I've improved over time. The app has a great mix of features.",
+//     author: "Kate Davis",
+//     handle: "friable_captain_8"
+//   },
+//   {
+//     logo: "HBOMAX",
+//     logoColor: "text-[#000000] dark:text-white",
+//     rating: "4.8",
+//     text: "I love how easy it is to keep track of my goals. The interface is clean and intuitive, making my daily routine much more efficient.",
+//     author: "Martin Kazlauskas",
+//     handle: "sartorial_statue_59"
+//   },
+//   {
+//     logo: "Disney+",
+//     logoColor: "text-[#006E99]",
+//     rating: "4.9",
+//     text: "A game changer for my productivity. The insights provided are incredibly helpful and have allowed me to make better decisions.",
+//     author: "Sanjay Sharma",
+//     handle: "voracious_rainbows_68"
+//   },
+//   {
+//     logo: "STARZ",
+//     logoColor: "text-[#002D58] dark:text-white",
+//     rating: "4.7",
+//     text: "The community features are a great addition. It's wonderful to see others' progress and share my own journey with like-minded people.",
+//     author: "Tawanna Afumba",
+//     handle: "intransigent_toejam_15"
+//   },
+//   {
+//     logo: "VIX",
+//     logoColor: "text-[#FF4B00]",
+//     rating: "4.9",
+//     text: "Excellent support and frequent updates. You can tell the team really cares about their users and is constantly working to improve the app.",
+//     author: "Larry King",
+//     handle: "pendulous_unicom_46"
+//   },
+//   {
+//     logo: "prime video",
+//     logoColor: "text-[#00A8E1]",
+//     rating: "4.8",
+//     text: "Highly recommended for anyone looking to take their progress tracking to the next level. It's simple, yet powerful and very effective.",
+//     author: "Fatima Mohamed",
+//     handle: "salubrious_artist_72"
+//   }
+// ];
+
+const testimonials = [
+  {
+    logo: "🛒",
+    logoColor: "text-orange-500",
+    rating: "4.9",
+    text: "Insydz helped me identify which products were quietly losing margin. Within two weeks I restructured my pricing and saw a 22% improvement in net profit. I didn't need to guess anymore — the data was right there.",
+    author: "Rahul Gupta",
+    handle: "Electronics · 3 yrs on Amazon",
+    role: "Amazon Seller · Delhi",
+    badge: "Amazon India"
+  },
+  {
+    logo: "🏷️",
+    logoColor: "text-pink-500",
+    rating: "5.0",
+    text: "Competitor tracking on Insydz is a game changer. I used to spend hours manually checking prices — now it's all there every morning. Big Billion Days prep was so much smoother this year because of the alerts.",
+    author: "Priya Sharma",
+    handle: "Fashion & Apparel · 5 yrs on Flipkart",
+    role: "Flipkart Seller · Mumbai",
+    badge: "Flipkart"
+  },
+  {
+    logo: "📊",
+    logoColor: "text-blue-500",
+    rating: "4.8",
+    text: "Managing 4 brands across Amazon and Flipkart was a nightmare before Insydz. Now I have one dashboard and my clients get reports they can actually act on. It has genuinely changed how I run my agency.",
+    author: "Aarav Kumar",
+    handle: "Multi-brand Agency · Bengaluru",
+    role: "Brand Manager · Bengaluru",
+    badge: "Amazon + Flipkart"
+  },
+  {
+    logo: "🔍",
+    logoColor: "text-purple-500",
+    rating: "4.7",
+    text: "The AI keyword suggestions took my listings from page 4 to page 1 within a month. I was skeptical at first but the data doesn't lie — my organic sales doubled and my ad spend dropped 30%.",
+    author: "Sneha Mehta",
+    handle: "Home & Kitchen · 2 yrs on Amazon",
+    role: "Amazon Seller · Pune",
+    badge: "Amazon India"
+  },
+  {
+    logo: "🏆",
+    logoColor: "text-yellow-500",
+    rating: "4.9",
+    text: "Finally a tool built for Indian marketplaces, not just adapted from western tools. The Flipkart-specific insights are accurate and the support team actually understands our local market challenges.",
+    author: "Vikram Reddy",
+    handle: "Sports & Fitness · 4 yrs on Flipkart",
+    role: "Flipkart Seller · Hyderabad",
+    badge: "Flipkart"
+  },
+  {
+    logo: "🚀",
+    logoColor: "text-pink-500",
+    rating: "4.8",
+    text: "We onboarded 12 new clients after showing them Insydz reports during pitches. The data precision and India-specific market intelligence gives us an edge no other tool provides. Our clients love the dashboards.",
+    author: "Nidhi Joshi",
+    handle: "E-commerce Agency · 12 clients",
+    role: "E-commerce Agency · Ahmedabad",
+    badge: "Amazon + Flipkart"
+  }
+];
 
 export default function LandingContent() {
   const router = useRouter();
@@ -579,7 +693,7 @@ export default function LandingContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-6 leading-tight tracking-tight">
-              Building India's Most Trusted <span className="text-[#B53BA3]">Seller Analytics Platform</span>
+              Building India's Most Trusted <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Seller Analytics Platform</span>
             </h2>
             <p className="text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto font-medium">
               Supporting data driven decisions for Indian sellers across every marketplace
@@ -597,7 +711,7 @@ export default function LandingContent() {
                 key={index} 
                 className="bg-white dark:bg-gray-900 p-8 rounded-2xl shadow-sm border border-gray-50 dark:border-gray-800 flex flex-col items-center justify-center text-center transition-all hover:shadow-md"
               >
-                <div className="text-4xl md:text-5xl font-extrabold text-[#B53BA3] mb-4">
+                <div className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
                   {stat.title}
                 </div>
                 <div className="text-gray-500 dark:text-gray-400 font-medium text-sm md:text-base">
@@ -609,7 +723,50 @@ export default function LandingContent() {
         </div>
       </section>
 
+      {/* Testimonials Section */}
+      <section id="Testimonials" className="py-16 bg-slate-50/50 dark:bg-gray-900/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-6">
+              Our trusted <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Clients</span>
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto font-medium">
+              Our mission is to drive progress and enhance the lives of our customers by delivering superior products and services that exceed expectations.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pt-10">
+            {testimonials.map((t, i) => (
+              <div 
+                key={i} 
+                className="bg-white dark:bg-gray-800 p-8 rounded-[2rem] shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-gray-100 dark:border-gray-700 flex flex-col justify-between h-full transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 z-10"
+              >
+                <div className="flex justify-between items-start mb-8">
+                  <div className={`text-2xl font-black tracking-tighter uppercase ${t.logoColor || 'text-gray-900 dark:text-white'}`}>
+                    {t.logo}
+                  </div>
+                  <div className="flex items-center gap-1.5 bg-gray-50 dark:bg-gray-700/50 px-3 py-1 rounded-full">
+                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{t.rating}</span>
+                    <Star className="w-4 h-4 text-green-500 fill-green-500" />
+                  </div>
+                </div>
+
+                <p className="text-gray-700 dark:text-gray-300 text-lg leading-relaxed mb-8 font-medium italic">
+                  "{t.text}"
+                </p>
+
+                <div>
+                  <h4 className="text-xl font-bold text-gray-900 dark:text-white">{t.author}</h4>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">{t.handle}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Subscription Plans Section */}
+
       <section id="Pricing" className="py-16 bg-white dark:bg-gray-900 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-20">
