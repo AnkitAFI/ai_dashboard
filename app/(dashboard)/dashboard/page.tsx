@@ -38,6 +38,7 @@ const MARKETPLACE_FILTER_MAP: Record<string, string> = {
   both:         "amazon", // default to amazon when both
 };
 
+
 function DashboardContent() {
   const router = useRouter();
   const { selectedAlert, isAlertDialogOpen, closeAlertDialog } = useAlerts();
@@ -207,3 +208,4 @@ export default function DashboardPage() {
     </Suspense>
   );
 }
+

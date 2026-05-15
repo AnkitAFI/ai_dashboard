@@ -73,3 +73,15 @@ async def get_current_user_jwt(token: str = Depends(oauth2_scheme), db: Session 
 
 def get_current_user_id(current_user = Depends(get_current_user)) -> str:
     return str(current_user.id)
+
+def get_optional_user(session_id: str = Cookie(None), db: Session = Depends(get_db)):
+    from app.db.models.user_model import User
+    
+    if not session_id:
+        return None
+    
+    session_data = validate_session(session_id)
+    if not session_data:
+        return None
+    
+    return db.query(User).filter(User.id == session_data["user_id"]).first()

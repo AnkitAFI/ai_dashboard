@@ -546,9 +546,7 @@ function WhiteSpaceFinderContent() {
   const fetchWatchlist = useCallback(async () => {
     if (!userId) return;
     try {
-      const res = await axios.get(`${API}/white-space/watchlist`, {
-        params: { user_id: userId.toString() },
-      });
+      const res = await axios.get(`${API}/white-space/watchlist`);
       setWatchlistItems(res.data.watchlist as WatchlistItem[]);
     } catch {
       // Non-critical
@@ -593,7 +591,6 @@ function WhiteSpaceFinderContent() {
         query:    query.trim(),
         category: category === "all" ? null : category,
         platform,
-        user_id:  userId?.toString() ?? "",
       });
       setResult(res.data as ScanResult);
       setTimeout(() => window.scrollTo({ top: 300, behavior: "smooth" }), 100);
@@ -647,7 +644,6 @@ function WhiteSpaceFinderContent() {
     setWatchlistLoading(true);
     try {
       await axios.post(`${API}/white-space/watchlist/toggle`, {
-        user_id:          userId.toString(),
         niche:            opp.product_niche,
         score:            opp.score,
         category:         opp.category,
@@ -678,7 +674,6 @@ function WhiteSpaceFinderContent() {
     if (!userId) return;
     try {
       await axios.post(`${API}/white-space/watchlist/toggle`, {
-        user_id:          userId.toString(),
         niche:            item.niche,
         score:            item.score,
         category:         item.category,
@@ -758,7 +753,7 @@ function WhiteSpaceFinderContent() {
 
           <div className="flex items-center gap-3 flex-wrap">
             {/* Ollama status — Premium only */}
-            {isPremium && (
+            {/* {isPremium && (
               <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 rounded-xl border border-slate-800">
                 <div className="relative w-2.5 h-2.5">
                   <div className={`w-2 h-2 rounded-full ${
@@ -782,7 +777,7 @@ function WhiteSpaceFinderContent() {
                   </code>
                 )}
               </div>
-            )}
+            )} */}
 
             {/* Scan counter — shown once a scan has been run */}
             {result && (

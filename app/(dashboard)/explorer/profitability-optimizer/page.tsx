@@ -20,6 +20,8 @@ import ReactMarkdown from "react-markdown";
 
 const API = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com/api");
 
+axios.defaults.withCredentials = true;
+
 const CHART_STYLE = {
   backgroundColor: "rgba(255,255,255,0.97)",
   borderRadius: "12px",
@@ -164,6 +166,7 @@ function useOllamaStream() {
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(body),
         signal: abortRef.current.signal,
       });
@@ -377,25 +380,7 @@ function AIPanel({
 
   return (
     <div className="space-y-4">
-      {/* Status bar */}
-      <div className="flex items-center justify-between bg-slate-900 rounded-2xl px-5 py-3 border border-slate-800">
-        <div className="flex items-center gap-3">
-          <div className="relative w-3 h-3">
-            <div className={`w-2.5 h-2.5 rounded-full ${statusColor}`} style={ready ? { boxShadow: "0 0 8px rgba(74,222,128,0.7)" } : {}} />
-            {ready && <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-400 opacity-25 animate-ping" />}
-          </div>
-          <span className="text-sm font-mono text-slate-300">
-            {!aiStatus ? "Checking Ollama..." : ready ? `${str(aiStatus.model)} · ready` : aiStatus.status === "no_model" ? "Ollama running · model missing" : "Ollama offline"}
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          {aiStatus?.setup_hint && (
-            <code className="text-xs text-amber-400 bg-amber-950/60 px-3 py-1 rounded-lg border border-amber-800/40">
-              {aiStatus.setup_hint}
-            </code>
-          )}
-        </div>
-      </div>
+
 
       {/* Mode tabs */}
       <div className="flex gap-2 flex-wrap">
@@ -632,7 +617,7 @@ export default function ProfitabilityOptimizer() {
   const fetchSavedProducts = useCallback(async () => {
     if (!userId) return;
     try {
-      const res = await axios.get(`${API}/profitability/saved/${userId}`);
+      const res = await axios.get(`${API}/profitability/saved`);
       setSaved(res.data as SavedProductDB[]);
     } catch {
       // silent
@@ -682,7 +667,7 @@ export default function ProfitabilityOptimizer() {
 
   const fetchTierInfo = async () => {
     try {
-      const res = await axios.get(`${API}/profitability/tier-info`, { params: { user_id: userId } });
+      const res = await axios.get(`${API}/profitability/tier-info`);
       setTier(String(res.data.tier ?? "free"));
     } catch { /* silent */ }
   };
@@ -697,7 +682,7 @@ export default function ProfitabilityOptimizer() {
     if (!inputs.category) return;
     setCalcLoading(true);
     try {
-      const res = await axios.post(`${API}/profitability/calculate`, { ...inputs, user_id: userId?.toString() || "" });
+      const res = await axios.post(`${API}/profitability/calculate`, { ...inputs });
       setCalcResult(res.data as CalcResult);
       setTier(String(res.data.tier ?? "free"));
     } catch (e) {
@@ -711,7 +696,7 @@ export default function ProfitabilityOptimizer() {
     if (!isPremium) { setUpgrade({ open: true, feature: "Scenario planner" }); return; }
     setTabLoading(true);
     try {
-      const res = await axios.post(`${API}/profitability/scenarios`, { ...inputs, user_id: userId?.toString() || "" });
+      const res = await axios.post(`${API}/profitability/scenarios`, { ...inputs });
       setScenarios(res.data.scenarios);
       setSensitivity(res.data.sensitivity);
     } catch (e: unknown) {
@@ -725,7 +710,7 @@ export default function ProfitabilityOptimizer() {
     setTabLoading(true);
     try {
       const res = await axios.get(`${API}/profitability/market-intel`, {
-        params: { category: inputs.category, marketplace: inputs.marketplace, selling_price: inputs.selling_price, user_id: userId },
+        params: { category: inputs.category, marketplace: inputs.marketplace, selling_price: inputs.selling_price },
       });
       setMarketIntel(res.data as Record<string, unknown>);
     } catch (e: unknown) {
@@ -739,7 +724,7 @@ export default function ProfitabilityOptimizer() {
     if (!isPremium) { setUpgrade({ open: true, feature: "Business health" }); return; }
     setTabLoading(true);
     try {
-      const res = await axios.post(`${API}/profitability/health`, { ...inputs, user_id: userId?.toString() || "" });
+      const res = await axios.post(`${API}/profitability/health`, { ...inputs });
       setHealthData(res.data as Record<string, unknown>);
     } catch (e: unknown) {
       if ((e as { response?: { status?: number } })?.response?.status === 403)
@@ -771,7 +756,6 @@ export default function ProfitabilityOptimizer() {
     setSavingProduct(true);
     try {
       const res = await axios.post(`${API}/profitability/saved`, {
-        user_id:       userId.toString(),
         name:          saveName.trim(),
         inputs:        inputs,
         calc_snapshot: calcResult,

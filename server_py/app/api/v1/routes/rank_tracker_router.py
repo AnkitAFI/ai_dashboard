@@ -16,7 +16,8 @@ from pydantic import BaseModel
 from sqlalchemy import func
 from sqlalchemy.orm import Session
  
-from app.db.session import get_db, SessionLocal          # ← import SessionLocal
+from app.db.session import get_db, SessionLocal
+from app.api.deps import get_current_user
 from app.models.legacy_models import (
     TrackedProduct,
     User,
@@ -605,25 +606,25 @@ def _get_recent_alerts(
 def get_rank_profile(
     asin:       str           = Query(...),
     seller_id:  str           = Query(...),
-    user_id:    Optional[str] = Query(None),
-    user_email: Optional[str] = Query(None),
     db:         Session       = Depends(get_db),
+    current_user: User        = Depends(get_current_user),
 ) -> dict:
     """Load rank tracker profile for a given ASIN + seller."""
-    tier = _get_user_tier(db, user_email)
+    tier = _get_user_tier(db, current_user.email)
  
     tracked = (
         db.query(TrackedProduct)
         .filter(
             TrackedProduct.asin      == asin,
             TrackedProduct.seller_id == seller_id,
+            TrackedProduct.user_email == current_user.email,
         )
         .first()
     )
     if not tracked:
         raise HTTPException(status_code=404, detail="Tracked product not found")
  
-    profile = _build_profile_response(tracked, db, seller_id, user_email, tier)
+    profile = _build_profile_response(tracked, db, seller_id, current_user.email, tier)
  
     profile["recent_alerts"] = (
         _get_recent_alerts(db, seller_id, asin)
@@ -638,6 +639,7 @@ def get_rank_profile(
 def add_keyword(
     body: AddKeywordRequest,
     db:   Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ) -> dict:
     """
     Add a keyword to track for an ASIN.
@@ -645,7 +647,7 @@ def add_keyword(
     Triggers an immediate background rank check via RapidAPI.
     Returns updated profile.
     """
-    tier    = _get_user_tier(db, body.user_email)
+    tier    = _get_user_tier(db, current_user.email)
     limit   = _keyword_limit(tier)
     keyword = _clean_keyword(body.keyword)
  
@@ -657,6 +659,7 @@ def add_keyword(
         .filter(
             TrackedProduct.asin      == body.asin,
             TrackedProduct.seller_id == body.seller_id,
+            TrackedProduct.user_email == current_user.email,
         )
         .first()
     )
@@ -700,7 +703,7 @@ def add_keyword(
         db.add(RankTrackedKeyword(
             seller_id  = body.seller_id,
             asin       = body.asin,
-            user_email = body.user_email,
+            user_email = current_user.email,
             keyword    = keyword,
             country    = country,
         ))
@@ -710,27 +713,29 @@ def add_keyword(
         # IMPORTANT: passes NO db session — thread creates its own SessionLocal()
         threading.Thread(
             target  = _run_rank_checks_in_thread,
-            args    = (body.seller_id, body.asin, body.user_email, [keyword], country),
+            args    = (body.seller_id, body.asin, current_user.email, [keyword], country),
             daemon  = True,
         ).start()
  
-    return _build_profile_response(tracked, db, body.seller_id, body.user_email, tier)
+    return _build_profile_response(tracked, db, body.seller_id, current_user.email, tier)
  
  
 @router.post("/keywords/remove")
 def remove_keyword(
     body: RemoveKeywordRequest,
     db:   Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ) -> dict:
     """Remove a tracked keyword and all its snapshot history."""
     keyword = _clean_keyword(body.keyword)
-    tier    = _get_user_tier(db, body.user_email)
+    tier    = _get_user_tier(db, current_user.email)
  
     tracked = (
         db.query(TrackedProduct)
         .filter(
             TrackedProduct.asin      == body.asin,
             TrackedProduct.seller_id == body.seller_id,
+            TrackedProduct.user_email == current_user.email,
         )
         .first()
     )
@@ -757,26 +762,28 @@ def remove_keyword(
  
     db.commit()
  
-    return _build_profile_response(tracked, db, body.seller_id, body.user_email, tier)
+    return _build_profile_response(tracked, db, body.seller_id, current_user.email, tier)
  
  
 @router.post("/refresh")
 def refresh_ranks(
     body: RefreshRequest,
     db:   Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ) -> dict:
     """
     Trigger a fresh rank check for all tracked keywords of an ASIN.
     Rate-limited to once per REFRESH_COOLDOWN_MINUTES.
     Background thread does the actual checking — returns profile immediately.
     """
-    tier = _get_user_tier(db, body.user_email)
+    tier = _get_user_tier(db, current_user.email)
  
     tracked = (
         db.query(TrackedProduct)
         .filter(
             TrackedProduct.asin      == body.asin,
             TrackedProduct.seller_id == body.seller_id,
+            TrackedProduct.user_email == current_user.email,
         )
         .first()
     )
@@ -818,11 +825,11 @@ def refresh_ranks(
         # ── Same fix: no db session passed to thread ───────────────────────
         threading.Thread(
             target  = _run_rank_checks_in_thread,
-            args    = (body.seller_id, body.asin, body.user_email, keywords, country),
+            args    = (body.seller_id, body.asin, current_user.email, keywords, country),
             daemon  = True,
         ).start()
  
-    return _build_profile_response(tracked, db, body.seller_id, body.user_email, tier)
+    return _build_profile_response(tracked, db, body.seller_id, current_user.email, tier)
  
  
 # ─────────────────────────────────────────────────────────────────────────────
@@ -905,9 +912,10 @@ async def _stream_ollama(prompt: str) -> AsyncGenerator[str, None]:
 async def ai_rank_insight(
     body: AIInsightRequest,
     db:   Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ) -> StreamingResponse:
     """Premium-only SSE endpoint. Streams AI analysis of rank trends."""
-    tier = _get_user_tier(db, body.user_email)
+    tier = _get_user_tier(db, current_user.email)
  
     if tier != "premium":
         async def _gate() -> AsyncGenerator[str, None]:
@@ -920,6 +928,7 @@ async def ai_rank_insight(
         .filter(
             TrackedProduct.asin      == body.asin,
             TrackedProduct.seller_id == body.seller_id,
+            TrackedProduct.user_email == current_user.email,
         )
         .first()
     )
@@ -929,7 +938,7 @@ async def ai_rank_insight(
             yield "data: [DONE]\n\n"
         return StreamingResponse(_not_found(), media_type="text/event-stream")
  
-    profile = _build_profile_response(tracked, db, body.seller_id, body.user_email, tier)
+    profile = _build_profile_response(tracked, db, body.seller_id, current_user.email, tier)
     prompt  = _build_rank_insight_prompt(profile)
  
     if not prompt:

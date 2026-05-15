@@ -21,6 +21,8 @@ from app.api.v1.routes.onboarding_router import router as onboarding_router
 from app.api.v1.routes.seller_optimizer_router import router as seller_optimizer_router
 from app.api.v1.routes.rank_tracker_router import router as rank_tracker_router
 from app.api.v1.routes.seller_ai_advisor_router import router as seller_ai_advisor_router
+from app.api.v1.routes.festive_router import router as festive_router
+from app.api.v1.routes.watchlist_router import router as watchlist_router
 
 api_router = APIRouter()
 
@@ -43,3 +45,5 @@ api_router.include_router(seller_router, prefix="/seller", tags=["Seller Dashboa
 api_router.include_router(seller_optimizer_router, tags=["AI"])
 api_router.include_router(rank_tracker_router)
 api_router.include_router(seller_ai_advisor_router)
+api_router.include_router(festive_router)
+api_router.include_router(watchlist_router)

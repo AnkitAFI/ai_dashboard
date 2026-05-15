@@ -697,3 +697,4 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
     </div>
   );
 }
+

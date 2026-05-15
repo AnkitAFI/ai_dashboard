@@ -27,7 +27,7 @@ from datetime import datetime, timedelta
 from typing import AsyncGenerator, Optional
 
 import httpx
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Cookie
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from sqlalchemy import func
@@ -40,6 +40,7 @@ from app.models.legacy_models import (
     RankTrackedKeyword,
     RankSnapshot,
 )
+from app.api.deps import get_current_user, validate_session
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +55,19 @@ OLLAMA_TIMEOUT = 90.0
 # For production replace with Redis or DB-backed history
 _session_history: dict[str, list[dict]] = {}
 MAX_HISTORY_TURNS = 6
+
+
+# Optional auth helper for AI advisor routes
+def get_optional_user(
+    session_id: str = Cookie(None),
+    db: Session = Depends(get_db),
+):
+    if not session_id:
+        return None
+    session_data = validate_session(session_id)
+    if not session_data:
+        return None
+    return db.query(User).filter(User.id == session_data["user_id"]).first()
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -75,16 +89,10 @@ class ChatRequest(BaseModel):
 # HELPERS
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _get_user_tier(db: Session, user_email: Optional[str]) -> str:
-    if not user_email:
+def _get_user_tier_by_obj(user: Optional[User]) -> str:
+    if not user:
         return "free"
-    try:
-        user = db.query(User).filter(User.email == user_email).first()
-        if user and user.subscription_tier:
-            return user.subscription_tier.lower().strip()
-    except Exception as exc:
-        logger.warning("_get_user_tier: %s", exc)
-    return "free"
+    return (user.subscription_tier or "free").lower().strip()
 
 
 def _clean(text: Optional[str]) -> str:
@@ -442,24 +450,33 @@ async def _stream_ollama(prompt: str) -> AsyncGenerator[str, None]:
 @router.get("/context")
 def get_seller_context(
     seller_id:  str           = Query(...),
-    user_email: Optional[str] = Query(None),
+    current_user: Optional[User] = Depends(get_optional_user),
     db:         Session       = Depends(get_db),
 ) -> dict:
     """
     Load seller store context for the chat UI sidebar.
     Returns products list, avg rating, currency.
     """
-    tier = _get_user_tier(db, user_email)
+    from app.api.deps import r
+    cache_key = f"ai_advisor:context:{seller_id}"
+    try:
+        cached = r.get(cache_key)
+        if cached:
+            return json.loads(cached)
+    except Exception as e:
+        logger.warning("Redis error (get): %s", e)
+
+    tier = _get_user_tier_by_obj(current_user)
 
     context = _load_seller_context(
         db         = db,
         seller_id  = seller_id,
-        user_email = user_email,
+        user_email = current_user.email if current_user else None,
         tier       = tier,
     )
 
     # Return slim version for sidebar
-    return {
+    result = {
         "seller_id":      seller_id,
         "total_products": context["total_products"],
         "avg_rating":     context["avg_rating"],
@@ -476,10 +493,18 @@ def get_seller_context(
         ],
     }
 
+    try:
+        r.setex(cache_key, 600, json.dumps(result))  # 10 min cache
+    except Exception as e:
+        logger.warning("Redis error (set): %s", e)
+
+    return result
+
 
 @router.post("/chat")
 async def chat(
     body: ChatRequest,
+    current_user: User = Depends(get_current_user),
     db:   Session = Depends(get_db),
 ) -> StreamingResponse:
     """
@@ -493,7 +518,7 @@ async def chat(
     Basic     → products + reviews + basic rank data.
     Premium   → everything including 30-day rank history.
     """
-    tier = _get_user_tier(db, body.user_email)
+    tier = _get_user_tier_by_obj(current_user)
 
     # ── Tier gate ──────────────────────────────────────────────────────────
     if tier == "free":
@@ -512,7 +537,7 @@ async def chat(
     context = _load_seller_context(
         db          = db,
         seller_id   = body.seller_id,
-        user_email  = body.user_email,
+        user_email  = current_user.email if current_user else body.user_email,
         tier        = tier,
         focus_asin  = body.focus_asin,
     )

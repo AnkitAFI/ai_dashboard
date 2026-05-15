@@ -251,9 +251,9 @@ function ContextPanel({ context, selectedAsin, onSelectProduct }: {
           >
             All products
           </button>
-          {context.products.map((p) => (
+          {context.products.map((p, i) => (
             <button
-              key={p.asin}
+              key={`${p.asin}-${i}`}
               onClick={() => onSelectProduct(p.asin, p.title)}
               className={`w-full text-left px-2.5 py-2 rounded-xl text-xs transition-all ${
                 selectedAsin === p.asin
@@ -699,7 +699,7 @@ function AIAdvisorContent() {
                       </button>
                     </div>
                     <p className="text-[10px] text-slate-400 mt-2 text-center">
-                      Press Enter to send · Shift+Enter for new line · Powered by Ollama
+                      Press Enter to send · Shift+Enter for new line
                     </p>
                   </div>
                 </div>

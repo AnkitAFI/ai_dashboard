@@ -136,7 +136,7 @@ export default function MyWatchlist() {
     if (!userId) return;
     setProfitLoading(true);
     try {
-      const res = await axios.get(`${API}/profitability/saved/${userId}`);
+      const res = await axios.get(`${API}/profitability/saved`);
       if (Array.isArray(res.data)) {
         const flattened = res.data.map((p: SavedProductDB) => ({
           ...p,
@@ -160,7 +160,7 @@ export default function MyWatchlist() {
   const removeItem = async (niche: string) => {
     if (!userId) return;
     try {
-      await axios.delete(`${API}/white-space/watchlist/remove?user_id=${userId}&niche=${encodeURIComponent(niche)}`);
+      await axios.delete(`${API}/white-space/watchlist/remove?niche=${encodeURIComponent(niche)}`);
       setItems((prev) => prev.filter((i) => i.niche !== niche));
     } catch (err) {
       console.error("Remove error:", err);
@@ -169,7 +169,7 @@ export default function MyWatchlist() {
 
   const removeSavedProduct = async (id: string) => {
     try {
-      await axios.delete(`${API}/profitability/saved/${userId}/${id}`);
+      await axios.delete(`${API}/profitability/saved/${id}`);
       setSavedProducts((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
       console.error("Remove product error:", err);

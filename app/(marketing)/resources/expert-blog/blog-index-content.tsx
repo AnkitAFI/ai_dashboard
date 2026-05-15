@@ -86,6 +86,16 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "16",
+    title: "Amazon Private Label Guide for Indian Sellers in 2026: The Complete Guide",
+    excerpt: "Learn how to start and scale an Amazon Private Label business in India in 2026. From product research to sourcing and building a D2C brand.",
+    category: "Seller Tools & Strategy",
+    readTime: "12 min read",
+    image: "/build-your-brand.png",
+    route: "/resources/expert-blog/amazon-private-label-india-2026",
+    popular: true
+  },
+  {
     id: "15",
     title: "Amazon Vine Program for Indian Sellers in 2026: Is It Worth the Cost?",
     excerpt: "Learn the flat fee per ASIN, enrollment criteria, and strategic benefits of Amazon Vine India in 2026. Get 30 verified reviews and boost your launch velocity.",

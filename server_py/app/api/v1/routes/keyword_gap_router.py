@@ -683,6 +683,7 @@
 #         .filter(
 #             TrackedProduct.asin      == asin,
 #             TrackedProduct.seller_id == seller_id,
+#             TrackedProduct.user_email == current_user.email,
 #         )
 #         .first()
 #     )
@@ -959,6 +960,7 @@
 #         .filter(
 #             TrackedProduct.asin      == asin,
 #             TrackedProduct.seller_id == seller_id,
+#             TrackedProduct.user_email == current_user.email,
 #         )
 #         .first()
 #     )
@@ -1019,6 +1021,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
+from app.api.deps import get_current_user
 from app.models.legacy_models import (
     RapidapiAmazonProducts,
     TrackedProduct,
@@ -1498,8 +1501,9 @@ def _get_competitor_titles(
     tracked_siblings = (
         db.query(TrackedProduct)
         .filter(
-            TrackedProduct.asin     != tracked.asin,
-            TrackedProduct.currency == currency,
+            TrackedProduct.asin       != tracked.asin,
+            TrackedProduct.currency   == currency,
+            TrackedProduct.user_email == tracked.user_email,
             TrackedProduct.product_title.isnot(None),
         )
         .limit(500)
@@ -1930,19 +1934,22 @@ def _build_plan_prompt(
 def keyword_gap_analyse(
     asin:       str           = Query(...,  description="Amazon ASIN"),
     seller_id:  str           = Query(...,  description="Seller ID"),
-    user_email: Optional[str] = Query(None, description="User email for tier lookup"),
     db:         Session       = Depends(get_db),
+    current_user: User        = Depends(get_current_user),
 ) -> dict:
     """
     Full keyword gap analysis, tiered by subscription.
-
-    free    → title keywords, total gap count teaser
-    basic   → + full gap/shared/unique sets, heatmap, coverage score,
-                competitor breakdown, semantic similarity scores, gap clusters
-    premium → + review keyword mining, AI opportunity scores (Ollama CoT),
-                AI listing rewrite, cluster-aware prioritised action plan
     """
-    tier       = _get_user_tier(db, user_email) if user_email else "free"
+    from app.api.deps import r
+    cache_key = f"keyword_gap:analyse:{asin}:{seller_id}:{current_user.email}"
+    try:
+        cached = r.get(cache_key)
+        if cached:
+            return json.loads(cached)
+    except Exception as e:
+        logger.warning("Redis error (get): %s", e)
+
+    tier       = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
     is_basic   = tier in ("basic", "premium")
     is_premium = tier == "premium"
 
@@ -1951,6 +1958,7 @@ def keyword_gap_analyse(
         .filter(
             TrackedProduct.asin      == asin,
             TrackedProduct.seller_id == seller_id,
+            TrackedProduct.user_email == current_user.email,
         )
         .first()
     )
@@ -2180,6 +2188,11 @@ def keyword_gap_analyse(
                 )
             result["ai_action_plan"] = fallback[:3]
 
+    try:
+        r.setex(cache_key, 900, json.dumps(result))  # 15 min cache
+    except Exception as e:
+        logger.warning("Redis error (set): %s", e)
+
     return result
 
 
@@ -2191,20 +2204,20 @@ def keyword_gap_analyse(
 def get_keyword_competitors(
     asin:       str           = Query(...),
     seller_id:  str           = Query(...),
-    user_email: Optional[str] = Query(None),
     db:         Session       = Depends(get_db),
+    current_user: User        = Depends(get_current_user),
 ) -> dict:
     """
     Returns the top semantically similar competitor products for the frontend.
-    Similarity scores now reflect sentence-transformer cosine similarity.
     """
-    tier = _get_user_tier(db, user_email) if user_email else "free"
+    tier = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
 
     tracked = (
         db.query(TrackedProduct)
         .filter(
             TrackedProduct.asin      == asin,
             TrackedProduct.seller_id == seller_id,
+            TrackedProduct.user_email == current_user.email,
         )
         .first()
     )

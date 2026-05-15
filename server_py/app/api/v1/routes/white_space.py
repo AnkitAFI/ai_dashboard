@@ -311,6 +311,7 @@ from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
+from app.api.deps import get_current_user_id, get_optional_user
 from app.services.profitability_service import get_user_tier
 from app.schemas.white_space_finder_schema import (
     ScanRequest, ScoreBreakdown, Competitor, Opportunity, ScanResult, AIInsight, WatchlistItemRequest
@@ -318,6 +319,8 @@ from app.schemas.white_space_finder_schema import (
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
+
+from app.api.deps import r
 
 # ── Ollama config ─────────────────────────────────────────────────────────────
 
@@ -901,14 +904,22 @@ def get_categories(platform: str = "both", db: Session = Depends(get_db)):
 # ── Main scan endpoint ────────────────────────────────────────────────────────
 
 @router.post("/scan", response_model=ScanResult)
-def scan_white_spaces(req: ScanRequest, db: Session = Depends(get_db)):
+def scan_white_spaces(
+    req: ScanRequest,
+    db: Session = Depends(get_db),
+    user: Optional[Any] = Depends(get_optional_user)
+):
 
     # ── Resolve tier + scan count ──────────────────────────────────────────
     tier = "free"
     scans_used = 0
-    if req.user_id:
+    
+    # Use session user if available
+    user_id = str(user.id) if user else None
+
+    if user_id:
         try:
-            tier = get_user_tier(req.user_id, db)
+            tier = get_user_tier(user_id, db)
         except Exception:
             tier = "free"
         try:
@@ -918,13 +929,24 @@ def scan_white_spaces(req: ScanRequest, db: Session = Depends(get_db)):
                     WHERE user_id = :uid
                     AND created_at > NOW() - INTERVAL '30 days'
                 """),
-                {"uid": req.user_id},
+                {"uid": user_id},
             ).scalar()
             scans_used = int(row or 0)
         except Exception:
             scans_used = 0
 
     cfg = _get_tier_config(tier)
+    
+    # ⚡ Redis Cache Check
+    cache_key_raw = f"white_space:scan:{req.query}:{req.category}:{req.platform}:{tier}"
+    cache_key = f"white_space:scan:{hashlib.md5(cache_key_raw.encode()).hexdigest()}"
+    try:
+        cached = r.get(cache_key)
+        if cached:
+            return json.loads(cached)
+    except Exception as e:
+        logger.warning(f"Redis error (get): {e}")
+
     if scans_used >= cfg["scans_limit"]:
         raise HTTPException(status_code=429, detail="Monthly scan limit reached. Upgrade for more scans.")
 
@@ -1123,20 +1145,20 @@ def scan_white_spaces(req: ScanRequest, db: Session = Depends(get_db)):
         ai_market_summary = _build_ai_market_summary(req.query, visible)
 
     # ── Record scan ───────────────────────────────────────────────────────
-    if req.user_id:
+    if user_id:
         try:
             db.execute(
                 text("""
                     INSERT INTO white_space_scans (user_id, query, tier, results_count)
                     VALUES (:uid, :q, :t, :rc)
                 """),
-                {"uid": req.user_id, "q": req.query, "t": tier, "rc": total_found},
+                {"uid": user_id, "q": req.query, "t": tier, "rc": total_found},
             )
             db.commit()
         except Exception:
             pass
 
-    return ScanResult(
+    result = ScanResult(
         query=req.query,
         category=req.category or "all",
         platform=req.platform,
@@ -1149,11 +1171,22 @@ def scan_white_spaces(req: ScanRequest, db: Session = Depends(get_db)):
         ai_market_summary=ai_market_summary,
     )
 
+    try:
+        r.setex(cache_key, 1800, json.dumps(result.dict()))  # 30 min cache
+    except Exception as e:
+        logger.warning(f"Redis error (set): {e}")
+
+    return result
+
 
 # ── Watchlist endpoints ───────────────────────────────────────────────────────
 
 @router.post("/watchlist/toggle")
-def toggle_watchlist(req: WatchlistItemRequest, db: Session = Depends(get_db)):
+def toggle_watchlist(
+    req: WatchlistItemRequest,
+    db: Session = Depends(get_db),
+    user_id: str = Depends(get_current_user_id)
+):
     """
     Idempotent toggle: if the niche is already in the user's watchlist, remove it.
     Otherwise add it with full metadata. No tier restriction — available to all.
@@ -1161,13 +1194,13 @@ def toggle_watchlist(req: WatchlistItemRequest, db: Session = Depends(get_db)):
     try:
         existing = db.execute(
             text("SELECT id FROM white_space_watchlist WHERE user_id = :uid AND niche = :niche"),
-            {"uid": req.user_id, "niche": req.niche},
+            {"uid": user_id, "niche": req.niche},
         ).fetchone()
 
         if existing:
             db.execute(
                 text("DELETE FROM white_space_watchlist WHERE user_id = :uid AND niche = :niche"),
-                {"uid": req.user_id, "niche": req.niche},
+                {"uid": user_id, "niche": req.niche},
             )
             db.commit()
             return {"action": "removed", "niche": req.niche}
@@ -1186,7 +1219,7 @@ def toggle_watchlist(req: WatchlistItemRequest, db: Session = Depends(get_db)):
                         added_at = NOW()
                 """),
                 {
-                    "uid": req.user_id,
+                    "uid": user_id,
                     "niche": req.niche,
                     "score": req.score,
                     "category": req.category,
@@ -1207,7 +1240,7 @@ def toggle_watchlist(req: WatchlistItemRequest, db: Session = Depends(get_db)):
 
 
 @router.get("/watchlist")
-def get_watchlist(user_id: str, db: Session = Depends(get_db)):
+def get_watchlist(db: Session = Depends(get_db), user_id: str = Depends(get_current_user_id)):
     """Fetch all watchlist items for a user, ordered newest first."""
     if not user_id:
         raise HTTPException(status_code=400, detail="user_id required")

@@ -50,6 +50,16 @@ IS_LOCAL = True
  
 # app.include_router(payment_router, prefix="/api/payments", tags=["payments"]) # Migrated to main.py
 
+def sanitize_data(data):
+    """Recursively convert Decimal objects to floats for JSON serialization."""
+    if isinstance(data, list):
+        return [sanitize_data(v) for v in data]
+    if isinstance(data, dict):
+        return {k: sanitize_data(v) for k, v in data.items()}
+    if isinstance(data, Decimal):
+        return float(data)
+    return data
+
 class AIQuery(BaseModel):
     question: str
     source: str  # "flipkart" or "amazon"
@@ -121,7 +131,20 @@ def get_product_reviews(product_id: str, limit: int = 20, db: Session = Depends(
  
 @router.get("/Amazon_Reviews/search/{query}", response_model=List[schemas.AmazonReview])
 def search_reviews(query: str, limit: int = 50, db: Session = Depends(get_db)):
-    return crud.search_reviews(db, query, limit)
+    cache_key = f"amazon_review_search:{query}:{limit}"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
+    results = crud.search_reviews(db, query, limit)
+    final_results = [res for res in results] # results are usually objects, but crud.search_reviews returns objects
+    # Wait, crud.search_reviews returns models.AmazonReview objects.
+    # json.dumps needs dicts.
+    r.setex(cache_key, 1200, json.dumps(sanitize_data([res.__dict__ for res in final_results])))
+    return final_results
 
 @router.get("/rapidapi_amazon_products/statistics")
 def get_statistics(db: Session = Depends(get_db)):
@@ -129,6 +152,14 @@ def get_statistics(db: Session = Depends(get_db)):
     Return summary statistics for RapidAPI Amazon Products table
     including total products, average rating, and total reviews count.
     """
+    cache_key = "amazon_stats"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
     query = text("""
         SELECT 
             COUNT(*) AS total_products,
@@ -140,22 +171,48 @@ def get_statistics(db: Session = Depends(get_db)):
 
     row = db.execute(query).fetchone()
 
-    return {
+    result = {
         "total_products": int(row.total_products) if row.total_products else 0,
         "average_rating": float(row.average_rating) if row.average_rating else 0.0,
         "total_reviews": int(row.total_reviews) if row.total_reviews else 0
     }
+    
+    result = sanitize_data(result)
+    r.setex(cache_key, 1200, json.dumps(result))
+    return result
 
 
 @router.get("/Amazon_Reviews/sentiment", response_model=List[schemas.SentimentOut])
 def get_sentiment(db: Session = Depends(get_db)):
+    cache_key = "amazon_reviews_sentiment"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
     results = crud.get_sentiment_distribution(db)
-    return [schemas.SentimentOut(sentiment=sentiment, count=count) for sentiment, count in results]
+    final_results = [schemas.SentimentOut(sentiment=sentiment, count=count) for sentiment, count in results]
+    
+    r.setex(cache_key, 1200, json.dumps([res.dict() for res in final_results], default=str))
+    return final_results
  
 @router.get("/Amazon_Reviews/ratings", response_model=List[schemas.RatingOut])
 def get_ratings(db: Session = Depends(get_db)):
+    cache_key = "amazon_reviews_ratings"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
     results = crud.get_ratings_distribution(db)
-    return [schemas.RatingOut(rating=rating, count=count) for rating, count in results]
+    final_results = [schemas.RatingOut(rating=rating, count=count) for rating, count in results]
+    
+    r.setex(cache_key, 1200, json.dumps([res.dict() for res in final_results], default=str))
+    return final_results
  
 @router.get("/Amazon_Reviews/categories", response_model=List[schemas.CategoryOut])
 def get_category_stats(db: Session = Depends(get_db)):
@@ -190,12 +247,33 @@ def analytics_summary(
     source: str = Query("flipkart", enum=["flipkart", "amazon", "all"]),
     db: Session = Depends(get_db)
 ):
-    return crud.get_summary(db, source)
+    cache_key = f"analytics_summary:{source}"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
+    result = crud.get_summary(db, source)
+    sanitized = sanitize_data(result)
+    r.setex(cache_key, 1200, json.dumps(sanitized))
+    return sanitized
 
 @router.get("/analytics/category", response_model=schemas.CategoryAnalyticsResponse)
 def analytics_by_category(db: Session = Depends(get_db)):
+    cache_key = "analytics_category"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
     categories = crud.get_category_analytics(db)
-    return {"categories": categories}
+    result = sanitize_data({"categories": categories})
+    r.setex(cache_key, 1200, json.dumps(result))
+    return result
 
 
 import json
@@ -3280,7 +3358,7 @@ def get_all_products(
                 "price": p.price,
                 "rating": p.rating,
                 "daily_sales": f"{p.sales_estimate_low} - {p.sales_estimate_high}" if p.sales_estimate_high else None,
-                "daily_revenue": f"â‚¹{p.revenue_estimate_low:,.0f} - â‚¹{p.revenue_estimate_high:,.0f}" if p.revenue_estimate_high else None,
+                "daily_revenue": f"₹{p.revenue_estimate_low:,.0f} - ₹{p.revenue_estimate_high:,.0f}" if p.revenue_estimate_high else None,
                 "category": p.main_category,
                 "has_deal": p.has_deal,
                 "image": p.image_urls[0] if p.image_urls else None,
@@ -3312,12 +3390,12 @@ def get_top_selling_products(limit: int = 20, db: Session = Depends(get_db)):
                 "title": p.title,
                 "brand": p.brand,
                 "category": p.main_category,
-                "price": f"â‚¹{p.price:,.2f}" if p.price else None,
+                "price": f"₹{p.price:,.2f}" if p.price else None,
                 "rating": f"{p.rating} ({p.number_of_ratings:,} ratings)" if p.rating else None,
                 "daily_sales": f"{p.sales_estimate_low:,} - {p.sales_estimate_high:,}",
                 "monthly_sales_estimate": f"{p.sales_estimate_low * 30:,} - {p.sales_estimate_high * 30:,}",
-                "daily_revenue": f"â‚¹{p.revenue_estimate_low:,.0f} - â‚¹{p.revenue_estimate_high:,.0f}",
-                "monthly_revenue_estimate": f"â‚¹{p.revenue_estimate_low * 30:,.0f} - â‚¹{p.revenue_estimate_high * 30:,.0f}",
+                "daily_revenue": f"₹{p.revenue_estimate_low:,.0f} - ₹{p.revenue_estimate_high:,.0f}",
+                "monthly_revenue_estimate": f"₹{p.revenue_estimate_low * 30:,.0f} - ₹{p.revenue_estimate_high * 30:,.0f}",
                 "image": p.image_urls[0] if p.image_urls else None,
                 "url": p.url
             }
@@ -3347,346 +3425,7 @@ def get_database_stats(db: Session = Depends(get_db)):
     }
  
  
-@router.get("/rapidapi/top-sales")
-def get_top_sales_products(
-    limit: int = 10,
-    category: Optional[str] = Query(None),
-    min_price: Optional[float] = Query(None),
-    max_price: Optional[float] = Query(None),
-    min_rating: Optional[float] = Query(None),
-    db: Session = Depends(get_db)
-):
-    # Build WHERE conditions for the CTE
-    where_conditions = [
-        "sales_volume IS NOT NULL",
-        "product_star_rating_numeric IS NOT NULL",
-        "product_price_numeric IS NOT NULL",
-        "product_num_ratings IS NOT NULL",
-        "product_num_ratings > 0"
-    ]
-    params = {"limit": limit}
-   
-    if category and category != "All Categories":
-        where_conditions.append("LOWER(category_name) = LOWER(:category)")
-        params["category"] = category
-   
-    if min_price is not None:
-        where_conditions.append("product_price_numeric >= :min_price")
-        params["min_price"] = min_price
-   
-    if max_price is not None:
-        where_conditions.append("product_price_numeric <= :max_price")
-        params["max_price"] = max_price
-   
-    if min_rating is not None:
-        where_conditions.append("product_star_rating_numeric >= :min_rating")
-        params["min_rating"] = min_rating
-   
-    where_clause = " AND ".join(where_conditions)
-   
-    try:
-        query = text(f"""
-        WITH sales_data AS (
-            SELECT
-                product_title,
-                category_name,
-                product_url,
-                product_photo,
-                product_price_numeric,
-                product_star_rating_numeric,
-                product_num_ratings,
-                sales_volume,
-                country,
-                CASE
-                    WHEN sales_volume LIKE '%M+%' THEN
-                        (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000000) / 30
-                    WHEN sales_volume LIKE '%K+%' THEN
-                        (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000) / 30
-                    ELSE
-                        CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) / 30
-                END as daily_sales
-            FROM rapidapi_amazon_products
-            WHERE {where_clause}
-        )
-        SELECT
-            product_title,
-            STRING_AGG(DISTINCT category_name, ', ') as categories,
-            MAX(product_url) as product_url,
-            MAX(product_photo) as product_photo,
-            ROUND(CAST(AVG(product_price_numeric) AS NUMERIC), 2) as avg_price,
-            ROUND(CAST(AVG(product_star_rating_numeric) AS NUMERIC), 2) as avg_rating,
-            SUM(product_num_ratings) as total_ratings,
-            MAX(sales_volume) as sales_volume,
-            MAX(country) as country,
-            ROUND(CAST(SUM(daily_sales) AS NUMERIC), 0) as total_daily_sales,
-            COUNT(*) as variant_count
-        FROM sales_data
-        WHERE daily_sales IS NOT NULL
-        GROUP BY product_title
-        ORDER BY total_daily_sales DESC NULLS LAST
-        LIMIT :limit
-        """)
-       
-        rows = db.execute(query, params).fetchall()
-       
-        products = []
-        for row in rows:
-            product = dict(row._mapping)
-            product['daily_sales'] = product.pop('total_daily_sales')
-            product['category_name'] = product.pop('categories')
-            product['product_price'] = f"₹{product['avg_price']:.2f}" if product['avg_price'] else None
-            product['product_star_rating'] = product['avg_rating']
-           
-            if product['variant_count'] > 1:
-                product['is_merged'] = True
-                product['merged_info'] = f"{product['variant_count']} variants combined"
-            else:
-                product['is_merged'] = False
-           
-            products.append(product)
-       
-        return {"data": products, "count": len(products)}
-       
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching top sales products: {str(e)}")
-   
- 
-@router.get("/top")
-def get_top_products(table: str, n: int = 10, db: Session = Depends(get_db)):
-    try:
-        query = text(f"""
-            SELECT product_id, product_title, product_price_numeric,
-                   product_star_rating_numeric, product_num_ratings, category_name
-            FROM {table}
-            WHERE product_title IS NOT NULL
-              AND product_price_numeric IS NOT NULL
-              AND product_star_rating_numeric IS NOT NULL
-            ORDER BY product_star_rating_numeric DESC
-            LIMIT :n
-        """)
-        result = db.execute(query, {"n": n}).mappings().all()
-        return {"data": [dict(row) for row in result]}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
- 
-@router.get("/rapidapi_amazon_products/categories")
-def get_amazon_categories(
-    category: Optional[str] = Query(None),
-    min_price: Optional[float] = Query(None),
-    max_price: Optional[float] = Query(None),
-    min_rating: Optional[float] = Query(None),
-    db: Session = Depends(get_db)
-):
-    # Build WHERE conditions
-    where_conditions = [
-        "category_name IS NOT NULL",
-        "product_star_rating_numeric IS NOT NULL",
-        "product_title IS NOT NULL"
-    ]
-    params = {}
-   
-    if category and category != "All Categories":
-        where_conditions.append("LOWER(category_name) = LOWER(:category)")
-        params["category"] = category
-   
-    if min_price is not None:
-        where_conditions.append("product_price_numeric >= :min_price")
-        params["min_price"] = min_price
-   
-    if max_price is not None:
-        where_conditions.append("product_price_numeric <= :max_price")
-        params["max_price"] = max_price
-   
-    if min_rating is not None:
-        where_conditions.append("product_star_rating_numeric >= :min_rating")
-        params["min_rating"] = min_rating
-   
-    where_clause = " AND ".join(where_conditions)
-   
-    try:
-        query = text(f"""
-            SELECT category_name, COUNT(*) as count
-            FROM rapidapi_amazon_products
-            WHERE {where_clause}
-            GROUP BY category_name
-            ORDER BY count DESC
-        """)
-        result = db.execute(query, params).mappings().all()
-        return [dict(row) for row in result]
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-# -----------------------------
-# ðŸ”¹ 3. Rating Distribution
-# -----------------------------
 
- 
-@router.get("/rapidapi_amazon_products/ratings")
-def get_amazon_ratings(
-    category: Optional[str] = Query(None),
-    min_price: Optional[float] = Query(None),
-    max_price: Optional[float] = Query(None),
-    min_rating: Optional[float] = Query(None),
-    db: Session = Depends(get_db)
-):
-    # Build WHERE conditions
-    where_conditions = [
-        "product_star_rating_numeric IS NOT NULL",
-        "product_star_rating_numeric > 0",
-        "product_title IS NOT NULL",
-        "product_num_ratings IS NOT NULL"
-    ]
-    params = {}
-   
-    if category and category != "All Categories":
-        where_conditions.append("LOWER(category_name) = LOWER(:category)")
-        params["category"] = category
-   
-    if min_price is not None:
-        where_conditions.append("product_price_numeric >= :min_price")
-        params["min_price"] = min_price
-   
-    if max_price is not None:
-        where_conditions.append("product_price_numeric <= :max_price")
-        params["max_price"] = max_price
-   
-    if min_rating is not None:
-        where_conditions.append("product_star_rating_numeric >= :min_rating")
-        params["min_rating"] = min_rating
-   
-    where_clause = " AND ".join(where_conditions)
-   
-    try:
-        query = text(f"""
-            SELECT
-                CAST(product_star_rating_numeric AS FLOAT) AS rating,
-                COUNT(*) AS count,
-                SUM(product_num_ratings) AS total_user_ratings
-            FROM rapidapi_amazon_products
-            WHERE {where_clause}
-            GROUP BY product_star_rating_numeric
-            ORDER BY product_star_rating_numeric DESC
-        """)
-        result = db.execute(query, params).mappings().all()
-        return [dict(row) for row in result]
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
- 
- 
-# -----------------------------
-# ðŸ”¹ 4. Sentiment Simulation (Based on Rating)
-# -----------------------------
-# @app.get("/rapidapi_amazon_products/sentiment")
-# def get_amazon_sentiment(
-#     category: Optional[str] = Query(None),
-#     min_price: Optional[float] = Query(None),
-#     max_price: Optional[float] = Query(None),
-#     min_rating: Optional[float] = Query(None),
-#     db: Session = Depends(get_db)
-# ):
-#     # Build WHERE conditions
-#     where_conditions = ["product_star_rating_numeric IS NOT NULL"]
-#     params = {}
-   
-#     if category and category != "All Categories":
-#         where_conditions.append("LOWER(category_name) = LOWER(:category)")
-#         params["category"] = category
-   
-#     if min_price is not None:
-#         where_conditions.append("product_price_numeric >= :min_price")
-#         params["min_price"] = min_price
-   
-#     if max_price is not None:
-#         where_conditions.append("product_price_numeric <= :max_price")
-#         params["max_price"] = max_price
-   
-#     if min_rating is not None:
-#         where_conditions.append("product_star_rating_numeric >= :min_rating")
-#         params["min_rating"] = min_rating
-   
-#     where_clause = " AND ".join(where_conditions)
-   
-#     try:
-#         query = text(f"""
-#             SELECT
-#                 CASE
-#                     WHEN product_star_rating_numeric >= 4 THEN 'positive'
-#                     WHEN product_star_rating_numeric = 3 THEN 'neutral'
-#                     ELSE 'negative'
-#                 END as sentiment,
-#                 COUNT(*) as count
-#             FROM rapidapi_amazon_products
-#             WHERE {where_clause}
-#             GROUP BY sentiment
-#         """)
-#         result = db.execute(query, params).mappings().all()
-#         return [dict(row) for row in result]
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
-    
-#     return categories
-
-@router.get("/rapidapi_amazon_products/sentiment")
-def get_amazon_sentiment(
-    category: Optional[str] = Query(None),
-    min_price: Optional[float] = Query(None),
-    max_price: Optional[float] = Query(None),
-    min_rating: Optional[float] = Query(None),
-    db: Session = Depends(get_db)
-):
-    """
-    ✅ ADJUSTED: Same ranges as Flipkart for consistency
-    Positive: 4.0+, Neutral: 3.5-3.99, Negative: <3.5
-    """
-    where_conditions = ["product_star_rating_numeric IS NOT NULL"]
-    params = {}
-    
-    if category and category != "All Categories":
-        where_conditions.append("LOWER(category_name) = LOWER(:category)")
-        params["category"] = category
-    
-    if min_price is not None:
-        where_conditions.append("product_price_numeric >= :min_price")
-        params["min_price"] = min_price
-    
-    if max_price is not None:
-        where_conditions.append("product_price_numeric <= :max_price")
-        params["max_price"] = max_price
-    
-    if min_rating is not None:
-        where_conditions.append("product_star_rating_numeric >= :min_rating")
-        params["min_rating"] = min_rating
-    
-    where_clause = " AND ".join(where_conditions)
-    
-    try:
-        query = text(f"""
-            SELECT
-                CASE
-                    WHEN product_star_rating_numeric >= 4.0 THEN 'positive'
-                    WHEN product_star_rating_numeric >= 3.5 THEN 'neutral'
-                    ELSE 'negative'
-                END as sentiment,
-                COUNT(*) as count
-            FROM rapidapi_amazon_products
-            WHERE {where_clause}
-            GROUP BY sentiment
-            ORDER BY sentiment DESC
-        """)
-        
-        result = db.execute(query, params).mappings().all()
-        
-        # Debug logging
-        print(f"📊 Amazon Sentiment (Adjusted Ranges):")
-        total = sum(row['count'] for row in result)
-        for row in result:
-            pct = (row['count'] / total * 100) if total > 0 else 0
-            print(f"   {row['sentiment']}: {row['count']} ({pct:.1f}%)")
-        
-        return [dict(row) for row in result]
-        
-    except Exception as e:
-        print(f"❌ Error: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
 
 # @app.get("/lstm_forecast/flipkart/{product_name}")
 # def forecast_flipkart(product_name: str):
@@ -3877,7 +3616,7 @@ def forecast_flipkart(product_name: str):
 
 
 @router.get("/rapidapi/top-sales")
-def get_top_sales_products(
+def get_amazon_top_sales(
     limit: int = 10,
     category: Optional[str] = Query(None),
     min_price: Optional[float] = Query(None),
@@ -3885,7 +3624,16 @@ def get_top_sales_products(
     min_rating: Optional[float] = Query(None),
     db: Session = Depends(get_db)
 ):
-    # Build WHERE conditions for the CTE
+    """Amazon Top Sales with Caching."""
+    params_dict = {"lim": limit, "cat": category, "min_p": min_price, "max_p": max_price, "min_r": min_rating}
+    cache_key = f"amazon_top_sales:{json.dumps(params_dict, sort_keys=True)}"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
     where_conditions = [
         "sales_volume IS NOT NULL",
         "product_star_rating_numeric IS NOT NULL",
@@ -3917,22 +3665,13 @@ def get_top_sales_products(
         query = text(f"""
         WITH sales_data AS (
             SELECT 
-                product_title,
-                category_name,
-                product_url,
-                product_photo,
-                product_price_numeric,
-                product_star_rating_numeric,
-                product_num_ratings,
-                sales_volume,
-                country,
+                product_title, category_name, product_url, product_photo,
+                product_price_numeric, product_star_rating_numeric, product_num_ratings,
+                sales_volume, country,
                 CASE 
-                    WHEN sales_volume LIKE '%M+%' THEN 
-                        (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000000) / 30
-                    WHEN sales_volume LIKE '%K+%' THEN 
-                        (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000) / 30
-                    ELSE 
-                        CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) / 30
+                    WHEN sales_volume LIKE '%M+%' THEN (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000000) / 30
+                    WHEN sales_volume LIKE '%K+%' THEN (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000) / 30
+                    ELSE CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) / 30
                 END as daily_sales
             FROM rapidapi_amazon_products
             WHERE {where_clause}
@@ -3957,27 +3696,119 @@ def get_top_sales_products(
         """)
         
         rows = db.execute(query, params).fetchall()
-        
         products = []
         for row in rows:
             product = dict(row._mapping)
-            product['daily_sales'] = product.pop('total_daily_sales')
+            product['daily_sales'] = float(product.pop('total_daily_sales')) if product.get('total_daily_sales') else 0
             product['category_name'] = product.pop('categories')
-            product['product_price'] = f"₹{product['avg_price']:.2f}" if product['avg_price'] else None
-            product['product_star_rating'] = product['avg_rating']
-            
-            if product['variant_count'] > 1:
-                product['is_merged'] = True
-                product['merged_info'] = f"{product['variant_count']} variants combined"
-            else:
-                product['is_merged'] = False
-            
+            product['price'] = float(product['avg_price']) if product.get('avg_price') else 0
+            product['product_star_rating'] = float(product['avg_rating']) if product.get('avg_rating') else 0
             products.append(product)
         
-        return {"data": products, "count": len(products)}
-        
+        final_result = sanitize_data({"data": products, "count": len(products)})
+        r.setex(cache_key, 1200, json.dumps(final_result))
+        return final_result
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error fetching top sales products: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/rapidapi/flipkart/top-sales")
+def get_flipkart_top_sales_products(
+    limit: int = 10,
+    category: Optional[str] = Query(None),
+    min_price: Optional[float] = Query(None),
+    max_price: Optional[float] = Query(None),
+    min_rating: Optional[float] = Query(None),
+    db: Session = Depends(get_db)
+):
+    """Flipkart Top Sales with Caching."""
+    params_dict = {"lim": limit, "cat": category, "min_p": min_price, "max_p": max_price, "min_r": min_rating}
+    cache_key = f"flipkart_top_sales:{json.dumps(params_dict, sort_keys=True)}"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
+    where_conditions = [
+        "sales_volume IS NOT NULL",
+        "product_star_rating IS NOT NULL",
+        "product_price IS NOT NULL",
+        "product_review_count IS NOT NULL",
+        "product_review_count > 0"
+    ]
+    params = {"limit": limit}
+    
+    if category and category != "All Categories":
+        where_conditions.append("LOWER(category_name) = LOWER(:category)")
+        params["category"] = category
+    
+    if min_price is not None:
+        where_conditions.append("product_price >= :min_price")
+        params["min_price"] = min_price
+    
+    if max_price is not None:
+        where_conditions.append("product_price <= :max_price")
+        params["max_price"] = max_price
+    
+    if min_rating is not None:
+        where_conditions.append("product_star_rating >= :min_rating")
+        params["min_rating"] = min_rating
+    
+    where_clause = " AND ".join(where_conditions)
+    
+    try:
+        query = text(f"""
+        WITH sales_data AS (
+            SELECT 
+                product_title, category_name, product_url, product_photo,
+                product_price, product_mrp, product_star_rating, product_review_count,
+                sales_volume, estimated_sales, brand,
+                CASE 
+                    WHEN sales_volume LIKE '%M+%' THEN (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000000) / 30
+                    WHEN sales_volume LIKE '%K+%' THEN (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000) / 30
+                    ELSE CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) / 30
+                END as daily_sales
+            FROM rapidapi_flipkart_products
+            WHERE {where_clause}
+        )
+        SELECT 
+            product_title,
+            STRING_AGG(DISTINCT category_name, ', ') as categories,
+            MAX(product_url) as product_url,
+            MAX(product_photo) as product_photo,
+            MAX(brand) as brand,
+            ROUND(CAST(AVG(product_price) AS NUMERIC), 2) as avg_price,
+            ROUND(CAST(AVG(product_mrp) AS NUMERIC), 2) as avg_mrp,
+            ROUND(CAST(AVG(product_star_rating) AS NUMERIC), 2) as avg_rating,
+            SUM(product_review_count) as total_reviews,
+            MAX(sales_volume) as sales_volume,
+            MAX(estimated_sales) as estimated_sales,
+            ROUND(CAST(SUM(daily_sales) AS NUMERIC), 0) as total_daily_sales,
+            COUNT(*) as variant_count
+        FROM sales_data
+        WHERE daily_sales IS NOT NULL
+        GROUP BY product_title
+        ORDER BY total_daily_sales DESC NULLS LAST
+        LIMIT :limit
+        """)
+        
+        rows = db.execute(query, params).fetchall()
+        products = []
+        for row in rows:
+            product = dict(row._mapping)
+            product['daily_sales'] = float(product.pop('total_daily_sales')) if product.get('total_daily_sales') else 0
+            product['category_name'] = product.pop('categories')
+            product['price'] = float(product['avg_price']) if product.get('avg_price') else 0
+            product['product_star_rating'] = float(product['avg_rating']) if product.get('avg_rating') else 0
+            products.append(product)
+        
+        final_result = sanitize_data({"data": products, "count": len(products)})
+        r.setex(cache_key, 1200, json.dumps(final_result))
+        return final_result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.get("/top")
@@ -4009,6 +3840,16 @@ def get_amazon_categories(
     min_rating: Optional[float] = Query(None),
     db: Session = Depends(get_db)
 ):
+    # ── Cache ──
+    params_dict = {"cat": category, "min_p": min_price, "max_p": max_price, "min_r": min_rating}
+    cache_key = f"amazon_categories:{json.dumps(params_dict, sort_keys=True)}"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
     # Build WHERE conditions
     where_conditions = [
         "category_name IS NOT NULL",
@@ -4044,7 +3885,10 @@ def get_amazon_categories(
             ORDER BY count DESC
         """)
         result = db.execute(query, params).mappings().all()
-        return [dict(row) for row in result]
+        final_result = [dict(row) for row in result]
+        final_result = sanitize_data(final_result)
+        r.setex(cache_key, 1200, json.dumps(final_result))
+        return final_result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -4056,6 +3900,16 @@ def get_amazon_ratings(
     min_rating: Optional[float] = Query(None),
     db: Session = Depends(get_db)
 ):
+    # ── Cache ──
+    params_dict = {"cat": category, "min_p": min_price, "max_p": max_price, "min_r": min_rating}
+    cache_key = f"amazon_ratings:{json.dumps(params_dict, sort_keys=True)}"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
     # Build WHERE conditions
     where_conditions = [
         "product_star_rating_numeric IS NOT NULL",
@@ -4095,7 +3949,10 @@ def get_amazon_ratings(
             ORDER BY product_star_rating_numeric DESC
         """)
         result = db.execute(query, params).mappings().all()
-        return [dict(row) for row in result]
+        final_result = [dict(row) for row in result]
+        final_result = sanitize_data(final_result)
+        r.setex(cache_key, 1200, json.dumps(final_result))
+        return final_result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -4110,6 +3967,16 @@ def get_amazon_sentiment(
     min_rating: Optional[float] = Query(None),
     db: Session = Depends(get_db)
 ):
+    # ── Cache ──
+    params_dict = {"cat": category, "min_p": min_price, "max_p": max_price, "min_r": min_rating}
+    cache_key = f"amazon_sentiment_v2:{json.dumps(params_dict, sort_keys=True)}"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
     # Build WHERE conditions
     where_conditions = ["product_star_rating_numeric IS NOT NULL"]
     params = {}
@@ -4146,7 +4013,10 @@ def get_amazon_sentiment(
             GROUP BY sentiment
         """)
         result = db.execute(query, params).mappings().all()
-        return [dict(row) for row in result]
+        final_result = [dict(row) for row in result]
+        final_result = sanitize_data(final_result)
+        r.setex(cache_key, 1200, json.dumps(final_result))
+        return final_result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -4159,6 +4029,16 @@ def get_flipkart_top_sales_products(
     min_rating: Optional[float] = Query(None),
     db: Session = Depends(get_db)
 ):
+    # ── Cache ──
+    params_dict = {"lim": limit, "cat": category, "min_p": min_price, "max_p": max_price, "min_r": min_rating}
+    cache_key = f"flipkart_top_sales:{json.dumps(params_dict, sort_keys=True)}"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
     # Build WHERE conditions for the CTE
     where_conditions = [
         "sales_volume IS NOT NULL",
@@ -4252,7 +4132,10 @@ def get_flipkart_top_sales_products(
             
             products.append(product)
         
-        return {"data": products, "count": len(products)}
+        final_result = {"data": products, "count": len(products)}
+        final_result = sanitize_data(final_result)
+        r.setex(cache_key, 1200, json.dumps(final_result))
+        return final_result
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching Flipkart top sales products: {str(e)}")
@@ -4265,6 +4148,16 @@ def get_flipkart_categories(
     min_rating: Optional[float] = Query(None),
     db: Session = Depends(get_db)
 ):
+    # ── Cache ──
+    params_dict = {"cat": category, "min_p": min_price, "max_p": max_price, "min_r": min_rating}
+    cache_key = f"flipkart_categories:{json.dumps(params_dict, sort_keys=True)}"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
     # Build WHERE conditions
     where_conditions = [
         "category_name IS NOT NULL",
@@ -4300,7 +4193,10 @@ def get_flipkart_categories(
             ORDER BY count DESC
         """)
         result = db.execute(query, params).mappings().all()
-        return [dict(row) for row in result]
+        final_result = [dict(row) for row in result]
+        final_result = sanitize_data(final_result)
+        r.setex(cache_key, 1200, json.dumps(final_result))
+        return final_result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -4313,6 +4209,16 @@ def get_flipkart_ratings(
     min_rating: Optional[float] = Query(None),
     db: Session = Depends(get_db)
 ):
+    # ── Cache ──
+    params_dict = {"cat": category, "min_p": min_price, "max_p": max_price, "min_r": min_rating}
+    cache_key = f"flipkart_ratings:{json.dumps(params_dict, sort_keys=True)}"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
     # Build WHERE conditions
     where_conditions = [
         "product_star_rating IS NOT NULL",
@@ -4352,7 +4258,10 @@ def get_flipkart_ratings(
             ORDER BY product_star_rating DESC
         """)
         result = db.execute(query, params).mappings().all()
-        return [dict(row) for row in result]
+        final_result = [dict(row) for row in result]
+        final_result = sanitize_data(final_result)
+        r.setex(cache_key, 1200, json.dumps(final_result))
+        return final_result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -4417,6 +4326,16 @@ def get_flipkart_sentiment(
     ✅ ADJUSTED: Realistic sentiment ranges based on actual data
     Positive: 4.0+, Neutral: 3.5-3.99, Negative: <3.5
     """
+    # ── Cache ──
+    params_dict = {"cat": category, "min_p": min_price, "max_p": max_price, "min_r": min_rating}
+    cache_key = f"flipkart_sentiment:{json.dumps(params_dict, sort_keys=True)}"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
     where_conditions = ["product_star_rating IS NOT NULL"]
     params = {}
     
@@ -4462,8 +4381,10 @@ def get_flipkart_sentiment(
             pct = (row['count'] / total * 100) if total > 0 else 0
             print(f"   {row['sentiment']}: {row['count']} ({pct:.1f}%)")
         
-        return [dict(row) for row in result]
-        
+        final_result = [dict(row) for row in result]
+        final_result = sanitize_data(final_result)
+        r.setex(cache_key, 1200, json.dumps(final_result))
+        return final_result
     except Exception as e:
         print(f"❌ Error: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -4471,6 +4392,14 @@ def get_flipkart_sentiment(
 
 @router.get("/rapidapi_flipkart_products/top")
 def get_flipkart_top_products(n: int = 10, db: Session = Depends(get_db)):
+    cache_key = f"flipkart_top_products:{n}"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
     try:
         query = text(f"""
             SELECT pid, product_title, product_price, 
@@ -4483,7 +4412,10 @@ def get_flipkart_top_products(n: int = 10, db: Session = Depends(get_db)):
             LIMIT :n
         """)
         result = db.execute(query, {"n": n}).mappings().all()
-        return {"data": [dict(row) for row in result]}
+        final_result = {"data": [dict(row) for row in result]}
+        final_result = sanitize_data(final_result)
+        r.setex(cache_key, 1200, json.dumps(final_result))
+        return final_result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
    
@@ -5880,7 +5812,7 @@ def login_user(login_data: UserLogin, response: Response, db: Session = Depends(
             secure=SESSION_COOKIE_SECURE,
             samesite="lax",
             max_age=max_age,
-            domain=".insydz.com"
+            # domain=".insydz.com"
         )
         
         response_data = {
@@ -6090,7 +6022,7 @@ def verify_email(request: VerifyOTPRequest, response: Response, db: Session = De
             secure=SESSION_COOKIE_SECURE,
             samesite="lax",
             max_age=SESSION_EXPIRE_DAYS_NO_REMEMBER * 24 * 60 * 60,
-            domain=".insydz.com"
+            # domain=".insydz.com"
         )
         
         current_month = datetime.now().strftime("%Y-%m")
@@ -9700,18 +9632,15 @@ def _get_category_sov_data(
     else:
         query = text("""
             SELECT
-                COALESCE(
-                    NULLIF(TRIM(brand), ''),
-                    SPLIT_PART(product_title, ' ', 1)
-                )                                                       AS brand,
-                COUNT(*)                                                AS product_count,
-                COALESCE(SUM(product_num_ratings),    0)               AS total_reviews,
-                COALESCE(SUM(avg_sales_volume),       0)               AS total_sales,
-                COALESCE(AVG(product_star_rating_numeric), 0)          AS avg_rating,
-                COALESCE(AVG(product_price_numeric),  0)               AS avg_price
+               SPLIT_PART(product_title, ' ', 1) AS brand,
+               COUNT(*)                                                AS product_count,
+               COALESCE(SUM(product_num_ratings),    0)               AS total_reviews,
+               COALESCE(SUM(avg_sales_volume),       0)               AS total_sales,
+               COALESCE(AVG(product_star_rating_numeric), 0)          AS avg_rating,
+               COALESCE(AVG(product_price_numeric),  0)               AS avg_price
             FROM rapidapi_amazon_products
             WHERE category_name = :cat
-            GROUP BY brand
+            GROUP BY SPLIT_PART(product_title, ' ', 1)
             ORDER BY total_reviews DESC
             LIMIT 200
         """)
@@ -10087,10 +10016,10 @@ def _compute_listing_quality(
             """)
         else:
             q = text("""
-                SELECT COALESCE(NULLIF(TRIM(brand),''), SPLIT_PART(product_title,' ',1)) AS brand,
+                SELECT SPLIT_PART(product_title, ' ', 1) AS brand,
                        LENGTH(product_title)              AS title_len,
                        product_num_ratings                AS reviews,
-                       COUNT(*) OVER (PARTITION BY brand) AS prod_count,
+                       COUNT(*) OVER (PARTITION BY SPLIT_PART(product_title, ' ', 1)) AS prod_count,
                        product_star_rating_numeric IS NOT NULL AS has_rating
                 FROM rapidapi_amazon_products
                 WHERE category_name = :cat AND product_title IS NOT NULL
@@ -10738,7 +10667,7 @@ async def get_keyword_sov(
                 price_cond += " AND product_price_numeric <= :pmax"
                 params["pmax"] = price_max
             q = text(f"""
-                SELECT COALESCE(NULLIF(TRIM(brand),''), SPLIT_PART(product_title,' ',1)) AS brand,
+                SELECT SPLIT_PART(product_title, ' ', 1)                        AS brand,
                        COUNT(*)                                                  AS product_count,
                        COALESCE(SUM(product_num_ratings),    0)                 AS total_reviews,
                        COALESCE(SUM(avg_sales_volume),       0)                 AS total_sales,
@@ -10750,7 +10679,7 @@ async def get_keyword_sov(
                 WHERE (LOWER(product_title) LIKE LOWER(:kw)
                     OR LOWER(category_name)  LIKE LOWER(:kw))
                   {price_cond}
-                GROUP BY brand
+                GROUP BY SPLIT_PART(product_title, ' ', 1)
                 ORDER BY total_reviews DESC
                 LIMIT 100
             """)
@@ -10981,8 +10910,10 @@ def get_all_brands(
             brands.update(r[0] for r in rows if r[0])
         if marketplace in ("amazon", "all"):
             rows = db.execute(text(
-                "SELECT DISTINCT COALESCE(NULLIF(TRIM(brand),''), SPLIT_PART(product_title,' ',1)) AS brand "
-                "FROM rapidapi_amazon_products WHERE product_title IS NOT NULL ORDER BY brand"
+                "SELECT DISTINCT SPLIT_PART(product_title, ' ', 1) AS brand "
+                "FROM rapidapi_amazon_products "
+                "WHERE product_title IS NOT NULL "
+                "ORDER BY brand"
             )).fetchall()
             brands.update(r[0] for r in rows if r[0])
         return {"brands": sorted(brands)[:200]}
@@ -11323,7 +11254,8 @@ def get_ai_insights(
                            AVG(product_star_rating_numeric) AS ar,
                            SUM(product_num_ratings) AS tr
                     FROM rapidapi_amazon_products
-                    WHERE category_name = :cat AND LOWER(brand) != LOWER(:yb)
+                    WHERE category_name = :cat
+                      AND LOWER(SPLIT_PART(product_title, ' ', 1)) != LOWER(:yb)
                     GROUP BY product_title HAVING COUNT(*) >= 2
                     ORDER BY tr DESC LIMIT 10
                 """)
@@ -16276,6 +16208,15 @@ def get_competitor_comparison(
 ):
     if not user_email:
         raise HTTPException(status_code=400, detail="user_email is required")
+
+    cache_key = f"competitor_comp:{seller_id}:{country}:{user_email}:{max_competitors_per_product}"
+    cached = r.get(cache_key)
+    if cached:
+        try:
+            return json.loads(cached)
+        except Exception:
+            pass
+
     products = db.query(TrackedProduct).filter(
         TrackedProduct.seller_id  == seller_id,
         TrackedProduct.user_email == user_email,
@@ -16298,10 +16239,13 @@ def get_competitor_comparison(
                 comparison_metrics=generate_comparison_metrics(seller_dict, comp),
             ))
 
-    return ComparisonResponse(
+    final_result = ComparisonResponse(
         seller_id=seller_id, total_seller_products=len(products),
         total_comparisons=len(all_comparisons), comparisons=all_comparisons,
     )
+    final_result = sanitize_data(final_result.dict())
+    r.setex(cache_key, 1200, json.dumps(final_result))
+    return final_result
 
 
 @router.get("/keyword_tracker/fetch_and_compare/{seller_id}")
@@ -17576,6 +17520,7 @@ def get_intelligence(query: IntelligenceQuery, db: Session = Depends(get_db)):
     }
  
     # Cache for 20 minutes
-    r.setex(cache_key, 1200, json.dumps(result, default=str))
+    result = sanitize_data(result)
+    r.setex(cache_key, 1200, json.dumps(result))
  
     return result

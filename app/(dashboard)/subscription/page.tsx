@@ -44,7 +44,6 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "Basic dashboard access",
       "25 product tracking",
       "Top 5 products filter",
-      "5 AI chat messages/month",
       "5 notifications",
       "Weekly reports",
     ],

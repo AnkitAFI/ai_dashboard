@@ -631,7 +631,7 @@ function RankTrackerContent() {
   const isPremium = tier === "premium";
 
   const qs = (extra: Record<string, string> = {}) =>
-    new URLSearchParams({ asin, seller_id: sellerId, user_id: userId, user_email: userEmail, ...extra }).toString();
+    new URLSearchParams({ asin, seller_id: sellerId, ...extra }).toString();
 
   // Load profile
   useEffect(() => {
@@ -642,7 +642,7 @@ function RankTrackerContent() {
       .then((d) => d && setProfile(d))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [asin, sellerId, userEmail]);
+  }, [asin, sellerId]);
 
   const handleAddKeyword = async (keyword: string) => {
     if (!profile) return;
@@ -652,7 +652,7 @@ function RankTrackerContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ asin, seller_id: sellerId, user_email: userEmail, keyword }),
+        body: JSON.stringify({ asin, seller_id: sellerId, keyword }),
       });
       if (res.ok) {
         const updated = await res.json();
@@ -669,7 +669,7 @@ function RankTrackerContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ asin, seller_id: sellerId, user_email: userEmail, keyword }),
+        body: JSON.stringify({ asin, seller_id: sellerId, keyword }),
       });
       if (res.ok) {
         const updated = await res.json();
@@ -688,7 +688,7 @@ function RankTrackerContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ asin, seller_id: sellerId, user_email: userEmail }),
+        body: JSON.stringify({ asin, seller_id: sellerId }),
       });
       if (res.ok) {
         const updated = await res.json();
@@ -983,7 +983,7 @@ function RankTrackerContent() {
                       <button onClick={aiStream.reset} className="text-xs text-slate-400 hover:text-slate-600">Clear</button>
                     )}
                     <button
-                      onClick={() => aiStream.start(`${API}/ai/rank-insight`, { asin, seller_id: sellerId, user_id: userId, user_email: userEmail })}
+                      onClick={() => aiStream.start(`${API}/ai/rank-insight`, { asin, seller_id: sellerId })}
                       disabled={aiStream.streaming}
                       className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-200 disabled:text-slate-400 text-white text-xs rounded-xl font-medium transition-all"
                     >

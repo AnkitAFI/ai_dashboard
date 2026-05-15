@@ -981,6 +981,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
 from app.db.session import get_db
+from app.api.deps import get_current_user
 from app.models.legacy_models import (
     RapidapiAmazonProducts,
     TrackedProduct,
@@ -1599,18 +1600,13 @@ def _find_market_gaps(
 def get_price_comparison(
     asin:       str           = Query(..., description="Amazon ASIN"),
     seller_id:  str           = Query(..., description="Seller ID"),
-    user_email: Optional[str] = Query(None, description="User email for tier lookup"),
     db:         Session       = Depends(get_db),
+    current_user: User        = Depends(get_current_user),
 ) -> dict:
     """
     Returns tiered price comparison data for a tracked product.
-
-    free    → current_price, original_price, discount_pct, basic product flags
-    basic   → + min_offer_price, market_avg/min/max, price_bands,
-                price_position, competitor_count, top_competitors
-    premium → + ai_pricing_tip, ai_velocity_insight, seller_other_products
     """
-    tier       = _get_user_tier(db, user_email) if user_email else "free"
+    tier       = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
     is_basic   = tier in ("basic", "premium")
     is_premium = tier == "premium"
 
@@ -1620,6 +1616,7 @@ def get_price_comparison(
         .filter(
             TrackedProduct.asin      == asin,
             TrackedProduct.seller_id == seller_id,
+            TrackedProduct.user_email == current_user.email,
         )
         .first()
     )
@@ -1826,6 +1823,7 @@ def get_price_comparison(
             .filter(
                 TrackedProduct.seller_id == seller_id,
                 TrackedProduct.asin      != asin,
+                TrackedProduct.user_email == current_user.email,
             )
             .limit(5)
             .all()
@@ -1853,19 +1851,13 @@ def get_price_comparison(
 def get_review_comparison(
     asin:       str           = Query(..., description="Amazon ASIN"),
     seller_id:  str           = Query(..., description="Seller ID"),
-    user_email: Optional[str] = Query(None, description="User email for tier lookup"),
     db:         Session       = Depends(get_db),
+    current_user: User        = Depends(get_current_user),
 ) -> dict:
     """
     Returns tiered review / sentiment comparison data for a tracked product.
-
-    free    → star_rating, total_ratings, rating_distribution
-    basic   → + recent_reviews (5), response_rate
-    premium → + sentiment_breakdown, review_health_score, competitor_reviews,
-                ai_response_suggestion, review_velocity_insight,
-                avg_seller_portfolio_rating
     """
-    tier       = _get_user_tier(db, user_email) if user_email else "free"
+    tier       = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
     is_basic   = tier in ("basic", "premium")
     is_premium = tier == "premium"
 
@@ -1875,6 +1867,7 @@ def get_review_comparison(
         .filter(
             TrackedProduct.asin      == asin,
             TrackedProduct.seller_id == seller_id,
+            TrackedProduct.user_email == current_user.email,
         )
         .first()
     )
@@ -2130,23 +2123,13 @@ def get_review_comparison(
 def get_competitor_analysis(
     asin:       str           = Query(..., description="Amazon ASIN"),
     seller_id:  str           = Query(..., description="Seller ID"),
-    user_email: Optional[str] = Query(None, description="User email for tier lookup"),
     db:         Session       = Depends(get_db),
+    current_user: User        = Depends(get_current_user),
 ) -> dict:
     """
     Tiered competitor analysis — identity, threat score, and Buy Box intelligence.
-
-    free    → product identity, competitor count teaser, Buy Box risk badge (Safe / Watch / At Risk)
-    basic   → + threat score 1–10 per competitor with readable reason, #1 threat card,
-                Buy Box detail (min_offer_price, undercut_amount, sellers_undercutting),
-                discount aggression per competitor, price diff vs yours, top 20 competitors
-    premium → + change feed (price / badge deltas from snapshot columns),
-                seller health card (seller_rating, seller_ratings_total, business_name),
-                market gap finder (price bands with high demand, few rivals),
-                AI weekly summary ("biggest threat this week"),
-                portfolio threat rank (all seller ASINs scored)
     """
-    tier       = _get_user_tier(db, user_email) if user_email else "free"
+    tier       = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
     is_basic   = tier in ("basic", "premium")
     is_premium = tier == "premium"
 
@@ -2156,6 +2139,7 @@ def get_competitor_analysis(
         .filter(
             TrackedProduct.asin      == asin,
             TrackedProduct.seller_id == seller_id,
+            TrackedProduct.user_email == current_user.email,
         )
         .first()
     )
@@ -2302,7 +2286,10 @@ def get_competitor_analysis(
             "seller_ratings_total": tracked.seller_ratings_total,
             "business_name":        tracked.business_name,
             "product_count":        db.query(TrackedProduct)
-                                      .filter(TrackedProduct.seller_id == seller_id)
+                                      .filter(
+                                          TrackedProduct.seller_id == seller_id,
+                                          TrackedProduct.user_email == current_user.email
+                                      )
                                       .count(),
         }
 
@@ -2361,10 +2348,44 @@ def get_competitor_analysis(
             )
             ai_text = _ollama(ai_prompt, max_tokens=180)
             result["ai_weekly_summary"] = ai_text or (
-                f"Your top threat scores {top3[0]['threat_score']}/10 — "
+                f"Your top threat scores {top3[0]['threat_score']}/10 - "
                 f"{top3[0]['threat_reason']}. "
                 f"Buy Box is {buy_box['buy_box_risk_level']}. "
                 f"Address the pricing gap before the next repricing cycle."
             )
 
     return result
+
+@router.get("/analysis")
+def get_comparative_analysis(
+    asin:       str           = Query(..., description="Amazon ASIN"),
+    seller_id:  str           = Query(..., description="Seller ID"),
+    db:         Session       = Depends(get_db),
+    current_user: User        = Depends(get_current_user),
+) -> dict:
+    tier       = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
+    tracked = (
+        db.query(TrackedProduct)
+        .filter(
+            TrackedProduct.asin      == asin,
+            TrackedProduct.seller_id == seller_id,
+            TrackedProduct.user_email == current_user.email,
+        )
+        .first()
+    )
+    if not tracked:
+        raise HTTPException(status_code=404, detail="Tracked product not found")
+    return {"tier": tier, "asin": asin, "buy_box_status": "Safe"}
+
+@router.get("/snapshot")
+def get_comparison_snapshot(
+    asin:       str           = Query(..., description="Amazon ASIN"),
+    seller_id:  str           = Query(..., description="Seller ID"),
+    db:         Session       = Depends(get_db),
+    current_user: User        = Depends(get_current_user),
+) -> dict:
+    return {
+        "price":    get_price_comparison(asin, seller_id, db, current_user),
+        "reviews":  get_review_comparison(asin, seller_id, db, current_user),
+        "analysis": get_comparative_analysis(asin, seller_id, db, current_user),
+    }

@@ -1,6 +1,6 @@
 # app/api/v1/routes/profitability_router.py
 
-from fastapi import APIRouter, HTTPException, Query, Depends
+from fastapi import APIRouter, HTTPException, Query, Depends, Cookie
 from typing import Optional
 from sqlalchemy.orm import Session
 
@@ -19,6 +19,17 @@ from app.services.profitability_service import (
     compute_health,
     TIER_FEATURES,
 )
+from app.api.deps import get_current_user_id, validate_session, r
+import json
+
+# Optional auth helper for profitability routes
+def get_optional_user_id(
+    session_id: str = Cookie(None),
+) -> Optional[str]:
+    if not session_id:
+        return None
+    session_data = validate_session(session_id)
+    return str(session_data["user_id"]) if session_data and "user_id" in session_data else None
 
 router = APIRouter(prefix="/profitability", tags=["Profitability Optimizer"])
 
@@ -42,15 +53,30 @@ def get_categories(
     db: Session = Depends(get_db),
 ):
     """Pull distinct categories directly from the DB table."""
+    cache_key = f"profitability:categories:{marketplace}"
+    try:
+        cached = r.get(cache_key)
+        if cached:
+            return json.loads(cached)
+    except Exception as e:
+        print(f"Redis error: {e}")
+
     categories = get_categories_from_db(marketplace, db)
-    return {"categories": categories, "marketplace": marketplace}
+    result = {"categories": categories, "marketplace": marketplace}
+    
+    try:
+        r.setex(cache_key, 86400, json.dumps(result))  # 24 hour cache
+    except Exception as e:
+        print(f"Redis error: {e}")
+        
+    return result
 
 
 # ── GET /profitability/tier-info ──────────────────────────────────────────────
 
 @router.get("/tier-info")
 def tier_info(
-    user_id: Optional[str] = Query(None),
+    user_id: Optional[str] = Depends(get_optional_user_id),
     db: Session = Depends(get_db),
 ):
     tier = get_user_tier(user_id, db)
@@ -60,13 +86,18 @@ def tier_info(
 # ── POST /profitability/calculate ──────────────────────────────────────────────
 
 @router.post("/calculate")
-def calculate(inp: ProfitabilityInput, db: Session = Depends(get_db)):
+def calculate(
+    inp: ProfitabilityInput, 
+    user_id: Optional[str] = Depends(get_optional_user_id),
+    db: Session = Depends(get_db)
+):
     """
     Core calculator.
     Free  → profit/unit, margin, monthly profit, break-even
     Basic → + waterfall, ROI, ACOS, yearly profit, alerts
     """
-    tier   = get_user_tier(inp.user_id, db)
+    # Prefer authenticated user_id over the one in the request body
+    tier   = get_user_tier(user_id or inp.user_id, db)
     result = calculate_unit_economics(inp)
 
     # Strip advanced fields for Free tier
@@ -97,10 +128,15 @@ def calculate(inp: ProfitabilityInput, db: Session = Depends(get_db)):
 # ── POST /profitability/scenarios ─────────────────────────────────────────────
 
 @router.post("/scenarios")
-def scenarios(inp: ProfitabilityInput, db: Session = Depends(get_db)):
+def scenarios(
+    inp: ProfitabilityInput, 
+    user_id: str = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
     """4-scenario planner + price sensitivity. Premium only."""
     try:
-        require_tier(inp.user_id, "premium", db)
+        # Use authenticated user_id
+        require_tier(user_id, "premium", db)
     except PermissionError:
         raise _upgrade_error("premium")
 
@@ -118,7 +154,7 @@ def market_intel(
     category:    str           = Query(...),
     marketplace: str           = Query("amazon"),
     selling_price: Optional[float] = Query(None),
-    user_id:     Optional[str] = Query(None),
+    user_id:     str           = Depends(get_current_user_id),
     db: Session = Depends(get_db),
 ):
     """
@@ -130,6 +166,14 @@ def market_intel(
     except PermissionError:
         raise _upgrade_error("premium")
 
+    cache_key = f"profitability:market-intel:{category}:{marketplace}:{selling_price}"
+    try:
+        cached = r.get(cache_key)
+        if cached:
+            return json.loads(cached)
+    except Exception as e:
+        print(f"Redis error: {e}")
+
     try:
         benchmarks, price_bands, price_position, insight = get_market_intel(
             category, marketplace, selling_price, db
@@ -137,7 +181,7 @@ def market_intel(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    return {
+    result = {
         "category":           category,
         "marketplace":        marketplace,
         "benchmarks":         benchmarks.dict(),
@@ -147,14 +191,25 @@ def market_intel(
         "insight":            insight,
     }
 
+    try:
+        r.setex(cache_key, 1800, json.dumps(result))  # 30 min cache
+    except Exception as e:
+        print(f"Redis error: {e}")
+
+    return result
+
 
 # ── POST /profitability/health ────────────────────────────────────────────────
 
 @router.post("/health")
-def business_health(inp: ProfitabilityInput, db: Session = Depends(get_db)):
+def business_health(
+    inp: ProfitabilityInput, 
+    user_id: str = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
     """5-metric health score + recommendations. Premium only."""
     try:
-        require_tier(inp.user_id, "premium", db)
+        require_tier(user_id, "premium", db)
     except PermissionError:
         raise _upgrade_error("premium")
 

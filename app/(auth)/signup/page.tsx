@@ -515,13 +515,32 @@ export default function Signup() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
 
-    if (!agreedToTerms) { toast({ title: "Terms required", description: "Please agree to the Terms.", variant: "destructive" }); return; }
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) { toast({ title: "Missing fields", description: "Fill all required fields.", variant: "destructive" }); return; }
-    if (!formData.location) { toast({ title: "Location required", description: "Select your location.", variant: "destructive" }); return; }
-    if (formData.businessInterests.length === 0) { toast({ title: "Select interests", description: "Select at least one.", variant: "destructive" }); return; }
+  //   if (!agreedToTerms) { toast({ title: "Terms required", description: "Please agree to the Terms.", variant: "destructive" }); return; }
+  //   if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) { toast({ title: "Missing fields", description: "Fill all required fields.", variant: "destructive" }); return; }
+  //   if (!formData.location) { toast({ title: "Location required", description: "Select your location.", variant: "destructive" }); return; }
+  //   if (formData.businessInterests.length === 0) { toast({ title: "Select interests", description: "Select at least one.", variant: "destructive" }); return; }
+    const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!agreedToTerms) { 
+    toast({ title: "Terms required", description: "Please agree to the Terms.", variant: "destructive" }); 
+    return; 
+  }
+  if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) { 
+    toast({ title: "Missing fields", description: "Fill all required fields.", variant: "destructive" }); 
+    return; 
+  }
+  if (!formData.location) { 
+    toast({ title: "Location required", description: "Select your location.", variant: "destructive" }); 
+    return; 
+  }
+  if (formData.businessInterests.length === 0) { 
+    toast({ title: "Select interests", description: "Select at least one.", variant: "destructive" }); 
+    return; 
+  }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) { toast({ title: "Invalid Email", description: "Enter valid email.", variant: "destructive" }); return; }
@@ -532,53 +551,118 @@ export default function Signup() {
     const mobileRegex = /^[6-9]\d{9}$/;
     if (!mobileRegex.test(cleanedMobile)) { toast({ title: "Invalid mobile number", description: "Enter a valid 10-digit Indian mobile number.", variant: "destructive" }); return; }
 
-    setIsLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/users/signup`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          email: formData.email,
-          password: formData.password,
-          business_name: formData.businessName || null,
-          location: formData.location,
-          business_interests: formData.businessInterests,
-          mobile_number: cleanedMobile,
-        }),
-      });
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/users/signup`, {
+  //       method: "POST",
+  //       credentials: "include",
+  //       headers: { "Content-Type": "application/json", Accept: "application/json" },
+  //       body: JSON.stringify({
+  //         first_name: formData.firstName,
+  //         last_name: formData.lastName,
+  //         email: formData.email,
+  //         password: formData.password,
+  //         business_name: formData.businessName || null,
+  //         location: formData.location,
+  //         business_interests: formData.businessInterests,
+  //         mobile_number: cleanedMobile,
+  //       }),
+  //     });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (response.status === 400 && errorData.detail?.includes("already registered")) {
-          toast({ title: "Email already exists", description: "This email is already registered. Please login instead.", variant: "destructive" });
-        } else {
-          throw new Error(errorData.detail || "Signup failed");
-        }
-        setIsLoading(false);
-        return;
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       if (response.status === 400 && errorData.detail?.includes("already registered")) {
+  //         toast({ title: "Email already exists", description: "This email is already registered. Please login instead.", variant: "destructive" });
+  //       } else {
+  //         throw new Error(errorData.detail || "Signup failed");
+  //       }
+  //       setIsLoading(false);
+  //       return;
+  //     }
+
+  //     const userData = await response.json();
+
+  //     if (userData.requires_verification) {
+  //       document.cookie = `verify_email=${userData.email}; path=/; max-age=600; SameSite=Strict`;
+  //       toast({ title: "Check your email", description: `We sent a 6-digit verification code to ${userData.email}` });
+  //       setIsLoading(false);
+  //       router.push("/verify-email");
+  //       return;
+  //     }
+
+  //     await refreshUser();
+  //     setIsLoading(false);
+  //     router.push("/dashboard");
+  //   } catch (err: any) {
+  //     toast({ title: "Signup failed", description: err.message || "An error occurred during signup. Please try again.", variant: "destructive" });
+  //     setIsLoading(false);
+  //   }
+  // };
+     setIsLoading(true);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/signup`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        business_name: formData.businessName || null,
+        location: formData.location,
+        business_interests: formData.businessInterests,
+        mobile_number: cleanedMobile,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      if (response.status === 400 && errorData.detail?.includes("already registered")) {
+        toast({ title: "Email already exists", description: "This email is already registered. Please login instead.", variant: "destructive" });
+      } else {
+        toast({ title: "Signup failed", description: errorData.detail || "An error occurred.", variant: "destructive" });
       }
-
-      const userData = await response.json();
-
-      if (userData.requires_verification) {
-        document.cookie = `verify_email=${userData.email}; path=/; max-age=600; SameSite=Strict`;
-        toast({ title: "Check your email", description: `We sent a 6-digit verification code to ${userData.email}` });
-        setIsLoading(false);
-        router.push("/verify-email");
-        return;
-      }
-
-      await refreshUser();
-      setIsLoading(false);
-      router.push("/dashboard");
-    } catch (err: any) {
-      toast({ title: "Signup failed", description: err.message || "An error occurred during signup. Please try again.", variant: "destructive" });
-      setIsLoading(false);
+      return;
     }
-  };
+
+    const userData = await response.json();
+
+    if (userData.requires_verification) {
+      document.cookie = `verify_email=${userData.email}; path=/; max-age=600; SameSite=Strict`;
+      toast({ 
+        title: "Check your email", 
+        description: `We sent a 6-digit verification code to ${userData.email}` 
+      });
+      router.push("/verify-email");
+      return;
+    }
+
+    // ==================== SUCCESS ====================
+    toast({ 
+      title: "Account Created!", 
+      description: "Welcome to Insydz!" 
+    });
+
+    // 🔥 Non-blocking refresh (removes delay)
+    refreshUser().catch((err) => {
+      console.warn("Refresh user after signup failed (non-critical)", err);
+    });
+
+    router.push("/dashboard");
+
+  } catch (err: any) {
+    console.error(err);
+    toast({ 
+      title: "Signup failed", 
+      description: err.message || "An error occurred during signup.", 
+      variant: "destructive" 
+    });
+  } finally {
+    setIsLoading(false);     // ← Always reset loading
+  }
+};
 
   return (
     <div className="min-h-screen flex bg-[#080e1c]">
