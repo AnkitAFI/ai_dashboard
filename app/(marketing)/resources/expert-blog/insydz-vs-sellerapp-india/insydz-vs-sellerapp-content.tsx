@@ -13,7 +13,12 @@ import {
 import { Button } from "@/components/ui/button";
 import SELLARIMAGE from "public/sellerapp.png";
 import SELLARIMAGE2 from "public/sellerapp_2.png";
-import SELLARIMAGE3 from "public/sellerapp_3.png";
+import SELLARIMAGE3 from "public/img6_comparison.png";
+import HERO_GUIDE from "public/insydz-vs-seller-hero-guide.png";
+import MISMATCH_IMAGE from "public/img2_mismatches.png";
+import MARKET_INTEL_IMAGE from "public/img5_market_intel.png";
+import KNOW_POSITION_IMAGE from "public/img4_know_position.png";
+import TOP_PRODUCTS_IMAGE from "public/img1_top_products.png";
 export const dynamic = "force-static";
 import Image from "next/image";
 
@@ -290,8 +295,8 @@ export default function InsydzVsSellerAppContent() {
         .verdict-icon { width: 48px; height: 48px; background: #DB2777; border-radius: 12px; display: flex; items-center; justify-content: center; color: white; flex-shrink: 0; }
 
         .quick-answer {
-          background: #F0F9FF; border-left: 4px solid #0EA5E9;
-          border-radius: 0 12px 12px 0; padding: 24px; margin: 40px 0;
+          background: #F0F9FF; border-left: 4px solid #3B82F6;
+          border-radius: 12px; padding: 24px; margin: 40px 0;
           font-size: 15px; display: flex; gap: 16px;
         }
         .dark .quick-answer { background: #0c1c2c; border-color: #0ea5e9; }
@@ -436,7 +441,7 @@ export default function InsydzVsSellerAppContent() {
 
         <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong className="text-[#0D1B2A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => router.push("/author/vikrant-singh")}>Vikrant Singh</strong></div>
-          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />April 2026</div>
+          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />May 2026</div>
           <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong>11 min read</strong></div>
           <span style={{ background:"#FFEDD5", color:"#F97316", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Updated for 2026</span>
           <span style={{ background:"#F5F3FF", color:"#7C3AED", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Tool Comparison</span>
@@ -456,6 +461,11 @@ export default function InsydzVsSellerAppContent() {
           ))}
         </div>
 
+        <ArticleImg 
+          src={HERO_GUIDE}
+          alt="Insydz vs SellerApp India Hero Guide" 
+          caption="Insydz is purpose-built for Indian sellers operating on Amazon.in + Flipkart — not a global tool retrofitted for India." 
+        />
         <ArticleImg 
           src={SELLARIMAGE}
           alt="SellerApp vs Insydz Comparison Dashboard" 
@@ -503,32 +513,17 @@ export default function InsydzVsSellerAppContent() {
              ))}
           </div>
 
-          <div className="takeaway-box">
-            <h3>Key Insights</h3>
-            {[
-              "SellerApp is a global tool with USD billing, which creates FX volatility and loss of GST input credit for Indian sellers.",
-              "Insydz supports Flipkart natively, whereas SellerApp is Amazon-only, leaving 30-50% of the Indian market un-tracked.",
-              "WhatsApp alerts on Insydz provide real-time response capability that email digests cannot match.",
-              "The cost difference can reach ₹78,000+ per year for a typical ₹15L/month Indian D2C brand."
-            ].map((t, i) => (
-              <div className="takeaway-item" key={i}>
-                <div className="takeaway-dot">✓</div>
-                <div className="takeaway-text">{t}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* <div id="quick-answer" className="verdict-box">
-             <div className="verdict-icon"><Rocket className="w-6 h-6" /></div>
+          <div id="quick-answer" className="quick-answer">
+             <div className="flex-shrink-0 mt-1">
+                <Zap className="w-4 h-4 text-blue-600 fill-blue-600" />
+             </div>
              <div>
-                <h3 className="text-lg sm:text-xl font-bold mb-3 mt-0 text-white font-['Sora']">The 60-Second Verdict</h3>
-                <p className="text-sm md:text-base text-gray-300 leading-relaxed m-0 font-['Lora']">
-                  SellerApp is a strong global platform with mature PPC automation. But for Indian SMB sellers, 
-                  the lack of Flipkart support and USD pricing are major dealbreakers. 
-                  <strong> If you sell on Amazon.in and Flipkart in rupees — Insydz is the math-backed choice.</strong>
+                <span className="block font-['Sora'] text-[11px] font-[800] text-blue-600 tracking-wider mb-2 uppercase">Quick Answer</span>
+                <p className="text-[#1E293B] dark:text-gray-300 m-0 font-['Lora'] text-[15px] leading-relaxed">
+                  For Indian sellers active on both Amazon.in and Flipkart, Insydz is the better SellerApp alternative — it costs roughly 75% less, supports Flipkart natively, sends WhatsApp rank-drop alerts within 60 minutes, and is calibrated on Indian marketplace data. SellerApp remains a strong choice for India-based sellers focused exclusively on Amazon.com or other global marketplaces.
                 </p>
              </div>
-          </div> */}
+          </div>
 
           <h2 id="why-alternatives">Why Are Indian Sellers Searching for a SellerApp Alternative?</h2>
           <p>
@@ -553,6 +548,12 @@ export default function InsydzVsSellerAppContent() {
           <p>
             SellerApp's keyword research, listing optimization, and review intelligence are tuned on Amazon.com data and English-language buyer signals. That means Hinglish reviews ("bahut bekaar product hai bhai") get classified as neutral, Hindi-transliterated search queries don't surface in keyword reports, and the festive window logic that drives 40–60% of Indian category revenue in 4–7 days doesn't exist. You're paying for a global platform and adapting it to India — every week.
           </p>
+
+          <ArticleImg 
+            src={MISMATCH_IMAGE}
+            alt="3 Structural Mismatches in Global Seller Tools" 
+            caption="Three structural gaps that make global tools fail Indian D2C sellers — and how Insydz closes each one." 
+          />
 
           <div className="reality-box">
              <span className="reality-label">Practitioner Reality</span>
@@ -653,6 +654,12 @@ export default function InsydzVsSellerAppContent() {
              </table>
           </div>
 
+          <ArticleImg 
+            src={MARKET_INTEL_IMAGE}
+            alt="Real-time competitor price and rank monitoring" 
+            caption="Insydz surfaces real-time competitor price moves across Amazon.in and Flipkart in one unified view — with WhatsApp alerts under 60 minutes." 
+          />
+
           <h2 id="where-wins">Where Does Each Tool Genuinely Win?</h2>
           <p className="text-gray-600 dark:text-gray-400 font-['Lora'] mb-8">This isn't a hit piece — both tools have strengths. Knowing which fits your seller profile prevents a 12-month regret.</p>
           
@@ -678,6 +685,12 @@ export default function InsydzVsSellerAppContent() {
           <p className="text-gray-700 dark:text-gray-300 font-['Lora'] leading-relaxed mb-12">
             SellerApp's PPC automation depth on global Amazon is more mature than what any India-first tool, including Insydz, currently offers — that's a fair admission. The question is whether you'll actually use that depth on Amazon.in, where your ₹35K/month ad budget needs sharper INR-priced tooling and Flipkart visibility more than it needs multi-marketplace bid stacking.
           </p>
+
+          <ArticleImg 
+            src={KNOW_POSITION_IMAGE}
+            alt="Know Your Position rank intelligence dashboard" 
+            caption="Insydz tracks rank positions across Amazon.in and Flipkart in real time — so Indian sellers never lose their position during festive windows." 
+          />
 
           <h2 id="how-to-switch">How Do You Switch From SellerApp to Insydz in 30 Days?</h2>
           <p className="text-gray-600 dark:text-gray-400 font-['Lora'] mb-8">If you've decided to test the alternative, here's the sequence Indian sellers we've onboarded actually follow. No big-bang migration, no data loss, no mid-month subscription overlap drama.</p>
@@ -768,6 +781,12 @@ export default function InsydzVsSellerAppContent() {
           <p className="text-gray-700 dark:text-gray-300 font-['Lora'] leading-relaxed mb-12">
             The Flipkart upside surprised everyone — including the Insydz team. The brand had 22 SKUs on Flipkart that were ranking P3–P8 for buy-intent terms, but no one was watching them because SellerApp simply didn't show that data. Surfacing it took 11 days. Acting on it added ₹4.6L in monthly Flipkart revenue inside one quarter.
           </p>
+
+          <ArticleImg 
+            src={TOP_PRODUCTS_IMAGE}
+            alt="Product Intelligence Top Products Ranked" 
+            caption="Insydz's India-calibrated AI ranks your products by opportunity across Amazon.in and Flipkart — with Hinglish sentiment and festive priming built in." 
+          />
 
           <div className="internal-cta">
             <h3>Run Insydz and SellerApp in Parallel — Free for 14 Days</h3>

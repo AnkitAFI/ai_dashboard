@@ -80,6 +80,7 @@ const navigationMenu: NavigationMenu = {
   ],
   Resources: [
     { name: "Expert Blog", icon: <BookOpen className="w-4 h-4" />, route: "/resources/expert-blog" },
+    { name: "Video Guides", icon: <TrendingUp className="w-4 h-4" />, route: "/resources/video-guides" },
   ],
   Integrations: [
     { name: "Amazon", icon: <ShoppingBag className="w-4 h-4" /> },

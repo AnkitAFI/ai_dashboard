@@ -126,11 +126,9 @@ export default function PriceOptimizationFeaturePage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 bg-green-100 border border-green-300 rounded-full px-4 py-2">
-                <DollarSign className="w-4 h-4 text-green-600" />
-                <span className="text-sm font-medium text-green-700">Feature Spotlight</span>
+                <h1 className="text-sm font-medium text-green-700">Price Optimization Software</h1>
               </div>
-
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
+              <div className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
                 AI Price Optimization 
                 <br />
                 <span className="bg-gradient-to-r from-green-600 via-emerald-600 to-green-700 bg-clip-text text-transparent">
@@ -138,7 +136,7 @@ export default function PriceOptimizationFeaturePage() {
                 </span>
                 <br />
                 Without Losing Sales
-              </h1>
+              </div>
 
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
                 AI-powered <strong>price optimization software</strong> that finds the perfect price
@@ -150,10 +148,14 @@ export default function PriceOptimizationFeaturePage() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/signup" className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold px-12 py-5 text-lg rounded-full shadow-2xl transition-all inline-flex items-center justify-center group">
-                  Start Optimizing Prices Free
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                <Button
+                  onClick={() => router.push("/signup")}
+                  size="lg"
+                  variant="outline"
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-5 text-lg rounded-full transition-all"
+                >
+                  Start Free →
+                </Button>
                 <Button
                   onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })}
                   size="lg"

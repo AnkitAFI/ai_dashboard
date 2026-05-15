@@ -13,6 +13,8 @@ import {
   Presentation, LayoutGrid, Lightbulb, Facebook, Twitter, Instagram, Linkedin
 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { FAQAccordion, TrustBadges, FadeInStyles } from "@/components/solutions";
+import type { FAQItem } from "@/components/solutions";
 
 
 export const dynamic = "force-static";
@@ -217,46 +219,46 @@ export default function SolutionsPage() {
     { condition: 'Category manager or brand team', solution: 'Brand Manager Solution', link: '/solutions/brand-managers' },
   ];
 
-  const faqs = [
+  const faqs: FAQItem[] = [
     {
       id: 'faq-1',
-      question: 'Can I switch between solutions later?',
-      answer: 'Yes. Insydz is designed to adapt as your business grows. You can switch your solution type inside the product dashboard at any time no data loss, no restart required.'
+      q: 'Can I switch between solutions later?',
+      a: 'Yes. Insydz is designed to adapt as your business grows. You can switch your solution type inside the product dashboard at any time no data loss, no restart required.'
     },
     {
       id: 'faq-2',
-      question: 'Do the solutions work across multiple platforms Amazon, Flipkart?',
-      answer: 'Yes. Insydz supports multi-platform intelligence from a single dashboard. The same data engine powers insights for Amazon India, Flipkart, with platform-specific signals surfaced based on your solution type.'
+      q: 'Do the solutions work across multiple platforms Amazon, Flipkart?',
+      a: 'Yes. Insydz supports multi-platform intelligence from a single dashboard. The same data engine powers insights for Amazon India, Flipkart, with platform-specific signals surfaced based on your solution type.'
     },
     {
       id: 'faq-3',
-      question: 'Is pricing different for each solution?',
-      answer: 'No. All solutions are powered by the same Insydz platform. Pricing is based on your plan tier, not the solution type you choose. See the Pricing page for current plans.'
+      q: 'Is pricing different for each solution?',
+      a: 'No. All solutions are powered by the same Insydz platform. Pricing is based on your plan tier, not the solution type you choose. See the Pricing page for current plans.'
     },
     {
       id: 'faq-4',
-      question: 'Can agencies access multiple solutions for different clients?',
-      answer: 'Yes. The Agency solution includes multi-account access, allowing you to manage different client profiles each with their own solution type, marketplace focus, and reporting view from a single Insydz workspace.'
+      q: 'Can agencies access multiple solutions for different clients?',
+      a: 'Yes. The Agency solution includes multi-account access, allowing you to manage different client profiles each with their own solution type, marketplace focus, and reporting view from a single Insydz workspace.'
     },
     {
       id: 'faq-5',
-      question: 'Is the free plan available for all solutions?',
-      answer: 'Yes. You can start free on any solution type. No credit card required. The free plan gives you access to core intelligence features so you can evaluate Insydz before upgrading.'
+      q: 'Is the free plan available for all solutions?',
+      a: 'Yes. You can start free on any solution type. No credit card required. The free plan gives you access to core intelligence features so you can evaluate Insydz before upgrading.'
     },
     {
       id: 'faq-6',
-      question: 'Which solution is best for Amazon vs Flipkart sellers?',
-      answer: 'Amazon sellers benefit most from Insydz\'s pricing AI, Buy Box tracking, and review mining features. Flipkart sellers get the most value from keyword visibility, SEO gap analysis, and competitor monitoring tools. Both are available on the same platform.'
+      q: 'Which solution is best for Amazon vs Flipkart sellers?',
+      a: 'Amazon sellers benefit most from Insydz\'s pricing AI, Buy Box tracking, and review mining features. Flipkart sellers get the most value from keyword visibility, SEO gap analysis, and competitor monitoring tools. Both are available on the same platform.'
     },
     {
       id: 'faq-7',
-      question: 'Can I use more than one solution at the same time?',
-      answer: 'Yes. If you sell on both Amazon and Flipkart, or run both a D2C brand and a marketplace store, Insydz can be configured to surface insights across all your active channels simultaneously.'
+      q: 'Can I use more than one solution at the same time?',
+      a: 'Yes. If you sell on both Amazon and Flipkart, or run both a D2C brand and a marketplace store, Insydz can be configured to surface insights across all your active channels simultaneously.'
     },
     {
       id: 'faq-8',
-      question: 'What is the best ecommerce analytics solution for Indian sellers?',
-      answer: 'Insydz is purpose-built for Indian marketplace sellers covering Amazon India, Flipkart. Unlike global analytics tools, Insydz provides India-specific pricing intelligence, Flipkart SEO tracking, regional trend analysis, and AI-powered review mining all in one platform built for sellers doing ₹5L to ₹50L+ per month.'
+      q: 'What is the best ecommerce analytics solution for Indian sellers?',
+      a: 'Insydz is purpose-built for Indian marketplace sellers covering Amazon India, Flipkart. Unlike global analytics tools, Insydz provides India-specific pricing intelligence, Flipkart SEO tracking, regional trend analysis, and AI-powered review mining all in one platform built for sellers doing ₹5L to ₹50L+ per month.'
     }
   ];
 
@@ -277,9 +279,9 @@ export default function SolutionsPage() {
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             {/* Left */}
             <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 bg-orange-100 border border-orange-300 rounded-full px-4 py-2">
-                <span className="text-sm font-medium text-orange-700">India's AI Ecommerce Analytics Software </span>
-              </div> 
+              <h1 className="inline-flex items-center gap-2 bg-orange-100 border border-orange-300 rounded-full px-4 py-2">
+                <span className="text-sm font-medium text-orange-700"> Ecommerce analytics platform</span>
+              </h1> 
 
               <h2 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
                 The Ecommerce Analytics Platform Built for 
@@ -691,27 +693,7 @@ export default function SolutionsPage() {
             Solutions <span className="text-orange-600">FAQs</span>
           </h2>
 
-          <div className="space-y-4">
-            {faqs.map((faq) => (
-              <div key={faq.id} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-orange-300 transition-all">
-                <button
-                  onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
-                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                >
-                  <span className="font-bold text-gray-900 dark:text-white pr-4 text-lg">{faq.question}</span>
-                  {expandedFaq === faq.id
-                    ? <ChevronDown className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                    : <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                  }
-                </button>
-                {expandedFaq === faq.id && (
-                  <div className="px-6 pb-5 bg-gray-50 dark:bg-gray-700/30">
-                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{faq.answer}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          <FAQAccordion faqs={faqs} accentColor="orange" variant="card" />
         </div>
       </section>
 
@@ -791,39 +773,15 @@ export default function SolutionsPage() {
               Explore Solutions →
             </Button> */}
           </div>
-          <p className="text-white/80 mt-6 text-sm flex items-center justify-center gap-2 flex-wrap">
-  <span>✓ No credit card required</span>
-  <span className="text-white/40">·</span>
-  <span>✓ Setup in 2 minutes</span>
-  <span className="text-white/40">·</span>
-  <span>✓ Cancel anytime</span>
-</p>
+          <TrustBadges theme="light" />
         </div>
       </section>
 
       {/* Footer */}
       
  
-      <style>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-        .delay-1000 {
-          animation-delay: 1s;
-        }
-      `}</style>
+      <FadeInStyles />
     </div>
   );
 }
- 
 

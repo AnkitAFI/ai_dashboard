@@ -16,6 +16,8 @@ import {
   Presentation, LayoutGrid, Lightbulb, Facebook, Linkedin, Instagram, Twitter
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FAQAccordion, TrustBadges, FadeInStyles } from "@/components/solutions";
+import type { FAQItem } from "@/components/solutions";
 
 export const dynamic = "force-static";
 
@@ -111,7 +113,7 @@ export default function EcommerceAgenciesContent() {
     { label: "2 new clients onboarded (capacity freed)", value: "+₹1,20,000" },
   ];
 
-  const faqs = [
+  const faqs: FAQItem[] = [
     {
       id: "faq-1",
       q: "What is the best ecommerce analytics platform for agencies in India?",
@@ -169,10 +171,10 @@ export default function EcommerceAgenciesContent() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-500 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-600"></span>
                 </span>
-                <span className="text-sm font-medium text-cyan-700">India's #1 Ecommerce Analytics Platform for Agencies</span>
+                <h1 className="text-sm font-medium text-cyan-700">Ecommerce Analytics Platform for Agencies</h1>
               </div>
 
-              <h1 className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
+              <div className="text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white">
                 Scale Your Agency.
                 <br />
                 <span className="bg-gradient-to-r from-cyan-600 via-blue-600 to-cyan-700 bg-clip-text text-transparent">
@@ -180,7 +182,7 @@ export default function EcommerceAgenciesContent() {
                 </span>
                 <br />
                 That Wow Clients.
-              </h1>
+              </div>
 
               <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
                 Insydz is India's most powerful <strong>ecommerce analytics platform for agencies</strong> built to manage multiple clients effortlessly. Deliver data-driven strategies that drive real ROI, automate competitive intelligence across Amazon and Flipkart,
@@ -191,7 +193,7 @@ export default function EcommerceAgenciesContent() {
                 <Button onClick={handleGetStarted} size="lg"
                   className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold px-4 sm:px-8 py-6 text-sm sm:text-lg rounded-full shadow-2xl hover:shadow-cyan-500/50 transition-all group w-full sm:w-auto"
                 >
-                  Start Free Agency Account
+                  Start Free
                   <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button
@@ -543,7 +545,7 @@ export default function EcommerceAgenciesContent() {
             <Button onClick={handleGetStarted} size="lg"
               className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold px-4 sm:px-12 py-6 text-sm sm:text-lg rounded-full shadow-2xl hover:shadow-cyan-500/50 transition-all group w-full sm:w-auto"
             >
-              Start Free Trial
+              Start a Free Trial
               <ChevronRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
@@ -643,27 +645,7 @@ export default function EcommerceAgenciesContent() {
           </h2>
           <p className="text-center text-gray-500 mb-12 text-lg">About Ecommerce Agency Software in India</p>
 
-          <div className="space-y-4">
-            {faqs.map((faq) => (
-              <div key={faq.id} className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-cyan-300 transition-all">
-                <button
-                  onClick={() => setExpandedFaq(expandedFaq === faq.id ? null : faq.id)}
-                  className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                >
-                  <span className="font-bold text-gray-900 dark:text-white pr-4 text-lg">{faq.q}</span>
-                  {expandedFaq === faq.id
-                    ? <ChevronDown className="w-5 h-5 text-cyan-500 flex-shrink-0" />
-                    : <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                  }
-                </button>
-                {expandedFaq === faq.id && (
-                  <div className="px-6 pb-5 bg-gray-50 dark:bg-gray-700/30">
-                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{faq.a}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          <FAQAccordion faqs={faqs} accentColor="cyan" variant="card" />
         </div>
       </section>
 
@@ -672,7 +654,7 @@ export default function EcommerceAgenciesContent() {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl lg:text-5xl font-black mb-6 text-white">Ready to Scale Your Agency?</h2>
           <p className="text-xl text-white/90 mb-12 leading-relaxed">
-            Join e-commerce agencies delivering premium intelligence to clients without the premium overhead.
+            Join e-commerce agencies delivering premium intelligence to clients <br /> without the premium overhead.
           </p>
 
           <div className="grid md:grid-cols-3 gap-6 mb-10">
@@ -714,42 +696,15 @@ export default function EcommerceAgenciesContent() {
               <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
             </Button>
           </div>
-          <p className="text-white/80 mt-6 text-sm flex items-center justify-center gap-2 flex-wrap">
-  <span>✓ No credit card required</span>
-  <span className="text-white/40">·</span>
-  <span>✓ Setup in 2 minutes</span>
-  <span className="text-white/40">·</span>
-  <span>✓ Cancel anytime</span>
-</p>
+          <TrustBadges theme="light" />
         </div>
       </section>
       {/* Footer */}
-      
- 
-      <style>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 1s ease-out;
-        }
-        .delay-1000 {
-          animation-delay: 1s;
-        }
-      `}</style>
+
+      <FadeInStyles />
     </div>
   );
 }
- 
-
-
 
 
 
