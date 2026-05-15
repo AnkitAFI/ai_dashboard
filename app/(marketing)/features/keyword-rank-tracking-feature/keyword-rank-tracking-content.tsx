@@ -13,7 +13,6 @@ import {
   Package, LayoutGrid, Flame, Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Clock } from "lucide-react";
 
 export const dynamic = "force-static";
 

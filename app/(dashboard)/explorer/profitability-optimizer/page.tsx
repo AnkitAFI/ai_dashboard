@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
-const API = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api");
+const API = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com/api");
 
 axios.defaults.withCredentials = true;
 

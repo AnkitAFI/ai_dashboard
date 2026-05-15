@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function ThreatRing({ score, size = "sm" }: { score: number; size?: "sm" | "md" }) {

@@ -21,7 +21,7 @@ import {
 } from "recharts";
 import ReactMarkdown from "react-markdown";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
 const API = `${BASE_URL}/api/rank-tracker`;
 
 // ── Types ─────────────────────────────────────────────────────────────────────

@@ -13,7 +13,7 @@ load_dotenv()
 logger = logging.getLogger(__name__)
 
 # Database URL - get directly from environment
-DATABASE_URL = os.getenv("DATABASE_URL", "postgres:postgres123@localhost:5434/mydatabase")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://seller-db:Seller!db@122.176.108.253:5432/db1")
 
 # Remove quotes if present in DATABASE_URL
 if DATABASE_URL.startswith('"') and DATABASE_URL.endswith('"'):

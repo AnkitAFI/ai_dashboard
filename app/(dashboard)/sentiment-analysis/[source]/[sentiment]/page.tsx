@@ -26,7 +26,7 @@ function SentimentAnalysisPageContent() {
   const [totalProducts, setTotalProducts] = useState(0);
   const limit = 24;
 
-  const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
+  const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);

@@ -28,7 +28,7 @@ function SellerProductsContent() {
     if (!activeSellerId) return;
     setLoading(true);
     try {
-      const BASE_URL = ((process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")) || (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
+      const BASE_URL = ((process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")) || (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
       const resp = await fetch(
         `${BASE_URL}/api/seller/products?seller_id=${activeSellerId}`,
         { credentials: "include" }

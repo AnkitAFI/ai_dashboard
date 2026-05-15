@@ -14,7 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useSelectedProduct } from "@/lib/selected-product-context";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
 
 // ── Cluster icon + colour map ─────────────────────────────────────────────────
 const CLUSTER_META: Record<string, { color: string; bg: string; border: string; emoji: string }> = {
