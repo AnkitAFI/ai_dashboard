@@ -664,7 +664,7 @@
 
 
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -689,7 +689,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 export default function Login() {
   const router = useRouter();
   const { toast } = useToast();
-  const { refreshUser } = useAuth();
+  const { user, isLoading: authLoading, refreshUser } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
@@ -703,6 +703,13 @@ export default function Login() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [otpTimer, setOtpTimer] = useState(0);
+
+  // If already logged in, redirect to dashboard
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace("/dashboard");
+    }
+  }, [user, authLoading, router]);
 
   // const handleSubmit = async (e: React.FormEvent) => {
   //   e.preventDefault();

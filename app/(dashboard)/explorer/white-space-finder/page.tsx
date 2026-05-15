@@ -753,7 +753,7 @@ function WhiteSpaceFinderContent() {
 
           <div className="flex items-center gap-3 flex-wrap">
             {/* Ollama status — Premium only */}
-            {isPremium && (
+            {/* {isPremium && (
               <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-900 rounded-xl border border-slate-800">
                 <div className="relative w-2.5 h-2.5">
                   <div className={`w-2 h-2 rounded-full ${
@@ -777,7 +777,7 @@ function WhiteSpaceFinderContent() {
                   </code>
                 )}
               </div>
-            )}
+            )} */}
 
             {/* Scan counter — shown once a scan has been run */}
             {result && (

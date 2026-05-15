@@ -651,36 +651,9 @@ class SellerInboundService:
                     db.refresh(new_tp)
                     saved_products.append(new_tp)
 
-                # ── RapidapiAmazonProducts (marketplace stats) ─────────────
-                if asin:
-                    r_prod = db.query(RapidapiAmazonProducts).filter(RapidapiAmazonProducts.asin == asin).first()
-
-                    price_str   = item.get("product_price", "")
-                    star_str    = item.get("product_star_rating", "")
-                    num_ratings = item.get("product_num_ratings", 0)
-                    if isinstance(num_ratings, str):
-                        num_ratings = int(re.sub(r'[^\d]', '', num_ratings) or 0)
-
-                    data_dict = {
-                        "product_title":               item.get("product_title", ""),
-                        "product_photo":               item.get("product_photo", ""),
-                        "product_url":                 item.get("product_url", ""),
-                        "product_price":               price_str,
-                        "product_price_numeric":       self.extract_numeric(price_str),
-                        "product_star_rating":         star_str,
-                        "product_star_rating_numeric": self.extract_numeric(star_str),
-                        "product_num_ratings":         num_ratings,
-                        "is_prime":                    item.get("is_prime", False),
-                        "is_best_seller":              item.get("is_best_seller", False),
-                    }
-
-                    if r_prod:
-                        for key, value in data_dict.items():
-                            setattr(r_prod, key, value)
-                    else:
-                        db.add(RapidapiAmazonProducts(asin=asin, **data_dict))
-
-                    db.commit()
+                # RapidapiAmazonProducts intentionally NOT written here.
+                # Seller-fetched products belong only in TrackedProduct (user-scoped).
+                # Explorer/market catalogue writes happen through separate Explorer flows.
 
             # ── Done ───────────────────────────────────────────────────────────
             if user_id:

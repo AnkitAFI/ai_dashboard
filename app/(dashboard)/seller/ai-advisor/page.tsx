@@ -699,7 +699,7 @@ function AIAdvisorContent() {
                       </button>
                     </div>
                     <p className="text-[10px] text-slate-400 mt-2 text-center">
-                      Press Enter to send · Shift+Enter for new line · Powered by Ollama
+                      Press Enter to send · Shift+Enter for new line
                     </p>
                   </div>
                 </div>

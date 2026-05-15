@@ -17,7 +17,7 @@ import {
   Tooltip, ResponsiveContainer, ReferenceLine,
 } from "recharts";
 
-const BASE_URL = ((process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")) || (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
+const BASE_URL = ((process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"));
 
 function fmt(val: number | null | undefined, currency = "USD"): string {
   if (val == null) return "—";

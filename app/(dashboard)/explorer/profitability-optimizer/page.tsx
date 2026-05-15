@@ -380,25 +380,7 @@ function AIPanel({
 
   return (
     <div className="space-y-4">
-      {/* Status bar */}
-      <div className="flex items-center justify-between bg-slate-900 rounded-2xl px-5 py-3 border border-slate-800">
-        <div className="flex items-center gap-3">
-          <div className="relative w-3 h-3">
-            <div className={`w-2.5 h-2.5 rounded-full ${statusColor}`} style={ready ? { boxShadow: "0 0 8px rgba(74,222,128,0.7)" } : {}} />
-            {ready && <div className="absolute inset-0 w-3 h-3 rounded-full bg-green-400 opacity-25 animate-ping" />}
-          </div>
-          <span className="text-sm font-mono text-slate-300">
-            {!aiStatus ? "Checking Ollama..." : ready ? `${str(aiStatus.model)} · ready` : aiStatus.status === "no_model" ? "Ollama running · model missing" : "Ollama offline"}
-          </span>
-        </div>
-        <div className="flex items-center gap-3">
-          {aiStatus?.setup_hint && (
-            <code className="text-xs text-amber-400 bg-amber-950/60 px-3 py-1 rounded-lg border border-amber-800/40">
-              {aiStatus.setup_hint}
-            </code>
-          )}
-        </div>
-      </div>
+
 
       {/* Mode tabs */}
       <div className="flex gap-2 flex-wrap">

@@ -485,7 +485,7 @@ export default function FiltersPanel() {
                 {currentTier === "free" && (
                   <>
                     <div className="border-l-4 border-blue-500 bg-blue-50 p-3 rounded-r-lg">
-                      <p className="font-semibold text-sm text-blue-900">Basic - ₹499/month</p>
+                      <p className="font-semibold text-sm text-blue-900">Basic - ₹1999/month</p>
                       <ul className="text-xs text-blue-700 space-y-1 mt-1 ml-4">
                         <li>✓ Top 20 products (4x more)</li>
                         <li>✓ AI chart summaries</li>
@@ -494,7 +494,7 @@ export default function FiltersPanel() {
                       </ul>
                     </div>
                     <div className="border-l-4 border-purple-500 bg-purple-50 p-3 rounded-r-lg">
-                      <p className="font-semibold text-sm text-purple-900">Premium - ₹1999/month ⭐</p>
+                      <p className="font-semibold text-sm text-purple-900">Premium - ₹2999/month ⭐</p>
                       <ul className="text-xs text-purple-700 space-y-1 mt-1 ml-4">
                         <li>✓ Top 100 products (20x more)</li>
                         <li>✓ Real-time data & alerts</li>
