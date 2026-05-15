@@ -8,6 +8,7 @@ import {
   ChevronDown, ShoppingBag, TrendingDown, MessageCircle, Search, Package, Bell,
   Code, BarChart, Briefcase, Store, ShoppingCart, Flame, LayoutGrid
 } from "lucide-react";
+import { useTheme } from "next-themes";
 
 // Define types for menu items
 type MenuItemWithBadge = {
