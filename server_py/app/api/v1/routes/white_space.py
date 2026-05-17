@@ -1267,7 +1267,7 @@ def get_watchlist(db: Session = Depends(get_db), user_id: str = Depends(get_curr
 
 
 @router.delete("/watchlist/remove")
-def remove_from_watchlist(user_id: str, niche: str, db: Session = Depends(get_db)):
+def remove_from_watchlist(niche: str, db: Session = Depends(get_db), user_id: str = Depends(get_current_user_id)):
     """Remove a single niche from a user's watchlist."""
     try:
         db.execute(

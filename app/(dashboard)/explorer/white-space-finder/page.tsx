@@ -21,6 +21,8 @@ import {
 
 const API = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com") + "/api";
 
+axios.defaults.withCredentials = true;
+
 const CHART_STYLE = {
   backgroundColor: "rgba(255,255,255,0.97)",
   borderRadius: "12px",

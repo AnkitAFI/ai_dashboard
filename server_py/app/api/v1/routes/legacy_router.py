@@ -6106,7 +6106,13 @@ def logout(response: Response, session_id: str = Cookie(None)):
         delete_session(session_id)
         print(f"✅ Session deleted from Redis")
     
-    response.delete_cookie(key="session_id")
+        response.delete_cookie(
+        key="session_id",
+        httponly=True,
+        secure=SESSION_COOKIE_SECURE,
+        samesite="lax"
+    )
+
     
     return {"success": True, "message": "Logged out successfully"}
 

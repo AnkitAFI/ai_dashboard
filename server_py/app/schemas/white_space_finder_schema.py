@@ -135,7 +135,6 @@ class ScanResult(BaseModel):
 
 class WatchlistItemRequest(BaseModel):
     """Request body for adding/toggling a watchlist item."""
-    user_id: str
     niche: str
     score: int
     category: str
