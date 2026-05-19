@@ -298,7 +298,7 @@ export default function ProductTracker() {
     if (!userId) return;
     setLoadingUsage(true);
     try {
-      const res = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")}/users/${userId}/analysis-usage`, { 
+      const res = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")}/users/${userId}/analysis-usage`, { 
         credentials: "include",
         cache: 'no-store'
       });
@@ -333,7 +333,7 @@ export default function ProductTracker() {
 
   const fetchCategories = async (src: string) => {
     try {
-      const res = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")}/categories?table=${src}`, { cache: 'no-store' });
+      const res = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")}/categories?table=${src}`, { cache: 'no-store' });
       const data = await res.json();
       const cats = data.map((c: any) => c.category);
       setCategories(cats);
@@ -378,7 +378,7 @@ export default function ProductTracker() {
     setApiResponse(null);
 
     try {
-      const res = await fetch("https://api.insydz.com/product-tracker/analyze", {
+      const res = await fetch("http://localhost:8000/product-tracker/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         cache: 'no-store',

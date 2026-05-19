@@ -5151,7 +5151,7 @@ from dotenv import load_dotenv
 
 # Load environment variables
 from pathlib import Path
-_base_dir = Path(__file__).resolve().parent
+_base_dir = Path(__file__).resolve().parents[5]
 load_dotenv(dotenv_path=_base_dir / ".env", override=True)
 
 # ============================================
@@ -16920,6 +16920,11 @@ async def sitemap():
         "/resources/expert-blog/insydz-vs-sellerapp-india",
         "/resources/expert-blog/amazon-review-analysis-guide-india",
         "/resources/expert-blog/manual-vs-automated-competitor-tracking-tool",
+        "/resources/expert-blog/amazon-private-label-india-2026",
+        "/resources/expert-blog/amazon-vine-program-india-2026",
+        "/resources/expert-blog/amazon-vs-flipkart-india-seller",
+        "/resources/video-guides",
+        "/author/vikrant-singh",
         "/about/our-vision",
         "/about/careers",
         "/about/contact-us",

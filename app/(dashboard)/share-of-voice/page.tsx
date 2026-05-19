@@ -361,7 +361,7 @@ export default function ShareOfVoice() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com/api");
+  const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api");
 
   useEffect(() => { if (userId) fetchUsageLimits(); }, [userId]);
   useEffect(() => { fetchCategories(); }, [marketplace]);
@@ -775,12 +775,12 @@ export default function ShareOfVoice() {
             {/* Summary Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: "Total Products", value: sovData.total_products.toLocaleString(), icon: <BarChart3 className="w-6 h-6 text-white" />, grad: "from-blue-500 to-blue-600", sub: "In this category" },
-                { label: "Total Reviews", value: sovData.total_reviews.toLocaleString(), icon: <Users className="w-6 h-6 text-white" />, grad: "from-green-500 to-emerald-600", sub: "Customer feedback" },
-                { label: "Market Leader", value: sovData.market_leader || "—", icon: <Award className="w-6 h-6 text-white" />, grad: "from-purple-500 to-pink-600", sub: "Top brand", truncate: true },
+                { label: "Total Products", value: sovData.total_products.toLocaleString(), icon: <BarChart3 className="w-6 h-6 text-blue-500" />, grad: "from-blue-500 to-blue-600", sub: "In this category" },
+                { label: "Total Reviews", value: sovData.total_reviews.toLocaleString(), icon: <Users className="w-6 h-6 text-emerald-500" />, grad: "from-green-500 to-emerald-600", sub: "Customer feedback" },
+                { label: "Market Leader", value: sovData.market_leader || "—", icon: <Award className="w-6 h-6 text-purple-500" />, grad: "from-purple-500 to-pink-600", sub: "Top brand", truncate: true },
                 ...(sovData.your_brand_share !== null
-                  ? [{ label: "Your Share", value: `${sovData.your_brand_share}%`, icon: <Target className="w-6 h-6 text-white" />, grad: "from-orange-500 to-red-600", sub: "Market position" }]
-                  : [{ label: "Total Brands", value: String(sovData.brands.length), icon: <Layers className="w-6 h-6 text-white" />, grad: "from-cyan-500 to-sky-600", sub: "Competing brands" }]),
+                  ? [{ label: "Your Share", value: `${sovData.your_brand_share}%`, icon: <Target className="w-6 h-6 text-orange-500" />, grad: "from-orange-500 to-red-600", sub: "Market position" }]
+                  : [{ label: "Total Brands", value: String(sovData.brands.length), icon: <Layers className="w-6 h-6 text-cyan-500" />, grad: "from-cyan-500 to-sky-600", sub: "Competing brands" }]),
               ].map((c, i) => (
                 <Card key={i} className={`relative bg-gradient-to-br ${c.grad} text-white border-0 rounded-3xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-transform`}>
                   <CardContent className="p-5 relative">
@@ -1024,7 +1024,7 @@ export default function ShareOfVoice() {
                   <CardDescription>Brand density per price band — green = opportunity, red = crowded</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <ResponsiveContainer width="100%" height={220}>
+                  <ResponsiveContainer width="100%" height={260}>
                     <BarChart
                       data={marketHealth.all_price_gaps.map((g) => ({
                         band: g.price_band.replace("₹", "").replace(",", ""),
@@ -1032,11 +1032,11 @@ export default function ShareOfVoice() {
                         opp: g.opportunity,
                         rating: g.avg_rating,
                       }))}
-                      margin={{ left: 0, right: 10, top: 4, bottom: 40 }}
+                      margin={{ left: 0, right: 10, top: 4, bottom: 60 }}
                       barCategoryGap="12%"
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                      <XAxis dataKey="band" tick={{ fontSize: 10, fill: "#94a3b8" }} angle={-35} textAnchor="end" interval={0} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="band" tick={{ fontSize: 10, fill: "#94a3b8" }} angle={-35} textAnchor="end" interval="preserveStartEnd" minTickGap={20} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
                       <Tooltip
                         contentStyle={CustomTooltipStyle}
@@ -1416,15 +1416,15 @@ export default function ShareOfVoice() {
                 {aiInsights && !loadingInsights && (
                   <>
                     {aiInsights.ai_generated_insights && (
-                      <Card className="bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-600 text-white border-0 rounded-3xl shadow-2xl overflow-hidden">
-                        <CardHeader>
-                          <CardTitle className="text-xl flex items-center gap-3">
-                            <span className="text-3xl">🤖</span> Insydz Strategic Analysis
+                      <Card className="bg-background border border-slate-200 rounded-2xl shadow-lg overflow-hidden border-t-4 border-t-blue-600">
+                        <CardHeader className="bg-slate-50 border-b border-slate-100">
+                          <CardTitle className="text-xl flex items-center gap-3 text-slate-800">
+                            <span className="text-2xl">🤖</span> Insydz Strategic Analysis
                           </CardTitle>
                         </CardHeader>
-                        <CardContent>
-                          <div className="bg-background opacity-100 backdrop-blur-none rounded-2xl p-6 border border-white/20">
-                            <pre className="whitespace-pre-wrap text-white font-mono text-xs leading-relaxed">{aiInsights.ai_generated_insights}</pre>
+                        <CardContent className="pt-6">
+                          <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                            <pre className="whitespace-pre-wrap text-slate-700 font-sans text-sm leading-relaxed">{aiInsights.ai_generated_insights}</pre>
                           </div>
                         </CardContent>
                       </Card>

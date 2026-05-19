@@ -21,7 +21,7 @@ import {
 } from "recharts";
 import ReactMarkdown from "react-markdown";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const API = `${BASE_URL}/api/rank-tracker`;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -67,6 +67,7 @@ interface RankProfile {
   tier: string;
   keyword_limit: number;
   suggestions: string[];
+  recent_alerts?: { type: "warn" | "danger" | "success"; msg: string; keyword: string; fired_at: string }[];
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -115,6 +116,7 @@ function useStream() {
       const res = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(body),
         signal: abortRef.current.signal,
       });
@@ -947,22 +949,24 @@ function RankTrackerContent() {
                   <Bell className="w-4 h-4 text-amber-500" /> Rank Change Alerts
                 </h3>
                 <div className="space-y-2">
-                  {[
-                    { type: "warn", msg: "\"sandisk 128gb\" dropped from #4 → #11 in the last 24 hours" },
-                    { type: "danger", msg: "A competitor overtook you for \"memory card 128gb\" — they moved from #8 to #3" },
-                    { type: "success", msg: "You entered Top 10 for \"uhs-i sdxc\" — now ranking #7" },
-                  ].map((a, i) => (
-                    <div key={i} className={`flex items-start gap-2 p-3 rounded-xl border-l-4 text-xs ${
-                      a.type === "danger" ? "bg-red-50 border-red-400 text-red-800"
-                      : a.type === "warn" ? "bg-amber-50 border-amber-400 text-amber-800"
-                      : "bg-emerald-50 border-emerald-400 text-emerald-800"
-                    }`}>
-                      {a.type === "danger" ? <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                       : a.type === "warn" ? <ArrowDown className="w-4 h-4 shrink-0 mt-0.5" />
-                       : <ArrowUp className="w-4 h-4 shrink-0 mt-0.5" />}
-                      <span>{a.msg}</span>
-                    </div>
-                  ))}
+                  {profile?.recent_alerts && profile.recent_alerts.length > 0 ? (
+                    profile.recent_alerts.map((a, i) => (
+                      <div key={i} className={`flex items-start gap-2 p-3 rounded-xl border-l-4 text-xs ${
+                        a.type === "danger" ? "bg-red-50 border-red-400 text-red-800"
+                        : a.type === "warn" ? "bg-amber-50 border-amber-400 text-amber-800"
+                        : "bg-emerald-50 border-emerald-400 text-emerald-800"
+                      }`}>
+                        {a.type === "danger" ? <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                         : a.type === "warn" ? <ArrowDown className="w-4 h-4 shrink-0 mt-0.5" />
+                         : <ArrowUp className="w-4 h-4 shrink-0 mt-0.5" />}
+                        <span>{a.msg}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-xs text-slate-400 text-center py-4 bg-slate-50 rounded-xl border border-slate-100">
+                      No rank changes detected in the last 7 days.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>

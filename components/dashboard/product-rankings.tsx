@@ -84,7 +84,7 @@ export default function ProductRankings({
 }: {
   selectedSource: string;
 }) {
-  const BASE_URL = "https://api.insydz.com";
+  const BASE_URL = "http://localhost:8000";
   const { filters } = useFilters();
   const { canAccessFeature, currentTier } = useSubscriptionLimits();
 

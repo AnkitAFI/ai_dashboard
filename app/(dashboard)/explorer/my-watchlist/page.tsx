@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com/api";
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

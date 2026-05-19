@@ -146,7 +146,7 @@ const SELLER_SECTIONS: NavSection[] = [
     items: [
       { href: "/share-of-voice", label: "Market Visibility", icon: BarChart3 },
       { href: "/seller/whatsapp-alerts", label: "WhatsApp Alerts", icon: MessageSquare, badge: "NEW" },
-      { href: "/seller/festive-trends", label: "Festive Trends", icon: Star, badge: "NEW", disabled: true },
+      { href: "/seller/festive-trends", label: "Festive Trends", icon: Star, badge: "NEW" },
       { href: "/seller/rank-tracker", label: "Rank Tracker", icon: Target, badge: "NEW" },
     ],
   },

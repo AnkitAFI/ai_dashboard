@@ -21,7 +21,7 @@
 //   DialogFooter,
 // } from "@/components/ui/dialog";
 // // Environment config
-// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
+// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 // export default function Login() {
 //   const router = useRouter();
@@ -684,7 +684,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function Login() {
   const router = useRouter();

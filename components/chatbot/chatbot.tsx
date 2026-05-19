@@ -55,7 +55,7 @@ interface ChatMessage {
 // CONSTANTS
 // ─────────────────────────────────────────────
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const QUICK_QUESTIONS = [
   "What products are trending now?",
@@ -447,40 +447,42 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
       {/* Chat Window */}
       {isOpen && (
         <Card className={cn(
-          "shadow-2xl border border-gray-200 overflow-hidden flex flex-col rounded-2xl transition-all duration-300",
+          "overflow-hidden flex flex-col transition-all duration-300",
           isFullScreen 
-            ? "w-full flex-1 h-[calc(100vh-12rem)] min-h-[500px]" 
-            : "absolute bottom-16 right-0 w-80 h-[28rem]"
+            ? "w-full h-full flex-1 min-h-[500px] border-0 shadow-none rounded-none bg-transparent" 
+            : "absolute bottom-16 right-0 w-80 h-[28rem] shadow-2xl border border-gray-200 rounded-2xl bg-white"
         )}>
 
           {/* Header */}
-          <CardHeader className="bg-gradient-to-r from-primary to-purple-600 text-white p-3 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-white/20 text-white">
-                  <Bot className="h-4 w-4" />
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <CardTitle className="text-sm font-medium">Insydz Advisor</CardTitle>
-                <Badge variant="secondary" className="text-xs bg-white/20 border-0 text-white">
-                  {isTyping ? "thinking…" : isStreaming ? "typing…" : "AI Powered"}
-                </Badge>
+          {!isFullScreen && (
+            <CardHeader className="bg-gradient-to-r from-primary to-purple-600 text-white p-3 flex items-center justify-between shrink-0">
+              <div className="flex items-center space-x-2">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-white/20 text-white">
+                    <Bot className="h-4 w-4" />
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex flex-col">
+                  <CardTitle className="text-sm font-medium">Insydz Advisor</CardTitle>
+                  <Badge variant="secondary" className="text-xs bg-white/20 border-0 text-white">
+                    {isTyping ? "thinking…" : isStreaming ? "typing…" : "AI Powered"}
+                  </Badge>
+                </div>
               </div>
-            </div>
-            <div className="flex items-center gap-1">
-              {messages.length > 1 && (
-                <Button variant="ghost" size="sm" onClick={resetConversation} title="New conversation" className="text-white h-8 w-8 p-0 hover:bg-white/20">
-                  <RefreshCw className="h-3.5 w-3.5" />
-                </Button>
-              )}
-              {!isFullScreen && (
-                <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="text-white h-8 w-8 p-0">
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          </CardHeader>
+              <div className="flex items-center gap-1">
+                {messages.length > 1 && (
+                  <Button variant="ghost" size="sm" onClick={resetConversation} title="New conversation" className="text-white h-8 w-8 p-0 hover:bg-white/20">
+                    <RefreshCw className="h-3.5 w-3.5" />
+                  </Button>
+                )}
+                {!isFullScreen && (
+                  <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="text-white h-8 w-8 p-0">
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+            </CardHeader>
+          )}
 
           {/* Usage / Auth Banner */}
           {!isLoadingUsage && (
@@ -605,19 +607,19 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
             </ScrollArea>
 
             {/* Input Section */}
-            <div className="border-t bg-slate-50/50 p-4 space-y-3">
-              <div className="max-w-4xl mx-auto space-y-3">
-                <Select value={selectedSource} onValueChange={setSelectedSource} disabled={isChatLocked}>
-                  <SelectTrigger className="w-40 text-xs bg-white h-8">
-                    <SelectValue placeholder="Data Source" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border-slate-200 shadow-xl">
-                    <SelectItem value="flipkart">🛍 Flipkart Data</SelectItem>
-                    <SelectItem value="amazon">💬 Amazon Data</SelectItem>
-                  </SelectContent>
-                </Select>
+            <div className="border-t bg-slate-50/50 p-2 sm:p-3 shrink-0">
+              <div className="max-w-4xl mx-auto space-y-2">
+                <div className="flex items-center gap-2">
+                  <Select value={selectedSource} onValueChange={setSelectedSource} disabled={isChatLocked}>
+                    <SelectTrigger className="w-32 sm:w-36 text-xs bg-white h-10 rounded-xl border-slate-200 shadow-sm shrink-0">
+                      <SelectValue placeholder="Data Source" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-slate-200 shadow-xl">
+                      <SelectItem value="flipkart">🛍 Flipkart Data</SelectItem>
+                      <SelectItem value="amazon">💬 Amazon Data</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-                <div className="flex space-x-2">
                   <Input
                     ref={inputRef}
                     value={inputMessage}
@@ -625,27 +627,34 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                     onKeyDown={(e) => e.key === "Enter" && !isChatLocked && sendMessage()}
                     placeholder={
                       !isAuthenticated ? "Please login to unlock AI Advisor..."
-                        : isChatLocked ? (currentTier === 'free' ? "Unlock with Basic or Premium plan..." : "Usage limit reached. Upgrade to continue...")
-                          : "Type your query here (e.g., 'What are the top electronics trending on Flipkart?')..."
+                        : isChatLocked ? (currentTier === 'free' ? "Unlock with Basic or Premium plan..." : "Usage limit reached...")
+                          : "Type your query here..."
                     }
-                    className="flex-1 text-sm bg-white border-slate-200 focus:ring-primary h-11 rounded-xl shadow-sm"
+                    className="flex-1 text-sm bg-white border-slate-200 focus:ring-primary h-10 rounded-xl shadow-sm min-w-0"
                     disabled={isTyping || isStreaming || isChatLocked}
                   />
+
                   <Button
                     onClick={() => isStreaming ? abort() : sendMessage()}
                     disabled={isChatLocked || isTyping || (!inputMessage.trim() && !isStreaming)}
                     size="icon"
                     className={cn(
-                      "h-11 w-11 rounded-xl shadow-md transition-all",
+                      "h-10 w-10 rounded-xl shadow-md transition-all shrink-0",
                       isStreaming ? "bg-red-500 hover:bg-red-600" : "bg-primary hover:bg-primary/90"
                     )}
                   >
-                    {!isAuthenticated ? <LogIn className="h-5 w-5" />
-                      : isChatLocked ? <Lock className="h-5 w-5" />
-                        : isTyping ? <span className="w-5 h-5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                          : isStreaming ? <X className="h-5 w-5" />
-                            : <Send className="h-5 w-5" />}
+                    {!isAuthenticated ? <LogIn className="h-4 w-4" />
+                      : isChatLocked ? <Lock className="h-4 w-4" />
+                        : isTyping ? <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                          : isStreaming ? <X className="h-4 w-4" />
+                            : <Send className="h-4 w-4" />}
                   </Button>
+
+                  {isFullScreen && messages.length > 1 && (
+                    <Button variant="outline" size="icon" onClick={resetConversation} title="Reset Chat" className="h-10 w-10 rounded-xl border-slate-200 shadow-sm shrink-0 text-slate-500 hover:text-slate-800">
+                      <RefreshCw className="h-4 w-4" />
+                    </Button>
+                  )}
                 </div>
 
                 {/* Quick actions for fullscreen */}

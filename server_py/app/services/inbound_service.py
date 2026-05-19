@@ -498,27 +498,64 @@ class SellerInboundService:
             db.commit()
 
         try:
-            # ── 1. Fetch Products ──────────────────────────────────────────────
-            params = {"seller_id": seller_id, "country": country, "page": page, "sort_by": "RELEVANCE"}
-            print(f"\n[DEBUG] --- AMAZON PRODUCTS REQUEST ---")
-            print(f"[DEBUG] URL: {AMAZON_API_URL} | Params: {params}")
+            # ── 1. Fetch Products (Paginated & Dynamic) ────────────────────────
+            import time
+            seller_products = []
+            seen_asins = set()
+            current_page = page
+            
+            while current_page <= 100:  # Safety guardrail to prevent infinite runs
+                # Apply a small delay between calls to respect API rate limits
+                if current_page > page:
+                    time.sleep(1)
 
-            resp = requests.get(AMAZON_API_URL, headers=HEADERS, params=params, timeout=20)
-            print(f"[DEBUG] Products status: {resp.status_code}")
+                params = {"seller_id": seller_id, "country": country, "page": current_page, "sort_by": "RELEVANCE"}
+                print(f"\n[DEBUG] --- AMAZON PRODUCTS REQUEST (PAGE {current_page}) ---")
+                print(f"[DEBUG] URL: {AMAZON_API_URL} | Params: {params}")
 
-            try:
-                resp_json = resp.json()
-                print(f"[DEBUG] Products response: {json.dumps(resp_json, indent=2)}")
-                with open(log_file, "a") as f:
-                    f.write(f"[{datetime.utcnow()}] [ingest] PRODUCTS RESPONSE: {json.dumps(resp_json)}\n")
-            except Exception as json_err:
-                print(f"[DEBUG] Failed to parse JSON: {json_err} | Raw: {resp.text}")
+                resp = requests.get(AMAZON_API_URL, headers=HEADERS, params=params, timeout=20)
+                print(f"[DEBUG] Products status (Page {current_page}): {resp.status_code}")
 
-            resp.raise_for_status()
-            seller_products = resp.json().get("data", {}).get("seller_products", [])
+                try:
+                    resp_json = resp.json()
+                    with open(log_file, "a") as f:
+                        f.write(f"[{datetime.utcnow()}] [ingest] PRODUCTS RESPONSE (PAGE {current_page}): {json.dumps(resp_json)}\n")
+                except Exception as json_err:
+                    print(f"[DEBUG] Failed to parse JSON on page {current_page}: {json_err} | Raw: {resp.text}")
+                    break
+
+                if not resp.ok:
+                    print(f"[DEBUG] Products request failed on page {current_page} with status {resp.status_code}")
+                    break
+
+                page_products = resp_json.get("data", {}).get("seller_products", [])
+                if not page_products:
+                    print(f"[DEBUG] No products found on page {current_page}. Stopping pagination.")
+                    break
+
+                # Filter duplicates to prevent infinite loops (in case the API keeps returning the same page)
+                new_products_found = False
+                for item in page_products:
+                    asin = item.get("asin")
+                    if asin and asin not in seen_asins:
+                        seen_asins.add(asin)
+                        seller_products.append(item)
+                        new_products_found = True
+
+                print(f"[DEBUG] Fetched {len(page_products)} products from page {current_page}. Unique new: {new_products_found}")
+
+                if not new_products_found:
+                    print(f"[DEBUG] No new products found on page {current_page}. Stopping pagination.")
+                    break
+
+                if len(page_products) < 10:
+                    print(f"[DEBUG] Page {current_page} returned {len(page_products)} products (< 10). Assuming last page.")
+                    break
+
+                current_page += 1
 
             with open(log_file, "a") as f:
-                f.write(f"[{datetime.utcnow()}] [ingest] Found {len(seller_products)} products\n")
+                f.write(f"[{datetime.utcnow()}] [ingest] Found total {len(seller_products)} products across pages\n")
 
             if not seller_products:
                 if user_id:

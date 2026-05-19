@@ -571,31 +571,63 @@ def _get_recent_alerts(
     asin:      str,
     limit:     int = 10,
 ) -> list:
-    rows = (
-        db.query(RankAlertLog)
+    cutoff = datetime.utcnow() - timedelta(days=7)
+    
+    # Query ONLY the RankSnapshot table
+    snapshots = (
+        db.query(RankSnapshot)
         .filter(
-            RankAlertLog.seller_id == seller_id,
-            RankAlertLog.asin      == asin,
-            RankAlertLog.fired_at  >= datetime.utcnow() - timedelta(days=7),
+            RankSnapshot.seller_id  == seller_id,
+            RankSnapshot.asin       == asin,
+            RankSnapshot.checked_at >= cutoff,
         )
-        .order_by(RankAlertLog.fired_at.desc())
-        .limit(limit)
+        .order_by(RankSnapshot.keyword, RankSnapshot.checked_at.asc())
         .all()
     )
-    type_map = {
-        "drop":        "warn",
-        "enter_top10": "success",
-        "lost":        "danger",
-    }
-    return [
-        {
-            "type":     type_map.get(row.alert_type, "warn"),
-            "msg":      row.alert_msg or "",
-            "keyword":  row.keyword,
-            "fired_at": row.fired_at.isoformat() if row.fired_at else None,
-        }
-        for row in rows
-    ]
+
+    from collections import defaultdict
+    kw_snapshots = defaultdict(list)
+    for s in snapshots:
+        kw_snapshots[s.keyword].append(s)
+
+    alerts = []
+
+    for keyword, snaps in kw_snapshots.items():
+        for i in range(1, len(snaps)):
+            prev_snap = snaps[i-1]
+            curr_snap = snaps[i]
+            prev_rank = prev_snap.rank_position
+            curr_rank = curr_snap.rank_position
+
+            # 1. Enter Top 10
+            if curr_rank and curr_rank <= 10 and (prev_rank is None or prev_rank > 10):
+                alerts.append({
+                    "type": "success",
+                    "msg": f'"{keyword}" entered Top 10 — now ranking #{curr_rank}',
+                    "keyword": keyword,
+                    "fired_at": curr_snap.checked_at.isoformat()
+                })
+            # 2. Rank Drop
+            elif curr_rank and prev_rank and curr_rank > prev_rank:
+                alert_type = "danger" if (curr_rank - prev_rank) >= 5 else "warn"
+                msg = f'A competitor overtook you for "{keyword}" — they moved from #{prev_rank} to #{curr_rank}' if alert_type == "danger" else f'"{keyword}" dropped from #{prev_rank} → #{curr_rank} in the last 24 hours'
+                alerts.append({
+                    "type": alert_type,
+                    "msg": msg,
+                    "keyword": keyword,
+                    "fired_at": curr_snap.checked_at.isoformat()
+                })
+            # 3. Lost ranking
+            elif curr_rank is None and prev_rank is not None:
+                alerts.append({
+                    "type": "danger",
+                    "msg": f'"{keyword}" dropped out of top 100 results (was #{prev_rank})',
+                    "keyword": keyword,
+                    "fired_at": curr_snap.checked_at.isoformat()
+                })
+
+    alerts.sort(key=lambda a: a["fired_at"], reverse=True)
+    return alerts[:limit]
  
  
 # ─────────────────────────────────────────────────────────────────────────────

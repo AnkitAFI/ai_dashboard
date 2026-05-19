@@ -7,7 +7,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
 import {
-  TrendingUp, TrendingDown, Package, Star, DollarSign,
+  TrendingUp, TrendingDown, Package, Star, IndianRupee,
   Zap, BarChart3, Users, Award, ShieldCheck, Loader2, RefreshCcw, ShoppingCart, Percent
 } from "lucide-react";
 import { useAuth } from '@/lib/auth-context';
@@ -55,7 +55,7 @@ export default function SellerDashboardView() {
 
   const fetchStats = async () => {
     try {
-      const resp = await fetch(`https://api.insydz.com/api/seller/dashboard-stats?seller_id=${user?.seller_id}`, {
+      const resp = await fetch(`http://localhost:8000/api/seller/dashboard-stats?seller_id=${user?.seller_id}`, {
         credentials: "include",
       });
       if (!resp.ok) throw new Error("Failed to fetch stats");
@@ -168,8 +168,8 @@ export default function SellerDashboardView() {
         />
         <MetricCard
           title="Avg Price"
-          value={`$${metrics.avg_price}`}
-          icon={<DollarSign className="w-6 h-6 text-emerald-600" />}
+          value={`₹${metrics.avg_price}`}
+          icon={<IndianRupee className="w-6 h-6 text-emerald-600" />}
           description="Mean listing price"
         />
         <MetricCard
@@ -260,7 +260,7 @@ export default function SellerDashboardView() {
               <Star className="w-5 h-5 text-amber-500" />
               Feedback Sentiment
             </CardTitle>
-            <CardDescription>Derived from customer review ratings</CardDescription>
+            <CardDescription>Derived from customer review comments &amp; ratings</CardDescription>
           </CardHeader>
           <CardContent className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">

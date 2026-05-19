@@ -113,7 +113,7 @@ function MicroInsight({ text, index }: { text: string; index: number }) {
 // MAIN COMPONENT
 // ─────────────────────────────────────────────
 
-const BASE_URL = "https://api.insydz.com";
+const BASE_URL = "http://localhost:8000";
 
 export default function AIRecommendations({ selectedSource }: { selectedSource: string }) {
   const { filters } = useFilters();
