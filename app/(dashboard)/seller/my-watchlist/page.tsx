@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { Menu } from "lucide-react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com/api");
+const API = process.env.NEXT_PUBLIC_API_URL || (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api");
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

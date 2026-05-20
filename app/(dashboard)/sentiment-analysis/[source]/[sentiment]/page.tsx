@@ -26,7 +26,7 @@ function SentimentAnalysisPageContent() {
   const [totalProducts, setTotalProducts] = useState(0);
   const limit = 24;
 
-  const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+  const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
@@ -46,7 +46,7 @@ function SentimentAnalysisPageContent() {
         setTotalPages(data.total_pages);
         setTotalProducts(data.total_products);
       }
-    } catch (err) { setError("Failed to aggregate sentiment data"); } finally { setLoading(false); }
+    } catch (err) { setError("Review data couldn't load. Please try again."); } finally { setLoading(false); }
   }, [source, sentiment, currentPage, searchParams, API_BASE]);
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);

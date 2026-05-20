@@ -45,7 +45,7 @@ export default function SentimentProductsPage() {
 
   const source = (params?.source as string) || "flipkart";
   const sentiment = (params?.sentiment as string) || "positive";
-  const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+  const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
   const urlParams = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
   const categoryFilter = urlParams.get('category');
@@ -115,7 +115,7 @@ export default function SentimentProductsPage() {
         }
       } catch (error) {
         console.error("Error fetching sentiment products:", error);
-        setError(error instanceof Error ? error.message : "Failed to load products");
+        setError(error instanceof Error ? error.message : "Product list failed to load. Please refresh.");
       } finally {
         setIsLoading(false);
       }

@@ -140,7 +140,7 @@ interface ProductDetail {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 function renderAnalysisField(value: any): string {
   if (typeof value === "string") return value;
@@ -330,9 +330,9 @@ export default function KeywordTracker() {
         credentials: "include",
         cache: 'no-store'
       });
-      if (!res.ok) throw new Error("Failed to fetch rank history");
+      if (!res.ok) throw new Error("Couldn't load history. Please refresh the page.");
       setRankHistory(await res.json());
-    } catch (e: any) { showToast("Failed to Load History", e.message, "error"); }
+    } catch (e: any) { showToast("Couldn't Load History", "Rank history unavailable. Please try again.", "error"); }
     finally { setLoadingRanks(false); }
   };
 
@@ -350,13 +350,13 @@ export default function KeywordTracker() {
       if (!res.ok) {
         const err = await res.json();
         if (res.status === 403) { setShowUpgradeModal(true); showToast("Tracking Limit Reached", err.detail, "error"); return; }
-        throw new Error(err.detail || "Failed to fetch products");
+        throw new Error(err.detail || "Couldn't fetch products. Please try again.");
       }
       const data = await res.json();
       setProducts(data);
       if (userId) await fetchUsageLimits();
       showToast("Success!", `Found ${data.length} products with reviews for seller ${sellerId}`, "success");
-    } catch (e: any) { showToast("Fetch Failed", e.message, "error"); }
+    } catch (e: any) { showToast("Fetch Failed", "Couldn't load products. Please try again.", "error"); }
     finally { setLoading(false); }
   };
 
@@ -379,10 +379,10 @@ export default function KeywordTracker() {
         cache: 'no-store',
         body: JSON.stringify({ tracked_product_id: selectedProduct.id, keywords: valid, user_email: userEmail }),
       });
-      if (!res.ok) throw new Error("Failed to track keywords");
+      if (!res.ok) throw new Error("Couldn't add keywords. Please try again.");
       showToast("Keywords Tracked!", `${valid.length} keywords added for tracking`, "success");
       await fetchRankHistory(selectedProduct.id);
-    } catch (e: any) { showToast("Tracking Failed", e.message, "error"); }
+    } catch (e: any) { showToast("Tracking Failed", "Couldn't add keywords. Please try again.", "error"); }
   };
 
   const handleUpdateRanks = async () => {
@@ -398,12 +398,12 @@ export default function KeywordTracker() {
         body: JSON.stringify({ user_email: userEmail }),
       });
       if (res.status === 429) { const err = await res.json(); showToast("Rate Limited", err.detail, "error"); return; }
-      if (!res.ok) throw new Error("Failed to update ranks");
+      if (!res.ok) throw new Error("Couldn't update ranks. Please try again.");
       const result = await res.json();
       showToast("Ranks Updated!", "All keyword ranks have been refreshed", "success");
       if (selectedProduct) await fetchRankHistory(selectedProduct.id);
       await fetchRateLimitStatus();
-    } catch (e: any) { showToast("Update Failed", e.message, "error"); }
+    } catch (e: any) { showToast("Update Failed", "Couldn't update ranks. Please try again.", "error"); }
     finally { setUpdatingRanks(false); }
   };
 
@@ -621,6 +621,11 @@ export default function KeywordTracker() {
                   : userId && !canTrack ? <><Lock className="h-4 w-4 mr-2" />Limit Reached</>
                     : <><Search className="h-4 w-4 mr-2" />Fetch Products & Reviews</>}
               </Button>
+              {loading && (
+                <p className="text-slate-500 text-xs text-center mt-2 animate-pulse">
+                  We are analyzing the data. This may take 1–2 minutes.
+                </p>
+              )}
             </CardContent>
           </Card>
 
@@ -920,7 +925,7 @@ export default function KeywordTracker() {
                           <div className="flex flex-col items-center justify-center py-12">
                             <Loader2 className="h-12 w-12 animate-spin text-purple-500 mb-4" />
                             <p className="text-slate-600 text-sm">AI is analyzing your keyword data...</p>
-                            <p className="text-slate-400 text-xs mt-2">This may take 20–30 seconds</p>
+                            <p className="text-slate-400 text-xs mt-2">We are analyzing the data. This may take 1–2 minutes.</p>
                           </div>
                         ) : aiAnalysis ? (
                           <div className="space-y-6">
@@ -1043,7 +1048,14 @@ export default function KeywordTracker() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-6">
-                    {selectedProduct.review_comments?.length > 0 && !reviewSentiment && (
+                    {loadingSentiment && (
+                      <div className="flex flex-col items-center justify-center py-12">
+                        <Loader2 className="h-12 w-12 animate-spin text-blue-500 mb-4" />
+                        <p className="text-slate-600 text-sm font-medium">Analyzing reviews sentiment...</p>
+                        <p className="text-slate-400 text-xs mt-2">We are analyzing the data. This may take 1–2 minutes.</p>
+                      </div>
+                    )}
+                    {selectedProduct.review_comments?.length > 0 && !reviewSentiment && !loadingSentiment && (
                       <div className="space-y-2">
                         <p className="text-xs text-slate-500 uppercase tracking-wider mb-3">{selectedProduct.review_comments.length} reviews available</p>
                         {selectedProduct.review_comments.slice(0, 3).map((c, i) => (

@@ -14,7 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useSelectedProduct } from "@/lib/selected-product-context";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 // ── Cluster icon + colour map ─────────────────────────────────────────────────
 const CLUSTER_META: Record<string, { color: string; bg: string; border: string; emoji: string }> = {
@@ -455,6 +455,7 @@ function KeywordGapContent() {
               <RefreshCw className="w-8 h-8 animate-spin text-sky-500" />
               <div className="text-center">
                 <p className="text-slate-600 font-semibold">Analysing keyword gaps…</p>
+                <p className="text-slate-400 text-xs animate-pulse mt-1">We are analyzing the data. This may take 1–2 minutes.</p>
               </div>
             </div>
           )}

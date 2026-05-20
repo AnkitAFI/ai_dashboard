@@ -55,7 +55,7 @@ interface ChatMessage {
 // CONSTANTS
 // ─────────────────────────────────────────────
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 const QUICK_QUESTIONS = [
   "What products are trending now?",
@@ -362,7 +362,7 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
         setIsStreaming(false);
         setMessages(prev => [
           ...prev.filter(m => m.id !== streamId),
-          { id: Date.now().toString(), message: "⚠️ I'm having trouble fetching data. Please make sure your FastAPI server is running.", isUser: false, timestamp: new Date() },
+          { id: Date.now().toString(), message: "AI is temporarily unavailable. Please try again shortly.", isUser: false, timestamp: new Date() },
         ]);
       }
     );

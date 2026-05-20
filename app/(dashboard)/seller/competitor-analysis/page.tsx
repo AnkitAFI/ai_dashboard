@@ -17,7 +17,7 @@
 // } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
 
-// const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+// const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 // // ── Tier Gate ─────────────────────────────────────────────────────────────────
 // function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
@@ -896,7 +896,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 // ── Tier Gate ─────────────────────────────────────────────────────────────────
 function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
@@ -1454,6 +1454,7 @@ function CompetitorAnalysisContent() {
           <div className="flex flex-col items-center justify-center h-64 gap-3">
             <RefreshCw className="w-8 h-8 animate-spin text-sky-500" />
             <p className="text-slate-600 font-semibold">Scanning your competitive landscape…</p>
+            <p className="text-slate-400 text-xs animate-pulse">We are analyzing the data. This may take 1–2 minutes.</p>
           </div>
         )}
 

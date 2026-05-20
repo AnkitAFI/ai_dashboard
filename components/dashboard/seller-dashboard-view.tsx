@@ -55,7 +55,7 @@ export default function SellerDashboardView() {
 
   const fetchStats = async () => {
     try {
-      const resp = await fetch(`https://api.insydz.com/api/seller/dashboard-stats?seller_id=${user?.seller_id}`, {
+      const resp = await fetch(`http://localhost:8000/api/seller/dashboard-stats?seller_id=${user?.seller_id}`, {
         credentials: "include",
       });
       if (!resp.ok) throw new Error("Failed to fetch stats");

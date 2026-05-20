@@ -10,7 +10,7 @@
 //   Wallet, IndianRupee,
 // } from "lucide-react";
 
-// const API_BASE_URL = ((process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")) || (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+// const API_BASE_URL = ((process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")) || (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 // const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "") || "syatharthdelhi@gmail.com";
 // const TIER_PRICE: Record<string, number> = { free: 0, basic: 1999, premium: 2999 };
 
@@ -775,7 +775,7 @@ import {
   MessageSquare, BarChart2, Globe, Tag,
 } from "lucide-react";
 
-const API_BASE_URL = ((process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")) || (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const API_BASE_URL = ((process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")) || (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "") || "syatharthdelhi@gmail.com";
 const TIER_PRICE: Record<string, number> = { free: 0, basic: 1999, premium: 2999 };
 

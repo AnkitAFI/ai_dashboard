@@ -361,7 +361,7 @@ export default function ShareOfVoice() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com/api");
+  const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api");
 
   useEffect(() => { if (userId) fetchUsageLimits(); }, [userId]);
   useEffect(() => { fetchCategories(); }, [marketplace]);
@@ -442,7 +442,7 @@ export default function ShareOfVoice() {
         setTimeout(() => window.scrollTo({ top: 500, behavior: "smooth" }), 100);
       }
     } catch (err: any) {
-      const msg = err.response?.data?.detail || "Failed to fetch SOV data";
+      const msg = err.response?.data?.detail || "Market data unavailable. Please retry shortly.";
       if (err.response?.status === 403) setShowUpgradeModal(true);
       setError(msg);
       showToast("Analysis Failed", msg, "error");
@@ -472,7 +472,7 @@ export default function ShareOfVoice() {
         setTimeout(() => window.scrollTo({ top: 500, behavior: "smooth" }), 100);
       }
     } catch (err: any) {
-      const msg = err.response?.data?.detail || "Failed to fetch keyword SOV";
+      const msg = err.response?.data?.detail || "Competitor data is taking longer than usual. Please retry.";
       if (err.response?.status === 403) setShowUpgradeModal(true);
       setError(msg); showToast("Search Failed", msg, "error");
     } finally { setLoading(false); }
@@ -766,6 +766,7 @@ export default function ShareOfVoice() {
             <CardContent className="p-12 flex flex-col items-center gap-4">
               <RefreshCw className="w-10 h-10 text-blue-500 animate-spin" />
               <p className="text-gray-500 font-medium">Analyzing market data…</p>
+              <p className="text-slate-400 text-xs mt-1">We are analyzing the data. This may take 1–2 minutes.</p>
             </CardContent>
           </Card>
         )}
@@ -1408,7 +1409,10 @@ export default function ShareOfVoice() {
                   <Card className="bg-background rounded-2xl shadow-lg">
                     <CardContent className="p-8 flex items-center gap-4">
                       <RefreshCw className="w-8 h-8 text-purple-500 animate-spin shrink-0" />
-                      <p className="text-slate-600 font-medium">AI is analyzing your competitive landscape…</p>
+                      <div>
+                        <p className="text-slate-600 font-medium">AI is analyzing your competitive landscape…</p>
+                        <p className="text-slate-400 text-xs mt-1">We are analyzing the data. This may take 1–2 minutes.</p>
+                      </div>
                     </CardContent>
                   </Card>
                 )}

@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 interface PaymentOrder {
   id: number;
@@ -272,12 +272,12 @@ export default function OrderHistory() {
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        throw new Error(d.detail || "Failed to load order history.");
+        throw new Error(d.detail || "Billing details unavailable. Please refresh.");
       }
       const data: PaymentOrder[] = await res.json();
       setOrders(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : "Couldn't load order history. Please refresh.");
     } finally {
       setLoading(false);
     }

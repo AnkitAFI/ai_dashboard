@@ -29,7 +29,7 @@ export default function SellerIdInput({ onSaved }: { onSaved: (id: string) => vo
     setError(null);
 
     try {
-      const response = await fetch("https://api.insydz.com/api/seller/update-seller-id", {
+      const response = await fetch("http://localhost:8000/api/seller/update-seller-id", {
         method: "POST",
         credentials: "include",
         headers: {

@@ -28,7 +28,7 @@
 //   { value: "local", label: "Local (Mumbai Metro)" },
 // ];
 
-// const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+// const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 // export default function Settings() {
 //   const { toast } = useToast();
@@ -390,7 +390,7 @@ const TARGET_MARKETS = [
   { value: "local", label: "Local (Mumbai Metro)" },
 ];
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function Settings() {
   const { toast } = useToast();
@@ -473,7 +473,7 @@ export default function Settings() {
 
       toast({ title: "Settings saved successfully!", description: "Your profile has been updated." });
     } catch (error: any) {
-      toast({ title: "Failed to save", description: error.message || "Could not update your profile.", variant: "destructive" });
+      toast({ title: "Couldn't save changes", description: "Please try again — previous settings are intact.", variant: "destructive" });
     } finally {
       setIsSaving(false);
     }

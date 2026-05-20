@@ -21,7 +21,7 @@ import {
 } from "recharts";
 import ReactMarkdown from "react-markdown";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 const API = `${BASE_URL}/api/rank-tracker`;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -598,8 +598,17 @@ function StreamBox({ stream }: { stream: ReturnType<typeof useStream> }) {
           {stream.streaming && <span className="animate-pulse text-blue-500">▌</span>}
         </div>
       )}
-      {stream.error && (
-        <span className="text-red-600 text-xs font-medium">{stream.error}</span>
+      {stream.error === "upgrade_required" && (
+        <span className="text-amber-600 text-xs font-medium">Available on Premium plan. Upgrade to unlock.</span>
+      )}
+      {stream.error === "ollama_offline" && (
+        <span className="text-red-600 text-xs font-medium">AI is temporarily unavailable. Please try again shortly.</span>
+      )}
+      {stream.error === "stream_interrupted" && (
+        <span className="text-red-600 text-xs font-medium">Analysis interrupted. Retry to continue — no data lost.</span>
+      )}
+      {stream.error && !["upgrade_required", "ollama_offline", "stream_interrupted"].includes(stream.error) && (
+        <span className="text-red-600 text-xs font-medium">Couldn't complete analysis. Please try again.</span>
       )}
     </div>
   );
@@ -778,14 +787,15 @@ function RankTrackerContent() {
         )}
 
         {/* Loading */}
-        {asin && loading && (
+        {asin && (loading || refreshing) && (
           <div className="flex flex-col items-center justify-center h-64 gap-3">
             <RefreshCw className="w-8 h-8 animate-spin text-sky-500" />
-            <p className="text-slate-600 font-semibold">Loading rank data…</p>
+            <p className="text-slate-600 font-semibold">{refreshing ? "Refreshing and analyzing rank positions..." : "Loading rank data…"}</p>
+            <p className="text-slate-400 text-xs animate-pulse">We are analyzing the data. This may take 1–2 minutes.</p>
           </div>
         )}
 
-        {asin && !loading && profile && (
+        {asin && !loading && !refreshing && profile && (
           <>
             {/* Product card */}
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center">

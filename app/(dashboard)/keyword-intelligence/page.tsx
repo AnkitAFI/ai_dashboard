@@ -86,7 +86,7 @@ interface Toast {
   variant: "success" | "error";
 }
 
-const API = "https://api.insydz.com/api/keyword-tracker";
+const API = "http://localhost:8000/api/keyword-tracker";
 
 // ── AI Insight Card ───────────────────────────────────────────────────────────
 
@@ -185,7 +185,7 @@ function HistoryModal({ kw, onClose }: { kw: KeywordOut; onClose: () => void }) 
         if (d.detail?.error_code) setError(d.detail.message);
         else setData(d);
       })
-      .catch(() => setError("Failed to load history"))
+      .catch(() => setError("Couldn't load history. Please refresh the page."))
       .finally(() => setLoading(false));
   }, [kw.id]);
 
@@ -299,7 +299,7 @@ function KeywordTrackerIntelligenceContent() {
       if (res.ok) setDashboard(data);
       else showToast("Error", data.detail?.message ?? "Failed to load dashboard", "error");
     } catch {
-      showToast("Network Error", "Could not reach the server", "error");
+      showToast("Network Error", "Connection issue. Please retry shortly.", "error");
     } finally {
       setLoadingDash(false);
     }
@@ -308,7 +308,7 @@ function KeywordTrackerIntelligenceContent() {
   useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
 
   useEffect(() => {
-    fetch(`${(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")}/categories?table=${platform}`)
+    fetch(`${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")}/categories?table=${platform}`)
       .then(r => r.json())
       .then(d => setCategories(d.map((c: any) => c.category)))
       .catch(() => setCategories([]));
@@ -342,7 +342,7 @@ function KeywordTrackerIntelligenceContent() {
       } else if (res.status === 409) {
         showToast("Already tracking", "This keyword is already tracked for this product", "error");
       } else {
-        showToast("Error", data.detail?.message ?? "Failed to add", "error");
+        showToast("Error", data.detail?.message ?? "Couldn't add keyword. Please try again.", "error");
       }
     } catch {
       showToast("Network Error", "Could not reach the server", "error");
@@ -362,7 +362,7 @@ function KeywordTrackerIntelligenceContent() {
         setKwInsights(p => { const n = { ...p }; delete n[kwId]; return n; });
         fetchDashboard();
       } else {
-        showToast("Error", "Failed to remove keyword", "error");
+        showToast("Error", "Couldn't remove keyword. Please try again.", "error");
       }
     } catch {
       showToast("Network Error", "Could not reach the server", "error");
@@ -393,7 +393,7 @@ function KeywordTrackerIntelligenceContent() {
         showToast("Error", data.detail?.message ?? "Refresh failed", "error");
       }
     } catch {
-      showToast("Network Error", "Could not reach the server", "error");
+      showToast("Network Error", "Connection issue. Please retry shortly.", "error");
     } finally {
       setRefreshing(p => ({ ...p, [kwId]: false }));
     }
@@ -411,9 +411,9 @@ function KeywordTrackerIntelligenceContent() {
       const res  = await fetch(`${API}/suggestions?${params}`, { credentials: "include" });
       const data = await res.json();
       if (res.ok) setSuggestions(data.suggestions);
-      else showToast("Error", data.detail?.message ?? "Failed to load suggestions", "error");
+      else showToast("Error", data.detail?.message ?? "Couldn't load suggestions. Please try again.", "error");
     } catch {
-      showToast("Network Error", "Could not reach the server", "error");
+      showToast("Network Error", "Connection issue. Please retry shortly.", "error");
     } finally {
       setLoadingSuggest(false);
     }
@@ -609,7 +609,7 @@ function KeywordTrackerIntelligenceContent() {
                   {loadingSuggest && (
                     <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl border border-purple-200">
                       <Loader2 className="h-5 w-5 animate-spin text-purple-500" />
-                      <p className="text-sm text-purple-700">AI is generating keyword ideas for your product…</p>
+                      <p className="text-sm text-purple-700">We are analyzing the data. This may take 1–2 minutes.</p>
                     </div>
                   )}
 
@@ -765,7 +765,7 @@ function KeywordTrackerIntelligenceContent() {
                         <div className="px-4 pb-3 pt-2 bg-purple-50 border-t border-purple-100">
                           <div className="flex items-center gap-2 text-purple-600">
                             <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                            <span className="text-xs">AI is analysing your rank change…</span>
+                            <span className="text-xs">We are analyzing the data. This may take 1–2 minutes.</span>
                           </div>
                         </div>
                       )}

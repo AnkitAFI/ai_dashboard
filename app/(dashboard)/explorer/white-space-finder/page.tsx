@@ -19,7 +19,7 @@ import {
   Package, Flame, SortAsc, ChevronRight, Bookmark,
 } from "lucide-react";
 
-const API = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com") + "/api";
+const API = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000") + "/api";
 
 const CHART_STYLE = {
   backgroundColor: "rgba(255,255,255,0.97)",
@@ -1039,28 +1039,20 @@ function WhiteSpaceFinderContent() {
             </div>
           )}
 
-          {/* Loading skeleton */}
+          {/* Loading state */}
           {loading && (
-            <div className="space-y-3">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="bg-background rounded-2xl shadow-sm animate-pulse">
-                  <CardContent className="p-5">
-                    <div className="flex gap-3 mb-3">
-                      <div className="w-12 h-12 bg-slate-200 rounded-full" />
-                      <div className="flex-1">
-                        <div className="h-3.5 w-52 bg-slate-200 rounded mb-2" />
-                        <div className="h-2.5 w-28 bg-slate-100 rounded" />
-                      </div>
-                      <div className="w-16 h-10 bg-slate-200 rounded-xl" />
-                    </div>
-                    <div className="h-10 bg-slate-100 rounded-xl mb-3" />
-                    <div className="grid grid-cols-4 gap-2">
-                      {[1,2,3,4].map((j) => <div key={j} className="h-12 bg-slate-100 rounded-lg" />)}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <Card className="bg-background border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
+              <CardContent className="p-16 flex flex-col items-center justify-center gap-4 text-center min-h-[450px]">
+                <div className="relative flex items-center justify-center">
+                  <RefreshCw className="w-10 h-10 text-violet-600 dark:text-violet-400 animate-spin" />
+                  <div className="absolute inset-0 rounded-full bg-violet-100 dark:bg-violet-900/30 scale-150 -z-10 animate-ping opacity-25" />
+                </div>
+                <div className="space-y-1.5 mt-2">
+                  <p className="text-slate-700 dark:text-slate-300 font-semibold text-lg">Scanning competitive landscape…</p>
+                  <p className="text-slate-400 dark:text-slate-500 text-sm animate-pulse">We are analyzing the data. This may take 1–2 minutes.</p>
+                </div>
+              </CardContent>
+            </Card>
           )}
 
           {/* Results */}

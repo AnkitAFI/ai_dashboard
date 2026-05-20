@@ -11,7 +11,7 @@ import { Check, X, Crown, Zap, Building2, Loader2, AlertCircle, Sparkles, Infini
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import PaymentModal, { type PaymentPlan } from "@/components/payment/payment-modal";
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
 
 interface SubscriptionPlan {
   id: string;
@@ -235,7 +235,7 @@ export default function Subscription() {
       }
       preview = await res.json();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load billing info.");
+      setError(err instanceof Error ? err.message : "Billing details unavailable. Please refresh.");
       setPreviewLoadingPlan(null);
       return;
     } finally {
