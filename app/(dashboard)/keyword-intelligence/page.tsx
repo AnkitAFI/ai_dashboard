@@ -86,7 +86,7 @@ interface Toast {
   variant: "success" | "error";
 }
 
-const API = "http://localhost:8000/api/keyword-tracker";
+const API = "https://api.insydz.com/api/keyword-tracker";
 
 // ── AI Insight Card ───────────────────────────────────────────────────────────
 
@@ -308,7 +308,7 @@ function KeywordTrackerIntelligenceContent() {
   useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
 
   useEffect(() => {
-    fetch(`${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")}/categories?table=${platform}`)
+    fetch(`${(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")}/categories?table=${platform}`)
       .then(r => r.json())
       .then(d => setCategories(d.map((c: any) => c.category)))
       .catch(() => setCategories([]));

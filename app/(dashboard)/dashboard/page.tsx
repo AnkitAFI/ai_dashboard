@@ -52,7 +52,7 @@ function DashboardContent() {
   const { user, refreshUser } = useAuth();
 
   const { filters, setFilters } = useFilters();
-  const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
+  const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
 
   const selectedSource = filters.table || "amazon";
 

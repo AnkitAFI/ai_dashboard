@@ -16,7 +16,7 @@
 //   Tooltip, ResponsiveContainer,
 // } from "recharts";
 
-// const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
+// const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
 
 // // ── Tier Gate ─────────────────────────────────────────────────────────────────
 // function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
@@ -516,7 +516,7 @@ import {
 } from "recharts";
 import { useSelectedProduct } from "@/lib/selected-product-context";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000");
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
 
 // ── Tier Gate ─────────────────────────────────────────────────────────────────
 function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {

@@ -361,7 +361,7 @@ export default function ShareOfVoice() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api");
+  const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com/api");
 
   useEffect(() => { if (userId) fetchUsageLimits(); }, [userId]);
   useEffect(() => { fetchCategories(); }, [marketplace]);

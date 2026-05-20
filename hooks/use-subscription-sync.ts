@@ -1,7 +1,7 @@
 import { useAuth } from '@/lib/auth-context';
 import { useSubscriptionLimits } from './use-subscription-limits';
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = "https://api.insydz.com";
 
 interface SubscriptionUpdatePayload {
   user_id: number;
