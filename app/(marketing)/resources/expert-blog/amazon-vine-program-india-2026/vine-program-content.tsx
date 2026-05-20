@@ -734,13 +734,7 @@ export default function AmazonVineProgramContent() {
           ))}
         </div>
 
-        {/* QUICK ANSWER BOX */}
-        <div style={{ background:"#F7F8FC", borderLeft:"4px solid #F4500A", borderRadius:8, padding:20, marginBottom:32 }} className="dark:bg-gray-900">
-          <div style={{ fontSize:11, fontWeight:700, color:"#F4500A", textTransform:"uppercase", letterSpacing:1, marginBottom:8, fontFamily:"'Sora',sans-serif" }}>Quick Answer</div>
-          <p style={{ margin:0, fontSize:15, color:"#1E293B", lineHeight:1.6, fontFamily:"'Lora',serif" }} className="dark:text-gray-300">
-            Amazon Vine India charges ₹19,200 per ASIN for up to 30 verified reviews from trusted Vine Voices. You enrol through Seller Central → Advertising → Vine. Your ASIN must have under 30 reviews and be Brand Registered on FBA. Vine reviewers keep the product — reviews are honest and cannot be removed.
-          </p>
-        </div>
+        
 
         {/* Hero image placeholder - replication asked for same UI */}
         <img
@@ -749,6 +743,14 @@ export default function AmazonVineProgramContent() {
           style={{ width:"100%", borderRadius:16, marginBottom:10, display:"block" }}
         />
         <p className="hero-img-cap">Amazon Vine continues to be the gold standard for generating high-quality, authentic reviews for new product launches in the Indian marketplace.</p>
+
+        {/* QUICK ANSWER BOX */}
+        <div style={{ background:"#F7F8FC", borderLeft:"4px solid #F4500A", borderRadius:8, padding:20, marginBottom:32 }} className="dark:bg-gray-900">
+          <div style={{ fontSize:11, fontWeight:700, color:"#F4500A", textTransform:"uppercase", letterSpacing:1, marginBottom:8, fontFamily:"'Sora',sans-serif" }}>Quick Answer</div>
+          <p style={{ margin:0, fontSize:15, color:"#1E293B", lineHeight:1.6, fontFamily:"'Lora',serif" }} className="dark:text-gray-300">
+            Amazon Vine India charges ₹19,200 per ASIN for up to 30 verified reviews from trusted Vine Voices. You enrol through Seller Central → Advertising → Vine. Your ASIN must have under 30 reviews and be Brand Registered on FBA. Vine reviewers keep the product — reviews are honest and cannot be removed.
+          </p>
+        </div>
       </div>
 
       {/* KEY TAKEAWAYS SECTION */}

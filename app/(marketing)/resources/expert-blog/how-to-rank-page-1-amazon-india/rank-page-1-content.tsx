@@ -544,7 +544,7 @@ export default function HowToRankPage1AmazonIndia() {
             of Amazon India: The Complete Guide for Sellers (2026)
           </h1>
 
-          <p className="text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mb-7" style={{ fontFamily: "'Lora', serif" }}>
+          <p className="text-sm md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mb-7" style={{ fontFamily: "'Lora', serif" }}>
             Learn exactly how to rank on page 1 of Amazon India using the A9 algorithm, keyword optimization &amp;
             competitor intelligence. An actionable 4-phase guide for Indian sellers.
           </p>
@@ -559,7 +559,6 @@ export default function HowToRankPage1AmazonIndia() {
             <span className="text-gray-300 dark:text-gray-700">·</span>
             <div className="flex items-center gap-1"><Clock className="w-4 h-4" /><strong className="text-gray-700 dark:text-gray-300">15 min read</strong></div>
             <span className="bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400 text-xs font-bold px-2 py-0.5 rounded">Updated for 2026</span>
-            <span className="bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 text-xs font-bold px-2 py-0.5 rounded">BOFU Guide</span>
           </div>
 
           <div className="stat-strip" style={{ width: "140%" }}>
