@@ -473,7 +473,7 @@ export default function Settings() {
 
       toast({ title: "Settings saved successfully!", description: "Your profile has been updated." });
     } catch (error: any) {
-      toast({ title: "Failed to save", description: error.message || "Could not update your profile.", variant: "destructive" });
+      toast({ title: "Couldn't save changes", description: "Please try again — previous settings are intact.", variant: "destructive" });
     } finally {
       setIsSaving(false);
     }

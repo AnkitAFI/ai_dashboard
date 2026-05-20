@@ -115,7 +115,7 @@ export default function SentimentProductsPage() {
         }
       } catch (error) {
         console.error("Error fetching sentiment products:", error);
-        setError(error instanceof Error ? error.message : "Failed to load products");
+        setError(error instanceof Error ? error.message : "Product list failed to load. Please refresh.");
       } finally {
         setIsLoading(false);
       }

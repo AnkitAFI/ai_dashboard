@@ -18,14 +18,6 @@ import { Button } from "@/components/ui/button";
 //     handle: "friable_captain_8"
 //   },
 //   {
-//     logo: "HBOMAX",
-//     logoColor: "text-[#000000] dark:text-white",
-//     rating: "4.8",
-//     text: "I love how easy it is to keep track of my goals. The interface is clean and intuitive, making my daily routine much more efficient.",
-//     author: "Martin Kazlauskas",
-//     handle: "sartorial_statue_59"
-//   },
-//   {
 //     logo: "Disney+",
 //     logoColor: "text-[#006E99]",
 //     rating: "4.9",
@@ -40,22 +32,6 @@ import { Button } from "@/components/ui/button";
 //     text: "The community features are a great addition. It's wonderful to see others' progress and share my own journey with like-minded people.",
 //     author: "Tawanna Afumba",
 //     handle: "intransigent_toejam_15"
-//   },
-//   {
-//     logo: "VIX",
-//     logoColor: "text-[#FF4B00]",
-//     rating: "4.9",
-//     text: "Excellent support and frequent updates. You can tell the team really cares about their users and is constantly working to improve the app.",
-//     author: "Larry King",
-//     handle: "pendulous_unicom_46"
-//   },
-//   {
-//     logo: "prime video",
-//     logoColor: "text-[#00A8E1]",
-//     rating: "4.8",
-//     text: "Highly recommended for anyone looking to take their progress tracking to the next level. It's simple, yet powerful and very effective.",
-//     author: "Fatima Mohamed",
-//     handle: "salubrious_artist_72"
 //   }
 // ];
 
@@ -124,6 +100,7 @@ const testimonials = [
 
 export default function LandingContent() {
   const router = useRouter();
+  const [playingVideo, setPlayingVideo] = useState<string | null>(null);
 
   const handleGetStarted = () => {
     router.push("/login");
@@ -146,179 +123,266 @@ export default function LandingContent() {
       {/* Hero Section */}
       <section
         id="Home"
-        className="relative min-h-screen flex items-center justify-center pt-28 lg:pt-32 pb-12 lg:pb-16 bg-gradient-to-br from-purple-50/40 via-white to-pink-50/20 dark:from-gray-900 dark:via-background dark:to-gray-900 overflow-hidden"
+        className="relative min-h-[65vh] lg:h-[78vh] flex items-center justify-center pt-16 lg:pt-20 pb-12 lg:pb-16 bg-gradient-to-br from-purple-50/40 via-white to-pink-50/20 dark:from-gray-900 dark:via-background dark:to-gray-900 overflow-hidden"
       >
         {/* Abstract Background Shapes */}
         <div className="absolute top-1/4 left-0 w-96 h-96 bg-purple-300/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
         <div className="absolute top-1/3 right-0 w-96 h-96 bg-pink-300/20 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-8 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-8 items-center">
             
             {/* Left Content */}
-            <div className="flex flex-col space-y-6 text-left mt-4 lg:mt-0">
+            <div className="flex flex-col space-y-3 lg:space-y-4 text-left mt-2 lg:mt-0">
               {/* Pill */}
-              <h1 className="inline-flex w-max items-center px-4 py-2 rounded-full border border-purple-200 bg-purple-50 text-purple-700 text-sm font-semibold shadow-sm">
+              <h1 className="inline-flex w-max items-center px-3 py-1 rounded-full border border-purple-200 bg-purple-50 text-purple-700 text-xs font-semibold shadow-sm">
                 Ecommerce Analytics Software
               </h1>
 
               {/* Platforms */}
-              <div className="flex items-center space-x-3 text-sm text-gray-500 font-medium">
+              <div className="flex items-center space-x-3 text-xs text-gray-500 font-medium">
                 <span>Works with</span>
-                <span className="px-3 py-1 rounded-md bg-orange-50 text-orange-600 border border-orange-100 font-semibold">Amazon India</span>
-                <span className="px-3 py-1 rounded-md bg-blue-50 text-blue-600 border border-blue-100 font-semibold">Flipkart</span>
+                <span className="px-2 py-0.5 rounded bg-orange-50 text-orange-600 border border-orange-100 font-semibold">Amazon India</span>
+                <span className="px-2 py-0.5 rounded bg-blue-50 text-blue-600 border border-blue-100 font-semibold">Flipkart</span>
               </div>
 
               {/* Heading */}
-              <div className="text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight text-gray-900 dark:text-white">
-                <span className="text-6xl block mb-2 text-gray-900">Stop Guessing.</span>
-                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text leading-tight text-transparent block mb-2">Make Selling</span>
-                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block mb-2">Decisions</span>
-                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block">Better & Faster</span>
-              </div>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight text-gray-900 dark:text-white">
+                <span className="block mb-1 text-gray-900">Stop Guessing.</span>
+                <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent block">
+                  Make Selling Decisions <br className="hidden sm:inline" /> Better & Faster
+                </span>
+              </h1>
 
               {/* Paragraphs */}
-              <div className="space-y-4 text-gray-600 dark:text-gray-400 text-lg max-w-xl">
+              <div className="text-gray-600 dark:text-gray-400 text-sm sm:text-base max-w-xl leading-relaxed">
                 <p>
-                  Insydz helps Amazon and Flipkart sellers understand their data and grow their business. No more guessing what works. Get clear insights and take action with confidence.
-                </p>
-                <p>
-                  Our <span className="font-semibold text-gray-900 dark:text-white">seller analytics platform</span> shows you exactly which products are making money, what your competitors are doing, and where you are losing sales.
+                  Insydz helps Amazon and Flipkart sellers understand their data and grow their business. Our <span className="font-semibold text-gray-900 dark:text-white">seller analytics platform</span> shows you exactly which products make money, what competitors are doing, and where you lose sales.
                 </p>
               </div>
 
               {/* Buttons */}
-              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+              <div className="flex flex-col sm:flex-row gap-4 pt-1">
                 <Link href="/login"
-                  className="inline-flex justify-center items-center px-8 py-4 text-base font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full transition-colors shadow-lg hover:shadow-purple-500/25"
+                  className="inline-flex justify-center items-center px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full transition-all shadow-md hover:shadow-purple-500/20 transform hover:-translate-y-0.5"
                 >
                   Start Free. No Card Needed.
                 </Link>
               </div>
 
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-6 pt-8 mt-4">
+              <div className="grid grid-cols-3 gap-4 pt-4 mt-1 border-t border-purple-100/50 dark:border-gray-800">
                 <div>
-                  <div className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">5,000+</div>
-                  <div className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">Sellers trust Insydz</div>
+                  <div className="text-xl sm:text-2xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">5,000+</div>
+                  <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 font-medium">Sellers trust Insydz</div>
                 </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">2.5 Lakh+</div>
-                  <div className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">Reviews analysed</div>
+                  <div className="text-xl sm:text-2xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">2.5L+</div>
+                  <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 font-medium">Reviews analysed</div>
                 </div>
                 <div>
-                  <div className="text-2xl sm:text-3xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">24/7</div>
-                  <div className="text-xs sm:text-sm text-gray-500 mt-1 font-medium">Live market data</div>
+                  <div className="text-xl sm:text-2xl font-black bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">24/7</div>
+                  <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 font-medium">Live market data</div>
                 </div>
               </div>
             </div>
 
             {/* Right Content - Dashboard Mockup */}
-            <div className="relative w-full max-w-xl mx-auto lg:ml-auto xl:max-w-2xl mt-12 lg:mt-0 lg:pl-10 hidden lg:block">
+            <div className="relative w-full max-w-md mx-auto lg:ml-auto xl:max-w-lg mt-12 lg:mt-0 lg:pl-6 hidden lg:block scale-[0.8] xl:scale-[0.85] origin-right">
               {/* Floating elements */}
-              <div className="absolute -top-6 -right-2 sm:-right-6 z-20 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-bold px-5 py-3 rounded-full shadow-xl shadow-purple-500/30 animate-bounce" style={{ animationDuration: '3s' }}>
+              <div className="absolute -top-4 -right-2 z-20 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-xl shadow-purple-500/30 animate-bounce" style={{ animationDuration: '3s' }}>
                 Sales up 18% this week
               </div>
               
-              <div className="absolute -bottom-6 -left-2 sm:-left-6 z-20 bg-white border border-purple-200 text-purple-600 text-sm font-bold px-5 py-4 rounded-2xl shadow-2xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
-                <span className="block text-gray-900 mb-1">Competitor dropped price</span>
+              <div className="absolute -bottom-4 -left-2 sm:-left-4 z-20 bg-white border border-purple-200 text-purple-600 text-xs font-bold px-4 py-3 rounded-xl shadow-2xl animate-bounce" style={{ animationDuration: '4s', animationDelay: '1s' }}>
+                <span className="block text-gray-900 mb-0.5">Competitor dropped price</span>
                 <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">on 3 of your products</span>
               </div>
 
               {/* Browser Window Mockup */}
               <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
                 {/* Browser Header */}
-                <div className="bg-[#1C1C28] px-4 py-4 flex items-center gap-2">
-                  <div className="flex gap-2">
-                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                    <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                <div className="bg-[#1C1C28] px-4 py-2.5 flex items-center gap-2">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-500"></div>
+                    <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
                   </div>
-                  <div className="mx-auto bg-background opacity-100 rounded-md px-4 py-1.5 text-xs text-white/50 w-64 text-center truncate font-medium">
+                  <div className="mx-auto bg-background opacity-100 rounded px-3 py-1 text-[10px] text-white/50 w-48 text-center truncate font-medium">
                     insydz.com/dashboard
                   </div>
                 </div>
 
                 {/* Dashboard Content */}
-                <div className="p-6 sm:p-8 space-y-6">
+                <div className="p-4 space-y-3">
                   <div className="flex justify-between items-end">
                     <div>
-                      <h3 className="font-bold text-gray-900 dark:text-white text-lg">Good morning, Rahul</h3>
+                      <h3 className="font-bold text-gray-900 dark:text-white text-sm">Good morning, Rahul</h3>
                     </div>
-                    <div className="text-sm text-gray-400 font-medium">22 Apr 2026</div>
+                    <div className="text-[10px] text-gray-400 font-medium">22 Apr 2026</div>
                   </div>
 
                   {/* Stats Cards */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div className="border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-sm bg-white dark:bg-gray-900">
-                      <div className="text-xs text-gray-500 mb-2 font-medium">Revenue Today</div>
-                      <div className="font-extrabold text-2xl text-gray-900 dark:text-white">₹48,200</div>
-                      <div className="text-xs text-green-500 mt-2 font-bold">+12% vs yesterday</div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="border border-gray-100 dark:border-gray-800 rounded-lg p-2 shadow-sm bg-white dark:bg-gray-900">
+                      <div className="text-[9px] text-gray-500 mb-0.5 font-medium">Revenue Today</div>
+                      <div className="font-extrabold text-sm text-gray-900 dark:text-white">₹48,200</div>
+                      <div className="text-[8px] text-green-500 mt-0.5 font-bold">+12% vs yesterday</div>
                     </div>
-                    <div className="border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-sm bg-white dark:bg-gray-900">
-                      <div className="text-xs text-gray-500 mb-2 font-medium">Orders</div>
-                      <div className="font-extrabold text-2xl text-gray-900 dark:text-white">143</div>
-                      <div className="text-xs text-green-500 mt-2 font-bold">+8 orders</div>
+                    <div className="border border-gray-100 dark:border-gray-800 rounded-lg p-2 shadow-sm bg-white dark:bg-gray-900">
+                      <div className="text-[9px] text-gray-500 mb-0.5 font-medium">Orders</div>
+                      <div className="font-extrabold text-sm text-gray-900 dark:text-white">143</div>
+                      <div className="text-[8px] text-green-500 mt-0.5 font-bold">+8 orders</div>
                     </div>
-                    <div className="border border-gray-100 dark:border-gray-800 rounded-2xl p-4 shadow-sm bg-white dark:bg-gray-900">
-                      <div className="text-xs text-gray-500 mb-2 font-medium">Returns</div>
-                      <div className="font-extrabold text-2xl text-gray-900 dark:text-white">4</div>
-                      <div className="text-xs text-red-500 mt-2 font-bold">Review needed</div>
+                    <div className="border border-gray-100 dark:border-gray-800 rounded-lg p-2 shadow-sm bg-white dark:bg-gray-900">
+                      <div className="text-[9px] text-gray-500 mb-0.5 font-medium">Returns</div>
+                      <div className="font-extrabold text-sm text-gray-900 dark:text-white">4</div>
+                      <div className="text-[8px] text-red-500 mt-0.5 font-bold">Review needed</div>
                     </div>
                   </div>
 
                   {/* Chart */}
-                  <div className="border border-gray-100 dark:border-gray-800 rounded-2xl p-5 shadow-sm bg-white dark:bg-gray-900">
-                    <div className="text-sm text-gray-600 dark:text-gray-400 mb-6 font-semibold">Weekly Sales on Amazon India</div>
-                    <div className="flex items-end gap-3 h-28">
-                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t-md h-[30%]"></div>
-                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t-md h-[40%]"></div>
-                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t-md h-[35%]"></div>
-                      <div className="flex-1 bg-purple-100 dark:bg-purple-900/40 rounded-t-md h-[60%]"></div>
-                      <div className="flex-1 bg-gradient-to-t from-purple-500 to-pink-500 rounded-t-md h-[90%] relative"></div>
-                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t-md h-[50%]"></div>
-                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t-md h-[70%]"></div>
+                  <div className="border border-gray-100 dark:border-gray-800 rounded-lg p-3 shadow-sm bg-white dark:bg-gray-900">
+                    <div className="text-[10px] text-gray-600 dark:text-gray-400 mb-2 font-semibold">Weekly Sales on Amazon India</div>
+                    <div className="flex items-end gap-2 h-14">
+                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t h-[30%]"></div>
+                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t h-[40%]"></div>
+                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t h-[35%]"></div>
+                      <div className="flex-1 bg-purple-100 dark:bg-purple-900/40 rounded-t h-[60%]"></div>
+                      <div className="flex-1 bg-gradient-to-t from-purple-500 to-pink-500 rounded-t h-[90%] relative"></div>
+                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t h-[50%]"></div>
+                      <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 rounded-t h-[70%]"></div>
                     </div>
-                  </div>
-
-                  {/* Table */}
-                  <div className="border border-purple-100 dark:border-purple-900/30 bg-purple-50/40 dark:bg-purple-900/5 rounded-2xl p-5">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="text-purple-600 font-bold text-left">
-                          <th className="pb-4 uppercase tracking-wider text-xs">Product</th>
-                          <th className="pb-4 uppercase tracking-wider text-xs">Price</th>
-                          <th className="pb-4 uppercase tracking-wider text-xs">Profit</th>
-                          <th className="pb-4 uppercase tracking-wider text-xs">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className="text-gray-700 dark:text-gray-300">
-                        <tr className="border-b border-purple-100/50 dark:border-purple-900/20 last:border-0">
-                          <td className="py-3 font-semibold text-xs sm:text-sm">Steel Water Bottle</td>
-                          <td className="py-3 text-xs sm:text-sm">₹749</td>
-                          <td className="py-3 text-xs sm:text-sm">₹82</td>
-                          <td className="py-3"><span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold">Trending</span></td>
-                        </tr>
-                        <tr className="border-b border-purple-100/50 dark:border-purple-900/20 last:border-0">
-                          <td className="py-3 font-semibold text-xs sm:text-sm">Yoga Mat 6mm</td>
-                          <td className="py-3 text-xs sm:text-sm">₹599</td>
-                          <td className="py-3 text-xs sm:text-sm">₹41</td>
-                          <td className="py-3"><span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold">Review</span></td>
-                        </tr>
-                        <tr className="border-b border-purple-100/50 dark:border-purple-900/20 last:border-0">
-                          <td className="py-3 font-semibold text-xs sm:text-sm">Phone Stand Desk</td>
-                          <td className="py-3 text-xs sm:text-sm">₹199</td>
-                          <td className="py-3 text-xs sm:text-sm">₹12</td>
-                          <td className="py-3"><span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold">Low Margin</span></td>
-                        </tr>
-                      </tbody>
-                    </table>
                   </div>
 
                 </div>
               </div>
             </div>
 
+          </div>
+        </div>
+      </section>
+
+      {/* Video Masterclasses Section */}
+      <section className="pt-6 pb-16 lg:pt-8 bg-gradient-to-br from-pink-50 to-pink-50 dark:from-gray-800 dark:to-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-12">
+            <div>
+              <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border border-purple-100 dark:border-purple-800/50 uppercase tracking-wider mb-4">
+                <span className="text-[10px]">▶</span> Video Masterclasses
+              </span>
+              <h2 className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white leading-tight mb-4 tracking-tight">
+                Learn from India's <span className="bg-gradient-to-r from-purple-600 to-[#8B5CF6] bg-clip-text text-transparent">Top Sellers</span>
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400 text-lg max-w-xl font-medium">
+                Free strategy walkthroughs on Amazon.in, Flipkart, PPC & festive prep — straight from real sellers.
+              </p>
+            </div>
+            <div className="mt-6 md:mt-0">
+              <Link href="/resources/video-guides" 
+                className="inline-flex items-center gap-2 border border-purple-200 dark:border-purple-800 text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/20 font-bold px-6 py-2.5 rounded-full transition-all text-sm shadow-sm"
+              >
+                View all videos <span className="text-base font-normal">→</span>
+              </Link>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Card 1 */}
+            <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/60 shadow-[0_10px_35px_rgba(0,0,0,0.03)] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 flex flex-col h-full group">
+              <div 
+                className="bg-gray-100 dark:bg-gray-900 aspect-video w-full relative flex items-center justify-center cursor-pointer bg-cover bg-center"
+                style={{ backgroundImage: "url('/Insydz%20Feature%20-%20Opportunity%20Finder%20Cover%20Image.png')" }}
+                onClick={() => setPlayingVideo("/videos/Insydz%20Feature%20-%20Opportunity%20Finder.mp4")}
+              >
+                <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
+                  <svg className="w-5 h-5 fill-current text-[#4338ca] ml-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <span className="absolute top-4 right-4 bg-black/50 text-white border border-white/20 text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm">Product Research</span>
+                <span className="absolute bottom-4 left-4 bg-black/75 text-white text-xs font-semibold px-2 py-0.5 rounded">06:12</span>
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <h3 
+                  className="text-lg font-black text-gray-900 dark:text-white leading-snug mb-3 hover:text-purple-600 transition-colors cursor-pointer"
+                  onClick={() => setPlayingVideo("/videos/Insydz%20Feature%20-%20Opportunity%20Finder.mp4")}
+                >
+                  Find Winning Product Opportunities with Insydz's Opportunity Finder
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6 font-medium flex-grow">
+                  Discover hidden market gaps on Amazon and Flipkart using Insydz Opportunity Finder. See competitor counts, revenue potential, pricing gaps, demand signals, and AI-powered insights all in seconds.
+                </p>
+                <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700/60 text-xs font-bold text-gray-400 mt-auto">
+                  <span className="flex items-center gap-1">👁 14.2K views</span>
+                  <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
+                    <svg className="w-4 h-4 text-red-600 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.107C19.522 3.54 12 3.54 12 3.54s-7.522 0-9.388.516a3.003 3.003 0 0 0-2.11 2.107C0 8.029 0 12 0 12s0 3.971.502 5.837a3.003 3.003 0 0 0 2.11 2.107C4.478 20.46 12 20.46 12 20.46s7.522 0 9.388-.516a3.003 3.003 0 0 0 2.11-2.107C24 15.971 24 12 24 12s0-3.971-.502-5.837z"/></svg> YouTube
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 2 */}
+            <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/60 shadow-[0_10px_35px_rgba(0,0,0,0.03)] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 flex flex-col h-full group">
+              <div 
+                className="bg-gray-100 dark:bg-gray-900 aspect-video w-full relative flex items-center justify-center cursor-pointer bg-cover bg-center"
+                style={{ backgroundImage: "url('/Insydz%20-%20Navigation%20Guide%20Cover%20Image.png')" }}
+                onClick={() => setPlayingVideo("/videos/Insydz%20-%20%20Complete%20Navigation%20Guide.mp4")}
+              >
+                <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
+                  <svg className="w-5 h-5 fill-current text-[#0f766e] ml-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <span className="absolute top-4 right-4 bg-black/50 text-white border border-white/20 text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm">Getting Started</span>
+                <span className="absolute bottom-4 left-4 bg-black/75 text-white text-xs font-semibold px-2 py-0.5 rounded">08:45</span>
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <h3 
+                  className="text-lg font-black text-gray-900 dark:text-white leading-snug mb-3 hover:text-purple-600 transition-colors cursor-pointer"
+                  onClick={() => setPlayingVideo("/videos/Insydz%20-%20%20Complete%20Navigation%20Guide.mp4")}
+                >
+                  Insydz - Complete Navigation Guide
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6 font-medium flex-grow">
+                  This step-by-step guide helps you set up your account and explore powerful seller tools, all in one place. Built for Amazon and Flipkart sellers who want smarter growth with data.
+                </p>
+                <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700/60 text-xs font-bold text-gray-400 mt-auto">
+                  <span className="flex items-center gap-1">👁 6.1K views</span>
+                  <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
+                    <svg className="w-4 h-4 text-red-600 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.107C19.522 3.54 12 3.54 12 3.54s-7.522 0-9.388.516a3.003 3.003 0 0 0-2.11 2.107C0 8.029 0 12 0 12s0 3.971.502 5.837a3.003 3.003 0 0 0 2.11 2.107C4.478 20.46 12 20.46 12 20.46s7.522 0 9.388-.516a3.003 3.003 0 0 0 2.11-2.107C24 15.971 24 12 24 12s0-3.971-.502-5.837z"/></svg> YouTube
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Card 3 */}
+            <div className="bg-white dark:bg-gray-800 rounded-3xl border border-gray-100 dark:border-gray-700/60 shadow-[0_10px_35px_rgba(0,0,0,0.03)] overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1.5 flex flex-col h-full group">
+              <div 
+                className="bg-gray-100 dark:bg-gray-900 aspect-video w-full relative flex items-center justify-center cursor-pointer bg-cover bg-center"
+                style={{ backgroundImage: "url('/Insydz%E2%80%99s%20Market%20Visibility%20-%20Cover%20Image.png')" }}
+                onClick={() => setPlayingVideo("/videos/Insydz’s%20Market%20Visibility.mp4")}
+              >
+                <div className="w-14 h-14 bg-white/90 rounded-full flex items-center justify-center shadow-lg backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
+                  <svg className="w-5 h-5 fill-current text-[#9a3412] ml-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <span className="absolute top-4 right-4 bg-black/50 text-white border border-white/20 text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm">Competitor Analysis</span>
+                <span className="absolute bottom-4 left-4 bg-black/75 text-white text-xs font-semibold px-2 py-0.5 rounded">05:30</span>
+              </div>
+              <div className="p-6 flex flex-col flex-grow">
+                <h3 
+                  className="text-lg font-black text-gray-900 dark:text-white leading-snug mb-3 hover:text-purple-600 transition-colors cursor-pointer"
+                  onClick={() => setPlayingVideo("/videos/Insydz’s%20Market%20Visibility.mp4")}
+                >
+                  Insydz’s Market Visibility
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6 font-medium flex-grow">
+                  Insydz's Market Visibility tool gives you a complete X-ray of your category, who's dominating, where the gaps are, and exactly how you can break in.
+                </p>
+                <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700/60 text-xs font-bold text-gray-400 mt-auto">
+                  <span className="flex items-center gap-1">👁 11.8K views</span>
+                  <span className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
+                    <svg className="w-4 h-4 text-red-600 fill-current" viewBox="0 0 24 24"><path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.107C19.522 3.54 12 3.54 12 3.54s-7.522 0-9.388.516a3.003 3.003 0 0 0-2.11 2.107C0 8.029 0 12 0 12s0 3.971.502 5.837a3.003 3.003 0 0 0 2.11 2.107C4.478 20.46 12 20.46 12 20.46s7.522 0 9.388-.516a3.003 3.003 0 0 0 2.11-2.107C24 15.971 24 12 24 12s0-3.971-.502-5.837z"/></svg> YouTube
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -959,6 +1023,30 @@ export default function LandingContent() {
       </section>
 
       {/* Footer is handled by MarketingLayout */}
+
+      {/* Video Modal Player Overlay */}
+      {playingVideo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md transition-all duration-300">
+          <div className="relative w-full max-w-4xl bg-black rounded-3xl overflow-hidden shadow-2xl border border-white/10 animate-in fade-in zoom-in-95 duration-200">
+            {/* Close button */}
+            <button 
+              onClick={() => setPlayingVideo(null)}
+              className="absolute top-4 right-4 z-10 bg-black/60 hover:bg-black/80 text-white rounded-full p-2.5 backdrop-blur-md transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            {/* Video element */}
+            <div className="aspect-video w-full">
+              <video 
+                src={playingVideo} 
+                className="w-full h-full object-contain" 
+                controls 
+                autoPlay
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         @keyframes blob {

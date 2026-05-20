@@ -235,7 +235,7 @@ export default function Subscription() {
       }
       preview = await res.json();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load billing info.");
+      setError(err instanceof Error ? err.message : "Billing details unavailable. Please refresh.");
       setPreviewLoadingPlan(null);
       return;
     } finally {

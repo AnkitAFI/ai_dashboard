@@ -396,7 +396,7 @@ export default function ProductTracker() {
       if (!res.ok) {
         const err = body as ApiErrorResponse;
         if (err.error_code === "QUOTA_EXCEEDED") setShowUpgradeModal(true);
-        showToast("Analysis Failed", err.message ?? "Unknown error", "error");
+        showToast("Analysis Failed", "Couldn't complete analysis. Please try again.", "error");
         return;
       }
 
@@ -410,7 +410,7 @@ export default function ProductTracker() {
       setTimeout(() => window.scrollTo({ top: 500, behavior: "smooth" }), 100);
 
     } catch (err: any) {
-      showToast("Network Error", "Could not reach the server. Please try again.", "error");
+      showToast("Network Error", "Connection issue. Please retry shortly.", "error");
       console.error("Analyse error:", err);
     } finally {
       setLoading(false);
@@ -582,6 +582,11 @@ export default function ProductTracker() {
                   <><Target className="h-4 w-4 mr-2" />Analyse on {source}</>
                 )}
               </Button>
+              {loading && (
+                <p className="text-xs text-slate-500 text-center mt-2 animate-pulse">
+                  We are analyzing the data. This may take 1–2 minutes.
+                </p>
+              )}
             </CardContent>
           </Card>
 

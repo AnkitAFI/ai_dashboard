@@ -727,6 +727,7 @@ function ReviewComparisonContent() {
             <div className="flex flex-col items-center justify-center h-64 gap-3">
               <RefreshCw className="w-8 h-8 animate-spin text-sky-500" />
               <p className="text-slate-500 font-medium">Analysing reviews & finding similar competitors…</p>
+              <p className="text-slate-400 text-xs animate-pulse">We are analyzing the data. This may take 1–2 minutes.</p>
             </div>
           )}
 

@@ -744,7 +744,7 @@ export default function AmazonReviewAnalysisToolIndia() {
           Review Intelligence Pillar
         </div>
         <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(22px,4vw,40px)", fontWeight:800, lineHeight:1.18, color:"#0D1B2A", letterSpacing:"-.5px", maxWidth:820 }} className="dark:text-white">
-          AI <span style={{ color:"#16A34A" }}>Review Intelligence Tool</span> for Amazon &amp; Flipkart Sellers: The Complete Guide (2026)
+          AI <span style={{ color:"#16A34A" }}>Review Intelligence Tool </span> for Amazon &amp; Flipkart Sellers: The Complete Guide (2026)
         </h1>
         <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2.5vw,17px)", color:"#475569", lineHeight:1.75, maxWidth:800,paddingTop:10, marginBottom:20 }} className="dark:text-gray-400">
           Your customers are already telling you exactly what's broken and why they're switching to a competitor — inside every review. Learn how India's fastest-growing D2C brands use AI review analysis to cut returns, fix listings, and grow revenue.
@@ -921,14 +921,14 @@ export default function AmazonReviewAnalysisToolIndia() {
 
             <div className="tbl-wrap">
               <table className="dt">
-                <thead>
-                  <tr>
-                    <th>Review Signal</th>
-                    <th>What the AI Detects</th>
-                    <th>What You Do With It</th>
-                    <th>Revenue Impact</th>
-                  </tr>
-                </thead>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                  <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Review Signal</th>
+                  <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left leading-relaxed">What the AI Detects</th>
+                  <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left leading-relaxed">What You Do With It</th>
+                  <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base text-left leading-relaxed">Revenue Impact</th>
+                </tr>
+              </thead>
                 <tbody>
                   {reviewSignals.map((r, i) => (
                     <tr key={i}>
@@ -945,11 +945,11 @@ export default function AmazonReviewAnalysisToolIndia() {
             <h2 id="comparison">Manual vs. Tool vs. India-First AI: How the Options Compare</h2>
             <div className="tbl-wrap">
               <table className="dt">
-                <thead>
-                  <tr>
-                    <th>Capability</th>
-                    <th>Manual Review Reading</th>
-                    <th>Global Tools (US)</th>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Capability</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Manual Review Reading</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Global Tools (US)</th>
                     <th style={{ background:"#16A34A" }}>Insydz AI Review Intelligence</th>
                   </tr>
                 </thead>
@@ -1075,13 +1075,13 @@ export default function AmazonReviewAnalysisToolIndia() {
 
             <div className="tbl-wrap">
               <table className="dt">
-                <thead>
-                  <tr>
-                    <th>Tool</th>
-                    <th>Review Analysis</th>
-                    <th>India Platforms</th>
-                    <th>Hinglish Support</th>
-                    <th>WhatsApp Alerts</th>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Tool</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Review Analysis</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">India Platforms</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Hinglish Support</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">WhatsApp Alerts</th>
                     <th style={{ background:"#16A34A" }}>Price (INR/mo)</th>
                   </tr>
                 </thead>

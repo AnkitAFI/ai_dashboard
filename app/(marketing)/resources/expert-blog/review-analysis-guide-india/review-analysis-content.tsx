@@ -757,12 +757,12 @@ export default function BestReviewAnalysisToolIndia() {
 
             <div className="tbl-wrap">
               <table className="dt">
-                <thead>
-                  <tr>
-                    <th>Review Intelligence Type</th>
-                    <th>What the AI Detects</th>
-                    <th>Action for Indian Sellers</th>
-                    <th>Revenue Impact</th>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Review Intelligence Type</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">What the AI Detects</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Action for Indian Sellers</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Revenue Impact</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -896,14 +896,14 @@ export default function BestReviewAnalysisToolIndia() {
 
             <div className="tbl-wrap">
               <table className="dt">
-                <thead>
-                  <tr>
-                    <th>Tool</th>
-                    <th>Review Analysis</th>
-                    <th>India Platform Coverage</th>
-                    <th>Hinglish NLP</th>
-                    <th>WhatsApp Alerts</th>
-                    <th style={{ background:"#16A34A" }}>Price (INR/mo)</th>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Tool</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Review Analysis</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">India Platform Coverage</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Hinglish NLP</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">WhatsApp Alerts</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed" style={{ background:"#16A34A" }}>Price (INR/mo)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -924,12 +924,12 @@ export default function BestReviewAnalysisToolIndia() {
             <h3>Full Capability Comparison India Market</h3>
             <div className="tbl-wrap">
               <table className="dt">
-                <thead>
-                  <tr>
-                    <th>Capability</th>
-                    <th>Manual Reading</th>
-                    <th>Global Tools (US-first)</th>
-                    <th style={{ background:"#16A34A" }}>Insydz India-First</th>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Capability</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Manual Reading</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Global Tools (US-first)</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed" style={{ background:"#16A34A" }}>Insydz India-First</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -46,7 +46,7 @@ function SentimentAnalysisPageContent() {
         setTotalPages(data.total_pages);
         setTotalProducts(data.total_products);
       }
-    } catch (err) { setError("Failed to aggregate sentiment data"); } finally { setLoading(false); }
+    } catch (err) { setError("Review data couldn't load. Please try again."); } finally { setLoading(false); }
   }, [source, sentiment, currentPage, searchParams, API_BASE]);
 
   useEffect(() => { fetchProducts(); }, [fetchProducts]);

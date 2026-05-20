@@ -293,15 +293,16 @@ function StreamBox({ stream }: { stream: ReturnType<typeof useStream> }) {
         </div>
       )}
       {stream.error === "upgrade_required" && (
-        <span className="text-amber-600 text-xs font-medium">Upgrade required.</span>
+        <span className="text-amber-600 text-xs font-medium">Available on Premium plan. Upgrade to unlock.</span>
       )}
       {stream.error === "ollama_offline" && (
-        <span className="text-red-600 text-xs font-medium">
-          Ollama offline — run: <code className="bg-red-50 px-1 rounded">ollama serve</code>
-        </span>
+        <span className="text-red-600 text-xs font-medium">AI is temporarily unavailable. Please try again shortly.</span>
       )}
-      {stream.error && !["upgrade_required", "ollama_offline"].includes(stream.error) && (
-        <span className="text-red-600 text-xs font-medium">{stream.error}</span>
+      {stream.error === "stream_interrupted" && (
+        <span className="text-red-600 text-xs font-medium">Analysis interrupted. Retry to continue — no data lost.</span>
+      )}
+      {stream.error && !["upgrade_required", "ollama_offline", "stream_interrupted"].includes(stream.error) && (
+        <span className="text-red-600 text-xs font-medium">Couldn't complete analysis. Please try again.</span>
       )}
     </div>
   );

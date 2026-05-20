@@ -403,68 +403,10 @@ export default function FlipkartKeywordContent() {
         .alert-act { font-size:10px; font-weight:700; color:#fb923c; white-space:nowrap; }
       `}</style>
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
-      {/* ══ NAV ══ */}
-      {/* <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background/80 dark:bg-gray-900/80 backdrop-blur-none"}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center space-x-1 group cursor-pointer" onClick={() => router.push("/")}>
-              <div className="relative">
-                <img src="/logo.png" alt="Insydz Logo" className="w-12 h-12 rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent ml-2">Insydz</span>
-            </div>
-            <div className="hidden lg:flex items-center space-x-1" ref={dropdownRef}>
-              <DesktopDropdown label="Solutions" menuKey="Solutions" />
-              <DesktopDropdown label="Use Cases" menuKey="Use Cases" />
-              <DesktopDropdown label="Features" menuKey="Features" />
-              <button onClick={() => router.push("/pricing")} onMouseEnter={() => setActiveDropdown(null)} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all">Pricing</button>
-              <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
-              <DesktopDropdown label="Compare" menuKey="Compare" />
-              <DesktopDropdown label="Resources" menuKey="Resources" accent="orange" />
-              <DesktopDropdown label="About" menuKey="About" />
-              <Button onClick={() => router.push("/login")} onMouseEnter={() => setActiveDropdown(null)} className="ml-2 text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">Login</Button>
-              <button className="ml-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" onClick={() => setIsDarkMode(!isDarkMode)} aria-label="Toggle dark mode">
-                {isDarkMode ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-800" />}
-              </button>
-            </div>
-            <button className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-            </button>
-          </div>
-        </div>
-        {isMenuOpen && (
-          <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100vh-5rem)] overflow-y-auto">
-            <div className="px-4 py-4 space-y-2">
-              <button onClick={() => { router.push("/resources/expert-blog"); setIsMenuOpen(false); }} className="flex items-center gap-2 w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium text-sm">
-                <ArrowLeft className="w-4 h-4" /> Back to Blog
-              </button>
-              {([["Solutions", "Solutions", "purple"], ["Use Cases", "Use Cases", "purple"], ["Features", "Features", "purple"], ["Free Tools", "Free Tools", "purple"], ["Compare", "Compare", "purple"], ["Resources", "Resources", "orange"], ["About", "About", "purple"]] as [string, keyof NavigationMenu, string][]).map(([label, key, accent]) => (
-                <div key={label}>
-                  <button onClick={() => toggleMobileMenu(label)} className={`flex items-center justify-between w-full px-4 py-2 rounded-lg font-medium text-sm ${accent === "orange" ? "text-orange-600 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20" : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"}`}>
-                    {label}<ChevronDown className={`w-4 h-4 transition-transform ${mobileActiveMenu === label ? "rotate-180" : ""}`} />
-                  </button>
-                  {mobileActiveMenu === label && (
-                    <div className="ml-4 mt-2 space-y-1">
-                      {navigationMenu[key].map((item, i) => (
-                        <button key={i} onClick={() => handleMenuItemClick(item)} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg">
-                          {item.icon}<span className="text-left flex-1">{item.name}</span>
-                          {item.badge && <span className="ml-auto text-xs bg-purple-600 text-white px-2 py-0.5 rounded-full">{item.badge}</span>}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              <button onClick={() => { router.push("/pricing"); setIsMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium text-sm">Pricing</button>
-              <Button onClick={() => { router.push("/login"); setIsMenuOpen(false); }} className="w-full mt-2 bg-gradient-to-r from-pink-500 to-rose-500">Login</Button>
-            </div>
-          </div>
-        )}
-      </nav> */}
-
+      
+      <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent"></span>
       {/* ══ HERO ══ */}
-      <section className="bg-white dark:bg-[#0f172a] pt-32 border-b border-gray-200 dark:border-gray-800">
+      <section className="bg-white dark:bg-[#0f172a] pt-24 border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
             <button onClick={() => router.push("/")} className="hover:text-orange-500 transition-colors">Home</button>
@@ -477,10 +419,10 @@ export default function FlipkartKeywordContent() {
             <div className="w-2 h-2 bg-orange-500 rounded-full" />
             Flipkart SEO & Seller Strategy
           </div>
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight text-gray-900 dark:text-white mb-6 max-w-4xl">
-            Flipkart <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Keyword Research Tool</span> & SEO Optimization Guide for Sellers (2026)
+          <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(32px, 4.5vw, 52px)", fontWeight: 800, color: "#0D1B2A", lineHeight: 1.1, letterSpacing: "-0.03em" }}>
+            Flipkart <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Keyword Research Tool</span> <br /> & <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">SEO Optimization</span> <br />Guide for Sellers (2026)
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mb-8" style={{ fontFamily: "'Lora', serif" }}>
+          <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mb-8" style={{ fontFamily: "'Lora', serif" }}>
             Master Flipkart keyword research and SEO optimization. Discover how India's top Flipkart sellers use AI-powered keyword tracking and search visibility tools to dominate search results and grow revenue.
           </p>
           <div className="flex flex-wrap items-center gap-6 pb-8 border-b border-gray-200 dark:border-gray-800 text-sm text-gray-500 dark:text-gray-400">
@@ -488,7 +430,6 @@ export default function FlipkartKeywordContent() {
               <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-950 flex items-center justify-center text-orange-600 font-bold">VS</div>
               <div>
                 <div className="text-gray-900 dark:text-gray-100 font-bold hover:text-orange-500 transition-colors cursor-pointer" onClick={() => router.push("/author/vikrant-singh")}>Vikrant Singh</div>
-                <div className="text-xs">Ecommerce Growth Experts</div>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -500,26 +441,24 @@ export default function FlipkartKeywordContent() {
               <strong className="text-gray-700 dark:text-gray-300">14 min read</strong>
             </div>
           </div>
-          <div className="stat-strip">
-            <div className="stat-item">
-              <div className="text-2xl font-extrabold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">35%</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">Algorithm weight on keywords</div>
-            </div>
-            <div className="stat-item">
-              <div className="text-2xl font-extrabold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">28%</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">Weight on attribute completeness</div>
-            </div>
-            <div className="stat-item">
-              <div className="text-2xl font-extrabold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">₹1,999</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">Starting price for professional tools</div>
-            </div>
-            <div className="stat-item">
-              <div className="text-2xl font-extrabold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">100%</div>
-              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium">India-focused data sources</div>
-            </div>
+          <div className="stat-strip" style={{ marginBottom:2 }}>
+          {[
+            ["35%",  "Algorithm weight on keywords"],
+            ["28%",  "Weight on attribute completeness"],
+            ["₹1,999",   "Starting price for professional tools"],
+            ["100%", "India-focused data sources"],
+          ].map(([num, lbl]) => (
+            <div className="stat-item" key={num}>
+            <span
+              className="block bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent font-black leading-none"
+              style={{fontSize: "clamp(20px,4vw,26px)", fontFamily: "'Sora',sans-serif" }}>{num}</span>
+
+            <span style={{display: "block", fontSize: "clamp(10px,2vw,11.5px)", color: "#64748B", marginTop: 4, lineHeight: 1.4, fontWeight: 500, fontFamily: "'Sora',sans-serif" }} >{lbl}</span>
           </div>
+          ))}
         </div>
-        <div className="border-t border-gray-200 dark:border-gray-800 py-12">
+        </div>
+        <div className="border-gray-200 dark:border-gray-800 py-2">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <ArticleImg
               src="/01_hero_banner.png"
@@ -545,7 +484,7 @@ export default function FlipkartKeywordContent() {
               </button>
             ))}
           </nav>
-          <div className="mt-8 pt-8 border-t border-gray-100 dark:border-gray-800">
+          <div className="mt-8 pt-8 border-gray-100 dark:border-gray-800">
             <div className="bg-orange-50 dark:bg-orange-950/30 rounded-xl p-5 border border-orange-100 dark:border-orange-900/50">
               <h5 className="font-bold text-orange-700 dark:text-orange-400 text-sm mb-2">Free SEO Audit</h5>
               <p className="text-xs text-orange-600 dark:text-orange-500/80 leading-relaxed mb-4">Check your Flipkart rank for any keyword instantly with our free tool.</p>

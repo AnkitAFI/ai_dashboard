@@ -700,7 +700,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
           grid-template-columns: repeat(2,1fr);
           gap: 14px; margin-top: 16px;
         }
-        @media(min-width:768px){ .related-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; } }
+        @media(min-width:768px){ .related-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
         @media(max-width:600px){ .related-grid { grid-template-columns: 1fr; } }
         .related-card {
           background: #fff; border: 1px solid #e5e7eb;
@@ -1158,7 +1158,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
             India: Complete Guide for Sellers (2026)
           </h1>
 
-          <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mb-6" style={{ fontFamily: "'Lora', serif" }}>
+          <p className="text-base sm:text-sm md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mb-6" style={{ fontFamily: "'Lora', serif" }}>
             Track competitor prices on Amazon.in, Flipkart in real time. Discover how Indian sellers use
             AI-powered tools to protect margins, win the Buy Box, and outsell rivals — with a complete 2026 playbook.
           </p>
@@ -1938,13 +1938,6 @@ export default function AmazonCompetitorPriceTrackingTool() {
                   time: "12 min",
                   imgSrc: "/keyword-research-hero.png",
                   route: "/features/keyword-rank-tracking-feature",
-                },
-                {
-                  title: "Review Analytics: Turn Customer Feedback into Competitive Edge",
-                  tag: "Review Intelligence",
-                  time: "9 min",
-                  imgSrc: "/eighteen.png",
-                  route: "/features/review-analytics-feature",
                 },
               ].map(r => (
                 <div className="related-card" key={r.title} onClick={() => router.push(r.route)}>

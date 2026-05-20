@@ -272,12 +272,12 @@ export default function OrderHistory() {
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        throw new Error(d.detail || "Failed to load order history.");
+        throw new Error(d.detail || "Billing details unavailable. Please refresh.");
       }
       const data: PaymentOrder[] = await res.json();
       setOrders(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : "Couldn't load order history. Please refresh.");
     } finally {
       setLoading(false);
     }

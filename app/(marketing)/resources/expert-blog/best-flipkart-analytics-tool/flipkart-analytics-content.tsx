@@ -581,18 +581,36 @@ export default function BestFlipkartAnalyticsTool() {
         .dark .toc-link { color:#9ca3af; }
         .dark .toc-link:hover, .dark .toc-link.active { background:#2e1065; color:#a78bfa; }
 
+        // /* ── Related grid ── */
+        // .related-grid { display:grid; grid-template-columns:1fr; gap:12px; }
+        // @media(min-width:480px){ .related-grid { grid-template-columns:1fr 1fr; gap:14px; } }
+        // @media(min-width:768px){ .related-grid { grid-template-columns:repeat(3,1fr); gap:16px; } }
+        // .rel-card { border:1px solid #E2E8F0; border-radius:10px; overflow:hidden; cursor:pointer; transition:box-shadow .2s,transform .2s; background:#fff; }
+        // .dark .rel-card { background:#111827; border-color:#1f2937; }
+        // .rel-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.09); transform:translateY(-2px); }
+        // .rel-thumb { width:100%; aspect-ratio:2.4/1; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+        // .rel-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+        // .rel-body { padding:12px; }
+        // .rel-tag { font-size:10px; font-weight:700; color:#7C3AED; text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px; font-family:'Sora',sans-serif; }
+        // .rel-title { font-size:12px; font-weight:700; color:#0D1B2A; line-height:1.4; font-family:'Sora',sans-serif; }
+        // @media(min-width:640px){ .rel-title { font-size:13px; } }
+        // .dark .rel-title { color:#f9fafb; }
+
         /* ── Related grid ── */
         .related-grid { display:grid; grid-template-columns:1fr; gap:12px; }
         @media(min-width:480px){ .related-grid { grid-template-columns:1fr 1fr; gap:14px; } }
         @media(min-width:768px){ .related-grid { grid-template-columns:repeat(3,1fr); gap:16px; } }
-        .rel-card { border:1px solid #E2E8F0; border-radius:10px; overflow:hidden; cursor:pointer; transition:box-shadow .2s,transform .2s; background:#fff; }
+        .rel-card { border:1px solid #E2E8F0; border-radius:10px; overflow:hidden; cursor:pointer; transition:box-shadow .2s,transform .2s; background:#fff; text-decoration:none !important; color:inherit; display:block; }
         .dark .rel-card { background:#111827; border-color:#1f2937; }
+        .rel-card:hover, 
+        .rel-card:focus, 
+        .rel-card:visited { text-decoration:none !important; color:inherit; }
         .rel-card:hover { box-shadow:0 4px 16px rgba(0,0,0,.09); transform:translateY(-2px); }
         .rel-thumb { width:100%; aspect-ratio:2.4/1; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
         .rel-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
         .rel-body { padding:12px; }
         .rel-tag { font-size:10px; font-weight:700; color:#7C3AED; text-transform:uppercase; letter-spacing:.5px; margin-bottom:5px; font-family:'Sora',sans-serif; }
-        .rel-title { font-size:12px; font-weight:700; color:#0D1B2A; line-height:1.4; font-family:'Sora',sans-serif; }
+        .rel-title { font-size:12px; font-weight:700; color:#0D1B2A; line-height:1.4; font-family:'Sora',sans-serif; text-decoration:none; }
         @media(min-width:640px){ .rel-title { font-size:13px; } }
         .dark .rel-title { color:#f9fafb; }
 
@@ -927,7 +945,15 @@ export default function BestFlipkartAnalyticsTool() {
 
             <div className="tbl-wrap">
               <table className="dt">
-                <thead><tr><th>Data Type</th><th>Example (India)</th><th>Search Vol.</th><th>Conversion Rate</th><th>Priority</th></tr></thead>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Data Type</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Example (India)</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Search Vol.</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Conversion Rate</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Priority</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {keywordRows.map((r, i) => (
                     <tr key={i}>
@@ -964,7 +990,15 @@ export default function BestFlipkartAnalyticsTool() {
             <h2 id="comparison">Flipkart Analytics Methods Compared</h2>
             <div className="tbl-wrap">
               <table className="dt">
-                <thead><tr><th>Method</th><th>Speed</th><th>Flipkart Data</th><th>Actionability</th><th>Cost</th></tr></thead>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Method</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Speed</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Flipkart Data</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Actionability</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Cost</th>
+                  </tr>
+                </thead>
                 <tbody>
                   <tr><td>Manual Seller Hub Research</td><td style={{ color:"#EF4444", fontWeight:700 }}>3–5 days</td><td>Partial</td><td>None — guesses</td><td>4–5 hrs/day</td></tr>
                   <tr><td>Basic Free Tools (Sonar)</td><td style={{ color:"#F59E0B", fontWeight:700 }}>Same day</td><td>Limited</td><td>Low — data only</td><td>Free–₹500/mo</td></tr>
@@ -1055,7 +1089,16 @@ export default function BestFlipkartAnalyticsTool() {
 
             <div className="tbl-wrap">
               <table className="dt">
-                <thead><tr><th>Tool</th><th>Flipkart Coverage</th><th>Amazon.in</th><th>WhatsApp Alerts</th><th>Buy Intent Data</th><th>Price (INR/mo)</th></tr></thead>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Tool</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Flipkart Coverage</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Amazon.in</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">WhatsApp Alerts</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Buy Intent Data</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Price (INR/mo)</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {toolRows.map((r, i) => (
                     <tr key={i} className={r.hl ? "hl" : ""}>
@@ -1074,7 +1117,14 @@ export default function BestFlipkartAnalyticsTool() {
             <h3>Full Capability Comparison</h3>
             <div className="tbl-wrap">
               <table className="dt">
-                <thead><tr><th>Capability</th><th>Manual Research</th><th>Global Tools (US-first)</th><th style={{ background:"#7C3AED" }}>Insydz India-First</th></tr></thead>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Capability</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Manual Research</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Global Tools (US-first)</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed" style={{ background:"#7C3AED" }}>Insydz India-First</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {capRows.map((r, i) => (
                     <tr key={i}>

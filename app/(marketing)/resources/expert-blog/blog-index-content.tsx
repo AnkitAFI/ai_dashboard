@@ -301,15 +301,18 @@ export default function ExpertBlog() {
   const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState<BlogCategory>("All Articles");
 
-  // Read initial page from URL query param
-  const getPageFromUrl = (): number => {
-    if (typeof window === 'undefined') return 1;
-    const params = new URLSearchParams(window.location.search);
-    const page = parseInt(params.get('page') || '1', 10);
-    return isNaN(page) || page < 1 ? 1 : page;
-  };
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const [currentPage, setCurrentPage] = useState(getPageFromUrl);
+  // Sync state from URL query param after initial mount to prevent hydration mismatch
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const page = parseInt(params.get('page') || '1', 10);
+      if (!isNaN(page) && page > 1) {
+        setCurrentPage(page);
+      }
+    }
+  }, []);
 
 
   const categories: BlogCategory[] = [
@@ -386,7 +389,7 @@ export default function ExpertBlog() {
       
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 pt-32 pb-20 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-gray-50 via-white to-gray-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 pt-28 pb-12 overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMDEwIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-40"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
@@ -398,33 +401,25 @@ export default function ExpertBlog() {
 
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
               <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent">
-                E-commerce Intelligence &
+                E-commerce Intelligence 
               </span>
               <br />
               <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                Seller Growth Insights
+                 & Seller Growth Insights
               </span>
             </h1>
 
-            <p className="text-xl text-gray-600 dark:text-gray-400 mb-10 leading-relaxed max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-400 mb-6 leading-relaxed max-w-3xl mx-auto">
               Actionable strategies, data-backed guides, and marketplace insights for Amazon and Flipkart sellers in India.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              {/* <Button
-                onClick={() => router.push('/login')}
-                size="lg"
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-8 py-6 text-lg rounded-full shadow-xl hover:shadow-2xl transition-all transform hover:scale-105"
-              >
-                <Zap className="w-5 h-5 mr-2" />
-                Start Free with Insydz
-              </Button> */}
+            <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
 
               <Button
                 onClick={() => window.scrollTo({ top: 1670, behavior: 'smooth' })}
                 variant="outline"
                 size="lg"
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-8 py-6 text-lg rounded-full shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:text-white"
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold px-8 py-4 text-lg rounded-full shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 hover:text-white"
               >
                 Browse Topics
                 <ArrowRight className="w-5 h-5 ml-2" />
@@ -457,7 +452,7 @@ export default function ExpertBlog() {
       </section>
 
       {/* ===================== FEATURED ARTICLE ===================== */}
-      {featuredArticle && selectedCategory === "All Articles" && (
+      {/* {featuredArticle && selectedCategory === "All Articles" && (
         <section className="py-10 bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-900 dark:to-gray-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center gap-3 mb-8">
@@ -465,10 +460,10 @@ export default function ExpertBlog() {
               <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Featured Insight</h2>
             </div>
             <div onClick={() => router.push(featuredArticle.route)} className="bg-white dark:bg-gray-950 rounded-3xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer">
-              <div className="grid md:grid-cols-2 gap-0 md:h-[500px]">
+              <div className="grid md:grid-cols-2 gap-0 md:h-[500px]"> */}
 
                 {/* Featured image */}
-                <div className="blog-card-thumb h-full">
+                {/* <div className="blog-card-thumb h-full">
                   {featuredArticle.image ? (
                     <img
                       src={featuredArticle.image}
@@ -476,7 +471,7 @@ export default function ExpertBlog() {
                     />
                   ) : (
                     <div className="flex items-center justify-center p-8">
-                      <BarChart3 className="w-32 h-32 text-orange-300 dark:text-orange-900 opacity-20" />
+                      <BarChart3 className="w-28 h-28 text-orange-300 dark:text-orange-900 opacity-20" />
                     </div>
                   )}
                 </div>
@@ -513,7 +508,82 @@ export default function ExpertBlog() {
             </div>
           </div>
         </section>
-      )}
+      )} */}
+
+      {featuredArticle && selectedCategory === "All Articles" && (
+  <section className="py-8 bg-gradient-to-br from-orange-50 to-red-50 dark:from-gray-900 dark:to-gray-800">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-1 h-6 bg-gradient-to-b from-orange-500 to-red-500 rounded-full"></div>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          Featured Insight
+        </h2>
+      </div>
+
+      <div
+        onClick={() => router.push(featuredArticle.route)}
+        className="bg-white dark:bg-gray-950 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer"
+      >
+        <div className="grid md:grid-cols-2 md:min-h-[320px] lg:min-h-[380px]">
+
+          {/* Featured Image */}
+          <div className="blog-card-thumb h-full">
+            {featuredArticle.image ? (
+              <img
+                src={featuredArticle.image}
+                alt={featuredArticle.title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="flex items-center justify-center h-full p-6">
+                <BarChart3 className="w-20 h-20 text-orange-300 dark:text-orange-900 opacity-20" />
+              </div>
+            )}
+          </div>
+
+          {/* Content */}
+          <div className="p-5 sm:p-6 md:p-8 flex flex-col justify-center overflow-hidden">
+
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold mb-3 w-fit">
+              {featuredArticle.category}
+            </div>
+
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-snug mb-4 line-clamp-3">
+              {featuredArticle.title}
+            </h3>
+
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed mb-5 line-clamp-3">
+              {featuredArticle.excerpt}
+            </p>
+
+            <div className="flex items-center justify-between mt-auto">
+              <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+                <Clock className="w-4 h-4" />
+                <span className="text-xs sm:text-sm font-medium">
+                  {featuredArticle.readTime}
+                </span>
+              </div>
+
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  router.push(featuredArticle.route);
+                }}
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold rounded-full px-5 py-2 text-sm group"
+              >
+                Read Article
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+)}
 
       {/* ===================== POPULAR ARTICLES ===================== */}
       {selectedCategory === "All Articles" && (

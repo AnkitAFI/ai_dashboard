@@ -455,6 +455,7 @@ function KeywordGapContent() {
               <RefreshCw className="w-8 h-8 animate-spin text-sky-500" />
               <div className="text-center">
                 <p className="text-slate-600 font-semibold">Analysing keyword gaps…</p>
+                <p className="text-slate-400 text-xs animate-pulse mt-1">We are analyzing the data. This may take 1–2 minutes.</p>
               </div>
             </div>
           )}

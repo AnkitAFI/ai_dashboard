@@ -381,6 +381,23 @@ export default function InsydzVsSellerAppContent() {
 
         .faq-item { border: 1px solid #E2E8F0; border-radius: 12px; padding: 18px 24px; margin-bottom: 12px; background: white; transition: all 0.3s; }
         .dark .faq-item { background: #0D1B2A; border-color: #1f2937; }
+
+        /* ── Related grid ── */
+        .related-grid{display:grid;grid-template-columns:1fr;gap:12px}
+        @media(min-width:480px){.related-grid{grid-template-columns:1fr 1fr;gap:14px}}
+        @media(min-width:768px){.related-grid{grid-template-columns:repeat(3,1fr);gap:16px}}
+        .rel-card{border:1px solid #E5E7EB;border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;background:#fff;text-decoration:none;display:block}
+        .dark .rel-card{background:#111827;border-color:#1f2937}
+        .rel-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.09);transform:translateY(-2px)}
+        .rel-thumb{width:100%;aspect-ratio:2.4/1;overflow:hidden;background:#0A0F1A;display:flex;align-items:center;justify-content:center}
+        .rel-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+        .rel-body{padding:12px}
+        @media(min-width:640px){.rel-body{padding:14px}}
+        .rel-tag{font-size:10px;font-weight:700;color:#FF9900;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-family:'Sora',sans-serif}
+        @media(min-width:640px){.rel-tag{font-size:10.5px;margin-bottom:6px}}
+        .rel-title{font-size:12px;font-weight:700;color:#0A0F1A;line-height:1.4;font-family:'Sora',sans-serif}
+        @media(min-width:640px){.rel-title{font-size:13px}}
+        .dark .rel-title{color:#f9fafb}
       `}</style>
 
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
@@ -431,7 +448,7 @@ export default function InsydzVsSellerAppContent() {
         </div>
         
         <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(22px,4vw,40px)", fontWeight:800, lineHeight:1.18, color:"#0D1B2A", letterSpacing:"-.5px", marginBottom:14, maxWidth:820 }} className="dark:text-white">
-          Insydz vs SellerApp: Which Amazon Seller Tool Actually Works for the Indian Market?
+          <span style={{ color:"#7C3AED" }}>Insydz vs SellerApp</span>: Which Amazon Seller Tool Actually Works for the Indian Market?
         </h1>
 
         <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2vw,17px)", color:"#475569", lineHeight:1.65, maxWidth:760, marginBottom:16 }} className="dark:text-gray-400">
@@ -792,7 +809,7 @@ export default function InsydzVsSellerAppContent() {
             <h3>Run Insydz and SellerApp in Parallel — Free for 14 Days</h3>
             <p>No card, no contract. See your Amazon.in + Flipkart data side-by-side. If Insydz isn't sharper for the Indian market, keep SellerApp.</p>
             <Button onClick={() => router.push("/login")} className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-12 py-6 rounded-xl text-base transition-all transform hover:scale-105">
-              Start Free Parallel Trial →
+              Start Free Trial →
             </Button>
           </div>
           <h2 id="why-pick" className="mt-16">Why Indian SMB Sellers Pick Insydz Specifically</h2>
@@ -806,7 +823,7 @@ export default function InsydzVsSellerAppContent() {
               ["🚚", "RTO & COD-aware analytics", "Returns, COD refusal patterns, and pin-code-level RTO signals are part of the standard view — because in India, that's where margin actually leaks."]
             ].map(([icon, title, desc], i) => (
               <div key={i} className="feature-pick-box">
-                <div className="fp-icon">{icon}</div>
+                {/* <div className="fp-icon">{icon}</div> */}
                 <div>
                   <span className="fp-title">{title}</span>
                   <p className="fp-desc">{desc}</p>
@@ -847,6 +864,40 @@ export default function InsydzVsSellerAppContent() {
               </div>
             ))}
           </div>
+
+          {/* Related */}
+            <div style={{ marginTop:48, paddingTop:28, borderTop:"2px solid #E2E8F0" }}>
+              <h2 style={{ fontSize:"clamp(16px,3vw,20px)", fontWeight:800, color:"#0D1B2A", margin:"0 0 18px", border:"none", padding:0, fontFamily:"'Sora',sans-serif" }} className="dark:text-white">Related Guides</h2>
+              <div className="related-grid">
+                <Link href="/resources/expert-blog/flipkart-keyword-research-tool" className="rel-card" title="Flipkart keyword research for Indian sellers">
+                  <div className="rel-thumb">
+                    <img src="/01_hero_banner.png" alt="Flipkart Keyword Research Guide" />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Keyword Research</div>
+                    <div className="rel-title">Flipkart Keyword Research for Indian Sellers: Complete 2026 Guide</div>
+                  </div>
+                </Link>
+                <Link href="/resources/expert-blog/insydz-vs-helium-10-india" className="rel-card" title="Insydz vs Helium 10 for Indian sellers">
+                  <div className="rel-thumb">
+                    <img src="/thirteen.png" alt="Insydz vs Helium 10 comparison" />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Compare</div>
+                    <div className="rel-title">Insydz vs Helium 10: Which is the Right Tool for Indian Sellers?</div>
+                  </div>
+                </Link>
+                <Link href="/resources/expert-blog/amazon-competitor-price-tracking-tool" className="rel-card" title="Flipkart pricing automation strategy">
+                  <div className="rel-thumb">
+                    <img src="/one.png" alt="Flipkart Pricing Automation Strategy" />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Pricing Strategy</div>
+                    <div className="rel-title">Flipkart Pricing Automation: How to Win the SmartBuy Badge in 2026</div>
+                  </div>
+                </Link>
+              </div>
+            </div>
         </main>
       </div>
 
@@ -876,7 +927,7 @@ export default function InsydzVsSellerAppContent() {
             onClick={() => router.push("/login")} 
             className="bg-white text-purple-700 hover:bg-gray-100 font-bold px-8 md:px-12 py-6 md:py-8 text-base md:text-lg rounded-full shadow-2xl transition-all transform hover:scale-105 mb-6"
           >
-            → Start Free at insydz.com — Get Your India-First Dashboard Today
+            → Start Free Trial
           </Button>
 
           <p className="text-blue-200 text-sm font-['Lora']">

@@ -641,76 +641,6 @@ export default function ManualVsAutomatedCompetitorTracking() {
 
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
 
-      {/* ═══ NAV ══════════════════════════════════════════════════════════════ */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}>
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
-            <Link href="/" className="flex items-center space-x-1 group">
-              <div className="relative">
-                <img src="/logo.png" alt="Insydz Logo" className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-xl sm:rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain" />
-                <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
-              </div>
-              <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-orange-500 to-teal-500 bg-clip-text text-transparent ml-1 sm:ml-2">Insydz</span>
-            </Link>
-            <div className="hidden lg:flex items-center space-x-0.5 xl:space-x-1" ref={dropdownRef}>
-              <DesktopDropdown label="Solutions"  menuKey="Solutions" />
-              <DesktopDropdown label="Use Cases"  menuKey="Use Cases" />
-              <DesktopDropdown label="Features"   menuKey="Features" />
-              <Link href="/pricing" onMouseEnter={() => setActiveDropdown(null)} className="px-2 xl:px-3 py-2 text-xs xl:text-sm text-gray-700 dark:text-gray-300 hover:text-orange-500 font-medium rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 transition-all">Pricing</Link>
-              <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
-              <DesktopDropdown label="Compare"    menuKey="Compare" />
-              <DesktopDropdown label="Resources"  menuKey="Resources" accent="orange" />
-              <DesktopDropdown label="About"      menuKey="About" />
-              <Button asChild onMouseEnter={() => setActiveDropdown(null)} className="ml-1 text-xs xl:text-sm bg-gradient-to-r from-orange-500 to-teal-500 hover:from-orange-600 hover:to-teal-600 text-white font-semibold px-4 xl:px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
-                <Link href="/login">Login</Link>
-              </Button>
-              <button className="ml-1 p-1.5 xl:p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex-shrink-0" onClick={() => setIsDarkMode(!isDarkMode)} aria-label="Toggle dark mode">
-                {isDarkMode ? <Sun className="w-4 h-4 xl:w-5 xl:h-5 text-yellow-400" /> : <Moon className="w-4 h-4 xl:w-5 xl:h-5 text-gray-800" />}
-              </button>
-            </div>
-            <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
-              <button className="p-1.5 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" onClick={() => setIsDarkMode(!isDarkMode)} aria-label="Toggle dark mode">
-                {isDarkMode ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4 text-gray-800 dark:text-gray-200" />}
-              </button>
-              <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
-                {isMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-gray-300" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-gray-300" />}
-              </button>
-            </div>
-          </div>
-        </div>
-        {isMenuOpen && (
-          <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100vh-4rem)] overflow-y-auto">
-            <div className="px-3 sm:px-4 py-3 sm:py-4 space-y-1.5">
-              <Link href="/resources/expert-blog" onClick={() => setIsMenuOpen(false)} className="flex items-center gap-2 w-full px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg font-medium text-sm">
-                <ArrowLeft className="w-4 h-4 flex-shrink-0" /> Back to Blog
-              </Link>
-              {([ ["Solutions","Solutions"],["Use Cases","Use Cases"],["Features","Features"],["Free Tools","Free Tools"],["Compare","Compare"],["Resources","Resources"],["About","About"] ] as [string, keyof NavigationMenu][]).map(([label, key]) => (
-                <div key={label}>
-                  <button onClick={() => toggleMobileMenu(label)} className="flex items-center justify-between w-full px-3 sm:px-4 py-2 rounded-lg font-medium text-sm text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/20">
-                    {label}<ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${mobileActiveMenu === label ? "rotate-180" : ""}`} />
-                  </button>
-                  {mobileActiveMenu === label && (
-                    <div className="ml-3 sm:ml-4 mt-1 space-y-0.5">
-                      {navigationMenu[key].map((item, i) => (
-                        <button key={i} onClick={() => handleMenuItemClick(item)} className="flex items-center gap-2 w-full px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg">
-                          <span className="flex-shrink-0">{item.icon}</span>
-                          <span className="text-left flex-1">{item.name}</span>
-                          {item.badge && <span className="ml-auto text-xs bg-orange-500 text-white px-1.5 py-0.5 rounded-full flex-shrink-0">{item.badge}</span>}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              <Link href="/pricing" onClick={() => setIsMenuOpen(false)} className="block w-full text-left px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg font-medium text-sm">Pricing</Link>
-              <Button asChild className="w-full mt-2 bg-gradient-to-r from-orange-500 to-teal-500 text-sm py-2">
-                <Link href="/login" onClick={() => setIsMenuOpen(false)}>Login</Link>
-              </Button>
-            </div>
-          </div>
-        )}
-      </nav>
-
       {/* BREADCRUMB */}
       <div className="breadcrumb" style={{ marginTop: 80 }}>
         <div className="breadcrumb-inner">
@@ -729,9 +659,8 @@ export default function ManualVsAutomatedCompetitorTracking() {
         <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#FFF7ED", color:"#F4500A", fontSize:"clamp(10px,2vw,11.5px)", fontWeight:700, letterSpacing:.6, textTransform:"uppercase" as const, padding:"4px 12px", borderRadius:20, marginBottom:14, border:"1px solid rgba(244,80,10,.2)", fontFamily:"'Sora',sans-serif" }}>
           ◆ Seller Tools &amp; Strategy
         </div>
-        <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(22px,4vw,40px)", fontWeight:900, lineHeight:1.16, color:"#0A0F1A", letterSpacing:"-.5px", marginBottom:14, maxWidth:820 }} className="dark:text-white">
-          <span style={{ color:"#F4500A" }}>Manual vs Automated</span>{" "}
-          Competitor Tracking:{" "}
+        <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(32px, 4.5vw, 52px)", fontWeight: 800, color: "#0D1B2A", lineHeight: 1.1, letterSpacing: "-0.03em" }} className="dark:text-white">
+          <span style={{ color:"#F4500A" }}>Manual vs Automated</span>{" "} Competitor Tracking:{" "}
           <span style={{ color:"#0ABFA4" }}>What Works in 2026?</span>
         </h1>
         <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2vw,16px)", color:"#4B5568", lineHeight:1.75, maxWidth:620, marginBottom:18 }}>
@@ -897,12 +826,12 @@ export default function ManualVsAutomatedCompetitorTracking() {
             
             <div className="tbl-wrap">
               <table className="dt">
-                <thead>
-                  <tr>
-                    <th>Factor</th>
-                    <th>Manual Excel</th>
-                    <th className="ai-head">AI-Powered Automation</th>
-                    <th>Winner</th>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Factor</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Manual Excel</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">AI-Powered Automation</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Winner</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -995,13 +924,13 @@ export default function ManualVsAutomatedCompetitorTracking() {
 
             <div className="tbl-wrap">
               <table className="dt">
-                <thead>
-                  <tr>
-                    <th>Method</th>
-                    <th>Speed</th>
-                    <th>Accuracy</th>
-                    <th>Actionability</th>
-                    <th className="ai-head">True Cost/Month</th>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Method</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Speed</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Accuracy</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Actionability</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">True Cost/Month</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1143,13 +1072,13 @@ export default function ManualVsAutomatedCompetitorTracking() {
 
             <div className="tbl-wrap">
               <table className="dt">
-                <thead>
-                  <tr>
-                    <th>Tool</th>
-                    <th>Amazon.in</th>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Tool</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Amazon.in</th>
                     <th className="fk-head">Flipkart</th>
-                    <th>WhatsApp Alerts</th>
-                    <th>Buy Intent Data</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">WhatsApp Alerts</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Buy Intent Data</th>
                     <th className="ai-head">Price (INR/mo)</th>
                   </tr>
                 </thead>
