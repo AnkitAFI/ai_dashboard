@@ -31,6 +31,15 @@ const VIDEOS = [
     videoUrl: "/videos/Insydz%20Feature%20-%20Opportunity%20Finder.mp4",
     thumbnail: "/Insydz%20Feature%20-%20Opportunity%20Finder%20Cover%20Image.png"
   },
+  {
+    id: 3,
+    title: "Insydz’s Market Visibility",
+    description: "Insydz's Market Visibility tool gives you a complete X-ray of your category, who's dominating, where the gaps are, and exactly how you can break in.",
+    category: "Competitor Analysis",
+    gradient: "g-purple",
+    videoUrl: "/videos/Insydz%E2%80%99s%20Market%20Visibility.mp4",
+    thumbnail: "/Insydz%E2%80%99s%20Market%20Visibility%20-%20Cover%20Image.png"
+  },
   // {
   //   id: 3,
   //   title: "Review Intelligence: Complete Guide",

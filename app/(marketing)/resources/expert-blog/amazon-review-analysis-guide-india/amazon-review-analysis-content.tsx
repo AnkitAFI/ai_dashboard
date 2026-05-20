@@ -296,32 +296,27 @@ export default function AmazonReviewAnalysisContent() {
         .alert-btn { background: #8b5cf6; color: white; font-weight: 700; padding: 10px 20px; border-radius: 8px; font-size: 13px; white-space: nowrap; transition: all 0.2s; }
         .alert-btn:hover { background: #7c3aed; transform: translateY(-1px); }
 
+        /* ── Related grid ── */
+        .related-grid{display:grid;grid-template-columns:1fr;gap:12px}
+        @media(min-width:480px){.related-grid{grid-template-columns:1fr 1fr;gap:14px}}
+        @media(min-width:768px){.related-grid{grid-template-columns:repeat(3,1fr);gap:16px}}
+        .rel-card{border:1px solid #E5E7EB;border-radius:10px;overflow:hidden;cursor:pointer;transition:box-shadow .2s,transform .2s;background:#fff;text-decoration:none;display:block}
+        .dark .rel-card{background:#111827;border-color:#1f2937}
+        .rel-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.09);transform:translateY(-2px)}
+        .rel-thumb{width:100%;aspect-ratio:2.4/1;overflow:hidden;background:#0A0F1A;display:flex;align-items:center;justify-content:center}
+        .rel-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+        .rel-body{padding:12px}
+        @media(min-width:640px){.rel-body{padding:14px}}
+        .rel-tag{font-size:10px;font-weight:700;color:#FF9900;text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;font-family:'Sora',sans-serif}
+        @media(min-width:640px){.rel-tag{font-size:10.5px;margin-bottom:6px}}
+        .rel-title{font-size:12px;font-weight:700;color:#0A0F1A;line-height:1.4;font-family:'Sora',sans-serif}
+        @media(min-width:640px){.rel-title{font-size:13px}}
+        .dark .rel-title{color:#f9fafb}
+
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
       `}</style>
 
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
-
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 shadow-lg" : "bg-background dark:bg-gray-900/80"}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div className="flex items-center space-x-1 group cursor-pointer" onClick={() => router.push("/")}>
-              <img src="/logo.png" alt="Insydz Logo" className="w-12 h-12 rounded-2xl" />
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent ml-2">Insydz</span>
-            </div>
-            <div className="hidden lg:flex items-center space-x-3">
-              <DesktopDropdown label="Solutions"  menuKey="Solutions" />
-              <DesktopDropdown label="Use Cases"  menuKey="Use Cases" />
-              <DesktopDropdown label="Features"   menuKey="Features" />
-              <button onClick={() => router.push("/pricing")} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 font-medium">Pricing</button>
-              <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
-              <DesktopDropdown label="Compare"    menuKey="Compare" />
-              <DesktopDropdown label="Resources"  menuKey="Resources" accent="orange" />
-              <DesktopDropdown label="About"      menuKey="About" />
-              <Button onClick={() => router.push("/login")} className="ml-2 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full">Login</Button>
-            </div>
-          </div>
-        </div>
-      </nav>
 
       <div className="pt-24 bg-white dark:bg-gray-950">
         <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 24px", display: "flex", gap: 6, fontSize: 13, color: "#94A3B8" }}>
@@ -344,25 +339,12 @@ export default function AmazonReviewAnalysisContent() {
           AI-powered review mining for Amazon India and Flipkart to surface buyer pain points and competitor weaknesses before your next listing update.
         </p>
 
-        <div className="flex flex-wrap items-center gap-y-4 gap-x-4 text-sm text-slate-500 dark:text-slate-400 mt-8 mb-10">
-          <div className="flex items-center gap-2">
-            <User className="w-4 h-4 text-purple-700 dark:text-purple-400" />
-            <span className="text-slate-700 dark:text-slate-300 font-medium">Insydz Research Team</span>
-          </div>
-          <span className="text-slate-300 dark:text-slate-600 ml-1">·</span>
-          <div className="flex items-center gap-2 ml-1">
-            <Calendar className="w-4 h-4 text-slate-400" />
-            <span>April 2026</span>
-          </div>
-          <span className="text-slate-300 dark:text-slate-600 ml-1">·</span>
-          <div className="flex items-center gap-2 ml-1">
-            <Clock className="w-4 h-4 text-slate-400" />
-            <span>12 min read</span>
-          </div>
-          <div className="flex items-center gap-3 sm:ml-4">
-             <span className="px-4 py-1.5 bg-[#F97316] text-white text-[11px] font-bold rounded-full">Updated for 2026</span>
-             <span className="px-4 py-1.5 bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 text-[11px] font-bold rounded-full">D2C Playbook</span>
-          </div>
+        <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20, marginTop:12 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => router.push("/author/vikrant-singh")}>Vikrant Singh</strong></div>
+          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>🕐 April 2026</div>
+          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>📖 <strong>12 min read</strong></div>
+          <span style={{ background:"rgba(244,80,10,.12)", color:"#F4500A", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"3px 10px", borderRadius:20 }}>Updated for 2026</span>
+          <span style={{ background:"rgba(10,191,164,.12)", color:"#0ABFA4", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"3px 10px", borderRadius:20 }}>Seller Strategy Guide</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-12 mb-14">
@@ -988,6 +970,40 @@ export default function AmazonReviewAnalysisContent() {
               </details>
             ))}
           </div>
+
+          {/* Related */}
+            <div style={{ marginTop:48, paddingTop:28, borderTop:"2px solid #E2E8F0" }}>
+              <h2 style={{ fontSize:"clamp(16px,3vw,20px)", fontWeight:800, color:"#0D1B2A", margin:"0 0 18px", border:"none", padding:0, fontFamily:"'Sora',sans-serif" }} className="dark:text-white">Related Guides</h2>
+              <div className="related-grid">
+                <Link href="/resources/expert-blog/flipkart-keyword-research-tool" className="rel-card" title="Flipkart keyword research for Indian sellers">
+                  <div className="rel-thumb">
+                    <img src="/01_hero_banner.png" alt="Flipkart Keyword Research Guide" />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Keyword Research</div>
+                    <div className="rel-title">Flipkart Keyword Research for Indian Sellers: Complete 2026 Guide</div>
+                  </div>
+                </Link>
+                <Link href="/resources/expert-blog/insydz-vs-helium-10-india" className="rel-card" title="Insydz vs Helium 10 for Indian sellers">
+                  <div className="rel-thumb">
+                    <img src="/thirteen.png" alt="Insydz vs Helium 10 comparison" />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Compare</div>
+                    <div className="rel-title">Insydz vs Helium 10: Which is the Right Tool for Indian Sellers?</div>
+                  </div>
+                </Link>
+                <Link href="/resources/expert-blog/amazon-competitor-price-tracking-tool" className="rel-card" title="Flipkart pricing automation strategy">
+                  <div className="rel-thumb">
+                    <img src="/one.png" alt="Flipkart Pricing Automation Strategy" />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Pricing Strategy</div>
+                    <div className="rel-title">Flipkart Pricing Automation: How to Win the SmartBuy Badge in 2026</div>
+                  </div>
+                </Link>
+              </div>
+            </div>
         </main>
       </div>
 

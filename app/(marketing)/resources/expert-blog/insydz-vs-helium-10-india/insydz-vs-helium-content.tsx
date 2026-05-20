@@ -533,7 +533,7 @@ export default function InsydzVsHelium10India() {
         </div>
         <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(26px,3.8vw,40px)", fontWeight: 800, lineHeight: 1.18, color: "#0D1B2A", letterSpacing: "-.5px", maxWidth: 820 }} className="dark:text-white">
           {/* Link #1 — self-referencing primary keyword */}
-          <InLink to="/resources/expert-blog/insydz-vs-helium-10-india" color="#4F46E5">Insydz vs Helium 10</InLink>{" "}
+          <span style={{ color: "#4F46E5" }}>Insydz vs Helium 10 </span> 
            comparison for Indian sellers: Which is the Right Amazon Intelligence Tool?
         </h1>
         <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2.5vw,17px)", color:"#475569", lineHeight:1.75, maxWidth:800,paddingTop:10, marginBottom:20 }} className="dark:text-gray-400">
@@ -544,7 +544,6 @@ export default function InsydzVsHelium10India() {
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#64748B" }}><Clock className="w-3.5 h-3.5" />January 2026</div>
           <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "#64748B" }}><Clock className="w-3.5 h-3.5" /><strong>14 min read</strong></div>
           <span style={{ background: "#FFEDD5", color: "#F97316", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4 }}>Updated for 2026</span>
-          <span style={{ background: "#EEF2FF", color: "#4F46E5", fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 4 }}>BOFU Guide</span>
         </div>
 
         {/* Stat strip */}

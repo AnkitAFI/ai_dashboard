@@ -605,7 +605,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
 
       {/* ═══ NAV ══════════════════════════════════════════════════════════════ */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}>
+      {/* <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}>
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
             <Link href="/" className="flex items-center space-x-1 group">
@@ -672,7 +672,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
             </div>
           </div>
         )}
-      </nav>
+      </nav> */}
 
       {/* BREADCRUMB */}
       <div className="breadcrumb" style={{ marginTop: 80}}>
@@ -690,9 +690,8 @@ export default function AmazonVsFlipkartIndiaSellers() {
         <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#FFF7ED", color:"#FF9900", fontSize:"clamp(10px,2vw,11.5px)", fontWeight:700, letterSpacing:.6, textTransform:"uppercase" as const, padding:"4px 12px", borderRadius:20, marginBottom:14, border:"1px solid #FED7AA", fontFamily:"'Sora',sans-serif" }}>
           ◆ Seller Tools &amp; Strategy
         </div>
-        <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(22px,4vw,40px)", fontWeight:800, lineHeight:1.18, color:"#0A0F1A", letterSpacing:"-.5px", maxWidth:820 }} className="dark:text-white">
-          <span style={{ color:"#FF9900" }}>Amazon vs Flipkart:</span>{" "}
-          Which Marketplace is Better in India?{" "}
+        <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(32px, 4.5vw, 52px)", fontWeight: 800, color: "#0D1B2A", lineHeight: 1.1, letterSpacing: "-0.03em" }} className="dark:text-white">
+          <span style={{ color:"#FF9900" }}>Amazon vs Flipkart:</span>{" "} Which Marketplace is Better in India?{" "}
           <span style={{ color:"#2874F0" }}>(2026)</span>
         </h1>
         <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2.5vw,17px)", color:"#475569", lineHeight:1.75, maxWidth:800,paddingTop:10, marginBottom:20 }} className="dark:text-gray-400">
@@ -705,14 +704,6 @@ export default function AmazonVsFlipkartIndiaSellers() {
           <span style={{ background:"#ECFDF5", color:"#10B981", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Updated for 2026</span>
           <span style={{ background:"#FFF7ED", color:"#FF9900", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Marketplace Comparison</span>
         </div>
-
-        {/* Hero Visual Card */}
-        <img
-          src="/amazon-vs-flipkart-hero-metrics.png"
-          alt="Amazon vs Flipkart India — commission fees, search traffic and Tier-2 buyer data comparison"
-          style={{ width:"100%", borderRadius:16, marginBottom:10, display:"block" }}
-        />
-        <p className="hero-caption">Data based on Insydz seller intelligence across 10,000+ Indian sellers · January 2026</p>
 
         <div className="stat-strip" style={{ marginBottom:24 }}>
           {[
@@ -727,6 +718,16 @@ export default function AmazonVsFlipkartIndiaSellers() {
             </div>
           ))}
         </div>
+
+        {/* Hero Visual Card */}
+        <img
+          src="/amazon-vs-flipkart-hero-metrics.png"
+          alt="Amazon vs Flipkart India — commission fees, search traffic and Tier-2 buyer data comparison"
+          style={{ width:"100%", borderRadius:16, marginBottom:10, display:"block" }}
+        />
+        <p className="hero-caption">Data based on Insydz seller intelligence across 10,000+ Indian sellers · January 2026</p>
+
+        
       </div>
 
       {/* TAKEAWAYS */}
@@ -827,12 +828,12 @@ export default function AmazonVsFlipkartIndiaSellers() {
 
             <div className="tbl-wrap">
               <table className="dt">
-                <thead>
-                  <tr>
-                    <th>Category</th>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Category</th>
                     <th className="amz-head">Amazon.in Commission</th>
                     <th className="fk-head">Flipkart Commission</th>
-                    <th>Winner</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Winner</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -958,12 +959,12 @@ export default function AmazonVsFlipkartIndiaSellers() {
 
             <div className="tbl-wrap">
               <table className="dt">
-                <thead>
-                  <tr>
-                    <th>Category</th>
-                    <th>Better Margin Platform</th>
-                    <th>Reason</th>
-                    <th>Avg. Margin Delta</th>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
+                  <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Category</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Better Margin Platform</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Reason</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Avg. Margin Delta</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1057,13 +1058,13 @@ export default function AmazonVsFlipkartIndiaSellers() {
 
             <div className="tbl-wrap">
               <table className="dt">
-                <thead>
+                <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
                   <tr>
-                    <th>Tool</th>
-                    <th>Amazon.in</th>
-                    <th className="fk-head">Flipkart</th>
-                    <th>WhatsApp Alerts</th>
-                    <th className="amz-head">Price (INR/mo)</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Tool</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Amazon.in</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Flipkart</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">WhatsApp Alerts</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Price (INR/mo)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1132,7 +1133,7 @@ export default function AmazonVsFlipkartIndiaSellers() {
                     <img src="/eighteen.png" alt="AI Review Intelligence Tool for Amazon and Flipkart" />
                   </div>
                   <div className="rel-body">
-                    <div className="rel-tag" style={{ color:"#10B981" }}>Review Intelligence</div>
+                    <div className="rel-tag" >Review Intelligence</div>
                     <div className="rel-title">AI Review Intelligence Tool for Amazon &amp; Flipkart Sellers: The Complete Guide</div>
                   </div>
                 </Link>
