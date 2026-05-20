@@ -55,7 +55,7 @@ interface ChatMessage {
 // CONSTANTS
 // ─────────────────────────────────────────────
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
 
 const QUICK_QUESTIONS = [
   "What products are trending now?",

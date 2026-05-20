@@ -66,7 +66,7 @@ export default function CategoryProducts() {
 
     axios
       .get(
-        `${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")}/category/products/${encodeURIComponent(
+        `${(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")}/category/products/${encodeURIComponent(
           decodedCategory
         )}?source=${source}&limit=${limit}&offset=${(page - 1) * limit}`
       )

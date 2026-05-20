@@ -89,7 +89,7 @@ export default function ProductTrackerHistory() {
   const fetchHistory = async (email: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")}/product-tracker/history?user_email=${email}&limit=50`);
+      const response = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")}/product-tracker/history?user_email=${email}&limit=50`);
       const data = await response.json();
       if (data.success) {
         setHistory(data.data?.items || []);
@@ -104,7 +104,7 @@ export default function ProductTrackerHistory() {
   const fetchAnalysisDetails = async (id: number) => {
     setDetailsLoading(true);
     try {
-      const response = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")}/product-tracker/analysis/${id}`);
+      const response = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")}/product-tracker/analysis/${id}`);
       const data = await response.json();
 
       if (data.success) {
@@ -139,7 +139,7 @@ export default function ProductTrackerHistory() {
     setIsDeleting(true);
     try {
       const response = await fetch(
-        `${(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000")}/product-tracker/analysis/${deleteDialog.itemId}?user_email=${userEmail}`,
+        `${(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")}/product-tracker/analysis/${deleteDialog.itemId}?user_email=${userEmail}`,
         { method: "DELETE" }
       );
 
