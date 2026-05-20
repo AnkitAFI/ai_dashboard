@@ -136,7 +136,7 @@ const SELLER_SECTIONS: NavSection[] = [
     icon: Zap,
     items: [
       { href: "/seller/price-optimizer", label: "Price Optimizer", icon: TrendingUp },
-      { href: "/keyword-tracker", label: "Keyword Tracker", icon: History },
+      { href: "/seller/rank-tracker", label: "Rank Tracker", icon: Target, badge: "NEW" },
       { href: "/seller/ai-advisor", label: "AI Advisor", icon: Sparkles, badge: "AI" },
     ],
   },
@@ -147,7 +147,6 @@ const SELLER_SECTIONS: NavSection[] = [
       { href: "/share-of-voice", label: "Market Visibility", icon: BarChart3 },
       { href: "/seller/whatsapp-alerts", label: "WhatsApp Alerts", icon: MessageSquare, badge: "NEW" },
       { href: "/seller/festive-trends", label: "Festive Trends", icon: Star, badge: "NEW", disabled: true },
-      { href: "/seller/rank-tracker", label: "Rank Tracker", icon: Target, badge: "NEW" },
     ],
   },
   {

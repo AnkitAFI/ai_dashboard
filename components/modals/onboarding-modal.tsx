@@ -52,8 +52,8 @@ const steps = [
 
 const MARKETPLACE_API_MAP: Record<string, string> = {
   amazon_india: "amazon",
-  flipkart:     "flipkart",
-  both:         "both",
+  flipkart: "flipkart",
+  both: "both",
 };
 
 async function fetchCategories(marketplace: string): Promise<string[]> {
@@ -82,10 +82,10 @@ const COMING_SOON_SELLER_MARKETPLACES = ["flipkart", "both"];
 export default function OnboardingModal({ isOpen, onClose, onComplete }: OnboardingModalProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<OnboardingData>({
-    onboarding_goal:        "",
+    onboarding_goal: "",
     onboarding_marketplace: "",
-    onboarding_details:     "",
-    seller_id:              "",
+    onboarding_details: "",
+    seller_id: "",
   });
 
   // Category fetch state
@@ -276,8 +276,8 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-4">
                   {[
                     { id: "amazon_india", label: "Amazon India", icon: Package },
-                    { id: "flipkart",     label: "Flipkart",     icon: ShoppingCart },
-                    { id: "both",         label: "Both / Meesho", icon: Globe },
+                    { id: "flipkart", label: "Flipkart", icon: ShoppingCart },
+                    { id: "both", label: "Both / Meesho", icon: Globe },
                   ].map((market) => {
                     const isMarketComingSoon =
                       formData.onboarding_goal === "existing_seller" &&
@@ -298,8 +298,8 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
                           formData.onboarding_marketplace === market.id
                             ? "border-sky-500 bg-sky-50"
                             : isMarketComingSoon
-                            ? "border-slate-100 bg-slate-50 opacity-70"
-                            : "border-slate-100 hover:border-sky-200"
+                              ? "border-slate-100 bg-slate-50 opacity-70"
+                              : "border-slate-100 hover:border-sky-200"
                         )}
                       >
                         {/* Coming soon badge on the card */}
@@ -313,8 +313,8 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
                           formData.onboarding_marketplace === market.id
                             ? "bg-sky-500 text-white"
                             : isMarketComingSoon
-                            ? "bg-slate-200 text-slate-400"
-                            : "bg-slate-100 text-slate-500"
+                              ? "bg-slate-200 text-slate-400"
+                              : "bg-slate-100 text-slate-500"
                         )}>
                           <market.icon className="w-5 h-5" />
                         </div>
@@ -565,8 +565,8 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
                   {formData.onboarding_goal === "new_seller"
                     ? "Show Me Opportunities"
                     : isComingSoon
-                    ? "Got It, Notify Me"
-                    : "Set Up My Dashboard"}
+                      ? "Got It, Notify Me"
+                      : "Set Up My Dashboard"}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </>
               ) : (

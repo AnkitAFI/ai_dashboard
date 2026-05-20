@@ -298,7 +298,7 @@ import { useRouter } from "next/navigation";
 import SellerIdInput from "@/components/dashboard/seller-id-input";
 import { useAuth } from "@/lib/auth-context";
 import {
-  Loader2, Search, Star, ChevronRight,
+  Loader2, Search, Star, ChevronRight, ChevronLeft,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -314,6 +314,8 @@ function SellerProductsContent() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<"all" | "prime" | "best_seller">("all");
   const [selectedAsin, setSelectedAsin] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const activeSellerId = user?.seller_id || localSellerId;
 
@@ -341,6 +343,11 @@ function SellerProductsContent() {
     if (activeSellerId) fetchProducts();
   }, [activeSellerId]);
 
+  // Reset page when search or tab filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, activeFilter]);
+
   const { setSelected } = useSelectedProduct();
 
   const filteredProducts = products.filter((p) => {
@@ -355,6 +362,11 @@ function SellerProductsContent() {
         : p.is_best_seller === true;
     return matchesSearch && matchesTab;
   });
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
 
   const handleRowClick = (p: any) => {
     setSelectedAsin(p.asin);
@@ -454,7 +466,7 @@ function SellerProductsContent() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {filteredProducts.map((p, idx) => {
+                  {currentItems.map((p, idx) => {
                     const isSelected = selectedAsin === p.asin;
                     return (
                       <tr
@@ -558,11 +570,39 @@ function SellerProductsContent() {
             )}
           </div>
 
-          {/* Footer */}
-          {products.length > 0 && !loading && (
-            <div className="p-4 border-t border-slate-100 text-xs text-slate-500 flex justify-between items-center bg-slate-50/50">
-              <p>Showing {filteredProducts.length} of {products.length} products</p>
-              <p className="text-slate-400">Click a row to analyse it</p>
+          {/* Footer & Pagination */}
+          {filteredProducts.length > 0 && !loading && (
+            <div className="p-4 border-t border-slate-100 text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/50">
+              <div className="flex flex-col sm:flex-row items-center gap-2">
+                <p>
+                  Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredProducts.length)} of {filteredProducts.length} products
+                  {filteredProducts.length !== products.length && ` (filtered from ${products.length} total)`}
+                </p>
+                <span className="hidden sm:inline text-slate-300">|</span>
+                <p className="text-slate-400">Click a row to analyze it</p>
+              </div>
+              
+              {totalPages > 1 && (
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:pointer-events-none transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4 text-slate-600" />
+                  </button>
+                  <span className="font-semibold text-slate-700">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:pointer-events-none transition-colors"
+                  >
+                    <ChevronRight className="w-4 h-4 text-slate-600" />
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

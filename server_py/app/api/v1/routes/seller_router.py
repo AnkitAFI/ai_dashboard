@@ -8,6 +8,58 @@ from app.db.models.user_model import User
 from app.models.legacy_models import TrackedProduct
 from app.services.inbound_service import SellerInboundService
 import random
+import json
+import threading
+
+class _ReviewSentimentAnalyzer:
+    _instance = None
+    _lock = threading.Lock()
+
+    def __init__(self):
+        try:
+            import nltk
+            from nltk.sentiment.vader import SentimentIntensityAnalyzer
+            try:
+                self._sia = SentimentIntensityAnalyzer()
+            except Exception:
+                nltk.download('vader_lexicon', quiet=True)
+                self._sia = SentimentIntensityAnalyzer()
+            
+            # Custom lexicon updates for e-commerce and spelling errors
+            self._sia.lexicon.update({
+                "soft": 2.0,
+                "premium": 2.0,
+                "recieved": 1.0,      # "not recieved" -> negated to negative
+                "receievd": 1.0,      # "not receievd" -> negated to negative
+                "received": 1.0,
+                "delivered": 1.0,
+                "awsome": 3.0,
+                "awesum": 3.0,
+                "superb": 3.0,
+                "worst": -3.0,
+                "waste": -3.0,
+                "useless": -3.0,
+                "poor": -2.0,
+                "cheap": -1.5,
+            })
+            self._available = True
+        except Exception:
+            self._sia = None
+            self._available = False
+
+    @classmethod
+    def get(cls):
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = cls()
+        return cls._instance
+
+    def analyze(self, text: str) -> float:
+        """Returns compound score, or 0.0 if not available."""
+        if not self._available or not self._sia:
+            return 0.0
+        return self._sia.polarity_scores(text)['compound']
 
 router = APIRouter(tags=["Seller Dashboard"])
 
@@ -92,12 +144,20 @@ def get_seller_dashboard_stats(
     avg_seller_rating = (sum(seller_rating_values) / len(seller_rating_values)) if seller_rating_values else 0
 
     # --- Charts ---
-    months = ["Oct", "Nov", "Dec", "Jan", "Feb", "Mar"]
+    import calendar
+    from datetime import datetime
+    today = datetime.now()
+    months = [calendar.month_abbr[(today.month - i - 1) % 12 + 1] for i in range(5, -1, -1)]
 
     # Sales Trend: review velocity as a rough proxy
     base_sales = total_reviews / 10
+    
+    # Use a local random instance seeded by the seller ID and current date 
+    # so the mock data stays consistent throughout the day, but updates tomorrow
+    seed_value = f"{s_id}_{today.strftime('%Y-%m-%d')}"
+    local_random = random.Random(seed_value)
     sales_trend = [
-        {"name": m, "sales": int(base_sales * (0.8 + 0.5 * random.random()))}
+        {"name": m, "sales": int(base_sales * (0.8 + 0.5 * local_random.random()))}
         for m in months
     ]
 
@@ -108,19 +168,44 @@ def get_seller_dashboard_stats(
         country_counts[key] = country_counts.get(key, 0) + 1
     category_distribution = [{"name": k, "value": v} for k, v in country_counts.items()]
 
-    # Review Sentiment: derived from review_ratings column.
-    # review_ratings may be stored as a list of ints OR strings — safe_int handles both.
+    # Review Sentiment: derived from review_comments text.
+    # Falls back to review_ratings if comments are not present or empty.
     pos = neu = neg = 0
+    analyzer = _ReviewSentimentAnalyzer.get()
+
     for p in products:
-        ratings = p.review_ratings or []
-        for r in ratings:
-            rating_int = safe_int(r)
-            if rating_int >= 4:
-                pos += 1
-            elif rating_int == 3:
-                neu += 1
-            else:
-                neg += 1
+        has_text_sentiment = False
+        try:
+            comments = json.loads(p.review_comments) if isinstance(p.review_comments, str) else (p.review_comments or [])
+        except (json.JSONDecodeError, TypeError):
+            comments = []
+            
+        valid_comments = [c for c in comments if isinstance(c, str) and c.strip()]
+        if valid_comments:
+            for comment in valid_comments:
+                score = analyzer.analyze(comment)
+                if score >= 0.05:
+                    pos += 1
+                elif score <= -0.05:
+                    neg += 1
+                else:
+                    neu += 1
+            has_text_sentiment = True
+
+        if not has_text_sentiment:
+            try:
+                ratings = json.loads(p.review_ratings) if isinstance(p.review_ratings, str) else (p.review_ratings or [])
+            except (json.JSONDecodeError, TypeError):
+                ratings = []
+                
+            for r in ratings:
+                rating_int = safe_int(r)
+                if rating_int >= 4:
+                    pos += 1
+                elif rating_int == 3:
+                    neu += 1
+                else:
+                    neg += 1
 
     total_rated = pos + neu + neg
     if total_rated:
