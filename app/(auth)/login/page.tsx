@@ -21,8 +21,7 @@
 //   DialogFooter,
 // } from "@/components/ui/dialog";
 // // Environment config
-// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
-
+// 
 // export default function Login() {
 //   const router = useRouter();
 //   const { toast } = useToast();
@@ -664,6 +663,7 @@
 
 
 "use client";
+import { API_BASE_URL } from "@/lib/config";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -684,7 +684,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
 
 export default function Login() {
   const router = useRouter();

@@ -1660,8 +1660,9 @@ logger = logging.getLogger(__name__)
 # ── AI Setup (HTTP, no SDK needed) ───────────────────────────────────────────
 
 import httpx
+from app.core.config import settings
 
-OLLAMA_BASE_URL = "http://localhost:11434"
+OLLAMA_BASE_URL = settings.OLLAMA_BASE_URL
 OLLAMA_MODEL    = "llama3.2:3b"
 OLLAMA_TIMEOUT  = 60
 

@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
 import { useRouter, usePathname } from "next/navigation";
 import { useAlerts, Notification, NotificationDetails } from "@/components/dashboard/alert-context";
+import { API_BASE_URL } from "@/lib/config";
 
 // Types are now imported from alert-context
 
@@ -80,7 +81,7 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
   const [notifications, setNotifications] = useState<Notification[]>([]);
   
   const selectedSource = filters.table || "amazon";
-  const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
+  const BASE_URL = API_BASE_URL;
 
   const currentRoute = ROUTE_TITLES[pathname] || {
     title: pathname.split("/").pop()?.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()) || "Dashboard",

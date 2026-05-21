@@ -31,6 +31,7 @@ from app.db import session as database_config
 from app.db.session import get_db, engine
 from app.models.legacy_models import AmazonReview, Product, AmazonProductDetails, IndianProduct, User, ProductTrackerAnalysis, TrackedProduct, KeywordRankHistory, PaymentOrder, PriceAlert, RapidapiFlipkartProduct, RankUpdateRatelimit, Feedback, CompetitorSnapshot, TimeSeriesForcasting
 from app.core.security import verify_password, get_password_hash
+from app.core.config import settings
 from app.services.inbound_service import SellerInboundService
 models.Base.metadata.create_all(bind=engine)
 # app = FastAPI(title="API", version="1.0.0")
@@ -73,7 +74,7 @@ class AIChartAnalysis(BaseModel):
     filters: Optional[Dict[str, Any]] = {}
 
 
-OLLAMA_API_URL = "http://127.0.0.1:11434"  # Ollama HTTP API
+OLLAMA_API_URL = settings.OLLAMA_BASE_URL  # Ollama HTTP API
 MAX_DATA_CHARS = 1500
 MODEL_NAME = "llama3.2:3b"
 
@@ -14266,7 +14267,7 @@ HEADERS = {
     "X-RapidAPI-Host": RAPIDAPI_HOST,
 }
 
-OLLAMA_BASE  = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_BASE  = settings.OLLAMA_BASE_URL
 OLLAMA_MODEL = "llama3.2:3b"
 
 # ─────────────────────────────────────────

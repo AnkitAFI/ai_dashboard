@@ -17,7 +17,7 @@
 // } from "lucide-react";
 // import { Badge } from "@/components/ui/badge";
 
-// const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+// const BASE_URL = API_BASE_URL;
 
 // // ── Tier Gate ─────────────────────────────────────────────────────────────────
 // function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
@@ -878,6 +878,7 @@
 
 
 "use client";
+import { API_BASE_URL } from "@/lib/config";
 
 import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -896,7 +897,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const BASE_URL = API_BASE_URL;
 
 // ── Tier Gate ─────────────────────────────────────────────────────────────────
 function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {

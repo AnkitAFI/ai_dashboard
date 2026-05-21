@@ -16,7 +16,7 @@
 // import { cn } from "@/lib/utils";
 // import { useToast } from "@/hooks/use-toast";
 
-// const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
+// const API_BASE = API_BASE_URL;
 
 // // ─── Auth header helper ───────────────────────────────────────────────────────
 // function authHeaders(userId: string | null): HeadersInit {
@@ -998,6 +998,7 @@
 
 
 "use client";
+import { API_BASE_URL } from "@/lib/config";
 
 import { useState, useEffect, useRef, Suspense, useCallback } from "react";
 import { useRouter } from "next/navigation";
@@ -1016,7 +1017,7 @@ import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
+const API_BASE = API_BASE_URL;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // All API calls use session cookies — no Authorization header needed.

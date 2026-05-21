@@ -10,8 +10,7 @@
 //   Wallet, IndianRupee,
 // } from "lucide-react";
 
-// const API_BASE_URL = ((process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")) || (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
-// const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "") || "syatharthdelhi@gmail.com";
+// // const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "") || "syatharthdelhi@gmail.com";
 // const TIER_PRICE: Record<string, number> = { free: 0, basic: 1999, premium: 2999 };
 
 // const inr = (n: number) => "₹" + n.toLocaleString("en-IN");
@@ -764,6 +763,7 @@
 
 
 "use client";
+import { API_BASE_URL } from "@/lib/config";
 
 import { useEffect, useState, Fragment } from "react";
 import { useRouter } from "next/navigation";
@@ -775,7 +775,6 @@ import {
   MessageSquare, BarChart2, Globe, Tag,
 } from "lucide-react";
 
-const API_BASE_URL = ((process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")) || (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
 const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "") || "syatharthdelhi@gmail.com";
 const TIER_PRICE: Record<string, number> = { free: 0, basic: 1999, premium: 2999 };
 

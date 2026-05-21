@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -298,7 +299,7 @@ export default function ProductTracker() {
     if (!userId) return;
     setLoadingUsage(true);
     try {
-      const res = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")}/users/${userId}/analysis-usage`, { 
+      const res = await fetch(`${API_BASE_URL}/users/${userId}/analysis-usage`, { 
         credentials: "include",
         cache: 'no-store'
       });
@@ -333,7 +334,7 @@ export default function ProductTracker() {
 
   const fetchCategories = async (src: string) => {
     try {
-      const res = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")}/categories?table=${src}`, { cache: 'no-store' });
+      const res = await fetch(`${API_BASE_URL}/categories?table=${src}`, { cache: 'no-store' });
       const data = await res.json();
       const cats = data.map((c: any) => c.category);
       setCategories(cats);
@@ -378,7 +379,7 @@ export default function ProductTracker() {
     setApiResponse(null);
 
     try {
-      const res = await fetch("https://api.insydz.com/product-tracker/analyze", {
+      const res = await fetch(`${API_BASE_URL}/product-tracker/analyze`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         cache: 'no-store',

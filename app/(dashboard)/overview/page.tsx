@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import axios from "axios";
 import {
   Card,
@@ -26,7 +27,7 @@ export default function Overview() {
   const fetchSummary = async (selectedSource: string) => {
     try {
       setLoading(true);
-      const res = await axios.get(`${(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")}/analytics-summary?source=${selectedSource}`);
+      const res = await axios.get(`${API_BASE_URL}/analytics-summary?source=${selectedSource}`);
       setSummary(res.data);
     } catch (err) {
       console.error("Error fetching summary:", err);

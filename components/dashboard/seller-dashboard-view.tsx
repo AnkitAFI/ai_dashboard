@@ -3,6 +3,16 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
@@ -11,6 +21,7 @@ import {
   Zap, BarChart3, Users, Award, ShieldCheck, Loader2, RefreshCcw, ShoppingCart, Percent
 } from "lucide-react";
 import { useAuth } from '@/lib/auth-context';
+import { API_BASE_URL } from "@/lib/config";
 
 const COLORS = ["#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981"];
 
@@ -48,14 +59,17 @@ function MetricCard({ title, value, icon, description, trend }: MetricCardProps)
 }
 
 export default function SellerDashboardView() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [disconnecting, setDisconnecting] = useState(false);
+
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   const fetchStats = async () => {
     try {
-      const resp = await fetch(`https://api.insydz.com/api/seller/dashboard-stats?seller_id=${user?.seller_id}`, {
+      const resp = await fetch(`${API_BASE_URL}/api/seller/dashboard-stats?seller_id=${user?.seller_id}`, {
         credentials: "include",
       });
       if (!resp.ok) throw new Error("Failed to fetch stats");
@@ -66,6 +80,38 @@ export default function SellerDashboardView() {
     } finally {
       setLoading(false);
       setRefreshing(false);
+    }
+  };
+
+  const handleDisconnectClick = () => {
+    setIsConfirmOpen(true);
+  };
+
+  const executeDisconnect = async () => {
+    setIsConfirmOpen(false);
+    setDisconnecting(true);
+    try {
+      const resp = await fetch(`${API_BASE_URL}/api/seller/update-seller-id`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ seller_id: "" }),
+      });
+      if (resp.ok) {
+        if (refreshUser) {
+          await refreshUser();
+        }
+        window.location.reload();
+      } else {
+        alert("Failed to disconnect store. Please try again.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("An error occurred while disconnecting the store.");
+    } finally {
+      setDisconnecting(false);
     }
   };
 
@@ -140,14 +186,23 @@ export default function SellerDashboardView() {
             <span className="font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{user?.seller_id}</span>
           </p>
         </div>
-        <button
-          onClick={handleRefresh}
-          disabled={refreshing}
-          className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:shadow-md transition-all border border-slate-100 disabled:opacity-50"
-        >
-          <RefreshCcw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
-          {refreshing ? "Refreshing..." : "Sync Now"}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleDisconnectClick}
+            disabled={disconnecting}
+            className="flex items-center gap-2 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl text-sm font-bold text-red-600 transition-all border border-red-100 disabled:opacity-50"
+          >
+            Disconnect Store
+          </button>
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:shadow-md transition-all border border-slate-100 disabled:opacity-50"
+          >
+            <RefreshCcw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+            {refreshing ? "Refreshing..." : "Sync Now"}
+          </button>
+        </div>
       </div>
 
       {/* 8 Metric Cards */}
@@ -307,6 +362,30 @@ export default function SellerDashboardView() {
           </CardContent>
         </Card>
       </div>
+
+      <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
+        <AlertDialogContent className="max-w-md bg-white border border-slate-100 shadow-2xl rounded-2xl p-6">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl font-bold text-slate-900">
+              Disconnect Store
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-slate-500 mt-2">
+              Are you sure you want to disconnect this store? This will clear your Seller ID and return you to the store connection page.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="mt-6 flex flex-col sm:flex-row gap-3">
+            <AlertDialogCancel className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold transition-all">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={executeDisconnect}
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold transition-all shadow-sm shadow-red-100"
+            >
+              Disconnect
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

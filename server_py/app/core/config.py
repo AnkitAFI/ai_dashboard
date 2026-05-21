@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     DATAFORSEO_LOGIN: str = ""
     DATAFORSEO_PASSWORD: str = ""
     
+    # Ollama Settings
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    
     # Optional Settings
     DEFAULT_LOCATION_CODE: int = 2840
     DEFAULT_LANGUAGE_CODE: str = "en_US"

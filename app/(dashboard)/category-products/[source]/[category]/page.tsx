@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import { useRouter, useParams } from "next/navigation";
 
 import axios from "axios";
@@ -66,7 +67,7 @@ export default function CategoryProducts() {
 
     axios
       .get(
-        `${(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")}/category/products/${encodeURIComponent(
+        `${API_BASE_URL}/category/products/${encodeURIComponent(
           decodedCategory
         )}?source=${source}&limit=${limit}&offset=${(page - 1) * limit}`
       )

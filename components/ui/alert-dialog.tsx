@@ -73,14 +73,12 @@ AlertDialogDescription.displayName = AlertDialogPrimitive.Description.displayNam
 const AlertDialogAction = React.forwardRef<
   React.ElementRef<typeof AlertDialogPrimitive.Action>,
   React.ComponentPropsWithoutRef<typeof AlertDialogPrimitive.Action>
->(({ className, children, ...props }, ref) => (
+>(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Action
     ref={ref}
-    className={cn(buttonVariants(), "flex items-center gap-1", className)}
+    className={cn(buttonVariants(), className)}
     {...props}
-  >
-    <Lightbulb className="h-4 w-4" /> {children || "Generate AI Insight"}
-  </AlertDialogPrimitive.Action>
+  />
 ))
 AlertDialogAction.displayName = AlertDialogPrimitive.Action.displayName
  

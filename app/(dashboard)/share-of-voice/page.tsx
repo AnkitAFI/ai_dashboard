@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { API_BASE_URL as CONFIG_API_BASE_URL } from "@/lib/config";
 import axios from "axios";
 import { useAuth } from "@/lib/auth-context";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, } from "@/components/ui/card";
@@ -361,7 +362,7 @@ export default function ShareOfVoice() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com/api");
+  const API_BASE_URL = `${CONFIG_API_BASE_URL}/api`;
 
   useEffect(() => { if (userId) fetchUsageLimits(); }, [userId]);
   useEffect(() => { fetchCategories(); }, [marketplace]);

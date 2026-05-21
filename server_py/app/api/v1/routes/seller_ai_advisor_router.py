@@ -41,13 +41,14 @@ from app.models.legacy_models import (
     RankSnapshot,
 )
 from app.api.deps import get_current_user, validate_session
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/seller/ai-advisor", tags=["Seller AI Advisor"])
 
 # ── Ollama ────────────────────────────────────────────────────────────────────
-OLLAMA_URL     = "http://localhost:11434/api/generate"
+OLLAMA_URL     = f"{settings.OLLAMA_BASE_URL}/api/generate"
 OLLAMA_MODEL   = "llama3.2:3b"
 OLLAMA_TIMEOUT = 90.0
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, Suspense } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,7 +27,7 @@ function SentimentAnalysisPageContent() {
   const [totalProducts, setTotalProducts] = useState(0);
   const limit = 24;
 
-  const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+  const API_BASE = API_BASE_URL;
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);

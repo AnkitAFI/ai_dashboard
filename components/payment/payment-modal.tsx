@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { API_BASE_URL } from "@/lib/config";
 
-const API_BASE = "https://api.insydz.com";
+const API_BASE = API_BASE_URL;
 
 export interface PaymentPlan {
   id: string;

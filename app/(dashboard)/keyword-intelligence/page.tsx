@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, Suspense } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import {
   Card, CardContent, CardDescription, CardHeader, CardTitle,
 } from "@/components/ui/card";
@@ -86,7 +87,7 @@ interface Toast {
   variant: "success" | "error";
 }
 
-const API = "https://api.insydz.com/api/keyword-tracker";
+const API = `${API_BASE_URL}/api/keyword-tracker`;
 
 // ── AI Insight Card ───────────────────────────────────────────────────────────
 
@@ -308,7 +309,7 @@ function KeywordTrackerIntelligenceContent() {
   useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
 
   useEffect(() => {
-    fetch(`${(process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")}/categories?table=${platform}`)
+    fetch(`${API_BASE_URL}/categories?table=${platform}`)
       .then(r => r.json())
       .then(d => setCategories(d.map((c: any) => c.category)))
       .catch(() => setCategories([]));

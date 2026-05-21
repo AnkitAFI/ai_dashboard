@@ -27,12 +27,14 @@ from app.models.legacy_models import (
     RankAlertLog,
 )
  
+from app.core.config import settings
+ 
 logger = logging.getLogger(__name__)
  
 router = APIRouter(prefix="/rank-tracker", tags=["Rank Tracker"])
  
 # ── Ollama ────────────────────────────────────────────────────────────────────
-OLLAMA_URL     = "http://localhost:11434/api/generate"
+OLLAMA_URL     = f"{settings.OLLAMA_BASE_URL}/api/generate"
 OLLAMA_MODEL   = "llama3.2:3b"
 OLLAMA_TIMEOUT = 45.0
  

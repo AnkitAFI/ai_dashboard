@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { useAuth } from "@/lib/auth-context";
@@ -16,7 +17,7 @@ import {
   Tooltip, ResponsiveContainer,
 } from "recharts";
 
-const BASE_URL = ((process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")) || (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const BASE_URL = (API_BASE_URL) || API_BASE_URL;
 
 // ── Tier Gate ─────────────────────────────────────────────────────────────────
 function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {

@@ -200,10 +200,11 @@ import httpx
 import json
 import logging
 from typing import AsyncGenerator
+from app.core.config import settings
 
 logger = logging.getLogger(__name__)
 
-OLLAMA_BASE_URL = "http://localhost:11434"
+OLLAMA_BASE_URL = settings.OLLAMA_BASE_URL
 OLLAMA_MODEL    = "llama3.2:3b"
 OLLAMA_TIMEOUT  = 120
 

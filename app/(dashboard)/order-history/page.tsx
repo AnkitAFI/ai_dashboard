@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import { useAuth } from "@/lib/auth-context";
 import {
   Card,
@@ -26,7 +27,7 @@ import {
 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const API_BASE = API_BASE_URL;
 
 interface PaymentOrder {
   id: number;
