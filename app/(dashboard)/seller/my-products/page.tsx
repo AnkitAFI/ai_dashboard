@@ -12,7 +12,7 @@
 // import { Input } from "@/components/ui/input";
 // import { cn } from "@/lib/utils";
 
-// const API_BASE = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+// const API_BASE = API_BASE_URL;
 
 // export default function SellerProductsPage() {
 //   const { user, refreshUser } = useAuth();
@@ -291,6 +291,7 @@
 // }
 
 "use client";
+import { API_BASE_URL } from "@/lib/config";
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
@@ -323,7 +324,7 @@ function SellerProductsContent() {
     if (!activeSellerId) return;
     setLoading(true);
     try {
-      const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+      const BASE_URL = API_BASE_URL;
       const resp = await fetch(
         `${BASE_URL}/api/seller/products?seller_id=${activeSellerId}`,
         { credentials: "include" }

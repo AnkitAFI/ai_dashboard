@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import { useRouter, useParams } from "next/navigation";
 
 import axios from "axios";
@@ -95,7 +96,7 @@ export default function ProductDetails() {
   const [activeTab, setActiveTab] = useState("1y");
   const [isAmazon, setIsAmazon] = useState(false);
 
-  const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+  const BASE_URL = API_BASE_URL;
 
   useEffect(() => {
     if (!productName) return;

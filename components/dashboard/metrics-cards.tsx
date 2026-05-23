@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp, ShoppingCart, Star, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { API_BASE_URL } from "@/lib/config";
 import { useFilters } from "@/components/dashboard/filters-context";
 
 interface MetricCardProps {
@@ -44,7 +45,7 @@ function MetricCard({ title, value, icon, color, isLoading }: MetricCardProps) {
 }
 
 export default function MetricsCards({ selectedSource }: { selectedSource: string }) {
-  const BASE_URL = "https://api.insydz.com";
+  const BASE_URL = API_BASE_URL;
   const { filters } = useFilters(); // ✅ Get filters from context
 
   const [flipkartStats, setFlipkartStats] = useState<any>(null);

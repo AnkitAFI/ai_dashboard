@@ -1028,12 +1028,14 @@ from app.models.legacy_models import (
     User,
 )
 
+from app.core.config import settings
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/keyword-gap", tags=["Keyword Gap"])
 
 # ── Ollama ─────────────────────────────────────────────────────────────────────
-OLLAMA_URL     = "http://localhost:11434/api/generate"
+OLLAMA_URL     = f"{settings.OLLAMA_BASE_URL}/api/generate"
 OLLAMA_MODEL   = "llama3.2:3b"
 OLLAMA_TIMEOUT = 45.0   # slightly higher — we now use chain-of-thought
 

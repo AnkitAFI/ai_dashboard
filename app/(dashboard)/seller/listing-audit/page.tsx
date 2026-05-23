@@ -1,15 +1,8 @@
-// import FeatureComingSoon from "@/components/dashboard/feature-coming-soon";
-
-// export default function Page() {
-//   return <FeatureComingSoon />;
-// }
-
-
-
 
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
@@ -20,7 +13,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const BASE_URL = API_BASE_URL;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function ThreatRing({ score, size = "sm" }: { score: number; size?: "sm" | "md" }) {

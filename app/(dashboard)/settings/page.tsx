@@ -28,8 +28,7 @@
 //   { value: "local", label: "Local (Mumbai Metro)" },
 // ];
 
-// const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
-
+// 
 // export default function Settings() {
 //   const { toast } = useToast();
 //   const { user, refreshUser, isLoading: authLoading } = useAuth();
@@ -371,6 +370,7 @@
 
 
 "use client";
+import { API_BASE_URL } from "@/lib/config";
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
@@ -390,7 +390,6 @@ const TARGET_MARKETS = [
   { value: "local", label: "Local (Mumbai Metro)" },
 ];
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
 
 export default function Settings() {
   const { toast } = useToast();

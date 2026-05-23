@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import {
   Dialog,
   DialogContent,
@@ -59,7 +60,7 @@ const MARKETPLACE_API_MAP: Record<string, string> = {
 async function fetchCategories(marketplace: string): Promise<string[]> {
   const param = MARKETPLACE_API_MAP[marketplace] ?? "amazon";
   const res = await fetch(
-    `https://api.insydz.com/api/onboarding/categories?marketplace=${param}`
+    `${API_BASE_URL}/api/onboarding/categories?marketplace=${param}`
   );
   if (!res.ok) return [];
   const data = await res.json();
@@ -67,7 +68,7 @@ async function fetchCategories(marketplace: string): Promise<string[]> {
 }
 
 async function connectSellerAccount(sellerId: string, country: string): Promise<void> {
-  const response = await fetch("https://api.insydz.com/api/seller/update-seller-id", {
+  const response = await fetch(`${API_BASE_URL}/api/seller/update-seller-id`, {
     method: "POST",
     credentials: "include",
     headers: { "Content-Type": "application/json" },

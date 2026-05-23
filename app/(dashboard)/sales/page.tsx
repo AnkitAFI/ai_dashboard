@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "@/lib/config";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, IndianRupee, ArrowUpDown, TrendingUp } from "lucide-react";
@@ -68,8 +69,8 @@ export default function Sales() {
     setLoading(true);
     const url =
       source === "flipkart"
-        ? "https://api.insydz.com/top?table=rapidapi_flipkart_products&n=500"
-        : "https://api.insydz.com/rapidapi/top-sales?limit=500";
+        ? `${API_BASE_URL}/top?table=rapidapi_flipkart_products&n=500`
+        : `${API_BASE_URL}/rapidapi/top-sales?limit=500`;
 
     axios
       .get(url)

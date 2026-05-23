@@ -17,7 +17,7 @@
 //   Tooltip, ResponsiveContainer, ReferenceLine,
 // } from "recharts";
 
-// const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+// const BASE_URL = API_BASE_URL;
 
 // function fmt(val: number | null | undefined, currency = "USD"): string {
 //   if (val == null) return "—";
@@ -501,6 +501,7 @@
 
 
 "use client";
+import { API_BASE_URL } from "@/lib/config";
 
 import { useSelectedProduct } from "@/lib/selected-product-context";
 import { useState, useEffect, Suspense } from "react";
@@ -520,7 +521,7 @@ import {
   Tooltip, ResponsiveContainer, ReferenceLine,
 } from "recharts";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const BASE_URL = API_BASE_URL;
 
 function fmt(val: number | null | undefined, currency = "USD"): string {
   if (val == null) return "—";

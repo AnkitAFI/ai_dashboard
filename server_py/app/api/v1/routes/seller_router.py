@@ -264,8 +264,12 @@ def update_seller_id(
     seller_id = data.get("seller_id")
     country = data.get("country", "IN")
 
-    if not seller_id:
-        raise HTTPException(status_code=400, detail="Seller ID is required")
+    # If seller_id is an empty string or null, treat it as a request to disconnect/clear the connected store
+    if not seller_id or seller_id.strip() == "":
+        current_user.seller_id = None
+        db.commit()
+        db.refresh(current_user)
+        return {"status": "success", "seller_id": None, "country": country}
 
     current_user.seller_id = seller_id
     current_user.onboarding_marketplace = country

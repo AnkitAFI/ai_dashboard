@@ -6,6 +6,7 @@
 
 
 "use client";
+import { API_BASE_URL } from "@/lib/config";
 
 import { useSelectedProduct } from "@/lib/selected-product-context";
 import { useState, useEffect, Suspense, useCallback } from "react";
@@ -25,7 +26,7 @@ import {
   Tooltip, ResponsiveContainer, LineChart, Line, ReferenceLine,
 } from "recharts";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
+const BASE_URL = API_BASE_URL;
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 

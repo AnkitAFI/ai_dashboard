@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TrendingUp, Lock, Sparkles, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { API_BASE_URL } from "@/lib/config";
 import { useFilters } from "@/components/dashboard/filters-context";
 import { useAISummary } from "@/hooks/use-ai-summary";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
@@ -84,7 +85,7 @@ export default function ProductRankings({
 }: {
   selectedSource: string;
 }) {
-  const BASE_URL = "https://api.insydz.com";
+  const BASE_URL = API_BASE_URL;
   const { filters } = useFilters();
   const { canAccessFeature, currentTier } = useSubscriptionLimits();
 

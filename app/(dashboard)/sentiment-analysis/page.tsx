@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import { usePathname, useRouter, useParams } from "next/navigation";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,7 +46,7 @@ export default function SentimentProductsPage() {
 
   const source = (params?.source as string) || "flipkart";
   const sentiment = (params?.sentiment as string) || "positive";
-  const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+  const BASE_URL = API_BASE_URL;
 
   const urlParams = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
   const categoryFilter = urlParams.get('category');

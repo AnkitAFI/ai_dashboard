@@ -9,8 +9,7 @@
 // import { Label } from "@/components/ui/label";
 // import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
-
+// 
 // // cookie helpers
 // function getCookie(name: string): string | null {
 //   const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
@@ -233,6 +232,7 @@
 
 
 "use client";
+import { API_BASE_URL } from "@/lib/config";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -240,7 +240,6 @@ import { useAuth } from "@/lib/auth-context";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
 
 function getCookie(name: string): string | null {
   const match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));

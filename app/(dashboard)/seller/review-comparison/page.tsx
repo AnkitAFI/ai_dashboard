@@ -16,7 +16,7 @@
 //   Tooltip, ResponsiveContainer,
 // } from "recharts";
 
-// const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+// const BASE_URL = API_BASE_URL;
 
 // // ── Tier Gate ─────────────────────────────────────────────────────────────────
 // function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
@@ -498,6 +498,7 @@
 
 
 "use client";
+import { API_BASE_URL } from "@/lib/config";
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -516,7 +517,7 @@ import {
 } from "recharts";
 import { useSelectedProduct } from "@/lib/selected-product-context";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const BASE_URL = API_BASE_URL;
 
 // ── Tier Gate ─────────────────────────────────────────────────────────────────
 function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense, useRef, useCallback } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
@@ -21,7 +22,7 @@ import {
 } from "recharts";
 import ReactMarkdown from "react-markdown";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
+const BASE_URL = API_BASE_URL;
 const API = `${BASE_URL}/api/rank-tracker`;
 
 // ── Types ─────────────────────────────────────────────────────────────────────

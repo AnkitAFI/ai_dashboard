@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import axios from "axios";
+import { API_BASE_URL } from "@/lib/config";
 import {
   Card,
   CardContent,
@@ -33,7 +34,7 @@ export default function Categories() {
 
   useEffect(() => {
     axios
-      .get("https://api.insydz.com/analytics/category")
+      .get(`${API_BASE_URL}/analytics/category`)
       .then((res) => setCategories(res.data.categories))
       .catch(() => setError("Failed to fetch category data"))
       .finally(() => setLoading(false));

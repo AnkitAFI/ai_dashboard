@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import { useRouter } from "next/navigation";
 
 import SellerIdInput from "@/components/dashboard/seller-id-input";
@@ -28,7 +29,7 @@ function SellerProductsContent() {
     if (!activeSellerId) return;
     setLoading(true);
     try {
-      const BASE_URL = ((process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com")) || (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+      const BASE_URL = (API_BASE_URL) || API_BASE_URL;
       const resp = await fetch(
         `${BASE_URL}/api/seller/products?seller_id=${activeSellerId}`,
         { credentials: "include" }

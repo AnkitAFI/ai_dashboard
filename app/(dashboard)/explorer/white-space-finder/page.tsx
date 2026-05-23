@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect, Suspense } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import axios from "axios";
 import { useAuth } from "@/lib/auth-context";
@@ -19,7 +20,7 @@ import {
   Package, Flame, SortAsc, ChevronRight, Bookmark,
 } from "lucide-react";
 
-const API = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com") + "/api";
+const API = API_BASE_URL + "/api";
 
 axios.defaults.withCredentials = true;
 

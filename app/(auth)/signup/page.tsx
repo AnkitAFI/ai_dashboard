@@ -48,8 +48,7 @@
 //   { id: "office", label: "Office Supplies" },
 //   { id: "pet", label: "Pet Supplies" },
 // ];
-// const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
-
+// 
 // export default function Signup() {
 //   const router = useRouter();
 //   const { toast } = useToast();
@@ -441,6 +440,7 @@
 
 
 "use client";
+import { API_BASE_URL } from "@/lib/config";
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -479,7 +479,6 @@ const BUSINESS_INTERESTS = [
   { id: "pet", label: "Pet Supplies" },
 ];
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com";
 
 export default function Signup() {
   const router = useRouter();

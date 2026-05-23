@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, Suspense } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
@@ -14,7 +15,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useSelectedProduct } from "@/lib/selected-product-context";
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+const BASE_URL = API_BASE_URL;
 
 // ── Cluster icon + colour map ─────────────────────────────────────────────────
 const CLUSTER_META: Record<string, { color: string; bg: string; border: string; emoji: string }> = {

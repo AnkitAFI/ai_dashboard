@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { useAuth } from "@/lib/auth-context";
@@ -15,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { Menu } from "lucide-react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com/api");
+const API = process.env.NEXT_PUBLIC_API_URL || `${API_BASE_URL}/api`;
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 

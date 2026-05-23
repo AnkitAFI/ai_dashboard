@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "@/lib/config";
 
 interface Filters {
   table?: string;
@@ -52,7 +53,7 @@ export function useAISummary(
           sampleItem: data[0]
         });
 
-        const res = await fetch("https://api.insydz.com/ai/analyze-chart", {
+        const res = await fetch(`${API_BASE_URL}/ai/analyze-chart`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),

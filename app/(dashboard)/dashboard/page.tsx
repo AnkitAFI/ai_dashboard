@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import MetricsCards from "@/components/dashboard/metrics-cards";
 import ChartsGrid from "@/components/dashboard/charts-grid";
 import ProductRankings from "@/components/dashboard/product-rankings";
@@ -52,7 +53,7 @@ function DashboardContent() {
   const { user, refreshUser } = useAuth();
 
   const { filters, setFilters } = useFilters();
-  const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
+  const BASE_URL = API_BASE_URL;
 
   const selectedSource = filters.table || "amazon";
 

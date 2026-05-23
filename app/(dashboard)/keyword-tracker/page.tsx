@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { API_BASE_URL } from "@/lib/config";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -140,7 +141,6 @@ interface ProductDetail {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || "https://api.insydz.com");
 
 function renderAnalysisField(value: any): string {
   if (typeof value === "string") return value;

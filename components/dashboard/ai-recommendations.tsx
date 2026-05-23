@@ -10,6 +10,7 @@ import {
 import { useFilters } from "@/components/dashboard/filters-context";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
 import { useSubscriptionSync } from "@/hooks/use-subscription-sync";
+import { API_BASE_URL } from "@/lib/config";
 
 // ─────────────────────────────────────────────
 // TYPES
@@ -113,7 +114,7 @@ function MicroInsight({ text, index }: { text: string; index: number }) {
 // MAIN COMPONENT
 // ─────────────────────────────────────────────
 
-const BASE_URL = "https://api.insydz.com";
+const BASE_URL = API_BASE_URL;
 
 export default function AIRecommendations({ selectedSource }: { selectedSource: string }) {
   const { filters } = useFilters();

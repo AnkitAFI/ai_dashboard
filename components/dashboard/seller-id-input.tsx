@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, Loader2, Save, ShoppingBag, Globe } from "lucide-react";
 import { useAuth } from '@/lib/auth-context';
+import { API_BASE_URL } from "@/lib/config";
 import {
   Select,
   SelectContent,
@@ -29,7 +30,7 @@ export default function SellerIdInput({ onSaved }: { onSaved: (id: string) => vo
     setError(null);
 
     try {
-      const response = await fetch("https://api.insydz.com/api/seller/update-seller-id", {
+      const response = await fetch(`${API_BASE_URL}/api/seller/update-seller-id`, {
         method: "POST",
         credentials: "include",
         headers: {

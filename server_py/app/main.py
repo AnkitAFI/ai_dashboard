@@ -24,7 +24,7 @@ app.add_middleware(
         "https://*.razorpay.com",
         "http://localhost:3000",
         "https://insydz.com",
-        "https://api.insydz.com",
+        "http://localhost:8000",
     ],
     allow_credentials=True,
     allow_methods=["*"],

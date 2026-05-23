@@ -40,23 +40,33 @@ const VIDEOS = [
     videoUrl: "/videos/Insydz%E2%80%99s%20Market%20Visibility.mp4",
     thumbnail: "/Insydz%E2%80%99s%20Market%20Visibility%20-%20Cover%20Image.png"
   },
+  {
+    id: 4,
+    title: "Insydz - Seller Price Comparison",
+    description: "It monitors every competing listing on Amazon India in real time and sends alert. With AI suggested reprice that protects your margins. Stop guessing your next product idea. Start validating with real marketplace data.",
+    category: "Price Tracking",
+    gradient: "g-teal",
+    videoUrl: "/videos/Seller-Price-Comparison.mp4",
+    thumbnail: "/Seller-Price-Comparison-Cover-Image.png"
+  },
+  {
+    id: 5,
+    title: "Insydz - Review Comparison",
+    description: "It shows exactly how your ratings and customer sentiment stack up against similar competitors. It also auto-drafts review responses and gives AI-powered insights to help you close the gap and build buyer trust faster.",
+    category: "Review Intelligence",
+    gradient: "g-orange",
+    videoUrl: "/videos/Insydz%20Review%20Comp.mp4",
+    thumbnail: "/Insydz%20Review%20Comp%20Cover%20Image.png"
+  },
   // {
-  //   id: 3,
-  //   title: "Review Intelligence: Complete Guide",
-  //   description: "Use our AI engine to analyze thousands of reviews instantly. Spot product defects before they hurt your ratings.",
-  //   category: "Review Intelligence",
-  //   gradient: "g-orange",
-  //   hasRepiltBadge: true
-  // },
-  // {
-  //   id: 4,
+  //   id: 6,
   //   title: "Setting Up Price Alerts and Notifications",
   //   description: "Never miss a competitor price drop. Configure SMS and email alerts tailored to your specific margin thresholds.",
   //   category: "Price Tracking",
   //   gradient: "g-teal"
   // },
   // {
-  //   id: 5,
+  //   id: 7,
   //   title: "Advanced Sales Analytics Deep Dive",
   //   description: "Analyze velocity, identify seasonal trends, and predict stock-outs before they happen using historical data.",
   //   category: "Sales Analytics",
@@ -64,7 +74,7 @@ const VIDEOS = [
   //   hasRepiltBadge: true
   // },
   // {
-  //   id: 6,
+  //   id: 8,
   //   title: "Keyword Research for Amazon India",
   //   description: "Find high-volume, low-competition search terms specifically tailored for the Indian marketplace.",
   //   category: "Keyword Research",

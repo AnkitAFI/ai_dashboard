@@ -321,10 +321,11 @@ router = APIRouter()
 logger = logging.getLogger(__name__)
 
 from app.api.deps import r
+from app.core.config import settings
 
 # ── Ollama config ─────────────────────────────────────────────────────────────
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
+OLLAMA_URL = f"{settings.OLLAMA_BASE_URL}/api/generate"
 OLLAMA_MODEL = "llama3.2:3b"
 OLLAMA_TIMEOUT = 45.0  # seconds — 3B model is fast, but give headroom
 
@@ -850,7 +851,7 @@ def ollama_status():
     """
     try:
         with httpx.Client(timeout=5.0) as client:
-            resp = client.get("http://localhost:11434/api/tags")
+            resp = client.get(f"{settings.OLLAMA_BASE_URL}/api/tags")
             resp.raise_for_status()
             tags = resp.json()
             models = [m["name"] for m in tags.get("models", [])]
