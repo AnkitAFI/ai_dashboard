@@ -971,9 +971,17 @@ class Database:
         """Save Amazon products to rapidapi_amazon_products table"""
         if not self.available or not products:
             return 0
- 
+
+        seen_keys = set()
         tuples = []
         for p in products:
+            asin = p.get("asin")
+            category_id = p.get("category_id")
+            country = p.get("country")
+            key = (asin, category_id, country)
+            if not asin or key in seen_keys:
+                continue
+            seen_keys.add(key)
             try:
                 current_price = p.get("product_price_numeric")
                 original_price = p.get("product_original_price_numeric")
@@ -1012,10 +1020,10 @@ class Database:
             except Exception as e:
                 logger.debug(f"[DB] Skip Amazon product {p.get('asin')}: {e}")
                 continue
- 
+
         if not tuples:
             return 0
- 
+
         insert_sql = """
         INSERT INTO rapidapi_amazon_products (
             asin, category_id, category_name, product_title, product_url,
@@ -1044,15 +1052,15 @@ class Database:
         try:
             with self.conn.cursor() as cur:
                 execute_values(cur, insert_sql, tuples, page_size=100)
-           
+
             self.conn.commit()
             logger.info(f"[DB] COMMITTED {len(tuples)} Amazon products")
-           
+
             with self.conn.cursor() as cur:
                 cur.execute("SELECT COUNT(*) FROM rapidapi_amazon_products WHERE updated_at > NOW() - INTERVAL '1 minute';")
                 recent_count = cur.fetchone()[0]
                 logger.info(f"[DB] VERIFIED: {recent_count} Amazon records updated")
-           
+
             return len(tuples)
         except Exception as e:
             logger.error(f"[DB] Amazon save error: {e}")
@@ -1064,9 +1072,17 @@ class Database:
         """Save Flipkart products to rapidapi_flipkart_products table"""
         if not self.available or not products:
             return 0
- 
+
+        seen_keys = set()
         tuples = []
         for p in products:
+            pid = p.get("pid")
+            category_id = p.get("category_id")
+            country = p.get("country")
+            key = (pid, category_id, country)
+            if not pid or key in seen_keys:
+                continue
+            seen_keys.add(key)
             try:
                 current_price = p.get("product_price")
                 original_price = p.get("product_mrp")
@@ -1107,10 +1123,10 @@ class Database:
             except Exception as e:
                 logger.debug(f"[DB] Skip Flipkart product {p.get('pid')}: {e}")
                 continue
- 
+
         if not tuples:
             return 0
- 
+
         insert_sql = """
         INSERT INTO rapidapi_flipkart_products (
             pid, item_id, listing_id, category_id, category_name, brand,
@@ -1141,15 +1157,15 @@ class Database:
         try:
             with self.conn.cursor() as cur:
                 execute_values(cur, insert_sql, tuples, page_size=100)
-           
+
             self.conn.commit()
             logger.info(f"[DB] COMMITTED {len(tuples)} Flipkart products")
-           
+
             with self.conn.cursor() as cur:
                 cur.execute("SELECT COUNT(*) FROM rapidapi_flipkart_products WHERE updated_at > NOW() - INTERVAL '1 minute';")
                 recent_count = cur.fetchone()[0]
                 logger.info(f"[DB] VERIFIED: {recent_count} Flipkart records updated")
-           
+
             return len(tuples)
         except Exception as e:
             logger.error(f"[DB] Flipkart save error: {e}")
