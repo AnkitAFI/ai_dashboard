@@ -276,7 +276,7 @@ export default function KeywordTracker() {
     if (!userId) return;
     setLoadingUsage(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/users/${userId}/keyword-tracker-usage`, { 
+      const res = await fetch(`${API_BASE_URL}/users/${userId}/keyword-tracker-usage`, {
         credentials: "include",
         cache: 'no-store'
       });
@@ -296,7 +296,7 @@ export default function KeywordTracker() {
   const fetchRateLimitStatus = async () => {
     if (!userEmail) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/keyword_tracker/rate_limit_status?user_email=${encodeURIComponent(userEmail)}`, { 
+      const res = await fetch(`${API_BASE_URL}/keyword_tracker/rate_limit_status?user_email=${encodeURIComponent(userEmail)}`, {
         credentials: "include",
         cache: 'no-store'
       });
@@ -308,7 +308,7 @@ export default function KeywordTracker() {
     if (!userEmail) return;
     setLoadingDetail(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/keyword_tracker/product_detail/${productId}?user_email=${encodeURIComponent(userEmail)}`, { 
+      const res = await fetch(`${API_BASE_URL}/keyword_tracker/product_detail/${productId}?user_email=${encodeURIComponent(userEmail)}`, {
         credentials: "include",
         cache: 'no-store'
       });
@@ -326,7 +326,7 @@ export default function KeywordTracker() {
   const fetchRankHistory = async (productId: number) => {
     setLoadingRanks(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/keyword_tracker/rank_history/${productId}?user_email=${encodeURIComponent(userEmail)}`, { 
+      const res = await fetch(`${API_BASE_URL}/keyword_tracker/rank_history/${productId}?user_email=${encodeURIComponent(userEmail)}`, {
         credentials: "include",
         cache: 'no-store'
       });
@@ -343,7 +343,7 @@ export default function KeywordTracker() {
     setLoading(true);
     try {
       const url = `${API_BASE_URL}/keyword_tracker/fetch_and_store_products/${sellerId}?country=${country}&page=${page}&user_email=${encodeURIComponent(userEmail)}${userId ? `&user_id=${userId}` : ""}`;
-      const res = await fetch(url, { 
+      const res = await fetch(url, {
         credentials: "include",
         cache: 'no-store'
       });
@@ -411,7 +411,7 @@ export default function KeywordTracker() {
     if (!selectedProduct || !userEmail) return;
     setLoadingAI(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/keyword_tracker/ai_analysis/${selectedProduct.id}?user_email=${encodeURIComponent(userEmail)}`, { 
+      const res = await fetch(`${API_BASE_URL}/keyword_tracker/ai_analysis/${selectedProduct.id}?user_email=${encodeURIComponent(userEmail)}`, {
         credentials: "include",
         cache: 'no-store'
       });
@@ -426,7 +426,7 @@ export default function KeywordTracker() {
     if (!selectedProduct || !userEmail) return;
     setLoadingSentiment(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/keyword_tracker/review_sentiment/${selectedProduct.id}?user_email=${encodeURIComponent(userEmail)}`, { 
+      const res = await fetch(`${API_BASE_URL}/keyword_tracker/review_sentiment/${selectedProduct.id}?user_email=${encodeURIComponent(userEmail)}`, {
         credentials: "include",
         cache: 'no-store'
       });
@@ -442,8 +442,8 @@ export default function KeywordTracker() {
     if (!selectedProduct || !userEmail) return;
     setLoadingSuggestions(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/keyword_tracker/suggest_keywords/${selectedProduct.id}?user_email=${encodeURIComponent(userEmail)}`, { 
-        method: "POST", 
+      const res = await fetch(`${API_BASE_URL}/keyword_tracker/suggest_keywords/${selectedProduct.id}?user_email=${encodeURIComponent(userEmail)}`, {
+        method: "POST",
         credentials: "include",
         cache: 'no-store'
       });
@@ -475,7 +475,7 @@ export default function KeywordTracker() {
     if (!selectedProduct) return;
     setLoadingCrossMarket(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/keyword_tracker/cross_market_comparison/${selectedProduct.asin}?countries=${crossMarketCountries}`, { 
+      const res = await fetch(`${API_BASE_URL}/keyword_tracker/cross_market_comparison/${selectedProduct.asin}?countries=${crossMarketCountries}`, {
         credentials: "include",
         cache: 'no-store'
       });
@@ -488,7 +488,7 @@ export default function KeywordTracker() {
   const handleExport = async (format: "pdf" | "csv") => {
     if (!selectedProduct || !userEmail) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/keyword_tracker/export/${selectedProduct.id}?format=${format}&user_email=${encodeURIComponent(userEmail)}`, { 
+      const res = await fetch(`${API_BASE_URL}/keyword_tracker/export/${selectedProduct.id}?format=${format}&user_email=${encodeURIComponent(userEmail)}`, {
         credentials: "include",
         cache: 'no-store'
       });
@@ -505,7 +505,7 @@ export default function KeywordTracker() {
   const handleLoadChatStarters = async () => {
     if (!selectedProduct || !userEmail) return;
     try {
-      const res = await fetch(`${API_BASE_URL}/keyword_tracker/competitor_chat/starters/${selectedProduct.id}?user_email=${encodeURIComponent(userEmail)}`, { 
+      const res = await fetch(`${API_BASE_URL}/keyword_tracker/competitor_chat/starters/${selectedProduct.id}?user_email=${encodeURIComponent(userEmail)}`, {
         credentials: "include",
         cache: 'no-store'
       });

@@ -14,12 +14,13 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth-context";
+import KeywordExplorer from "@/components/KeywordExplorer";
 import {
   Loader2, X, TrendingUp, TrendingDown, Minus,
   Plus, Trash2, RefreshCw, BarChart3, Target, Crown,
   Lock, CheckCircle2, XCircle, ChevronDown, ChevronUp,
   Lightbulb, ShoppingBag, AlertCircle, Search,
-  ArrowUp, ArrowDown, Activity, Bot, Sparkles,
+  ArrowUp, ArrowDown, Activity, Bot, Sparkles, Compass,
 } from "lucide-react";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -132,25 +133,13 @@ function RankBadge({ rank, change }: { rank: number | null; change: number | nul
   );
 }
 
-function TierBadge({ tier }: { tier: string }) {
-  const colors: Record<string, string> = {
-    free:    "bg-slate-100 text-slate-700 border-slate-300",
-    basic:   "bg-blue-100 text-blue-800 border-blue-300",
-    premium: "bg-purple-100 text-purple-800 border-purple-300",
-  };
-  return (
-    <Badge className={`${colors[tier] ?? colors.free} text-[10px] uppercase tracking-wider`}>
-      {tier === "premium" && <Crown className="h-2.5 w-2.5 mr-1" />}
-      {tier}
-    </Badge>
-  );
-}
+
 
 function MiniSparkline({ history }: { history: RankPoint[] }) {
   if (history.length < 2) return <span className="text-xs text-slate-400">No chart yet</span>;
   const ranks = history.map(h => h.rank ?? 0).filter(r => r > 0);
   if (!ranks.length) return null;
-  const maxR  = Math.max(...ranks);
+  const maxR = Math.max(...ranks);
   const range = maxR - Math.min(...ranks) || 1;
   const W = 120, H = 36;
   const pts = ranks.map((r, i) => {
@@ -175,9 +164,9 @@ function MiniSparkline({ history }: { history: RankPoint[] }) {
 // ── History modal ─────────────────────────────────────────────────────────────
 
 function HistoryModal({ kw, onClose }: { kw: KeywordOut; onClose: () => void }) {
-  const [data, setData]       = useState<KeywordHistory | null>(null);
+  const [data, setData] = useState<KeywordHistory | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetch(`${API}/keywords/${kw.id}/history`, { credentials: "include" })
@@ -258,16 +247,17 @@ function KeywordTrackerIntelligenceContent() {
   const { user, isLoading } = useAuth();
   const userId = user?.id;
 
-  const [dashboard, setDashboard]     = useState<Dashboard | null>(null);
+  const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [loadingDash, setLoadingDash] = useState(false);
+  const [activeTab, setActiveTab] = useState<"tracker" | "explorer">("tracker");
 
   // Add keyword form
-  const [keyword, setKeyword]   = useState("");
-  const [pid, setPid]           = useState("");
+  const [keyword, setKeyword] = useState("");
+  const [pid, setPid] = useState("");
   const [platform, setPlatform] = useState("amazon");
   const [category, setCategory] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
-  const [adding, setAdding]     = useState(false);
+  const [adding, setAdding] = useState(false);
 
   // Per-keyword loading states
   const [refreshing, setRefreshing] = useState<Record<number, boolean>>({});
@@ -277,9 +267,9 @@ function KeywordTrackerIntelligenceContent() {
   const [historyKw, setHistoryKw] = useState<KeywordOut | null>(null);
 
   // Suggestions panel
-  const [showSuggest, setShowSuggest]     = useState(false);
-  const [suggestPid, setSuggestPid]       = useState("");
-  const [suggestions, setSuggestions]     = useState<any[]>([]);
+  const [showSuggest, setShowSuggest] = useState(false);
+  const [suggestPid, setSuggestPid] = useState("");
+  const [suggestions, setSuggestions] = useState<any[]>([]);
   const [loadingSuggest, setLoadingSuggest] = useState(false);
 
   // Toasts
@@ -295,7 +285,7 @@ function KeywordTrackerIntelligenceContent() {
     if (!userId) return;
     setLoadingDash(true);
     try {
-      const res  = await fetch(`${API}/dashboard`, { credentials: "include" });
+      const res = await fetch(`${API}/dashboard`, { credentials: "include" });
       const data = await res.json();
       if (res.ok) setDashboard(data);
       else showToast("Error", data.detail?.message ?? "Failed to load dashboard", "error");
@@ -373,7 +363,7 @@ function KeywordTrackerIntelligenceContent() {
   const handleRefresh = async (kwId: number) => {
     setRefreshing(p => ({ ...p, [kwId]: true }));
     try {
-      const res  = await fetch(`${API}/keywords/${kwId}/refresh`, {
+      const res = await fetch(`${API}/keywords/${kwId}/refresh`, {
         method: "POST", credentials: "include",
       });
       const data = await res.json();
@@ -409,7 +399,7 @@ function KeywordTrackerIntelligenceContent() {
     try {
       const params = new URLSearchParams({ asin_or_pid: suggestPid.trim(), platform });
       if (category) params.set("category", category);
-      const res  = await fetch(`${API}/suggestions?${params}`, { credentials: "include" });
+      const res = await fetch(`${API}/suggestions?${params}`, { credentials: "include" });
       const data = await res.json();
       if (res.ok) setSuggestions(data.suggestions);
       else showToast("Error", data.detail?.message ?? "Couldn't load suggestions. Please try again.", "error");
@@ -421,9 +411,7 @@ function KeywordTrackerIntelligenceContent() {
   };
 
   const limits = dashboard?.tier_limits;
-  const canAdd = limits
-    ? (limits.keyword_limit === -1 || (dashboard?.keywords_used ?? 0) < limits.keyword_limit)
-    : true;
+  const canAdd = true;
 
   return (
     <div className="space-y-6">
@@ -431,9 +419,8 @@ function KeywordTrackerIntelligenceContent() {
       {/* Toasts */}
       <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-md">
         {toasts.map(t => (
-          <div key={t.id} className={`flex items-start gap-3 p-4 rounded-lg shadow-lg border-2 backdrop-blur-none animate-in slide-in-from-right ${
-            t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
-          }`}>
+          <div key={t.id} className={`flex items-start gap-3 p-4 rounded-lg shadow-lg border-2 backdrop-blur-none animate-in slide-in-from-right ${t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
+            }`}>
             {t.variant === "success"
               ? <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
               : <XCircle className="h-5 w-5 text-red-600 mt-0.5" />}
@@ -447,18 +434,47 @@ function KeywordTrackerIntelligenceContent() {
           </div>
         ))}
       </div>
-
       <div className="space-y-6">
         <div className="max-w-7xl mx-auto space-y-6">
 
-          {/* Summary stats */}
+          {/* Tab Switcher */}
+          <div className="flex justify-center md:justify-start">
+            <div className="bg-slate-100/85 backdrop-blur-xs p-1.5 rounded-2xl border border-slate-200 inline-flex gap-1">
+              <button
+                onClick={() => setActiveTab("tracker")}
+                className={`px-5 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-2 ${
+                  activeTab === "tracker"
+                    ? "bg-white text-purple-700 shadow-md border border-slate-200/50"
+                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-50/50"
+                }`}
+              >
+                <Target className="h-4 w-4" />
+                Rank Tracker
+              </button>
+              <button
+                onClick={() => setActiveTab("explorer")}
+                className={`px-5 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-2 ${
+                  activeTab === "explorer"
+                    ? "bg-white text-purple-700 shadow-md border border-slate-200/50"
+                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-50/50"
+                }`}
+              >
+                <Compass className="h-4 w-4" />
+                Keyword Explorer
+              </button>
+            </div>
+          </div>
+
+          {activeTab === "tracker" ? (
+            <>
+              {/* Summary stats */}
           {dashboard && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               {[
-                { label: "Improving",   value: dashboard.improving,  icon: TrendingUp,   color: "text-green-600",  bg: "bg-green-50 border-green-200" },
-                { label: "Declining",   value: dashboard.declining,  icon: TrendingDown, color: "text-red-500",    bg: "bg-red-50 border-red-200" },
-                { label: "Stable",      value: dashboard.stable,     icon: Minus,        color: "text-slate-500",  bg: "bg-slate-50 border-slate-200" },
-                { label: "Not Ranked",  value: dashboard.not_ranked, icon: Activity,     color: "text-orange-500", bg: "bg-orange-50 border-orange-200" },
+                { label: "Improving", value: dashboard.improving, icon: TrendingUp, color: "text-green-600", bg: "bg-green-50 border-green-200" },
+                { label: "Declining", value: dashboard.declining, icon: TrendingDown, color: "text-red-500", bg: "bg-red-50 border-red-200" },
+                { label: "Stable", value: dashboard.stable, icon: Minus, color: "text-slate-500", bg: "bg-slate-50 border-slate-200" },
+                { label: "Not Ranked", value: dashboard.not_ranked, icon: Activity, color: "text-orange-500", bg: "bg-orange-50 border-orange-200" },
               ].map(({ label, value, icon: Icon, color, bg }) => (
                 <div key={label} className={`rounded-xl border-2 p-4 ${bg} flex items-center gap-3`}>
                   <Icon className={`h-6 w-6 ${color} flex-shrink-0`} />
@@ -541,32 +557,20 @@ function KeywordTrackerIntelligenceContent() {
 
               <Button
                 onClick={handleAdd}
-                disabled={adding || !canAdd}
-                className={`w-full ${!canAdd ? "bg-slate-300 cursor-not-allowed" : "bg-purple-600 hover:bg-purple-700"} text-white`}
+                disabled={adding}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white"
               >
                 {adding ? (
                   <><Loader2 className="h-4 w-4 animate-spin mr-2" />Adding…</>
-                ) : !canAdd ? (
-                  <><Lock className="h-4 w-4 mr-2" />Keyword Limit Reached — Upgrade to Continue</>
                 ) : (
                   <><Target className="h-4 w-4 mr-2" />Start Tracking Keyword</>
                 )}
               </Button>
-
-              {!canAdd && dashboard && (
-                <Alert className="border-orange-200 bg-orange-50">
-                  <Crown className="h-4 w-4 text-orange-600" />
-                  <AlertDescription className="text-orange-800 text-sm">
-                    You've used all {limits?.keyword_limit} keyword slots on the {dashboard.tier} plan.{" "}
-                    <a href="/subscription" className="font-semibold underline">Upgrade now</a> to track more.
-                  </AlertDescription>
-                </Alert>
-              )}
             </CardContent>
           </Card>
 
           {/* Keyword Suggestions panel */}
-          {dashboard && dashboard.tier !== "free" && (
+          {dashboard && (
             <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 backdrop-blur-none">
               <CardHeader>
                 <button
@@ -578,7 +582,7 @@ function KeywordTrackerIntelligenceContent() {
                     AI Keyword Suggestions
                     <Badge className="bg-purple-100 text-purple-800 border-purple-300 text-[10px]">
                       <Sparkles className="h-2.5 w-2.5 mr-1" />
-                      {dashboard.tier_limits.opportunity_score ? "AI + Score" : "AI Powered"}
+                      AI + Score
                     </Badge>
                   </CardTitle>
                   {showSuggest
@@ -621,16 +625,14 @@ function KeywordTrackerIntelligenceContent() {
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-slate-800 truncate">{s.keyword}</p>
                             <div className="flex gap-2 mt-1 flex-wrap">
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                                s.estimated_search_volume === "High"   ? "bg-green-100 text-green-700" :
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded ${s.estimated_search_volume === "High" ? "bg-green-100 text-green-700" :
                                 s.estimated_search_volume === "Medium" ? "bg-yellow-100 text-yellow-700" :
-                                                                         "bg-slate-100 text-slate-600"
-                              }`}>{s.estimated_search_volume} vol</span>
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                                s.competition_level === "Low"    ? "bg-green-100 text-green-700" :
+                                  "bg-slate-100 text-slate-600"
+                                }`}>{s.estimated_search_volume} vol</span>
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded ${s.competition_level === "Low" ? "bg-green-100 text-green-700" :
                                 s.competition_level === "Medium" ? "bg-yellow-100 text-yellow-700" :
-                                                                     "bg-red-100 text-red-700"
-                              }`}>{s.competition_level} comp</span>
+                                  "bg-red-100 text-red-700"
+                                }`}>{s.competition_level} comp</span>
                             </div>
                           </div>
                           <div className="flex items-center gap-2 ml-2">
@@ -710,9 +712,8 @@ function KeywordTrackerIntelligenceContent() {
                   {dashboard.keywords.map(kw => (
                     <div key={kw.id} className="rounded-xl border border-slate-200 overflow-hidden">
                       <div className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 transition-colors">
-                        <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
-                          kw.platform === "amazon" ? "bg-orange-100" : "bg-yellow-100"
-                        }`}>
+                        <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${kw.platform === "amazon" ? "bg-orange-100" : "bg-yellow-100"
+                          }`}>
                           <ShoppingBag className={`h-4 w-4 ${kw.platform === "amazon" ? "text-orange-600" : "text-yellow-600"}`} />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -743,15 +744,13 @@ function KeywordTrackerIntelligenceContent() {
                           >
                             <RefreshCw className={`h-4 w-4 ${refreshing[kw.id] ? "animate-spin" : ""}`} />
                           </button>
-                          {dashboard.tier !== "free" && (
-                            <button
-                              onClick={() => setHistoryKw(kw)}
-                              className="p-2 hover:bg-purple-100 rounded-lg text-purple-600 transition-colors"
-                              title="View history + AI trend"
-                            >
-                              <BarChart3 className="h-4 w-4" />
-                            </button>
-                          )}
+                          <button
+                            onClick={() => setHistoryKw(kw)}
+                            className="p-2 hover:bg-purple-100 rounded-lg text-purple-600 transition-colors"
+                            title="View history + AI trend"
+                          >
+                            <BarChart3 className="h-4 w-4" />
+                          </button>
                           <button
                             onClick={() => handleDelete(kw.id, kw.keyword)}
                             className="p-2 hover:bg-red-100 rounded-lg text-red-500 transition-colors"
@@ -785,51 +784,15 @@ function KeywordTrackerIntelligenceContent() {
             </CardContent>
           </Card>
 
-          {/* Tier feature info */}
-          {dashboard && (
-            <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden backdrop-blur-none bg-gradient-to-br from-slate-50 to-blue-50">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold text-slate-700">
-                  Your Plan — {dashboard.tier.charAt(0).toUpperCase() + dashboard.tier.slice(1)}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-                  {[
-                    { label: "Keywords",   value: limits?.keyword_limit === -1 ? "∞" : limits?.keyword_limit },
-                    { label: "Products",   value: limits?.product_limit === -1 ? "∞" : limits?.product_limit },
-                    { label: "Checks/day", value: limits?.checks_per_day },
-                    { label: "History",    value: limits?.history_days === 0 ? "None" : limits?.history_days === 9999 ? "Full" : `${limits?.history_days}d` },
-                  ].map(({ label, value }) => (
-                    <div key={label} className="bg-white rounded-xl border border-slate-200 p-3">
-                      <p className="text-xl font-bold text-slate-800">{value}</p>
-                      <p className="text-xs text-slate-500">{label}</p>
-                    </div>
-                  ))}
-                </div>
 
-                {dashboard.tier === "free" && (
-                  <div className="mt-4 p-3 bg-purple-50 border border-purple-200 rounded-xl">
-                    <p className="text-xs text-purple-700 text-center">
-                      <Bot className="h-3.5 w-3.5 inline mr-1" />
-                      Upgrade to Basic or Premium to unlock AI insights on your rankings, trends, and keyword suggestions.
-                    </p>
-                  </div>
-                )}
-
-                {dashboard.tier !== "premium" && (
-                  <div className="mt-3 flex justify-center">
-                    <a
-                      href="/subscription"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm font-medium rounded-xl transition-all"
-                    >
-                      <Crown className="h-4 w-4" />
-                      Upgrade for AI-powered features
-                    </a>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+          </>
+          ) : (
+            <KeywordExplorer
+              showToast={showToast}
+              trackedProducts={dashboard?.keywords.map(kw => ({ asin_or_pid: kw.asin_or_pid, platform: kw.platform })) || []}
+              onKeywordAdded={fetchDashboard}
+              userTier={dashboard?.tier}
+            />
           )}
 
         </div>

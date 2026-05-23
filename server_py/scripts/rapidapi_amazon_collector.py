@@ -972,8 +972,16 @@ class Database:
         if not self.available or not products:
             return 0
  
+        seen_keys = set()
         tuples = []
         for p in products:
+            asin = p.get("asin")
+            category_id = p.get("category_id")
+            country = p.get("country")
+            key = (asin, category_id, country)
+            if not asin or key in seen_keys:
+                continue
+            seen_keys.add(key)
             try:
                 current_price = p.get("product_price_numeric")
                 original_price = p.get("product_original_price_numeric")
@@ -1065,8 +1073,16 @@ class Database:
         if not self.available or not products:
             return 0
  
+        seen_keys = set()
         tuples = []
         for p in products:
+            pid = p.get("pid")
+            category_id = p.get("category_id")
+            country = p.get("country")
+            key = (pid, category_id, country)
+            if not pid or key in seen_keys:
+                continue
+            seen_keys.add(key)
             try:
                 current_price = p.get("product_price")
                 original_price = p.get("product_mrp")
