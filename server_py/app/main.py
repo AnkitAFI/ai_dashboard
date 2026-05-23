@@ -25,6 +25,8 @@ app.add_middleware(
         "http://localhost:3000",
         "https://insydz.com",
         "http://localhost:8000",
+        "https://api.insydz.com",
+        "*",
     ],
     allow_credentials=True,
     allow_methods=["*"],
