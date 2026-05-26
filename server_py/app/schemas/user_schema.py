@@ -9,8 +9,7 @@ class UserCreate(BaseModel):
     password: str = Field(..., min_length=6, example="password123")
     business_name: Optional[str] = Field(None, example="My Business")
     location: str = Field(..., example="mumbai")
-    business_interests: List[str] = Field(..., example=["electronics", "books"])
-    mobile_number: str = str 
+    mobile_number: str
 
 class UserOut(BaseModel):
     id: int

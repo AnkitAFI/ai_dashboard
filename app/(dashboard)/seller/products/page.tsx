@@ -20,14 +20,15 @@ function SellerProductsContent() {
   const [localSellerId, setLocalSellerId] = useState<string | null>(null);
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<string>("IDLE");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<"all" | "prime" | "best_seller">("all");
 
   const activeSellerId = user?.seller_id || localSellerId;
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (silent = false) => {
     if (!activeSellerId) return;
-    setLoading(true);
+    if (!silent) setLoading(true);
     try {
       const BASE_URL = (API_BASE_URL) || API_BASE_URL;
       const resp = await fetch(
@@ -37,17 +38,30 @@ function SellerProductsContent() {
       if (resp.ok) {
         const data = await resp.json();
         setProducts(data.products || []);
+        if (data.status) {
+          setSyncStatus(data.status);
+        }
       }
     } catch (err) {
       console.error("Failed to fetch products", err);
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
   useEffect(() => {
     if (activeSellerId) fetchProducts();
   }, [activeSellerId]);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (activeSellerId && syncStatus === "SYNCING") {
+      interval = setInterval(() => {
+        fetchProducts(true);
+      }, 3000);
+    }
+    return () => { if (interval) clearInterval(interval); };
+  }, [activeSellerId, syncStatus]);
 
   const filteredProducts = products.filter((p) => {
     const matchesSearch =
@@ -80,7 +94,15 @@ function SellerProductsContent() {
       {/* Title Section */}
       <div className="flex justify-between items-center bg-white p-4 rounded-2xl border border-sky-100 shadow-sm">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-sky-900">My Products</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-sky-900 flex items-center gap-2">
+            <span>My Products</span>
+            {syncStatus === "SYNCING" && (
+              <Badge variant="outline" className="animate-pulse bg-blue-50 text-blue-600 border-blue-200 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+                <Loader2 className="w-3 h-3 animate-spin text-blue-500" />
+                <span>Syncing store...</span>
+              </Badge>
+            )}
+          </h1>
           <p className="text-slate-600 text-xs sm:text-sm">
             Click <span className="text-sky-600 font-semibold">Price</span> or{" "}
             <span className="text-violet-600 font-semibold">Reviews</span> on any product to compare
@@ -151,16 +173,26 @@ function SellerProductsContent() {
                 <p className="text-slate-500 font-medium">Loading catalog...</p>
               </div>
             ) : products.length === 0 ? (
-              <div className="flex flex-col items-center justify-center p-12 text-center h-64">
-                <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-4">
-                  <Search className="w-8 h-8" />
+              syncStatus === "SYNCING" ? (
+                <div className="flex flex-col items-center justify-center p-12 text-center h-64 gap-3">
+                  <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
+                  <h3 className="text-lg font-bold text-slate-800">Synchronizing Store...</h3>
+                  <p className="text-slate-500 max-w-sm text-sm">
+                    We're currently fetching your Amazon products and metrics. This initial sync usually takes about 30–60 seconds.
+                  </p>
                 </div>
-                <h3 className="text-lg font-bold text-slate-800 mb-1">No products found</h3>
-                <p className="text-slate-500 max-w-sm">
-                  We couldn't find any tracked products for your Seller ID.
-                  Make sure you are tracking products in the Explorer mode first.
-                </p>
-              </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center p-12 text-center h-64">
+                  <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-4">
+                    <Search className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-800 mb-1">No products found</h3>
+                  <p className="text-slate-500 max-w-sm">
+                    We couldn't find any tracked products for your Seller ID.
+                    Make sure you are tracking products in the Explorer mode first.
+                  </p>
+                </div>
+              )
             ) : (
               <table className="w-full text-sm text-left">
                 <thead className="text-xs text-slate-500 border-b border-slate-100 font-semibold sticky top-0 bg-white z-10 uppercase tracking-wider">

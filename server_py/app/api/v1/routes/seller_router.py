@@ -64,8 +64,9 @@ class _ReviewSentimentAnalyzer:
 router = APIRouter(tags=["Seller Dashboard"])
 
 
-def _empty_response():
+def _empty_response(status="IDLE"):
     return {
+        "status": status,
         "metrics": {
             "total_products": 0,
             "avg_rating": 0,
@@ -113,6 +114,10 @@ def get_seller_dashboard_stats(
     Fetch dashboard statistics for a specific seller.
     Aggregates data directly from the tracked_products table.
     """
+    try:
+        db.refresh(current_user)
+    except Exception:
+        pass
     s_id = seller_id or current_user.seller_id
     if not s_id:
         raise HTTPException(status_code=400, detail="Seller ID is required")
@@ -127,7 +132,7 @@ def get_seller_dashboard_stats(
     )
 
     if not products:
-        return _empty_response()
+        return _empty_response(status=current_user.seller_sync_status)
 
     total_count = len(products)
 
@@ -299,6 +304,10 @@ def get_seller_products(
     """
     Fetch all products for a seller directly from tracked_products.
     """
+    try:
+        db.refresh(current_user)
+    except Exception:
+        pass
     s_id = seller_id or current_user.seller_id
     if not s_id:
         raise HTTPException(status_code=400, detail="Seller ID is required")
@@ -314,7 +323,7 @@ def get_seller_products(
     )
 
     if not products:
-        return {"products": []}
+        return {"products": [], "status": current_user.seller_sync_status}
 
     result = []
     for p in products:
@@ -334,4 +343,4 @@ def get_seller_products(
             "delivery":       p.delivery,
         })
 
-    return {"products": result}
+    return {"products": result, "status": current_user.seller_sync_status}

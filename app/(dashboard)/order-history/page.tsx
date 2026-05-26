@@ -336,10 +336,19 @@ export default function OrderHistory() {
       )}
 
       {/* Title & Actions */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-extrabold text-sky-900 tracking-tight">Order History</h1>
-          <p className="text-slate-500 text-sm">{user.email}</p>
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 pb-4 border-b border-sky-100/80">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl flex items-center justify-center shadow-inner">
+            <Receipt className="h-6 w-6 text-blue-500" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+              Order History
+            </h1>
+            <p className="text-slate-500 text-sm font-medium">
+              View your invoices, transaction receipts, and active subscriptions ({user.email}).
+            </p>
+          </div>
         </div>
         <Button
           variant="outline"

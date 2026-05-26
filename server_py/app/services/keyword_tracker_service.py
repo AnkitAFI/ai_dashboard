@@ -2945,8 +2945,57 @@ def explore_keyword(user_id: int, keyword: str, platform: str, db: Session) -> K
             
         return picked_list
 
-    # Run local e-commerce NLP suggestion engine directly (production-safe, unlimited capacity, zero API dependencies)
-    sugg_data = generate_local_suggestions(kw_lower, h)
+    # Try to fetch real suggestions from RapidAPI Global Search Suggestions API
+    sugg_data = []
+    try:
+        import httpx
+        url = "https://global-search-suggestions-api.p.rapidapi.com/amazon/"
+        import os
+        api_key = os.getenv("KEYWORD_SUGGEST_KEY")
+        if not api_key:
+            raise ValueError("KEYWORD_SUGGEST_KEY is not set in the environment variables")
+        headers = {
+            "x-rapidapi-host": "global-search-suggestions-api.p.rapidapi.com",
+            "x-rapidapi-key": api_key
+        }
+        with httpx.Client(timeout=2.5) as client:
+            resp = client.get(url, headers=headers, params={"query": kw_lower})
+            if resp.status_code == 200:
+                resp_json = resp.json()
+                raw_suggs = []
+                if isinstance(resp_json, list):
+                    for item in resp_json:
+                        if isinstance(item, str):
+                            raw_suggs.append(item)
+                        elif isinstance(item, dict):
+                            val = item.get("suggestion") or item.get("value") or item.get("text")
+                            if val:
+                                raw_suggs.append(str(val))
+                elif isinstance(resp_json, dict):
+                    suggestions_list = resp_json.get("suggestions") or resp_json.get("data") or resp_json.get("results")
+                    if isinstance(suggestions_list, list):
+                        for item in suggestions_list:
+                            if isinstance(item, str):
+                                raw_suggs.append(item)
+                            elif isinstance(item, dict):
+                                val = item.get("suggestion") or item.get("value") or item.get("text")
+                                if val:
+                                    raw_suggs.append(str(val))
+                    else:
+                        for key in ["suggestions", "data", "results", "suggestions_list"]:
+                            if key in resp_json:
+                                val = resp_json[key]
+                                if isinstance(val, list):
+                                    raw_suggs.extend([str(x) for x in val if isinstance(x, str)])
+                sugg_data = [s.strip() for s in raw_suggs if s.strip()]
+            else:
+                logger.warning(f"RapidAPI autocomplete request returned status code {resp.status_code}")
+    except Exception as api_err:
+        logger.error(f"RapidAPI autocomplete fetch failed: {api_err}")
+
+    # Fallback to local e-commerce NLP suggestion engine if RapidAPI returned too few suggestions
+    if len(sugg_data) < 5:
+        sugg_data = generate_local_suggestions(kw_lower, h)
 
     # Convert suggestion strings to ExplorerVariationItems
     for val in sugg_data:
@@ -3278,4 +3327,4 @@ def get_keyword_strategy(user_id: int, keyword: str, platform: str, db: Session)
     )
     
     ck = _cache_key("strategy_advisor_v1", str(user_id), keyword, platform)
-    return _ask_llama(prompt, ck)
+    return _ask_llama(prompt, ck)

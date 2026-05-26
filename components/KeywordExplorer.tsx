@@ -617,10 +617,10 @@ export default function KeywordExplorer({
       {/* Analytics Panels */}
       {data && !loading && (
         <div className="space-y-6 animate-in fade-in-50 duration-300">
-          
+
           {/* Key Metrics Widgets */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-            
+
             {/* Search Volume */}
             <Card className="shadow-xs border border-slate-200 rounded-2xl bg-white">
               <CardHeader className="pb-2">
@@ -717,9 +717,8 @@ export default function KeywordExplorer({
                   </div>
                   <div className="w-full bg-slate-100 rounded-full h-2">
                     <div
-                      className={`h-2 rounded-full transition-all duration-1000 ${
-                        data.competitive_density >= 0.80 ? "bg-rose-500" : data.competitive_density >= 0.50 ? "bg-amber-500" : "bg-green-500"
-                      }`}
+                      className={`h-2 rounded-full transition-all duration-1000 ${data.competitive_density >= 0.80 ? "bg-rose-500" : data.competitive_density >= 0.50 ? "bg-amber-500" : "bg-green-500"
+                        }`}
                       style={{ width: `${(data.competitive_density || 0) * 100}%` }}
                     />
                   </div>
@@ -752,7 +751,7 @@ export default function KeywordExplorer({
 
           {/* Trend & Geo Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            
+
             {/* Search Trend Chart */}
             <Card className="shadow-xs border border-slate-200 rounded-2xl p-6 bg-white lg:col-span-3">
               <CardHeader className="p-0 pb-4">
@@ -839,7 +838,7 @@ export default function KeywordExplorer({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-            
+
             {/* Keyword variations table */}
             <Card className="shadow-xs border border-slate-200 rounded-2xl lg:col-span-5">
               <CardHeader>
@@ -878,26 +877,24 @@ export default function KeywordExplorer({
                           <td className="p-3 text-right font-semibold">{v.search_volume.toLocaleString("en-IN")}</td>
                           <td className="p-3 text-center font-medium">
                             <span
-                              className={`px-1.5 py-0.5 rounded text-[10px] ${
-                                v.difficulty >= 60
+                              className={`px-1.5 py-0.5 rounded text-[10px] ${v.difficulty >= 60
                                   ? "bg-rose-50 text-rose-600 border border-rose-100"
                                   : v.difficulty >= 30
-                                  ? "bg-amber-50 text-amber-600 border border-amber-100"
-                                  : "bg-green-50 text-green-600 border border-green-100"
-                              }`}
+                                    ? "bg-amber-50 text-amber-600 border border-amber-100"
+                                    : "bg-green-50 text-green-600 border border-green-100"
+                                }`}
                             >
                               {v.difficulty}%
                             </span>
                           </td>
                           <td className="p-3 text-center">
                             <span
-                              className={`px-1.5 py-0.5 rounded-[4px] text-[10px] font-semibold ${
-                                v.intent === "Transactional"
+                              className={`px-1.5 py-0.5 rounded-[4px] text-[10px] font-semibold ${v.intent === "Transactional"
                                   ? "bg-purple-100 text-purple-700"
                                   : v.intent === "Commercial"
-                                  ? "bg-emerald-100 text-emerald-700"
-                                  : "bg-blue-100 text-blue-700"
-                              }`}
+                                    ? "bg-emerald-100 text-emerald-700"
+                                    : "bg-blue-100 text-blue-700"
+                                }`}
                             >
                               {v.intent.charAt(0)}
                             </span>
@@ -977,7 +974,7 @@ export default function KeywordExplorer({
                             {(() => {
                               const brandVal = item.brand;
                               if (brandVal && brandVal !== "None" && brandVal !== "—" && brandVal.trim() !== "") {
-                                  return brandVal;
+                                return brandVal;
                               }
                               if (item.title) {
                                 const words = item.title.trim().split(/\s+/);
@@ -1018,7 +1015,7 @@ export default function KeywordExplorer({
             <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 border-b border-slate-100">
               <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
                 <Sparkles className="h-4.5 w-4.5 text-purple-600 animate-pulse" />
-                AI Copywriting & PPC Bidding Strategy (Ollama)
+                AI Copywriting & PPC Bidding Strategy
               </CardTitle>
               <CardDescription className="text-xs">
                 Local AI-generated strategy recommendations based on keyword intent, volume, and difficulty.
@@ -1028,14 +1025,14 @@ export default function KeywordExplorer({
               {strategyLoading ? (
                 <div className="flex flex-col items-center justify-center py-12 space-y-3">
                   <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-                  <p className="text-xs text-slate-500 font-medium">Generating copywriting & PPC strategy via Llama 3.2...</p>
+                  <p className="text-xs text-slate-500 font-medium">Generating copywriting & PPC strategy</p>
                 </div>
               ) : strategyError ? (
                 <div className="text-xs text-rose-600 p-4 border border-rose-100 rounded-lg bg-rose-50/50">
                   Failed to generate AI strategy: {strategyError}
                 </div>
               ) : strategyText ? (
-                <div 
+                <div
                   className="prose prose-sm max-w-none text-xs text-slate-600 space-y-4"
                   dangerouslySetInnerHTML={{ __html: strategyText }}
                 />

@@ -420,9 +420,9 @@ function OpportunityCard({
 
         {/* Footer */}
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-100">
-          <span className="text-[10px] text-slate-400">
+          {/* <span className="text-[10px] text-slate-400">
             Top keyword: <span className="text-slate-600 font-medium">{opp.top_keyword}</span>
-          </span>
+          </span> */}
           <button
             onClick={() => onWatchlist(opp)}
             disabled={watchlistLoading}
@@ -739,17 +739,17 @@ function WhiteSpaceFinderContent() {
       </div>
 
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8 pb-4 border-b border-sky-100/80">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-xl flex items-center justify-center shadow-inner">
-              <Sparkles className="h-5 w-5 text-violet-600" />
+            <div className="w-12 h-12 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-2xl flex items-center justify-center shadow-inner">
+              <Sparkles className="h-6 w-6 text-violet-600 animate-pulse" />
             </div>
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-violet-900 to-indigo-700 bg-clip-text text-transparent tracking-tight">
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
                 Opportunity Finder
-              </h2>
-              <p className="text-slate-500 text-xs sm:text-sm font-medium">
-                Discover untapped product gaps — Amazon.in & Flipkart
+              </h1>
+              <p className="text-slate-500 text-sm font-medium">
+                Discover untapped product gaps and find whitespace opportunities across Amazon and Flipkart.
               </p>
             </div>
           </div>

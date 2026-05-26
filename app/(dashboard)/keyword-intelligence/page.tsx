@@ -14,16 +14,25 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth-context";
-import KeywordExplorer from "@/components/KeywordExplorer";
 import {
   Loader2, X, TrendingUp, TrendingDown, Minus,
   Plus, Trash2, RefreshCw, BarChart3, Target, Crown,
   Lock, CheckCircle2, XCircle, ChevronDown, ChevronUp,
   Lightbulb, ShoppingBag, AlertCircle, Search,
   ArrowUp, ArrowDown, Activity, Bot, Sparkles, Compass,
+  MapPin, ArrowUpRight, Info,
 } from "lucide-react";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+} from "recharts";
 
-// ── Types ─────────────────────────────────────────────────────────────────────
+// ── Types (page) ──────────────────────────────────────────────────────────────
 
 interface TierLimits {
   keyword_limit: number;
@@ -88,6 +97,59 @@ interface Toast {
   variant: "success" | "error";
 }
 
+// ── Types (KeywordExplorer) ───────────────────────────────────────────────────
+
+interface ExplorerSerpItem {
+  position: number;
+  title: string;
+  brand: string | null;
+  price: number | null;
+  rating: number | null;
+  reviews: number | null;
+  sales_volume: number | null;
+  asin_or_pid: string;
+}
+
+interface ExplorerVariationItem {
+  keyword: string;
+  search_volume: number;
+  difficulty: number;
+  intent: string;
+  cpc: number;
+}
+
+interface KeywordExplorerResponse {
+  keyword: string;
+  platform: string;
+  search_volume: number;
+  difficulty: number;
+  intent: string;
+  cpc: number;
+  estimated_impressions: number;
+  estimated_clicks: number;
+  geo_distribution: Record<string, number>;
+  variations: ExplorerVariationItem[];
+  serp: ExplorerSerpItem[];
+  cached_at: string;
+  trend: number[];
+  global_search_volume: number;
+  global_breakdown: Record<string, number>;
+  competitive_density: number;
+  serp_features: string[];
+}
+
+interface TrackedProduct {
+  asin_or_pid: string;
+  platform: string;
+}
+
+interface KeywordExplorerProps {
+  showToast: (title: string, description: string, variant?: "success" | "error") => void;
+  trackedProducts: TrackedProduct[];
+  onKeywordAdded: () => void;
+  userTier?: string;
+}
+
 const API = `${API_BASE_URL}/api/keyword-tracker`;
 
 // ── AI Insight Card ───────────────────────────────────────────────────────────
@@ -132,8 +194,6 @@ function RankBadge({ rank, change }: { rank: number | null; change: number | nul
     </div>
   );
 }
-
-
 
 function MiniSparkline({ history }: { history: RankPoint[] }) {
   if (history.length < 2) return <span className="text-xs text-slate-400">No chart yet</span>;
@@ -241,6 +301,937 @@ function HistoryModal({ kw, onClose }: { kw: KeywordOut; onClose: () => void }) 
   );
 }
 
+// ── KeywordExplorer Sub-components ────────────────────────────────────────────
+
+function DifficultyGauge({ value }: { value: number }) {
+  const radius = 32;
+  const stroke = 5;
+  const normalizedRadius = radius - stroke * 2;
+  const circumference = normalizedRadius * 2 * Math.PI;
+  const strokeDashoffset = circumference - (value / 100) * circumference;
+
+  let strokeColor = "stroke-green-500";
+  let bgClass = "bg-green-50 text-green-700 border-green-200";
+  let label = "Easy";
+  let desc = "Low organic barrier. Highly actionable to rank on page 1.";
+
+  if (value >= 60) {
+    strokeColor = "stroke-rose-500";
+    bgClass = "bg-rose-50 text-rose-700 border-rose-200";
+    label = "Hard";
+    desc = "High brand concentration. Needs significant reviews to compete.";
+  } else if (value >= 30) {
+    strokeColor = "stroke-amber-500";
+    bgClass = "bg-amber-50 text-amber-700 border-amber-200";
+    label = "Medium";
+    desc = "Moderate listings authority. Possible with solid optimizations.";
+  }
+
+  return (
+    <div className="flex items-center gap-4">
+      <div className="relative flex items-center justify-center flex-shrink-0">
+        <svg height={radius * 2} width={radius * 2} className="transform -rotate-90">
+          <circle
+            stroke="#f1f5f9"
+            fill="transparent"
+            strokeWidth={stroke}
+            r={normalizedRadius}
+            cx={radius}
+            cy={radius}
+          />
+          <circle
+            className={`transition-all duration-700 ease-out ${strokeColor}`}
+            fill="transparent"
+            strokeWidth={stroke}
+            strokeDasharray={circumference + ' ' + circumference}
+            style={{ strokeDashoffset }}
+            r={normalizedRadius}
+            cx={radius}
+            cy={radius}
+            strokeLinecap="round"
+          />
+        </svg>
+        <span className="absolute text-sm font-extrabold text-slate-800">{value}%</span>
+      </div>
+      <div>
+        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold border ${bgClass}`}>
+          {label}
+        </span>
+        <p className="text-xs text-slate-400 mt-1">{desc}</p>
+      </div>
+    </div>
+  );
+}
+
+function IntentBadge({ intent }: { intent: string }) {
+  let badgeClass = "bg-blue-50 text-blue-700 border-blue-200";
+  let label = "Researching (Informational)";
+  let desc = "Buyer is seeking product details, specs, or guides.";
+
+  if (intent === "Transactional") {
+    badgeClass = "bg-purple-50 text-purple-700 border-purple-200";
+    label = "Ready to Buy (Transactional)";
+    desc = "Highest purchase intent. Buyer is looking to buy immediately.";
+  } else if (intent === "Commercial") {
+    badgeClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
+    label = "Comparing Brands (Commercial)";
+    desc = "Buyer is comparing prices, reviews, and features.";
+  }
+
+  return (
+    <div>
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold border ${badgeClass}`}>
+        {label}
+      </span>
+      <p className="text-xs text-slate-400 mt-1">{desc}</p>
+    </div>
+  );
+}
+
+// ── Quick Track Modal ─────────────────────────────────────────────────────────
+
+function QuickTrackModal({
+  keyword,
+  platform,
+  trackedProducts,
+  onClose,
+  showToast,
+  onKeywordAdded,
+}: {
+  keyword: string;
+  platform: string;
+  trackedProducts: TrackedProduct[];
+  onClose: () => void;
+  showToast: (title: string, description: string, variant?: "success" | "error") => void;
+  onKeywordAdded: () => void;
+}) {
+  const [useExisting, setUseExisting] = useState(trackedProducts.length > 0);
+  const [pidInput, setPidInput] = useState("");
+  const [selectedPid, setSelectedPid] = useState("");
+  const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/categories?table=${platform}`)
+      .then((r) => r.json())
+      .then((d) => setCategories(d.map((c: any) => c.category)))
+      .catch(() => setCategories([]));
+  }, [platform]);
+
+  useEffect(() => {
+    const matched = trackedProducts.filter((p) => p.platform === platform);
+    if (matched.length > 0) {
+      setSelectedPid(matched[0].asin_or_pid);
+    }
+  }, [trackedProducts, platform]);
+
+  const handleTrack = async () => {
+    const finalPid = useExisting ? selectedPid : pidInput.trim();
+    if (!finalPid) {
+      showToast("Required Field", "Please enter or select a product ID / ASIN.", "error");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/keyword-tracker/keywords`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          keyword: keyword,
+          asin_or_pid: finalPid,
+          platform: platform,
+          category: category || null,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        showToast("Success", `Now tracking keyword "${keyword}" for ${finalPid}`);
+        onKeywordAdded();
+        onClose();
+      } else {
+        showToast("Error", data.detail?.message ?? "Failed to track keyword", "error");
+      }
+    } catch {
+      showToast("Network Error", "Unable to connect to service.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const platformMatchedProducts = trackedProducts.filter((p) => p.platform === platform);
+
+  return (
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl max-w-md w-full p-6 border border-slate-200 shadow-2xl relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+        >
+          <X className="h-5 w-5" />
+        </button>
+
+        <h3 className="text-base font-bold text-slate-800 flex items-center gap-2 mb-2">
+          <Sparkles className="h-5 w-5 text-purple-600 animate-pulse" />
+          Track Keyword
+        </h3>
+        <p className="text-xs text-slate-500 mb-6">
+          Add <strong className="text-slate-700">"{keyword}"</strong> on {platform === "amazon" ? "Amazon" : "Flipkart"} to your dashboard rankings.
+        </p>
+
+        <div className="space-y-4">
+          {platformMatchedProducts.length > 0 && (
+            <div className="flex items-center gap-4 p-2 bg-slate-50 rounded-lg border border-slate-200 mb-4">
+              <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                <input
+                  type="radio"
+                  checked={useExisting}
+                  onChange={() => setUseExisting(true)}
+                  className="accent-purple-600"
+                />
+                Use Tracked Product
+              </label>
+              <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                <input
+                  type="radio"
+                  checked={!useExisting}
+                  onChange={() => setUseExisting(false)}
+                  className="accent-purple-600"
+                />
+                Track New ASIN/PID
+              </label>
+            </div>
+          )}
+
+          {useExisting && platformMatchedProducts.length > 0 ? (
+            <div className="space-y-2">
+              <Label>Select Product</Label>
+              <Select value={selectedPid} onValueChange={setSelectedPid}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose target product" />
+                </SelectTrigger>
+                <SelectContent>
+                  {platformMatchedProducts.map((p) => (
+                    <SelectItem key={p.asin_or_pid} value={p.asin_or_pid}>
+                      {p.asin_or_pid} ({platform === "amazon" ? "Amazon" : "Flipkart"})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Label>ASIN / Product ID</Label>
+              <Input
+                value={pidInput}
+                onChange={(e) => setPidInput(e.target.value)}
+                placeholder={platform === "amazon" ? "e.g., B08XYZ" : "e.g., ITMABCDEF"}
+              />
+            </div>
+          )}
+
+          <div className="space-y-2">
+            <Label>Category (Optional)</Label>
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger>
+                <SelectValue placeholder={categories.length === 0 ? "No categories" : "Select category"} />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="pt-4 flex gap-3">
+            <Button variant="outline" onClick={onClose} className="flex-1" disabled={loading}>
+              Cancel
+            </Button>
+            <Button onClick={handleTrack} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white" disabled={loading}>
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Adding...
+                </>
+              ) : (
+                "Track Rank"
+              )}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── KeywordExplorer Panel ─────────────────────────────────────────────────────
+
+function KeywordExplorerPanel({
+  showToast,
+  trackedProducts,
+  onKeywordAdded,
+  userTier = "free",
+}: KeywordExplorerProps) {
+  const [keyword, setKeyword] = useState("");
+  const [platform, setPlatform] = useState("amazon");
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<KeywordExplorerResponse | null>(null);
+
+  const [trackTarget, setTrackTarget] = useState<string | null>(null);
+
+  const [strategyText, setStrategyText] = useState<string>("");
+  const [strategyLoading, setStrategyLoading] = useState<boolean>(false);
+  const [strategyError, setStrategyError] = useState<string>("");
+
+  const [showAllStates, setShowAllStates] = useState<boolean>(false);
+
+  const calculateRegions = () => {
+    if (!data || !data.geo_distribution) return [];
+    const zones = [
+      {
+        name: "South India",
+        states: ["Tamil Nadu", "Karnataka", "Telangana", "Andhra Pradesh", "Kerala", "Puducherry", "Lakshadweep", "Andaman and Nicobar Islands"]
+      },
+      {
+        name: "North India",
+        states: ["Delhi", "Uttar Pradesh", "Punjab", "Haryana", "Rajasthan", "Uttarakhand", "Himachal Pradesh", "Jammu and Kashmir", "Ladakh", "Chandigarh"]
+      },
+      {
+        name: "West India",
+        states: ["Maharashtra", "Gujarat", "Goa", "Madhya Pradesh", "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu"]
+      },
+      {
+        name: "East India",
+        states: ["West Bengal", "Bihar", "Odisha", "Jharkhand", "Assam", "Sikkim", "Arunachal Pradesh", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Tripura"]
+      }
+    ];
+
+    const regions = zones.map((zone) => {
+      let pctSum = 0;
+      zone.states.forEach((state) => {
+        pctSum += data.geo_distribution[state] || 0;
+      });
+      const volume = Math.round((data.search_volume * pctSum) / 100);
+      return { name: zone.name, percentage: Math.round(pctSum * 10) / 10, volume };
+    });
+
+    return regions.sort((a, b) => b.volume - a.volume);
+  };
+
+  const regionalBreakdown = calculateRegions();
+
+  const fetchStrategy = async (searchVal: string, targetPlatform: string) => {
+    setStrategyLoading(true);
+    setStrategyError("");
+    setStrategyText("");
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/api/keyword-tracker/explorer/strategy?keyword=${encodeURIComponent(searchVal)}&platform=${targetPlatform}`,
+        { credentials: "include" }
+      );
+      const resJson = await res.json();
+      if (res.ok) {
+        setStrategyText(resJson.strategy || "");
+      } else {
+        setStrategyError(resJson.detail?.message ?? "Error generating strategy");
+      }
+    } catch {
+      setStrategyError("Network error. Unable to load strategy.");
+    } finally {
+      setStrategyLoading(false);
+    }
+  };
+
+  const handleSearch = async (overrideKeyword?: string) => {
+    const searchVal = (overrideKeyword || keyword || "wireless headphones").trim();
+    if (!searchVal) {
+      showToast("Error", "Please enter a search query.", "error");
+      return;
+    }
+
+    setLoading(true);
+    setShowAllStates(false);
+    setStrategyText("");
+    setStrategyError("");
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/api/keyword-tracker/explorer?keyword=${encodeURIComponent(searchVal)}&platform=${platform}`,
+        { credentials: "include" }
+      );
+      const resJson = await res.json();
+      if (res.ok) {
+        setData(resJson);
+        if (overrideKeyword) setKeyword(overrideKeyword);
+        fetchStrategy(searchVal, platform);
+      } else {
+        showToast("Search failed", resJson.detail?.message ?? "Error exploring keyword", "error");
+      }
+    } catch {
+      showToast("Network Error", "Could not query details from server.", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (keyword.trim()) {
+      handleSearch();
+    }
+  }, [platform]);
+
+  const handleQuickTrack = (kw: string) => {
+    setTrackTarget(kw);
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Search Bar Section */}
+      <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 relative">
+        <CardContent className="p-5">
+          <div className="flex flex-col md:flex-row gap-4 items-end">
+            <div className="flex-1 space-y-2 w-full">
+              <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Search Keyword</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
+                <Input
+                  className="pl-10 h-11 border-slate-200 focus-visible:ring-purple-600 rounded-xl"
+                  placeholder="Analyze products, volume, & KD (e.g. bluetooth speakers, face serum)"
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                />
+              </div>
+            </div>
+            <div className="w-full md:w-44 space-y-2">
+              <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Marketplace</Label>
+              <Select value={platform} onValueChange={setPlatform}>
+                <SelectTrigger className="h-11 border-slate-200 rounded-xl">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="amazon">
+                    <div className="flex items-center gap-2">
+                      <ShoppingBag className="h-4 w-4 text-orange-600" /> Amazon India
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="flipkart">
+                    <div className="flex items-center gap-2">
+                      <ShoppingBag className="h-4 w-4 text-yellow-600" /> Flipkart
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Button
+              className="w-full md:w-36 h-11 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl flex gap-2 items-center justify-center transition-all"
+              onClick={() => handleSearch()}
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Analyzing...
+                </>
+              ) : (
+                <>
+                  <Compass className="h-4 w-4" />
+                  Analyze
+                </>
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Loading Overlay */}
+      {loading && (
+        <Card className="border border-purple-100 bg-gradient-to-r from-purple-50 to-indigo-50 shadow-sm animate-pulse rounded-2xl">
+          <CardContent className="p-8 flex flex-col items-center justify-center text-center space-y-3">
+            <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+            <div>
+              <h4 className="font-bold text-purple-950">
+                Retrieving Marketplace Intel
+              </h4>
+              <p className="text-xs text-purple-700 mt-1 max-w-md">
+                We are scanning local search index data, calculating product demand, classifying search intentions, and compiling search recommendations. This process operates 100% free of charge.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Empty State Banner */}
+      {!data && !loading && (
+        <Card className="border border-dashed border-slate-300 bg-slate-50/50 rounded-2xl">
+          <CardContent className="p-12 flex flex-col items-center justify-center text-center space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600">
+              <Compass className="h-6 w-6 animate-pulse" />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800 text-lg">Keyword Explorer</h3>
+              <p className="text-sm text-slate-500 max-w-sm mt-1.5 mx-auto">
+                Type in any search term above (e.g., "face serum", "water bottle") and click Analyze to retrieve search volumes, buyer intent, regional demand, competitor SERPs, and local AI advice.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Analytics Panels */}
+      {data && !loading && (
+        <div className="space-y-6 animate-in fade-in-50 duration-300">
+
+          {/* Key Metrics Widgets */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+
+            {/* Search Volume */}
+            <Card className="shadow-xs border border-slate-200 rounded-2xl bg-white">
+              <CardHeader className="pb-2">
+                <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
+                  Monthly Volume
+                  <BarChart3 className="h-4 w-4 text-slate-400" />
+                </CardDescription>
+                <CardTitle className="text-3xl font-extrabold text-slate-800">
+                  {data.search_volume.toLocaleString("en-IN")}
+                </CardTitle>
+                <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
+                  Monthly searches by buyers. Higher means more potential customers.
+                </p>
+              </CardHeader>
+              <CardContent className="pt-2 text-xs text-slate-400 space-y-1.5 border-t border-slate-100 mt-2">
+                <div className="flex justify-between">
+                  <span>Est. Impressions (Views):</span>
+                  <span className="font-semibold text-slate-600">{data.estimated_impressions.toLocaleString("en-IN")}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Est. Clicks (Visits):</span>
+                  <span className="font-semibold text-slate-600">{data.estimated_clicks.toLocaleString("en-IN")}</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Keyword Difficulty */}
+            <Card className="shadow-xs border border-slate-200 rounded-2xl bg-white">
+              <CardHeader className="pb-2">
+                <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
+                  KD%
+                  <Info className="h-4 w-4 text-slate-400" />
+                </CardDescription>
+                <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
+                  Competition level to rank. Lower is easier to reach Page 1.
+                </p>
+              </CardHeader>
+              <CardContent className="pb-4">
+                <DifficultyGauge value={data.difficulty} />
+              </CardContent>
+            </Card>
+
+            {/* Regional Breakdown */}
+            <Card className="shadow-xs border border-slate-200 rounded-2xl bg-white">
+              <CardHeader className="pb-2">
+                <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
+                  Regional Breakdown
+                  <MapPin className="h-4 w-4 text-emerald-500" />
+                </CardDescription>
+                <CardTitle className="text-3xl font-extrabold text-slate-800">
+                  India
+                </CardTitle>
+                <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
+                  Estimated search volume by Indian region.
+                </p>
+              </CardHeader>
+              <CardContent className="pt-2 border-t border-slate-100 mt-2 space-y-1 text-xs">
+                {regionalBreakdown.length > 0 ? (
+                  regionalBreakdown.map((region) => (
+                    <div key={region.name} className="flex justify-between text-slate-600">
+                      <span className="truncate">{region.name}</span>
+                      <span className="font-bold text-slate-700">
+                        {region.volume.toLocaleString("en-IN")} ({region.percentage}%)
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-xs text-slate-400">No regional data.</div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Competitive Density */}
+            <Card className="shadow-xs border border-slate-200 rounded-2xl bg-white">
+              <CardHeader className="pb-2">
+                <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
+                  Competitive Density
+                  <Sparkles className="h-4 w-4 text-indigo-500" />
+                </CardDescription>
+                <CardTitle className="text-3xl font-extrabold text-slate-800">
+                  {data.competitive_density !== undefined ? data.competitive_density.toFixed(2) : "0.00"}
+                </CardTitle>
+                <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
+                  PPC competition index from 0.00 to 1.00.
+                </p>
+              </CardHeader>
+              <CardContent className="pt-2 border-t border-slate-100 mt-2">
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs font-semibold text-slate-600">
+                    <span>PPC Competition</span>
+                    <span>
+                      {data.competitive_density >= 0.80 ? "High" : data.competitive_density >= 0.50 ? "Medium" : "Low"}
+                    </span>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full transition-all duration-1000 ${data.competitive_density >= 0.80 ? "bg-rose-500" : data.competitive_density >= 0.50 ? "bg-amber-500" : "bg-green-500"
+                        }`}
+                      style={{ width: `${(data.competitive_density || 0) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Intent & CPC */}
+            <Card className="shadow-xs border border-slate-200 rounded-2xl bg-white">
+              <CardHeader className="pb-2">
+                <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
+                  Mindset & Ad Cost
+                  <ArrowUpRight className="h-4 w-4 text-slate-400" />
+                </CardDescription>
+                <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
+                  Buyer intent and estimated sponsor cost.
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-3 pt-1">
+                <IntentBadge intent={data.intent} />
+                <div className="border-t border-slate-100 pt-2 flex justify-between items-center">
+                  <div>
+                    <span className="text-xs font-semibold text-slate-600 block">Est. CPC:</span>
+                  </div>
+                  <span className="text-sm font-extrabold text-slate-700">₹{data.cpc.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Trend & Geo Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+            {/* Search Trend Chart */}
+            <Card className="shadow-xs border border-slate-200 rounded-2xl p-6 bg-white lg:col-span-3">
+              <CardHeader className="p-0 pb-4">
+                <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4 text-indigo-500" />
+                  12-Month Search Volume Trend
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Historical search volume distribution over the past year.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0 h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={
+                    (data.trend || []).map((vol, idx) => {
+                      const monthNames = ["Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May"];
+                      return { month: monthNames[idx % 12], Volume: vol };
+                    })
+                  } margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={10} stroke="#94a3b8" />
+                    <YAxis
+                      tickLine={false}
+                      axisLine={false}
+                      fontSize={10}
+                      stroke="#94a3b8"
+                      width={45}
+                      tickFormatter={(val) => val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}
+                    />
+                    <Tooltip
+                      contentStyle={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "12px" }}
+                      labelClassName="font-bold text-slate-700"
+                    />
+                    <Bar dataKey="Volume" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Geo breakdown list */}
+            <Card className="shadow-xs border border-slate-200 rounded-2xl lg:col-span-2 relative overflow-hidden">
+              <CardHeader>
+                <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-rose-500" />
+                  State-wise Interest Distribution
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Estimated percentage demand distribution across top Indian commerce hubs.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="relative min-h-[220px]">
+                <div className={showAllStates ? "max-h-[280px] overflow-y-auto pr-2 space-y-3" : "space-y-3"}>
+                  {Object.entries(data.geo_distribution || {})
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, showAllStates ? undefined : 8)
+                    .map(([state, pct]) => (
+                      <div key={state} className="space-y-1">
+                        <div className="flex justify-between text-xs font-semibold text-slate-700">
+                          <span>{state}</span>
+                          <span>{pct}%</span>
+                        </div>
+                        <div className="w-full bg-slate-100 rounded-full h-2">
+                          <div
+                            className="bg-indigo-500 h-2 rounded-full transition-all duration-1000"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                </div>
+                <div className="pt-3 text-center border-t border-slate-100 mt-3">
+                  <button
+                    onClick={() => setShowAllStates(!showAllStates)}
+                    className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors focus:outline-none inline-flex items-center gap-1.5"
+                  >
+                    {showAllStates ? "Show Top 8 States" : "Show All 36 States & UTs"}
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+            {/* Keyword variations table */}
+            <Card className="shadow-xs border border-slate-200 rounded-2xl lg:col-span-5">
+              <CardHeader>
+                <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                  <Compass className="h-4 w-4 text-indigo-500" />
+                  Related Keyword Variations
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Autocomplete keywords matching your search prefix.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-y border-slate-100 bg-slate-50 text-slate-500 font-semibold">
+                        <th className="p-3">Keyword</th>
+                        <th className="p-3 text-right">Vol</th>
+                        <th className="p-3 text-center">KD%</th>
+                        <th className="p-3 text-center">Intent</th>
+                        <th className="p-3 text-right">CPC</th>
+                        <th className="p-3 text-center">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-slate-700">
+                      {data.variations.map((v, i) => (
+                        <tr key={i} className="hover:bg-slate-50/50 transition-colors">
+                          <td className="p-3 font-medium text-slate-800">
+                            <button
+                              onClick={() => handleSearch(v.keyword)}
+                              className="hover:underline text-purple-700 text-left"
+                            >
+                              {v.keyword}
+                            </button>
+                          </td>
+                          <td className="p-3 text-right font-semibold">{v.search_volume.toLocaleString("en-IN")}</td>
+                          <td className="p-3 text-center font-medium">
+                            <span
+                              className={`px-1.5 py-0.5 rounded text-[10px] ${v.difficulty >= 60
+                                  ? "bg-rose-50 text-rose-600 border border-rose-100"
+                                  : v.difficulty >= 30
+                                    ? "bg-amber-50 text-amber-600 border border-amber-100"
+                                    : "bg-green-50 text-green-600 border border-green-100"
+                                }`}
+                            >
+                              {v.difficulty}%
+                            </span>
+                          </td>
+                          <td className="p-3 text-center">
+                            <span
+                              className={`px-1.5 py-0.5 rounded-[4px] text-[10px] font-semibold ${v.intent === "Transactional"
+                                  ? "bg-purple-100 text-purple-700"
+                                  : v.intent === "Commercial"
+                                    ? "bg-emerald-100 text-emerald-700"
+                                    : "bg-blue-100 text-blue-700"
+                                }`}
+                            >
+                              {v.intent.charAt(0)}
+                            </span>
+                          </td>
+                          <td className="p-3 text-right font-medium">₹{v.cpc.toFixed(2)}</td>
+                          <td className="p-3 text-center">
+                            <button
+                              onClick={() => handleQuickTrack(v.keyword)}
+                              className="p-1 hover:bg-purple-100 text-purple-600 rounded transition-colors"
+                              title="Add to Rank Tracker"
+                            >
+                              <Plus className="h-4 w-4" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* SERP Features Badges */}
+          {data.serp_features && data.serp_features.length > 0 && (
+            <div className="flex flex-wrap gap-2 items-center bg-slate-50 border border-slate-200 p-3 rounded-xl">
+              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">SERP Features:</span>
+              {data.serp_features.map((feature, idx) => (
+                <Badge key={idx} variant="secondary" className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-150 text-[10px] font-semibold">
+                  {feature}
+                </Badge>
+              ))}
+            </div>
+          )}
+
+          {/* SERP Analysis top 10 products */}
+          <Card className="shadow-xs border border-slate-200 rounded-2xl">
+            <CardHeader>
+              <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                <ShoppingBag className="h-4 w-4 text-orange-500" />
+                SERP Analysis (Top 10 Results)
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Real-time snapshot of the highest performing database listings for this search term.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-y border-slate-100 bg-slate-50 text-slate-500 font-semibold">
+                      <th className="p-3 text-center w-12">Pos</th>
+                      <th className="p-3">Product Name</th>
+                      <th className="p-3">Brand</th>
+                      <th className="p-3 text-right">Price</th>
+                      <th className="p-3 text-center">Rating</th>
+                      <th className="p-3 text-right">Reviews</th>
+                      <th className="p-3 text-right">Monthly Sales</th>
+                      <th className="p-3 w-28">ASIN/PID</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-slate-700">
+                    {data.serp.length === 0 ? (
+                      <tr>
+                        <td colSpan={8} className="p-8 text-center text-slate-400">
+                          No matching items cataloged in the database.
+                        </td>
+                      </tr>
+                    ) : (
+                      data.serp.map((item) => (
+                        <tr key={item.position} className="hover:bg-slate-50/50 transition-colors">
+                          <td className="p-3 text-center font-bold text-slate-500">{item.position}</td>
+                          <td className="p-3 max-w-sm font-medium text-slate-800 truncate" title={item.title}>
+                            {item.title}
+                          </td>
+                          <td className="p-3 text-slate-500 font-medium">
+                            {(() => {
+                              const brandVal = item.brand;
+                              if (brandVal && brandVal !== "None" && brandVal !== "—" && brandVal.trim() !== "") {
+                                return brandVal;
+                              }
+                              if (item.title) {
+                                const words = item.title.trim().split(/\s+/);
+                                if (words.length > 0) {
+                                  const firstWord = words[0].replace(/^\W+|\W+$/g, "");
+                                  if (firstWord) return firstWord;
+                                }
+                              }
+                              return "—";
+                            })()}
+                          </td>
+                          <td className="p-3 text-right font-semibold">
+                            {item.price ? `₹${item.price.toLocaleString("en-IN")}` : "—"}
+                          </td>
+                          <td className="p-3 text-center font-bold text-amber-600">
+                            {item.rating ? `${item.rating}★` : "—"}
+                          </td>
+                          <td className="p-3 text-right font-medium text-slate-600">
+                            {item.reviews ? item.reviews.toLocaleString("en-IN") : "—"}
+                          </td>
+                          <td className="p-3 text-right font-bold text-indigo-600">
+                            {item.sales_volume ? item.sales_volume.toLocaleString("en-IN") : "—"}
+                          </td>
+                          <td className="p-3 font-mono text-slate-400 text-[10px] select-all">
+                            {item.asin_or_pid}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* AI Copywriting & PPC Bidding Strategy Card */}
+          <Card className="shadow-xs border border-slate-200 rounded-2xl overflow-hidden relative">
+            <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 border-b border-slate-100">
+              <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-purple-600 animate-pulse" />
+                AI Copywriting & PPC Bidding Strategy
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Local AI-generated strategy recommendations based on keyword intent, volume, and difficulty.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-6 min-h-[200px] relative">
+              {strategyLoading ? (
+                <div className="flex flex-col items-center justify-center py-12 space-y-3">
+                  <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+                  <p className="text-xs text-slate-500 font-medium">Generating copywriting & PPC strategy via Llama 3.2...</p>
+                </div>
+              ) : strategyError ? (
+                <div className="text-xs text-rose-600 p-4 border border-rose-100 rounded-lg bg-rose-50/50">
+                  Failed to generate AI strategy: {strategyError}
+                </div>
+              ) : strategyText ? (
+                <div
+                  className="prose prose-sm max-w-none text-xs text-slate-600 space-y-4"
+                  dangerouslySetInnerHTML={{ __html: strategyText }}
+                />
+              ) : (
+                <div className="text-xs text-slate-400 py-8 text-center">
+                  Analyze a keyword to generate copywriting & advertising strategy advice from your local LLM.
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Cache footer indicator */}
+          <div className="text-right text-[10px] text-slate-400 font-mono">
+            Analysis Cache Created: {new Date(data.cached_at).toLocaleString("en-IN")}
+          </div>
+        </div>
+      )}
+
+      {/* Quick Track popup overlay */}
+      {trackTarget && (
+        <QuickTrackModal
+          keyword={trackTarget}
+          platform={platform}
+          trackedProducts={trackedProducts}
+          onClose={() => setTrackTarget(null)}
+          showToast={showToast}
+          onKeywordAdded={onKeywordAdded}
+        />
+      )}
+    </div>
+  );
+}
+
 // ── Main page content ─────────────────────────────────────────────────────────
 
 function KeywordTrackerIntelligenceContent() {
@@ -249,30 +1240,8 @@ function KeywordTrackerIntelligenceContent() {
 
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [loadingDash, setLoadingDash] = useState(false);
-  const [activeTab, setActiveTab] = useState<"tracker" | "explorer">("tracker");
-
-  // Add keyword form
-  const [keyword, setKeyword] = useState("");
-  const [pid, setPid] = useState("");
-  const [platform, setPlatform] = useState("amazon");
-  const [category, setCategory] = useState("");
-  const [categories, setCategories] = useState<string[]>([]);
-  const [adding, setAdding] = useState(false);
-
-  // Per-keyword loading states
-  const [refreshing, setRefreshing] = useState<Record<number, boolean>>({});
-  const [kwInsights, setKwInsights] = useState<Record<number, string>>({});
-
-  // History modal
   const [historyKw, setHistoryKw] = useState<KeywordOut | null>(null);
 
-  // Suggestions panel
-  const [showSuggest, setShowSuggest] = useState(false);
-  const [suggestPid, setSuggestPid] = useState("");
-  const [suggestions, setSuggestions] = useState<any[]>([]);
-  const [loadingSuggest, setLoadingSuggest] = useState(false);
-
-  // Toasts
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const showToast = (title: string, description: string, variant: "success" | "error" = "success") => {
@@ -298,121 +1267,6 @@ function KeywordTrackerIntelligenceContent() {
 
   useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
 
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/categories?table=${platform}`)
-      .then(r => r.json())
-      .then(d => setCategories(d.map((c: any) => c.category)))
-      .catch(() => setCategories([]));
-  }, [platform]);
-
-  const handleAdd = async () => {
-    if (!keyword.trim() || !pid.trim()) {
-      showToast("Missing fields", "Please enter both a keyword and ASIN/PID", "error");
-      return;
-    }
-    setAdding(true);
-    try {
-      const res = await fetch(`${API}/keywords`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          keyword: keyword.trim(),
-          asin_or_pid: pid.trim(),
-          platform,
-          category: category || null,
-        }),
-      });
-      const data = await res.json();
-      if (res.ok) {
-        showToast("Keyword added!", `Now tracking "${keyword}" for ${pid}`);
-        setKeyword(""); setPid(""); setCategory("");
-        fetchDashboard();
-      } else if (res.status === 403) {
-        showToast("Upgrade required", data.detail?.message ?? "Limit reached", "error");
-      } else if (res.status === 409) {
-        showToast("Already tracking", "This keyword is already tracked for this product", "error");
-      } else {
-        showToast("Error", data.detail?.message ?? "Couldn't add keyword. Please try again.", "error");
-      }
-    } catch {
-      showToast("Network Error", "Could not reach the server", "error");
-    } finally {
-      setAdding(false);
-    }
-  };
-
-  const handleDelete = async (kwId: number, kwText: string) => {
-    if (!window.confirm(`Remove "${kwText}" from tracking?`)) return;
-    try {
-      const res = await fetch(`${API}/keywords/${kwId}`, {
-        method: "DELETE", credentials: "include",
-      });
-      if (res.ok) {
-        showToast("Removed", `"${kwText}" removed`);
-        setKwInsights(p => { const n = { ...p }; delete n[kwId]; return n; });
-        fetchDashboard();
-      } else {
-        showToast("Error", "Couldn't remove keyword. Please try again.", "error");
-      }
-    } catch {
-      showToast("Network Error", "Could not reach the server", "error");
-    }
-  };
-
-  const handleRefresh = async (kwId: number) => {
-    setRefreshing(p => ({ ...p, [kwId]: true }));
-    try {
-      const res = await fetch(`${API}/keywords/${kwId}/refresh`, {
-        method: "POST", credentials: "include",
-      });
-      const data = await res.json();
-      if (res.ok) {
-        showToast(
-          "Rank updated!",
-          `Current rank: ${data.current_rank !== null ? `#${data.current_rank}` : "Not ranked"}`,
-        );
-        if (data.ai_rank_insight) {
-          setKwInsights(p => ({ ...p, [kwId]: data.ai_rank_insight }));
-        }
-        fetchDashboard();
-      } else if (res.status === 429) {
-        showToast("Rate limited", data.detail?.message ?? "Too many checks", "error");
-      } else if (res.status === 403) {
-        showToast("Upgrade required", data.detail?.message ?? "Limit reached", "error");
-      } else {
-        showToast("Error", data.detail?.message ?? "Refresh failed", "error");
-      }
-    } catch {
-      showToast("Network Error", "Connection issue. Please retry shortly.", "error");
-    } finally {
-      setRefreshing(p => ({ ...p, [kwId]: false }));
-    }
-  };
-
-  const fetchSuggestions = async () => {
-    if (!suggestPid.trim()) {
-      showToast("Enter ASIN/PID", "Please enter a product ID", "error");
-      return;
-    }
-    setLoadingSuggest(true);
-    try {
-      const params = new URLSearchParams({ asin_or_pid: suggestPid.trim(), platform });
-      if (category) params.set("category", category);
-      const res = await fetch(`${API}/suggestions?${params}`, { credentials: "include" });
-      const data = await res.json();
-      if (res.ok) setSuggestions(data.suggestions);
-      else showToast("Error", data.detail?.message ?? "Couldn't load suggestions. Please try again.", "error");
-    } catch {
-      showToast("Network Error", "Connection issue. Please retry shortly.", "error");
-    } finally {
-      setLoadingSuggest(false);
-    }
-  };
-
-  const limits = dashboard?.tier_limits;
-  const canAdd = true;
-
   return (
     <div className="space-y-6">
 
@@ -434,366 +1288,29 @@ function KeywordTrackerIntelligenceContent() {
           </div>
         ))}
       </div>
+
       <div className="space-y-6">
         <div className="max-w-7xl mx-auto space-y-6">
 
-          {/* Tab Switcher */}
-          <div className="flex justify-center md:justify-start">
-            <div className="bg-slate-100/85 backdrop-blur-xs p-1.5 rounded-2xl border border-slate-200 inline-flex gap-1">
-              <button
-                onClick={() => setActiveTab("tracker")}
-                className={`px-5 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-2 ${
-                  activeTab === "tracker"
-                    ? "bg-white text-purple-700 shadow-md border border-slate-200/50"
-                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-50/50"
-                }`}
-              >
-                <Target className="h-4 w-4" />
-                Rank Tracker
-              </button>
-              <button
-                onClick={() => setActiveTab("explorer")}
-                className={`px-5 py-2.5 text-xs font-bold rounded-xl transition-all flex items-center gap-2 ${
-                  activeTab === "explorer"
-                    ? "bg-white text-purple-700 shadow-md border border-slate-200/50"
-                    : "text-slate-500 hover:text-slate-800 hover:bg-slate-50/50"
-                }`}
-              >
-                <Compass className="h-4 w-4" />
-                Keyword Explorer
-              </button>
+          {/* Page Header */}
+          <div className="text-center space-y-4 pt-4">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-2xl mb-2 shadow-inner">
+              <Search className="h-8 w-8 text-purple-600" />
             </div>
+            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 text-transparent bg-clip-text">
+              Keyword Explorer
+            </h1>
+            <p className="text-base sm:text-lg text-slate-500 max-w-2xl mx-auto">
+              Explore high-opportunity buyer search terms, analyze search volumes, and track buyer keywords.
+            </p>
           </div>
 
-          {activeTab === "tracker" ? (
-            <>
-              {/* Summary stats */}
-          {dashboard && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {[
-                { label: "Improving", value: dashboard.improving, icon: TrendingUp, color: "text-green-600", bg: "bg-green-50 border-green-200" },
-                { label: "Declining", value: dashboard.declining, icon: TrendingDown, color: "text-red-500", bg: "bg-red-50 border-red-200" },
-                { label: "Stable", value: dashboard.stable, icon: Minus, color: "text-slate-500", bg: "bg-slate-50 border-slate-200" },
-                { label: "Not Ranked", value: dashboard.not_ranked, icon: Activity, color: "text-orange-500", bg: "bg-orange-50 border-orange-200" },
-              ].map(({ label, value, icon: Icon, color, bg }) => (
-                <div key={label} className={`rounded-xl border-2 p-4 ${bg} flex items-center gap-3`}>
-                  <Icon className={`h-6 w-6 ${color} flex-shrink-0`} />
-                  <div>
-                    <p className="text-2xl font-bold text-slate-800">{value}</p>
-                    <p className="text-xs text-slate-500">{label}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* AI Dashboard Insight */}
-          {dashboard?.ai_insight && (
-            <AIInsightCard insight={dashboard.ai_insight} label="AI Portfolio Insight" />
-          )}
-
-          {/* Add keyword form */}
-          <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 backdrop-blur-none">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-slate-700 flex items-center gap-2">
-                <Plus className="h-5 w-5 text-purple-600" />
-                Track a New Keyword
-              </CardTitle>
-              <CardDescription className="text-slate-500">
-                Enter the keyword a customer would search, and your product's ASIN (Amazon) or PID (Flipkart).
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Keyword</Label>
-                  <Input
-                    value={keyword}
-                    onChange={e => setKeyword(e.target.value)}
-                    placeholder='e.g., "wireless headphones under 1000"'
-                    disabled={!canAdd}
-                    onKeyDown={e => e.key === "Enter" && handleAdd()}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>ASIN / PID</Label>
-                  <Input
-                    value={pid}
-                    onChange={e => setPid(e.target.value)}
-                    placeholder="e.g., B08XYZ or ITMABCDEF"
-                    disabled={!canAdd}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Marketplace</Label>
-                  <Select value={platform} onValueChange={setPlatform} disabled={!canAdd}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="amazon">
-                        <div className="flex items-center gap-2">
-                          <ShoppingBag className="h-4 w-4 text-orange-600" /> Amazon
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="flipkart">
-                        <div className="flex items-center gap-2">
-                          <ShoppingBag className="h-4 w-4 text-yellow-600" /> Flipkart
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label>Category <span className="text-slate-400 text-xs">(optional)</span></Label>
-                  <Select value={category} onValueChange={setCategory} disabled={!canAdd}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={categories.length === 0 ? "No categories" : "Select category"} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-              <Button
-                onClick={handleAdd}
-                disabled={adding}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                {adding ? (
-                  <><Loader2 className="h-4 w-4 animate-spin mr-2" />Adding…</>
-                ) : (
-                  <><Target className="h-4 w-4 mr-2" />Start Tracking Keyword</>
-                )}
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Keyword Suggestions panel */}
-          {dashboard && (
-            <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 backdrop-blur-none">
-              <CardHeader>
-                <button
-                  className="flex items-center justify-between w-full text-left"
-                  onClick={() => setShowSuggest(v => !v)}
-                >
-                  <CardTitle className="text-lg font-semibold text-slate-700 flex items-center gap-2">
-                    <Lightbulb className="h-5 w-5 text-yellow-500" />
-                    AI Keyword Suggestions
-                    <Badge className="bg-purple-100 text-purple-800 border-purple-300 text-[10px]">
-                      <Sparkles className="h-2.5 w-2.5 mr-1" />
-                      AI + Score
-                    </Badge>
-                  </CardTitle>
-                  {showSuggest
-                    ? <ChevronUp className="h-4 w-4 text-slate-400" />
-                    : <ChevronDown className="h-4 w-4 text-slate-400" />}
-                </button>
-              </CardHeader>
-
-              {showSuggest && (
-                <CardContent className="space-y-4">
-                  <div className="flex gap-2">
-                    <Input
-                      value={suggestPid}
-                      onChange={e => setSuggestPid(e.target.value)}
-                      placeholder="Enter ASIN or PID to get AI suggestions"
-                      className="flex-1"
-                    />
-                    <Button
-                      onClick={fetchSuggestions}
-                      disabled={loadingSuggest}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white"
-                    >
-                      {loadingSuggest
-                        ? <Loader2 className="h-4 w-4 animate-spin" />
-                        : <Search className="h-4 w-4" />}
-                    </Button>
-                  </div>
-
-                  {loadingSuggest && (
-                    <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl border border-purple-200">
-                      <Loader2 className="h-5 w-5 animate-spin text-purple-500" />
-                      <p className="text-sm text-purple-700">We are analyzing the data. This may take 1–2 minutes.</p>
-                    </div>
-                  )}
-
-                  {suggestions.length > 0 && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {suggestions.map((s, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200 hover:border-purple-300 transition-colors">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-slate-800 truncate">{s.keyword}</p>
-                            <div className="flex gap-2 mt-1 flex-wrap">
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded ${s.estimated_search_volume === "High" ? "bg-green-100 text-green-700" :
-                                s.estimated_search_volume === "Medium" ? "bg-yellow-100 text-yellow-700" :
-                                  "bg-slate-100 text-slate-600"
-                                }`}>{s.estimated_search_volume} vol</span>
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded ${s.competition_level === "Low" ? "bg-green-100 text-green-700" :
-                                s.competition_level === "Medium" ? "bg-yellow-100 text-yellow-700" :
-                                  "bg-red-100 text-red-700"
-                                }`}>{s.competition_level} comp</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 ml-2">
-                            {s.opportunity_score != null && (
-                              <div className="text-center">
-                                <p className="text-lg font-bold text-purple-600">{s.opportunity_score}</p>
-                                <p className="text-[9px] text-slate-400">Score</p>
-                              </div>
-                            )}
-                            <button
-                              onClick={() => { setKeyword(s.keyword); setSuggestPid(""); setShowSuggest(false); }}
-                              className="p-1.5 bg-purple-100 hover:bg-purple-200 rounded-lg text-purple-700 transition-colors"
-                              title="Use this keyword"
-                            >
-                              <Plus className="h-3.5 w-3.5" />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              )}
-            </Card>
-          )}
-
-          {/* Tracked keywords list */}
-          <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 backdrop-blur-none">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold text-slate-700 flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-blue-600" />
-                  Tracked Keywords
-                  {dashboard && (
-                    <span className="text-sm font-normal text-slate-400">({dashboard.total_keywords})</span>
-                  )}
-                </CardTitle>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={fetchDashboard}
-                  disabled={loadingDash}
-                  className="gap-1 text-xs"
-                >
-                  <RefreshCw className={`h-3.5 w-3.5 ${loadingDash ? "animate-spin" : ""}`} />
-                  Refresh all
-                </Button>
-              </div>
-            </CardHeader>
-
-            <CardContent>
-              {loadingDash && !dashboard && (
-                <div className="flex justify-center py-12">
-                  <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
-                </div>
-              )}
-
-              {!userId && (
-                <Alert className="border-orange-200 bg-orange-50">
-                  <AlertCircle className="h-4 w-4 text-orange-600" />
-                  <AlertDescription className="text-orange-800 text-sm">
-                    Please log in to track keywords.
-                  </AlertDescription>
-                </Alert>
-              )}
-
-              {dashboard?.keywords.length === 0 && (
-                <div className="text-center py-12">
-                  <Search className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-                  <p className="text-slate-500 font-medium">No keywords tracked yet</p>
-                  <p className="text-sm text-slate-400 mt-1">Add your first keyword above to start tracking.</p>
-                </div>
-              )}
-
-              {dashboard && dashboard.keywords.length > 0 && (
-                <div className="space-y-3">
-                  {dashboard.keywords.map(kw => (
-                    <div key={kw.id} className="rounded-xl border border-slate-200 overflow-hidden">
-                      <div className="flex items-center gap-3 p-4 bg-slate-50 hover:bg-slate-100 transition-colors">
-                        <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${kw.platform === "amazon" ? "bg-orange-100" : "bg-yellow-100"
-                          }`}>
-                          <ShoppingBag className={`h-4 w-4 ${kw.platform === "amazon" ? "text-orange-600" : "text-yellow-600"}`} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-slate-800 text-sm truncate">{kw.keyword}</p>
-                          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                            <span className="text-[11px] text-slate-400 font-mono">{kw.asin_or_pid}</span>
-                            {kw.category && (
-                              <span className="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">{kw.category}</span>
-                            )}
-                            {kw.last_checked_at && (
-                              <span className="text-[10px] text-slate-400">
-                                Checked {new Date(kw.last_checked_at).toLocaleString("en-IN", {
-                                  day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
-                                })}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex-shrink-0">
-                          <RankBadge rank={kw.current_rank} change={kw.rank_change} />
-                        </div>
-                        <div className="flex items-center gap-1 flex-shrink-0">
-                          <button
-                            onClick={() => handleRefresh(kw.id)}
-                            disabled={refreshing[kw.id]}
-                            className="p-2 hover:bg-blue-100 rounded-lg text-blue-600 transition-colors"
-                            title="Refresh rank + get AI insight"
-                          >
-                            <RefreshCw className={`h-4 w-4 ${refreshing[kw.id] ? "animate-spin" : ""}`} />
-                          </button>
-                          <button
-                            onClick={() => setHistoryKw(kw)}
-                            className="p-2 hover:bg-purple-100 rounded-lg text-purple-600 transition-colors"
-                            title="View history + AI trend"
-                          >
-                            <BarChart3 className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(kw.id, kw.keyword)}
-                            className="p-2 hover:bg-red-100 rounded-lg text-red-500 transition-colors"
-                            title="Remove keyword"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
-
-                      {refreshing[kw.id] && (
-                        <div className="px-4 pb-3 pt-2 bg-purple-50 border-t border-purple-100">
-                          <div className="flex items-center gap-2 text-purple-600">
-                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                            <span className="text-xs">We are analyzing the data. This may take 1–2 minutes.</span>
-                          </div>
-                        </div>
-                      )}
-                      {!refreshing[kw.id] && kwInsights[kw.id] && (
-                        <div className="px-4 pb-4 pt-2 bg-gradient-to-r from-purple-50 to-indigo-50 border-t border-purple-100">
-                          <div className="flex gap-2">
-                            <Bot className="h-4 w-4 text-purple-500 flex-shrink-0 mt-0.5" />
-                            <p className="text-xs text-slate-700 leading-relaxed">{kwInsights[kw.id]}</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-
-          </>
-          ) : (
-            <KeywordExplorer
-              showToast={showToast}
-              trackedProducts={dashboard?.keywords.map(kw => ({ asin_or_pid: kw.asin_or_pid, platform: kw.platform })) || []}
-              onKeywordAdded={fetchDashboard}
-              userTier={dashboard?.tier}
-            />
-          )}
+          <KeywordExplorerPanel
+            showToast={showToast}
+            trackedProducts={dashboard?.keywords.map(kw => ({ asin_or_pid: kw.asin_or_pid, platform: kw.platform })) || []}
+            onKeywordAdded={fetchDashboard}
+            userTier={dashboard?.tier}
+          />
 
         </div>
       </div>

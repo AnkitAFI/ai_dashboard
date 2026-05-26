@@ -88,7 +88,7 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
     subtitle: "AI-powered marketplace intelligence",
   };
 
-  const isDashboard = pathname === "/overview" || pathname === "/dashboard" || pathname === "/" || pathname === "/seller/my-products";
+  const isDashboard = pathname === "/overview" || pathname === "/dashboard" || pathname === "/";
 
   const fetchNotifications = async (source: string) => {
     try {
@@ -178,26 +178,28 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
 
       <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
         {isDashboard && (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold transition-all ${showFilters ? 'bg-sky-100 border-sky-300 text-sky-700 shadow-sm' : ''}`} 
-            onClick={onFilterToggle}
-          >
-            <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span>{showFilters ? "Hide Filters" : "Filters"}</span>
-          </Button>
-        )}
+          <>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold transition-all ${showFilters ? 'bg-sky-100 border-sky-300 text-sky-700 shadow-sm' : ''}`} 
+              onClick={onFilterToggle}
+            >
+              <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span>{showFilters ? "Hide Filters" : "Filters"}</span>
+            </Button>
 
-        <select 
-          className="flex-1 sm:flex-none border border-slate-300 rounded-lg px-3 py-1.5 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20 transition-all font-medium" 
-          value={selectedSource} 
-          onChange={(e) => handleSourceChange(e.target.value)}
-        >
-          <option value="flipkart">Flipkart</option>
-          <option value="amazon">Amazon</option>
-          <option value="both">All Platforms</option>
-        </select>
+            <select 
+              className="flex-1 sm:flex-none border border-slate-300 rounded-lg px-3 py-1.5 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20 transition-all font-medium" 
+              value={selectedSource} 
+              onChange={(e) => handleSourceChange(e.target.value)}
+            >
+              <option value="flipkart">Flipkart</option>
+              <option value="amazon">Amazon</option>
+              <option value="both">All Platforms</option>
+            </select>
+          </>
+        )}
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

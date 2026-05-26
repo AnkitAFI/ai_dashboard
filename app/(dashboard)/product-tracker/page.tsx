@@ -500,6 +500,19 @@ export default function ProductTracker() {
       <div className="space-y-6">
         <div className="max-w-7xl mx-auto space-y-6">
 
+          {/* Page Header */}
+          <div className="text-center space-y-4 pt-4">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl mb-2 shadow-inner">
+              <Target className="h-8 w-8 text-blue-500" />
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-500 via-indigo-400 to-purple-400 text-transparent bg-clip-text">
+              Product Radar (AI)
+            </h1>
+            <p className="text-base sm:text-lg text-slate-500 max-w-2xl mx-auto">
+              Scan specific products to analyze market competition, pricing metrics, and project AI viability reports.
+            </p>
+          </div>
+
           {/* Input Form */}
           <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 backdrop-blur-none">
             <CardHeader>
@@ -665,9 +678,9 @@ export default function ProductTracker() {
                       <p className="text-xl font-semibold text-slate-700">
                         ₹{result.pricing.min_price.toLocaleString()} – ₹{result.pricing.max_price.toLocaleString()}
                       </p>
-                      <p className="text-xs text-slate-400 mt-1">
+                      {/* <p className="text-xs text-slate-400 mt-1">
                         Market avg: ₹{result.pricing.market_avg_price.toLocaleString()}
-                      </p>
+                      </p> */}
                     </div>
                     <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-lg border-2 border-green-200">
                       <p className="text-sm text-slate-600 mb-1">Profit Margin</p>

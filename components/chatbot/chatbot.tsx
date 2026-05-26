@@ -538,10 +538,7 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                         )}
                       </div>
 
-                      {/* Market Score Card */}
-                      {!msg.isUser && msg.marketScore && !msg.isStreaming && (
-                        <MarketScoreCard score={msg.marketScore} product={msg.extractedProduct} />
-                      )}
+
 
                       {/* Proactive insight badge */}
                       {msg.hasProactiveInsight && !msg.isStreaming && (

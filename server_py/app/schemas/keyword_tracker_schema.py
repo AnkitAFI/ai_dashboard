@@ -191,4 +191,4 @@ class KeywordExplorerResponse(BaseModel):
     global_breakdown: Optional[Dict[str, int]] = None
     competitive_density: Optional[float] = None
     serp_features: Optional[List[str]] = None
-    trend: Optional[List[int]] = None
+    trend: Optional[List[int]] = None

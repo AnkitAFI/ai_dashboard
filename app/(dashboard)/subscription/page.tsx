@@ -328,20 +328,16 @@ export default function Subscription() {
         </Alert>
       )}
 
-      {/* Hero */}
-      <div className="text-center space-y-3">
-        <div className="inline-flex items-center gap-2 bg-sky-50 border border-sky-200
-                        rounded-full px-4 py-1.5 text-xs font-bold text-sky-700
-                        uppercase tracking-widest">
-          <Sparkles className="h-3.5 w-3.5" />
-          Choose Your Plan
+      {/* Hero Header */}
+      <div className="text-center space-y-4">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl mb-2 shadow-inner">
+          <Crown className="h-8 w-8 text-blue-500" />
         </div>
-        <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-          Unlock the full potential of{" "}
-          <span className="text-sky-600">AI-powered analytics</span>
-        </h2>
-        <p className="text-slate-500 text-base sm:text-lg max-w-2xl mx-auto">
-          From smart insights to real-time alerts — pick the plan that fits your growth.
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+          Subscription & Licensing
+        </h1>
+        <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+          Unlock the full potential of AI-powered analytics. Pick the plan that fits your growth.
         </p>
 
         {/* AI usage bar */}

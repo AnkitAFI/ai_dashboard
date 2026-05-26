@@ -3133,6 +3133,82 @@ def get_category_products(
         "products": products
     }
 
+@router.get("/rating/products/{rating}")
+def get_rating_products(
+    rating: float,
+    source: str,  # must be 'amazon' or 'flipkart'
+    limit: Optional[int] = None,
+    offset: int = 0,
+    db: Session = Depends(get_db)
+):
+    # ✅ Flipkart Query (using rapidapi_flipkart_products)
+    flipkart_query = """
+        SELECT 
+            product_title AS product_name,
+            ROUND(AVG(product_price), 2) AS avg_price,
+            ROUND(AVG(min_price), 2) AS min_price,
+            ROUND(AVG(max_price), 2) AS max_price,
+            SUM(product_review_count) AS total_reviews,
+            ROUND(AVG(product_star_rating), 2) AS avg_rating,
+            'Flipkart' AS source
+        FROM rapidapi_flipkart_products
+        WHERE product_star_rating = :rating
+          AND product_title IS NOT NULL
+        GROUP BY product_title
+        ORDER BY total_reviews DESC
+        LIMIT :limit OFFSET :offset
+    """
+
+    # ✅ Amazon Query
+    amazon_query = """
+        SELECT 
+            product_title AS product_name,
+            ROUND(AVG(product_price_numeric), 2) AS avg_price,
+            ROUND(AVG(min_price), 2) AS min_price,
+            ROUND(AVG(max_price), 2) AS max_price,
+            SUM(product_num_ratings) AS total_reviews,
+            ROUND(AVG(product_star_rating_numeric), 2) AS avg_rating,
+            'Amazon' AS source
+        FROM rapidapi_amazon_products
+        WHERE product_star_rating_numeric = :rating
+          AND product_title IS NOT NULL
+        GROUP BY product_title
+        ORDER BY total_reviews DESC
+        LIMIT :limit OFFSET :offset
+    """
+
+    # ✅ Select Query based on Source
+    if source.lower() == "flipkart":
+        query = flipkart_query
+    elif source.lower() == "amazon":
+        query = amazon_query
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid source. Must be either 'amazon' or 'flipkart'."
+        )
+
+    # ✅ Execute Query
+    try:
+        rows = db.execute(
+            text(query),
+            {"rating": rating, "limit": limit, "offset": offset}
+        ).fetchall()
+    except Exception as e:
+        print(f"❌ SQL Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+    products = [dict(row._mapping) for row in rows]
+
+    # ✅ Response
+    return {
+        "rating": rating,
+        "source": source,
+        "total_products": len(products),
+        "products": sanitize_data(products)
+    }
+
+
 # @app.get("/product/{product_name:path}")
 # def get_product_details(product_name: str, db: Session = Depends(get_db)):
 
