@@ -21,6 +21,7 @@ export interface SubscriptionLimits {
   maxNotifications: number;
   maxFullAnalysesPerMonth: number;
   maxAIChatMessagesPerMonth: number;
+  maxKeywordIntelligenceSearchesPerMonth: number;
 }
 
 export const UNLIMITED = 1000000;
@@ -46,6 +47,7 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     maxNotifications: 5,
     maxFullAnalysesPerMonth: 5, // ✅ 5 product analyses per month
     maxAIChatMessagesPerMonth: 0, // 0 AI chat messages for free tier (must pay)
+    maxKeywordIntelligenceSearchesPerMonth: 0, // ✅ Fully locked for free tier
   },
   basic: {
     productTrackingLimit: 1000,
@@ -67,6 +69,7 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     maxNotifications: 15,
     maxFullAnalysesPerMonth: 20, // ✅ 20 product analyses per month
     maxAIChatMessagesPerMonth: 20, // 20 AI chat messages per month
+    maxKeywordIntelligenceSearchesPerMonth: 2, // ✅ 2 keyword intelligence searches per month for basic
   },
   premium: {
     productTrackingLimit: UNLIMITED,
@@ -88,6 +91,7 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     maxNotifications: UNLIMITED,
     maxFullAnalysesPerMonth: UNLIMITED, // ✅ Unlimited product analyses
     maxAIChatMessagesPerMonth: UNLIMITED, // Unlimited AI chat messages
+    maxKeywordIntelligenceSearchesPerMonth: 20, // ✅ 20 keyword intelligence searches per month for premium
   },
   enterprise: {
     productTrackingLimit: UNLIMITED,
@@ -109,6 +113,7 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     maxNotifications: UNLIMITED,
     maxFullAnalysesPerMonth: UNLIMITED, // ✅ Unlimited product analyses
     maxAIChatMessagesPerMonth: UNLIMITED, // Unlimited AI chat messages
+    maxKeywordIntelligenceSearchesPerMonth: UNLIMITED, // ✅ Unlimited for enterprise
   },
 };
 

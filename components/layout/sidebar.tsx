@@ -77,7 +77,7 @@ const EXPLORER_SECTIONS: NavSection[] = [
     items: [
       { href: "/explorer/white-space-finder", label: "Opportunity Finder", icon: ShieldCheck, badge: "NEW" },
       { href: "/share-of-voice", label: "Market Visibility", icon: BarChart3 },
-      { href: "/keyword-intelligence", label: "Keyword Explorer", icon: Compass },
+      { href: "/keyword-intelligence", label: "Keyword Intelligence", icon: Compass },
     ],
   },
   {

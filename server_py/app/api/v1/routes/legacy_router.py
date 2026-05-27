@@ -5594,6 +5594,406 @@ def send_otp_email(email: str, otp: str) -> bool:
         return True
 
 # ============================================
+# Welcome Email
+# ============================================
+
+def send_welcome_email(email: str, first_name: str) -> bool:
+    """Send a beautiful welcome email after successful signup verification via Brevo"""
+    try:
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+            sib_api_v3_sdk.ApiClient(configuration)
+        )
+
+        html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to Insydz</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+    body {{
+      font-family: 'Inter', Arial, sans-serif;
+      background-color: #060d1c;
+      color: #ffffff;
+      -webkit-font-smoothing: antialiased;
+    }}
+    .email-wrapper {{
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #060d1c;
+    }}
+    /* ── Header ── */
+    .header {{
+      background: linear-gradient(160deg, #050c1a 0%, #091525 50%, #060e1c 100%);
+      padding: 40px 48px 32px;
+      text-align: center;
+      border-bottom: 1px solid rgba(170,240,255,0.08);
+      position: relative;
+      overflow: hidden;
+    }}
+    .header-glow {{
+      position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+      width: 320px; height: 200px;
+      background: radial-gradient(ellipse, rgba(170,240,255,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }}
+    .logo-ring {{
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 64px; height: 64px; border-radius: 16px;
+      background: rgba(170,240,255,0.08); border: 1px solid rgba(170,240,255,0.2);
+      margin-bottom: 16px;
+    }}
+    .logo-ring img {{ width: 36px; height: 36px; object-fit: contain; }}
+    .brand-name {{
+      font-size: 22px; font-weight: 800; color: #ffffff;
+      letter-spacing: -0.5px; margin-bottom: 4px;
+    }}
+    .badge {{
+      display: inline-block; background: rgba(170,240,255,0.1);
+      border: 1px solid rgba(170,240,255,0.2); border-radius: 20px;
+      padding: 4px 12px; font-size: 11px; font-weight: 600; color: #AAF0FF;
+      letter-spacing: 1.5px; text-transform: uppercase; margin-top: 8px;
+    }}
+    /* ── Hero ── */
+    .hero {{
+      background: linear-gradient(160deg, #091525 0%, #060d1c 100%);
+      padding: 48px 48px 40px; text-align: center;
+      border-bottom: 1px solid rgba(170,240,255,0.06);
+    }}
+    .confetti {{ font-size: 36px; margin-bottom: 16px; }}
+    .hero-title {{
+      font-size: 30px; font-weight: 800; color: #ffffff;
+      letter-spacing: -0.8px; line-height: 1.2; margin-bottom: 8px;
+    }}
+    .hero-title span {{ color: #AAF0FF; text-shadow: 0 0 30px rgba(170,240,255,0.4); }}
+    .hero-subtitle {{
+      font-size: 15px; color: rgba(255,255,255,0.45);
+      line-height: 1.6; max-width: 400px; margin: 0 auto 28px;
+    }}
+    /* ── CTA ── */
+    .cta-wrapper {{ text-align: center; margin: 28px 0 0; }}
+    .cta-btn {{
+      display: inline-block; padding: 14px 36px;
+      background: linear-gradient(135deg, #AAF0FF 0%, #60c8e0 100%);
+      color: #060d1c; font-weight: 700; font-size: 14px;
+      border-radius: 10px; text-decoration: none; letter-spacing: 0.3px;
+      box-shadow: 0 8px 24px rgba(170,240,255,0.25);
+    }}
+    /* ── India Marketplaces ── */
+    .india-section {{
+      padding: 36px 48px;
+      background: linear-gradient(160deg, #07111f 0%, #060d1c 100%);
+      border-bottom: 1px solid rgba(170,240,255,0.06);
+    }}
+    .section-eyebrow {{
+      font-size: 11px; font-weight: 700; color: rgba(255,200,100,0.7);
+      letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px;
+    }}
+    .section-title {{
+      font-size: 17px; font-weight: 700; color: #ffffff;
+      margin-bottom: 18px; letter-spacing: -0.3px;
+    }}
+    .platform-row {{
+      display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
+    }}
+    .platform-pill {{
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; padding: 10px 16px;
+      font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8);
+    }}
+    .platform-dot-amazon {{ width: 8px; height: 8px; border-radius: 50%; background: #FF9900; flex-shrink: 0; }}
+    .platform-dot-flipkart {{ width: 8px; height: 8px; border-radius: 50%; background: #2874F0; flex-shrink: 0; }}
+    /* ── Festival Banner ── */
+    .festival-banner {{
+      background: linear-gradient(135deg, rgba(255,150,0,0.1) 0%, rgba(255,80,0,0.07) 100%);
+      border: 1px solid rgba(255,150,0,0.2);
+      border-radius: 12px; padding: 18px 20px; margin-top: 4px;
+    }}
+    .festival-banner-title {{
+      font-size: 14px; font-weight: 700; color: #FFB347; margin-bottom: 4px;
+    }}
+    .festival-banner-desc {{
+      font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.5;
+    }}
+    /* ── Features Grid ── */
+    .features {{
+      padding: 36px 48px; background-color: #060d1c;
+      border-bottom: 1px solid rgba(170,240,255,0.06);
+    }}
+    .features-title {{
+      font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.35);
+      letter-spacing: 1.5px; text-transform: uppercase;
+      margin-bottom: 22px; text-align: center;
+    }}
+    .feature-row {{
+      display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px;
+    }}
+    .feature-icon {{
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(170,240,255,0.07); border: 1px solid rgba(170,240,255,0.12);
+      font-size: 18px; flex-shrink: 0; text-align: center; line-height: 40px;
+    }}
+    .feature-text-title {{
+      font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.85); margin-bottom: 3px;
+    }}
+    .feature-text-desc {{ font-size: 13px; color: rgba(255,255,255,0.35); line-height: 1.5; }}
+    /* ── Quick Start ── */
+    .quickstart {{
+      padding: 32px 48px; background: #060d1c;
+      border-bottom: 1px solid rgba(170,240,255,0.06);
+    }}
+    .step-row {{
+      display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px;
+    }}
+    .step-num {{
+      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+      background: rgba(170,240,255,0.1); border: 1px solid rgba(170,240,255,0.2);
+      font-size: 12px; font-weight: 700; color: #AAF0FF;
+      text-align: center; line-height: 28px;
+    }}
+    .step-title {{ font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); margin-bottom: 2px; }}
+    .step-desc {{ font-size: 12px; color: rgba(255,255,255,0.35); line-height: 1.5; }}
+    /* ── GST Card ── */
+    .gst-card {{
+      margin: 0 48px 8px;
+      background: rgba(100,220,150,0.05); border: 1px solid rgba(100,220,150,0.15);
+      border-radius: 12px; padding: 16px 20px;
+      display: flex; align-items: flex-start; gap: 12px;
+    }}
+    .gst-icon {{ font-size: 22px; flex-shrink: 0; }}
+    .gst-title {{ font-size: 13px; font-weight: 700; color: rgba(100,220,150,0.9); margin-bottom: 3px; }}
+    .gst-desc {{ font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.5; }}
+    /* ── Account Card ── */
+    .account-card {{
+      margin: 20px 48px 8px;
+      background: rgba(170,240,255,0.04); border: 1px solid rgba(170,240,255,0.1);
+      border-radius: 12px; padding: 20px 24px;
+    }}
+    .account-label {{
+      font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.3);
+      letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px;
+    }}
+    .account-email {{ font-size: 14px; font-weight: 600; color: #AAF0FF; }}
+    .account-tier {{
+      display: inline-block; margin-top: 8px;
+      background: rgba(170,240,255,0.08); border: 1px solid rgba(170,240,255,0.15);
+      border-radius: 6px; padding: 3px 10px; font-size: 11px; font-weight: 600;
+      color: #AAF0FF; text-transform: uppercase; letter-spacing: 0.8px;
+    }}
+    /* ── Support Note ── */
+    .support-note {{
+      margin: 0 48px 24px;
+      background: rgba(170,240,255,0.03); border: 1px solid rgba(170,240,255,0.07);
+      border-radius: 10px; padding: 14px 18px;
+      font-size: 12px; color: rgba(255,255,255,0.35); line-height: 1.6;
+    }}
+    .support-note strong {{ color: rgba(170,240,255,0.6); }}
+    /* ── Footer ── */
+    .footer {{
+      background: #040b18; padding: 28px 48px; text-align: center;
+      border-top: 1px solid rgba(170,240,255,0.06);
+    }}
+    .footer-brand {{ font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 8px; }}
+    .footer-text {{ font-size: 12px; color: rgba(255,255,255,0.22); line-height: 1.6; }}
+    .footer-link {{ color: rgba(170,240,255,0.5); text-decoration: none; }}
+    .divider {{ height: 1px; background: rgba(170,240,255,0.06); margin: 0 48px; }}
+  </style>
+</head>
+<body>
+  <div class="email-wrapper">
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-glow"></div>
+      <div class="logo-ring">
+        <img src="https://insydz.com/logo.png" alt="Insydz" />
+      </div>
+      <div class="brand-name">Insydz</div>
+      <div class="badge">✦ Account Verified</div>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="confetti">🎉</div>
+      <div class="hero-title">
+        Welcome aboard,<br /><span>{first_name}!</span>
+      </div>
+      <p class="hero-subtitle">
+        Your account is verified and ready. Start unlocking powerful AI-driven insights built specifically for Indian marketplace sellers.
+      </p>
+      <div class="cta-wrapper">
+        <a href="https://insydz.com/dashboard" class="cta-btn">
+          Go to Your Dashboard →
+        </a>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- India Marketplaces Section -->
+    <div class="india-section">
+      <div class="section-eyebrow">🇮🇳 Built for India</div>
+      <div class="section-title">Supports India's biggest marketplaces</div>
+      <div class="platform-row">
+        <div class="platform-pill">
+          <div class="platform-dot-amazon"></div>
+          Amazon.in
+        </div>
+        <div class="platform-pill">
+          <div class="platform-dot-flipkart"></div>
+          Flipkart
+        </div>
+      </div>
+
+      <!-- Festival Banner -->
+      <div class="festival-banner">
+        <div class="festival-banner-title">🪔 Festival Season Ready</div>
+        <div class="festival-banner-desc">
+          Prepare for <strong style="color:rgba(255,179,71,0.9)">Diwali, Big Billion Days &amp; Great Indian Festival</strong> with AI-powered demand forecasting, competitor analysis, and review sentiment — weeks before the rush hits.
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Features -->
+    <div class="features">
+      <div class="features-title">What's waiting for you</div>
+
+      <div class="feature-row">
+        <div class="feature-icon">📊</div>
+        <div>
+          <div class="feature-text-title">Real-time Dashboards</div>
+          <div class="feature-text-desc">Live analytics pulled from your Amazon.in &amp; Flipkart reviews — updated continuously.</div>
+        </div>
+      </div>
+
+      <div class="feature-row">
+        <div class="feature-icon">🤖</div>
+        <div>
+          <div class="feature-text-title">AI-Generated Insights</div>
+          <div class="feature-text-desc">Detect trends, sentiment shifts, and market patterns across Hindi &amp; regional language reviews.</div>
+        </div>
+      </div>
+
+      <div class="feature-row">
+        <div class="feature-icon">📍</div>
+        <div>
+          <div class="feature-text-title">City-Level Intelligence</div>
+          <div class="feature-text-desc">Understand what's selling in Mumbai vs Delhi vs Bangalore — region-specific, not one-size-fits-all.</div>
+        </div>
+      </div>
+
+      <div class="feature-row">
+        <div class="feature-icon">🔑</div>
+        <div>
+          <div class="feature-text-title">Keyword Rank Tracker</div>
+          <div class="feature-text-desc">Monitor your product rankings on Amazon.in and Flipkart and discover high-opportunity keywords.</div>
+        </div>
+      </div>
+
+      <div class="feature-row">
+        <div class="feature-icon">📈</div>
+        <div>
+          <div class="feature-text-title">Profitability Calculator</div>
+          <div class="feature-text-desc">Calculate net margins in ₹ after marketplace fees, shipping &amp; returns — know your true profit.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Quick Start Steps -->
+    <div class="quickstart">
+      <div class="features-title">Get started in 3 steps</div>
+
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Connect your Seller ID</div>
+          <div class="step-desc">Go to your dashboard → Onboarding → enter your Amazon.in or Flipkart Seller ID to import your data automatically.</div>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Explore your Review Analytics</div>
+          <div class="step-desc">See what customers really think — broken down by product, category, star rating, and sentiment.</div>
+        </div>
+      </div>
+
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Ask the AI Assistant</div>
+          <div class="step-desc">Type any question about your products in plain English — our AI will answer with data-backed insights.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- GST Note -->
+    <div style="padding: 20px 0 0;">
+      <div class="gst-card">
+        <div class="gst-icon">🧾</div>
+        <div>
+          <div class="gst-title">GST-Friendly Analytics</div>
+          <div class="gst-desc">All pricing insights and profitability calculations are displayed in <strong style="color:rgba(100,220,150,0.7)">Indian Rupees (₹)</strong>, with marketplace fee structures aligned to Amazon.in &amp; Flipkart's current GST-inclusive commission slabs.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Account Card -->
+    <div class="account-card">
+      <div class="account-label">Your account</div>
+      <div class="account-email">{email}</div>
+      <div class="account-tier">Free Plan · 🇮🇳 India</div>
+    </div>
+
+    <!-- Support Note -->
+    <div class="support-note">
+      💬 <strong>Need help?</strong> Our support team is available <strong>Mon–Sat, 10 AM – 7 PM IST</strong>. Just reply to this email or visit <a href="https://insydz.com" style="color:rgba(170,240,255,0.5);">insydz.com</a>.
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-brand">Insydz</div>
+      <p class="footer-text">
+        © 2026 Insydz. All rights reserved.<br />
+        <a href="https://insydz.com/privacy-policy" class="footer-link">Privacy Policy</a> &nbsp;·&nbsp;
+        <a href="https://insydz.com/terms-service" class="footer-link">Terms of Service</a>
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>"""
+
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+
+            to=[{"email": email}],
+            sender={"email": BREVO_SENDER_EMAIL, "name": BREVO_SENDER_NAME},
+            subject=f"🎉 Welcome to Insydz, {first_name}! Your account is ready.",
+            html_content=html_content
+        )
+
+        api_instance.send_transac_email(send_smtp_email)
+        print(f"✅ Welcome email sent to {email}")
+        return True
+
+    except ApiException as e:
+        print(f"❌ Brevo API error sending welcome email: {e}")
+        return False
+    except Exception as e:
+        print(f"❌ Error sending welcome email: {str(e)}")
+        return False
+
+# ============================================
 # Redis Helper Functions with Prefixes
 # ============================================
 # Using prefixes to avoid conflicts with existing Redis data
@@ -6300,7 +6700,13 @@ def verify_email(request: VerifyOTPRequest, response: Response, db: Session = De
         
         # Clear OTP from Redis
         delete_otp(request.email)
-        
+
+        # Send welcome email (non-blocking — failure doesn't break verification)
+        try:
+            send_welcome_email(email=user.email, first_name=user.first_name)
+        except Exception as _e:
+            print(f"⚠️ Welcome email failed (non-critical): {_e}")
+
         # Create session
         session_token = create_session(user.id, remember_me=False)
         response.set_cookie(
@@ -6398,7 +6804,8 @@ def logout(response: Response, session_id: str = Cookie(None)):
         key="session_id",
         httponly=True,
         secure=SESSION_COOKIE_SECURE,
-        samesite="lax"
+        samesite="lax",
+        # domain=".insydz.com"
     )
 
     
@@ -6510,6 +6917,9 @@ def get_admin_stats(
 
         "keyword_tracker_used": u.keyword_tracker_used or 0,
         "keyword_tracker_month": u.keyword_tracker_month,
+
+        "ki_searches_used": u.ki_searches_used or 0,
+        "ki_cycle_start": str(u.ki_cycle_start) if u.ki_cycle_start else None,
 
         "business_name": u.business_name,
         "location": u.location,
@@ -9559,6 +9969,102 @@ def reset_ai_usage(
         raise
     except Exception as e:
         db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+# ==================== KEYWORD INTELLIGENCE USAGE ENDPOINTS ====================
+
+class KIUsageUpdate(BaseModel):
+    user_id: int
+    increment: int = 1
+
+@router.post("/users/{user_id}/ki-usage")
+def track_ki_usage(
+    user_id: int,
+    data: KIUsageUpdate,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Increment Keyword Intelligence search usage for the current billing cycle.
+    Resets based on billing cycle (ki_cycle_start + 30 days), NOT calendar month.
+    If ki_cycle_start is None (free user or never set), treats as fresh cycle from now.
+    """
+    try:
+        if current_user.id != user_id:
+            raise HTTPException(status_code=403, detail="Not authorized")
+
+        now = datetime.now()
+        cycle_start = current_user.ki_cycle_start
+        current_used = current_user.ki_searches_used or 0
+
+        # Determine if we are past the 30-day billing cycle
+        if cycle_start and (now - cycle_start).days >= 30:
+            # New cycle: reset counter and move cycle_start forward by 30-day increments
+            cycles_elapsed = (now - cycle_start).days // 30
+            new_cycle_start = cycle_start + timedelta(days=30 * cycles_elapsed)
+            new_used = data.increment
+            current_user.ki_cycle_start = new_cycle_start
+            print(f"🔄 KI usage reset for user {user_id}: new cycle from {new_cycle_start.date()}")
+        else:
+            new_used = current_used + data.increment
+            # If no cycle_start set yet (e.g. user just subscribed), set it now
+            if not cycle_start:
+                current_user.ki_cycle_start = now
+            print(f"📊 KI usage incremented for user {user_id}: {current_used} → {new_used}")
+
+        current_user.ki_searches_used = new_used
+        current_user.updated_at = now
+        db.commit()
+        db.refresh(current_user)
+
+        return {
+            "success": True,
+            "ki_searches_used": current_user.ki_searches_used,
+            "ki_cycle_start": str(current_user.ki_cycle_start) if current_user.ki_cycle_start else None,
+            "message": "KI usage tracked successfully"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+
+@router.get("/users/{user_id}/ki-usage")
+def get_ki_usage(
+    user_id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get current Keyword Intelligence search usage for the active billing cycle.
+    Resets automatically when the 30-day billing cycle rolls over.
+    """
+    try:
+        if current_user.id != user_id:
+            raise HTTPException(status_code=403, detail="Not authorized")
+
+        now = datetime.now()
+        cycle_start = current_user.ki_cycle_start
+        current_used = current_user.ki_searches_used or 0
+
+        # Auto-reset if billing cycle has rolled over (read-only: just return 0, don't write)
+        if cycle_start and (now - cycle_start).days >= 30:
+            used = 0
+        else:
+            used = current_used
+
+        return {
+            "ki_searches_used": used,
+            "ki_cycle_start": str(cycle_start) if cycle_start else None,
+            "subscription_tier": current_user.subscription_tier or "free"
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
 
 

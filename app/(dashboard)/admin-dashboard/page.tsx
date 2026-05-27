@@ -806,6 +806,8 @@ interface UserRow {
   sov_month: string | null;
   keyword_tracker_used: number;
   keyword_tracker_month: string | null;
+  ki_searches_used: number;
+  ki_cycle_start: string | null;
   created_at: string;
   updated_at: string;
   business_name: string | null;
@@ -1092,6 +1094,7 @@ export default function AdminDashboard() {
                 <Th label="Analysis" field="analysis_used" />
                 <Th label="SOV" field="sov_used" />
                 <Th label="KW Tracker" field="keyword_tracker_used" />
+                <Th label="KI Searches" field="ki_searches_used" />
                 <Th label="MRR" />
                 <Th label="Expires" field="subscription_expires_at" />
                 <Th label="Joined" field="created_at" />
@@ -1099,7 +1102,7 @@ export default function AdminDashboard() {
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={17} style={{ padding: 48, textAlign: "center", color: "#94a3b8", fontSize: 14 }}>No users found</td></tr>
+                <tr><td colSpan={18} style={{ padding: 48, textAlign: "center", color: "#94a3b8", fontSize: 14 }}>No users found</td></tr>
               ) : filtered.map(u => {
                 const hue = (u.id * 47) % 360;
                 const tierMeta = {
@@ -1194,6 +1197,11 @@ export default function AdminDashboard() {
                         <UsagePill used={u.keyword_tracker_used} color="#f59e0b" />
                       </td>
 
+                      {/* KI Searches */}
+                      <td style={{ padding: "11px 14px", textAlign: "center" }}>
+                        <UsagePill used={u.ki_searches_used} color="#ec4899" />
+                      </td>
+
                       {/* MRR */}
                       <td style={{ padding: "11px 14px" }}>
                         {TIER_PRICE[u.subscription_tier] > 0
@@ -1218,7 +1226,7 @@ export default function AdminDashboard() {
                     {/* Expanded Detail Row */}
                     {isOpen && (
                       <tr key={`exp-${u.id}`}>
-                        <td colSpan={17} style={{ padding: 0, background: "#f8fafc", borderTop: "1px solid #f1f5f9", borderBottom: "2px solid #e2e8f0" }}>
+                        <td colSpan={18} style={{ padding: 0, background: "#f8fafc", borderTop: "1px solid #f1f5f9", borderBottom: "2px solid #e2e8f0" }}>
                           <div style={{ padding: "18px 24px" }}>
                             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
 
@@ -1252,6 +1260,7 @@ export default function AdminDashboard() {
                                 <DetailRow label="Analysis" value={u.analysis_used > 0 ? `${u.analysis_used} (${u.analysis_month ?? "—"})` : "0"} />
                                 <DetailRow label="SOV" value={u.sov_used > 0 ? `${u.sov_used} (${u.sov_month ?? "—"})` : "0"} />
                                 <DetailRow label="KW Tracker" value={u.keyword_tracker_used > 0 ? `${u.keyword_tracker_used} (${u.keyword_tracker_month ?? "—"})` : "0"} />
+                                <DetailRow label="KI Searches" value={u.ki_searches_used > 0 ? `${u.ki_searches_used} (Cycle start: ${u.ki_cycle_start ? new Date(u.ki_cycle_start).toLocaleDateString("en-IN") : "—"})` : "0"} />
                               </DetailCard>
 
                               {/* Subscription */}

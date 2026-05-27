@@ -14,6 +14,9 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth-context";
+import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
+import { useKIUsage } from "@/hooks/use-ki-usage";
+import { useRouter } from "next/navigation";
 import {
   Loader2, X, TrendingUp, TrendingDown, Minus,
   Plus, Trash2, RefreshCw, BarChart3, Target, Crown,
@@ -151,6 +154,31 @@ interface KeywordExplorerProps {
 }
 
 const API = `${API_BASE_URL}/api/keyword-tracker`;
+
+// ── Subscription Tier Gate ────────────────────────────────────────────────────
+
+function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
+  const router = useRouter();
+  return (
+    <div className="absolute inset-0 bg-background/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
+      <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? "bg-blue-50" : "bg-amber-50"}`}>
+        <Lock className={`w-6 h-6 ${tier === "premium" ? "text-blue-500" : "text-amber-500"}`} />
+      </div>
+      <div className="text-center px-6">
+        <p className="font-bold text-slate-800 text-sm">{feature} is locked</p>
+        <p className="text-xs text-slate-400 mt-1">{tier === "premium" ? "Available on Premium · ₹2,999/mo" : "Available on Basic · ₹1,999/mo"}</p>
+      </div>
+      <button
+        onClick={() => router.push("/subscription")}
+        className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold text-white shadow-md transition-all hover:scale-105 ${
+          tier === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-amber-500 to-orange-500"
+        }`}
+      >
+        <Crown className="w-4 h-4" /> Upgrade to {tier === "premium" ? "Premium" : "Basic"}
+      </button>
+    </div>
+  );
+}
 
 // ── AI Insight Card ───────────────────────────────────────────────────────────
 
@@ -578,6 +606,8 @@ function KeywordExplorerPanel({
   onKeywordAdded,
   userTier = "free",
 }: KeywordExplorerProps) {
+  // ── Server-side usage tracking ───────────────────────────────────────
+  const { isLocked, isAtLimit, remaining: remainingSearches, limit: searchLimit, incrementUsage } = useKIUsage();
   const [keyword, setKeyword] = useState("");
   const [platform, setPlatform] = useState("amazon");
   const [loading, setLoading] = useState(false);
@@ -649,6 +679,15 @@ function KeywordExplorerPanel({
   };
 
   const handleSearch = async (overrideKeyword?: string) => {
+    if (isLocked) {
+      showToast("Upgrade Required", "Keyword Intelligence requires a Basic or Premium plan.", "error");
+      return;
+    }
+    if (isAtLimit) {
+      showToast("Limit Reached", `You've used all ${searchLimit} searches for this month. Upgrade for more.`, "error");
+      return;
+    }
+
     const searchVal = (overrideKeyword || keyword || "wireless headphones").trim();
     if (!searchVal) {
       showToast("Error", "Please enter a search query.", "error");
@@ -668,6 +707,8 @@ function KeywordExplorerPanel({
       if (res.ok) {
         setData(resJson);
         if (overrideKeyword) setKeyword(overrideKeyword);
+        // ── Increment usage on the backend ──────────────────────────────
+        await incrementUsage();
         fetchStrategy(searchVal, platform);
       } else {
         showToast("Search failed", resJson.detail?.message ?? "Error exploring keyword", "error");
@@ -694,6 +735,22 @@ function KeywordExplorerPanel({
       {/* Search Bar Section */}
       <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 relative">
         <CardContent className="p-5">
+          {/* Usage counter badge */}
+          {!isLocked && remainingSearches !== null && (
+            <div className="flex justify-end mb-3">
+              <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${
+                remainingSearches === 0
+                  ? "bg-red-50 text-red-600 border-red-200"
+                  : remainingSearches <= 1
+                  ? "bg-amber-50 text-amber-600 border-amber-200"
+                  : "bg-purple-50 text-purple-600 border-purple-200"
+              }`}>
+                {remainingSearches === 0
+                  ? "No searches left this month"
+                  : `${remainingSearches} of ${searchLimit} searches left`}
+              </span>
+            </div>
+          )}
           <div className="flex flex-col md:flex-row gap-4 items-end">
             <div className="flex-1 space-y-2 w-full">
               <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Search Keyword</Label>
@@ -729,9 +786,9 @@ function KeywordExplorerPanel({
               </Select>
             </div>
             <Button
-              className="w-full md:w-36 h-11 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl flex gap-2 items-center justify-center transition-all"
+              className="w-full md:w-36 h-11 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl flex gap-2 items-center justify-center transition-all disabled:opacity-60"
               onClick={() => handleSearch()}
-              disabled={loading}
+              disabled={loading || isLocked || isAtLimit}
             >
               {loading ? (
                 <>
@@ -1295,22 +1352,30 @@ function KeywordTrackerIntelligenceContent() {
           {/* Page Header */}
           <div className="text-center space-y-4 pt-4">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-2xl mb-2 shadow-inner">
-              <Search className="h-8 w-8 text-purple-600" />
+              <Compass className="h-8 w-8 text-purple-600" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 text-transparent bg-clip-text">
-              Keyword Explorer
+              Keyword Intelligence
             </h1>
             <p className="text-base sm:text-lg text-slate-500 max-w-2xl mx-auto">
               Explore high-opportunity buyer search terms, analyze search volumes, and track buyer keywords.
             </p>
           </div>
 
-          <KeywordExplorerPanel
-            showToast={showToast}
-            trackedProducts={dashboard?.keywords.map(kw => ({ asin_or_pid: kw.asin_or_pid, platform: kw.platform })) || []}
-            onKeywordAdded={fetchDashboard}
-            userTier={dashboard?.tier}
-          />
+          {/* Subscription gate wrapper */}
+          <div className="relative">
+            {(user?.subscriptionTier?.toLowerCase() || "free") === "free" && (
+              <TierGate tier="basic" feature="Keyword Intelligence" />
+            )}
+            <div className={(user?.subscriptionTier?.toLowerCase() || "free") === "free" ? "blur-sm pointer-events-none" : ""}>
+              <KeywordExplorerPanel
+                showToast={showToast}
+                trackedProducts={dashboard?.keywords.map(kw => ({ asin_or_pid: kw.asin_or_pid, platform: kw.platform })) || []}
+                onKeywordAdded={fetchDashboard}
+                userTier={dashboard?.tier}
+              />
+            </div>
+          </div>
 
         </div>
       </div>
