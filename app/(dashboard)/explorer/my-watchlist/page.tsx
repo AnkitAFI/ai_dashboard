@@ -216,17 +216,17 @@ export default function MyWatchlist() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 pb-4 border-b border-sky-100/80">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-xl flex items-center justify-center shadow-inner">
-            <Bookmark className="h-5 w-5 text-violet-600 fill-violet-200" />
+          <div className="w-12 h-12 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-2xl flex items-center justify-center shadow-inner">
+            <Bookmark className="h-6 w-6 text-violet-600 fill-violet-200" />
           </div>
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-violet-900 to-indigo-700 bg-clip-text text-transparent tracking-tight">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
               My Watchlist
-            </h2>
-            <p className="text-slate-500 text-xs sm:text-sm font-medium">
-              Synced across all your devices
+            </h1>
+            <p className="text-slate-500 text-sm font-medium">
+              Your saved opportunities and product calculations, synced across all your devices.
             </p>
           </div>
         </div>

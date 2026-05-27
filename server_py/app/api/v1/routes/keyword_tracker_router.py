@@ -27,6 +27,7 @@ from app.schemas.keyword_tracker_schema import (
     SuccessResponse,
     SuggestionsOut,
     TierLimits,
+    KeywordExplorerResponse,
 )
 from app.services import keyword_tracker_service as svc
 
@@ -270,6 +271,51 @@ def get_alerts(
         raise _handle_permission(e)
     except Exception as e:
         logger.error(f"get_alerts error: {e}")
+        raise HTTPException(status_code=500, detail={"error_code": "INTERNAL_ERROR", "message": str(e)})
+
+
+# ── Keyword Explorer ──────────────────────────────────────────────────────────
+
+@router.get("/explorer", response_model=KeywordExplorerResponse)
+def explore_keyword(
+    keyword: str = Query(..., min_length=1),
+    platform: str = Query(..., pattern="^(amazon|flipkart)$"),
+    db: Session = Depends(get_db),
+    user_id: str = Depends(get_current_user_id),
+):
+    """
+    Explore search volume, CPC, difficulty, search engine results page (SERP),
+    and geo-breakdown for a keyword on Amazon or Flipkart.
+    Requires Basic or Premium plan.
+    """
+    try:
+        return svc.explore_keyword(user_id, keyword, platform, db)
+    except PermissionError as e:
+        raise _handle_permission(e)
+    except Exception as e:
+        logger.error(f"explore_keyword error: {e}")
+        raise HTTPException(status_code=500, detail={"error_code": "INTERNAL_ERROR", "message": str(e)})
+
+
+@router.get("/explorer/strategy")
+def get_keyword_strategy(
+    keyword: str = Query(..., min_length=1),
+    platform: str = Query(..., pattern="^(amazon|flipkart)$"),
+    db: Session = Depends(get_db),
+    user_id: str = Depends(get_current_user_id),
+):
+    """
+    Returns AI-generated SEO title copywriting, bullet points, PPC bidding range,
+    and competitor targeting advice from the local Ollama LLM.
+    Requires Basic or Premium plan.
+    """
+    try:
+        strategy_html = svc.get_keyword_strategy(user_id, keyword, platform, db)
+        return {"strategy": strategy_html}
+    except PermissionError as e:
+        raise _handle_permission(e)
+    except Exception as e:
+        logger.error(f"get_keyword_strategy error: {e}")
         raise HTTPException(status_code=500, detail={"error_code": "INTERNAL_ERROR", "message": str(e)})
 
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { API_BASE_URL } from "@/lib/config";
 import {
   Card, CardContent, CardDescription, CardHeader, CardTitle,
@@ -9,21 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { useAuth } from "@/lib/auth-context";
-import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
-import { useKIUsage } from "@/hooks/use-ki-usage";
-import { useRouter } from "next/navigation";
 import {
-  Loader2, X, TrendingUp, TrendingDown, Minus,
-  Plus, Trash2, RefreshCw, BarChart3, Target, Crown,
-  Lock, CheckCircle2, XCircle, ChevronDown, ChevronUp,
-  Lightbulb, ShoppingBag, AlertCircle, Search,
-  ArrowUp, ArrowDown, Activity, Bot, Sparkles, Compass,
-  MapPin, ArrowUpRight, Info,
+  Loader2, X, Search, ShoppingBag, MapPin, Compass, ArrowUpRight, HelpCircle, Plus, Sparkles, BarChart3, Info, Crown, Lock
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -35,72 +25,7 @@ import {
   Tooltip,
 } from "recharts";
 
-// ── Types (page) ──────────────────────────────────────────────────────────────
-
-interface TierLimits {
-  keyword_limit: number;
-  product_limit: number;
-  history_days: number;
-  competitor_limit: number;
-  checks_per_day: number;
-  alerts_email: boolean;
-  alerts_whatsapp: boolean;
-  keyword_suggestions: boolean;
-  opportunity_score: boolean;
-}
-
-interface KeywordOut {
-  id: number;
-  keyword: string;
-  asin_or_pid: string;
-  platform: string;
-  category: string | null;
-  current_rank: number | null;
-  previous_rank: number | null;
-  rank_change: number | null;
-  last_checked_at: string | null;
-  created_at: string;
-  is_active: boolean;
-  ai_rank_insight: string | null;
-}
-
-interface Dashboard {
-  tier: string;
-  tier_limits: TierLimits;
-  keywords_used: number;
-  keywords_remaining: number;
-  total_keywords: number;
-  improving: number;
-  declining: number;
-  stable: number;
-  not_ranked: number;
-  keywords: KeywordOut[];
-  ai_insight: string | null;
-}
-
-interface RankPoint {
-  checked_at: string;
-  rank: number | null;
-  page: number | null;
-}
-
-interface KeywordHistory {
-  keyword_id: number;
-  keyword: string;
-  asin_or_pid: string;
-  platform: string;
-  history: RankPoint[];
-  ai_trend_analysis: string | null;
-}
-
-interface Toast {
-  id: number;
-  title: string;
-  description: string;
-  variant: "success" | "error";
-}
-
-// ── Types (KeywordExplorer) ───────────────────────────────────────────────────
+// ── Schemas & Interfaces ──────────────────────────────────────────────────────
 
 interface ExplorerSerpItem {
   position: number;
@@ -153,183 +78,7 @@ interface KeywordExplorerProps {
   userTier?: string;
 }
 
-const API = `${API_BASE_URL}/api/keyword-tracker`;
-
-// ── Subscription Tier Gate ────────────────────────────────────────────────────
-
-function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
-  const router = useRouter();
-  return (
-    <div className="absolute inset-0 bg-background/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
-      <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? "bg-blue-50" : "bg-amber-50"}`}>
-        <Lock className={`w-6 h-6 ${tier === "premium" ? "text-blue-500" : "text-amber-500"}`} />
-      </div>
-      <div className="text-center px-6">
-        <p className="font-bold text-slate-800 text-sm">{feature} is locked</p>
-        <p className="text-xs text-slate-400 mt-1">{tier === "premium" ? "Available on Premium · ₹2,999/mo" : "Available on Basic · ₹1,999/mo"}</p>
-      </div>
-      <button
-        onClick={() => router.push("/subscription")}
-        className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold text-white shadow-md transition-all hover:scale-105 ${
-          tier === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-amber-500 to-orange-500"
-        }`}
-      >
-        <Crown className="w-4 h-4" /> Upgrade to {tier === "premium" ? "Premium" : "Basic"}
-      </button>
-    </div>
-  );
-}
-
-// ── AI Insight Card ───────────────────────────────────────────────────────────
-
-function AIInsightCard({ insight, label = "AI Insight" }: { insight: string; label?: string }) {
-  return (
-    <div className="flex gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl">
-      <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
-        <Bot className="h-4 w-4 text-white" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-[10px] font-bold text-purple-600 uppercase tracking-wider mb-1 flex items-center gap-1">
-          <Sparkles className="h-3 w-3" />{label}
-        </p>
-        <p className="text-sm text-slate-700 leading-relaxed">{insight}</p>
-      </div>
-    </div>
-  );
-}
-
-// ── Small components ──────────────────────────────────────────────────────────
-
-function RankBadge({ rank, change }: { rank: number | null; change: number | null }) {
-  if (rank === null) {
-    return (
-      <span className="inline-flex items-center gap-1 text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">
-        <Minus className="h-3 w-3" /> Not ranked
-      </span>
-    );
-  }
-  const page = Math.ceil(rank / 10);
-  return (
-    <div className="flex flex-col items-end gap-0.5">
-      <span className="font-bold text-slate-800 text-sm">#{rank}</span>
-      <span className="text-[10px] text-slate-400">Page {page}</span>
-      {change !== null && change !== 0 && (
-        <span className={`flex items-center gap-0.5 text-[10px] font-semibold ${change > 0 ? "text-green-600" : "text-red-500"}`}>
-          {change > 0 ? <ArrowUp className="h-2.5 w-2.5" /> : <ArrowDown className="h-2.5 w-2.5" />}
-          {Math.abs(change)}
-        </span>
-      )}
-    </div>
-  );
-}
-
-function MiniSparkline({ history }: { history: RankPoint[] }) {
-  if (history.length < 2) return <span className="text-xs text-slate-400">No chart yet</span>;
-  const ranks = history.map(h => h.rank ?? 0).filter(r => r > 0);
-  if (!ranks.length) return null;
-  const maxR = Math.max(...ranks);
-  const range = maxR - Math.min(...ranks) || 1;
-  const W = 120, H = 36;
-  const pts = ranks.map((r, i) => {
-    const x = (i / (ranks.length - 1)) * W;
-    const y = H - ((maxR - r) / range) * (H - 4) - 2;
-    return `${x},${y}`;
-  }).join(" ");
-  return (
-    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="overflow-visible">
-      <polyline points={pts} fill="none" stroke="#3b82f6" strokeWidth="1.5" strokeLinejoin="round" />
-      {ranks.map((r, i) => {
-        const x = (i / (ranks.length - 1)) * W;
-        const y = H - ((maxR - r) / range) * (H - 4) - 2;
-        return i === ranks.length - 1
-          ? <circle key={i} cx={x} cy={y} r="3" fill="#3b82f6" />
-          : null;
-      })}
-    </svg>
-  );
-}
-
-// ── History modal ─────────────────────────────────────────────────────────────
-
-function HistoryModal({ kw, onClose }: { kw: KeywordOut; onClose: () => void }) {
-  const [data, setData] = useState<KeywordHistory | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    fetch(`${API}/keywords/${kw.id}/history`, { credentials: "include" })
-      .then(r => r.json())
-      .then(d => {
-        if (d.detail?.error_code) setError(d.detail.message);
-        else setData(d);
-      })
-      .catch(() => setError("Couldn't load history. Please refresh the page."))
-      .finally(() => setLoading(false));
-  }, [kw.id]);
-
-  return (
-    <div className="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="font-semibold text-slate-800">{kw.keyword}</p>
-            <p className="text-xs text-slate-400">{kw.asin_or_pid} · {kw.platform}</p>
-          </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        {loading && (
-          <div className="flex justify-center py-8">
-            <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
-          </div>
-        )}
-
-        {error && (
-          <Alert className="border-orange-200 bg-orange-50">
-            <Lock className="h-4 w-4 text-orange-600" />
-            <AlertDescription className="text-orange-800 text-sm">{error}</AlertDescription>
-          </Alert>
-        )}
-
-        {data && !error && (
-          <>
-            <div className="mb-4">
-              <MiniSparkline history={data.history} />
-            </div>
-
-            {data.ai_trend_analysis && (
-              <div className="mb-4">
-                <AIInsightCard insight={data.ai_trend_analysis} label="AI Trend Analysis" />
-              </div>
-            )}
-
-            <div className="space-y-2 max-h-56 overflow-y-auto">
-              {data.history.length === 0 && (
-                <p className="text-sm text-slate-400 text-center py-4">
-                  No history yet — refresh rank to start logging.
-                </p>
-              )}
-              {[...data.history].reverse().map((h, i) => (
-                <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
-                  <span className="text-xs text-slate-500">
-                    {new Date(h.checked_at).toLocaleString("en-IN", {
-                      day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
-                    })}
-                  </span>
-                  <RankBadge rank={h.rank} change={null} />
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ── KeywordExplorer Sub-components ────────────────────────────────────────────
+// ── Sub-components ────────────────────────────────────────────────────────────
 
 function DifficultyGauge({ value }: { value: number }) {
   const radius = 32;
@@ -447,6 +196,7 @@ function QuickTrackModal({
       .catch(() => setCategories([]));
   }, [platform]);
 
+  // Set default selection if any existing
   useEffect(() => {
     const matched = trackedProducts.filter((p) => p.platform === platform);
     if (matched.length > 0) {
@@ -598,47 +348,89 @@ function QuickTrackModal({
   );
 }
 
-// ── KeywordExplorer Panel ─────────────────────────────────────────────────────
+// ── Main Component ────────────────────────────────────────────────────────────
 
-function KeywordExplorerPanel({
+export default function KeywordExplorer({
   showToast,
   trackedProducts,
   onKeywordAdded,
   userTier = "free",
 }: KeywordExplorerProps) {
-  // ── Server-side usage tracking ───────────────────────────────────────
-  const { isLocked, isAtLimit, remaining: remainingSearches, limit: searchLimit, incrementUsage } = useKIUsage();
   const [keyword, setKeyword] = useState("");
   const [platform, setPlatform] = useState("amazon");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<KeywordExplorerResponse | null>(null);
 
+  // Quick track modal state
   const [trackTarget, setTrackTarget] = useState<string | null>(null);
 
+  // AI Strategy Advisor states
   const [strategyText, setStrategyText] = useState<string>("");
   const [strategyLoading, setStrategyLoading] = useState<boolean>(false);
   const [strategyError, setStrategyError] = useState<string>("");
 
+  // Show all states UI toggle
   const [showAllStates, setShowAllStates] = useState<boolean>(false);
 
+  // Calculate regional breakdown dynamically
   const calculateRegions = () => {
     if (!data || !data.geo_distribution) return [];
     const zones = [
       {
         name: "South India",
-        states: ["Tamil Nadu", "Karnataka", "Telangana", "Andhra Pradesh", "Kerala", "Puducherry", "Lakshadweep", "Andaman and Nicobar Islands"]
+        states: [
+          "Tamil Nadu",
+          "Karnataka",
+          "Telangana",
+          "Andhra Pradesh",
+          "Kerala",
+          "Puducherry",
+          "Lakshadweep",
+          "Andaman and Nicobar Islands"
+        ]
       },
       {
         name: "North India",
-        states: ["Delhi", "Uttar Pradesh", "Punjab", "Haryana", "Rajasthan", "Uttarakhand", "Himachal Pradesh", "Jammu and Kashmir", "Ladakh", "Chandigarh"]
+        states: [
+          "Delhi",
+          "Uttar Pradesh",
+          "Punjab",
+          "Haryana",
+          "Rajasthan",
+          "Uttarakhand",
+          "Himachal Pradesh",
+          "Jammu and Kashmir",
+          "Ladakh",
+          "Chandigarh"
+        ]
       },
       {
         name: "West India",
-        states: ["Maharashtra", "Gujarat", "Goa", "Madhya Pradesh", "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu"]
+        states: [
+          "Maharashtra",
+          "Gujarat",
+          "Goa",
+          "Madhya Pradesh",
+          "Chhattisgarh",
+          "Dadra and Nagar Haveli and Daman and Diu"
+        ]
       },
       {
         name: "East India",
-        states: ["West Bengal", "Bihar", "Odisha", "Jharkhand", "Assam", "Sikkim", "Arunachal Pradesh", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Tripura"]
+        states: [
+          "West Bengal",
+          "Bihar",
+          "Odisha",
+          "Jharkhand",
+          "Assam",
+          "Sikkim",
+          "Arunachal Pradesh",
+          "Manipur",
+          "Meghalaya",
+          "Mizoram",
+          "Nagaland",
+          "Tripura"
+        ]
       }
     ];
 
@@ -648,7 +440,11 @@ function KeywordExplorerPanel({
         pctSum += data.geo_distribution[state] || 0;
       });
       const volume = Math.round((data.search_volume * pctSum) / 100);
-      return { name: zone.name, percentage: Math.round(pctSum * 10) / 10, volume };
+      return {
+        name: zone.name,
+        percentage: Math.round(pctSum * 10) / 10,
+        volume,
+      };
     });
 
     return regions.sort((a, b) => b.volume - a.volume);
@@ -662,7 +458,9 @@ function KeywordExplorerPanel({
     setStrategyText("");
     try {
       const res = await fetch(
-        `${API_BASE_URL}/api/keyword-tracker/explorer/strategy?keyword=${encodeURIComponent(searchVal)}&platform=${targetPlatform}`,
+        `${API_BASE_URL}/api/keyword-tracker/explorer/strategy?keyword=${encodeURIComponent(
+          searchVal
+        )}&platform=${targetPlatform}`,
         { credentials: "include" }
       );
       const resJson = await res.json();
@@ -671,7 +469,7 @@ function KeywordExplorerPanel({
       } else {
         setStrategyError(resJson.detail?.message ?? "Error generating strategy");
       }
-    } catch {
+    } catch (err) {
       setStrategyError("Network error. Unable to load strategy.");
     } finally {
       setStrategyLoading(false);
@@ -679,15 +477,6 @@ function KeywordExplorerPanel({
   };
 
   const handleSearch = async (overrideKeyword?: string) => {
-    if (isLocked) {
-      showToast("Upgrade Required", "Keyword Intelligence requires a Basic or Premium plan.", "error");
-      return;
-    }
-    if (isAtLimit) {
-      showToast("Limit Reached", `You've used all ${searchLimit} searches for this month. Upgrade for more.`, "error");
-      return;
-    }
-
     const searchVal = (overrideKeyword || keyword || "wireless headphones").trim();
     if (!searchVal) {
       showToast("Error", "Please enter a search query.", "error");
@@ -700,26 +489,27 @@ function KeywordExplorerPanel({
     setStrategyError("");
     try {
       const res = await fetch(
-        `${API_BASE_URL}/api/keyword-tracker/explorer?keyword=${encodeURIComponent(searchVal)}&platform=${platform}`,
+        `${API_BASE_URL}/api/keyword-tracker/explorer?keyword=${encodeURIComponent(
+          searchVal
+        )}&platform=${platform}`,
         { credentials: "include" }
       );
       const resJson = await res.json();
       if (res.ok) {
         setData(resJson);
         if (overrideKeyword) setKeyword(overrideKeyword);
-        // ── Increment usage on the backend ──────────────────────────────
-        await incrementUsage();
         fetchStrategy(searchVal, platform);
       } else {
         showToast("Search failed", resJson.detail?.message ?? "Error exploring keyword", "error");
       }
-    } catch {
+    } catch (err) {
       showToast("Network Error", "Could not query details from server.", "error");
     } finally {
       setLoading(false);
     }
   };
 
+  // Trigger search on platform change only if there is an active search query
   useEffect(() => {
     if (keyword.trim()) {
       handleSearch();
@@ -735,22 +525,6 @@ function KeywordExplorerPanel({
       {/* Search Bar Section */}
       <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 relative">
         <CardContent className="p-5">
-          {/* Usage counter badge */}
-          {!isLocked && remainingSearches !== null && (
-            <div className="flex justify-end mb-3">
-              <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${
-                remainingSearches === 0
-                  ? "bg-red-50 text-red-600 border-red-200"
-                  : remainingSearches <= 1
-                  ? "bg-amber-50 text-amber-600 border-amber-200"
-                  : "bg-purple-50 text-purple-600 border-purple-200"
-              }`}>
-                {remainingSearches === 0
-                  ? "No searches left this month"
-                  : `${remainingSearches} of ${searchLimit} searches left`}
-              </span>
-            </div>
-          )}
           <div className="flex flex-col md:flex-row gap-4 items-end">
             <div className="flex-1 space-y-2 w-full">
               <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Search Keyword</Label>
@@ -786,9 +560,9 @@ function KeywordExplorerPanel({
               </Select>
             </div>
             <Button
-              className="w-full md:w-36 h-11 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl flex gap-2 items-center justify-center transition-all disabled:opacity-60"
+              className="w-full md:w-36 h-11 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl flex gap-2 items-center justify-center transition-all"
               onClick={() => handleSearch()}
-              disabled={loading || isLocked || isAtLimit}
+              disabled={loading}
             >
               {loading ? (
                 <>
@@ -797,7 +571,7 @@ function KeywordExplorerPanel({
                 </>
               ) : (
                 <>
-                  <Compass className="h-4 w-4" />
+                  <Compass className="h-4.5 w-4.5" />
                   Analyze
                 </>
               )}
@@ -833,7 +607,7 @@ function KeywordExplorerPanel({
             <div>
               <h3 className="font-bold text-slate-800 text-lg">Keyword Explorer</h3>
               <p className="text-sm text-slate-500 max-w-sm mt-1.5 mx-auto">
-                Type in any search term above (e.g., "face serum", "water bottle") and click Analyze to retrieve search volumes, buyer intent, regional demand, competitor SERPs, and local AI advice.
+                Type in any search term above (e.g., "face serum", "water bottle") and click **Analyze** to retrieve search volumes, buyer intent, regional demand, competitor SERPs, and local AI advice.
               </p>
             </div>
           </CardContent>
@@ -982,7 +756,7 @@ function KeywordExplorerPanel({
             <Card className="shadow-xs border border-slate-200 rounded-2xl p-6 bg-white lg:col-span-3">
               <CardHeader className="p-0 pb-4">
                 <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4 text-indigo-500" />
+                  <BarChart3 className="h-4.5 w-4.5 text-indigo-500" />
                   12-Month Search Volume Trend
                 </CardTitle>
                 <CardDescription className="text-xs">
@@ -994,7 +768,10 @@ function KeywordExplorerPanel({
                   <BarChart data={
                     (data.trend || []).map((vol, idx) => {
                       const monthNames = ["Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May"];
-                      return { month: monthNames[idx % 12], Volume: vol };
+                      return {
+                        month: monthNames[idx % 12],
+                        Volume: vol
+                      };
                     })
                   } margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
@@ -1021,7 +798,7 @@ function KeywordExplorerPanel({
             <Card className="shadow-xs border border-slate-200 rounded-2xl lg:col-span-2 relative overflow-hidden">
               <CardHeader>
                 <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-rose-500" />
+                  <MapPin className="h-4.5 w-4.5 text-rose-500" />
                   State-wise Interest Distribution
                 </CardTitle>
                 <CardDescription className="text-xs">
@@ -1066,7 +843,7 @@ function KeywordExplorerPanel({
             <Card className="shadow-xs border border-slate-200 rounded-2xl lg:col-span-5">
               <CardHeader>
                 <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                  <Compass className="h-4 w-4 text-indigo-500" />
+                  <Compass className="h-4.5 w-4.5 text-indigo-500" />
                   Related Keyword Variations
                 </CardTitle>
                 <CardDescription className="text-xs">
@@ -1157,7 +934,7 @@ function KeywordExplorerPanel({
           <Card className="shadow-xs border border-slate-200 rounded-2xl">
             <CardHeader>
               <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                <ShoppingBag className="h-4 w-4 text-orange-500" />
+                <ShoppingBag className="h-4.5 w-4.5 text-orange-500" />
                 SERP Analysis (Top 10 Results)
               </CardTitle>
               <CardDescription className="text-xs">
@@ -1237,7 +1014,7 @@ function KeywordExplorerPanel({
           <Card className="shadow-xs border border-slate-200 rounded-2xl overflow-hidden relative">
             <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 border-b border-slate-100">
               <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-purple-600 animate-pulse" />
+                <Sparkles className="h-4.5 w-4.5 text-purple-600 animate-pulse" />
                 AI Copywriting & PPC Bidding Strategy
               </CardTitle>
               <CardDescription className="text-xs">
@@ -1248,7 +1025,7 @@ function KeywordExplorerPanel({
               {strategyLoading ? (
                 <div className="flex flex-col items-center justify-center py-12 space-y-3">
                   <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-                  <p className="text-xs text-slate-500 font-medium">Generating copywriting & PPC strategy via Llama 3.2...</p>
+                  <p className="text-xs text-slate-500 font-medium">Generating copywriting & PPC strategy</p>
                 </div>
               ) : strategyError ? (
                 <div className="text-xs text-rose-600 p-4 border border-rose-100 rounded-lg bg-rose-50/50">
@@ -1286,115 +1063,5 @@ function KeywordExplorerPanel({
         />
       )}
     </div>
-  );
-}
-
-// ── Main page content ─────────────────────────────────────────────────────────
-
-function KeywordTrackerIntelligenceContent() {
-  const { user, isLoading } = useAuth();
-  const userId = user?.id;
-
-  const [dashboard, setDashboard] = useState<Dashboard | null>(null);
-  const [loadingDash, setLoadingDash] = useState(false);
-  const [historyKw, setHistoryKw] = useState<KeywordOut | null>(null);
-
-  const [toasts, setToasts] = useState<Toast[]>([]);
-
-  const showToast = (title: string, description: string, variant: "success" | "error" = "success") => {
-    const id = Date.now();
-    setToasts(p => [...p, { id, title, description, variant }]);
-    setTimeout(() => setToasts(p => p.filter(t => t.id !== id)), 5000);
-  };
-
-  const fetchDashboard = useCallback(async () => {
-    if (!userId) return;
-    setLoadingDash(true);
-    try {
-      const res = await fetch(`${API}/dashboard`, { credentials: "include" });
-      const data = await res.json();
-      if (res.ok) setDashboard(data);
-      else showToast("Error", data.detail?.message ?? "Failed to load dashboard", "error");
-    } catch {
-      showToast("Network Error", "Connection issue. Please retry shortly.", "error");
-    } finally {
-      setLoadingDash(false);
-    }
-  }, [userId]);
-
-  useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
-
-  return (
-    <div className="space-y-6">
-
-      {/* Toasts */}
-      <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-md">
-        {toasts.map(t => (
-          <div key={t.id} className={`flex items-start gap-3 p-4 rounded-lg shadow-lg border-2 backdrop-blur-none animate-in slide-in-from-right ${t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
-            }`}>
-            {t.variant === "success"
-              ? <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
-              : <XCircle className="h-5 w-5 text-red-600 mt-0.5" />}
-            <div className="flex-1">
-              <p className={`font-semibold text-sm ${t.variant === "success" ? "text-green-900" : "text-red-900"}`}>{t.title}</p>
-              <p className={`text-sm mt-0.5 ${t.variant === "success" ? "text-green-700" : "text-red-700"}`}>{t.description}</p>
-            </div>
-            <button onClick={() => setToasts(p => p.filter(x => x.id !== t.id))}>
-              <X className={`h-4 w-4 ${t.variant === "success" ? "text-green-600" : "text-red-600"}`} />
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <div className="space-y-6">
-        <div className="max-w-7xl mx-auto space-y-6">
-
-          {/* Page Header */}
-          <div className="text-center space-y-4 pt-4">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-2xl mb-2 shadow-inner">
-              <Compass className="h-8 w-8 text-purple-600" />
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 text-transparent bg-clip-text">
-              Keyword Intelligence
-            </h1>
-            <p className="text-base sm:text-lg text-slate-500 max-w-2xl mx-auto">
-              Explore high-opportunity buyer search terms, analyze search volumes, and track buyer keywords.
-            </p>
-          </div>
-
-          {/* Subscription gate wrapper */}
-          <div className="relative">
-            {(user?.subscriptionTier?.toLowerCase() || "free") === "free" && (
-              <TierGate tier="basic" feature="Keyword Intelligence" />
-            )}
-            <div className={(user?.subscriptionTier?.toLowerCase() || "free") === "free" ? "blur-sm pointer-events-none" : ""}>
-              <KeywordExplorerPanel
-                showToast={showToast}
-                trackedProducts={dashboard?.keywords.map(kw => ({ asin_or_pid: kw.asin_or_pid, platform: kw.platform })) || []}
-                onKeywordAdded={fetchDashboard}
-                userTier={dashboard?.tier}
-              />
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {historyKw && (
-        <HistoryModal
-          kw={historyKw}
-          onClose={() => setHistoryKw(null)}
-        />
-      )}
-
-    </div>
-  );
-}
-
-export default function KeywordTrackerIntelligence() {
-  return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>
-      <KeywordTrackerIntelligenceContent />
-    </Suspense>
   );
 }

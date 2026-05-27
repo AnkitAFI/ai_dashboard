@@ -1,7 +1,7 @@
 # app/schemas/keyword_tracker_schema.py
 
 from __future__ import annotations
-from typing import Optional, List
+from typing import Optional, List, Dict, Any
 from datetime import datetime
 from pydantic import BaseModel, Field
 
@@ -153,3 +153,42 @@ class ErrorResponse(BaseModel):
     success: bool = False
     error_code: str
     message: str
+
+
+class ExplorerSerpItem(BaseModel):
+    position: int
+    title: str
+    brand: Optional[str] = None
+    price: Optional[float] = None
+    rating: Optional[float] = None
+    reviews: Optional[int] = None
+    sales_volume: Optional[float] = None
+    asin_or_pid: str
+
+
+class ExplorerVariationItem(BaseModel):
+    keyword: str
+    search_volume: int
+    difficulty: int
+    intent: str
+    cpc: float
+
+
+class KeywordExplorerResponse(BaseModel):
+    keyword: str
+    platform: str
+    search_volume: int
+    difficulty: int
+    intent: str
+    cpc: float
+    estimated_impressions: int
+    estimated_clicks: int
+    geo_distribution: Dict[str, float]
+    variations: List[ExplorerVariationItem]
+    serp: List[ExplorerSerpItem]
+    cached_at: str
+    global_search_volume: Optional[int] = None
+    global_breakdown: Optional[Dict[str, int]] = None
+    competitive_density: Optional[float] = None
+    serp_features: Optional[List[str]] = None
+    trend: Optional[List[int]] = None

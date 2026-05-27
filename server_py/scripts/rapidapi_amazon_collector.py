@@ -1083,6 +1083,13 @@ class Database:
             if not pid or key in seen_keys:
                 continue
             seen_keys.add(key)
+            pid = p.get("pid")
+            category_id = p.get("category_id")
+            country = p.get("country")
+            key = (pid, category_id, country)
+            if not pid or key in seen_keys:
+                continue
+            seen_keys.add(key)
             try:
                 current_price = p.get("product_price")
                 original_price = p.get("product_mrp")

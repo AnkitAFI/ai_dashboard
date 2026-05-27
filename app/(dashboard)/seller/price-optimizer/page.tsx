@@ -388,17 +388,21 @@ export default function SellerPriceOptimizer() {
   return (
     <div className="min-h-screen flex flex-col bg-transparent">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-xl border-b border-sky-100 shadow-sm px-4 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-20 -mx-4 sm:-mx-6 lg:-mx-8">
+      <header className="bg-transparent border-b border-sky-100/80 pb-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <button onClick={toggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100">
+          <button onClick={toggle} className="lg:hidden p-2 rounded-xl bg-sky-50 hover:bg-sky-100 mr-1 shadow-sm">
             <Menu className="w-5 h-5 text-sky-900" />
           </button>
-          <div className="w-px h-5 bg-slate-200" />
+          <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl flex items-center justify-center shadow-inner shrink-0">
+            <TrendingUp className="w-6 h-6 text-sky-600 animate-pulse" />
+          </div>
           <div>
-            <h2 className="text-lg sm:text-xl font-bold text-sky-900 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-sky-600" /> Price Optimizer
-            </h2>
-            <p className="text-xs text-slate-500 hidden sm:block">Live repricing intelligence for your tracked ASINs</p>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+              Price Optimizer
+            </h1>
+            <p className="text-sm text-slate-500 font-medium">
+              Live repricing intelligence and price optimization recommendations for your tracked products.
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -407,7 +411,7 @@ export default function SellerPriceOptimizer() {
           </Badge>
           {!isPremium && (
             <button onClick={() => router.push("/subscription")}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-bold shadow hover:shadow-md transition-all">
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-bold shadow hover:shadow-md transition-all">
               <Crown className="w-3 h-3" /> Upgrade
             </button>
           )}
@@ -709,7 +713,6 @@ export default function SellerPriceOptimizer() {
                                 <span className="text-[10px] font-mono text-slate-400">{c.asin}</span>
                                 {c.is_best_seller && <span className="text-[9px] font-bold text-orange-600 bg-orange-50 px-1 rounded">BSR</span>}
                                 {c.is_amazon_choice && <span className="text-[9px] font-bold text-amber-700 bg-amber-50 px-1 rounded">AC</span>}
-                                {c.sales_volume && <span className="text-[9px] font-semibold text-emerald-600 bg-emerald-50 px-1 rounded">{c.sales_volume}</span>}
                               </div>
                             </div>
                             <div className="text-right shrink-0">

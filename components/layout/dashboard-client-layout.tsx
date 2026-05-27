@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "@/components/layout/sidebar";
 import { DashboardHeader } from "@/components/layout/DashboardHeader";
 import { FiltersProvider } from "@/components/dashboard/filters-context";
@@ -9,26 +9,19 @@ import { SidebarProvider, useSidebar } from "@/components/layout/sidebar-context
 import FiltersPanel from "@/components/dashboard/filters-panel";
 import AlertDetailsDialog from "@/components/dashboard/alert-details-dialog";
 import { usePathname } from "next/navigation";
+import { Menu } from "lucide-react";
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { isOpen, setIsOpen, toggle } = useSidebar();
   const [showFilters, setShowFilters] = useState(false);
   const pathname = usePathname();
 
-  // Pages that have their own custom header
-  const PAGES_WITH_CUSTOM_HEADER = [
-    "/product/",
-    "/category-products/",
-    "/sentiment-analysis/",
-    "/seller/my-watchlist",
-    "/seller/ai-advisor",
-    "/product-tracker/history",
-    "/seller/price-comparison",
-    "/seller/review-comparison",
-    "/seller/keyword-gap"
-  ];
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname, setIsOpen]);
 
-  const hasCustomHeader = PAGES_WITH_CUSTOM_HEADER.some(p => pathname.startsWith(p));
+  const isDashboardPage = pathname === "/dashboard" || pathname === "/overview" || pathname === "/";
+  const hasCustomHeader = !isDashboardPage;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100">
@@ -45,6 +38,23 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
             onFilterToggle={() => setShowFilters(!showFilters)}
             showFilters={showFilters}
           />
+        )}
+        
+        {hasCustomHeader && (
+          <header className="lg:hidden flex items-center justify-between px-4 py-3 bg-white/70 backdrop-blur-md border-b border-sky-100 shadow-sm sticky top-0 z-20">
+            <button
+              onClick={toggle}
+              className="p-2 rounded-lg hover:bg-sky-100 transition-colors text-sky-900"
+              aria-label="Toggle Sidebar"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <div className="flex items-center space-x-2">
+              <img src="/logo.png" alt="Insydz Logo" className="w-7 h-7 object-contain rounded-md" />
+              <span className="font-bold text-sm text-[#003366] tracking-tight">Insydz</span>
+            </div>
+            <div className="w-9" /> {/* balance/spacer */}
+          </header>
         )}
         
         <main className={`flex-1 ${hasCustomHeader ? 'p-0' : 'px-4 sm:px-6'}`}>

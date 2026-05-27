@@ -130,6 +130,10 @@ def _sync_user(user: "User", order: "PaymentOrder", db: Session) -> None:
     """Single place that writes tier + expiry to users table."""
     user.subscription_tier       = order.plan_id
     user.subscription_expires_at = order.expires_at
+    # Anchor KI billing cycle to the exact subscription date
+    if order.paid_at:
+        user.ki_cycle_start  = order.paid_at
+        user.ki_searches_used = 0   # reset counter on new subscription
     user.updated_at              = datetime.now()
     db.commit()
     db.refresh(user)

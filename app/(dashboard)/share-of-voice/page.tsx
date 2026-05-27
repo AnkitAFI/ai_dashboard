@@ -566,6 +566,19 @@ export default function ShareOfVoice() {
   return (
     <div className="space-y-6">
 
+      {/* Hero Header */}
+      <div className="text-center space-y-4 mb-8">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl mb-2 shadow-inner">
+          <BarChart3 className="h-8 w-8 text-blue-500" />
+        </div>
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+          Share of Voice (SOV) & Market Intelligence
+        </h1>
+        <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+          Analyze brand visibility, measure search market share, track competitors, and uncover category opportunities.
+        </p>
+      </div>
+
       {/* ── Upgrade Modal ── */}
       {showUpgradeModal && (
         <div className="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4">

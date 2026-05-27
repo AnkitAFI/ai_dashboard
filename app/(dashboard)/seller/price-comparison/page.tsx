@@ -664,17 +664,21 @@ function PriceComparisonContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-transparent">
-        <header className="bg-white/80 backdrop-blur-xl border-b border-sky-100 shadow-sm px-4 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-20 -mx-4 sm:-mx-6 lg:-mx-8">
+        <header className="bg-transparent border-b border-sky-100/80 pb-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <button onClick={toggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100">
+            <button onClick={toggle} className="lg:hidden p-2 rounded-xl bg-sky-50 hover:bg-sky-100 mr-1 shadow-sm">
               <Menu className="w-5 h-5 text-sky-900" />
             </button>
-            <div className="w-px h-5 bg-slate-200" />
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl flex items-center justify-center shadow-inner shrink-0">
+              <BarChart2 className="w-6 h-6 text-sky-600 animate-pulse" />
+            </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-bold text-sky-900 flex items-center gap-2">
-                <BarChart2 className="w-5 h-5 text-sky-600" /> Price Comparison
-              </h2>
-              <p className="text-xs text-slate-500 hidden sm:block">Benchmark your pricing against real similar products</p>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+                Price Comparison
+              </h1>
+              <p className="text-sm text-slate-500 font-medium">
+                Benchmark your pricing against real similar products.
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -682,7 +686,7 @@ function PriceComparisonContent() {
               {tier.toUpperCase()}
             </Badge>
             {!isPremium && (
-              <button onClick={() => router.push("/subscription")} className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-bold shadow hover:shadow-md transition-all">
+              <button onClick={() => router.push("/subscription")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-bold shadow hover:shadow-md transition-all">
                 <Crown className="w-3 h-3" /> Upgrade
               </button>
             )}

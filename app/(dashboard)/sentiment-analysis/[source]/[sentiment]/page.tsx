@@ -40,7 +40,7 @@ function SentimentAnalysisPageContent() {
         limit: limit.toString(),
         ...Object.fromEntries(searchParams.entries())
       });
-      const res = await fetch(`${API_BASE}/api/products/by-sentiment?${q.toString()}`, { credentials: "include" });
+      const res = await fetch(`${API_BASE}/products/by-sentiment?${q.toString()}`, { credentials: "include" });
       const data = await res.json();
       if (data.success) {
         setProducts(data.data);

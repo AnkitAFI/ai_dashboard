@@ -1,0 +1,215 @@
+2026-05-22 18:01:44,294 - INFO - [CONFIG] Loaded - Amazon: True, Flipkart: True
+2026-05-22 18:01:44,294 - INFO - [INIT] Amazon API client initialized
+2026-05-22 18:01:44,294 - INFO - [INIT] Flipkart API client initialized
+2026-05-22 18:01:44,294 - INFO - [START] Multi-platform collection starting
+2026-05-22 18:01:44,294 - INFO - [DB] Connecting (attempt 1/3)...
+2026-05-22 18:01:44,313 - INFO - [DB] Connected successfully
+2026-05-22 18:01:44,322 - INFO - [DB] Tables created successfully (rapidapi_amazon_products & rapidapi_flipkart_products)
+2026-05-22 18:01:44,322 - INFO - 
+######################################################################
+[AMAZON] Starting Amazon collection
+######################################################################
+2026-05-22 18:01:44,322 - INFO - 
+[AMAZON] Category 1/11
+2026-05-22 18:01:44,322 - INFO - 
+======================================================================
+[AMAZON] Collecting Clothing
+2026-05-22 18:01:44,322 - INFO - [AMAZON] Page 1/32...
+2026-05-22 18:01:47,836 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:01:47,840 - INFO - [DB] VERIFIED: 48 Amazon records updated
+2026-05-22 18:01:47,840 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:01:49,840 - INFO - [AMAZON] Page 2/32...
+2026-05-22 18:01:52,931 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:01:52,931 - INFO - [DB] VERIFIED: 96 Amazon records updated
+2026-05-22 18:01:52,931 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:01:54,935 - INFO - [AMAZON] Page 3/32...
+2026-05-22 18:01:58,103 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:01:58,106 - INFO - [DB] VERIFIED: 144 Amazon records updated
+2026-05-22 18:01:58,106 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:02:00,108 - INFO - [AMAZON] Page 4/32...
+2026-05-22 18:02:03,420 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:02:03,420 - INFO - [DB] VERIFIED: 192 Amazon records updated
+2026-05-22 18:02:03,420 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:02:05,425 - INFO - [AMAZON] Page 5/32...
+2026-05-22 18:02:08,866 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:02:08,866 - INFO - [DB] VERIFIED: 240 Amazon records updated
+2026-05-22 18:02:08,866 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:02:10,869 - INFO - [AMAZON] Page 6/32...
+2026-05-22 18:02:15,107 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:02:15,107 - INFO - [DB] VERIFIED: 288 Amazon records updated
+2026-05-22 18:02:15,107 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:02:17,109 - INFO - [AMAZON] Page 7/32...
+2026-05-22 18:02:20,732 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:02:20,732 - INFO - [DB] VERIFIED: 336 Amazon records updated
+2026-05-22 18:02:20,732 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:02:22,734 - INFO - [AMAZON] Page 8/32...
+2026-05-22 18:02:26,022 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:02:26,030 - INFO - [DB] VERIFIED: 384 Amazon records updated
+2026-05-22 18:02:26,030 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:02:28,031 - INFO - [AMAZON] Page 9/32...
+2026-05-22 18:02:31,473 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:02:31,473 - INFO - [DB] VERIFIED: 432 Amazon records updated
+2026-05-22 18:02:31,473 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:02:33,482 - INFO - [AMAZON] Page 10/32...
+2026-05-22 18:02:36,710 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:02:36,710 - INFO - [DB] VERIFIED: 480 Amazon records updated
+2026-05-22 18:02:36,710 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:02:38,714 - INFO - [AMAZON] Page 11/32...
+2026-05-22 18:02:42,239 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:02:42,239 - INFO - [DB] VERIFIED: 528 Amazon records updated
+2026-05-22 18:02:42,244 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:02:44,245 - INFO - [AMAZON] Page 12/32...
+2026-05-22 18:02:47,471 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:02:47,472 - INFO - [DB] VERIFIED: 576 Amazon records updated
+2026-05-22 18:02:47,472 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:02:49,473 - INFO - [AMAZON] Page 13/32...
+2026-05-22 18:02:52,836 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:02:52,839 - INFO - [DB] VERIFIED: 480 Amazon records updated
+2026-05-22 18:02:52,839 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:02:54,840 - INFO - [AMAZON] Page 14/32...
+2026-05-22 18:02:58,078 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:02:58,078 - INFO - [DB] VERIFIED: 480 Amazon records updated
+2026-05-22 18:02:58,078 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:03:00,086 - INFO - [AMAZON] Page 15/32...
+2026-05-22 18:03:03,041 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:03:03,042 - INFO - [DB] VERIFIED: 480 Amazon records updated
+2026-05-22 18:03:03,042 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:03:05,043 - INFO - [AMAZON] Page 16/32...
+2026-05-22 18:03:07,940 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:03:07,942 - INFO - [DB] VERIFIED: 480 Amazon records updated
+2026-05-22 18:03:07,942 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:03:09,943 - INFO - [AMAZON] Page 17/32...
+2026-05-22 18:03:13,267 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:03:13,270 - INFO - [DB] VERIFIED: 528 Amazon records updated
+2026-05-22 18:03:13,270 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:03:15,271 - INFO - [AMAZON] Page 18/32...
+2026-05-22 18:03:18,686 - INFO - [DB] COMMITTED 48 Amazon products
+2026-05-22 18:03:18,687 - INFO - [DB] VERIFIED: 528 Amazon records updated
+2026-05-22 18:03:18,687 - INFO - [AMAZON] Saved 48 products
+2026-05-22 18:03:19,966 - INFO - 
+[STOP] Interrupted
+2026-05-22 18:03:19,970 - INFO - [DB] Disconnected
+2026-05-22 18:03:43,789 - INFO - [CONFIG] Loaded - Amazon: False, Flipkart: True
+2026-05-22 18:03:43,789 - INFO - [INIT] Flipkart API client initialized
+2026-05-22 18:03:43,789 - INFO - [START] Multi-platform collection starting
+2026-05-22 18:03:43,789 - INFO - [DB] Connecting (attempt 1/3)...
+2026-05-22 18:03:43,813 - INFO - [DB] Connected successfully
+2026-05-22 18:03:43,818 - INFO - [DB] Tables created successfully (rapidapi_amazon_products & rapidapi_flipkart_products)
+2026-05-22 18:03:43,818 - INFO - 
+######################################################################
+[FLIPKART] Starting Flipkart collection
+######################################################################
+2026-05-22 18:03:43,818 - INFO - 
+[FLIPKART] Category 1/8
+2026-05-22 18:03:43,818 - INFO - 
+======================================================================
+[FLIPKART] Collecting Mobiles
+2026-05-22 18:03:43,818 - INFO - [FLIPKART] Page 1/110...
+2026-05-22 18:03:48,939 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:03:48,939 - INFO - [DB] VERIFIED: 40 Flipkart records updated
+2026-05-22 18:03:48,939 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:03:50,942 - INFO - [FLIPKART] Page 2/110...
+2026-05-22 18:03:55,658 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:03:55,661 - INFO - [DB] VERIFIED: 75 Flipkart records updated
+2026-05-22 18:03:55,663 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:03:57,664 - INFO - [FLIPKART] Page 3/110...
+2026-05-22 18:04:01,481 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:04:01,481 - INFO - [DB] VERIFIED: 110 Flipkart records updated
+2026-05-22 18:04:01,481 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:04:03,486 - INFO - [FLIPKART] Page 4/110...
+2026-05-22 18:04:08,636 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:04:08,637 - INFO - [DB] VERIFIED: 134 Flipkart records updated
+2026-05-22 18:04:08,639 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:04:10,640 - INFO - [FLIPKART] Page 5/110...
+2026-05-22 18:04:14,749 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:04:14,752 - INFO - [DB] VERIFIED: 166 Flipkart records updated
+2026-05-22 18:04:14,752 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:04:16,754 - INFO - [FLIPKART] Page 6/110...
+2026-05-22 18:04:21,189 - ERROR - [DB] Flipkart save error: ON CONFLICT DO UPDATE command cannot affect row a second time
+HINT:  Ensure that no rows proposed for insertion within the same command have duplicate constrained values.
+
+2026-05-22 18:04:23,194 - INFO - [FLIPKART] Page 7/110...
+2026-05-22 18:04:27,217 - ERROR - [DB] Flipkart save error: ON CONFLICT DO UPDATE command cannot affect row a second time
+HINT:  Ensure that no rows proposed for insertion within the same command have duplicate constrained values.
+
+2026-05-22 18:04:29,219 - INFO - [FLIPKART] Page 8/110...
+2026-05-22 18:04:33,674 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:04:33,677 - INFO - [DB] VERIFIED: 198 Flipkart records updated
+2026-05-22 18:04:33,677 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:04:35,678 - INFO - [FLIPKART] Page 9/110...
+2026-05-22 18:04:40,376 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:04:40,379 - INFO - [DB] VERIFIED: 229 Flipkart records updated
+2026-05-22 18:04:40,379 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:04:42,379 - INFO - [FLIPKART] Page 10/110...
+2026-05-22 18:04:46,040 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:04:46,040 - INFO - [DB] VERIFIED: 260 Flipkart records updated
+2026-05-22 18:04:46,040 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:04:47,590 - INFO - 
+[STOP] Interrupted
+2026-05-22 18:04:47,595 - INFO - [DB] Disconnected
+2026-05-22 18:08:20,894 - INFO - [CONFIG] Loaded - Amazon: False, Flipkart: True
+2026-05-22 18:08:20,894 - INFO - [INIT] Flipkart API client initialized
+2026-05-22 18:08:20,903 - INFO - [START] Multi-platform collection starting
+2026-05-22 18:08:20,903 - INFO - [DB] Connecting (attempt 1/3)...
+2026-05-22 18:08:20,914 - INFO - [DB] Connected successfully
+2026-05-22 18:08:20,918 - INFO - [DB] Tables created successfully (rapidapi_amazon_products & rapidapi_flipkart_products)
+2026-05-22 18:08:20,918 - INFO - 
+######################################################################
+[FLIPKART] Starting Flipkart collection
+######################################################################
+2026-05-22 18:08:20,918 - INFO - 
+[FLIPKART] Category 1/8
+2026-05-22 18:08:20,918 - INFO - 
+======================================================================
+[FLIPKART] Collecting Mobiles
+2026-05-22 18:08:20,918 - INFO - [FLIPKART] Page 1/110...
+2026-05-22 18:08:26,042 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:08:26,042 - INFO - [DB] VERIFIED: 40 Flipkart records updated
+2026-05-22 18:08:26,042 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:08:28,045 - INFO - [FLIPKART] Page 2/110...
+2026-05-22 18:08:31,627 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:08:31,628 - INFO - [DB] VERIFIED: 75 Flipkart records updated
+2026-05-22 18:08:31,629 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:08:33,629 - INFO - [FLIPKART] Page 3/110...
+2026-05-22 18:08:37,960 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:08:37,961 - INFO - [DB] VERIFIED: 110 Flipkart records updated
+2026-05-22 18:08:37,961 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:08:39,962 - INFO - [FLIPKART] Page 4/110...
+2026-05-22 18:08:43,567 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:08:43,567 - INFO - [DB] VERIFIED: 133 Flipkart records updated
+2026-05-22 18:08:43,567 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:08:45,571 - INFO - [FLIPKART] Page 5/110...
+2026-05-22 18:08:49,644 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:08:49,647 - INFO - [DB] VERIFIED: 165 Flipkart records updated
+2026-05-22 18:08:49,647 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:08:51,649 - INFO - [FLIPKART] Page 6/110...
+2026-05-22 18:08:56,169 - INFO - [DB] COMMITTED 39 Flipkart products
+2026-05-22 18:08:56,169 - INFO - [DB] VERIFIED: 189 Flipkart records updated
+2026-05-22 18:08:56,169 - INFO - [FLIPKART] Saved 39 products
+2026-05-22 18:08:58,173 - INFO - [FLIPKART] Page 7/110...
+2026-05-22 18:09:04,700 - INFO - [DB] COMMITTED 39 Flipkart products
+2026-05-22 18:09:04,700 - INFO - [DB] VERIFIED: 216 Flipkart records updated
+2026-05-22 18:09:04,700 - INFO - [FLIPKART] Saved 39 products
+2026-05-22 18:09:06,705 - INFO - [FLIPKART] Page 8/110...
+2026-05-22 18:09:10,009 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:09:10,009 - INFO - [DB] VERIFIED: 248 Flipkart records updated
+2026-05-22 18:09:10,009 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:09:12,012 - INFO - [FLIPKART] Page 9/110...
+2026-05-22 18:09:16,964 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:09:16,964 - INFO - [DB] VERIFIED: 279 Flipkart records updated
+2026-05-22 18:09:16,964 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:09:18,969 - INFO - [FLIPKART] Page 10/110...
+2026-05-22 18:09:22,610 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:09:22,611 - INFO - [DB] VERIFIED: 310 Flipkart records updated
+2026-05-22 18:09:22,612 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:09:24,612 - INFO - [FLIPKART] Page 11/110...
+2026-05-22 18:09:27,764 - INFO - [DB] COMMITTED 40 Flipkart products
+2026-05-22 18:09:27,764 - INFO - [DB] VERIFIED: 299 Flipkart records updated
+2026-05-22 18:09:27,764 - INFO - [FLIPKART] Saved 40 products
+2026-05-22 18:09:29,768 - INFO - [FLIPKART] Page 12/110...
+2026-05-22 18:09:33,423 - INFO - [DB] COMMITTED 39 Flipkart products
+2026-05-22 18:09:33,423 - INFO - [DB] VERIFIED: 317 Flipkart records updated
+2026-05-22 18:09:33,423 - INFO - [FLIPKART] Saved 39 products
+2026-05-22 18:09:34,728 - INFO - 
+[STOP] Interrupted
+2026-05-22 18:09:34,728 - INFO - [DB] Disconnected

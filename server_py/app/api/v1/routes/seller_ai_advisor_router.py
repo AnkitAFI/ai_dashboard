@@ -152,7 +152,6 @@ def _load_seller_context(
         db.query(TrackedProduct)
         .filter(TrackedProduct.seller_id == seller_id)
         .order_by(TrackedProduct.created_at.desc())
-        .limit(20)
         .all()
     )
 
@@ -459,7 +458,7 @@ def get_seller_context(
     Returns products list, avg rating, currency.
     """
     from app.api.deps import r
-    cache_key = f"ai_advisor:context:{seller_id}"
+    cache_key = f"ai_advisor:context_v3:{seller_id}"
     try:
         cached = r.get(cache_key)
         if cached:

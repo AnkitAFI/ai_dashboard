@@ -213,6 +213,10 @@ class User(Base):
     keyword_tracker_used = Column(Integer, default=0)
     keyword_tracker_month = Column(String)   # YYYY-MM format
 
+    # Keyword Intelligence Explorer usage (billing-cycle-based, not calendar-month)
+    ki_searches_used = Column(Integer, default=0)
+    ki_cycle_start = Column(DateTime, nullable=True)  # set to paid_at when user subscribes
+
     subscription_expires_at = Column(DateTime, nullable=True)
     payment_orders = relationship("PaymentOrder", back_populates="user")
     scheduled_downgrade_to = Column(String(50), nullable=True)

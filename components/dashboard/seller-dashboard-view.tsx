@@ -128,8 +128,23 @@ export default function SellerDashboardView() {
     return () => { if (interval) clearInterval(interval); };
   }, [user?.seller_id, stats?.status, stats?.metrics?.total_products]);
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
     setRefreshing(true);
+    try {
+      await fetch(`${API_BASE_URL}/api/seller/update-seller-id`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          seller_id: user?.seller_id,
+          country: user?.onboarding_marketplace || "IN",
+        }),
+      });
+    } catch (err) {
+      console.error("Failed to trigger background sync", err);
+    }
     fetchStats();
   };
 
@@ -181,10 +196,16 @@ export default function SellerDashboardView() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-slate-900">Seller Intelligence</h1>
-          <p className="text-slate-500 mt-1">
-            Real-time performance metrics for Merchant ID:{" "}
+          <div className="text-slate-500 mt-1 flex items-center flex-wrap gap-2 text-sm">
+            <span>Real-time performance metrics for Merchant ID:</span>
             <span className="font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{user?.seller_id}</span>
-          </p>
+            {isSyncing && (
+              <Badge variant="outline" className="animate-pulse bg-blue-50 text-blue-600 border-blue-200 text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+                <Loader2 className="w-3 h-3 animate-spin text-blue-500" />
+                <span>Syncing store...</span>
+              </Badge>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <button

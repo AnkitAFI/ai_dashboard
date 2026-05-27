@@ -181,7 +181,7 @@ def _fetch_tracked(asin: str, seller_id: str, db: Session) -> dict:
     return data
 
 
-def _fetch_category_meta(asin: str, db: Session) -> dict:
+def _fetch_category_meta(asin: str, db: Session, product_title: Optional[str] = None) -> dict:
     """Look up category info for this ASIN from rapidapi_amazon_products."""
     row = db.execute(
         text("""
@@ -192,16 +192,47 @@ def _fetch_category_meta(asin: str, db: Session) -> dict:
         """),
         {"asin": asin},
     ).mappings().first()
-    return dict(row) if row else {}
+    if row:
+        return dict(row)
+
+    # Title-based keyword fallback if ASIN is not in rapidapi table
+    if product_title:
+        words = re.findall(r'[a-zA-Z0-9]+', product_title)
+        stop_words = {'reifica', 'women', 'mens', 'boys', 'girls', 'stylish', 'casual', 'front', 'button', 'cotton', 'for', 'with', 'and', 'the', 'a', 'of', 'in', 'pack'}
+        keywords = [w for w in words if w.lower() not in stop_words and len(w) > 2]
+        
+        if keywords:
+            conditions = []
+            params = {}
+            for i, kw in enumerate(keywords[:3]):
+                conditions.append(f"product_title ILIKE :kw_{i}")
+                params[f"kw_{i}"] = f"%{kw}%"
+            
+            where_clause = " OR ".join(conditions)
+            fallback_row = db.execute(
+                text(f"""
+                    SELECT category_id, category_name
+                    FROM rapidapi_amazon_products
+                    WHERE ({where_clause}) AND category_id IS NOT NULL AND category_id != ''
+                    GROUP BY category_id, category_name
+                    ORDER BY COUNT(*) DESC
+                    LIMIT 1
+                """),
+                params
+            ).mappings().first()
+            if fallback_row:
+                return dict(fallback_row)
+
+    return {}
 
 
-def _fetch_market(asin: str, db: Session) -> dict:
+def _fetch_market(asin: str, db: Session, product_title: Optional[str] = None) -> dict:
     """
     Aggregate category benchmarks from rapidapi_amazon_products.
     Matches by category_id of this ASIN (looked up via asin join).
     Falls back to all products if ASIN not found in rapidapi.
     """
-    cat = _fetch_category_meta(asin, db)
+    cat = _fetch_category_meta(asin, db, product_title)
 
     if cat.get("category_id"):
         where  = "category_id = :cat"
@@ -458,7 +489,7 @@ async def asin_profile(
 ):
     """FREE — basic market position for any tracked ASIN."""
     tracked = _fetch_tracked(asin, seller_id, db)
-    market  = _fetch_market(asin, db)
+    market  = _fetch_market(asin, db, tracked.get("product_title"))
     gap     = _price_gap(tracked, market)
     rec     = _reprice_score(gap, tracked, market)
 
@@ -503,9 +534,9 @@ async def price_gap(
     """BASIC — full gap analysis, rating gap, discount depth, price bands, competitors."""
     _check_tier(user_id, "basic", db)
     tracked     = _fetch_tracked(asin, seller_id, db)
-    market      = _fetch_market(asin, db)
+    market      = _fetch_market(asin, db, tracked.get("product_title"))
     gap         = _price_gap(tracked, market)
-    cat_meta    = _fetch_category_meta(asin, db)
+    cat_meta    = _fetch_category_meta(asin, db, tracked.get("product_title"))
     competitors = _fetch_competitors(cat_meta.get("category_id"), db)
 
     bands: list = []
@@ -547,7 +578,7 @@ async def reprice(
     """BASIC — scoring-based repricing recommendation with confidence score."""
     _check_tier(user_id, "basic", db)
     tracked = _fetch_tracked(asin, seller_id, db)
-    market  = _fetch_market(asin, db)
+    market  = _fetch_market(asin, db, tracked.get("product_title"))
     gap     = _price_gap(tracked, market)
     rec     = _reprice_score(gap, tracked, market)
 
@@ -646,7 +677,7 @@ async def reprice_advice_stream(req: RepriceAdviceRequest, db: Session = Depends
     _check_tier(req.user_id, "premium", db)
     await _check_ollama()
     tracked = _fetch_tracked(req.asin, req.seller_id, db)
-    market  = _fetch_market(req.asin, db)
+    market  = _fetch_market(req.asin, db, tracked.get("product_title"))
     gap     = _price_gap(tracked, market)
     rec     = _reprice_score(gap, tracked, market)
     prompt  = _build_reprice_prompt(tracked, gap, rec)

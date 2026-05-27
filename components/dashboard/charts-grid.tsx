@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Lock, Sparkles, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -94,9 +95,10 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
 
 export default function ChartsGrid({ selectedSource }: { selectedSource: string }) {
   const BASE_URL = API_BASE_URL;
-  const { filters } = useFilters();
+  const { filters, setFilters } = useFilters();
   const { canAccessFeature } = useSubscriptionLimits();
   const router = useRouter();
+  const { toast } = useToast();
 
   const [flipkartProducts, setFlipkartProducts] = useState<any[]>([]);
   const [amazonProducts, setAmazonProducts] = useState<any[]>([]);
@@ -436,6 +438,20 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
     }
   };
 
+  const handleFlipkartRatingClick = (index: number) => {
+    const ratingObj = flipkartRatings[index];
+    if (ratingObj && ratingObj.rating !== undefined) {
+      router.push(`/rating-products/flipkart/${ratingObj.rating}?page=1`);
+    }
+  };
+
+  const handleAmazonRatingClick = (index: number) => {
+    const ratingObj = amazonRatings[index];
+    if (ratingObj && ratingObj.rating !== undefined) {
+      router.push(`/rating-products/amazon/${ratingObj.rating}?page=1`);
+    }
+  };
+
   const createBarOptions = (clickHandler: (index: number) => void) => ({
     responsive: true,
     maintainAspectRatio: false,
@@ -631,7 +647,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
           summary={flipkartRatingsSummary}
           summaryLoading={flipkartRatingsLoading}
         >
-          <Bar data={flipkartRatingsChart} options={createBarOptions(() => { })} />
+          <Bar data={flipkartRatingsChart} options={createBarOptions(handleFlipkartRatingClick)} />
         </ChartCard>
       )}
 
@@ -679,7 +695,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
           summary={amazonRatingsSummary}
           summaryLoading={amazonRatingsLoading}
         >
-          <Bar data={amazonRatingsChart} options={createBarOptions(() => { })} />
+          <Bar data={amazonRatingsChart} options={createBarOptions(handleAmazonRatingClick)} />
         </ChartCard>
       )}
 
