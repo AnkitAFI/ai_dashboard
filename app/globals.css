@@ -177,3 +177,13 @@ tr:hover {
 .button-primary:hover {
   background-color: #A0F0FF;
 }
+
+/* ===== HIDE REDUNDANT MOBILE BURGER BUTTONS INSIDE PAGES ===== */
+main button:has(svg.lucide-menu) {
+  display: none !important;
+}
+
+main button:has(svg.lucide-menu) + .w-px {
+  display: none !important;
+}
+

@@ -763,7 +763,7 @@ class Config:
         self.PRODUCT_CONDITION = os.getenv("PRODUCT_CONDITION", "ALL")
         self.IS_PRIME = os.getenv("IS_PRIME", "false")
         self.DEALS_AND_DISCOUNTS = os.getenv("DEALS_AND_DISCOUNTS", "NONE")
-        self.MAX_PAGES = int(os.getenv("MAX_PAGES", "32"))
+        self.MAX_PAGES = int(os.getenv("MAX_PAGES", "10"))
         self.FLIPKART_MAX_PAGES = int(os.getenv("FLIPKART_MAX_PAGES", "110"))
         self.OUTPUT_DIR = os.getenv("OUTPUT_DIR", "data_output")
         self.DB_CONNECT_TIMEOUT = int(os.getenv("DB_CONNECT_TIMEOUT", "10"))

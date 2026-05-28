@@ -231,6 +231,11 @@ class User(Base):
     seller_sync_status = Column(String(20), default='IDLE') # IDLE, SYNCING, COMPLETED, FAILED
     mobile_number = Column(String, nullable=False)
 
+    # Onboarding Guide fields
+    explorer_tour_completed = Column(Boolean, default=False, nullable=False)
+    seller_tour_completed = Column(Boolean, default=False, nullable=False)
+    welcome_card_dismissed = Column(Boolean, default=False, nullable=False)
+
     watchlist_items = relationship("WhiteSpaceWatchlist", back_populates="user", cascade="all, delete-orphan")   
     # Relationships
     def __repr__(self):

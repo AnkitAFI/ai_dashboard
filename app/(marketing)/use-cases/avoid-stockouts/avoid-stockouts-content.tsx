@@ -125,19 +125,21 @@ export default function AvoidStockoutsPage() {
             </div>
 
             {/* Hero Visual — inventory dashboard */}
-            <div className="relative mt-4 lg:mt-0">
-              <div className="relative bg-white dark:bg-gray-900 border-2 border-orange-200 dark:border-orange-800 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl transition-all hover:shadow-orange-500/10">
-                <div className="absolute -top-3 sm:-top-4 -right-3 sm:-right-4 bg-gradient-to-r from-orange-600 to-red-500 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-1.5 sm:py-2 shadow-xl z-10">
-                  <p className="text-white font-bold text-xs sm:text-sm leading-relaxed">AI-Powered</p>
-                </div>
+           <div className="relative mt-4 lg:mt-0">
+  <div className="relative bg-white dark:bg-gray-900 border-2 border-orange-200 dark:border-orange-800 rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl transition-all hover:shadow-orange-500/10">
+    
+    {/* Badge — now inside the card, top-right corner, no overflow */}
+    <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-600 to-red-500 rounded-bl-2xl px-3 sm:px-4 py-1.5 sm:py-2 z-10">
+      <p className="text-white font-bold text-xs sm:text-sm leading-relaxed">AI-Powered</p>
+    </div>
 
-                {/* topbar */}
-                <div className="bg-gradient-to-r from-orange-600 to-red-500 px-4 sm:px-5 py-3 flex items-center justify-between">
-                  <span className="text-white font-bold text-xs sm:text-sm leading-relaxed">Inventory Intelligence Dashboard</span>
-                  <span className="text-xs font-semibold bg-white/20 text-white px-2 py-0.5 rounded-full flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse inline-block" /> Live
-                  </span>
-                </div>
+    {/* topbar */}
+    <div className="bg-gradient-to-r from-orange-600 to-red-500 px-4 sm:px-5 py-3 flex items-center justify-between">
+      <span className="text-white font-bold text-xs sm:text-sm leading-relaxed">Inventory Intelligence Dashboard</span>
+      <span className="text-xs font-semibold bg-white/20 text-white px-2 py-0.5 rounded-full flex items-center gap-1.5 mr-24 sm:mr-28">
+        <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse inline-block" /> Live
+      </span>
+    </div>
 
                 <div className="p-4 sm:p-5 space-y-2.5">
                   {[
@@ -582,7 +584,7 @@ export default function AvoidStockoutsPage() {
               <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-1 leading-relaxed">For D2C Brands and Agencies</h3>
               <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 mb-2 sm:mb-3 leading-relaxed">Strategic Demo</p>
               <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm leading-relaxed mb-6 flex-grow">Multiple brands, dozens of SKUs, critical festive windows. Full portfolio inventory intelligence, white-label reporting, and API access for agency-level management.</p>
-              <Link href="/solutions/ecommerce-agencies" className="w-full border-2 border-orange-600 text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-bold rounded-full text-sm inline-block text-center py-2 px-4 transition-all">Book a Demo</Link>
+              <Link href="/about/contact-us" className="w-full border-2 border-orange-600 text-orange-700 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 font-bold rounded-full text-sm inline-block text-center py-2 px-4 transition-all">Book a Demo</Link>
             </div>
           </div>
           <p className="text-center text-gray-500 dark:text-gray-400 mt-6 sm:mt-8 text-xs sm:text-sm leading-relaxed">No credit card required &nbsp;·&nbsp; Setup in 2 minutes &nbsp;·&nbsp; Cancel anytime</p>

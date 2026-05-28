@@ -394,9 +394,7 @@ export default function EcommerceAgenciesContent() {
                       </li>
                     ))}
                   </ul>
-                  <button onClick={() => router.push(feat.link)}
-                    className="text-sm font-semibold text-cyan-600 hover:text-cyan-700 underline"
-                  >Learn more about this feature →</button>
+                 
                 </div>
 
                 <div className={`bg-gradient-to-br from-cyan-100 to-blue-100 dark:from-cyan-900/20 dark:to-blue-900/20 border-2 border-cyan-300 dark:border-cyan-700 rounded-3xl p-8 ${i % 2 === 1 ? "lg:order-1" : ""}`}>
@@ -675,7 +673,7 @@ export default function EcommerceAgenciesContent() {
                 label: "High-Performance Agencies (20+ clients)",
                 desc: "Custom needs? API access, custom KPIs, dedicated account manager, white-glove onboarding, and volume pricing everything you need to dominate at scale.",
                 cta: "Book a Demo →",
-                action: () => router.push("/demo")
+                action: () => router.push("/about/contact-us")
               }
             ].map((card, i) => (
               <div key={i} className="bg-white/10 backdrop-blur-md hover:bg-white/20 transition-all border border-white/20 rounded-2xl p-6 text-left 

@@ -180,6 +180,7 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
         {isDashboard && (
           <>
             <Button 
+              id="tour-filters-btn"
               variant="outline" 
               size="sm" 
               className={`flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold transition-all ${showFilters ? 'bg-sky-100 border-sky-300 text-sky-700 shadow-sm' : ''}`} 
@@ -203,7 +204,7 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="relative p-2 h-9 w-9 rounded-xl hover:bg-sky-50 transition-colors">
+            <Button id="tour-notifications-btn" variant="ghost" size="sm" className="relative p-2 h-9 w-9 rounded-xl hover:bg-sky-50 transition-colors">
               <Bell className="w-4 h-4 sm:w-5 h-5 text-sky-900" />
               {notifications.length > 0 && (
                 <span className="absolute top-1 right-1 inline-flex items-center justify-center h-4 w-4 text-[10px] font-bold rounded-full bg-red-500 text-white shadow-sm ring-2 ring-white">

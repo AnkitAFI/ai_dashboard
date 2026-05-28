@@ -6786,8 +6786,50 @@ def get_me(
         "onboarding_goal": current_user.onboarding_goal,
         "onboarding_marketplace": current_user.onboarding_marketplace,
         "onboarding_details": current_user.onboarding_details,
-        "seller_id": current_user.seller_id
+        "seller_id": current_user.seller_id,
+        "explorer_tour_completed": getattr(current_user, "explorer_tour_completed", False),
+        "seller_tour_completed": getattr(current_user, "seller_tour_completed", False),
+        "welcome_card_dismissed": getattr(current_user, "welcome_card_dismissed", False)
     }
+
+@router.post("/api/auth/tour-completion")
+def update_tour_completion(
+    request: dict,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Update onboarding tour completion and welcome card dismissal status
+    """
+    try:
+        explorer_tour_completed = request.get("explorer_tour_completed")
+        seller_tour_completed = request.get("seller_tour_completed")
+        welcome_card_dismissed = request.get("welcome_card_dismissed")
+        
+        if explorer_tour_completed is not None:
+            current_user.explorer_tour_completed = bool(explorer_tour_completed)
+        if seller_tour_completed is not None:
+            current_user.seller_tour_completed = bool(seller_tour_completed)
+        if welcome_card_dismissed is not None:
+            current_user.welcome_card_dismissed = bool(welcome_card_dismissed)
+            
+        db.commit()
+        db.refresh(current_user)
+        
+        return {
+            "success": True,
+            "message": "Tour completion status updated successfully",
+            "explorer_tour_completed": current_user.explorer_tour_completed,
+            "seller_tour_completed": current_user.seller_tour_completed,
+            "welcome_card_dismissed": current_user.welcome_card_dismissed
+        }
+    except Exception as e:
+        db.rollback()
+        print(f"❌ Update tour completion error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error updating tour completion status: {str(e)}"
+        )
 
 # ============================================
 # LOGOUT ENDPOINT

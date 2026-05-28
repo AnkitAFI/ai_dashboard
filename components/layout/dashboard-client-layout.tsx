@@ -10,6 +10,7 @@ import FiltersPanel from "@/components/dashboard/filters-panel";
 import AlertDetailsDialog from "@/components/dashboard/alert-details-dialog";
 import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
+import SaaSTourGuide from "@/components/layout/saas-tour-guide";
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { isOpen, setIsOpen, toggle } = useSidebar();
@@ -78,6 +79,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         </footer>
       </div>
       <AlertDetailsDialog />
+      <SaaSTourGuide />
     </div>
   );
 }

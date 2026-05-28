@@ -26,6 +26,9 @@ class UserOut(BaseModel):
     onboarding_marketplace: Optional[str] = None
     onboarding_details: Optional[str] = None
     seller_id: Optional[str] = None
+    explorer_tour_completed: bool = False
+    seller_tour_completed: bool = False
+    welcome_card_dismissed: bool = False
 
     model_config = ConfigDict(from_attributes=True)
 

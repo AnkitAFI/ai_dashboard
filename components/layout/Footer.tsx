@@ -75,9 +75,9 @@ export function Footer() {
             <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Resources</h4>
             <ul className="space-y-3">
               <li><Link href="/resources/expert-blog" className="text-sm text-gray-400 hover:text-white transition-colors">Blog</Link></li>
-              <li><Link href="/resources/guides" className="text-sm text-gray-400 hover:text-white transition-colors">E-commerce Guides</Link></li>
-              <li><Link href="/resources/videos" className="text-sm text-gray-400 hover:text-white transition-colors">Video Tutorials</Link></li>
-              <li><Link href="/resources/case-studies" className="text-sm text-gray-400 hover:text-white transition-colors">Case Studies</Link></li>
+              {/* <li><Link href="/resources/guides" className="text-sm text-gray-400 hover:text-white transition-colors">E-commerce Guides</Link></li> */}
+              <li><Link href="/resources/video-guides" className="text-sm text-gray-400 hover:text-white transition-colors">Video Tutorials</Link></li>
+              {/* <li><Link href="/resources/case-studies" className="text-sm text-gray-400 hover:text-white transition-colors">Case Studies</Link></li> */}
               <li><Link href="/free-tools/free-amazon-product-analyzer" className="text-sm text-gray-400 hover:text-white transition-colors">Free Tools</Link></li>
             </ul>
           </div>

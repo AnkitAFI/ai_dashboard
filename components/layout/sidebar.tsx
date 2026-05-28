@@ -36,7 +36,8 @@ import {
   Zap,
   Star,
   Bookmark,
-  Calculator
+  Calculator,
+  HelpCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -318,6 +319,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
         {!isCollapsed && (
           <div className="px-4 py-3">
             <div
+              id="tour-mode-switcher"
               className="relative p-1 rounded-full flex items-center"
               style={{
                 background: 'linear-gradient(135deg, #00C6FF 0%, #0099FF 50%, #00D4AA 100%)',
