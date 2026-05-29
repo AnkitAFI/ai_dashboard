@@ -86,6 +86,16 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "17",
+    title: "Flipkart Seller Analytics Tool India: The Complete Guide (2026)",
+    excerpt: "Learn how to use Flipkart Seller Analytics Tools in India to grow your business, track competitors, and improve your ranking in 2026.",
+    category: "Flipkart Seller Tools & Strategy",
+    readTime: "12 min read",
+    image: "/Flip_image_1.png",
+    route: "/resources/expert-blog/flipkart-seller-analytics-tool-india",
+    popular: true
+  },
+  {
     id: "16",
     title: "Amazon Private Label Guide for Indian Sellers in 2026: The Complete Guide",
     excerpt: "Learn how to start and scale an Amazon Private Label business in India in 2026. From product research to sourcing and building a D2C brand.",
