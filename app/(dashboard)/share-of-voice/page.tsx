@@ -253,12 +253,20 @@ function Pagination({
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
         className="p-2 rounded-lg border border-slate-300 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        data-track-id="sov_prev_page_btn"
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
       {start > 1 && (
         <>
-          <button onClick={() => onPageChange(1)} className="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-blue-50 text-sm transition-colors">1</button>
+          <button 
+            onClick={() => onPageChange(1)} 
+            className="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-blue-50 text-sm transition-colors"
+            data-track-id="sov_page_num_btn"
+            data-filter-value="1"
+          >
+            1
+          </button>
           {start > 2 && <span className="text-slate-400 text-sm">…</span>}
         </>
       )}
@@ -270,6 +278,8 @@ function Pagination({
             ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-blue-500 shadow-sm"
             : "border-slate-300 hover:bg-blue-50"
             }`}
+          data-track-id="sov_page_num_btn"
+          data-filter-value={p}
         >
           {p}
         </button>
@@ -277,13 +287,21 @@ function Pagination({
       {end < totalPages && (
         <>
           {end < totalPages - 1 && <span className="text-slate-400 text-sm">…</span>}
-          <button onClick={() => onPageChange(totalPages)} className="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-blue-50 text-sm transition-colors">{totalPages}</button>
+          <button 
+            onClick={() => onPageChange(totalPages)} 
+            className="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-blue-50 text-sm transition-colors"
+            data-track-id="sov_page_num_btn"
+            data-filter-value={totalPages}
+          >
+            {totalPages}
+          </button>
         </>
       )}
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
         className="p-2 rounded-lg border border-slate-300 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        data-track-id="sov_next_page_btn"
       >
         <ChevronRight className="w-4 h-4" />
       </button>
@@ -643,6 +661,8 @@ export default function ShareOfVoice() {
                   onClick={() => { setActiveTab(tab); setCurrentPage(1); }}
                   className={`flex-1 py-4 px-6 font-medium transition-all ${activeTab === tab ? "border-b-2 border-blue-500 text-blue-600 bg-blue-50/50" : "text-gray-600 hover:bg-gray-50"
                     }`}
+                  data-track-id="sov_tab_btn"
+                  data-filter-value={tab}
                 >
                   <div className="flex items-center justify-center gap-2">
                     {tab === "category" ? <BarChart3 className="w-4 h-4" /> : <Search className="w-4 h-4" />}
@@ -670,6 +690,8 @@ export default function ShareOfVoice() {
                   onChange={(e) => setMarketplace(e.target.value as any)}
                   disabled={!!userId && !canAnalyze}
                   className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  data-track-id="marketplace_select"
+                  data-filter-value={marketplace}
                 >
                   <option value="flipkart">Flipkart</option>
                   <option value="amazon">Amazon</option>
@@ -685,6 +707,8 @@ export default function ShareOfVoice() {
                       onChange={(e) => setSelectedCategory(e.target.value)}
                       disabled={!!userId && !canAnalyze}
                       className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      data-track-id="category_select"
+                      data-filter-value={selectedCategory}
                     >
                       <option value="">Select Category</option>
                       {categories.map((c, i) => <option key={i} value={c}>{c}</option>)}
@@ -698,6 +722,7 @@ export default function ShareOfVoice() {
                       placeholder="Enter your brand name"
                       disabled={!!userId && !canAnalyze}
                       className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      data-track-id="your_brand_input"
                     />
                   </div>
                   <div className="flex items-end">
@@ -706,6 +731,7 @@ export default function ShareOfVoice() {
                       disabled={loading || (!!userId && !canAnalyze)}
                       className={`w-full py-3 rounded-lg text-white font-medium flex items-center justify-center gap-2 ${userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
                         }`}
+                      data-track-id="analyze_category_sov_btn"
                     >
                       {loading ? <><RefreshCw className="w-4 h-4 animate-spin" /> Analyzing…</>
                         : userId && !canAnalyze ? <><Lock className="w-4 h-4" /> Limit Reached</>
@@ -723,24 +749,28 @@ export default function ShareOfVoice() {
                       placeholder="e.g., wireless earbuds"
                       disabled={!!userId && !canAnalyze}
                       className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                      data-track-id="keyword_search_input"
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Price Min (₹)</label>
                     <input type="number" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} placeholder="Min" disabled={!!userId && !canAnalyze}
-                      className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100" />
+                      className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100"
+                      data-track-id="price_min_input" />
                   </div>
                   <div className="flex items-end gap-2">
                     <div className="flex-1">
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">Price Max (₹)</label>
                       <input type="number" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} placeholder="Max" disabled={!!userId && !canAnalyze}
-                        className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100" />
+                        className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100"
+                        data-track-id="price_max_input" />
                     </div>
                     <Button
                       onClick={analyzeKeywordSov}
                       disabled={loading || (!!userId && !canAnalyze)}
                       className={`mb-0 py-3 px-5 rounded-lg text-white font-medium flex items-center gap-2 ${userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
                         }`}
+                      data-track-id="analyze_keyword_sov_btn"
                     >
                       {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                     </Button>
@@ -754,12 +784,14 @@ export default function ShareOfVoice() {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Target Share (%)</label>
                   <input type="number" value={targetShare} onChange={(e) => setTargetShare(Number(e.target.value))} min="0" max="100" disabled={!!userId && !canAnalyze}
-                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" />
+                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                    data-track-id="target_share_input" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Target Days</label>
                   <input type="number" value={targetDays} onChange={(e) => setTargetDays(Number(e.target.value))} min="1" disabled={!!userId && !canAnalyze}
-                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" />
+                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                    data-track-id="target_days_input" />
                 </div>
               </div>
             )}

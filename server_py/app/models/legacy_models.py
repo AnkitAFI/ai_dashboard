@@ -754,3 +754,19 @@ class RankAlertLog(Base):
         DateTime(timezone=True),
         default=lambda: datetime.utcnow(),
     )     
+
+
+class UserBehaviorLog(Base):
+    __tablename__ = "user_behavior_logs"
+
+    id         = Column(Integer, primary_key=True, autoincrement=True)
+    user_id    = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    user_email = Column(String(255), nullable=True, index=True)
+    session_id = Column(String(100), nullable=False, index=True)
+    event_type = Column(String(100), nullable=False, index=True)
+    page_path  = Column(Text, nullable=False)
+    properties = Column(JSON, nullable=True)
+    ip_address = Column(String(45), nullable=True)
+    user_agent = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.utcnow(), index=True)
+

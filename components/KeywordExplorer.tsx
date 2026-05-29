@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { API_BASE_URL } from "@/lib/config";
+
 import {
   Card, CardContent, CardDescription, CardHeader, CardTitle,
 } from "@/components/ui/card";
@@ -248,6 +249,7 @@ function QuickTrackModal({
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+          data-track-id="close_track_modal_btn"
         >
           <X className="h-5 w-5" />
         </button>
@@ -269,6 +271,7 @@ function QuickTrackModal({
                   checked={useExisting}
                   onChange={() => setUseExisting(true)}
                   className="accent-purple-600"
+                  data-track-id="use_existing_product_radio"
                 />
                 Use Tracked Product
               </label>
@@ -278,6 +281,7 @@ function QuickTrackModal({
                   checked={!useExisting}
                   onChange={() => setUseExisting(false)}
                   className="accent-purple-600"
+                  data-track-id="track_new_product_radio"
                 />
                 Track New ASIN/PID
               </label>
@@ -288,7 +292,7 @@ function QuickTrackModal({
             <div className="space-y-2">
               <Label>Select Product</Label>
               <Select value={selectedPid} onValueChange={setSelectedPid}>
-                <SelectTrigger>
+                <SelectTrigger data-track-id="track_selected_product_select" data-filter-value={selectedPid}>
                   <SelectValue placeholder="Choose target product" />
                 </SelectTrigger>
                 <SelectContent>
@@ -307,6 +311,7 @@ function QuickTrackModal({
                 value={pidInput}
                 onChange={(e) => setPidInput(e.target.value)}
                 placeholder={platform === "amazon" ? "e.g., B08XYZ" : "e.g., ITMABCDEF"}
+                data-track-id="track_pid_input"
               />
             </div>
           )}
@@ -314,7 +319,7 @@ function QuickTrackModal({
           <div className="space-y-2">
             <Label>Category (Optional)</Label>
             <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger>
+              <SelectTrigger data-track-id="track_category_select" data-filter-value={category}>
                 <SelectValue placeholder={categories.length === 0 ? "No categories" : "Select category"} />
               </SelectTrigger>
               <SelectContent>
@@ -328,10 +333,10 @@ function QuickTrackModal({
           </div>
 
           <div className="pt-4 flex gap-3">
-            <Button variant="outline" onClick={onClose} className="flex-1" disabled={loading}>
+            <Button variant="outline" onClick={onClose} className="flex-1" disabled={loading} data-track-id="track_rank_cancel_btn">
               Cancel
             </Button>
-            <Button onClick={handleTrack} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white" disabled={loading}>
+            <Button onClick={handleTrack} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white" disabled={loading} data-track-id="track_rank_submit_btn">
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -509,6 +514,8 @@ export default function KeywordExplorer({
     }
   };
 
+
+
   // Trigger search on platform change only if there is an active search query
   useEffect(() => {
     if (keyword.trim()) {
@@ -536,13 +543,14 @@ export default function KeywordExplorer({
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  data-track-id="keyword-search-input"
                 />
               </div>
             </div>
             <div className="w-full md:w-44 space-y-2">
               <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Marketplace</Label>
               <Select value={platform} onValueChange={setPlatform}>
-                <SelectTrigger className="h-11 border-slate-200 rounded-xl">
+                <SelectTrigger className="h-11 border-slate-200 rounded-xl" data-track-id="marketplace-select" data-filter-value={platform}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -563,6 +571,7 @@ export default function KeywordExplorer({
               className="w-full md:w-36 h-11 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl flex gap-2 items-center justify-center transition-all"
               onClick={() => handleSearch()}
               disabled={loading}
+              data-track-id="analyze-btn"
             >
               {loading ? (
                 <>
@@ -829,6 +838,8 @@ export default function KeywordExplorer({
                   <button
                     onClick={() => setShowAllStates(!showAllStates)}
                     className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors focus:outline-none inline-flex items-center gap-1.5"
+                    data-track-id="toggle-states-distribution-btn"
+                    data-filter-value={showAllStates ? "show_all" : "show_top_8"}
                   >
                     {showAllStates ? "Show Top 8 States" : "Show All 36 States & UTs"}
                   </button>
@@ -869,7 +880,9 @@ export default function KeywordExplorer({
                           <td className="p-3 font-medium text-slate-800">
                             <button
                               onClick={() => handleSearch(v.keyword)}
-                              className="hover:underline text-purple-700 text-left"
+                              disabled={loading}
+                              className="hover:underline text-purple-700 text-left disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
+                              data-track-id="related_keyword_variation_btn"
                             >
                               {v.keyword}
                             </button>
@@ -903,8 +916,11 @@ export default function KeywordExplorer({
                           <td className="p-3 text-center">
                             <button
                               onClick={() => handleQuickTrack(v.keyword)}
-                              className="p-1 hover:bg-purple-100 text-purple-600 rounded transition-colors"
+                              disabled={loading}
+                              className="p-1 hover:bg-purple-100 text-purple-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                               title="Add to Rank Tracker"
+                              data-track-id="quick_track_keyword_btn"
+                              data-filter-value={v.keyword}
                             >
                               <Plus className="h-4 w-4" />
                             </button>

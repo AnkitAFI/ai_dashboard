@@ -212,6 +212,7 @@ export default function SellerDashboardView() {
             onClick={handleDisconnectClick}
             disabled={disconnecting}
             className="flex items-center gap-2 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl text-sm font-bold text-red-600 transition-all border border-red-100 disabled:opacity-50"
+            data-track-id="seller_disconnect_store_btn"
           >
             Disconnect Store
           </button>
@@ -219,6 +220,7 @@ export default function SellerDashboardView() {
             onClick={handleRefresh}
             disabled={refreshing}
             className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:shadow-md transition-all border border-slate-100 disabled:opacity-50"
+            data-track-id="seller_sync_now_btn"
           >
             <RefreshCcw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
             {refreshing ? "Refreshing..." : "Sync Now"}
@@ -395,12 +397,16 @@ export default function SellerDashboardView() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-6 flex flex-col sm:flex-row gap-3">
-            <AlertDialogCancel className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold transition-all">
+            <AlertDialogCancel
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold transition-all"
+              data-track-id="seller_disconnect_cancel_btn"
+            >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={executeDisconnect}
               className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold transition-all shadow-sm shadow-red-100"
+              data-track-id="seller_disconnect_confirm_btn"
             >
               Disconnect
             </AlertDialogAction>

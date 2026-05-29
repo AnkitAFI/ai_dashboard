@@ -80,6 +80,7 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
                   variant="outline"
                   className="mt-2 text-xs h-7 border-amber-400 text-amber-700 hover:bg-amber-100"
                   onClick={() => window.location.href = "/subscription"}
+                  data-track-id="dashboard_charts_upgrade_btn"
                 >
                   <Crown className="w-3 h-3 mr-1" />
                   Upgrade to {currentTier === 'free' ? 'Basic' : 'Premium'}

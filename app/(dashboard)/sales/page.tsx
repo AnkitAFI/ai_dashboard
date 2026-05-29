@@ -162,6 +162,8 @@ export default function Sales() {
           value={source}
           onChange={(e) => setSource(e.target.value as "flipkart" | "amazon")}
           className="border border-slate-300 bg-white px-3 py-2 rounded-md text-slate-700 font-medium shadow-sm hover:bg-slate-50"
+          data-track-id="sales_source_select"
+          data-filter-value={source}
         >
           <option value="flipkart">Flipkart</option>
           <option value="amazon">Amazon</option>
@@ -187,6 +189,9 @@ export default function Sales() {
               : "text-slate-700 border-slate-300 hover:bg-slate-100"
               }`}
             onClick={() => toggleSort(field as "reviews" | "price" | "rating" | "sales")}
+            data-track-id="sales_sort_btn"
+            data-filter-value={field}
+            disabled={loading}
           >
             <ArrowUpDown className="w-4 h-4" />
             {field.charAt(0).toUpperCase() + field.slice(1)}
@@ -223,6 +228,8 @@ export default function Sales() {
                 <tr
                   key={i}
                   className="border-b border-slate-200 hover:bg-gradient-to-r hover:from-[#E0F2FE] hover:to-[#F0F9FF] transition-colors"
+                  data-track-id="sales_product_row"
+                  data-filter-value={p.title || p.product_title}
                 >
                   <td className="py-3 px-4 font-medium text-slate-600">
                     {(currentPage - 1) * itemsPerPage + i + 1}
@@ -264,8 +271,9 @@ export default function Sales() {
       <div className="flex justify-center items-center gap-3 mt-6">
         <Button
           onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
+          disabled={currentPage === 1 || loading}
           className="bg-white border border-slate-300 text-slate-700 hover:bg-slate-100"
+          data-track-id="sales_prev_page_btn"
         >
           Previous
         </Button>
@@ -276,8 +284,9 @@ export default function Sales() {
 
         <Button
           onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
+          disabled={currentPage === totalPages || loading}
           className="bg-white border border-slate-300 text-slate-700 hover:bg-slate-100"
+          data-track-id="sales_next_page_btn"
         >
           Next
         </Button>

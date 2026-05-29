@@ -75,7 +75,7 @@
 //     );
 //   });
 
-//   // ── Loading ──────────────────────────────────────────────────────────────
+//   // â”€â”€ Loading â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 //   if (isLoading) return (
 //     <div style={{
 //       display: "flex", flexDirection: "column", alignItems: "center",
@@ -120,7 +120,7 @@
 //         </div>
 //       </div>
 
-//       {/* ── KPI CARDS ───────────────────────────────────────────────── */}
+//       {/* â”€â”€ KPI CARDS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //       <div className="kpi-grid fade-in" style={{ animationDelay: "0.04s" }}>
 //         {([
 //           {
@@ -212,7 +212,7 @@
 //         ))}
 //       </div>
 
-//       {/* ── MIDDLE ROW ──────────────────────────────────────────────── */}
+//       {/* â”€â”€ MIDDLE ROW â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //       <div className="mid-grid fade-in" style={{ animationDelay: "0.18s" }}>
 
 //         {/* Tier Distribution */}
@@ -413,7 +413,7 @@
 //         </div>
 //       </div>
 
-//       {/* ── USERS TABLE ─────────────────────────────────────────────── */}
+//       {/* â”€â”€ USERS TABLE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
 //       <div className="panel fade-in"
 //         style={{ padding: 0, animationDelay: "0.3s", overflow: "hidden" }}>
 
@@ -641,7 +641,7 @@
 //   );
 // }
 
-// // ─── PanelHead ────────────────────────────────────────────────────────────────
+// // â”€â”€â”€ PanelHead â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // function PanelHead({ title, sub }: { title: string; sub: string }) {
 //   return (
 //     <div style={{ marginBottom: 18 }}>
@@ -654,7 +654,7 @@
 //   );
 // }
 
-// // ─── CSS ──────────────────────────────────────────────────────────────────────
+// // â”€â”€â”€ CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // const CSS = `
 //   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 //   * { box-sizing: border-box; }
@@ -773,6 +773,7 @@ import {
   Users, ShieldCheck, ShieldOff, TrendingUp,
   Wallet, IndianRupee, ChevronDown, ChevronUp,
   MessageSquare, BarChart2, Globe, Tag,
+  Activity, MousePointerClick, AlertOctagon, Clock,
 } from "lucide-react";
 
 const ADMIN_EMAIL = (process.env.NEXT_PUBLIC_ADMIN_EMAIL || "") || "syatharthdelhi@gmail.com";
@@ -824,6 +825,19 @@ interface UserRow {
   mobile_number: string | null;
 }
 
+interface BehaviorLog {
+  id: number;
+  user_id: number | null;
+  session_id: string;
+  event_type: string;
+  page_path: string;
+  properties: Record<string, any>;
+  ip_address: string | null;
+  user_agent: string | null;
+  created_at: string;
+  user_email: string | null;
+}
+
 export default function AdminDashboard() {
   const router = useRouter();
   const { user } = useAuth();
@@ -838,11 +852,30 @@ export default function AdminDashboard() {
   const [sortField, setSortField] = useState<keyof UserRow>("created_at");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
+  // Tab & User Behavior logs state
+  const [activeTab, setActiveTab] = useState<"overview" | "behavior">("overview");
+  const [behaviorLogs, setBehaviorLogs] = useState<BehaviorLog[]>([]);
+  const [behaviorLimit, setBehaviorLimit] = useState<number>(100);
+  const [behaviorSearch, setBehaviorSearch] = useState<string>("");
+  const [behaviorFilterType, setBehaviorFilterType] = useState<string>("all");
+  const [behaviorLoading, setBehaviorLoading] = useState<boolean>(false);
+  const [expandedLogId, setExpandedLogId] = useState<number | null>(null);
+  const [behaviorEmailFilter, setBehaviorEmailFilter] = useState<string>("");
+  const [behaviorPathFilter, setBehaviorPathFilter] = useState<string>("");
+  const [behaviorHidePageViews, setBehaviorHidePageViews] = useState<boolean>(false);
+  const [behaviorPage, setBehaviorPage] = useState<number>(0);
+
   useEffect(() => {
     if (!user) return;
     if (user.email !== ADMIN_EMAIL) { router.push("/dashboard"); return; }
     fetchStats();
   }, [user]);
+
+  useEffect(() => {
+    if (activeTab === "behavior" && user?.email === ADMIN_EMAIL) {
+      fetchBehaviorLogs();
+    }
+  }, [activeTab]);
 
   const fetchStats = async () => {
     setIsLoading(true);
@@ -858,6 +891,31 @@ export default function AdminDashboard() {
       setLastUpd(new Date());
     } catch { router.push("/dashboard"); }
     finally { setIsLoading(false); }
+  };
+
+  const fetchBehaviorLogs = async (limitVal: number = behaviorLimit) => {
+    setBehaviorLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/behavior-logs?limit=${limitVal}`, {
+        credentials: "include",
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setBehaviorLogs(data);
+        setLastUpd(new Date());
+      }
+    } catch (err) {
+      console.error("Error fetching behavior logs:", err);
+    } finally {
+      setBehaviorLoading(false);
+    }
+  };
+
+  const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newLimit = parseInt(e.target.value, 10);
+    setBehaviorLimit(newLimit);
+    fetchBehaviorLogs(newLimit);
   };
 
   const toggleSort = (field: keyof UserRow) => {
@@ -939,22 +997,73 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="flex-between mb-6 fade-in">
         <div>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>Admin Overview</h1>
+          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>
+            {activeTab === "overview" ? "Admin Overview" : "User Behavior Analytics"}
+          </h1>
           <p style={{ margin: "4px 0 0", fontSize: 13, color: "#94a3b8" }}>
-            Full user database — all columns visible.
+            {activeTab === "overview"
+              ? "Full user database — all columns visible."
+              : "Detailed clickstreams, page views, and user journeys."}
           </p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <span style={{ fontSize: 11, color: "#94a3b8" }}>
             Updated {lastUpd.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}
           </span>
-          <button onClick={fetchStats} className="hdr-btn">
+          <button onClick={activeTab === "overview" ? fetchStats : () => fetchBehaviorLogs()} className="hdr-btn">
             <RefreshCw size={13} /> Refresh
           </button>
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {/* Tab Switcher */}
+      <div style={{
+        display: "inline-flex",
+        background: "#f1f5f9",
+        padding: 4,
+        borderRadius: 10,
+        marginBottom: 22,
+        border: "1px solid #e2e8f0"
+      }}>
+        <button
+          onClick={() => setActiveTab("overview")}
+          style={{
+            padding: "6px 16px",
+            borderRadius: 8,
+            fontSize: 12,
+            fontWeight: 600,
+            background: activeTab === "overview" ? "white" : "transparent",
+            color: activeTab === "overview" ? "#4f46e5" : "#64748b",
+            boxShadow: activeTab === "overview" ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+            border: "none",
+            cursor: "pointer",
+            transition: "all 0.2s"
+          }}
+        >
+          User Count
+        </button>
+        <button
+          onClick={() => setActiveTab("behavior")}
+          style={{
+            padding: "6px 16px",
+            borderRadius: 8,
+            fontSize: 12,
+            fontWeight: 600,
+            background: activeTab === "behavior" ? "white" : "transparent",
+            color: activeTab === "behavior" ? "#4f46e5" : "#64748b",
+            boxShadow: activeTab === "behavior" ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+            border: "none",
+            cursor: "pointer",
+            transition: "all 0.2s"
+          }}
+        >
+          User Behavior & Journeys
+        </button>
+      </div>
+
+      {activeTab === "overview" ? (
+        <>
+          {/* KPI Cards */}
       <div className="kpi-grid fade-in" style={{ animationDelay: "0.04s" }}>
         {[
           { label: "Total Users", value: stats?.total_users ?? 0, sub: `+${stats?.recent_signups_7days ?? 0} this week`, up: true, isRupee: false, icon: <Users size={19} />, grad: "linear-gradient(135deg,#6366f1,#8b5cf6)", glow: "#6366f133" },
@@ -1047,14 +1156,14 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* ── Full Users Table ── */}
+      {/* â”€â”€ Full Users Table â”€â”€ */}
       <div className="panel fade-in" style={{ padding: 0, animationDelay: "0.3s", overflow: "hidden" }}>
 
         {/* Toolbar */}
         <div style={{ padding: "16px 22px", borderBottom: "1px solid #f1f5f9", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
           <div>
             <p style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 700, color: "#1e293b" }}>All Users</p>
-            <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>{filtered.length} of {users.length} users • click a row to expand</p>
+            <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>{filtered.length} of {users.length} users · click a row to expand</p>
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <div style={{ position: "relative" }}>
@@ -1295,11 +1404,326 @@ export default function AdminDashboard() {
           <span style={{ fontSize: 11, color: "#cbd5e1", letterSpacing: "0.1em", textTransform: "uppercase" }}>Insydz · Restricted Access</span>
         </div>
       </div>
+        </>
+      ) : (
+        /* â”€â”€ BEHAVIOR TAB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+        (() => {
+          // â”€â”€ derived filter data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+          const uniqueEmails  = Array.from(new Set(behaviorLogs.map(l => l.user_email).filter(Boolean))) as string[];
+          const uniquePaths   = Array.from(new Set(behaviorLogs.map(l => l.page_path))).sort();
+          const uniqueSessions = new Set(behaviorLogs.map(l => l.session_id)).size;
+
+          const filteredLogs = behaviorLogs.filter(log => {
+            const q = behaviorSearch.toLowerCase();
+            const matchesSearch = !q ||
+              (log.user_email || "").toLowerCase().includes(q) ||
+              log.page_path.toLowerCase().includes(q) ||
+              (log.properties?.track_id || "").toLowerCase().includes(q) ||
+              log.event_type.toLowerCase().includes(q);
+            const matchesType  = behaviorFilterType === "all" || log.event_type === behaviorFilterType;
+            const matchesEmail = !behaviorEmailFilter || log.user_email === behaviorEmailFilter;
+            const matchesPath  = !behaviorPathFilter  || log.page_path  === behaviorPathFilter;
+            const matchesHide  = !behaviorHidePageViews || log.event_type !== "page_view";
+            return matchesSearch && matchesType && matchesEmail && matchesPath && matchesHide;
+          });
+
+          const PAGE_SIZE = 25;
+          const totalPages = Math.max(1, Math.ceil(filteredLogs.length / PAGE_SIZE));
+          const safePage   = Math.min(behaviorPage, totalPages - 1);
+          const pageLogs   = filteredLogs.slice(safePage * PAGE_SIZE, safePage * PAGE_SIZE + PAGE_SIZE);
+
+          return (
+            <div className="fade-in" style={{ animationDelay: "0.05s" }}>
+
+              {/* Stats bar */}
+              <div style={{ display: "flex", gap: 12, marginBottom: 14, flexWrap: "wrap" }}>
+                {[
+                  { label: "Unique Users",    value: uniqueEmails.length },
+                  { label: "Unique Paths",    value: uniquePaths.length  },
+                  { label: "Unique Sessions", value: uniqueSessions       },
+                  { label: "Total Events",    value: behaviorLogs.length  },
+                ].map(s => (
+                  <div key={s.label} style={{ background: "white", border: "1px solid #f1f5f9", borderRadius: 10, padding: "8px 14px", display: "flex", flexDirection: "column", gap: 1 }}>
+                    <span style={{ fontSize: 10, fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>{s.label}</span>
+                    <span style={{ fontSize: 18, fontWeight: 700, color: "#1e293b" }}>{s.value}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Toolbar row 1 — search + event type + limit */}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
+                <div style={{ position: "relative", flexGrow: 1, maxWidth: 260 }}>
+                  <Search size={12} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} />
+                  <input value={behaviorSearch} onChange={e => setBehaviorSearch(e.target.value)} placeholder="Search email, path, track ID…" className="tbl-input" style={{ paddingLeft: 28, width: "100%" }} />
+                </div>
+                <select value={behaviorFilterType} onChange={e => setBehaviorFilterType(e.target.value)} className="tbl-select">
+                  <option value="all">All Events</option>
+                  <option value="page_view">Page Views</option>
+                  <option value="element_click">Clicks</option>
+                  <option value="rage_click">Rage Clicks</option>
+                </select>
+                <select value={String(behaviorLimit)} onChange={handleLimitChange} className="tbl-select">
+                  <option value="100">Last 100</option>
+                  <option value="250">Last 250</option>
+                  <option value="500">Last 500</option>
+                  <option value="1000">Last 1000</option>
+                </select>
+                <button onClick={() => fetchBehaviorLogs()} disabled={behaviorLoading} className="hdr-btn" style={{ opacity: behaviorLoading ? 0.6 : 1 }}>
+                  <RefreshCw size={13} style={{ animation: behaviorLoading ? "spin 0.8s linear infinite" : "none" }} />
+                  {behaviorLoading ? "Loading…" : "Refresh"}
+                </button>
+              </div>
+
+              {/* Toolbar row 2 — user + path filters + hide toggle */}
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14, flexWrap: "wrap" }}>
+                <select value={behaviorEmailFilter} onChange={e => { setBehaviorEmailFilter(e.target.value); setBehaviorPage(0); }} className="tbl-select">
+                  <option value="">All Users ({uniqueEmails.length})</option>
+                  {uniqueEmails.map(e => <option key={e} value={e}>{e}</option>)}
+                </select>
+                <select value={behaviorPathFilter} onChange={e => { setBehaviorPathFilter(e.target.value); setBehaviorPage(0); }} className="tbl-select">
+                  <option value="">All Pages ({uniquePaths.length})</option>
+                  {uniquePaths.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
+                <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#64748b", cursor: "pointer", userSelect: "none" }}>
+                  <input
+                    type="checkbox"
+                    checked={behaviorHidePageViews}
+                    onChange={e => { setBehaviorHidePageViews(e.target.checked); setBehaviorPage(0); }}
+                    style={{ accentColor: "#6366f1", width: 13, height: 13 }}
+                  />
+                  Hide page_views
+                </label>
+                {(behaviorEmailFilter || behaviorPathFilter || behaviorSearch || behaviorFilterType !== "all" || behaviorHidePageViews) && (
+                  <button
+                    className="hdr-btn"
+                    onClick={() => { setBehaviorEmailFilter(""); setBehaviorPathFilter(""); setBehaviorSearch(""); setBehaviorFilterType("all"); setBehaviorHidePageViews(false); setBehaviorPage(0); }}
+                    style={{ fontSize: 11, color: "#ef4444", borderColor: "#fca5a5" }}
+                  >
+                    Clear filters
+                  </button>
+                )}
+                <span style={{ fontSize: 11, color: "#94a3b8", marginLeft: "auto" }}>
+                  {filteredLogs.length} of {behaviorLogs.length} events
+                </span>
+              </div>
+
+              {/* Behavior Table */}
+              <div className="panel" style={{ padding: 0, overflow: "hidden" }}>
+                {behaviorLoading && behaviorLogs.length === 0 ? (
+                  <div style={{ padding: 60, textAlign: "center" }}>
+                    <div style={{ width: 32, height: 32, borderRadius: "50%", border: "3px solid #e2e8f0", borderTop: "3px solid #6366f1", animation: "spin 0.8s linear infinite", margin: "0 auto 12px" }} />
+                    <p style={{ color: "#94a3b8", fontSize: 13, margin: 0 }}>Loading behavior logs…</p>
+                  </div>
+                ) : (
+                  <div style={{ overflowX: "auto" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+                      <colgroup>
+                        <col style={{ width: 48  }} />{/* # */}
+                        <col style={{ width: 90  }} />{/* Time */}
+                        <col style={{ width: 170 }} />{/* User */}
+                        <col style={{ width: 100 }} />{/* Event */}
+                        <col style={{ width: 160 }} />{/* Path */}
+                        <col style={{ width: 160 }} />{/* Track ID */}
+                        <col style={{ width: 130 }} />{/* Filter Val */}
+                        <col style={{ width: 32  }} />{/* Chevron */}
+                      </colgroup>
+                      <thead>
+                        <tr style={{ background: "#f8fafc" }}>
+                          {["#", "Time", "User", "Event", "Page", "Track ID", "Filter Value", ""].map(h => (
+                            <th key={h} style={{ padding: "8px 10px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em", whiteSpace: "nowrap", borderBottom: "1px solid #f1f5f9", overflow: "hidden" }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {pageLogs.length === 0 ? (
+                          <tr><td colSpan={8} style={{ padding: 48, textAlign: "center", color: "#94a3b8", fontSize: 13 }}>No events match the current filters.</td></tr>
+                        ) : pageLogs.map(log => {
+                          const isLogOpen = expandedLogId === log.id;
+                          const eventMeta: Record<string, { color: string; bg: string; icon: React.ReactNode; label: string }> = {
+                            page_view:     { color: "#4f46e5", bg: "#ede9fe", icon: <Activity size={10} />,           label: "Page View" },
+                            page_exit:     { color: "#0f766e", bg: "#ccfbf1", icon: <Clock size={10} />,              label: "Exit/Dwell" },
+                            element_click: { color: "#0284c7", bg: "#e0f2fe", icon: <MousePointerClick size={10} />, label: "Click" },
+                            rage_click:    { color: "#dc2626", bg: "#fee2e2", icon: <AlertOctagon size={10} />,       label: "Rage" },
+                          };
+                          const meta      = eventMeta[log.event_type] ?? { color: "#64748b", bg: "#f1f5f9", icon: null, label: log.event_type };
+                          const props     = log.properties || {};
+                          const trackId   = props.track_id ?? props.id ?? null;
+                          const filterVal = props.filter_value ?? null;
+                          const tagName   = props.tagName ?? null;
+                          const ts        = new Date(log.created_at);
+                          const timeStr   = ts.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+                          const dateStr   = ts.toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+
+                          return (
+                            <Fragment key={log.id}>
+                              <tr className="tbl-row" style={{ cursor: "pointer" }} onClick={() => setExpandedLogId(isLogOpen ? null : log.id)}>
+                                {/* # */}
+                                <td style={{ padding: "7px 10px", fontSize: 10, color: "#cbd5e1", fontFamily: "monospace", overflow: "hidden" }}>{log.id}</td>
+                                {/* Time */}
+                                <td style={{ padding: "7px 10px", overflow: "hidden" }}>
+                                  <p style={{ margin: 0, fontSize: 11, fontWeight: 600, color: "#1e293b" }}>{timeStr}</p>
+                                  <p style={{ margin: 0, fontSize: 9, color: "#94a3b8" }}>{dateStr}</p>
+                                </td>
+                                {/* User */}
+                                <td style={{ padding: "7px 10px", fontSize: 11, color: "#64748b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={log.user_email ?? ""}>
+                                  {log.user_email ?? <span style={{ color: "#cbd5e1" }}>anon</span>}
+                                </td>
+                                {/* Event */}
+                                <td style={{ padding: "7px 10px", overflow: "hidden" }}>
+                                  <span style={{ display: "inline-flex", alignItems: "center", gap: 3, padding: "2px 7px", borderRadius: 5, fontSize: 10, fontWeight: 700, background: meta.bg, color: meta.color }}>
+                                    {meta.icon}{meta.label}
+                                  </span>
+                                </td>
+                                {/* Path */}
+                                <td style={{ padding: "7px 10px", fontSize: 11, color: "#475569", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={log.page_path}>
+                                  {log.page_path}
+                                </td>
+                                {/* Track ID */}
+                                <td style={{ padding: "7px 10px", overflow: "hidden" }}>
+                                  {trackId
+                                    ? <span style={{ display: "block", fontSize: 10, fontWeight: 600, color: "#0284c7", background: "#e0f2fe", padding: "2px 6px", borderRadius: 4, fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={String(trackId)}>{trackId}</span>
+                                    : <span style={{ fontSize: 10, color: "#e2e8f0" }}>—</span>
+                                  }
+                                </td>
+                                {/* Filter Value */}
+                                <td style={{ padding: "7px 10px", fontSize: 11, color: "#64748b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={filterVal ?? ""}>
+                                  {log.event_type === "page_view" && props.duration_seconds !== undefined
+                                    ? <span style={{ display: "inline-flex", alignItems: "center", gap: 3, fontSize: 10, color: "#0f766e", fontWeight: 600 }} title={`Dwell time: ${props.duration_seconds}s`}><Clock size={10} /> {props.duration_seconds}s dwell</span>
+                                    : (filterVal ?? <span style={{ color: "#e2e8f0" }}>—</span>)
+                                  }
+                                </td>
+                                {/* Chevron */}
+                                <td style={{ padding: "7px 10px", color: "#94a3b8", textAlign: "center" }}>
+                                  {isLogOpen ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+                                </td>
+                              </tr>
+
+                              {/* Expanded detail row — plain English summary */}
+                              {isLogOpen && (() => {
+                                // Parse browser & OS from user agent
+                                const ua = log.user_agent ?? "";
+                                const browser =
+                                  ua.includes("Edg/")     ? "Edge" :
+                                  ua.includes("OPR/")     ? "Opera" :
+                                  ua.includes("Chrome/")  ? "Chrome" :
+                                  ua.includes("Safari/") && !ua.includes("Chrome") ? "Safari" :
+                                  ua.includes("Firefox/") ? "Firefox" : "Browser";
+                                const os =
+                                  ua.includes("Windows NT 10") ? "Windows 10/11" :
+                                  ua.includes("Windows NT 6")  ? "Windows 7/8" :
+                                  ua.includes("Mac OS X")      ? "macOS" :
+                                  ua.includes("Android")       ? "Android" :
+                                  ua.includes("iPhone")        ? "iPhone" :
+                                  ua.includes("Linux")         ? "Linux" : "Unknown OS";
+
+                                // Human readable label for track ID
+                                const tidLabel = trackId
+                                  ? String(trackId)
+                                      .replace(/_/g, " ")
+                                      .replace(/\bbtn\b/g, "button")
+                                      .replace(/\bsidebar nav\b/g, "sidebar →")
+                                      .replace(/\bselect\b/g, "dropdown")
+                                      .replace(/\binput\b/g, "field")
+                                      .replace(/^(.)/, (c: string) => c.toUpperCase())
+                                  : null;
+
+                                // What action label
+                                const actionLabel =
+                                  log.event_type === "page_view"     ? "Visited a page" :
+                                  log.event_type === "page_exit"     ? "Left page (Dwell Time)" :
+                                  log.event_type === "element_click" ? "Clicked something" :
+                                  log.event_type === "rage_click"    ? "Clicked repeatedly (frustrated)" :
+                                  log.event_type;
+
+                                // Is filterVal a navigation path?
+                                const navTarget = filterVal && String(filterVal).startsWith("/") ? String(filterVal) : null;
+
+                                const pill = (text: string, color: string, bg: string) => (
+                                  <span style={{ display: "inline-block", padding: "2px 9px", borderRadius: 6, fontSize: 11, fontWeight: 600, background: bg, color, marginRight: 6, marginBottom: 4 }}>{text}</span>
+                                );
+
+                                return (
+                                  <tr key={`bexp-${log.id}`}>
+                                    <td colSpan={8} style={{ padding: 0, background: "#f8fafc", borderTop: "1px solid #f1f5f9", borderBottom: "2px solid #e2e8f0" }}>
+                                      <div style={{ padding: "14px 20px", display: "flex", flexWrap: "wrap", gap: 20, alignItems: "flex-start" }}>
+
+                                        {/* Action sentence */}
+                                        <div style={{ flex: "1 1 260px", minWidth: 220 }}>
+                                          <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>What happened</p>
+                                          <p style={{ margin: "0 0 8px", fontSize: 13, fontWeight: 600, color: "#1e293b" }}>{actionLabel}</p>
+                                          <div>
+                                            {tidLabel && pill(tidLabel, "#0284c7", "#e0f2fe")}
+                                            {navTarget && pill(`→ ${navTarget}`, "#10b981", "#f0fdf4")}
+                                            {(log.event_type === "page_exit" || log.event_type === "page_view") && props.duration_seconds && pill(`⏱️ Stayed ${props.duration_seconds}s`, "#0f766e", "#ccfbf1")}
+                                            {props.text && !tidLabel && pill(String(props.text).slice(0, 40), "#64748b", "#f1f5f9")}
+                                          </div>
+                                        </div>
+
+                                        {/* Page */}
+                                        <div style={{ flex: "1 1 160px", minWidth: 140 }}>
+                                          <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>On page</p>
+                                          <p style={{ margin: 0, fontSize: 12, color: "#475569", fontFamily: "monospace", fontWeight: 500 }}>{log.page_path}</p>
+                                        </div>
+
+                                        {/* Device */}
+                                        <div style={{ flex: "1 1 160px", minWidth: 140 }}>
+                                          <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>Device</p>
+                                          <p style={{ margin: 0, fontSize: 12, color: "#1e293b", fontWeight: 600 }}>{browser}</p>
+                                          <p style={{ margin: "2px 0 0", fontSize: 11, color: "#64748b" }}>{os}</p>
+                                        </div>
+
+                                        {/* Time */}
+                                        <div style={{ flex: "1 1 130px", minWidth: 110 }}>
+                                          <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>Time</p>
+                                          <p style={{ margin: 0, fontSize: 12, color: "#1e293b", fontWeight: 600 }}>{timeStr}</p>
+                                          <p style={{ margin: "2px 0 0", fontSize: 11, color: "#64748b" }}>{dateStr}</p>
+                                        </div>
+
+                                        {/* User */}
+                                        <div style={{ flex: "1 1 180px", minWidth: 160 }}>
+                                          <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>User</p>
+                                          <p style={{ margin: 0, fontSize: 12, color: "#1e293b", fontWeight: 600, wordBreak: "break-all" }}>{log.user_email ?? "Anonymous"}</p>
+                                          {log.ip_address && <p style={{ margin: "2px 0 0", fontSize: 11, color: "#94a3b8" }}>{log.ip_address}</p>}
+                                        </div>
+
+                                      </div>
+                                    </td>
+                                  </tr>
+                                );
+                              })()}
+                            </Fragment>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+
+                {/* Pagination footer */}
+                <div style={{ padding: "10px 18px", borderTop: "1px solid #f1f5f9", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#f8fafc", gap: 10, flexWrap: "wrap" }}>
+                  <span style={{ fontSize: 12, color: "#94a3b8" }}>
+                    Page {safePage + 1} of {totalPages} · {filteredLogs.length} events
+                  </span>
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button onClick={() => setBehaviorPage(0)} disabled={safePage === 0} className="hdr-btn" style={{ opacity: safePage === 0 ? 0.4 : 1, fontSize: 11 }}>«</button>
+                    <button onClick={() => setBehaviorPage(p => Math.max(0, p - 1))} disabled={safePage === 0} className="hdr-btn" style={{ opacity: safePage === 0 ? 0.4 : 1, fontSize: 11 }}>‹ Prev</button>
+                    <button onClick={() => setBehaviorPage(p => Math.min(totalPages - 1, p + 1))} disabled={safePage >= totalPages - 1} className="hdr-btn" style={{ opacity: safePage >= totalPages - 1 ? 0.4 : 1, fontSize: 11 }}>Next ›</button>
+                    <button onClick={() => setBehaviorPage(totalPages - 1)} disabled={safePage >= totalPages - 1} className="hdr-btn" style={{ opacity: safePage >= totalPages - 1 ? 0.4 : 1, fontSize: 11 }}>»</button>
+                  </div>
+                  <span style={{ fontSize: 11, color: "#cbd5e1", letterSpacing: "0.08em", textTransform: "uppercase" }}>Insydz · Behavior Analytics</span>
+                </div>
+              </div>
+            </div>
+          );
+        })()
+      )}
     </div>
   );
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+// â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function UsagePill({ used, color }: { used: number; color: string }) {
   if (!used) return <span style={{ fontSize: 11, color: "#cbd5e1" }}>0</span>;
@@ -1342,7 +1766,7 @@ function PanelHead({ title, sub }: { title: string; sub: string }) {
   );
 }
 
-// ── CSS ───────────────────────────────────────────────────────────────────────
+// â”€â”€ CSS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
   * { box-sizing: border-box; }

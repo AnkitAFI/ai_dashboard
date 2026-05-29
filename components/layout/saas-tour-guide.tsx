@@ -876,7 +876,7 @@ export default function SaaSTourGuide() {
   const [arrowStyle, setArrowStyle] = useState<React.CSSProperties>({});
   const [arrowDir, setArrowDir] = useState<"up" | "down" | "left" | "right" | null>(null);
 
-  const WELCOME_CARD_DISMISSED_KEY = "insydz-welcome-card-dismissed";
+
   const [showWelcomeCard, setShowWelcomeCard] = useState(false);
 
   // Interactive Live States
@@ -886,16 +886,11 @@ export default function SaaSTourGuide() {
   const [isExplorerCompleted, setIsExplorerCompleted] = useState(false);
   const [isSellerCompleted, setIsSellerCompleted] = useState(false);
 
-  // Check tour completion state on mount and sync with database user preferences
+  // Sync tour completion state from database on user load
   useEffect(() => {
     if (user) {
       setIsExplorerCompleted(!!user.explorerTourCompleted);
       setIsSellerCompleted(!!user.sellerTourCompleted);
-    } else if (typeof window !== "undefined") {
-      const expDone = localStorage.getItem("insydz-explorer-tour-completed") === "true";
-      const selDone = localStorage.getItem("insydz-seller-tour-completed") === "true";
-      setIsExplorerCompleted(expDone);
-      setIsSellerCompleted(selDone);
     }
   }, [user]);
 
@@ -1249,7 +1244,6 @@ export default function SaaSTourGuide() {
 
   const handleDismissWelcome = async () => {
     setShowWelcomeCard(false);
-    localStorage.setItem(WELCOME_CARD_DISMISSED_KEY, "true");
     if (user) {
       try {
         await fetch(`${API_BASE_URL}/api/auth/tour-completion`, {
@@ -1266,15 +1260,11 @@ export default function SaaSTourGuide() {
   };
 
   const markTourAsCompleted = async () => {
-
-    localStorage.setItem(WELCOME_CARD_DISMISSED_KEY, "true");
     const payload: { [key: string]: boolean } = {};
     if (activeTourMode === "seller") {
-      localStorage.setItem("insydz-seller-tour-completed", "true");
       setIsSellerCompleted(true);
       payload.seller_tour_completed = true;
     } else {
-      localStorage.setItem("insydz-explorer-tour-completed", "true");
       setIsExplorerCompleted(true);
       payload.explorer_tour_completed = true;
     }

@@ -85,6 +85,8 @@ export default function Categories() {
           value={tableFilter}
           onChange={(e) => setTableFilter(e.target.value as any)}
           className="border border-slate-300 rounded-md px-2 py-1 bg-white"
+          data-track-id="table_filter_select"
+          data-filter-value={tableFilter}
         >
           <option value="all">All</option>
           <option value="flipkart">Flipkart</option>
@@ -132,6 +134,8 @@ export default function Categories() {
                     )}`
                   )
                 }
+                data-track-id="view_products_btn"
+                data-filter-value={cat.category}
                 className="flex items-center justify-center mt-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg py-2 hover:from-blue-600 hover:to-cyan-600 shadow-md transition-all"
               >
                 View Products <ChevronRight className="ml-2 h-5 w-5" />

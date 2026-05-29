@@ -253,7 +253,8 @@ function SliderRow({
       </label>
       <input type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))} disabled={locked}
-        className="flex-1 accent-blue-500 h-1.5" />
+        className="flex-1 accent-blue-500 h-1.5"
+        data-track-id={`${label.toLowerCase().replace(/[^a-z0-9]+/g, "_")}_input`} />
       <span className="text-xs font-semibold text-slate-700 w-16 text-right tabular-nums">
         {format(value)}
       </span>
@@ -398,6 +399,8 @@ function AIPanel({
                   ? "bg-slate-900/50 text-slate-600 border-slate-800 cursor-not-allowed"
                   : "bg-slate-800 text-slate-300 border-slate-700 hover:border-violet-500 hover:text-white"
               }`}
+              data-track-id="ai_advisor_mode_btn"
+              data-filter-value={m.id}
             >
               {locked && <span className="text-amber-500 text-[10px]">🔒</span>}
               {m.label}
@@ -416,14 +419,21 @@ function AIPanel({
             </div>
             <div className="flex gap-2">
               {analyzeStream.text && (
-                <button onClick={analyzeStream.reset} className="text-xs text-slate-400 hover:text-slate-600 transition-colors">Clear</button>
+                <button 
+                  onClick={analyzeStream.reset} 
+                  className="text-xs text-slate-400 hover:text-slate-600 transition-colors"
+                  data-track-id="ai_run_analysis_clear_btn"
+                >
+                  Clear
+                </button>
               )}
               <button
                 onClick={runAnalyze}
                 disabled={analyzeStream.streaming || !calcResult || !ready}
                 className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-200 disabled:text-slate-400 text-white text-xs rounded-xl font-medium transition-all"
+                data-track-id="ai_run_analysis_btn"
               >
-                {analyzeStream.streaming ? <><RefreshCw className="w-3 h-3 animate-spin" /> Analyzing...</> : "✦ Run analysis"}
+                {analyzeStream.streaming ? <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Analyzing...</> : "✦ Run analysis"}
               </button>
             </div>
           </div>
@@ -450,6 +460,8 @@ function AIPanel({
                       key={q}
                       onClick={() => setChatInput(q)}
                       className="text-xs px-3 py-1.5 bg-slate-100 text-slate-600 rounded-full hover:bg-violet-100 hover:text-violet-700 transition-colors border border-slate-200"
+                      data-track-id="ai_chat_quick_q_btn"
+                      data-filter-value={q}
                     >
                       {q}
                     </button>
@@ -494,11 +506,13 @@ function AIPanel({
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); runChat(); } }}
               placeholder="Ask about your margins, pricing, ads..."
               className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-violet-400 focus:bg-white transition-colors"
+              data-track-id="ai_chat_input"
             />
             <button
               onClick={runChat}
               disabled={chatStream.streaming || !chatInput.trim() || !ready}
               className="px-3 py-2.5 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-200 disabled:text-slate-400 text-white rounded-xl transition-all"
+              data-track-id="ai_chat_submit_btn"
             >
               <Send className="w-3.5 h-3.5" />
             </button>
@@ -506,6 +520,7 @@ function AIPanel({
               <button
                 onClick={() => { setChatHistory([]); chatStream.reset(); setPendingChat(null); }}
                 className="px-3 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-500 rounded-xl text-xs transition-colors"
+                data-track-id="ai_chat_clear_btn"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
@@ -526,6 +541,7 @@ function AIPanel({
               onClick={runScenario}
               disabled={scenarioStream.streaming || !scenarios || !ready}
               className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-200 disabled:text-slate-400 text-white text-xs rounded-xl font-medium transition-all"
+              data-track-id="ai_get_scenario_advice_btn"
             >
               {scenarioStream.streaming ? "Thinking..." : "✦ Get advice"}
             </button>
@@ -553,6 +569,7 @@ function AIPanel({
               onClick={runHealth}
               disabled={healthStream.streaming || !healthData || !ready}
               className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-200 disabled:text-slate-400 text-white text-xs rounded-xl font-medium transition-all"
+              data-track-id="ai_build_health_plan_btn"
             >
               {healthStream.streaming ? "Thinking..." : "✦ Build plan"}
             </button>
@@ -807,7 +824,7 @@ export default function ProfitabilityOptimizer() {
             {tier.toUpperCase()}
           </Badge>
           {calcResult && (
-            <Button size="sm" variant="outline" onClick={handleSave} className="flex items-center gap-1.5 text-xs">
+            <Button size="sm" variant="outline" onClick={handleSave} className="flex items-center gap-1.5 text-xs" data-track-id="save-btn">
               <Bookmark className="w-3.5 h-3.5" /> Save
             </Button>
           )}
@@ -826,8 +843,8 @@ export default function ProfitabilityOptimizer() {
               <p className="text-slate-500 text-sm mb-5">Upgrade to unlock this feature.</p>
               <div className="grid grid-cols-2 gap-3 mb-5 text-left text-xs">
                 {[
-                  { tier: "Basic · ₹2,000/mo", feats: ["Full cost waterfall", "ROI & ACOS tracking", "Smart alerts", "Return rate modelling", "AI chat"] },
-                  { tier: "Premium · ₹3,000/mo", feats: ["Scenario planner", "Live market intel", "Business health score", "AI full analysis", "Unlimited saves"] },
+                  { tier: "Basic · ₹1,999/mo", feats: ["Full cost waterfall", "ROI & ACOS tracking", "Smart alerts", "Return rate modelling", "AI chat"] },
+                  { tier: "Premium · ₹2,999/mo", feats: ["Scenario planner", "Live market intel", "Business health score", "AI full analysis", "Unlimited saves"] },
                 ].map((plan) => (
                   <div key={plan.tier} className="bg-slate-50 rounded-xl p-3 border border-slate-200">
                     <p className="font-semibold text-slate-700 mb-2">{plan.tier}</p>
@@ -928,7 +945,10 @@ export default function ProfitabilityOptimizer() {
               return (
                 <button key={tab.id}
                   onClick={() => locked ? setUpgrade({ open: true, feature: tab.label }) : handleTab(tab.id as typeof activeTab)}
-                  className={`flex-1 min-w-[80px] py-3.5 px-3 font-medium text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 ${activeTab === tab.id ? "border-b-2 border-blue-500 text-blue-600 bg-blue-50/50" : "text-gray-500 hover:bg-gray-50"}`}>
+                  className={`flex-1 min-w-[80px] py-3.5 px-3 font-medium text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 ${activeTab === tab.id ? "border-b-2 border-blue-500 text-blue-600 bg-blue-50/50" : "text-gray-500 hover:bg-gray-50"}`}
+                  data-track-id="profit_tab_btn"
+                  data-filter-value={tab.id}
+                >
                   {tab.icon}
                   <span className="hidden sm:inline">{tab.label}</span>
                   {locked && <Lock className="w-3 h-3 text-amber-500" />}
@@ -956,7 +976,10 @@ export default function ProfitabilityOptimizer() {
                 <div>
                   <label className="text-xs text-slate-500 block mb-1">Marketplace</label>
                   <select value={inputs.marketplace} onChange={(e) => inp("marketplace", e.target.value)}
-                    className="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    className="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+                    data-track-id="marketplace_select"
+                    data-filter-value={inputs.marketplace}
+                  >
                     <option value="amazon">Amazon</option>
                     <option value="flipkart">Flipkart</option>
                   </select>
@@ -964,7 +987,10 @@ export default function ProfitabilityOptimizer() {
                 <div>
                   <label className="text-xs text-slate-500 block mb-1">Category</label>
                   <select value={inputs.category} onChange={(e) => inp("category", e.target.value)}
-                    className="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    className="w-full p-2.5 border border-slate-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-500 outline-none"
+                    data-track-id="category_select"
+                    data-filter-value={inputs.category}
+                  >
                     {categories.map((c) => <option key={c}>{c}</option>)}
                     {categories.length === 0 && <option value="">Loading...</option>}
                   </select>
@@ -995,7 +1021,7 @@ export default function ProfitabilityOptimizer() {
               {!isBasicPlus && (
                 <button onClick={() => setUpgrade({ open: true, feature: "Advanced inputs" })}
                   className="w-full mt-3 py-2 text-xs text-blue-600 border border-blue-200 rounded-xl hover:bg-blue-50 transition-colors flex items-center justify-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5" /> Unlock — Basic ₹2,000/mo
+                  <Lock className="w-3.5 h-3.5" /> Unlock — Basic ₹1,999/mo
                 </button>
               )}
             </CardContent>
@@ -1071,7 +1097,7 @@ export default function ProfitabilityOptimizer() {
                         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
                           <p className="text-sm font-semibold text-slate-700">Full cost breakdown</p>
                           <button className="text-xs px-4 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full shadow"
-                            onClick={() => setUpgrade({ open: true, feature: "Cost waterfall" })}>Unlock — Basic ₹2,000/mo</button>
+                            onClick={() => setUpgrade({ open: true, feature: "Cost waterfall" })}>Unlock — Basic ₹1,999/mo</button>
                         </div>
                       </div>
                     )}

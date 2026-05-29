@@ -2145,6 +2145,8 @@ function FestiveTrendContent() {
                   setLaunchData(null);
                 }}
                 className="w-full h-14 px-5 rounded-2xl bg-slate-50 border border-transparent text-sm font-bold focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all hover:bg-slate-100 cursor-pointer"
+                data-track-id="marketplace_select"
+                data-filter-value={source}
               >
                 <option value="amazon">Amazon India</option>
                 <option value="flipkart">Flipkart India</option>
@@ -2165,6 +2167,8 @@ function FestiveTrendContent() {
                   "w-full h-14 px-5 rounded-2xl bg-slate-50 border border-transparent text-sm font-bold focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all",
                   !isBasic ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-100 cursor-pointer"
                 )}
+                data-track-id="category_select"
+                data-filter-value={category}
               >
                 <option value="">
                   {isBasic ? "Select category…" : "Basic plan required"}
@@ -2190,6 +2194,7 @@ function FestiveTrendContent() {
                   "h-14 px-6 rounded-2xl bg-slate-50 border-transparent text-sm font-bold focus:ring-2 focus:ring-sky-500 outline-none transition-all",
                   !isPremium && "opacity-50 cursor-not-allowed"
                 )}
+                data-track-id="landing_cost_input"
               />
             </div>
 
@@ -2208,6 +2213,7 @@ function FestiveTrendContent() {
             onClick={runAnalysis}
             disabled={isLoading || !isBasic || !category}
             className="w-full h-16 rounded-[1.25rem] bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-base shadow-2xl shadow-sky-100/60 disabled:opacity-50 transition-all"
+            data-track-id="analyze-btn"
           >
             {isLoading ? (
               <><Loader2 className="h-6 w-6 animate-spin mr-3" /> Analysing…</>

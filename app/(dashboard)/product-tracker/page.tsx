@@ -526,6 +526,7 @@ export default function ProductTracker() {
                 <a
                   href="/product-tracker/history"
                   className="flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg border border-blue-200 transition-colors"
+                  data-track-id="analytics_history_btn"
                 >
                   <History className="h-4 w-4" />
                   <span className="hidden sm:inline font-medium">Analytics History</span>
@@ -538,6 +539,7 @@ export default function ProductTracker() {
                   <Label htmlFor="product-name">Product Name</Label>
                   <Input
                     id="product-name"
+                    data-track-id="product-name-input"
                     value={productName}
                     onChange={e => setProductName(e.target.value)}
                     placeholder="e.g., Wireless Headphones"
@@ -547,7 +549,7 @@ export default function ProductTracker() {
                 <div className="space-y-2">
                   <Label htmlFor="category">Category</Label>
                   <Select value={category} onValueChange={setCategory} disabled={!!userId && !canAnalyze}>
-                    <SelectTrigger id="category">
+                    <SelectTrigger id="category" data-track-id="category_select" data-filter-value={category}>
                       <SelectValue placeholder={categories.length === 0 ? "No categories available" : "Select category"} />
                     </SelectTrigger>
                     <SelectContent>
@@ -560,7 +562,7 @@ export default function ProductTracker() {
                 <div className="space-y-2">
                   <Label htmlFor="source">Marketplace</Label>
                   <Select value={source} onValueChange={setSource} disabled={!!userId && !canAnalyze}>
-                    <SelectTrigger id="source"><SelectValue /></SelectTrigger>
+                    <SelectTrigger id="source" data-track-id="marketplace_select" data-filter-value={source}><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="amazon">
                         <div className="flex items-center gap-2"><ShoppingBag className="h-4 w-4 text-orange-600" /> Amazon</div>
@@ -575,6 +577,7 @@ export default function ProductTracker() {
                   <Label htmlFor="base-cost">Your Cost Price (₹)</Label>
                   <Input
                     id="base-cost"
+                    data-track-id="base-cost-input"
                     type="number"
                     value={baseCost}
                     onChange={e => setBaseCost(e.target.value)}
@@ -587,6 +590,7 @@ export default function ProductTracker() {
                 onClick={handleAnalyze}
                 disabled={loading || (!!userId && !canAnalyze)}
                 className={`w-full ${userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-600"} text-white`}
+                data-track-id="analyze-btn"
               >
                 {loading ? (
                   <><Loader2 className="h-4 w-4 animate-spin mr-2" />Analysing {source} Market…</>

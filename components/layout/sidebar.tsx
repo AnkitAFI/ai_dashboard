@@ -310,6 +310,8 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
               if (!isCollapsed) onClose?.();
             }}
             className="lg:hidden text-slate-600"
+            data-track-id="sidebar_mobile_toggle_btn"
+            data-filter-value={isCollapsed ? "expand" : "collapse"}
           >
             {isCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
           </Button>
@@ -337,6 +339,8 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                     ? "bg-white text-[#003366] shadow-lg"
                     : "bg-transparent text-white hover:text-white/90"
                 )}
+                data-track-id="sidebar_mode_explorer_btn"
+                data-filter-value="explorer"
               >
                 <Search className="w-3.5 h-3.5 mr-1.5" />
                 Explorer
@@ -352,6 +356,8 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                     ? "bg-white text-[#003366] shadow-lg"
                     : "bg-transparent text-white hover:text-white/90"
                 )}
+                data-track-id="sidebar_mode_seller_btn"
+                data-filter-value="seller"
               >
                 <BarChart3 className="w-3.5 h-3.5 mr-1.5" />
                 Seller
@@ -391,6 +397,8 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                             : "text-slate-700 hover:bg-white/60",
                           item.disabled && "opacity-50 grayscale select-none"
                         )}
+                        data-track-id={`sidebar_nav_${item.label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "")}`}
+                        data-filter-value={item.href}
                       >
                         <Icon className={cn("h-4 w-4 shrink-0", !isCollapsed && "mr-3")} />
                         {!isCollapsed && (
@@ -456,6 +464,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
               onClick={handleLogout}
               className={cn("text-slate-500 hover:text-[#0072FF] h-8 w-8 p-0", isCollapsed && "p-2")}
               title="Logout"
+              data-track-id="sidebar_logout_btn"
             >
               <LogOut className="h-4 w-4" />
             </Button>

@@ -266,6 +266,7 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
             onClick={fetchIntelligence}
             disabled={loading || usageLimitReached}
             title={usageLimitReached ? "Monthly limit reached" : "Refresh insights"}
+            data-track-id="ai_recs_refresh_btn"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </Button>
@@ -285,7 +286,9 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
                   Upgrade to {currentTier === "free" ? "Basic" : "Premium"} to unlock AI-powered recommendations.
                 </p>
                 <Button size="sm" variant="outline" className="mt-3 border-amber-400 text-amber-700 hover:bg-amber-100"
-                  onClick={() => window.location.href = "/subscription"}>
+                  onClick={() => window.location.href = "/subscription"}
+                  data-track-id="ai_recs_locked_upgrade_btn"
+                >
                   <Crown className="w-4 h-4 mr-1" /> Upgrade Now
                 </Button>
               </div>
@@ -303,7 +306,9 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
                   You've used all {aiUsage?.limit} AI requests for this month. Upgrade for more!
                 </p>
                 <Button size="sm" variant="outline" className="mt-3 border-red-400 text-red-700 hover:bg-red-100"
-                  onClick={() => window.location.href = "/subscription"}>
+                  onClick={() => window.location.href = "/subscription"}
+                  data-track-id="ai_recs_limit_upgrade_btn"
+                >
                   <Crown className="w-4 h-4 mr-1" /> Upgrade Plan
                 </Button>
               </div>
