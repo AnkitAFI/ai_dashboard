@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import SmartSearchInput from "@/components/ui/smart-search-input";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
@@ -535,17 +536,29 @@ export default function KeywordExplorer({
           <div className="flex flex-col md:flex-row gap-4 items-end">
             <div className="flex-1 space-y-2 w-full">
               <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Search Keyword</Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
-                <Input
-                  className="pl-10 h-11 border-slate-200 focus-visible:ring-purple-600 rounded-xl"
-                  placeholder="Analyze products, volume, & KD (e.g. bluetooth speakers, face serum)"
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  data-track-id="keyword-search-input"
-                />
-              </div>
+              <SmartSearchInput
+                value={keyword}
+                onChange={setKeyword}
+                placeholder="Analyze products, volume, & KD (e.g. bluetooth speakers, face serum)"
+                inputClassName="h-11 border-slate-200 focus-visible:ring-purple-600 rounded-xl"
+                dictionary={[
+                  "bluetooth speakers", "wireless earbuds", "face serum", "water bottle",
+                  "desk organizer", "phone stand", "laptop stand", "keyboard", "mouse pad",
+                  "yoga mat", "resistance bands", "protein shaker", "air purifier",
+                  "led lights", "smart watch", "fitness tracker", "neck pillow",
+                  "electric toothbrush", "hair dryer", "trimmer", "sunscreen",
+                  "moisturizer", "lip balm", "perfume", "body lotion", "shampoo",
+                  "coffee mug", "lunch box", "water purifier", "mixer grinder",
+                  "pressure cooker", "non stick pan", "bed sheets", "curtains",
+                  "cushion cover", "bath towel", "storage box", "shoe rack",
+                  "baby diapers", "baby wipes", "toys", "board games",
+                  "running shoes", "casual shoes", "sandals", "backpack",
+                  ...(data?.variations?.map((v: any) => v.keyword) ?? []),
+                ]}
+                maxSuggestions={6}
+                onEnter={() => handleSearch()}
+                id="keyword-search-input"
+              />
             </div>
             <div className="w-full md:w-44 space-y-2">
               <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Marketplace</Label>

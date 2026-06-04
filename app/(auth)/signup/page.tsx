@@ -1,444 +1,3 @@
-// "use client";
-// import { useState } from "react";
-// import Link from "next/link";
-// import { useRouter } from "next/navigation";
-// import { useToast } from "@/hooks/use-toast";
-// // TODO: Replace with Next.js auth context once migrated
-// import { useAuth } from "@/lib/auth-context";
-// import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input";
-// import { Label } from "@/components/ui/label";
-// import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-// import { Checkbox } from "@/components/ui/checkbox";
-
-// interface SignupFormData {
-//   firstName: string;
-//   lastName: string;
-//   email: string;
-//   password: string;
-//   businessName: string;
-//   location: string;
-//   businessInterests: string[];
-//   mobileNumber: string;
-// }
-
-// const LOCATIONS = [
-//   { value: "mumbai", label: "Mumbai, India" },
-//   { value: "delhi", label: "Delhi, India" },
-//   { value: "bangalore", label: "Bangalore, India" },
-//   { value: "chennai", label: "Chennai, India" },
-//   { value: "kolkata", label: "Kolkata, India" },
-//   { value: "pune", label: "Pune, India" },
-//   { value: "hyderabad", label: "Hyderabad, India" },
-//   { value: "other", label: "Other" },
-// ];
-
-// const BUSINESS_INTERESTS = [
-//   { id: "electronics", label: "Electronics & Technology" },
-//   { id: "fashion", label: "Fashion & Apparel" },
-//   { id: "home", label: "Home & Kitchen" },
-//   { id: "beauty", label: "Beauty & Personal Care" },
-//   { id: "sports", label: "Sports & Fitness" },
-//   { id: "books", label: "Books & Media" },
-//   { id: "automotive", label: "Automotive" },
-//   { id: "health", label: "Health & Wellness" },
-//   { id: "toys", label: "Toys & Games" },
-//   { id: "grocery", label: "Grocery & Food" },
-//   { id: "office", label: "Office Supplies" },
-//   { id: "pet", label: "Pet Supplies" },
-// ];
-// 
-// export default function Signup() {
-//   const router = useRouter();
-//   const { toast } = useToast();
-//   const { refreshUser } = useAuth();
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [formData, setFormData] = useState<SignupFormData>({
-//     firstName: "",
-//     lastName: "",
-//     email: "",
-//     password: "",
-//     businessName: "",
-//     location: "",
-//     businessInterests: [],
-//     mobileNumber: ""
-//   });
-//   const [agreedToTerms, setAgreedToTerms] = useState(false);
-
-//   const handleInputChange = (field: keyof SignupFormData) => (
-//     e: React.ChangeEvent<HTMLInputElement>
-//   ) => {
-//     setFormData(prev => ({ ...prev, [field]: e.target.value }));
-//   };
-
-//   const handleLocationChange = (value: string) => {
-//     setFormData(prev => ({ ...prev, location: value }));
-//   };
-
-//   const handleInterestToggle = (interestId: string) => {
-//     setFormData(prev => {
-//       const interests = prev.businessInterests.includes(interestId)
-//         ? prev.businessInterests.filter(id => id !== interestId)
-//         : [...prev.businessInterests, interestId];
-//       return { ...prev, businessInterests: interests };
-//     });
-//   };
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-
-//     if (!agreedToTerms) {
-//       toast({
-//         title: "Terms required",
-//         description: "Please agree to the Terms.",
-//         variant: "destructive"
-//       });
-//       return;
-//     }
-
-//     if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
-//       toast({
-//         title: "Missing fields",
-//         description: "Fill all required fields.",
-//         variant: "destructive"
-//       });
-//       return;
-//     }
-
-//     if (!formData.location) {
-//       toast({
-//         title: "Location required",
-//         description: "Select your location.",
-//         variant: "destructive"
-//       });
-//       return;
-//     }
-
-//     if (formData.businessInterests.length === 0) {
-//       toast({
-//         title: "Select interests",
-//         description: "Select at least one.",
-//         variant: "destructive"
-//       });
-//       return;
-//     }
-
-//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//     if (!emailRegex.test(formData.email)) {
-//       toast({
-//         title: "Invalid Email",
-//         description: "Enter valid email.",
-//         variant: "destructive"
-//       });
-//       return;
-//     }
-
-//     if (formData.password.length < 6) {
-//       toast({
-//         title: "Password too short",
-//         description: "Min 6 characters.",
-//         variant: "destructive"
-//       });
-//       return;
-//     }
-//     if (!formData.mobileNumber) {
-//       toast({
-//         title: "Mobile number required",
-//         description: "Please enter your mobile number.",
-//         variant: "destructive"
-//       });
-//       return;
-//     }
-
-//     setIsLoading(true);
-
-//     try {
-//       console.log("📤 Sending signup request to:", `${API_BASE_URL}/users/signup`);
-
-//       const response = await fetch(`${API_BASE_URL}/users/signup`, {
-//         method: "POST",
-//         credentials: "include",
-//         headers: {
-//           "Content-Type": "application/json",
-//           "Accept": "application/json"
-//         },
-//         body: JSON.stringify({
-//           first_name: formData.firstName,
-//           last_name: formData.lastName,
-//           email: formData.email,
-//           password: formData.password,
-//           business_name: formData.businessName || null,
-//           location: formData.location,
-//           business_interests: formData.businessInterests,
-//           mobile_number: formData.mobileNumber || null
-//         }),
-//       });
-
-//       console.log("📥 Response status:", response.status);
-
-//       if (!response.ok) {
-//         const errorData = await response.json();
-//         console.error("❌ Signup error:", errorData);
-
-//         if (response.status === 400 && errorData.detail?.includes("already registered")) {
-//           toast({
-//             title: "Email already exists",
-//             description: "This email is already registered. Please login instead.",
-//             variant: "destructive"
-//           });
-//         } else {
-//           throw new Error(errorData.detail || "Signup failed");
-//         }
-
-//         setIsLoading(false);
-//         return;
-//       }
-//       const userData = await response.json();
-//       console.log("✅ Signup successful:", userData);
-
-//       // ✅ Check if email verification is required
-//       if (userData.requires_verification) {
-//         document.cookie = `verify_email=${userData.email}; path=/; max-age=600; SameSite=Strict`;
-//         toast({
-//           title: "Check your email",
-//           description: `We sent a 6-digit verification code to ${userData.email}`,
-//         });
-//         router.push("/verify-email");
-//         return;
-//       }
-
-//       // fallback — shouldn't reach here anymore
-//       await refreshUser();
-//       router.push("/dashboard");
-
-//     } catch (err: any) {
-//       console.error("❌ Signup error:", err);
-//       toast({
-//         title: "Signup failed",
-//         description: err.message || "An error occurred during signup. Please try again.",
-//         variant: "destructive"
-//       });
-//       setIsLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-background to-purple-50 dark:from-gray-900 dark:via-background dark:to-gray-900 flex items-center justify-center p-4">
-//       <div className="w-full max-w-2xl">
-//         <div className="text-center mb-8">
-//           <Link href="/" className="inline-flex flex-col items-center group">
-//             <img
-//               src="/logo.png"
-//               alt="Insydz Logo"
-//               className="w-20 h-20 object-contain mb-3 transition-transform group-hover:scale-110"
-//             />
-//             <h1 className="text-3xl font-bold mb-1">Insydz</h1>
-//           </Link>
-
-//           <p className="text-muted-foreground">
-//             Start your analytics journey
-//           </p>
-//         </div>
-
-//         <Card className="border shadow-xl">
-//           <CardHeader className="text-center">
-//             <CardTitle className="text-2xl">Create Account</CardTitle>
-//             <CardDescription>Join and get personalized insights</CardDescription>
-//           </CardHeader>
-
-//           <CardContent>
-//             <form onSubmit={handleSubmit} className="space-y-6">
-//               <div className="grid grid-cols-2 gap-4">
-//                 <div className="space-y-2">
-//                   <Label htmlFor="firstName">First Name *</Label>
-//                   <Input
-//                     id="firstName"
-//                     placeholder="John"
-//                     value={formData.firstName}
-//                     onChange={handleInputChange("firstName")}
-//                     required
-//                     disabled={isLoading}
-//                   />
-//                 </div>
-//                 <div className="space-y-2">
-//                   <Label htmlFor="lastName">Last Name *</Label>
-//                   <Input
-//                     id="lastName"
-//                     placeholder="Doe"
-//                     value={formData.lastName}
-//                     onChange={handleInputChange("lastName")}
-//                     required
-//                     disabled={isLoading}
-//                   />
-//                 </div>
-//               </div>
-
-//               <div className="space-y-2">
-//                 <Label htmlFor="email">Email *</Label>
-//                 <Input
-//                   id="email"
-//                   type="email"
-//                   placeholder="your@email.com"
-//                   value={formData.email}
-//                   onChange={handleInputChange("email")}
-//                   required
-//                   disabled={isLoading}
-//                 />
-//               </div>
-//               <div className="space-y-2">
-//   <Label htmlFor="mobileNumber">Mobile Number *</Label>
-//   <Input
-//     id="mobileNumber"
-//     type="tel"
-//     placeholder="+91 98765 43210"
-//     value={formData.mobileNumber}
-//     onChange={handleInputChange("mobileNumber")}
-//     disabled={isLoading}
-//     required
-//   />
-// </div>
-
-//               <div className="space-y-2">
-//                 <Label htmlFor="password">Password *</Label>
-//                 <Input
-//                   id="password"
-//                   type="password"
-//                   placeholder="••••••••"
-//                   value={formData.password}
-//                   onChange={handleInputChange("password")}
-//                   required
-//                   minLength={6}
-//                   disabled={isLoading}
-//                 />
-//                 <p className="text-xs text-muted-foreground">Minimum 6 characters</p>
-//               </div>
-
-//               <div className="space-y-2">
-//                 <Label htmlFor="businessName">Business Name (Optional)</Label>
-//                 <Input
-//                   id="businessName"
-//                   placeholder="Your Business"
-//                   value={formData.businessName}
-//                   onChange={handleInputChange("businessName")}
-//                   disabled={isLoading}
-//                 />
-//               </div>
-
-//               <div className="space-y-2">
-//                 <Label htmlFor="location">Location *</Label>
-//                 <Select
-//                   value={formData.location}
-//                   onValueChange={handleLocationChange}
-//                   required
-//                   disabled={isLoading}
-//                 >
-//                   <SelectTrigger>
-//                     <SelectValue placeholder="Select location" />
-//                   </SelectTrigger>
-//                   <SelectContent>
-//                     {LOCATIONS.map((loc) => (
-//                       <SelectItem key={loc.value} value={loc.value}>{loc.label}</SelectItem>
-//                     ))}
-//                   </SelectContent>
-//                 </Select>
-//               </div>
-
-//               <div className="space-y-3">
-//                 <Label className="text-base">Business Interests *</Label>
-//                 <p className="text-sm text-muted-foreground">Select at least one</p>
-//                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-48 overflow-y-auto p-4 border rounded-lg bg-muted/30">
-//                   {BUSINESS_INTERESTS.map((interest) => (
-//                     <div key={interest.id} className="flex items-center space-x-2">
-//                       <Checkbox
-//                         id={interest.id}
-//                         checked={formData.businessInterests.includes(interest.id)}
-//                         onCheckedChange={() => handleInterestToggle(interest.id)}
-//                         disabled={isLoading}
-//                       />
-//                       <Label
-//                         htmlFor={interest.id}
-//                         className="text-sm font-normal cursor-pointer"
-//                       >
-//                         {interest.label}
-//                       </Label>
-//                     </div>
-//                   ))}
-//                 </div>
-//                 {formData.businessInterests.length > 0 && (
-//                   <p className="text-sm text-primary font-medium">
-//                     ✓ {formData.businessInterests.length} selected
-//                   </p>
-//                 )}
-//               </div>
-
-//               <div className="flex items-start space-x-2">
-//                 <Checkbox
-//                   id="terms"
-//                   checked={agreedToTerms}
-//                   onCheckedChange={(checked) => setAgreedToTerms(checked === true)}
-//                   disabled={isLoading}
-//                 />
-//                 <Label htmlFor="terms" className="text-sm cursor-pointer">
-//                   I agree to{" "}
-//                   <a
-//                     href="/terms-service"
-//                     target="_blank"
-//                     rel="noopener noreferrer"
-//                     className="text-primary underline hover:text-primary/80"
-//                   >
-//                     Terms
-//                   </a>{" "}
-//                   and{" "}
-//                   <a
-//                     href="/privacy-policy"
-//                     target="_blank"
-//                     rel="noopener noreferrer"
-//                     className="text-primary underline hover:text-primary/80"
-//                   >
-//                     Privacy Policy
-//                   </a>
-//                 </Label>
-//               </div>
-
-//               <Button
-//                 type="submit"
-//                 className="w-full"
-//                 disabled={isLoading}
-//                 size="lg"
-//               >
-//                 {isLoading ? (
-//                   <span className="flex items-center gap-2">
-//                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-//                     Creating account...
-//                   </span>
-//                 ) : (
-//                   "Create Account"
-//                 )}
-//               </Button>
-//             </form>
-
-//             <div className="text-center pt-4 border-t mt-6">
-//               <p className="text-xs text-muted-foreground mb-4">
-//                 Secure authentication with session management
-//               </p>
-//               <p className="text-sm text-muted-foreground">
-//                 Have an account?{" "}
-//                 <Link href="/login">
-//                   <Button variant="link" className="p-0 h-auto text-primary font-semibold">
-//                     Sign in
-//                   </Button>
-//                 </Link>
-//               </p>
-//             </div>
-//           </CardContent>
-//         </Card>
-//       </div>
-//     </div>
-//   );
-// }
-
-
 "use client";
 import { API_BASE_URL } from "@/lib/config";
 import { useState } from "react";
@@ -452,6 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LOCATIONS } from "@/lib/locations";
+import { cn } from "@/lib/utils";
+import { Eye, EyeOff } from "lucide-react";
 
 interface SignupFormData {
   firstName: string;
@@ -480,6 +41,49 @@ const BUSINESS_INTERESTS = [
 ];
 
 
+const evaluatePasswordStrength = (password: string) => {
+  if (!password) return { score: 0, label: "", color: "bg-transparent", text: "text-transparent" };
+  let score = 0;
+  if (password.length >= 6) score += 1;
+  if (/[0-9]/.test(password) || /[^A-Za-z0-9]/.test(password)) score += 1;
+  if (/[A-Z]/.test(password) && /[a-z]/.test(password)) score += 1;
+  if (password.length >= 10) score += 1;
+
+  switch (score) {
+    case 1:
+      return { score, label: "Weak", color: "bg-red-500", text: "text-red-400" };
+    case 2:
+      return { score, label: "Fair", color: "bg-orange-500", text: "text-orange-400" };
+    case 3:
+      return { score, label: "Good", color: "bg-yellow-500", text: "text-yellow-400" };
+    case 4:
+      return { score, label: "Strong", color: "bg-green-500", text: "text-green-400" };
+    default:
+      return { score: 0, label: "Weak", color: "bg-red-500", text: "text-red-400" };
+  }
+};
+
+const generateStrongPassword = () => {
+  const length = 12;
+  const uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lowercase = "abcdefghijklmnopqrstuvwxyz";
+  const numbers = "0123456789";
+  const symbols = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+  
+  let password = "";
+  password += uppercase[Math.floor(Math.random() * uppercase.length)];
+  password += lowercase[Math.floor(Math.random() * lowercase.length)];
+  password += numbers[Math.floor(Math.random() * numbers.length)];
+  password += symbols[Math.floor(Math.random() * symbols.length)];
+  
+  const allChars = uppercase + lowercase + numbers + symbols;
+  for (let i = 4; i < length; i++) {
+    password += allChars[Math.floor(Math.random() * allChars.length)];
+  }
+  
+  return password.split('').sort(() => 0.5 - Math.random()).join('');
+};
+
 export default function Signup() {
   const router = useRouter();
   const { toast } = useToast();
@@ -496,6 +100,26 @@ export default function Signup() {
     mobileNumber: "",
   });
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const strength = evaluatePasswordStrength(formData.password);
+
+  const handleSuggestPassword = () => {
+    const newPassword = generateStrongPassword();
+    setFormData((prev) => ({ ...prev, password: newPassword }));
+    
+    navigator.clipboard.writeText(newPassword).then(() => {
+      toast({
+        title: "Strong Password Suggested",
+        description: "A random strong password has been filled and copied to your clipboard!",
+      });
+    }).catch(() => {
+      toast({
+        title: "Strong Password Suggested",
+        description: `Suggested password: ${newPassword}`,
+      });
+    });
+  };
 
   const handleInputChange = (field: keyof SignupFormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({ ...prev, [field]: e.target.value }));
@@ -514,13 +138,6 @@ export default function Signup() {
     });
   };
 
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-
-  //   if (!agreedToTerms) { toast({ title: "Terms required", description: "Please agree to the Terms.", variant: "destructive" }); return; }
-  //   if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) { toast({ title: "Missing fields", description: "Fill all required fields.", variant: "destructive" }); return; }
-  //   if (!formData.location) { toast({ title: "Location required", description: "Select your location.", variant: "destructive" }); return; }
-  //   if (formData.businessInterests.length === 0) { toast({ title: "Select interests", description: "Select at least one.", variant: "destructive" }); return; }
     const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
@@ -549,54 +166,6 @@ export default function Signup() {
     const cleanedMobile = formData.mobileNumber.replace(/\s+/g, "").replace(/^(\+91|91)/, "");
     const mobileRegex = /^[6-9]\d{9}$/;
     if (!mobileRegex.test(cleanedMobile)) { toast({ title: "Invalid mobile number", description: "Enter a valid 10-digit Indian mobile number.", variant: "destructive" }); return; }
-
-  //   setIsLoading(true);
-  //   try {
-  //     const response = await fetch(`${API_BASE_URL}/users/signup`, {
-  //       method: "POST",
-  //       credentials: "include",
-  //       headers: { "Content-Type": "application/json", Accept: "application/json" },
-  //       body: JSON.stringify({
-  //         first_name: formData.firstName,
-  //         last_name: formData.lastName,
-  //         email: formData.email,
-  //         password: formData.password,
-  //         business_name: formData.businessName || null,
-  //         location: formData.location,
-  //         business_interests: formData.businessInterests,
-  //         mobile_number: cleanedMobile,
-  //       }),
-  //     });
-
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       if (response.status === 400 && errorData.detail?.includes("already registered")) {
-  //         toast({ title: "Email already exists", description: "This email is already registered. Please login instead.", variant: "destructive" });
-  //       } else {
-  //         throw new Error(errorData.detail || "Signup failed");
-  //       }
-  //       setIsLoading(false);
-  //       return;
-  //     }
-
-  //     const userData = await response.json();
-
-  //     if (userData.requires_verification) {
-  //       document.cookie = `verify_email=${userData.email}; path=/; max-age=600; SameSite=Strict`;
-  //       toast({ title: "Check your email", description: `We sent a 6-digit verification code to ${userData.email}` });
-  //       setIsLoading(false);
-  //       router.push("/verify-email");
-  //       return;
-  //     }
-
-  //     await refreshUser();
-  //     setIsLoading(false);
-  //     router.push("/dashboard");
-  //   } catch (err: any) {
-  //     toast({ title: "Signup failed", description: err.message || "An error occurred during signup. Please try again.", variant: "destructive" });
-  //     setIsLoading(false);
-  //   }
-  // };
      setIsLoading(true);
 
   try {
@@ -662,6 +231,8 @@ export default function Signup() {
     setIsLoading(false);     // ← Always reset loading
   }
 };
+
+
 
   return (
     <div className="min-h-screen flex bg-[#080e1c]">
@@ -841,16 +412,55 @@ export default function Signup() {
 
               {/* Password */}
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-white/50">Password *</Label>
-                <Input
-                  type="password"
-                  placeholder="••••••••"
-                  value={formData.password}
-                  onChange={handleInputChange("password")}
-                  minLength={6}
-                  disabled={isLoading}
-                  className="h-11 text-sm bg-white/[0.04] border-[#AAF0FF]/10 text-white placeholder:text-white/20 focus-visible:ring-[#AAF0FF]/20 focus-visible:border-[#AAF0FF]/35 rounded-xl"
-                />
+                <div className="flex justify-between items-center">
+                  <Label className="text-xs font-medium text-white/50">Password *</Label>
+                  <button
+                    type="button"
+                    onClick={handleSuggestPassword}
+                    className="text-[11px] text-[#AAF0FF] hover:underline bg-transparent border-none p-0 cursor-pointer"
+                  >
+                    Suggest strong password
+                  </button>
+                </div>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleInputChange("password")}
+                    minLength={6}
+                    disabled={isLoading}
+                    className="h-11 text-sm bg-white/[0.04] border-[#AAF0FF]/10 text-white placeholder:text-white/20 focus-visible:ring-[#AAF0FF]/20 focus-visible:border-[#AAF0FF]/35 rounded-xl pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 bg-transparent border-none p-0 cursor-pointer flex items-center justify-center"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+                
+                {/* Password Strength Indicator */}
+                {formData.password && (
+                  <div className="space-y-1 mt-1.5">
+                    <div className="flex justify-between items-center text-[10px]">
+                      <span className="text-white/40">Password strength:</span>
+                      <span className={cn("font-semibold", strength.text)}>{strength.label}</span>
+                    </div>
+                    <div className="grid grid-cols-4 gap-1.5 h-1">
+                      <div className={cn("rounded-full transition-all duration-300", strength.score >= 1 ? strength.color : "bg-white/10")} />
+                      <div className={cn("rounded-full transition-all duration-300", strength.score >= 2 ? strength.color : "bg-white/10")} />
+                      <div className={cn("rounded-full transition-all duration-300", strength.score >= 3 ? strength.color : "bg-white/10")} />
+                      <div className={cn("rounded-full transition-all duration-300", strength.score >= 4 ? strength.color : "bg-white/10")} />
+                    </div>
+                  </div>
+                )}
+                
                 <p className="text-[11px] text-white/25">Minimum 6 characters</p>
               </div>
 

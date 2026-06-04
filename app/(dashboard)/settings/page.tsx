@@ -383,6 +383,17 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { LOCATIONS } from "@/lib/locations";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const TARGET_MARKETS = [
   { value: "national", label: "India (National)" },
@@ -413,6 +424,48 @@ export default function Settings() {
   });
 
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [sessions, setSessions] = useState<any[]>([]);
+  const [sessionsLoading, setSessionsLoading] = useState(true);
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== "DELETE") return;
+    if (!user?.id) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/${user.id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to delete account");
+      }
+
+      toast({
+        title: "Account deleted",
+        description: "Your account and all associated data have been permanently deleted.",
+      });
+
+      // Clear auth state and redirect
+      window.location.href = "/signup";
+    } catch (error: any) {
+      console.error("Error deleting account:", error);
+      toast({
+        title: "Deletion failed",
+        description: error.message || "Could not delete your account. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteDialogOpen(false);
+      setDeleteConfirmText("");
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -424,6 +477,57 @@ export default function Settings() {
         location: user.location || "",
         mobileNumber: user.mobileNumber || "",
       });
+    }
+  }, [user]);
+
+  const fetchSessions = async () => {
+    if (!user?.id) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/${user.id}/sessions`, {
+        credentials: "include",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setSessions(data.sessions || []);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching sessions:", error);
+    } finally {
+      setSessionsLoading(false);
+    }
+  };
+
+  const handleRevokeSession = async (token: string) => {
+    if (!user?.id) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/${user.id}/sessions/${token}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || "Failed to revoke session");
+      }
+      toast({
+        title: "Session revoked",
+        description: "The device has been successfully logged out.",
+      });
+      fetchSessions();
+    } catch (error: any) {
+      console.error("Error revoking session:", error);
+      toast({
+        title: "Revocation failed",
+        description: error.message || "Could not log out the device.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (user?.id) {
+      fetchSessions();
     }
   }, [user]);
 
@@ -456,7 +560,6 @@ export default function Settings() {
         body: JSON.stringify({
           first_name: profileData.firstName,
           last_name: profileData.lastName,
-          email: profileData.email,
           business_name: profileData.businessName,
           location: profileData.location,
           mobile_number: profileData.mobileNumber.replace(/\s+/g, ""),
@@ -560,7 +663,8 @@ export default function Settings() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" value={profileData.email} onChange={handleInputChange("email")} />
+              <Input id="email" type="email" value={profileData.email} disabled className="bg-muted" />
+              <p className="text-xs text-muted-foreground mt-1">Email cannot be changed directly for security. Please contact support.</p>
             </div>
             <div>
               <Label htmlFor="businessName">Business Name</Label>
@@ -686,6 +790,129 @@ export default function Settings() {
               <span className="text-sm">{new Date(user.createdAt).toLocaleDateString()}</span>
             </div>
           )}
+
+          {/* Active Sessions Section */}
+          <div className="border-t pt-4 mt-6">
+            <h4 className="text-sm font-semibold mb-3">Active Sessions</h4>
+            <p className="text-xs text-muted-foreground mb-4">
+              Devices currently logged into your account. You can log out of any session to keep your account secure.
+            </p>
+            
+            {sessionsLoading ? (
+              <div className="flex items-center justify-center py-4">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+              </div>
+            ) : sessions.length === 0 ? (
+              <p className="text-xs text-muted-foreground italic py-2">No active sessions found.</p>
+            ) : (
+              <div className="space-y-3">
+                {sessions.map((session) => (
+                  <div
+                    key={session.session_token}
+                    className="flex items-center justify-between p-3 border rounded-lg bg-card text-card-foreground shadow-sm"
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">{session.device}</span>
+                        {session.is_current ? (
+                          <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/25 border-emerald-500/20 text-[10px] px-1.5 py-0.25">
+                            Current Session
+                          </Badge>
+                        ) : null}
+                      </div>
+                      <div className="text-xs text-muted-foreground flex flex-wrap gap-x-3 gap-y-1">
+                        <span>Location: {session.location}</span>
+                        {session.created_at && (
+                          <>
+                            <span>•</span>
+                            <span>Logged in: {new Date(session.created_at).toLocaleString()}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {!session.is_current && (
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/20">
+                            Log out
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Log out of device?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This device will be immediately logged out of your account. Any unsaved progress on that device will be lost.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleRevokeSession(session.session_token)}
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                              Log Out Device
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Clean and Simple Danger Zone Row */}
+          <div className="border-t pt-4 mt-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h4 className="text-sm font-semibold text-destructive">Delete Account</h4>
+                <p className="text-xs text-muted-foreground mt-0.5">Permanently delete your account and all associated data.</p>
+              </div>
+              <AlertDialog open={isDeleteDialogOpen} onOpenChange={(open) => {
+                setIsDeleteDialogOpen(open);
+                if (!open) setDeleteConfirmText("");
+              }}>
+                <AlertDialogTrigger asChild>
+                  <Button variant="destructive" size="sm" type="button">
+                    Delete Account
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle className="text-destructive">Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription className="space-y-3">
+                      <span>
+                        This action cannot be undone. This will permanently delete your account, cancel all active subscriptions, and remove all your data from our servers.
+                      </span>
+                      <span className="block font-medium text-foreground mt-2">
+                        Please type <span className="font-mono bg-muted px-1.5 py-0.5 rounded border border-destructive/20 text-destructive font-bold">DELETE</span> to confirm:
+                      </span>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <div className="my-4">
+                    <Input
+                      placeholder="Type DELETE"
+                      value={deleteConfirmText}
+                      onChange={(e) => setDeleteConfirmText(e.target.value)}
+                      className="border-destructive/30 focus-visible:ring-destructive"
+                    />
+                  </div>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                    <Button
+                      variant="destructive"
+                      disabled={deleteConfirmText !== "DELETE" || isDeleting}
+                      onClick={handleDeleteAccount}
+                    >
+                      {isDeleting ? "Deleting..." : "Permanently Delete"}
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </div>

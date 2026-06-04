@@ -21,6 +21,7 @@ import {
   Tooltip, ResponsiveContainer, ReferenceLine,
 } from "recharts";
 import ReactMarkdown from "react-markdown";
+import SmartSearchInput from "@/components/ui/smart-search-input";
 
 const BASE_URL = API_BASE_URL;
 const API = `${BASE_URL}/api/rank-tracker`;
@@ -520,14 +521,14 @@ function KeywordInputBox({
     <div className="relative">
       <div className={`flex gap-2 ${atLimit ? "opacity-50 pointer-events-none" : ""}`}>
         <div className="relative flex-1">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
+          <SmartSearchInput
             value={input}
-            onChange={(e) => { setInput(e.target.value); setShowSuggestions(true); }}
-            onFocus={() => setShowSuggestions(true)}
-            onKeyDown={(e) => { if (e.key === "Enter" && input.trim()) handleAdd(input); }}
+            onChange={(val) => { setInput(val); setShowSuggestions(true); }}
+            onEnter={() => { if (input.trim()) handleAdd(input); }}
             placeholder="Type a keyword to track..."
-            className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 transition-all"
+            inputClassName="py-2.5 bg-slate-50 border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-sky-300 focus:border-sky-300"
+            dictionary={suggestions}
+            maxSuggestions={6}
           />
           {/* Suggestions dropdown */}
           {showSuggestions && input.length >= 2 && filtered.length > 0 && (

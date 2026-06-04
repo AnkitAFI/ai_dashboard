@@ -41,6 +41,17 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface NavItem {
   href: string;
@@ -458,16 +469,36 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
               </div>
             )}
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              className={cn("text-slate-500 hover:text-[#0072FF] h-8 w-8 p-0", isCollapsed && "p-2")}
-              title="Logout"
-              data-track-id="sidebar_logout_btn"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn("text-slate-500 hover:text-[#0072FF] h-8 w-8 p-0", isCollapsed && "p-2")}
+                  title="Logout"
+                  data-track-id="sidebar_logout_btn"
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to log out of your account?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleLogout}
+                    className="bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white hover:opacity-90"
+                  >
+                    Logout
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </div>

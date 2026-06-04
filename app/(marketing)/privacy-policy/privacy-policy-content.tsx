@@ -146,7 +146,7 @@ export default function PrivacyPolicyContent() {
               <li><strong>Restriction:</strong> Request limitation on processing of your data</li>
             </ul>
             <p className="text-gray-700 dark:text-gray-300 mt-3">
-              To exercise these rights, please contact us at privacy@insydz.com.
+              To exercise these rights, please contact us at support@insydz.com.
             </p>
           </section>
 
@@ -193,7 +193,7 @@ export default function PrivacyPolicyContent() {
               If you have questions or concerns about this Privacy Policy or our data practices, please contact us:
             </p>
             <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl mt-4">
-              <p className="text-gray-700 dark:text-gray-300"><strong>Email:</strong> privacy@insydz.com</p>
+              <p className="text-gray-700 dark:text-gray-300"><strong>Email:</strong> support@insydz.com</p>
               <p className="text-gray-700 dark:text-gray-300"><strong>Phone:</strong> +91 98765 43210</p>
               <p className="text-gray-700 dark:text-gray-300"><strong>Address:</strong> New Delhi, India</p>
             </div>

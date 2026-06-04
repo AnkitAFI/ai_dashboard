@@ -124,7 +124,7 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
   const hasAIRecommendations = canAccessFeature("hasChartAISummaries");
 
   const [data, setData] = useState<IntelligenceData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(hasAIRecommendations);
   const [aiUsage, setAiUsage] = useState<{ used: number; limit: number; month: string } | null>(null);
   const [usageLimitReached, setUsageLimitReached] = useState(false);
 
@@ -146,7 +146,11 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
   // ── Fetch intelligence ──
   const fetchIntelligence = async () => {
     const canUse = await canUseAIFeature();
-    if (!canUse) { setUsageLimitReached(true); return; }
+    if (!canUse) {
+      setUsageLimitReached(true);
+      setLoading(false);
+      return;
+    }
 
     // Cancel any previous in-flight request
     abortRef.current?.abort();
@@ -264,7 +268,7 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
             variant="ghost"
             size="sm"
             onClick={fetchIntelligence}
-            disabled={loading || usageLimitReached}
+            disabled={loading || usageLimitReached || !hasAIRecommendations}
             title={usageLimitReached ? "Monthly limit reached" : "Refresh insights"}
             data-track-id="ai_recs_refresh_btn"
           >

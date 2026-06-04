@@ -283,6 +283,14 @@ class ProductTrackerAnalysis(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())      
 
 
+class NicheResearchRule(Base):
+    __tablename__ = "niche_research_rules"
+
+    id = Column(Integer, primary_key=True, index=True)
+    query_keyword = Column(String(255), unique=True, index=True, nullable=False)
+    synonyms = Column(JSON, default=list, nullable=False)
+    price_floor = Column(Numeric(10, 2), default=0.00, nullable=False)
+    accessory_exclusions = Column(JSON, default=list, nullable=False)
 
 
 class TrackedProduct(Base):
@@ -769,4 +777,4 @@ class UserBehaviorLog(Base):
     ip_address = Column(String(45), nullable=True)
     user_agent = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.utcnow(), index=True)
-
+

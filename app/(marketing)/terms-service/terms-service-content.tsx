@@ -241,7 +241,7 @@ export default function TermsOfServiceContent() {
               If you have any questions about these Terms, please contact us:
             </p>
             <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-xl mt-4">
-              <p className="text-gray-700 dark:text-gray-300"><strong>Email:</strong> legal@insydz.com</p>
+              <p className="text-gray-700 dark:text-gray-300"><strong>Grievances:</strong> legal@insydz.com</p>
               <p className="text-gray-700 dark:text-gray-300"><strong>Support:</strong> support@insydz.com</p>
               <p className="text-gray-700 dark:text-gray-300"><strong>Phone:</strong> +91 98765 43210</p>
               <p className="text-gray-700 dark:text-gray-300"><strong>Address:</strong> New Delhi, India</p>

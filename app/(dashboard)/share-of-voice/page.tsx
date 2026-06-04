@@ -359,16 +359,11 @@ export default function ShareOfVoice() {
   const [marketHealth, setMarketHealth] = useState<MarketHealthResponse | null>(null);
   const [progressData, setProgressData] = useState<ProgressTrackingResponse | null>(null);
   const [competitors, setCompetitors] = useState<CompetitorAnalysis[]>([]);
-  const [keywordSearch, setKeywordSearch] = useState("");
-  const [keywordData, setKeywordData] = useState<KeywordSOVResponse | null>(null);
   const [targetShare, setTargetShare] = useState(20);
   const [targetDays, setTargetDays] = useState(90);
-  const [priceMin, setPriceMin] = useState("");
-  const [priceMax, setPriceMax] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingHealth, setLoadingHealth] = useState(false);
   const [error, setError] = useState("");
-  const [activeTab, setActiveTab] = useState<"category" | "keyword">("category");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [competitorPage, setCompetitorPage] = useState(1);
@@ -384,7 +379,7 @@ export default function ShareOfVoice() {
 
   useEffect(() => { if (userId) fetchUsageLimits(); }, [userId]);
   useEffect(() => { fetchCategories(); }, [marketplace]);
-  useEffect(() => { setCurrentPage(1); }, [sovData, keywordData]);
+  useEffect(() => { setCurrentPage(1); }, [sovData]);
   useEffect(() => { setCompetitorPage(1); }, [competitors]);
 
   const fetchUsageLimits = async () => {
@@ -468,34 +463,6 @@ export default function ShareOfVoice() {
     } finally { setLoading(false); }
   };
 
-  const analyzeKeywordSov = async () => {
-    if (userId && !canAnalyze) { setShowUpgradeModal(true); return; }
-    if (!keywordSearch) { setError("Please enter a keyword"); return; }
-
-    setLoading(true); setError(""); setKeywordData(null);
-
-    try {
-      let url = `${API_BASE_URL}/sov/keyword/${encodeURIComponent(keywordSearch)}?marketplace=${marketplace}`;
-      if (priceMin) url += `&price_min=${priceMin}`;
-      if (priceMax) url += `&price_max=${priceMax}`;
-      if (userId) url += `&user_id=${userId}`;
-
-      const res = await axios.get(url);
-      if (res.data.error) {
-        if (res.data.error.includes("limit")) setShowUpgradeModal(true);
-        else setError(res.data.error);
-      } else {
-        setKeywordData(res.data);
-        if (userId) await fetchUsageLimits();
-        showToast("Search Complete!", `Keyword "${keywordSearch}" analyzed.`, "success");
-        setTimeout(() => window.scrollTo({ top: 500, behavior: "smooth" }), 100);
-      }
-    } catch (err: any) {
-      const msg = err.response?.data?.detail || "Competitor data is taking longer than usual. Please retry.";
-      if (err.response?.status === 403) setShowUpgradeModal(true);
-      setError(msg); showToast("Search Failed", msg, "error");
-    } finally { setLoading(false); }
-  };
 
   const fetchMarketHealth = async () => {
     if (!selectedCategory) return;
@@ -535,14 +502,14 @@ export default function ShareOfVoice() {
   };
 
   const paginatedBrands = useMemo(() => {
-    const list = activeTab === "category" ? sovData?.brands || [] : keywordData?.brands || [];
+    const list = sovData?.brands || [];
     return list.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-  }, [sovData, keywordData, currentPage, itemsPerPage, activeTab]);
+  }, [sovData, currentPage, itemsPerPage]);
 
   const totalPages = useMemo(() => {
-    const list = activeTab === "category" ? sovData?.brands || [] : keywordData?.brands || [];
+    const list = sovData?.brands || [];
     return Math.ceil(list.length / itemsPerPage);
-  }, [sovData, keywordData, itemsPerPage, activeTab]);
+  }, [sovData, itemsPerPage]);
 
   const paginatedCompetitors = useMemo(() =>
     (competitors ?? []).slice((competitorPage - 1) * competitorsPerPage, competitorPage * competitorsPerPage),
@@ -651,29 +618,6 @@ export default function ShareOfVoice() {
       </div>
 
       <div className="space-y-6">
-        {/* Tab Navigation */}
-        <Card className="bg-background border border-slate-200 rounded-2xl shadow-lg">
-          <CardContent className="p-0">
-            <div className="flex border-b border-slate-200">
-              {(["category", "keyword"] as const).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => { setActiveTab(tab); setCurrentPage(1); }}
-                  className={`flex-1 py-4 px-6 font-medium transition-all ${activeTab === tab ? "border-b-2 border-blue-500 text-blue-600 bg-blue-50/50" : "text-gray-600 hover:bg-gray-50"
-                    }`}
-                  data-track-id="sov_tab_btn"
-                  data-filter-value={tab}
-                >
-                  <div className="flex items-center justify-center gap-2">
-                    {tab === "category" ? <BarChart3 className="w-4 h-4" /> : <Search className="w-4 h-4" />}
-                    {tab === "category" ? "Category Analysis" : "Keyword Search"}
-                  </div>
-                </button>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Controls */}
         <Card className="bg-background border border-slate-200 rounded-2xl shadow-lg">
           <CardHeader>
@@ -698,88 +642,47 @@ export default function ShareOfVoice() {
                 </select>
               </div>
 
-              {activeTab === "category" ? (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
-                    <select
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                      disabled={!!userId && !canAnalyze}
-                      className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                      data-track-id="category_select"
-                      data-filter-value={selectedCategory}
-                    >
-                      <option value="">Select Category</option>
-                      {categories.map((c, i) => <option key={i} value={c}>{c}</option>)}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Your Brand <span className="text-gray-400 text-xs">(Optional)</span></label>
-                    <input
-                      type="text" value={yourBrand}
-                      onChange={(e) => setYourBrand(e.target.value)}
-                      placeholder="Enter your brand name"
-                      disabled={!!userId && !canAnalyze}
-                      className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                      data-track-id="your_brand_input"
-                    />
-                  </div>
-                  <div className="flex items-end">
-                    <Button
-                      onClick={analyzeCategorySov}
-                      disabled={loading || (!!userId && !canAnalyze)}
-                      className={`w-full py-3 rounded-lg text-white font-medium flex items-center justify-center gap-2 ${userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
-                        }`}
-                      data-track-id="analyze_category_sov_btn"
-                    >
-                      {loading ? <><RefreshCw className="w-4 h-4 animate-spin" /> Analyzing…</>
-                        : userId && !canAnalyze ? <><Lock className="w-4 h-4" /> Limit Reached</>
-                          : <><Search className="w-4 h-4" /> Analyze</>}
-                    </Button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Keyword</label>
-                    <input
-                      type="text" value={keywordSearch}
-                      onChange={(e) => setKeywordSearch(e.target.value)}
-                      placeholder="e.g., wireless earbuds"
-                      disabled={!!userId && !canAnalyze}
-                      className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
-                      data-track-id="keyword_search_input"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Price Min (₹)</label>
-                    <input type="number" value={priceMin} onChange={(e) => setPriceMin(e.target.value)} placeholder="Min" disabled={!!userId && !canAnalyze}
-                      className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100"
-                      data-track-id="price_min_input" />
-                  </div>
-                  <div className="flex items-end gap-2">
-                    <div className="flex-1">
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Price Max (₹)</label>
-                      <input type="number" value={priceMax} onChange={(e) => setPriceMax(e.target.value)} placeholder="Max" disabled={!!userId && !canAnalyze}
-                        className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100"
-                        data-track-id="price_max_input" />
-                    </div>
-                    <Button
-                      onClick={analyzeKeywordSov}
-                      disabled={loading || (!!userId && !canAnalyze)}
-                      className={`mb-0 py-3 px-5 rounded-lg text-white font-medium flex items-center gap-2 ${userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
-                        }`}
-                      data-track-id="analyze_keyword_sov_btn"
-                    >
-                      {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
-                    </Button>
-                  </div>
-                </>
-              )}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  disabled={!!userId && !canAnalyze}
+                  className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  data-track-id="category_select"
+                  data-filter-value={selectedCategory}
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((c, i) => <option key={i} value={c}>{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Your Brand <span className="text-gray-400 text-xs">(Optional)</span></label>
+                <input
+                  type="text" value={yourBrand}
+                  onChange={(e) => setYourBrand(e.target.value)}
+                  placeholder="Enter your brand name"
+                  disabled={!!userId && !canAnalyze}
+                  className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  data-track-id="your_brand_input"
+                />
+              </div>
+              <div className="flex items-end">
+                <Button
+                  onClick={analyzeCategorySov}
+                  disabled={loading || (!!userId && !canAnalyze)}
+                  className={`w-full py-3 rounded-lg text-white font-medium flex items-center justify-center gap-2 ${userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
+                    }`}
+                  data-track-id="analyze_category_sov_btn"
+                >
+                  {loading ? <><RefreshCw className="w-4 h-4 animate-spin" /> Analyzing…</>
+                    : userId && !canAnalyze ? <><Lock className="w-4 h-4" /> Limit Reached</>
+                      : <><Search className="w-4 h-4" /> Analyze</>}
+                </Button>
+              </div>
             </div>
 
-            {activeTab === "category" && yourBrand && (
+            {yourBrand && (
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Target Share (%)</label>
@@ -817,7 +720,7 @@ export default function ShareOfVoice() {
           </Card>
         )}
 
-        {!loading && activeTab === "category" && sovData && (
+        {!loading && sovData && (
           <>
             {/* Summary Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1718,93 +1621,7 @@ export default function ShareOfVoice() {
           </>
         )}
 
-        {!loading && activeTab === "keyword" && keywordData && (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                { l: "Total Products", v: keywordData.total_products.toLocaleString(), icon: <BarChart3 className="w-5 h-5 text-blue-600" />, c: "text-blue-600" },
-                { l: "Total Reviews", v: keywordData.total_reviews.toLocaleString(), icon: <Users className="w-5 h-5 text-green-600" />, c: "text-green-600" },
-                { l: "Price Range", v: `₹${keywordData.price_range.min.toLocaleString()} – ₹${keywordData.price_range.max.toLocaleString()}`, icon: <Award className="w-5 h-5 text-purple-600" />, c: "text-purple-600" },
-              ].map((x) => (
-                <Card key={x.l} className="bg-background border border-slate-200 rounded-2xl shadow-lg">
-                  <CardContent className="p-5 flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-slate-500 mb-1">{x.l}</p>
-                      <p className={`text-2xl font-black ${x.c}`}>{x.v}</p>
-                    </div>
-                    <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center">{x.icon}</div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
 
-            <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-base">Brand Distribution for "{keywordData.keyword}"</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={280}>
-                  <BarChart
-                    data={keywordData.brands.slice(0, 10).map((b) => ({
-                      brand: b.brand.length > 12 ? b.brand.slice(0, 12) + "…" : b.brand,
-                      share: b.share_percentage,
-                    }))}
-                    margin={{ left: 0, right: 10, top: 4, bottom: 40 }}
-                    barCategoryGap="20%"
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                    <XAxis dataKey="brand" tick={{ fontSize: 10, fill: "#94a3b8" }} angle={-35} textAnchor="end" interval={0} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} tickFormatter={(v) => `${v}%`} />
-                    <Tooltip contentStyle={CustomTooltipStyle} formatter={(v: any) => [`${v}%`, "Share"]} />
-                    <Bar dataKey="share" radius={[4, 4, 0, 0]} maxBarSize={36}>
-                      {keywordData.brands.slice(0, 10).map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card id="brands-table" className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg overflow-hidden">
-              <CardHeader className="bg-slate-50 border-b border-slate-200">
-                <CardTitle className="text-base">Brand Details</CardTitle>
-                <CardDescription>{paginatedBrands.length} of {keywordData.brands.length} brands</CardDescription>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead className="bg-slate-50">
-                      <tr className="border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wide">
-                        <th className="p-3 text-left">Brand</th>
-                        <th className="p-3 text-right">Share</th>
-                        <th className="p-3 text-right">Reviews</th>
-                        <th className="p-3 text-right">Products</th>
-                        <th className="p-3 text-right">Rating</th>
-                        <th className="p-3 text-right">Avg Price</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {paginatedBrands.map((b, idx) => (
-                        <tr key={idx} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                          <td className="p-3 font-medium text-slate-800">{b.brand}</td>
-                          <td className="p-3 text-right font-bold text-blue-700">{b.share_percentage}%</td>
-                          <td className="p-3 text-right text-slate-700">{b.total_reviews.toLocaleString()}</td>
-                          <td className="p-3 text-right text-slate-600">{b.product_count}</td>
-                          <td className="p-3 text-right">{b.avg_rating ? <span className="text-yellow-600 font-semibold">⭐ {b.avg_rating}</span> : "—"}</td>
-                          <td className="p-3 text-right font-bold text-emerald-700">{b.avg_price ? `₹${b.avg_price.toLocaleString()}` : "—"}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                {totalPages > 1 && (
-                  <div className="p-4 border-t border-slate-200 bg-slate-50">
-                    <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </>
-        )}
       </div>
     </div>
   );

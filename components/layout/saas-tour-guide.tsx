@@ -37,6 +37,7 @@ import {
   Receipt,
   Home
 } from "lucide-react";
+import SmartSearchInput from "@/components/ui/smart-search-input";
 
 interface FeatureInfo {
   id: string;
@@ -1613,21 +1614,14 @@ export default function SaaSTourGuide() {
               
               {/* Search Inputs */}
               <div className="space-y-2.5 pb-2.5 border-b border-white/5 mb-2.5">
-                <div className="relative">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
-                  <input
-                    type="text"
-                    placeholder="Search SaaS features..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-slate-950 border border-white/10 rounded-lg py-1 pl-8 pr-4 text-[10.5px] text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 transition"
-                  />
-                  {searchQuery && (
-                    <button onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white">
-                      <X className="w-3 h-3" />
-                    </button>
-                  )}
-                </div>
+                <SmartSearchInput
+                  value={searchQuery}
+                  onChange={setSearchQuery}
+                  placeholder="Search SaaS features..."
+                  inputClassName="bg-slate-950 border border-white/10 rounded-lg py-1 text-[10.5px] text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 transition"
+                  dictionary={FEATURE_CATALOG.map(f => f.title)}
+                  maxSuggestions={5}
+                />
 
                 <div className="flex items-center justify-between text-[8px] gap-2">
                   <div className="flex bg-slate-950 p-0.5 rounded border border-white/5">

@@ -19,6 +19,7 @@ import {
   Target, Zap, Eye, BarChart3, Shield, Bot, Menu, Minus,
   Package, Flame, SortAsc, ChevronRight, Bookmark,
 } from "lucide-react";
+import SmartSearchInput from "@/components/ui/smart-search-input";
 
 const API = API_BASE_URL + "/api";
 
@@ -953,16 +954,20 @@ function WhiteSpaceFinderContent() {
             <CardContent className="p-5">
               <div className="flex gap-3 mb-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    ref={inputRef}
-                    type="text"
-                    data-track-id="white_space_query_input"
+                  <SmartSearchInput
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && runScan()}
+                    onChange={setQuery}
+                    onEnter={runScan}
                     placeholder='Search a category or product, e.g. "kitchen organizer", "baby feeding", "pet care"'
-                    className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-violet-300 focus:border-violet-400 outline-none transition-all"
+                    inputClassName="py-3 border-slate-300 rounded-xl text-sm bg-white focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
+                    dictionary={[
+                      "kitchen organizer", "baby feeding", "pet grooming",
+                      "sleep aid", "skincare tools", "home scent",
+                      "gaming accessories", "fitness gear", "pet care",
+                      "desk organizer", "water bottle", "yoga mat",
+                      "air purifier", "led lights", "bluetooth speaker",
+                    ]}
+                    maxSuggestions={5}
                   />
                 </div>
                 <button
