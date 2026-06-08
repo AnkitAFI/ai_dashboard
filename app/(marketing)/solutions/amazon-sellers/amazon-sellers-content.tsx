@@ -521,7 +521,7 @@ export default function AmazonSellersContent() {
             {[
               { label: "New Sellers", desc: "Just starting? Get free category insights.", cta: "Start Free", action: handleGetStarted },
               { label: "Growing Sellers", desc: "Scale with AI pricing and SEO.", cta: "View Pricing", action: () => router.push("/pricing") },
-              { label: "Agencies", desc: "Manage portfolios with ease.", cta: "Book Demo", action: () => router.push("/demo") },
+              { label: "Agencies", desc: "Manage portfolios with ease.", cta: "Book Demo", action: () => router.push("/about/contact-us") },
             ].map((card, i) => (
               <div key={i} className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 text-left flex flex-col h-full hover:bg-white/20 transition-all group">
                 <p className="font-black text-white mb-2 uppercase tracking-wider text-xs">{card.label}</p>

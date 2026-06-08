@@ -12,7 +12,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Tag, BarChart2, Star, ChevronRight } from "lucide-react";
+import { Tag, Star, ChevronRight } from "lucide-react";
+import { getCategoryIconComponent } from "@/lib/utils";
 
 interface Category {
   category: string;
@@ -85,6 +86,8 @@ export default function Categories() {
           value={tableFilter}
           onChange={(e) => setTableFilter(e.target.value as any)}
           className="border border-slate-300 rounded-md px-2 py-1 bg-white"
+          data-track-id="table_filter_select"
+          data-filter-value={tableFilter}
         >
           <option value="all">All</option>
           <option value="flipkart">Flipkart</option>
@@ -94,52 +97,69 @@ export default function Categories() {
 
       {/* Category Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredCategories.map((cat, index) => (
-          <Card
-            key={index}
-            className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
-          >
-            <CardHeader className="flex flex-col items-center text-center space-y-2">
-              <div className="w-12 h-12 bg-gradient-to-br from-cyan-100 to-blue-50 rounded-xl flex items-center justify-center">
-                <BarChart2 className="h-6 w-6 text-blue-600" />
-              </div>
-              <CardTitle className="text-lg font-semibold text-slate-800">
-                {cat.category}
-              </CardTitle>
-              <CardDescription className="text-slate-500">
-                {cat.total_products.toLocaleString()} products
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="flex flex-col gap-3 mt-2">
-              <div className="flex items-center justify-between">
-                <span className="text-emerald-600 font-semibold">
-                  ₹{cat.avg_price ? cat.avg_price.toFixed(2) : "N/A"} avg. price
+        {filteredCategories.map((cat, index) => {
+          const CategoryIcon = getCategoryIconComponent(cat.category);
+          return (
+            <Card
+              key={index}
+              className="relative bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
+            >
+              {/* Marketplace Badge */}
+              {cat.source === "flipkart" ? (
+                <span className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-300 tracking-wide shadow-sm">
+                  Flipkart
                 </span>
-                <span className="flex items-center gap-1 text-yellow-500 font-medium">
-                  <Star className="h-4 w-4" /> {cat.avg_rating?.toFixed(1) ?? "N/A"}
+              ) : cat.source === "amazon" ? (
+                <span className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-50 text-orange-500 border border-orange-300 tracking-wide shadow-sm">
+                  Amazon
                 </span>
-              </div>
-              <div className="text-slate-500 text-sm">
-                Total Reviews: {cat.total_reviews?.toLocaleString() ?? 0}
-              </div>
+              ) : null}
 
-              <button
-                onClick={() =>
-                  router.push(
-                    `/category-products/${cat.source}/${encodeURIComponent(
-                      cat.category
-                    )}`
-                  )
-                }
-                className="flex items-center justify-center mt-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg py-2 hover:from-blue-600 hover:to-cyan-600 shadow-md transition-all"
-              >
-                View Products <ChevronRight className="ml-2 h-5 w-5" />
-              </button>
-            </CardContent>
-          </Card>
-        ))}
+              <CardHeader className="flex flex-col items-center text-center space-y-2">
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-100 to-blue-50 rounded-xl flex items-center justify-center">
+                  <CategoryIcon className="h-6 w-6 text-blue-600" />
+                </div>
+                <CardTitle className="text-lg font-semibold text-slate-800">
+                  {cat.category}
+                </CardTitle>
+                <CardDescription className="text-slate-500">
+                  {cat.total_products.toLocaleString()} products
+                </CardDescription>
+              </CardHeader>
+
+              <CardContent className="flex flex-col gap-3 mt-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-emerald-600 font-semibold">
+                    ₹{cat.avg_price ? cat.avg_price.toFixed(2) : "N/A"} avg. price
+                  </span>
+                  <span className="flex items-center gap-1 text-yellow-500 font-medium">
+                    <Star className="h-4 w-4" /> {cat.avg_rating?.toFixed(1) ?? "N/A"}
+                  </span>
+                </div>
+                <div className="text-slate-500 text-sm">
+                  Total Reviews: {cat.total_reviews?.toLocaleString() ?? 0}
+                </div>
+
+                <button
+                  onClick={() =>
+                    router.push(
+                      `/category-products/${cat.source}/${encodeURIComponent(
+                        cat.category
+                      )}`
+                    )
+                  }
+                  data-track-id="view_products_btn"
+                  data-filter-value={cat.category}
+                  className="flex items-center justify-center mt-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg py-2 hover:from-blue-600 hover:to-cyan-600 shadow-md transition-all"
+                >
+                  View Products <ChevronRight className="ml-2 h-5 w-5" />
+                </button>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
 }
+

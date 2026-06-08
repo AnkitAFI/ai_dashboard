@@ -159,7 +159,7 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
   return (
     <header className="bg-white/70 backdrop-blur-xl border border-sky-100 shadow-lg rounded-none sm:rounded-2xl px-4 sm:px-6 lg:px-8 py-4 sm:py-5 mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 sticky top-0 sm:top-4 z-20 mx-0 sm:mx-6">
       <div className="flex items-center gap-3 w-full sm:w-auto">
-        <button onClick={onMobileMenuToggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors">
+        <button onClick={onMobileMenuToggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors" data-track-id="toggle_mobile_menu_btn">
           <Menu className="w-5 h-5 text-sky-900" />
         </button>
         <div className="flex-1 sm:flex-none">
@@ -180,19 +180,26 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
         {isDashboard && (
           <>
             <Button 
+              id="tour-filters-btn"
               variant="outline" 
               size="sm" 
               className={`flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold transition-all ${showFilters ? 'bg-sky-100 border-sky-300 text-sky-700 shadow-sm' : ''}`} 
               onClick={onFilterToggle}
+              data-track-id="toggle_filters_btn"
+              data-filter-value={showFilters ? "hide" : "show"}
+              data-panel-id="global_filters_panel"
             >
               <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span>{showFilters ? "Hide Filters" : "Filters"}</span>
             </Button>
 
+
             <select 
               className="flex-1 sm:flex-none border border-slate-300 rounded-lg px-3 py-1.5 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20 transition-all font-medium" 
               value={selectedSource} 
               onChange={(e) => handleSourceChange(e.target.value)}
+              data-track-id="source_platform_select"
+              data-filter-value={selectedSource}
             >
               <option value="flipkart">Flipkart</option>
               <option value="amazon">Amazon</option>
@@ -203,7 +210,14 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="relative p-2 h-9 w-9 rounded-xl hover:bg-sky-50 transition-colors">
+            <Button
+              id="tour-notifications-btn"
+              variant="ghost"
+              size="sm"
+              className="relative p-2 h-9 w-9 rounded-xl hover:bg-sky-50 transition-colors"
+              data-track-id="header_notifications_btn"
+              data-filter-value={notifications.length.toString()}
+            >
               <Bell className="w-4 h-4 sm:w-5 h-5 text-sky-900" />
               {notifications.length > 0 && (
                 <span className="absolute top-1 right-1 inline-flex items-center justify-center h-4 w-4 text-[10px] font-bold rounded-full bg-red-500 text-white shadow-sm ring-2 ring-white">
@@ -247,6 +261,8 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
                         showAlertDetails(n);
                       }
                     }}
+                    data-track-id="header_notification_item"
+                    data-filter-value={n.id}
                   >
                     <div className="flex items-start gap-3 w-full">
                       <div className="mt-1 flex-shrink-0">{getAlertIcon(n.type)}</div>
@@ -267,8 +283,8 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
               </div>
             )}
             <div className="sticky bottom-0 bg-white p-3 border-t border-slate-100 flex gap-2">
-              <Button size="sm" variant="ghost" className="flex-1 text-xs font-bold text-slate-500 hover:text-slate-700" onClick={() => setNotifications([])}>Clear All</Button>
-              <Button size="sm" className="flex-1 text-xs font-bold bg-sky-600 hover:bg-sky-700 shadow-md shadow-sky-100" onClick={() => fetchNotifications(selectedSource)}>Refresh Feed</Button>
+              <Button size="sm" variant="ghost" className="flex-1 text-xs font-bold text-slate-500 hover:text-slate-700" onClick={() => setNotifications([])} data-track-id="clear_alerts_btn">Clear All</Button>
+              <Button size="sm" className="flex-1 text-xs font-bold bg-sky-600 hover:bg-sky-700 shadow-md shadow-sky-100" onClick={() => fetchNotifications(selectedSource)} data-track-id="refresh_alerts_btn">Refresh Feed</Button>
             </div>
             {!canAccessFeature('hasRealTimeAlerts') && notifications.length > 0 && (
               <div className="m-3 p-4 bg-gradient-to-br from-indigo-600 to-sky-600 rounded-xl text-white shadow-lg">
@@ -279,7 +295,7 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
                   <div className="flex-1">
                     <p className="text-xs font-bold mb-1">Unlock Real-Time Intelligence</p>
                     <p className="text-[10px] text-sky-100 mb-3 opacity-90">Get instant price & review alerts before competitors react.</p>
-                    <Button size="sm" className="w-full bg-white text-sky-600 hover:bg-sky-50 font-bold text-[10px] h-8 rounded-lg" onClick={() => router.push("/subscription")}>
+                    <Button size="sm" className="w-full bg-white text-sky-600 hover:bg-sky-50 font-bold text-[10px] h-8 rounded-lg" onClick={() => router.push("/subscription")} data-track-id="upgrade_premium_alerts_btn">
                       Upgrade to Premium
                     </Button>
                   </div>

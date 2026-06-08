@@ -124,7 +124,7 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
   const hasAIRecommendations = canAccessFeature("hasChartAISummaries");
 
   const [data, setData] = useState<IntelligenceData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(hasAIRecommendations);
   const [aiUsage, setAiUsage] = useState<{ used: number; limit: number; month: string } | null>(null);
   const [usageLimitReached, setUsageLimitReached] = useState(false);
 
@@ -146,7 +146,11 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
   // ── Fetch intelligence ──
   const fetchIntelligence = async () => {
     const canUse = await canUseAIFeature();
-    if (!canUse) { setUsageLimitReached(true); return; }
+    if (!canUse) {
+      setUsageLimitReached(true);
+      setLoading(false);
+      return;
+    }
 
     // Cancel any previous in-flight request
     abortRef.current?.abort();
@@ -264,8 +268,9 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
             variant="ghost"
             size="sm"
             onClick={fetchIntelligence}
-            disabled={loading || usageLimitReached}
+            disabled={loading || usageLimitReached || !hasAIRecommendations}
             title={usageLimitReached ? "Monthly limit reached" : "Refresh insights"}
+            data-track-id="ai_recs_refresh_btn"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </Button>
@@ -285,7 +290,9 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
                   Upgrade to {currentTier === "free" ? "Basic" : "Premium"} to unlock AI-powered recommendations.
                 </p>
                 <Button size="sm" variant="outline" className="mt-3 border-amber-400 text-amber-700 hover:bg-amber-100"
-                  onClick={() => window.location.href = "/subscription"}>
+                  onClick={() => window.location.href = "/subscription"}
+                  data-track-id="ai_recs_locked_upgrade_btn"
+                >
                   <Crown className="w-4 h-4 mr-1" /> Upgrade Now
                 </Button>
               </div>
@@ -303,7 +310,9 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
                   You've used all {aiUsage?.limit} AI requests for this month. Upgrade for more!
                 </p>
                 <Button size="sm" variant="outline" className="mt-3 border-red-400 text-red-700 hover:bg-red-100"
-                  onClick={() => window.location.href = "/subscription"}>
+                  onClick={() => window.location.href = "/subscription"}
+                  data-track-id="ai_recs_limit_upgrade_btn"
+                >
                   <Crown className="w-4 h-4 mr-1" /> Upgrade Plan
                 </Button>
               </div>

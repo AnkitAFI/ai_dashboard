@@ -152,7 +152,7 @@ export default function ReviewAnalyticsFeaturePage() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 w-full">
-                <Link href="/signup" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold px-12 py-5 text-lg rounded-full shadow-2xl hover:shadow-purple-500/50 transition-all inline-flex items-center justify-center group">
+                <Link href="/signup" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold px-8 py-3 text-lg rounded-full shadow-2xl hover:shadow-purple-500/50 transition-all inline-flex items-center justify-center group">
                   Start Free Review Analysis
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>

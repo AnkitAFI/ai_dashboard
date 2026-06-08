@@ -36,10 +36,22 @@ import {
   Zap,
   Star,
   Bookmark,
-  Calculator
+  Calculator,
+  HelpCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface NavItem {
   href: string;
@@ -309,6 +321,8 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
               if (!isCollapsed) onClose?.();
             }}
             className="lg:hidden text-slate-600"
+            data-track-id="sidebar_mobile_toggle_btn"
+            data-filter-value={isCollapsed ? "expand" : "collapse"}
           >
             {isCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
           </Button>
@@ -318,6 +332,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
         {!isCollapsed && (
           <div className="px-4 py-3">
             <div
+              id="tour-mode-switcher"
               className="relative p-1 rounded-full flex items-center"
               style={{
                 background: 'linear-gradient(135deg, #00C6FF 0%, #0099FF 50%, #00D4AA 100%)',
@@ -335,6 +350,8 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                     ? "bg-white text-[#003366] shadow-lg"
                     : "bg-transparent text-white hover:text-white/90"
                 )}
+                data-track-id="sidebar_mode_explorer_btn"
+                data-filter-value="explorer"
               >
                 <Search className="w-3.5 h-3.5 mr-1.5" />
                 Explorer
@@ -350,6 +367,8 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                     ? "bg-white text-[#003366] shadow-lg"
                     : "bg-transparent text-white hover:text-white/90"
                 )}
+                data-track-id="sidebar_mode_seller_btn"
+                data-filter-value="seller"
               >
                 <BarChart3 className="w-3.5 h-3.5 mr-1.5" />
                 Seller
@@ -389,6 +408,8 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                             : "text-slate-700 hover:bg-white/60",
                           item.disabled && "opacity-50 grayscale select-none"
                         )}
+                        data-track-id={`sidebar_nav_${item.label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "")}`}
+                        data-filter-value={item.href}
                       >
                         <Icon className={cn("h-4 w-4 shrink-0", !isCollapsed && "mr-3")} />
                         {!isCollapsed && (
@@ -448,15 +469,36 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
               </div>
             )}
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              className={cn("text-slate-500 hover:text-[#0072FF] h-8 w-8 p-0", isCollapsed && "p-2")}
-              title="Logout"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={cn("text-slate-500 hover:text-[#0072FF] h-8 w-8 p-0", isCollapsed && "p-2")}
+                  title="Logout"
+                  data-track-id="sidebar_logout_btn"
+                >
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirm Logout</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to log out of your account?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleLogout}
+                    className="bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white hover:opacity-90"
+                  >
+                    Logout
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
         </div>
       </div>

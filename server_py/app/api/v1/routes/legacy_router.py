@@ -164,7 +164,7 @@ def get_statistics(db: Session = Depends(get_db)):
     query = text("""
         SELECT 
             COUNT(*) AS total_products,
-            ROUND(AVG(product_star_rating_numeric), 2) AS average_rating,
+            ROUND(AVG(product_star_rating_numeric)::numeric, 2) AS average_rating,
             SUM(product_num_ratings) AS total_reviews
         FROM "rapidapi_amazon_products"
         WHERE product_star_rating_numeric IS NOT NULL
@@ -2815,7 +2815,7 @@ def get_notifications(
                         product_num_ratings,
                         sales_volume,
                         ROUND(((product_original_price_numeric - product_price_numeric) / 
-                               product_original_price_numeric * 100), 1) as discount_percent
+                               product_original_price_numeric * 100)::numeric, 1) as discount_percent
                     FROM rapidapi_amazon_products
                     WHERE product_price_numeric IS NOT NULL 
                       AND product_original_price_numeric IS NOT NULL
@@ -3084,11 +3084,11 @@ def get_category_products(
     amazon_query = """
         SELECT 
             product_title AS product_name,
-            ROUND(AVG(product_price_numeric), 2) AS avg_price,
-            ROUND(AVG(min_price), 2) AS min_price,
-            ROUND(AVG(max_price), 2) AS max_price,
+            ROUND(AVG(product_price_numeric)::numeric, 2) AS avg_price,
+            ROUND(AVG(min_price)::numeric, 2) AS min_price,
+            ROUND(AVG(max_price)::numeric, 2) AS max_price,
             SUM(product_num_ratings) AS total_reviews,
-            ROUND(AVG(product_star_rating_numeric), 2) AS avg_rating,
+            ROUND(AVG(product_star_rating_numeric)::numeric, 2) AS avg_rating,
             'Amazon' AS source
         FROM rapidapi_amazon_products
         WHERE LOWER(category_name) = LOWER(:category_name)
@@ -3163,11 +3163,11 @@ def get_rating_products(
     amazon_query = """
         SELECT 
             product_title AS product_name,
-            ROUND(AVG(product_price_numeric), 2) AS avg_price,
-            ROUND(AVG(min_price), 2) AS min_price,
-            ROUND(AVG(max_price), 2) AS max_price,
+            ROUND(AVG(product_price_numeric)::numeric, 2) AS avg_price,
+            ROUND(AVG(min_price)::numeric, 2) AS min_price,
+            ROUND(AVG(max_price)::numeric, 2) AS max_price,
             SUM(product_num_ratings) AS total_reviews,
-            ROUND(AVG(product_star_rating_numeric), 2) AS avg_rating,
+            ROUND(AVG(product_star_rating_numeric)::numeric, 2) AS avg_rating,
             'Amazon' AS source
         FROM rapidapi_amazon_products
         WHERE product_star_rating_numeric = :rating
@@ -3352,11 +3352,11 @@ def get_product_details(product_name: str, db: Session = Depends(get_db)):
                 product_title AS product_name,
                 asin AS product_id,
                 product_photo,
-                ROUND(AVG(product_star_rating_numeric), 2) AS avg_rating,
+                ROUND(AVG(product_star_rating_numeric)::numeric, 2) AS avg_rating,
                 SUM(product_num_ratings) AS total_reviews,
-                ROUND(AVG(avg_price), 2) AS avg_price,
-                ROUND(AVG(min_price), 2) AS min_price,
-                ROUND(AVG(max_price), 2) AS max_price
+                ROUND(AVG(avg_price)::numeric, 2) AS avg_price,
+                ROUND(AVG(min_price)::numeric, 2) AS min_price,
+                ROUND(AVG(max_price)::numeric, 2) AS max_price
             FROM rapidapi_amazon_products
             WHERE product_title ILIKE :product_name
             GROUP BY product_title, asin, product_photo
@@ -5426,7 +5426,7 @@ def get_flipkart_top_products(n: int = 10, db: Session = Depends(get_db)):
 
 from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr
-from fastapi import HTTPException, Depends, Response, Cookie
+from fastapi import HTTPException, Depends, Response, Cookie, Request, BackgroundTasks
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 import secrets
@@ -6053,15 +6053,75 @@ def create_session_token() -> str:
     """Generate a secure session token"""
     return secrets.token_urlsafe(32)
 
-def create_session(user_id: int, remember_me: bool = False) -> str:
-    """Create a new session and store in Redis"""
+def parse_user_agent(ua_string: str) -> str:
+    if not ua_string:
+        return "Unknown Device"
+    
+    os_name = "Unknown OS"
+    if "Windows" in ua_string:
+        os_name = "Windows"
+    elif "Macintosh" in ua_string or "Mac OS X" in ua_string:
+        os_name = "macOS"
+    elif "Android" in ua_string:
+        os_name = "Android"
+    elif "iPhone" in ua_string or "iPad" in ua_string:
+        os_name = "iOS"
+    elif "Linux" in ua_string:
+        os_name = "Linux"
+        
+    browser_name = "Unknown Browser"
+    if "Chrome" in ua_string and "Safari" in ua_string:
+        if "Edg" in ua_string:
+            browser_name = "Edge"
+        elif "OPR" in ua_string or "Opera" in ua_string:
+            browser_name = "Opera"
+        else:
+            browser_name = "Chrome"
+    elif "Firefox" in ua_string:
+        browser_name = "Firefox"
+    elif "Safari" in ua_string and "Chrome" not in ua_string:
+        browser_name = "Safari"
+    elif "Trident" in ua_string or "MSIE" in ua_string:
+        browser_name = "IE"
+        
+    return f"{browser_name} on {os_name}"
+
+def get_location_from_ip(ip: str) -> str:
+    if not ip or ip in ("127.0.0.1", "localhost", "testclient", "::1"):
+        return "Localhost"
+    try:
+        import requests
+        response = requests.get(f"http://ip-api.com/json/{ip}", timeout=2.0)
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("status") == "success":
+                city = data.get("city", "")
+                country = data.get("country", "")
+                if city and country:
+                    return f"{city}, {country}"
+                elif country:
+                    return country
+        return "Unknown Location"
+    except Exception as e:
+        print(f"⚠️ GeoIP lookup failed: {e}")
+        return "Unknown Location"
+
+def create_session(user_id: int, remember_me: bool = False, ip_address: str = None, user_agent: str = None) -> str:
+    """Create a new session and store in Redis with device and location metadata"""
     session_token = create_session_token()
     expires_days = SESSION_EXPIRE_DAYS_REMEMBER if remember_me else SESSION_EXPIRE_DAYS_NO_REMEMBER
+    
+    device = parse_user_agent(user_agent)
+    location = get_location_from_ip(ip_address)
     
     session_data = {
         "user_id": user_id,
         "created_at": datetime.now().isoformat(),
-        "remember_me": remember_me
+        "remember_me": remember_me,
+        "ip_address": ip_address or "Unknown IP",
+        "device": device,
+        "location": location,
+        "session_token": session_token
     }
     
     try:
@@ -6451,7 +6511,7 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
 # ============================================
 
 @router.post("/users/login", response_model=LoginResponse)
-def login_user(login_data: UserLogin, response: Response, db: Session = Depends(get_db)):
+def login_user(login_data: UserLogin, response: Response, request: Request, db: Session = Depends(get_db)):
     """Authenticate user and set secure session cookie"""
     try:
         print(f"🔍 Login attempt for: {login_data.email}")
@@ -6489,8 +6549,22 @@ def login_user(login_data: UserLogin, response: Response, db: Session = Depends(
             db.commit()
             db.refresh(user)
         
+        # Extract IP and User-Agent metadata
+        ip_address = request.headers.get("x-forwarded-for") or request.headers.get("x-real-ip")
+        if ip_address:
+            ip_address = ip_address.split(",")[0].strip()
+        else:
+            ip_address = request.client.host if request.client else "Unknown IP"
+            
+        user_agent = request.headers.get("user-agent")
+
         # Create session in Redis
-        session_token = create_session(user.id, login_data.remember_me)
+        session_token = create_session(
+            user_id=user.id,
+            remember_me=login_data.remember_me,
+            ip_address=ip_address,
+            user_agent=user_agent
+        )
         
         max_age = SESSION_EXPIRE_DAYS_REMEMBER * 24 * 60 * 60 if login_data.remember_me else SESSION_EXPIRE_DAYS_NO_REMEMBER * 24 * 60 * 60
         response.set_cookie(
@@ -6540,7 +6614,12 @@ def login_user(login_data: UserLogin, response: Response, db: Session = Depends(
 # ============================================
 
 @router.post("/users/signup")
-def signup_user(user_data: schemas.UserCreate, response: Response, db: Session = Depends(get_db)):
+def signup_user(
+    user_data: schemas.UserCreate, 
+    response: Response, 
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
     try:
         existing_user = db.query(models.User).filter(
             models.User.email == user_data.email
@@ -6548,14 +6627,8 @@ def signup_user(user_data: schemas.UserCreate, response: Response, db: Session =
         
         if existing_user:
             if not existing_user.is_verified:
-                # Resend OTP — send email FIRST, store only if successful
+                # Queue OTP resend in background task
                 otp = generate_otp()
-                email_sent = send_otp_email(user_data.email, otp)
-                # if not email_sent:
-                #     raise HTTPException(
-                #         status_code=500, 
-                #         detail="Failed to send verification email. Please try again."
-                #     )
                 store_otp(user_data.email, {
                     "otp": otp,
                     "created_at": datetime.now().isoformat(),
@@ -6563,7 +6636,8 @@ def signup_user(user_data: schemas.UserCreate, response: Response, db: Session =
                     "verified": False,
                     "purpose": "signup"
                 })
-                print(f"✅ Verification email resent to {user_data.email}")
+                background_tasks.add_task(send_otp_email, user_data.email, otp)
+                print(f"✅ Verification email queued for resend: {user_data.email}")
                 return {
                     "success": True,
                     "message": "Verification email resent.",
@@ -6597,20 +6671,10 @@ def signup_user(user_data: schemas.UserCreate, response: Response, db: Session =
         db.commit()
         db.refresh(new_user)
         
-        # Send email FIRST, store OTP only if successful
         otp = generate_otp()
         print(f"OTP for {user_data.email}: {otp}")
-        email_sent = send_otp_email(user_data.email, otp)
         
-        if not email_sent:
-            # Rollback user creation if email fails
-            db.delete(new_user)
-            db.commit()
-            raise HTTPException(
-                status_code=500, 
-                detail="Failed to send verification email. Please try again."
-            )
-        
+        # Store OTP in Redis synchronously (<1ms)
         store_otp(user_data.email, {
             "otp": otp,
             "created_at": datetime.now().isoformat(),
@@ -6619,7 +6683,10 @@ def signup_user(user_data: schemas.UserCreate, response: Response, db: Session =
             "purpose": "signup"
         })
         
-        print(f"✅ New user created and verification email sent: {user_data.email}")
+        # Queue email sending in the background
+        background_tasks.add_task(send_otp_email, user_data.email, otp)
+        
+        print(f"✅ New user created and verification email queued in background: {user_data.email}")
         
         return {
             "success": True,
@@ -6639,7 +6706,7 @@ def signup_user(user_data: schemas.UserCreate, response: Response, db: Session =
         )
 
 @router.post("/users/verify-email")
-def verify_email(request: VerifyOTPRequest, response: Response, db: Session = Depends(get_db)):
+def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Request, db: Session = Depends(get_db)):
     try:
         # Get OTP data from Redis
         otp_data = get_otp(request.email)
@@ -6707,8 +6774,22 @@ def verify_email(request: VerifyOTPRequest, response: Response, db: Session = De
         except Exception as _e:
             print(f"⚠️ Welcome email failed (non-critical): {_e}")
 
+        # Extract IP and User-Agent metadata
+        ip_address = raw_request.headers.get("x-forwarded-for") or raw_request.headers.get("x-real-ip")
+        if ip_address:
+            ip_address = ip_address.split(",")[0].strip()
+        else:
+            ip_address = raw_request.client.host if raw_request.client else "Unknown IP"
+            
+        user_agent = raw_request.headers.get("user-agent")
+
         # Create session
-        session_token = create_session(user.id, remember_me=False)
+        session_token = create_session(
+            user_id=user.id,
+            remember_me=False,
+            ip_address=ip_address,
+            user_agent=user_agent
+        )
         response.set_cookie(
             key="session_id",
             value=session_token,
@@ -6786,8 +6867,50 @@ def get_me(
         "onboarding_goal": current_user.onboarding_goal,
         "onboarding_marketplace": current_user.onboarding_marketplace,
         "onboarding_details": current_user.onboarding_details,
-        "seller_id": current_user.seller_id
+        "seller_id": current_user.seller_id,
+        "explorer_tour_completed": getattr(current_user, "explorer_tour_completed", False),
+        "seller_tour_completed": getattr(current_user, "seller_tour_completed", False),
+        "welcome_card_dismissed": getattr(current_user, "welcome_card_dismissed", False)
     }
+
+@router.post("/api/auth/tour-completion")
+def update_tour_completion(
+    request: dict,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Update onboarding tour completion and welcome card dismissal status
+    """
+    try:
+        explorer_tour_completed = request.get("explorer_tour_completed")
+        seller_tour_completed = request.get("seller_tour_completed")
+        welcome_card_dismissed = request.get("welcome_card_dismissed")
+        
+        if explorer_tour_completed is not None:
+            current_user.explorer_tour_completed = bool(explorer_tour_completed)
+        if seller_tour_completed is not None:
+            current_user.seller_tour_completed = bool(seller_tour_completed)
+        if welcome_card_dismissed is not None:
+            current_user.welcome_card_dismissed = bool(welcome_card_dismissed)
+            
+        db.commit()
+        db.refresh(current_user)
+        
+        return {
+            "success": True,
+            "message": "Tour completion status updated successfully",
+            "explorer_tour_completed": current_user.explorer_tour_completed,
+            "seller_tour_completed": current_user.seller_tour_completed,
+            "welcome_card_dismissed": current_user.welcome_card_dismissed
+        }
+    except Exception as e:
+        db.rollback()
+        print(f"❌ Update tour completion error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error updating tour completion status: {str(e)}"
+        )
 
 # ============================================
 # LOGOUT ENDPOINT
@@ -9597,6 +9720,219 @@ def get_products_by_sentiment(
 
 
 
+
+class UserProfileUpdate(BaseModel):
+    first_name: str
+    last_name: str
+    business_name: Optional[str] = None
+    location: str
+    mobile_number: str
+
+@router.put("/users/{user_id}")
+def update_user_profile(
+    user_id: int,
+    data: UserProfileUpdate,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Update user profile settings (requires authentication)"""
+    try:
+        # Check authorization
+        if current_user.id != user_id:
+            raise HTTPException(
+                status_code=403,
+                detail="Not authorized to update this profile"
+            )
+        
+        current_user.first_name = data.first_name
+        current_user.last_name = data.last_name
+        current_user.business_name = data.business_name
+        current_user.location = data.location
+        current_user.mobile_number = data.mobile_number
+        current_user.updated_at = datetime.now()
+        
+        db.commit()
+        db.refresh(current_user)
+        
+        return {
+            "success": True,
+            "message": "Profile updated successfully",
+            "user": {
+                "id": current_user.id,
+                "first_name": current_user.first_name,
+                "last_name": current_user.last_name,
+                "email": current_user.email,
+                "business_name": current_user.business_name,
+                "location": current_user.location,
+                "mobile_number": current_user.mobile_number,
+                "subscription_tier": current_user.subscription_tier,
+                "updated_at": str(current_user.updated_at)
+            }
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+@router.delete("/users/{user_id}")
+def delete_user_account(
+    user_id: int,
+    current_user: models.User = Depends(get_current_user),
+    response: Response = None,
+    db: Session = Depends(get_db)
+):
+    """Delete a user account and purge all associated data (requires authentication)"""
+    try:
+        # Check authorization
+        if current_user.id != user_id:
+            raise HTTPException(
+                status_code=403,
+                detail="Not authorized to delete this account"
+            )
+        
+        user_email = current_user.email
+        
+        # 1. PaymentOrder (no cascade in db, delete manually)
+        db.query(models.PaymentOrder).filter(models.PaymentOrder.user_id == user_id).delete(synchronize_session=False)
+        
+        # 2. TrackedProduct (user_email relation)
+        user_products = db.query(models.TrackedProduct).filter(models.TrackedProduct.user_email == user_email).all()
+        for prod in user_products:
+            db.query(models.KeywordRankHistory).filter(models.KeywordRankHistory.tracked_product_id == prod.id).delete(synchronize_session=False)
+            db.query(models.PriceAlert).filter(models.PriceAlert.tracked_product_id == prod.id).delete(synchronize_session=False)
+        db.query(models.TrackedProduct).filter(models.TrackedProduct.user_email == user_email).delete(synchronize_session=False)
+        
+        # 3. PriceAlert
+        db.query(models.PriceAlert).filter(models.PriceAlert.user_email == user_email).delete(synchronize_session=False)
+        
+        # 4. CompetitorSnapshot
+        db.query(models.CompetitorSnapshot).filter(models.CompetitorSnapshot.user_email == user_email).delete(synchronize_session=False)
+        
+        # 5. RankTrackedKeyword
+        db.query(models.RankTrackedKeyword).filter(models.RankTrackedKeyword.user_email == user_email).delete(synchronize_session=False)
+        
+        # 6. RankSnapshot
+        db.query(models.RankSnapshot).filter(models.RankSnapshot.user_email == user_email).delete(synchronize_session=False)
+        
+        # 7. RankAlertLog
+        db.query(models.RankAlertLog).filter(models.RankAlertLog.user_email == user_email).delete(synchronize_session=False)
+        
+        # 8. ProductTrackerAnalysis
+        db.query(models.ProductTrackerAnalysis).filter(models.ProductTrackerAnalysis.user_email == user_email).delete(synchronize_session=False)
+        
+        # 9. Feedback
+        db.query(models.Feedback).filter(models.Feedback.user_id == user_id).delete(synchronize_session=False)
+        
+        # 10. UserBehaviorLog
+        db.query(models.UserBehaviorLog).filter(models.UserBehaviorLog.user_id == user_id).delete(synchronize_session=False)
+        
+        # 11. WhiteSpaceWatchlist & WhiteSpaceScan & KwTracked
+        db.query(models.WhiteSpaceWatchlist).filter(models.WhiteSpaceWatchlist.user_id == user_id).delete(synchronize_session=False)
+        db.query(models.WhiteSpaceScan).filter(models.WhiteSpaceScan.user_id == user_id).delete(synchronize_session=False)
+        
+        user_kws = db.query(models.KwTracked).filter(models.KwTracked.user_id == user_id).all()
+        for kw in user_kws:
+            db.query(models.KwRankHistory).filter(models.KwRankHistory.kw_id == kw.id).delete(synchronize_session=False)
+            db.query(models.KwCompetitor).filter(models.KwCompetitor.kw_id == kw.id).delete(synchronize_session=False)
+            db.query(models.KwAlertSettings).filter(models.KwAlertSettings.kw_id == kw.id).delete(synchronize_session=False)
+        db.query(models.KwTracked).filter(models.KwTracked.user_id == user_id).delete(synchronize_session=False)
+        
+        # Redis Session Cleanup
+        delete_all_user_sessions(user_id)
+        
+        # Delete user
+        db.query(models.User).filter(models.User.id == user_id).delete(synchronize_session=False)
+        db.commit()
+        
+        # Delete cookie
+        if response:
+            response.delete_cookie(
+                key="session_id",
+                httponly=True,
+                secure=SESSION_COOKIE_SECURE,
+                samesite="lax",
+            )
+            
+        return {"success": True, "message": "Account and all associated data deleted successfully."}
+    except Exception as e:
+        db.rollback()
+        print(f"❌ Delete account error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error deleting account: {str(e)}")
+
+@router.get("/users/{user_id}/sessions")
+def get_user_sessions(
+    user_id: int,
+    current_user: models.User = Depends(get_current_user),
+    session_id: str = Cookie(None)
+):
+    """Retrieve all active login sessions for the user (requires authentication)"""
+    if current_user.id != user_id:
+        raise HTTPException(
+            status_code=403,
+            detail="Not authorized to view these sessions"
+        )
+    
+    active_sessions = []
+    try:
+        cursor = 0
+        while True:
+            cursor, keys = r.scan(cursor, match=f"{SESSION_PREFIX}*", count=100)
+            for key in keys:
+                data = r.get(key)
+                if data:
+                    session_data = json.loads(data)
+                    if session_data.get("user_id") == user_id:
+                        token = key.replace(SESSION_PREFIX, "")
+                        is_current = (token == session_id)
+                        
+                        active_sessions.append({
+                            "session_token": token,
+                            "device": session_data.get("device", "Unknown Device"),
+                            "ip_address": session_data.get("ip_address", "Unknown IP"),
+                            "location": session_data.get("location", "Unknown Location"),
+                            "created_at": session_data.get("created_at"),
+                            "is_current": is_current
+                        })
+            if cursor == 0:
+                break
+                
+        active_sessions.sort(key=lambda s: (not s["is_current"], s.get("created_at", "")), reverse=True)
+        return {"success": True, "sessions": active_sessions}
+    except Exception as e:
+        print(f"❌ Get user sessions error: {e}")
+        raise HTTPException(status_code=500, detail=f"Error retrieving sessions: {str(e)}")
+
+@router.delete("/users/{user_id}/sessions/{session_token}")
+def revoke_user_session(
+    user_id: int,
+    session_token: str,
+    current_user: models.User = Depends(get_current_user)
+):
+    """Revoke a specific active session (log out another device)"""
+    if current_user.id != user_id:
+        raise HTTPException(
+            status_code=403,
+            detail="Not authorized to revoke this session"
+        )
+    
+    try:
+        key = f"{SESSION_PREFIX}{session_token}"
+        data = r.get(key)
+        if not data:
+            raise HTTPException(status_code=404, detail="Session not found")
+            
+        session_data = json.loads(data)
+        if session_data.get("user_id") != user_id:
+            raise HTTPException(status_code=403, detail="Not authorized to revoke this session")
+            
+        delete_session(session_token)
+        return {"success": True, "message": "Session revoked successfully"}
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Revoke session error: {e}")
+        raise HTTPException(status_code=500, detail=f"Error revoking session: {str(e)}")
 
 class SubscriptionUpdate(BaseModel):
     user_id: int
@@ -17857,12 +18193,12 @@ def _sql_category_overview(source: str, where: str, limit: int = 15) -> str:
     return f"""
         SELECT category_name,
             COUNT(*)                                  AS listings,
-            ROUND(AVG(product_price_numeric),0)       AS avg_price,
-            ROUND(MIN(product_price_numeric),0)       AS min_price,
-            ROUND(MAX(product_price_numeric),0)       AS max_price,
-            ROUND(AVG(product_star_rating_numeric),2) AS avg_rating,
+            ROUND(AVG(product_price_numeric)::numeric,0)       AS avg_price,
+            ROUND(MIN(product_price_numeric)::numeric,0)       AS min_price,
+            ROUND(MAX(product_price_numeric)::numeric,0)       AS max_price,
+            ROUND(AVG(product_star_rating_numeric)::numeric,2) AS avg_rating,
             SUM(product_num_ratings)                  AS total_reviews,
-            ROUND(AVG(avg_sales_volume),0)            AS avg_sales
+            ROUND(AVG(avg_sales_volume)::numeric,0)            AS avg_sales
         FROM rapidapi_amazon_products
         WHERE product_title IS NOT NULL AND {where}
         GROUP BY category_name
@@ -17888,10 +18224,10 @@ def _sql_brand_leaders(source: str, where: str, limit: int = 10) -> str:
     return f"""
         SELECT category_name AS brand,
             COUNT(*)                                  AS listings,
-            ROUND(AVG(product_price_numeric),0)       AS avg_price,
-            ROUND(AVG(product_star_rating_numeric),2) AS avg_rating,
+            ROUND(AVG(product_price_numeric)::numeric,0)       AS avg_price,
+            ROUND(AVG(product_star_rating_numeric)::numeric,2) AS avg_rating,
             SUM(product_num_ratings)                  AS total_reviews,
-            ROUND(AVG(avg_sales_volume),0)            AS avg_sales
+            ROUND(AVG(avg_sales_volume)::numeric,0)            AS avg_sales
         FROM rapidapi_amazon_products
         WHERE product_title IS NOT NULL AND {where}
         GROUP BY category_name
@@ -17930,7 +18266,7 @@ def _sql_price_bands(source: str, where: str) -> str:
                 ELSE 'Above ₹15K'
             END AS price_band,
             COUNT(*)                                  AS listings,
-            ROUND(AVG(product_star_rating_numeric),2) AS avg_rating,
+            ROUND(AVG(product_star_rating_numeric)::numeric,2) AS avg_rating,
             SUM(product_num_ratings)                  AS total_reviews
         FROM rapidapi_amazon_products
         WHERE product_title IS NOT NULL AND product_price_numeric IS NOT NULL AND {where}

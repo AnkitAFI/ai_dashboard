@@ -47,6 +47,11 @@ class User(Base):
     onboarding_details = Column(String(500), nullable=True) # Seller ID or Category
     seller_id = Column(String(100), nullable=True)
     seller_sync_status = Column(String(20), default='IDLE') # IDLE, SYNCING, COMPLETED, FAILED
+
+    # Onboarding Guide fields
+    explorer_tour_completed = Column(Boolean, default=False, nullable=False)
+    seller_tour_completed = Column(Boolean, default=False, nullable=False)
+    welcome_card_dismissed = Column(Boolean, default=False, nullable=False)
    
     def __repr__(self):
         return f"<User {self.email}>"

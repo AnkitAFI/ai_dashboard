@@ -193,7 +193,7 @@ export default function FiltersPanel() {
               {currentTier.toUpperCase()}
             </Badge>
           </CardTitle>
-          <Button variant="outline" size="sm" onClick={resetFilters}>
+          <Button variant="outline" size="sm" onClick={resetFilters} data-track-id="filters_reset_btn">
             <RotateCcw className="h-4 w-4 mr-2" /> Reset
           </Button>
         </CardHeader>
@@ -224,12 +224,12 @@ export default function FiltersPanel() {
             <div className="space-y-2">
               <Label>Data Source</Label>
               <Select value={localFilters.table} onValueChange={(v) => updateLocalFilter("table", v)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" data-track-id="filters_datasource_select" data-filter-value={localFilters.table}>
                   <SelectValue placeholder="Select table" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="flipkart">Flipkart</SelectItem>
-                  <SelectItem value="amazon">Amazon</SelectItem>
+                  <SelectItem value="flipkart" data-track-id="filters_datasource_option" data-filter-value="flipkart">Flipkart</SelectItem>
+                  <SelectItem value="amazon" data-track-id="filters_datasource_option" data-filter-value="amazon">Amazon</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -238,12 +238,12 @@ export default function FiltersPanel() {
             <div className="space-y-2">
               <Label>Category</Label>
               <Select value={localFilters.category} onValueChange={(v) => updateLocalFilter("category", v)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" data-track-id="filters_category_select" data-filter-value={localFilters.category}>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((cat) => (
-                    <SelectItem key={cat} value={cat}>
+                    <SelectItem key={cat} value={cat} data-track-id="filters_category_option" data-filter-value={cat}>
                       {cat}
                     </SelectItem>
                   ))}
@@ -262,6 +262,8 @@ export default function FiltersPanel() {
                   max={100000}
                   step={1000}
                   className="w-full"
+                  data-track-id="filters_price_slider"
+                  data-filter-value={JSON.stringify(localFilters.priceRange)}
                 />
                 <div className="flex justify-between text-xs text-muted-foreground mt-1">
                   <span>{formatPrice(localFilters.priceRange[0])}</span>
@@ -274,16 +276,16 @@ export default function FiltersPanel() {
             <div className="space-y-2">
               <Label>Minimum Rating</Label>
               <Select value={localFilters.rating.toString()} onValueChange={(v) => updateLocalFilter("rating", parseFloat(v))}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" data-track-id="filters_rating_select" data-filter-value={localFilters.rating.toString()}>
                   <SelectValue placeholder="All Ratings" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0">All Ratings</SelectItem>
-                  <SelectItem value="1">1+ Stars</SelectItem>
-                  <SelectItem value="2">2+ Stars</SelectItem>
-                  <SelectItem value="3">3+ Stars</SelectItem>
-                  <SelectItem value="4">4+ Stars</SelectItem>
-                  <SelectItem value="4.5">4.5+ Stars</SelectItem>
+                  <SelectItem value="0" data-track-id="filters_rating_option" data-filter-value="0">All Ratings</SelectItem>
+                  <SelectItem value="1" data-track-id="filters_rating_option" data-filter-value="1">1+ Stars</SelectItem>
+                  <SelectItem value="2" data-track-id="filters_rating_option" data-filter-value="2">2+ Stars</SelectItem>
+                  <SelectItem value="3" data-track-id="filters_rating_option" data-filter-value="3">3+ Stars</SelectItem>
+                  <SelectItem value="4" data-track-id="filters_rating_option" data-filter-value="4">4+ Stars</SelectItem>
+                  <SelectItem value="4.5" data-track-id="filters_rating_option" data-filter-value="4.5">4.5+ Stars</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -292,12 +294,12 @@ export default function FiltersPanel() {
             <div className="space-y-2">
               <Label>Date Range</Label>
               <Select value={localFilters.dateRange} onValueChange={(v) => updateLocalFilter("dateRange", v)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" data-track-id="filters_daterange_select" data-filter-value={localFilters.dateRange}>
                   <SelectValue placeholder="Select date range" />
                 </SelectTrigger>
                 <SelectContent>
                   {DATE_RANGES.map((range) => (
-                    <SelectItem key={range.value} value={range.value}>
+                    <SelectItem key={range.value} value={range.value} data-track-id="filters_daterange_option" data-filter-value={range.value}>
                       {range.label}
                     </SelectItem>
                   ))}
@@ -309,12 +311,12 @@ export default function FiltersPanel() {
             <div className="space-y-2">
               <Label>Sort By</Label>
               <Select value={localFilters.sortBy} onValueChange={(v) => updateLocalFilter("sortBy", v)}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" data-track-id="filters_sortby_select" data-filter-value={localFilters.sortBy}>
                   <SelectValue placeholder="Sort by" />
                 </SelectTrigger>
                 <SelectContent>
                   {SORT_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
+                    <SelectItem key={option.value} value={option.value} data-track-id="filters_sortby_option" data-filter-value={option.value}>
                       {option.label}
                     </SelectItem>
                   ))}
@@ -345,7 +347,7 @@ export default function FiltersPanel() {
                 value={localFilters.topN.toString()}
                 onValueChange={handleTopNChange}
               >
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-full" data-track-id="filters_topn_select" data-filter-value={localFilters.topN.toString()}>
                   <SelectValue placeholder="Select limit" />
                 </SelectTrigger>
                 <SelectContent>
@@ -357,6 +359,8 @@ export default function FiltersPanel() {
                         value={option.value.toString()}
                         disabled={locked}
                         className={locked ? "opacity-50" : ""}
+                        data-track-id="filters_topn_option"
+                        data-filter-value={option.value.toString()}
                       >
                         <div className="flex items-center justify-between w-full">
                           <span>{option.label}</span>
@@ -398,6 +402,7 @@ export default function FiltersPanel() {
                       size="sm"
                       className="bg-purple-600 hover:bg-purple-700 text-xs h-7"
                       onClick={() => window.location.href = "/subscription"}
+                      data-track-id="filters_upgrade_view_plans_btn"
                     >
                       <Crown className="w-3 h-3 mr-1" />
                       View Plans
@@ -407,6 +412,7 @@ export default function FiltersPanel() {
                       variant="outline"
                       className="text-xs h-7 border-purple-300 text-purple-700 hover:bg-purple-50"
                       onClick={() => setShowUpgradeDialog(true)}
+                      data-track-id="filters_upgrade_learn_more_btn"
                     >
                       Learn More
                     </Button>
@@ -430,16 +436,18 @@ export default function FiltersPanel() {
               <Switch
                 checked={localFilters.showTrendingOnly}
                 onCheckedChange={(checked) => updateLocalFilter("showTrendingOnly", checked)}
+                data-track-id="filters_show_trending_only_switch"
+                data-filter-value={localFilters.showTrendingOnly ? "on" : "off"}
               />
             </div>
           </div>
 
           {/* Apply & Clear Buttons */}
           <div className="flex gap-2 pt-4">
-            <Button onClick={applyFilters} className="flex-1">
+            <Button onClick={applyFilters} className="flex-1" data-track-id="filters_apply_btn" data-filter-value={JSON.stringify(localFilters)}>
               Apply Filters
             </Button>
-            <Button variant="outline" onClick={resetFilters}>
+            <Button variant="outline" onClick={resetFilters} data-track-id="filters_clear_btn">
               Clear All
             </Button>
           </div>
@@ -538,6 +546,7 @@ export default function FiltersPanel() {
               <Button
                 className="flex-1 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
                 onClick={() => window.location.href = "/subscription"}
+                data-track-id="filters_upgrade_now_dialog_btn"
               >
                 <Crown className="w-4 h-4 mr-2" />
                 Upgrade Now
@@ -546,6 +555,7 @@ export default function FiltersPanel() {
                 variant="outline"
                 className="flex-1"
                 onClick={() => setShowUpgradeDialog(false)}
+                data-track-id="filters_maybe_later_dialog_btn"
               >
                 Maybe Later
               </Button>

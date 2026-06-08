@@ -732,7 +732,7 @@ export default function SolutionsPage() {
                 label: 'Running an Agency?',
                 desc: 'See how Insydz centralises intelligence across all your clients.',
                 cta: 'Book a Demo →',
-                action: () => router.push('/demo')
+                action: () => router.push('/about/contact-us')
               }
             ].map((card, i) => (
               <div

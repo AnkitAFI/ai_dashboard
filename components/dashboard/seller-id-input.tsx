@@ -83,12 +83,16 @@ export default function SellerIdInput({ onSaved }: { onSaved: (id: string) => vo
           <div className="space-y-2">
             <label className="text-sm font-semibold text-slate-700">Select Marketplace</label>
             <Select value={country} onValueChange={setCountry} disabled={isSaving}>
-              <SelectTrigger className="h-12 rounded-xl border-slate-200 focus:ring-2 focus:ring-[#0f2a43]">
+              <SelectTrigger
+                className="h-12 rounded-xl border-slate-200 focus:ring-2 focus:ring-[#0f2a43]"
+                data-track-id="seller_connect_country_select"
+                data-filter-value={country}
+              >
                 <SelectValue placeholder="Select Country" />
               </SelectTrigger>
               <SelectContent className="rounded-xl overflow-hidden bg-white shadow-xl">
-                <SelectItem value="IN">India 🇮🇳</SelectItem>
-                <SelectItem value="US">United States 🇺🇸</SelectItem>
+                <SelectItem value="IN" data-track-id="seller_connect_country_option" data-filter-value="IN">India 🇮🇳</SelectItem>
+                <SelectItem value="US" data-track-id="seller_connect_country_option" data-filter-value="US">United States 🇺🇸</SelectItem>
               </SelectContent>
             </Select>
             <p className="text-[10px] text-slate-400 font-medium">
@@ -107,6 +111,7 @@ export default function SellerIdInput({ onSaved }: { onSaved: (id: string) => vo
             onClick={handleSave}
             disabled={isSaving}
             className="w-full h-12 rounded-xl bg-[#0f2a43] hover:bg-[#1a3d5c] text-white font-bold transition-all"
+            data-track-id="seller_connect_store_btn"
           >
             {isSaving ? (
               <>

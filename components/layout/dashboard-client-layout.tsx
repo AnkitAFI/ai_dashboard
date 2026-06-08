@@ -8,13 +8,23 @@ import { AlertProvider } from "@/components/dashboard/alert-context";
 import { SidebarProvider, useSidebar } from "@/components/layout/sidebar-context";
 import FiltersPanel from "@/components/dashboard/filters-panel";
 import AlertDetailsDialog from "@/components/dashboard/alert-details-dialog";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Menu } from "lucide-react";
+import SaaSTourGuide from "@/components/layout/saas-tour-guide";
+import { useAuth } from "@/lib/auth-context";
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { isOpen, setIsOpen, toggle } = useSidebar();
   const [showFilters, setShowFilters] = useState(false);
   const pathname = usePathname();
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.replace("/login");
+    }
+  }, [user, isLoading, router]);
 
   useEffect(() => {
     setIsOpen(false);
@@ -22,6 +32,18 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
 
   const isDashboardPage = pathname === "/dashboard" || pathname === "/overview" || pathname === "/";
   const hasCustomHeader = !isDashboardPage;
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#080e1c]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#AAF0FF]" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-sky-100">
@@ -78,6 +100,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         </footer>
       </div>
       <AlertDetailsDialog />
+      <SaaSTourGuide />
     </div>
   );
 }

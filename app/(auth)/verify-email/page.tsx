@@ -290,6 +290,7 @@ export default function VerifyEmail() {
         body: JSON.stringify({ email, otp }),
       });
       const data = await response.json();
+      console.log("Verification response:", data);  
       if (!response.ok) throw new Error(data.detail || "Verification failed");
       deleteCookie("verify_email");
       await refreshUser();

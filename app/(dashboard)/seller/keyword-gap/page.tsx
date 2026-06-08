@@ -405,9 +405,6 @@ function KeywordGapContent() {
     <div className="min-h-screen flex flex-col bg-transparent">
         <header className="bg-transparent border-b border-sky-100/80 pb-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <button onClick={toggle} className="lg:hidden p-2 rounded-xl bg-sky-50 hover:bg-sky-100 mr-1 shadow-sm">
-              <Menu className="w-5 h-5 text-sky-900" />
-            </button>
             <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl flex items-center justify-center shadow-inner shrink-0">
               <Search className="w-6 h-6 text-sky-600 animate-pulse" />
             </div>

@@ -667,7 +667,7 @@ export default function FlipkartSellersPage() {
                 Managing multiple Flipkart brands? Multi-account tracking, portfolio-level intelligence, and white-label reporting built for agencies and brand managers running Flipkart operations at scale.
               </p>
               <Button
-                onClick={() => router.push('/solutions/ecommerce-agencies')}
+                onClick={() => router.push('/about/contact-us')}
                 variant="outline"
                 className="w-full border-2 border-purple-600 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 font-bold rounded-full"
               >

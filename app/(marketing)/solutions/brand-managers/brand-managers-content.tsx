@@ -321,9 +321,6 @@ export default function BrandManagersPage() {
                   <span className="font-semibold text-orange-700 dark:text-orange-400">Brand Manager scenario:</span> A brand manager at a consumer electronics company spent 6 hours every month compiling competitor data for the CMO review deck. With Insydz, the same report auto-generates in 90 seconds. Six hours returned to strategy every month.
                 </p>
               </div>
-              <button onClick={() => router.push('/features/ai-recommendations-feature')} className="text-orange-600 dark:text-orange-400 font-semibold text-sm hover:underline">
-              Explore performance analytics software for brand leaders
-              </button>
             </div>
 
             {/* Feature 4 */}
@@ -615,7 +612,7 @@ export default function BrandManagersPage() {
               <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-6">
                 Managing a multi-brand portfolio? Custom dashboards, dedicated account manager, white-glove onboarding, API access, and enterprise pricing built for brand leaders managing complex multi-category portfolios across Indian marketplaces.
               </p>
-              <Button onClick={() => router.push('/solutions/ecommerce-agencies')} variant="outline" className="w-full border-2 border-purple-600 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 font-bold rounded-full">
+              <Button onClick={() => router.push('/about/contact-us')} variant="outline" className="w-full border-2 border-purple-600 text-purple-700 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 font-bold rounded-full">
                 Book a Strategic Demo →
               </Button>
             </div>

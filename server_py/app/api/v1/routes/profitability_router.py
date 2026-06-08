@@ -21,6 +21,10 @@ from app.services.profitability_service import (
 )
 from app.api.deps import get_current_user_id, validate_session, r
 import json
+from pydantic import BaseModel as _BaseModel
+from app.api.v1.routes.legacy_router import ProductTrackerRequest
+from app.services.niche_research_service import run_niche_research
+
 
 # Optional auth helper for profitability routes
 def get_optional_user_id(
@@ -220,3 +224,31 @@ def business_health(
         "metrics":           [m.dict() for m in metrics],
         "recommendations":   [r.dict() for r in recs],
     }
+
+
+# ── POST /profitability/niche-research ──────────────────────────────────────────
+
+@router.post("/niche-research")
+async def niche_research(
+    request_body: ProductTrackerRequest,
+    db: Session = Depends(get_db)
+):
+    """
+    Highly refined competitor and niche opportunity search pipeline
+    integrated specifically into the Profitability Optimizer page.
+    """
+    res = await run_niche_research(
+        db=db,
+        product_name=request_body.product_name,
+        category=request_body.category,
+        source=request_body.source,
+        base_cost=request_body.base_cost
+    )
+    if not res.get("success"):
+        raise HTTPException(
+            status_code=404,
+            detail=res.get("message", "No competitor products found.")
+        )
+    return res
+
+

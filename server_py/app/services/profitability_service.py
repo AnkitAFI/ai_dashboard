@@ -206,23 +206,25 @@ def build_scenarios(base: ProfitabilityInput) -> Tuple[List[ScenarioResult], Lis
 # ── Market Intel — real DB queries ─────────────────────────────────────────────
 
 def get_categories_from_db(marketplace: str, db: Session) -> List[str]:
-    """Pull distinct categories from the real table."""
+    """Pull distinct categories from the real table sorted dynamically by product popularity count."""
     try:
         if marketplace == "amazon":
             rows = db.execute(text("""
-                SELECT DISTINCT category_name
+                SELECT category_name
                 FROM rapidapi_amazon_products
                 WHERE category_name IS NOT NULL
                   AND category_name != ''
-                ORDER BY category_name
+                GROUP BY category_name
+                ORDER BY COUNT(*) DESC
             """)).fetchall()
         else:
             rows = db.execute(text("""
-                SELECT DISTINCT category_name
+                SELECT category_name
                 FROM rapidapi_flipkart_products
                 WHERE category_name IS NOT NULL
                   AND category_name != ''
-                ORDER BY category_name
+                GROUP BY category_name
+                ORDER BY COUNT(*) DESC
             """)).fetchall()
         return [r[0] for r in rows if r[0]]
     except Exception as e:
@@ -555,44 +557,87 @@ def compute_health(
     )
 
     recs: List[ActionRecommendation] = []
+    
+    # ── Critical & High Priority Warnings (Negative or poor performance metrics) ──
     if acos > 20:
         saving = round(inp.ad_spend_per_unit * 0.2 * inp.monthly_units, 2)
         recs.append(ActionRecommendation(
-            priority = "high",
+            priority = "critical" if acos > 30 else "high",
             area     = "Advertising",
-            action   = f"Cut ad spend by ₹{inp.ad_spend_per_unit * 0.2:.0f}/unit via negative keyword pruning",
-            impact   = f"Saves ~₹{saving:,.0f}/month, improves ACOS from {acos:.1f}% toward 20%",
+            action   = f"Prune low-converting search terms and decrease bids by 15% on keywords with ACOS > 30%",
+            impact   = f"Saves ~₹{saving:,.0f}/month, improving ACOS from {acos:.1f}% toward a 15% target.",
         ))
     if margin < 20:
         new_econ = calculate_unit_economics(
             ProfitabilityInput(**{**inp.dict(), "selling_price": inp.selling_price * 1.1})
         )
         recs.append(ActionRecommendation(
-            priority = "high",
+            priority = "critical" if margin < 10 else "high",
             area     = "Pricing",
-            action   = f"Raise price by 10% to ₹{inp.selling_price * 1.1:,.0f}",
-            impact   = f"Margin improves from {margin:.1f}% → {new_econ['net_margin_pct']:.1f}%",
+            action   = f"Raise listing price by 10% to ₹{inp.selling_price * 1.1:,.0f} to cover rising platform fees",
+            impact   = f"Net margin improves from {margin:.1f}% to {new_econ['net_margin_pct']:.1f}% per unit sold.",
         ))
     if ret > 8:
         saving = round(inp.selling_price * (ret - 5) / 100 * 0.5 * inp.monthly_units, 2)
         recs.append(ActionRecommendation(
             priority = "high",
             area     = "Returns",
-            action   = f"Fix listing accuracy to reduce return rate from {ret:.0f}% → 5%",
-            impact   = f"Recovers ~₹{saving:,.0f}/month in return costs",
+            action   = f"Conduct product packaging audit and update sizing charts to decrease return rate from {ret:.1f}%",
+            impact   = f"Recovers ~₹{saving:,.0f}/month in lost logistics and return processing costs.",
         ))
     if inp.storage_fee_per_unit > 20:
         recs.append(ActionRecommendation(
             priority = "medium",
             area     = "Inventory",
             action   = "Reduce FBA storage days by sending smaller, more frequent shipments",
-            impact   = f"Cuts storage fee from ₹{inp.storage_fee_per_unit}/unit downward",
+            impact   = f"Cuts FBA storage fee from ₹{inp.storage_fee_per_unit}/unit downward.",
         ))
-    recs.append(ActionRecommendation(
-        priority = "medium",
-        area     = "Positioning",
-        action   = "Bundle complementary products to justify higher price point",
-        impact   = "Reduces price sensitivity, increases average order value",
-    ))
+
+    # ── High-Potential Growth Opportunities (Triggered when metrics are healthy) ──
+    if margin >= 25 and acos <= 15:
+        recs.append(ActionRecommendation(
+            priority = "high",
+            area     = "Scaling",
+            action   = f"Scale ad budgets by 25% on top-performing search terms to capture organic market share",
+            impact   = f"Capitalizes on your strong {margin:.1f}% margin cushion to climb best-seller rankings (BSR).",
+        ))
+    if margin > 35:
+        recs.append(ActionRecommendation(
+            priority = "medium",
+            area     = "Promotion",
+            action   = f"Introduce a 5% to 10% coupon badge to boost listing click-through rate (CTR) and conversions",
+            impact   = f"Significantly increases unit volume without risking a permanent price decline.",
+        ))
+    if units < 100 and margin >= 20:
+        recs.append(ActionRecommendation(
+            priority = "medium",
+            area     = "Velocity",
+            action   = f"Launch bundle promotions (e.g. Buy 2, Get 10% Off) to accelerate monthly sales velocity",
+            impact   = f"Increases average order value and drives sales volume above the current {units} units/month limit.",
+        ))
+    if roi >= 60:
+        recs.append(ActionRecommendation(
+            priority = "medium",
+            area     = "Capital",
+            action   = f"Establish a 45-day inventory buffer to prevent out-of-stock situations during peak sales months",
+            impact   = f"Reinvests your excellent {roi:.1f}% inventory ROI to protect organic search rankings.",
+        ))
+    if ret <= 5 and margin >= 15:
+        recs.append(ActionRecommendation(
+            priority = "medium",
+            area     = "Marketing",
+            action   = f"Feature high customer satisfaction and return-free metrics directly in listing A+ content",
+            impact   = f"Directly converts your low {ret:.1f}% return rate into a powerful social proof marketing asset.",
+        ))
+
+    # ── Baseline fallback if no rules are met ──
+    if not recs:
+        recs.append(ActionRecommendation(
+            priority = "medium",
+            area     = "Positioning",
+            action   = "Bundle complementary accessories to justify a premium, higher-margin price point",
+            impact   = "Reduces price sensitivity and raises average order value on your checkout path.",
+        ))
 
     return overall, label, metrics, recs
+

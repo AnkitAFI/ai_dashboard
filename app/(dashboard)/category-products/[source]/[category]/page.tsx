@@ -12,8 +12,9 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { ChevronLeft, Star, ShoppingBag, Menu } from "lucide-react";
+import { ChevronLeft, Star, Menu } from "lucide-react";
 import { useSidebar } from "@/components/layout/sidebar-context";
+import { getCategoryIconComponent } from "@/lib/utils";
 
 interface Product {
   product_name: string;
@@ -30,6 +31,10 @@ export default function CategoryProducts() {
   const source = params?.source;
   const category = params?.category;
   const router = useRouter();
+
+  const CategoryIcon = getCategoryIconComponent(
+    decodeURIComponent((category as string) || "")
+  );
 
   const [products, setProducts] = useState<Product[]>([]);
   const { toggle } = useSidebar();
@@ -131,7 +136,7 @@ export default function CategoryProducts() {
       {/* Hero Section */}
       <div className="text-center space-y-4 pt-4">
         <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-2xl mb-2 shadow-inner">
-          <ShoppingBag className="h-8 w-8 text-blue-500" />
+          <CategoryIcon className="h-8 w-8 text-blue-500" />
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
           Products in {decodeURIComponent((category as string) || "")}

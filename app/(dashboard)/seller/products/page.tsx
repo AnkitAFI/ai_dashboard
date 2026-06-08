@@ -11,7 +11,7 @@ import {
   BarChart2, MessageSquare,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import SmartSearchInput from "@/components/ui/smart-search-input";
 
 function SellerProductsContent() {
   const { user, refreshUser } = useAuth();
@@ -131,15 +131,15 @@ function SellerProductsContent() {
               <p className="text-sm text-slate-500">{filteredProducts.length} products found</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
-              <div className="relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <Input
-                  placeholder="Search products..."
-                  className="pl-9 w-full sm:w-64 bg-slate-50 border-none h-10 rounded-xl"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </div>
+              <SmartSearchInput
+                value={searchQuery}
+                onChange={setSearchQuery}
+                placeholder="Search products..."
+                className="w-full sm:w-64"
+                inputClassName="bg-slate-50 border-slate-200 h-10"
+                dictionary={products.flatMap((p: any) => [p.title, p.asin].filter(Boolean))}
+                maxSuggestions={5}
+              />
               <div className="flex gap-2 bg-slate-100 p-1 rounded-xl">
                 {(["all", "prime", "best_seller"] as const).map((f) => (
                   <button

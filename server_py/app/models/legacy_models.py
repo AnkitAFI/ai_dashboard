@@ -231,6 +231,11 @@ class User(Base):
     seller_sync_status = Column(String(20), default='IDLE') # IDLE, SYNCING, COMPLETED, FAILED
     mobile_number = Column(String, nullable=False)
 
+    # Onboarding Guide fields
+    explorer_tour_completed = Column(Boolean, default=False, nullable=False)
+    seller_tour_completed = Column(Boolean, default=False, nullable=False)
+    welcome_card_dismissed = Column(Boolean, default=False, nullable=False)
+
     watchlist_items = relationship("WhiteSpaceWatchlist", back_populates="user", cascade="all, delete-orphan")   
     # Relationships
     def __repr__(self):
@@ -278,6 +283,14 @@ class ProductTrackerAnalysis(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())      
 
 
+class NicheResearchRule(Base):
+    __tablename__ = "niche_research_rules"
+
+    id = Column(Integer, primary_key=True, index=True)
+    query_keyword = Column(String(255), unique=True, index=True, nullable=False)
+    synonyms = Column(JSON, default=list, nullable=False)
+    price_floor = Column(Numeric(10, 2), default=0.00, nullable=False)
+    accessory_exclusions = Column(JSON, default=list, nullable=False)
 
 
 class TrackedProduct(Base):
@@ -749,3 +762,19 @@ class RankAlertLog(Base):
         DateTime(timezone=True),
         default=lambda: datetime.utcnow(),
     )     
+
+
+class UserBehaviorLog(Base):
+    __tablename__ = "user_behavior_logs"
+
+    id         = Column(Integer, primary_key=True, autoincrement=True)
+    user_id    = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    user_email = Column(String(255), nullable=True, index=True)
+    session_id = Column(String(100), nullable=False, index=True)
+    event_type = Column(String(100), nullable=False, index=True)
+    page_path  = Column(Text, nullable=False)
+    properties = Column(JSON, nullable=True)
+    ip_address = Column(String(45), nullable=True)
+    user_agent = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.utcnow(), index=True)
+
