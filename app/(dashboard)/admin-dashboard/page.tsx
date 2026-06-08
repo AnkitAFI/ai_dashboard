@@ -1683,7 +1683,7 @@ export default function AdminDashboard() {
                                         <div style={{ flex: "1 1 180px", minWidth: 160 }}>
                                           <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>User</p>
                                           <p style={{ margin: 0, fontSize: 12, color: "#1e293b", fontWeight: 600, wordBreak: "break-all" }}>{log.user_email ?? "Anonymous"}</p>
-                                          {log.ip_address && <p style={{ margin: "2px 0 0", fontSize: 11, color: "#94a3b8" }}>{log.ip_address}</p>}
+
                                         </div>
 
                                       </div>
