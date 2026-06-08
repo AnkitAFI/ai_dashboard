@@ -27,7 +27,7 @@ export const FiltersProvider = ({ children }: { children: ReactNode }) => {
   const { limits } = useSubscriptionLimits();
   
   const [filters, setFilters] = useState<Filters>({
-    table: "flipkart",
+    table: "amazon",
     category: "All Categories",
     priceRange: [0, 5000000],
     rating: 0,

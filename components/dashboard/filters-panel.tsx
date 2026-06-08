@@ -109,7 +109,7 @@ export default function FiltersPanel() {
 
   const resetFilters = () => {
     const defaultFilters: FilterState = {
-      table: "flipkart",
+      table: "amazon",
       category: "All Categories",
       priceRange: [0, 5000000],
       rating: 0,
@@ -146,7 +146,7 @@ export default function FiltersPanel() {
 
     let updatedFilters = { ...localFilters };
 
-    if (filterToRemove.startsWith("Table:")) updatedFilters.table = "flipkart";
+    if (filterToRemove.startsWith("Table:")) updatedFilters.table = "amazon";
     else if (filterToRemove.startsWith("Category:")) updatedFilters.category = "All Categories";
     else if (filterToRemove.startsWith("Price:")) updatedFilters.priceRange = [0, 5000000];
     else if (filterToRemove.startsWith("Rating:")) updatedFilters.rating = 0;
