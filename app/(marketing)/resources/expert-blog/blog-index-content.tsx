@@ -86,6 +86,16 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "18",
+    title: "Amazon Sales Drop in 2026: The Complete Guide",
+    excerpt: "Learn why your Amazon sales might drop and how to recover them in 2026. From product research to sourcing and building a D2C brand.",
+    category: "Seller Tools & Strategy",
+    readTime: "12 min read",
+    image: "/Banner image.png",
+    route: "/resources/expert-blog/amazon-sales-drop",
+    popular: true
+  },
+  {
     id: "17",
     title: "Flipkart Seller Analytics Tool India: The Complete Guide (2026)",
     excerpt: "Learn how to use Flipkart Seller Analytics Tools in India to grow your business, track competitors, and improve your ranking in 2026.",
