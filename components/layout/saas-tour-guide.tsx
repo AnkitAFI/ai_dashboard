@@ -337,7 +337,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     actionInstruction: "Click 'Start Live Guide' below to launch your hands-on tour!",
     placement: "auto",
     successMessage: "Explorer onboarding initiated!",
-    videoPath: "/videos/Insydz Introduction.mp4"
+    // videoPath: "/videos/Insydz Introduction.mp4"
   },
   {
     title: "Workspace Switcher",
@@ -373,7 +373,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     triggerValue: "/dashboard",
     placement: "right",
     successMessage: "Explorer Dashboard loaded successfully!",
-    videoPath: "/videos/Insydz -  Complete Navigation Guide.mp4"
+    // videoPath: "/videos/Insydz -  Complete Navigation Guide.mp4"
   },
   {
     title: "Browse Categories Catalog",
@@ -412,7 +412,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     triggerValue: "/explorer/white-space-finder",
     placement: "right",
     successMessage: "Opportunity Finder loaded successfully!",
-    videoPath: "/videos/Insydz Feature - Opportunity Finder.mp4"
+    // videoPath: "/videos/Insydz Feature - Opportunity Finder.mp4"
   },
   {
     title: "Market Visibility Share",
@@ -425,7 +425,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     triggerValue: "/share-of-voice",
     placement: "right",
     successMessage: "Market Visibility loaded successfully!",
-    videoPath: "/videos/Insydz’s Market Visibility.mp4"
+    // videoPath: "/videos/Insydz’s Market Visibility.mp4"
   },
   {
     title: "Keyword Intelligence Search",
@@ -586,7 +586,7 @@ const SELLER_TOUR_STEPS: TourStep[] = [
     actionInstruction: "Click 'Start Live Guide' below to launch your hands-on tour!",
     placement: "auto",
     successMessage: "Seller onboarding initiated!",
-    videoPath: "/videos/Insydz Introduction.mp4"
+    // videoPath: "/videos/Insydz Introduction.mp4"
   },
   {
     title: "Workspace Switcher",
@@ -611,7 +611,7 @@ const SELLER_TOUR_STEPS: TourStep[] = [
     triggerValue: "/dashboard",
     placement: "right",
     successMessage: "Seller Dashboard loaded successfully!",
-    videoPath: "/videos/Insydz -  Complete Navigation Guide.mp4"
+    // videoPath: "/videos/Insydz -  Complete Navigation Guide.mp4"
   },
   {
     title: "My Store Product Catalog",
@@ -663,7 +663,7 @@ const SELLER_TOUR_STEPS: TourStep[] = [
     triggerValue: "/seller/price-comparison",
     placement: "right",
     successMessage: "Price Comparison loaded successfully!",
-    videoPath: "/videos/Seller-Price-Comparison.mp4"
+    // videoPath: "/videos/Seller-Price-Comparison.mp4"
   },
   {
     title: "Review & Sentiment Matrix",
@@ -676,7 +676,7 @@ const SELLER_TOUR_STEPS: TourStep[] = [
     triggerValue: "/seller/review-comparison",
     placement: "right",
     successMessage: "Review Comparison loaded successfully!",
-    videoPath: "/videos/Insydz Review Comp.mp4"
+    // videoPath: "/videos/Insydz Review Comp.mp4"
   },
   {
     title: "Competitor Keyword Gap Analysis",
@@ -766,7 +766,7 @@ const SELLER_TOUR_STEPS: TourStep[] = [
     triggerValue: "/share-of-voice",
     placement: "right",
     successMessage: "Market Visibility loaded successfully!",
-    videoPath: "/videos/Insydz’s Market Visibility.mp4"
+    // videoPath: "/videos/Insydz’s Market Visibility.mp4"
   },
   {
     title: "WhatsApp Live Alerts Integration",

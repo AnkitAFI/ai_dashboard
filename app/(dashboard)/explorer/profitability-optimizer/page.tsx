@@ -2456,7 +2456,6 @@ export default function ProfitabilityOptimizer() {
             {([
               { id: "calc",     label: "Calculator",   icon: <Calculator className="w-4 h-4" />,  min: "free"    },
               { id: "scenario", label: "Scenarios",    icon: <BarChart3 className="w-4 h-4" />,   min: "premium" },
-              { id: "market",   label: "Market intel", icon: <TrendingUp className="w-4 h-4" />,  min: "premium" },
               { id: "health",   label: "Health",       icon: <Activity className="w-4 h-4" />,    min: "premium" },
               { id: "ai",       label: "AI Advisor",   icon: <Bot className="w-4 h-4" />,         min: "basic"   },
             ] as { id: string; label: string; icon: JSX.Element; min: string }[]).map((tab) => {
