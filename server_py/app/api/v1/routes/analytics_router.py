@@ -125,6 +125,11 @@ def track_behavior_batch(
     user_id = current_user.id if current_user else None
     user_email = current_user.email if current_user else None
 
+    # Skip tracking for the admin account — we don't want to pollute behavior logs with internal usage
+    EXCLUDED_FROM_TRACKING = {"syatharthdelhi@gmail.com"}
+    if user_email in EXCLUDED_FROM_TRACKING:
+        return {"status": "skipped", "count": 0}
+
     events_data = []
     for ev in payload.events:
         event_dict = ev.dict()
