@@ -1,4 +1,4 @@
-"use client";
+​"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
@@ -163,10 +163,17 @@ export default function LandingContent() {
 
               {/* Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 pt-1">
-                <Link href="/login"
+                <Link href="/signup"
                   className="inline-flex justify-center items-center px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-full transition-all shadow-md hover:shadow-purple-500/20 transform hover:-translate-y-0.5"
                 >
                   Start Free. No Card Needed.
+                </Link>
+
+                {/* Mobile-only Login button */}
+                <Link href="/login"
+                  className="sm:hidden inline-flex justify-center items-center px-6 py-3 text-sm font-bold text-purple-700 bg-purple-50 border border-purple-400 hover:bg-purple-100 rounded-full transition-all shadow-sm"
+                >
+                  Login
                 </Link>
               </div>
 
