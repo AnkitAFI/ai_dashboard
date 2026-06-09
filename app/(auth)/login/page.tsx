@@ -757,77 +757,77 @@ export default function Login() {
   //   }
   // };
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setErrorMessage("");
+    e.preventDefault();
+    setErrorMessage("");
 
-  if (!formData.email || !formData.password) {
-    setErrorMessage("Please fill in all required fields.");
-    return;
-  }
-
-  setIsLoading(true);
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/users/login`, {
-      method: "POST",
-      credentials: "include",
-      headers: { 
-        "Content-Type": "application/json", 
-        Accept: "application/json" 
-      },
-      body: JSON.stringify({ 
-        email: formData.email, 
-        password: formData.password, 
-        remember_me: rememberMe 
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      
-      if (response.status === 404) {
-        setErrorMessage("No account found with this email. Please sign up first.");
-      } else if (response.status === 401) {
-        setErrorMessage("Incorrect password. Click 'Forgot Password' to reset.");
-      } else if (response.status === 403) {
-        const detail = errorData.detail || "";
-        if (detail.includes("verify")) {
-          document.cookie = `verify_email=${formData.email}; path=/; max-age=600; SameSite=Strict`;
-          toast({ title: "Email not verified", description: "Please verify your email to continue.", variant: "destructive" });
-          router.push("/verify-email");
-          return;
-        } else {
-          setErrorMessage("Account is deactivated. Please contact support.");
-        }
-      } else {
-        setErrorMessage(errorData.detail || "Login failed. Please try again.");
-      }
+    if (!formData.email || !formData.password) {
+      setErrorMessage("Please fill in all required fields.");
       return;
     }
 
-    // ==================== SUCCESS ====================
-    const data = await response.json();
+    setIsLoading(true);
 
-    toast({ 
-      title: "Welcome back!", 
-      description: "Successfully logged in." 
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/login`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          remember_me: rememberMe
+        }),
+      });
 
-    // Non-blocking refresh (this fixes the delay)
-    refreshUser().catch((err) => {
-      console.warn("Refresh user after login failed (non-critical)", err);
-    });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
 
-    // Redirect immediately
-    router.push("/dashboard");
+        if (response.status === 404) {
+          setErrorMessage("No account found with this email. Please sign up first.");
+        } else if (response.status === 401) {
+          setErrorMessage("Incorrect password. Click 'Forgot Password' to reset.");
+        } else if (response.status === 403) {
+          const detail = errorData.detail || "";
+          if (detail.includes("verify")) {
+            document.cookie = `verify_email=${formData.email}; path=/; max-age=600; SameSite=Strict`;
+            toast({ title: "Email not verified", description: "Please verify your email to continue.", variant: "destructive" });
+            router.push("/verify-email");
+            return;
+          } else {
+            setErrorMessage("Account is deactivated. Please contact support.");
+          }
+        } else {
+          setErrorMessage(errorData.detail || "Login failed. Please try again.");
+        }
+        return;
+      }
 
-  } catch (error: any) {
-    console.error("Login error:", error);
-    setErrorMessage("Network error. Please check your connection and try again.");
-  } finally {
-    setIsLoading(false);     // ← Always reset loading
-  }
-};
+      // ==================== SUCCESS ====================
+      const data = await response.json();
+
+      toast({
+        title: "Welcome back!",
+        description: "Successfully logged in."
+      });
+
+      // Non-blocking refresh (this fixes the delay)
+      refreshUser().catch((err) => {
+        console.warn("Refresh user after login failed (non-critical)", err);
+      });
+
+      // Redirect immediately
+      router.push("/dashboard");
+
+    } catch (error: any) {
+      console.error("Login error:", error);
+      setErrorMessage("Network error. Please check your connection and try again.");
+    } finally {
+      setIsLoading(false);     // ← Always reset loading
+    }
+  };
   const handleRequestOTP = async () => {
     if (!forgotEmail) { toast({ title: "Email required", description: "Please enter your email address", variant: "destructive" }); return; }
     setIsProcessing(true);
@@ -963,8 +963,8 @@ export default function Login() {
             <div className="w-12 h-12 rounded-xl flex items-center justify-center"
               style={{ background: "rgba(170,240,255,0.09)", border: "1px solid rgba(170,240,255,0.22)" }}>
               <Link href="/">
-  <img src="/logo.png" alt="Insydz" className="w-7 h-7 object-contain" />
-</Link>
+                <img src="/logo.png" alt="Insydz" className="w-7 h-7 object-contain" />
+              </Link>
             </div>
             <span className="text-2xl font-bold text-white tracking-tight">Insydz</span>
           </div>
@@ -1003,11 +1003,11 @@ export default function Login() {
 
           {/* Mobile logo */}
           <div className="flex lg:hidden flex-col items-center mb-8">
-  <Link href="/" className="flex flex-col items-center group">
-    <img src="/logo.png" alt="Insydz" className="w-14 h-14 object-contain mb-2 transition-transform group-hover:scale-110" />
-    <span className="text-xl font-bold text-white">Insydz</span>
-  </Link>
-</div>
+            <Link href="/" className="flex flex-col items-center group">
+              <img src="/logo.png" alt="Insydz" className="w-14 h-14 object-contain mb-2 transition-transform group-hover:scale-110" />
+              <span className="text-xl font-bold text-white">Insydz</span>
+            </Link>
+          </div>
 
           {/* Glass card */}
           <div className="rounded-2xl p-8"
