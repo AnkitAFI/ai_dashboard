@@ -86,6 +86,16 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "19",
+    title: "Competitor Undercutting on Amazon India",
+    excerpt: "Learn why your Amazon sales might drop and how to recover them in 2026. From product research to sourcing and building a D2C brand.",
+    category: "Seller Tools & Strategy",
+    readTime: "12 min read",
+    image: "/Banner_competitor-undercutting-amazon-india.png",
+    route: "/resources/expert-blog/competitor-undercutting-amazon-india",
+    popular: true
+  },
+  {
     id: "18",
     title: "Amazon Sales Drop in 2026: The Complete Guide",
     excerpt: "Learn why your Amazon sales might drop and how to recover them in 2026. From product research to sourcing and building a D2C brand.",

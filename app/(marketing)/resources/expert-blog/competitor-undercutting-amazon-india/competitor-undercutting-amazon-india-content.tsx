@@ -3,14 +3,6 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {
-  Search, TrendingUp, Target, DollarSign, BarChart3,
-  MessageCircle, Package, Trophy, Zap, BookOpen,
-  Menu, X, Sun, Moon, ChevronDown, ShoppingBag, Store, Briefcase,
-  Users, Bell, Code, Globe, ArrowLeft, Facebook, Twitter, Linkedin,
-  Instagram, Flame, Presentation, LayoutGrid
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { MarketingHeader } from "@/components/layout/MarketingHeader";
 import { useTheme } from "next-themes";
 
@@ -36,21 +28,21 @@ const schemaPrivateLabel = {
     },
     {
       "@type": "WebPage",
-      "@id": "https://insydz.com/resources/expert-blog/amazon-private-label-india-2026",
-      "url": "https://insydz.com/resources/expert-blog/amazon-private-label-india-2026",
-      "name": "Amazon Private Label Guide India 2026: Everything You Need to Know",
-      "description": "Learn everything about starting an Amazon Private Label business in India for 2026. How to find products, source suppliers, and build a brand.",
+      "@id": "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india",
+      "url": "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india",
+      "name": "Competitor Undercutting Your Amazon India Price",
+      "description": "A competitor cut your Amazon India price by ₹200 and you lost 90% of sales overnight. Here is how to detect undercutting within 1 hour and respond before your listing collapses.",
       "isPartOf": { "@type": "WebSite", "name": "Insydz", "url": "https://insydz.com" },
-      "breadcrumb": { "@id": "https://insydz.com/resources/expert-blog/amazon-private-label-india-2026#breadcrumb" }
+      "breadcrumb": { "@id": "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india#breadcrumb" }
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://insydz.com/resources/expert-blog/amazon-private-label-india-2026#breadcrumb",
+      "@id": "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india#breadcrumb",
       "itemListElement": [
         { "@type": "ListItem", "position": 1, "name": "Home",         "item": "https://insydz.com" },
         { "@type": "ListItem", "position": 2, "name": "Resources",    "item": "https://insydz.com/resources" },
         { "@type": "ListItem", "position": 3, "name": "Expert Blog",  "item": "https://insydz.com/resources/expert-blog" },
-        { "@type": "ListItem", "position": 4, "name": "Amazon India Sales Drop", "item": "https://insydz.com/resources/expert-blog/amazon-private-label-india-2026" }
+        { "@type": "ListItem", "position": 4, "name": "Competitor Undercutting Your Amazon India Price", "item": "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india" }
       ]
     },
     {
@@ -75,52 +67,42 @@ const schemaPrivateLabel = {
 
 // ── TOC ───────────────────────────────────────────────────────────────────────
 
-// ── TOC ───────────────────────────────────────────────────────────────────────
 const TOC = [
-  { id:"guide-covers",             label:"What This Guide Covers" },
-  { id:"what-is-private-label",    label:"The First Question to Ask" },
-  { id:"product-selection",        label:"The 5 Most Common Causes" },
-  { id:"common-pitfalls",          label:"24-Hour Diagnosis Checklist" },
-  { id:"causes-fixes",             label:"Fix for Each Cause" },
-  { id:"temporary-or-structural",  label:"Temporary vs Structural Drop" },
-  { id:"prevent-drops",            label:"How to Prevent It Again" },
-  { id:"faq",                      label:"FAQs" },
+  { id: "guide-covers", label: "Key Takeaways" },
+  { id: "what-is-private-label", label: "Why It Happens Silently" },
+  { id: "product-selection", label: "How to Check Manually" },
+  { id: "common-pitfalls", label: "The Real Cost of Delayed Awareness" },
+  { id: "prevent-drops", label: "Setting Up Real-Time Alerts" },
+  { id: "causes-fixes", label: "How to Respond When the Alert Fires" },
+  { id: "faq", label: "FAQs" },
 ];
 
 // ── FAQ ───────────────────────────────────────────────────────────────────────
 const FAQS = [
   {
-    q: "Why do Amazon India sales drop suddenly with no obvious reason?",
-    a: "The most common hidden causes are Buy Box loss, listing suppression Amazon does not notify you about, and a keyword ranking drop triggered by declining sales velocity. None of these appear as a clear alert in Seller Central — you have to check each one manually or use a tool like Insydz."
+    q: "How do I know if a competitor lowered their price on Amazon India?",
+    a: "The fastest manual check: search your primary keyword on Amazon India in a private browser window and look at the Buy Box price. If it is lower than your price, a competitor has undercut you. For continuous monitoring, Insydz tracks competitor prices and sends an alert within 1 hour of any price change."
   },
   {
-    q: "How do I check if a competitor undercut my price overnight?",
-    a: "Go to your listing on Amazon India as a regular buyer and check who holds the Buy Box. If the price shown is lower than yours, a competitor has undercut you and taken it. Insydz sends price change alerts the same night so you catch this before your sessions fall the following morning."
+    q: "What happens to my listing when I lose the Buy Box?",
+    a: "When you lose the Buy Box, all default traffic goes to the Buy Box holder — buyers who click Buy Now go to the competitor. Your sales velocity drops, Amazon reads this as reduced demand, and keyword rankings begin to fall. The longer the gap, the deeper the damage."
   },
   {
-    q: "Does a ranking drop always cause a sales drop?",
-    a: "Not always. A ranking drop causes a traffic drop — fewer buyers see your listing. But if your conversion rate is also falling, that is a separate problem. Distinguishing between a traffic drop and a conversion drop is the most important first step, because the fix for each is completely different."
+    q: "How fast should I respond to a competitor price drop?",
+    a: "Within 1 hour is the target — Amazon's Buy Box algorithm updates within minutes of a price change. Every hour without it costs measurable sessions and orders. The sellers who win back fastest are those who respond first with a considered decision, not necessarily the lowest price."
   },
   {
-    q: "How long does it take to recover lost Amazon India rankings?",
-    a: "A ranking drop from a temporary sales velocity dip typically recovers in 7 to 21 days if you act quickly on the root cause. Buy Box loss and listing suppression recover faster once fixed, often within 48 to 72 hours. Sustained competitor pressure takes longer and requires a deliberate pricing or listing quality response."
+    q: "Can I get WhatsApp alerts for competitor price changes?",
+    a: "Yes. Insydz sends WhatsApp alerts within 1 hour of a competitor price change on any ASIN you track. WhatsApp outperforms email for Indian sellers because the average seller checks WhatsApp more than 50 times a day. The alert arrives with the old price, the new price, your Buy Box status, and a suggested response."
   },
   {
-    q: "Can a spike in negative reviews alone cause a sales drop?",
-    a: "Yes, but indirectly. A cluster of negative reviews drops your star rating, which lowers conversion rate, which reduces sales velocity, which then causes Amazon to lower your search ranking. This chain typically takes 5 to 14 days to fully play out — which is why review monitoring matters as much as rank tracking."
+    q: "What is a safe price floor to protect my margins?",
+    a: "Your price floor is the minimum price at which you cover COGS, Amazon commission, FBA fees, and a minimum acceptable net margin of 20 to 25 percent. For a ₹799 product with ₹160 COGS and ₹250 in Amazon fees, the floor is approximately ₹513. Set this before monitoring so alerts trigger a considered response."
   },
   {
-    q: "Should I immediately lower my price when sales drop suddenly?",
-    a: "No. Cutting price without knowing the cause often makes things worse. If the cause is a listing suppression, price cuts help nothing. Diagnose first using the checklist in this guide, then act with precision on the actual problem."
+    q: "Is it always right to match a competitor's lower price?",
+    a: "No. Matching is one of three options: match their price to win the Buy Box back, hold your price and protect margin while improving listing quality, or beat them by ₹1 to take the Buy Box decisively. The right choice depends on the gap size, your margin floor, and how strong your listing is relative to theirs."
   },
-  {
-    q: "How do I detect listing suppression on Amazon India?",
-    a: "Search your ASIN on Amazon India in a private browsing window as a regular buyer. If your listing does not appear but is still active in Seller Central, it is suppressed. Open Manage Inventory and look for any yellow or red warning flags — the flag text will tell you the specific reason for the suppression."
-  },
-  {
-    q: "Can Insydz help me monitor and prevent sudden Amazon India sales drops?",
-    a: "Yes. Insydz tracks your keyword rankings daily and sends alerts when a competitor changes price or when your rank drops significantly. Instead of discovering a problem after two days of lost sales, you catch it the same morning it happens and act before the sales velocity drop compounds into a ranking drop."
-  }
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -411,7 +393,7 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
           <span style={{ color: resolvedTheme === 'dark' ? "#475569" : "#cbd5e1" }}>›</span>
           <Link href="/resources/expert-blog" style={{ color: resolvedTheme === 'dark' ? "#cbd5e1" : "#64748B", fontWeight:500, textDecoration:"none" }}>Blog</Link>
           <span style={{ color: resolvedTheme === 'dark' ? "#475569" : "#cbd5e1" }}>›</span>
-          <span style={{ color: resolvedTheme === 'dark' ? "#64748b" : "#94A3B8" }}>Amazon India Sales Drop</span>
+          <span style={{ color: resolvedTheme === 'dark' ? "#64748b" : "#94A3B8" }}>Competitor Undercutting Your Amazon India Price</span>
         </div>
       </div>
 
@@ -433,59 +415,47 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
               color: resolvedTheme === 'dark' ? "#818cf8" : "#6366F1", 
               fontSize:11, fontWeight:800, letterSpacing:0.5, textTransform:"uppercase", padding:"6px 16px", borderRadius:20, marginBottom:20, fontFamily:"'Sora',sans-serif" 
             }}>
-              <span style={{ marginRight: 8, color: "#6366F1" }}>●</span> PRICING PAIN  · EMERGENCY DIAGNOSIS
+              <span style={{ marginRight: 8, color: "#6366F1" }}>●</span> PRICING INTELLIGENCE
             </div>
             
             <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(28px, 4.5vw, 48px)", fontWeight:900, lineHeight:1.1, color: resolvedTheme === 'dark' ? "white" : "#111827", letterSpacing:"-1px", marginBottom:20 }}>
-              Why Did My <span style={{ color: "#6366F1" }}>Amazon India Sales Drop</span> Suddenly? A Step-by-Step Diagnosis Guide
+              How to Know If a <span style={{ color: "#6366F1" }}>Competitor Is < br/>Undercutting</span> our Price on Amazon <br/> India and What to Do About It
             </h1>
             
-            <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap", gap:"8px 16px", marginBottom:32, fontSize: 13, color: resolvedTheme === 'dark' ? "#6b7280" : "#6B7280", fontFamily: "'Sora', sans-serif" }}>
-              <span className="flex items-center gap-1">Insydz Research Team</span>
-              <span>·</span>
-              <span>May 2026</span>
-              <span>·</span>
-              <span>13 min read</span>
-              <span>·</span>
-              <span style={{ background: "#E0E2FF", color: "#6366F1", fontWeight: 700, padding: "2px 10px", borderRadius: 4 }}>MOFU · Competitor Intelligence</span>
-              <span style={{ background: "#DCFCE7", color: "#059669", fontWeight: 700, padding: "2px 10px", borderRadius: 4 }}>Pricing Intelligence</span>
-            </div>
-            
-            <div className="flex flex-wrap gap-4">
-              <Button asChild className="bg-[#6366F1] hover:bg-[#4F46E5] text-white font-bold px-8 py-3 rounded-full shadow-lg transition-all transform hover:scale-105 h-auto">
-                <Link href="/login">Diagnose Your Sales Drop Free →</Link>
-              </Button>
-              <Button asChild variant="outline" className={`font-bold px-8 py-3 rounded-full h-auto transition-colors ${resolvedTheme === 'dark' ? 'bg-gray-800 border-gray-700 text-white hover:bg-gray-700' : 'bg-[#E0E2FF]/50 border-[#C7D2FE] text-[#6366F1] hover:bg-[#E0E2FF]'}`}>
-                <Link href="/pricing">See Plans</Link>
-              </Button>
+            <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20, marginTop:12 }}>
+              <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => router.push("/author/vikrant-singh")}>Vikrant Singh</strong></div>
+              <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>🕐 May 2026</div>
+              <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>📖 <strong>11 min read</strong></div>
+              <span style={{ background:"rgba(244,80,10,.12)", color:"#F4500A", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"3px 10px", borderRadius:20 }}>Updated for 2026</span>
+              <span style={{ background:"rgba(10,191,164,.12)", color:"#0ABFA4", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"3px 10px", borderRadius:20 }}>Competitor Intelligence</span>
             </div>
 
             <div className="mt-12 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-0 bg-white dark:bg-[#1f2937] border border-gray-200 dark:border-gray-800 rounded-lg shadow-sm w-full">
               <div className="p-4 sm:p-5 text-center border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-800">
-                <div className="text-2xl sm:text-3xl font-bold text-[#F97316] mb-1 sm:mb-2">5</div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#F97316] mb-1 sm:mb-2">&lt;1 hr</div>
                 <div className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
-                  most common causes of a sudden Amazon India sales drop<br className="hidden xl:block" /> — only one needs a price cut
+                  target response window — after that, Buy Box loss compounds into a ranking drop
                 </div>
               </div>
               
               <div className="p-4 sm:p-5 text-center border-b md:border-b-0 xl:border-r border-gray-200 dark:border-gray-800">
-                <div className="text-2xl sm:text-3xl font-bold text-[#F97316] mb-1 sm:mb-2">24 hrs</div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#F97316] mb-1 sm:mb-2">Minutes</div>
                 <div className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
-                  to complete a full diagnosis — before the drop compounds<br className="hidden xl:block" /> into a ranking problem
+                  for Amazon's Buy Box algorithm to respond to a competitor's price change
                 </div>
               </div>
               
               <div className="p-4 sm:p-5 text-center border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-800">
-                <div className="text-2xl sm:text-3xl font-bold text-[#F97316] mb-1 sm:mb-2">#1 cause</div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#F97316] mb-1 sm:mb-2">50×/day</div>
                 <div className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
-                  Buy Box loss — the most common reason for an overnight<br className="hidden xl:block" /> sales crash sellers miss
+                  the average Indian seller checks WhatsApp — which is why WhatsApp alerts beat email
                 </div>
               </div>
               
               <div className="p-4 sm:p-5 text-center">
-                <div className="text-2xl sm:text-3xl font-bold text-[#F97316] mb-1 sm:mb-2">2 types</div>
+                <div className="text-2xl sm:text-3xl font-bold text-[#F97316] mb-1 sm:mb-2">₹ 649</div>
                 <div className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 font-medium leading-relaxed">
-                  traffic drop vs conversion drop — completely different<br className="hidden xl:block" /> causes, completely different fixes
+                  revenue lost per hour of Buy Box gap on a ₹799 product at 20 orders/day
                 </div>
               </div>
             </div>
@@ -496,13 +466,13 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
       <div className="my-10" style={{ maxWidth: 1240, margin: "20px auto 0", padding: "0 16px" }}>
         <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
           <img 
-            src="/Banner image.png" 
+            src="/Banner_competitor-undercutting-amazon-india.png" 
             alt="Amazon Sales Drop" 
             className="w-full h-auto block"
           />
         </div>
         <p className="mt-4 text-center text-[13px] text-gray-400 italic font-medium font-sans px-4">
-          Seller Central Business Reports — Sessions dropped from 2,103 to 847 while Order Session % held steady at 14.2%, pointing to a traffic problem not a conversion issue.
+          The 10-hour Buy Box gap — what happens between 11pm when a competitor drops price and 9am when most sellers find out. With Insydz, the alert fires at 11:01pm.
         </p>
       </div>
 
@@ -519,7 +489,7 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
             QUICK ANSWER
           </div>
           <p style={{ margin: 0, fontSize: 16, color: resolvedTheme === 'dark' ? "#d1d5db" : "#4B5563", lineHeight: 1.65, fontFamily: "'Lora', serif" }}>
-            Before you do anything else: check your Buy Box status. Go to your listing on Amazon India as a regular buyer and see who is selling. If it is not you, that is almost certainly the cause. If you are still in the Buy Box, check your sessions in Seller Central Business Reports — sessions down means a traffic problem; sessions stable with orders down means a conversion problem. These two diagnoses need completely different fixes.
+            To know instantly if a competitor undercut you: search your main keyword in a private browser window and check who holds the Buy Box. If it is not you, they already undercut you. To catch this before it costs you hours of sales, use Insydz — it monitors your ASIN's competitor prices continuously and sends a WhatsApp alert within 1 hour of any price change, with the gap amount and your current Buy Box status.
           </p>
         </div>
 
@@ -530,15 +500,16 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
           boxShadow: "0 20px 50px rgba(0,0,0,0.2)"
         }}>
           <h3 style={{ fontSize: 20, fontWeight: 800, color: "white", marginBottom: 28, display: "flex", alignItems: "center", gap: 12, fontFamily: "'Sora', sans-serif" }}>
-            <span style={{ fontSize: 24 }}>📋</span> What This Guide Covers
+            <span style={{ fontSize: 24 }}>📋</span> Key Takeaways
           </h3>
           
           <div className="space-y-6">
             {[
-              "Diagnose a traffic drop vs a conversion rate drop — they need different fixes.",
-              "Check the five most common causes in order, starting with Buy Box loss.",
-              "Apply the right fix for each cause using the Seller Central instructions in this guide.",
-              "Set up monitoring so this never catches you by surprise again."
+              "Amazon's Buy Box algorithm responds within minutes of a competitor price change — not hours. Every hour of delay costs you measurable revenue.",
+              "The seller who wins the Buy Box is not always the cheapest. It is the seller who responds first with a considered pricing decision.",
+              "Manual checking in Seller Central is free but slow — you find out hours after the damage is done.",
+              "Indian sellers check WhatsApp more than 50 times a day. A WhatsApp alert from Insydz arrives faster than you would ever check your email.",
+              "Always set a price floor before you start monitoring. Alerts without a floor lead to blind matching and margin destruction."
             ].map((text, i) => (
               <div key={i} className="flex gap-4">
                 <div style={{ background: "#6366F1", width: 22, height: 22, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>
@@ -616,15 +587,15 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
               borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB",
               margin: "0 0 28px"
             }}>
-              What Is the First Thing You Should Do When Amazon India Sales Drop Suddenly?
+              Why Does Competitor Undercutting Happen Silently on Amazon India?
             </h2>
             
             <p style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.7, marginBottom: "20px", fontFamily: "'Lora', serif" }}>
-              A sudden sales drop is almost always diagnosable. The sellers who recover fastest spend five minutes understanding what type of problem they have before touching anything.
+              Amazon India does not send you a notification when a competitor drops their price below yours. There is no alert in Seller Central, no email, no SMS. The price change happens, the Buy Box switches within minutes, and your orders stop arriving — and you are the last to know.
             </p>
 
             <p style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.7, marginBottom: "32px", fontFamily: "'Lora', serif" }}>
-              Here is the one question that determines everything else you do next:
+              This is not a bug — it is how Amazon's marketplace is designed. Amazon rewards competitive pricing automatically. The platform has no incentive to tell you when you have been undercut; it already redirected the traffic to the cheaper seller.
             </p>
 
             <div className="box box-purple" style={{ 
@@ -634,76 +605,16 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
               boxShadow: resolvedTheme === 'dark' ? "0 4px 20px rgba(0,0,0,0.3)" : "0 10px 30px rgba(139,92,246,0.08)"
             }}>
               <div style={{ fontSize:11, fontWeight:800, color:"#7C3AED", textTransform:"uppercase", letterSpacing:1.2, marginBottom:18, fontFamily:"'Sora',sans-serif", display:"flex", alignItems:"center", gap:8 }}>
-                💡  The Diagnostic Question
+                ⚠️ The Silence Is the Problem
               </div>
               <p style={{ margin:"0 0 16px", fontSize:15.5, color: resolvedTheme === 'dark' ? "#cbd5e1" : "#4B5563", lineHeight:1.75, fontFamily: "'Sora', sans-serif" }}>
-              <strong>Are fewer people finding my listing, or are they finding it and not buying? </strong> These have different causes and completely different fixes.
+                A competitor in Surat listed the same steel tiffin box at ₹649 while yours sat at ₹699 — Amazon switched the Buy Box within 4 minutes, at 11:47pm Tuesday. You found out at 8:30am Wednesday. Eight hours of Buy Box gone, no warning, no way to recover those sales.
               </p>
             </div>
 
             <p style={{ margin:"0 0 16px", fontSize:15.5, color: resolvedTheme === 'dark' ? "#cbd5e1" : "#4B5563", lineHeight:1.75, fontFamily: "'Sora', sans-serif" }}>
-              Open Seller Central → Reports → Business Reports → Detail Page Sales and Traffic by ASIN. Check <strong>Sessions</strong> and <strong>Order Session Percentage</strong>.
-              </p>
-
-            <div className="my-10 grid grid-cols-1 md:grid-cols-2 gap-6 font-sans">
-              
-              {/* Left Box */}
-              <div className="rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20 p-6">
-                <h4 className="text-red-600 dark:text-red-500 font-bold text-[17px] mb-5 flex items-center gap-2">
-                  <span>📉</span> Sessions dropped
-                </h4>
-                <ul className="space-y-4 text-[15px] text-gray-700 dark:text-gray-300">
-                  <li className="flex gap-3 items-start">
-                    <span className="text-red-500 dark:text-red-400 mt-[2px]">→</span>
-                    <span>Fewer people are finding your listing</span>
-                  </li>
-                  <li className="flex gap-3 items-start">
-                    <span className="text-red-500 dark:text-red-400 mt-[2px]">→</span>
-                    <span className="leading-relaxed">Cause: ranking drop, listing suppression or Buy Box loss</span>
-                  </li>
-                  <li className="flex gap-3 items-start">
-                    <span className="text-red-500 dark:text-red-400 mt-[2px]">→</span>
-                    <span>Fix: restore visibility first</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Right Box */}
-              <div className="rounded-xl border border-blue-200 dark:border-blue-900/50 bg-blue-50/50 dark:bg-blue-950/20 p-6">
-                <h4 className="text-blue-600 dark:text-blue-500 font-bold text-[17px] mb-5 flex items-center gap-2">
-                  <span>📊</span> Sessions stable, orders down
-                </h4>
-                <ul className="space-y-4 text-[15px] text-gray-700 dark:text-gray-300">
-                  <li className="flex gap-3 items-start">
-                    <span className="text-blue-500 dark:text-blue-400 mt-[2px]">→</span>
-                    <span>People are finding you but not buying</span>
-                  </li>
-                  <li className="flex gap-3 items-start">
-                    <span className="text-blue-500 dark:text-blue-400 mt-[2px]">→</span>
-                    <span className="leading-relaxed">Cause: price increase, negative reviews, or a better competitor listing</span>
-                  </li>
-                  <li className="flex gap-3 items-start">
-                    <span className="text-blue-500 dark:text-blue-400 mt-[2px]">→</span>
-                    <span>Fix: improve the listing or the review situation</span>
-                  </li>
-                </ul>
-              </div>
-
-            </div>
-
-              <div className="my-10">
-              <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
-                <img 
-                  src="/Banner image.png" 
-                  alt="Amazon Sales Drop" 
-                  className="w-full h-auto block"
-                />
-              </div>
-              <p className="mt-4 text-center text-[13px] text-gray-400 italic font-medium font-sans px-4">
-                Seller Central Business Reports — Sessions dropped from 2,103 to 847 while Order Session Percentage held steady at 14.2%, pointing clearly to a traffic problem rather than a conversion issue.
-              </p>
-              </div>
-              
+              The result is that most Amazon India sellers are reactive by design. They check prices when they remember to, not when it matters. By the time they trace a drop in orders back to a competitor price change, the ranking damage has already started and sessions are already falling.
+            </p>             
 
             <h2 id="product-selection" style={{ 
               fontFamily: "'Sora', sans-serif",
@@ -716,118 +627,47 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
               borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB",
               margin: "40px 0 28px"
             }}>
-              What Are the Most Common Causes of a Sudden Amazon India Sales Drop?
+              How Do You Check Manually If You Are Being Undercut?
             </h2>
             
             <p style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.7, marginBottom: "20px", fontFamily: "'Lora', serif" }}>
-              Most sudden sales drops come down to one of five causes — work through them in this order.
+              You have two manual options. Neither is fast enough to prevent damage, but they are free and they confirm what is happening.
             </p>
-
-            <div className="my-6 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-[#111827] shadow-[0_4px_20px_rgba(0,0,0,0.04)] dark:shadow-none font-sans">
-              
-              {/* Row 1 */}
-              <div className="flex border-b border-gray-100 dark:border-gray-800">
-                <div className="w-[72px] flex-shrink-0 bg-[#E53E3E] flex items-center justify-center text-white font-black text-2xl">
-                  1
-                </div>
-                <div className="flex-1 py-2 px-3 md:py-2 md:px-4 flex flex-col md:flex-row md:items-center justify-between gap-2">
-                  <div className="pr-4">
-                    <h4 className="font-extrabold text-[#111827] dark:text-gray-100 text-[15px]">Buy Box Loss</h4>
-                    <p className="text-[13px] text-gray-500 dark:text-gray-400 leading-tight m-0 mt-0.5">
-                      Another seller has taken the Buy Box. All of Amazon's default traffic goes to the Buy Box holder — if that is not you, your visibility drops to near zero regardless of ranking.
-                    </p>
-                  </div>
-                  <div className="flex-shrink-0">
-                    <span className="inline-block px-3 py-0.5 bg-red-50 dark:bg-red-900/30 text-[#E53E3E] dark:text-red-400 text-[12px] font-bold rounded-full whitespace-nowrap">
-                      Overnight crash
-                    </span>
-                  </div>
-                </div>
+            <p style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.7, marginBottom: "20px", fontFamily: "'Lora', serif" }}>
+              <strong>Method 1: Check the Buy Box directly</strong> <br/>
+              Open Amazon India in a private browser window (so you are not logged in as a seller) and search your main keyword. Find your listing and look at the right side of the product page — specifically who is listed as the seller in the Buy Box. If it is not your seller name, a competitor has undercut you and Amazon has already given them the Buy Box.
+            </p>
+            <p style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.7, marginBottom: "20px", fontFamily: "'Lora', serif" }}>
+              <strong>Method 2: Check in Seller Central</strong> <br/>
+                Go to Manage Inventory in Seller Central and look at the Buy Box percentage column for your ASIN. If it has dropped from near 100% to below 50%, a competitor is sharing or taking the Buy Box. Click the ASIN and go to the pricing tab to see all competing offers ranked by price.
+            </p>
+            <div className="box box-purple" style={{ 
+              background: resolvedTheme === 'dark' ? "#4b421bff" : "#faf1ccff", 
+              borderLeft: "6px solid #ce9907ff",  
+              borderRadius: 20, padding: "32px", margin: "40px 0",
+              boxShadow: resolvedTheme === 'dark' ? "0 4px 20px rgba(0,0,0,0.3)" : "0 10px 30px rgba(139,92,246,0.08)"
+            }}>
+              <div style={{ fontSize:11, fontWeight:800, color:"#e2b22dff", textTransform:"uppercase", letterSpacing:1.2, marginBottom:18, fontFamily:"'Sora',sans-serif", display:"flex", alignItems:"center", gap:8 }}>
+                ⚠️ Why Manual Checking Is Not Enough
               </div>
-
-              {/* Row 2 */}
-              <div className="flex border-b border-gray-100 dark:border-gray-800">
-                <div className="w-[72px] flex-shrink-0 bg-[#DD6B20] flex items-center justify-center text-white font-black text-2xl">
-                  2
-                </div>
-                <div className="flex-1 py-2 px-3 md:py-2 md:px-4 flex flex-col md:flex-row md:items-center justify-between gap-2">
-                  <div className="pr-4">
-                    <h4 className="font-extrabold text-[#111827] dark:text-gray-100 text-[15px]">Keyword Ranking Drop</h4>
-                    <p className="text-[13px] text-gray-500 dark:text-gray-400 leading-tight m-0 mt-0.5">
-                      Your product slipped below page 1 on one or more important keywords. Amazon's algorithm may have responded to a sales velocity dip, a listing change, or a competitor gaining ground.
-                    </p>
-                  </div>
-                  <div className="flex-shrink-0">
-                    <span className="inline-block px-3 py-0.5 bg-orange-50 dark:bg-orange-900/30 text-[#DD6B20] dark:text-orange-400 text-[12px] font-bold rounded-full whitespace-nowrap">
-                      Gradual then sudden
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Row 3 */}
-              <div className="flex border-b border-gray-100 dark:border-gray-800">
-                <div className="w-[72px] flex-shrink-0 bg-[#D69E2E] flex items-center justify-center text-white font-black text-2xl">
-                  3
-                </div>
-                <div className="flex-1 py-2 px-3 md:py-2 md:px-4 flex flex-col md:flex-row md:items-center justify-between gap-2">
-                  <div className="pr-4">
-                    <h4 className="font-extrabold text-[#111827] dark:text-gray-100 text-[15px]">Listing Suppression</h4>
-                    <p className="text-[13px] text-gray-500 dark:text-gray-400 leading-tight m-0 mt-0.5">
-                      Amazon has hidden your listing from search results due to a pricing violation, incomplete attributes, or a compliance flag. The listing is still active in Seller Central but buyers cannot find it.
-                    </p>
-                  </div>
-                  <div className="flex-shrink-0">
-                    <span className="inline-block px-3 py-0.5 bg-yellow-50 dark:bg-yellow-900/30 text-[#D69E2E] dark:text-yellow-400 text-[12px] font-bold rounded-full whitespace-nowrap">
-                      Often invisible
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Row 4 */}
-              <div className="flex border-b border-gray-100 dark:border-gray-800">
-                <div className="w-[72px] flex-shrink-0 bg-[#38A169] flex items-center justify-center text-white font-black text-2xl">
-                  4
-                </div>
-                <div className="flex-1 py-2 px-3 md:py-2 md:px-4 flex flex-col md:flex-row md:items-center justify-between gap-2">
-                  <div className="pr-4">
-                    <h4 className="font-extrabold text-[#111827] dark:text-gray-100 text-[15px]">Competitor Price Undercut</h4>
-                    <p className="text-[13px] text-gray-500 dark:text-gray-400 leading-tight m-0 mt-0.5">
-                      A competitor dropped their price overnight. If they took the Buy Box, that is cause 1. Even if you held it, price sensitive buyers may be choosing them in search results where both listings appear.
-                    </p>
-                  </div>
-                  <div className="flex-shrink-0">
-                    <span className="inline-block px-3 py-0.5 bg-green-50 dark:bg-green-900/30 text-[#38A169] dark:text-green-400 text-[12px] font-bold rounded-full whitespace-nowrap">
-                      Fixable fast
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Row 5 */}
-              <div className="flex">
-                <div className="w-[72px] flex-shrink-0 bg-[#3182CE] flex items-center justify-center text-white font-black text-2xl">
-                  5
-                </div>
-                <div className="flex-1 py-2 px-3 md:py-2 md:px-4 flex flex-col md:flex-row md:items-center justify-between gap-2">
-                  <div className="pr-4">
-                    <h4 className="font-extrabold text-[#111827] dark:text-gray-100 text-[15px]">Seasonal or External Shift</h4>
-                    <p className="text-[13px] text-gray-500 dark:text-gray-400 leading-tight m-0 mt-0.5">
-                      A sale event ended, a competitor restocked, or category demand shifted. This usually affects multiple ASINs simultaneously rather than isolating to one product.
-                    </p>
-                  </div>
-                  <div className="flex-shrink-0">
-                    <span className="inline-block px-3 py-0.5 bg-blue-50 dark:bg-blue-900/30 text-[#3182CE] dark:text-blue-400 text-[12px] font-bold rounded-full whitespace-nowrap">
-                      Check category
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
+              <p style={{ margin:"0 0 16px", fontSize:15.5, color: resolvedTheme === 'dark' ? "#cbd5e1" : "#4B5563", lineHeight:1.75, fontFamily: "'Sora', sans-serif" }}>
+                Even if you check every morning, you have a 10 to 12 hour overnight blind spot. And checking 10 or more ASINs manually each morning is 30 to 45 minutes of work before you have done anything else. At scale, manual checking is not a strategy — it is a hope.
+              </p>
             </div>
 
-            {/* 5 Diagnostic Steps UI */}
+            <div className="my-10">
+              <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
+                <img 
+                  src="/image1_competitor-undercutting-amazon-india.png" 
+                  alt="Amazon Sales Drop" 
+                  className="w-full h-auto block"
+                />
+              </div>
+              <p className="mt-4 text-center text-[13px] text-gray-400 italic font-medium font-sans px-4">
+                The Buy Box cascade Amazon's algorithm switches within 4 minutes of a competitor price drop, triggering a chain of ranking and revenue damage that compounds every hour without a response.
+              </p>
+              </div>
+
             <div className="space-y-3 mb-8 font-sans">
               <h2 id="common-pitfalls" style={{ 
               fontFamily: "'Sora', sans-serif",
@@ -840,275 +680,52 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
               borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB",
               margin: "40px 0 28px"
             }}>
-              How Do You Diagnose a Sudden Amazon India Sales Drop in 24 Hours?
+              What Does It Actually Cost You to Find Out 10 Hours Late?
             </h2>
             <p className="text-[13px] text-gray-500 dark:text-gray-400 leading-tight m-0 mt-0.5">
-              Work through these in order — each step confirms or rules out a cause and points to the next. Most sellers find the answer by step 3.
+              The cost of delayed awareness is not hypothetical. You can calculate it precisely, and the number is large enough to justify automated monitoring many times over.
             </p>
-              {[ 
-                {
-                  num: 1,
-                  title: "Check Sessions vs Order Session Percentage in Business Reports",
-                  time: "5 min",
-                  text: "Reports → Business Reports → Detail Page Sales and Traffic by ASIN. Is Sessions down, or stable while orders fell?",
-                  alertLabel: "WHAT IT TELLS YOU",
-                  alertText: "Sessions down = traffic problem. Stable sessions, orders down = conversion problem. The fix is completely different for each."
-                },
-                {
-                  num: 2,
-                  title: "Check Your Buy Box Status as a Real Buyer",
-                  time: "3 min",
-                  text: "Search for your product on Amazon India in a private browser window and look at who is listed as the seller on the right side. If it is not you, you have lost the Buy Box — Manage Inventory in Seller Central will confirm with a near zero Buy Box percentage.",
-                  alertLabel: "IMMEDIATE FIX",
-                  alertText: "Check your price vs the current Buy Box price. If a competitor is below you, assess whether matching makes sense. Verify they are a legitimate seller first — fake reseller offers do not deserve a price cut."
-                },
-                {
-                  num: 3,
-                  title: "Check for Listing Suppression",
-                  time: "5 min",
-                  text: "Search your ASIN in a private browsing window. Suppressed listings sometimes show to the seller but not to buyers. In Seller Central, check Manage Inventory for any yellow or red icons — click the warning to see the exact reason.",
-                  alertLabel: "IMMEDIATE FIX",
-                  alertText: "Click the warning icon to read the specific reason — usually a pricing violation, missing attribute, or image issue. Fix it and request a listing review via Seller Support."
-                },
-                {
-                  num: 4,
-                  title: "Check Your Keyword Rankings",
-                  time: "10 min",
-                  text: [
-                    "In Insydz, check rank history for your top keywords. Any drop in the last 48 to 72 hours? Ranking drops typically appear in Sessions data one to two days after they happen.",
-                    "If you are not tracking keywords yet, search your main keyword on Amazon India and see where you appear. Position 18 or beyond when you used to be in the top 5 is your answer."
-                  ],
-                  alertLabel: "IMMEDIATE FIX",
-                  alertText: "Increase Sponsored Products bids to maintain traffic while organic rank recovers."
-                },
-                {
-                  num: 5,
-                  title: "Check Competitor Prices in Your Category",
-                  time: "5 min",
-                  text: "Search your main keyword on Amazon India and check the current prices of the top 5 listings. Insydz shows competitor price change history so you can see this at a glance.",
-                  alertLabel: "IMMEDIATE FIX",
-                  alertText: "If they took your Buy Box, you caught that in step 2. If you still hold it, assess whether the gap is large enough to divert buyers. A ₹30 gap on a ₹499 product matters; on ₹1,999, it usually does not."
-                }
-              ].map((step, idx) => (
-                <div 
-                  key={idx} 
-                  className="rounded-xl border border-gray-100 dark:border-gray-800/80 bg-white dark:bg-[#111827] shadow-[0_2px_10px_rgba(0,0,0,0.01)] dark:shadow-none overflow-hidden"
-                >
-                  {/* Card Header */}
-                  <div className="flex items-center justify-between px-4 py-1.5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/40 dark:bg-gray-900/20">
-                    <div className="flex items-center gap-2.5">
-                      <span className="w-6 h-6 flex-shrink-0 bg-[#F97316] text-white font-black text-[11px] flex items-center justify-center rounded-full">
-                        {step.num}
-                      </span>
-                      <h3 className="font-extrabold text-[14px] text-[#0A0F1A] dark:text-gray-100 leading-tight !m-0">
-                        {step.title}
-                      </h3>
-                    </div>
-                    <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400 dark:text-gray-500 whitespace-nowrap">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3 h-3">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                      </svg>
-                      {step.time}
-                    </div>
-                  </div>
-
-                  {/* Card Body */}
-                  <div className="px-4 pt-2 pb-3 flex flex-col gap-2.5">
-                    <div className="text-[13.5px] text-gray-600 dark:text-gray-300 leading-normal font-normal">
-                      {Array.isArray(step.text) ? (
-                        <div className="flex flex-col gap-1.5">
-                          {step.text.map((para, pIdx) => (
-                            <p key={pIdx}>{para}</p>
-                          ))}
-                        </div>
-                      ) : (
-                        <p>{step.text}</p>
-                      )}
-                    </div>
-
-                    {/* Alert Box */}
-                    <div className="py-2.5 px-3 rounded-lg border-l-4 border-[#F97316] bg-[#FFFBEB] dark:bg-[#2d1b10]/40 flex flex-col gap-0.5">
-                      <span className="text-[9.5px] font-black tracking-wider text-[#D97706] dark:text-amber-500 uppercase">
-                        {step.alertLabel}
-                      </span>
-                      <p className="text-[12.5px] text-[#78350F] dark:text-amber-200/90 leading-normal font-medium">
-                        {step.alertText}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="my-10">
-              <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
-                <img 
-                  src="/image2 1.png" 
-                  alt="Amazon Sales Drop" 
-                  className="w-full h-auto block"
-                />
-              </div>
-              <p className="mt-4 text-center text-[13px] text-gray-400 italic font-medium font-sans px-4">
-                Insydz competitor price alert — a ₹49 drop at 11:08 PM with a suggested response, before sessions fell the following morning.
-              </p>
-              </div>
-
-            <h2 id="causes-fixes" style={{ 
-              fontFamily: "'Sora', sans-serif",
-              fontSize: "clamp(22px, 3vw, 28px)", 
-              fontWeight: 900, 
-              color: resolvedTheme === 'dark' ? "#f9fafb" : "#0A0F1A", 
-              lineHeight: 1.2,
-              letterSpacing: "-0.5px",
-              paddingBottom: "16px",
-              borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB",
-              margin: "40px 0 28px"
-            }}>
-              What Does Each Cause Look Like and What Is the Right Fix?
-            </h2>
-
-            <div className="tbl-wrap" style={{ 
-              marginBottom: 48, 
-              background: resolvedTheme === 'dark' ? "#111827" : "#fff",
-              borderRadius: 16,
-              overflow: "hidden",
-              border: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB"
-            }}>
-              <table className="dt" style={{ width: "100%", minWidth: "800px", borderCollapse: "collapse", textAlign: "left" }}>
-                <thead style={{ background: resolvedTheme === 'dark' ? "#1e293b" : "#0F172A", color: "white" }}>
-                  <tr>
-                    <th style={{ padding: "16px 20px", fontSize: 13, fontFamily: "'Sora', sans-serif" }}>Cause</th>
-                    <th style={{ padding: "16px 20px", fontSize: 13, fontFamily: "'Sora', sans-serif" }}>What it looks like in Seller Central</th>
-                    <th style={{ padding: "16px 20px", fontSize: 13, fontFamily: "'Sora', sans-serif" }}>Immediate fix</th>
-                    <th style={{ padding: "16px 20px", fontSize: 13, fontFamily: "'Sora', sans-serif", textAlign: "center" }}>Time to recover</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {[
-                    { cause: "Buy Box loss", look: "Sessions down sharply. Buy Box % near zero.", fix: "Match or undercut their price if margins allow. Verify they are a legitimate seller first.", time: "24–48 hours", timeColor: "green", alert: true },
-                    { cause: "Keyword ranking drop", look: "Sessions fell gradually. Rank moved from page 1 to page 2+", fix: "Increase Sponsored Products bids on top keywords temporarily. Do not change listing copy during a traffic crisis.", time: "7–21 days", timeColor: "yellow", alert: false },
-                    { cause: "Listing suppression", look: "Sessions near zero. Listing invisible in search. Warning flag in Manage Inventory.", fix: "Fix the flagged issue and request a listing review in Seller Support.", time: "48–72 hours", timeColor: "green", alert: true },
-                    { cause: "Competitor price undercut", look: "Sessions stable, Order Session % down. Competitor is cheaper in search results.", fix: "Match price or hold. If holding, strengthen listing quality to justify the gap.", time: "Depends on response", timeColor: "yellow", alert: false },
-                    { cause: "Negative review spike", look: "Sessions stable, Order Session % declining. Star rating dropped recently.", fix: "Respond publicly to recent negative reviews and brief your supplier on any defect. Amazon Vine can help rebuild review balance.", time: "5–14 days minimum", timeColor: "red", alert: true },
-                    { cause: "Seasonal or external shift", look: "Multiple ASINs affected. Sales dropped across the full category.", fix: "If the drop is category wide and follows a sale event, it is normal. Hold pricing — do not chase demand that has genuinely left the market.", time: "Depends on season", timeColor: "blue", alert: false }
-                  ].map((row, i) => {
-                    let timeBg = "", timeText = "";
-                    if (row.timeColor === "green") { timeBg = resolvedTheme === 'dark' ? "#064e3b" : "#dcfce7"; timeText = resolvedTheme === 'dark' ? "#34d399" : "#059669"; }
-                    else if (row.timeColor === "yellow") { timeBg = resolvedTheme === 'dark' ? "#422006" : "#fef3c7"; timeText = resolvedTheme === 'dark' ? "#fbbf24" : "#b45309"; }
-                    else if (row.timeColor === "red") { timeBg = resolvedTheme === 'dark' ? "#450a0a" : "#fee2e2"; timeText = resolvedTheme === 'dark' ? "#f87171" : "#b91c1c"; }
-                    else if (row.timeColor === "blue") { timeBg = resolvedTheme === 'dark' ? "#1e3a8a" : "#dbeafe"; timeText = resolvedTheme === 'dark' ? "#60a5fa" : "#1d4ed8"; }
-
-                    return (
-                      <tr key={i} style={{ 
-                        background: i % 2 === 0 ? (resolvedTheme === 'dark' ? "transparent" : "#fff") : (resolvedTheme === 'dark' ? "#1e293b50" : "#F8FAFC"),
-                        borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #F1F5F9"
-                      }}>
-                        <td style={{ 
-                          padding: "18px 20px", 
-                          fontWeight: 700, 
-                          color: row.alert ? "#F97316" : (resolvedTheme === 'dark' ? "#f9fafb" : "#4B5563"), 
-                          fontSize: 14, 
-                          fontFamily: "'Sora', sans-serif",
-                          borderLeft: row.alert ? "3px solid #F97316" : "3px solid transparent"
-                        }}>
-                          {row.cause}
-                        </td>
-                        <td style={{ padding: "18px 20px", color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: 14, lineHeight: 1.6, fontFamily: "'Sora', sans-serif", width: "30%" }}>{row.look}</td>
-                        <td style={{ padding: "18px 20px", color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: 14, lineHeight: 1.6, fontFamily: "'Sora', sans-serif", width: "40%" }}>{row.fix}</td>
-                        <td style={{ padding: "18px 20px", textAlign: "center" }}>
-                          <span style={{ 
-                            background: timeBg, 
-                            color: timeText,
-                            padding: "6px 12px", borderRadius: 16, fontSize: 12, fontWeight: 700,
-                            whiteSpace: "nowrap"
-                          }}>
-                            {row.time}
-                          </span>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="box box-red" style={{ 
-              background: resolvedTheme === 'dark' ? "#450a0a20" : "#FFF5F5", 
-              borderLeft: "4px solid #EF4444", 
-              borderRadius: 8, padding: "24px 32px", margin: "48px 0",
-            }}>
-              <div style={{ fontSize:11, fontWeight:800, color:"#EF4444", textTransform:"uppercase", letterSpacing:1.2, marginBottom:16, fontFamily:"'Sora',sans-serif", display:"flex", alignItems:"center", gap:8 }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
-                THE MISTAKE THAT MAKES EVERY SITUATION WORSE
-              </div>
-              <p style={{ margin:0, fontSize:15.5, color: resolvedTheme === 'dark' ? "#cbd5e1" : "#4B5563", lineHeight:1.75, fontFamily: "'Lora', serif" }}>
-                <strong style={{ color: resolvedTheme === 'dark' ? "#f9fafb" : "#111827" }}>Do not reprice before you know the cause.</strong> If your listing is suppressed, a price cut will not help — suppressed listings are invisible regardless of price. Diagnose first, then act with precision on the actual problem.
-              </p>
-            </div>
-
-            <h2 id="temporary-or-structural" style={{ 
-              fontFamily: "'Sora', sans-serif",
-              fontSize: "clamp(22px, 3vw, 28px)", 
-              fontWeight: 900, 
-              color: resolvedTheme === 'dark' ? "#f9fafb" : "#0A0F1A", 
-              lineHeight: 1.2,
-              letterSpacing: "-0.5px",
-              paddingBottom: "16px",
-              borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB",
-              margin: "48px 0 24px"
-            }}>
-              How Do You Know If a Sales Drop Is Temporary or a Structural Problem?
-            </h2>
             
-            <p style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.7, marginBottom: "32px", fontFamily: "'Lora', serif" }}>
-              Not every drop needs intervention. Some resolve within 48 hours — the question is whether yours is a fluctuation or something structural.
-            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-8 font-sans">
+                <div className="rounded-xl border border-[#F9C8C8] dark:border-red-900/50 bg-[#FEF4F4] dark:bg-red-950/20 p-6 flex flex-col items-center text-center">
+                    <div className="text-[32px] md:text-[38px] font-black text-[#CC292B] dark:text-red-500 mb-2" style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-1px" }}>₹649</div>
+                    <div className="text-[14px] text-[#546E7A] dark:text-gray-400 leading-snug">
+                        lost revenue per hour on a ₹799 ASIN at 20 orders/day with no Buy Box
+                    </div>
+                </div>
 
-            <div className="my-10">
-              <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
-                <img 
-                  src="/image3 1.png" 
-                  alt="Amazon Sales Drop" 
-                  className="w-full h-auto block"
-                />
-              </div>
-              <p className="mt-4 text-center text-[13px] text-gray-400 italic font-medium font-sans px-4">
-                Insydz 7 day timeline — the competitor's restock on Day -3 triggered a ranking drop, then a session decline, then the order crash on Day 0. Daily monitoring gave a 48 hour head start.
-              </p>
+                <div className="rounded-xl border border-[#FDE38C] dark:border-amber-900/50 bg-[#FFF9E6] dark:bg-amber-950/20 p-6 flex flex-col items-center text-center">
+                    <div className="text-[32px] md:text-[38px] font-black text-[#E67E22] dark:text-amber-500 mb-2" style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-1px" }}>₹6,490</div>
+                    <div className="text-[14px] text-[#546E7A] dark:text-gray-400 leading-snug">
+                        lost in a 10-hour overnight gap — before you even open Seller Central in the morning
+                    </div>
+                </div>
+
+                <div className="rounded-xl border border-[#BBE5C7] dark:border-emerald-900/50 bg-[#F1FAF4] dark:bg-emerald-950/20 p-6 flex flex-col items-center text-center">
+                    <div className="text-[32px] md:text-[38px] font-black text-[#1B9945] dark:text-emerald-500 mb-2" style={{ fontFamily: "'Sora', sans-serif", letterSpacing: "-1px" }}>₹2,499</div>
+                    <div className="text-[14px] text-[#546E7A] dark:text-gray-400 leading-snug">
+                        monthly cost of Insydz — less than the revenue lost in 4 hours without an alert
+                    </div>
+                </div>
             </div>
 
-            <div className="mb-10 font-sans">
-              <p style={{ color: resolvedTheme === 'dark' ? "#cbd5e1" : "#1E293B", fontSize: "16px", marginBottom: "16px", fontFamily: "'Sora', sans-serif" }}>
-                Signs the drop is likely temporary:
-              </p>
-              <ul className="space-y-4 mb-8 ml-2" style={{ listStyle: "none", padding: 0 }}>
-                {[
-                  "Multiple ASINs affected simultaneously, or a major sale event just ended",
-                  "Your ranking and Buy Box status are unchanged",
-                  "The drop is 20% or less and has not continued past 48 hours"
-                ].map((item, i) => (
-                  <li key={i} className="flex gap-4 items-start">
-                    <span className="w-[6px] h-[6px] rounded-full bg-[#F97316] mt-[10px] flex-shrink-0"></span>
-                    <span style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.6, fontFamily: "'Sora', sans-serif" }}>{item}</span>
-                  </li>
-                ))}
-              </ul>
+            <p className="text-[13px] text-gray-500 dark:text-gray-400 leading-tight m-0 mt-0.5">
+                That ₹6,490 overnight figure assumes 20 orders a day at ₹799 — which is a conservative number for any seller doing ₹5L to ₹30L a month. For a seller with 50 orders a day, the overnight gap is closer to ₹16,000. And that does not account for the ranking damage that takes days to repair after a prolonged Buy Box absence.
+            </p>
+            </div>
 
-              <p style={{ color: resolvedTheme === 'dark' ? "#cbd5e1" : "#1E293B", fontSize: "16px", marginBottom: "16px", fontFamily: "'Sora', sans-serif" }}>
-                Signs of a structural problem that needs active intervention:
+            <div className="box box-purple" style={{ 
+              background: resolvedTheme === 'dark' ? "#4b421bff" : "#f7f2cdff", 
+              borderLeft: "6px solid #ce9907ff",  
+              borderRadius: 20, padding: "32px", margin: "40px 0",
+              boxShadow: resolvedTheme === 'dark' ? "0 4px 20px rgba(0,0,0,0.3)" : "0 10px 30px rgba(139,92,246,0.08)"
+            }}>
+              <div style={{ fontSize:11, fontWeight:800, color:"#e2b22dff", textTransform:"uppercase", letterSpacing:1.2, marginBottom:18, fontFamily:"'Sora',sans-serif", display:"flex", alignItems:"center", gap:8 }}>
+                💡 The Real Cost Is Not Just Lost Revenue
+              </div>
+              <p style={{ margin:"0 0 16px", fontSize:15.5, color: resolvedTheme === 'dark' ? "#cbd5e1" : "#4B5563", lineHeight:1.75, fontFamily: "'Sora', sans-serif" }}>
+                  Every hour without the Buy Box reduces your sales velocity, and Amazon interprets lower velocity as lower demand. This pushes keyword rankings down — usually within 6 to 12 hours of sustained Buy Box absence. The overnight undercut that cost ₹6,490 in direct revenue can cost another ₹10,000 to ₹15,000 in Sponsored Products spend to repair the ranking damage.
               </p>
-              <ul className="space-y-4 ml-2" style={{ listStyle: "none", padding: 0 }}>
-                {[
-                  "Drop is 40% or more and has lasted over 24 hours",
-                  "Only one ASIN is affected while the rest of your account is normal",
-                  "Buy Box percentage has changed, or you cannot find your listing on page 1"
-                ].map((item, i) => (
-                  <li key={i} className="flex gap-4 items-start">
-                    <span className="w-[6px] h-[6px] rounded-full bg-[#F97316] mt-[10px] flex-shrink-0"></span>
-                    <span style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.6, fontFamily: "'Sora', sans-serif" }}>{item}</span>
-                  </li>
-                ))}
-              </ul>
             </div>
 
             <h2 id="prevent-drops" style={{ 
@@ -1122,20 +739,20 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
               borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB",
               margin: "48px 0 24px"
             }}>
-              How Do You Prevent Sudden Amazon India Sales Drops From Happening Again?
+              How Do You Set Up Real-Time Competitor Price Alerts for Amazon India?
             </h2>
 
             <p style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.7, marginBottom: "32px", fontFamily: "'Lora', serif" }}>
-              The sellers who get hit hardest find out too late — by the time order count drops, the ranking damage has already compounded. Monitoring catches the signal before the symptom.
+                The only way to catch a price undercut before it costs you hours of Buy Box is automated monitoring with an instant alert. Here is how to set it up correctly.
             </p>
 
             <div className="space-y-4 mb-10">
               {[
-                { n:1, t:"Set up daily keyword rank tracking", d:"A move from position 5 to 14 typically arrives 24 to 48 hours before the session drop — Insydz tracks this daily." },
-                { n:2, t:"Turn on competitor price alerts", d:"Insydz sends an alert the same night a competitor drops price — you wake up knowing rather than spending two hours figuring out why." },
-                { n:3, t:"Check Seller Central Business Reports weekly, not monthly", d:"Check Sessions and Order Session Percentage across your top 5 ASINs every Monday. Weekly, trends are easy to catch. Monthly, they are already costly." },
-                { n:4, t:"Monitor your review velocity", d:"A rating drop from 4.3 to 4.0 stars is a slow moving early warning. Catch a review cluster in the first week and you can respond publicly before it hits conversion rate." },
-                { n:5, t:"Never run inventory to zero without a restock plan", d:"Amazon quietly reduces visibility when inventory falls critically low. Keep at least 15 days of FBA cover on active ASINs." },
+                { n:1, t:"Connect your ASINs to Insydz", d:"Add each active ASIN to your Insydz tracking dashboard. Insydz pulls all competitor offers for each ASIN automatically — no manual competitor selection needed." },
+                { n:2, t:"Set your alert threshold per ASIN", d:"Choose the gap that triggers an alert. A ₹20 gap on a ₹399 product (5%) matters — a ₹20 gap on a ₹1,999 product (1%) usually does not. Set thresholds that match your category's price sensitivity rather than a blanket number across all ASINs." },
+                { n:3, t:"Enable WhatsApp alerts", d:"In Insydz notification settings, connect your WhatsApp number. Every alert arrives with the competitor's old price, their new price, your current price, the gap in rupees, and your current Buy Box percentage — everything you need to make a decision in under a minute." },
+                { n:4, t:"Set your price floor before the first alert fires", d:"Decide the minimum price at which you still make an acceptable margin — typically 20 to 25 percent net after COGS, Amazon commission, FBA fees, and ad spend. Write this number down for each ASIN. When an alert arrives, you already know your answer before you check the gap." },
+                { n:5, t:"Test with one ASIN first", d:"Run it for one week on your highest volume ASIN. See how many alerts you get, whether the thresholds are calibrated right, and how fast you can respond from the WhatsApp message. Then expand to all active ASINs." },
               ].map((s, i) => (
                 <div key={i} style={{ 
                   background: resolvedTheme === 'dark' ? "#111827" : "white", 
@@ -1157,29 +774,654 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
               ))}
             </div>
 
-            <div style={{ 
-              background: "#0F172A", 
-              borderRadius: 16, padding: "32px 40px", marginBottom: "48px",
-              display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 24
-            }}>
-              <div style={{ flex: "1 1 400px" }}>
-                <h4 style={{ color: "white", fontSize: 20, fontWeight: 800, margin: "0 0 8px", fontFamily: "'Sora', sans-serif" }}>
-                  Insydz detects competitor price drops and ranking changes in real time
-                </h4>
-                <p style={{ color: "#94a3b8", fontSize: 15, margin: 0, lineHeight: 1.6 }}>
-                  Check your listing free — see if there is a problem you have not noticed yet.
-                </p>
+            <div style={{ background:"#0A1524", borderRadius:12, padding:"clamp(24px,5vw,32px)", display:"flex", alignItems:"center", justifyContent:"space-between", gap:24, flexWrap:"wrap", marginBottom:40 }}>
+              <div style={{ flex:1, minWidth:280 }}>
+                <h3 style={{ color:"white", fontSize:"clamp(18px,3vw,22px)", fontWeight:800, marginBottom:12, fontFamily:"'Sora',sans-serif", border:"none", padding:0 }}>Insydz sends a WhatsApp alert within 1 hour of any competitor price drop</h3>
+                <p style={{ color:"#94A3B8", fontSize:15, margin:0, lineHeight:1.6 }}>Try it free — connect your first ASIN and set your first alert in under 5 minutes.</p>
               </div>
-              <button style={{ 
-                background: "#F97316", color: "white", border: "none", padding: "14px 28px", 
-                borderRadius: 8, fontSize: 15, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap",
-                fontFamily: "'Sora', sans-serif", display: "flex", alignItems: "center", gap: 8, transition: "background 0.2s"
+              <Link href="/login" style={{ background:"#F4500A", color:"white", padding:"12px 24px", borderRadius:8, fontWeight:700, fontSize:14, whiteSpace:"nowrap", textDecoration:"none", fontFamily:"'Sora',sans-serif" }} className="sm:w-auto w-full text-center">Try Free on Insydz →</Link>
+            </div>
+
+            <h2 id="causes-fixes" style={{ 
+              fontFamily: "'Sora', sans-serif",
+              fontSize: "clamp(22px, 3vw, 28px)", 
+              fontWeight: 900, 
+              color: resolvedTheme === 'dark' ? "#f9fafb" : "#0A0F1A", 
+              lineHeight: 1.2,
+              letterSpacing: "-0.5px",
+              paddingBottom: "16px",
+              borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB",
+              margin: "40px 0 28px"
+            }}>
+              When You Get the Alert — How Should You Respond?
+            </h2>
+
+            <p style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.7, marginBottom: "32px", fontFamily: "'Lora', serif" }}>
+                Speed matters, but the response has to be considered. The sellers who win the Buy Box back fastest are not the ones who immediately match price — they are the ones who already know their price floor and can make the decision in under a minute.
+            </p>
+
+              <div
+  className="tbl-wrap"
+  style={{
+    marginBottom: 48,
+    background: resolvedTheme === "dark" ? "#111827" : "#fff",
+    borderRadius: 16,
+    overflowX: "auto" as const,
+    overflowY: "hidden" as const,
+    border:
+      resolvedTheme === "dark"
+        ? "1px solid #1f2937"
+        : "1px solid #E5E7EB",
+  }}
+>
+  <table
+    className="dt"
+    style={{
+      width: "100%",
+      minWidth: "820px",
+      borderCollapse: "collapse",
+      textAlign: "left",
+    }}
+  >
+    <thead
+      style={{
+        background: resolvedTheme === "dark" ? "#1e293b" : "#0F172A",
+        color: "white",
+      }}
+    >
+      <tr>
+        <th
+          style={{
+            padding: "18px 20px",
+            fontSize: 13,
+            fontFamily: "'Sora', sans-serif",
+          }}
+        >
+          Scenario
+        </th>
+        <th
+          style={{
+            padding: "18px 20px",
+            fontSize: 13,
+            fontFamily: "'Sora', sans-serif",
+          }}
+        >
+          Gap Size
+        </th>
+        <th
+          style={{
+            padding: "18px 20px",
+            fontSize: 13,
+            fontFamily: "'Sora', sans-serif",
+          }}
+        >
+          Your Margin Floor
+        </th>
+        <th
+          style={{
+            padding: "18px 20px",
+            fontSize: 13,
+            fontFamily: "'Sora', sans-serif",
+          }}
+        >
+          Right Response
+        </th>
+        <th
+          style={{
+            padding: "18px 20px",
+            fontSize: 13,
+            textAlign: "center",
+            fontFamily: "'Sora', sans-serif",
+          }}
+        >
+          Time to Act
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {[
+        {
+          scenario: "Competitor drops ₹30 below you",
+          gap: "₹30 (small)",
+          floor: "Matching still above floor",
+          response: "Match immediately",
+          time: "Within 15 min",
+          timeColor: "green",
+          alert: true,
+        },
+        {
+          scenario: "Competitor drops ₹100 below you",
+          gap: "₹100 (large)",
+          floor: "Matching is above floor",
+          response:
+            "Match — but check if they are a reseller first",
+          time: "Within 30 min",
+          timeColor: "green",
+          alert: false,
+        },
+        {
+          scenario: "Competitor drops below your floor",
+          gap: "Any",
+          floor: "Matching breaches floor",
+          response:
+            "Hold price — improve listing quality instead",
+          time: "Within 1 hr — update listing",
+          timeColor: "yellow",
+          alert: true,
+        },
+        {
+          scenario: "Unverified reseller undercuts",
+          gap: "Any",
+          floor: "Any",
+          response:
+            "Do not match — their offer is unreliable; report if fake",
+          time: "Monitor — no price change",
+          timeColor: "gray",
+          alert: false,
+        },
+        {
+          scenario:
+            "Multiple competitors drop simultaneously",
+          gap: "Category shift",
+          floor: "Any",
+          response:
+            "Check if a sale event triggered the category move",
+          time: "Assess before acting",
+          timeColor: "yellow",
+          alert: true,
+        },
+      ].map((row, i) => {
+        let timeBg = "";
+        let timeText = "";
+
+        if (row.timeColor === "green") {
+          timeBg = resolvedTheme === "dark" ? "#064e3b" : "#DCFCE7";
+          timeText = resolvedTheme === "dark" ? "#34D399" : "#059669";
+        } else if (row.timeColor === "yellow") {
+          timeBg = resolvedTheme === "dark" ? "#422006" : "#FEF3C7";
+          timeText = resolvedTheme === "dark" ? "#FBBF24" : "#B45309";
+        } else if (row.timeColor === "gray") {
+          timeBg = resolvedTheme === "dark" ? "#374151" : "#F1F5F9";
+          timeText = resolvedTheme === "dark" ? "#CBD5E1" : "#475569";
+        }
+
+        return (
+          <tr
+            key={i}
+            style={{
+              background:
+                i % 2 === 0
+                  ? resolvedTheme === "dark"
+                    ? "transparent"
+                    : "#F8F5F0"
+                  : resolvedTheme === "dark"
+                  ? "#1e293b50"
+                  : "#FFFFFF",
+              borderBottom:
+                resolvedTheme === "dark"
+                  ? "1px solid #1f2937"
+                  : "1px solid #E5E7EB",
+            }}
+          >
+            <td
+              style={{
+                padding: "22px 20px",
+                fontWeight: 700,
+                fontSize: 14,
+                lineHeight: 1.6,
+                fontFamily: "'Sora', sans-serif",
+                color: row.alert
+                  ? "#F97316"
+                  : resolvedTheme === "dark"
+                  ? "#F9FAFB"
+                  : "#374151",
+                borderLeft: row.alert
+                  ? "3px solid #F97316"
+                  : "3px solid transparent",
               }}
-              onMouseOver={(e) => e.currentTarget.style.background = "#EA580C"}
-              onMouseOut={(e) => e.currentTarget.style.background = "#F97316"}
+            >
+              {row.scenario}
+            </td>
+
+            <td
+              style={{
+                padding: "22px 20px",
+                color:
+                  resolvedTheme === "dark"
+                    ? "#CBD5E1"
+                    : "#334155",
+                fontSize: 14,
+                lineHeight: 1.8,
+                fontFamily: "'Sora', sans-serif",
+              }}
+            >
+              {row.gap}
+            </td>
+
+            <td
+              style={{
+                padding: "22px 20px",
+                color:
+                  resolvedTheme === "dark"
+                    ? "#CBD5E1"
+                    : "#334155",
+                fontSize: 14,
+                lineHeight: 1.8,
+                fontFamily: "'Sora', sans-serif",
+              }}
+            >
+              {row.floor}
+            </td>
+
+            <td
+              style={{
+                padding: "22px 20px",
+                color:
+                  resolvedTheme === "dark"
+                    ? "#CBD5E1"
+                    : "#334155",
+                fontSize: 14,
+                lineHeight: 1.8,
+                fontFamily: "'Sora', sans-serif",
+              }}
+            >
+              {row.response}
+            </td>
+
+            <td
+              style={{
+                padding: "22px 20px",
+                textAlign: "center",
+              }}
+            >
+              <span
+                style={{
+                  background: timeBg,
+                  color: timeText,
+                  padding: "10px 16px",
+                  borderRadius: "999px",
+                  fontSize: 12,
+                  fontWeight: 700,
+                  lineHeight: 1.4,
+                  display: "inline-block",
+                  maxWidth: "150px",
+                  fontFamily: "'Sora', sans-serif",
+                }}
               >
-                Check Your Listing Free &rarr;
-              </button>
+                {row.time}
+              </span>
+            </td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>
+
+            {/* 3 Options Callout */}
+            <div style={{
+              background: resolvedTheme === 'dark' ? "#0f1f2e" : "#F0FAFA",
+              borderLeft: "5px solid #0D9488",
+              borderRadius: 12,
+              padding: "28px 32px",
+              margin: "40px 0",
+              boxShadow: resolvedTheme === 'dark' ? "none" : "0 2px 12px rgba(0,0,0,0.04)"
+            }}>
+              <div style={{ 
+                display: "flex", alignItems: "center", gap: 8, marginBottom: 24,
+                fontSize: 12, fontWeight: 800, color: "#0D9488", textTransform: "uppercase" as const, 
+                letterSpacing: 1.2, fontFamily: "'Sora', sans-serif" 
+              }}>
+                <span style={{ 
+                  display: "inline-flex", alignItems: "center", justifyContent: "center",
+                  width: 20, height: 20, borderRadius: 4, background: "#0D9488", color: "white", fontSize: 12 
+                }}>✓</span>
+                THE 3 OPTIONS — NOT JUST MATCH OR IGNORE
+              </div>
+
+              <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "flex", flexDirection: "column" as const, gap: 20 }}>
+                <li style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                  <span style={{ color: "#0D9488", fontSize: 20, lineHeight: 1, flexShrink: 0, marginTop: 2 }}>•</span>
+                  <p style={{ margin: 0, fontSize: 15.5, color: resolvedTheme === 'dark' ? "#cbd5e1" : "#334155", lineHeight: 1.75, fontFamily: "'Sora', sans-serif" }}>
+                    <strong style={{ color: resolvedTheme === 'dark' ? "#f9fafb" : "#0F172A" }}>Match their price:</strong> fastest way to recover the Buy Box. Works when the gap is within your margin floor and the competitor is legitimate. Do this within 15 minutes for maximum recovery.
+                  </p>
+                </li>
+                <li style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                  <span style={{ color: "#0D9488", fontSize: 20, lineHeight: 1, flexShrink: 0, marginTop: 2 }}>•</span>
+                  <p style={{ margin: 0, fontSize: 15.5, color: resolvedTheme === 'dark' ? "#cbd5e1" : "#334155", lineHeight: 1.75, fontFamily: "'Sora', sans-serif" }}>
+                    <strong style={{ color: resolvedTheme === 'dark' ? "#f9fafb" : "#0F172A" }}>Beat their price by ₹1:</strong> takes the Buy Box decisively if they matched your old price rather than undercutting by a large amount. Use this when you need to break a Buy Box tie.
+                  </p>
+                </li>
+                <li style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
+                  <span style={{ color: "#0D9488", fontSize: 20, lineHeight: 1, flexShrink: 0, marginTop: 2 }}>•</span>
+                  <p style={{ margin: 0, fontSize: 15.5, color: resolvedTheme === 'dark' ? "#cbd5e1" : "#334155", lineHeight: 1.75, fontFamily: "'Sora', sans-serif" }}>
+                    <strong style={{ color: resolvedTheme === 'dark' ? "#f9fafb" : "#0F172A" }}>Hold your price:</strong> the right call when matching would breach your floor. Focus on listing quality — better images, more reviews, stronger A+ Content — so buyers choose you despite the gap. A 4.6-star listing with better images regularly wins over a cheaper 4.1-star competitor.
+                  </p>
+                </li>
+              </ul>
+            </div>
+
+            <div className="my-10">
+              <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
+                <img 
+                  src="/image2_competitor-undercutting-amazon-india.png" 
+                  alt="Amazon Sales Drop" 
+                  className="w-full h-auto block"
+                />
+              </div>
+              <p className="mt-4 text-center text-[13px] text-gray-400 italic font-medium font-sans px-4">
+                Price floor model for a ₹799 Amazon India ASIN the floor at 20% minimum net margin is ₹513, which means any competitor price above that is safe to match. Below it, hold and compete on listing quality.
+              </p>
+            </div>
+
+            <h2 id="temporary-or-structural" style={{ 
+              fontFamily: "'Sora', sans-serif",
+              fontSize: "clamp(22px, 3vw, 28px)", 
+              fontWeight: 900, 
+              color: resolvedTheme === 'dark' ? "#f9fafb" : "#0A0F1A", 
+              lineHeight: 1.2,
+              letterSpacing: "-0.5px",
+              paddingBottom: "16px",
+              borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB",
+              margin: "48px 0 24px"
+            }}>
+              Insydz vs Manual Checking vs Other Tools — How Do They Compare?
+            </h2>
+
+            <div
+              className="tbl-wrap"
+              style={{
+                marginBottom: 48,
+                background: resolvedTheme === "dark" ? "#111827" : "#fff",
+                borderRadius: 16,
+                overflow: "hidden",
+                border:
+                  resolvedTheme === "dark"
+                    ? "1px solid #1f2937"
+                    : "1px solid #E5E7EB",
+              }}
+            >
+              <table
+                className="dt"
+                style={{
+                  width: "100%",
+                  minWidth: "1000px",
+                  borderCollapse: "collapse",
+                  textAlign: "left",
+                }}
+              >
+                <thead
+                  style={{
+                    background: resolvedTheme === "dark" ? "#1e293b" : "#0F172A",
+                    color: "white",
+                  }}
+                >
+                  <tr>
+                    <th
+                      style={{
+                        padding: "16px 20px",
+                        fontSize: 13,
+                        fontFamily: "'Sora', sans-serif",
+                      }}
+                    >
+                      Feature
+                    </th>
+
+                    <th
+                      style={{
+                        padding: "16px 20px",
+                        fontSize: 13,
+                        fontFamily: "'Sora', sans-serif",
+                        background: "#C96515",
+                      }}
+                    >
+                      Insydz
+                    </th>
+
+                    <th
+                      style={{
+                        padding: "16px 20px",
+                        fontSize: 13,
+                        fontFamily: "'Sora', sans-serif",
+                      }}
+                    >
+                      Manual (Seller Central)
+                    </th>
+
+                    <th
+                      style={{
+                        padding: "16px 20px",
+                        fontSize: 13,
+                        fontFamily: "'Sora', sans-serif",
+                      }}
+                    >
+                      Helium 10
+                    </th>
+
+                    <th
+                      style={{
+                        padding: "16px 20px",
+                        fontSize: 13,
+                        fontFamily: "'Sora', sans-serif",
+                      }}
+                    >
+                      Jungle Scout
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {[
+                    {
+                      feature: "Real-time competitor price alerts",
+                      insydz: "✓ Within 1 hour",
+                      manual: "No — manual check",
+                      helium: "Limited",
+                      jungle: "No",
+                      insydzColor: "green",
+                      manualColor: "red",
+                      heliumColor: "yellow",
+                      jungleColor: "red",
+                      alert: true,
+                    },
+                    {
+                      feature: "WhatsApp alert delivery",
+                      insydz: "✓ Yes",
+                      manual: "No",
+                      helium: "No",
+                      jungle: "No",
+                      insydzColor: "green",
+                      manualColor: "red",
+                      heliumColor: "red",
+                      jungleColor: "red",
+                      alert: false,
+                    },
+                    {
+                      feature: "Amazon India + Flipkart tracking",
+                      insydz: "✓ Both",
+                      manual: "Amazon only",
+                      helium: "Amazon only",
+                      jungle: "US focused",
+                      insydzColor: "green",
+                      manualColor: "yellow",
+                      heliumColor: "yellow",
+                      jungleColor: "red",
+                      alert: true,
+                    },
+                    {
+                      feature: "Buy Box status monitoring",
+                      insydz: "✓ Real time",
+                      manual: "Delayed",
+                      helium: "Limited",
+                      jungle: "No",
+                      insydzColor: "green",
+                      manualColor: "yellow",
+                      heliumColor: "yellow",
+                      jungleColor: "red",
+                      alert: false,
+                    },
+                    {
+                      feature: "Price floor alert configuration",
+                      insydz: "✓ Per ASIN",
+                      manual: "No",
+                      helium: "No",
+                      jungle: "No",
+                      insydzColor: "green",
+                      manualColor: "red",
+                      heliumColor: "red",
+                      jungleColor: "red",
+                      alert: true,
+                    },
+                    {
+                      feature: "India first pricing",
+                      insydz: "Free / ₹2,499",
+                      manual: "Free",
+                      helium: "₹7,000+/mo",
+                      jungle: "₹5,500+/mo",
+                      insydzColor: "green",
+                      manualColor: "green",
+                      heliumColor: "red",
+                      jungleColor: "red",
+                      alert: false,
+                    },
+                  ].map((row, i) => {
+                    const getBadgeColors = (color: string) => {
+                      if (color === "green") {
+                        return {
+                          bg: resolvedTheme === "dark" ? "#064e3b" : "#dcfce7",
+                          text: resolvedTheme === "dark" ? "#34d399" : "#059669",
+                        };
+                      }
+
+                      if (color === "yellow") {
+                        return {
+                          bg: resolvedTheme === "dark" ? "#422006" : "#fef3c7",
+                          text: resolvedTheme === "dark" ? "#fbbf24" : "#b45309",
+                        };
+                      }
+
+                      return {
+                        bg: resolvedTheme === "dark" ? "#450a0a" : "#fee2e2",
+                        text: resolvedTheme === "dark" ? "#f87171" : "#dc2626",
+                      };
+                    };
+
+                    const insydzBadge = getBadgeColors(row.insydzColor);
+                    const manualBadge = getBadgeColors(row.manualColor);
+                    const heliumBadge = getBadgeColors(row.heliumColor);
+                    const jungleBadge = getBadgeColors(row.jungleColor);
+
+                    return (
+                      <tr
+                        key={i}
+                        style={{
+                          background:
+                            i % 2 === 0
+                              ? resolvedTheme === "dark"
+                                ? "transparent"
+                                : "#F8F5F0"
+                              : resolvedTheme === "dark"
+                              ? "#1e293b50"
+                              : "#F1F5F9",
+                          borderBottom:
+                            resolvedTheme === "dark"
+                              ? "1px solid #1f2937"
+                              : "1px solid #E5E7EB",
+                        }}
+                      >
+                        <td
+                          style={{
+                            padding: "18px 20px",
+                            fontWeight: 700,
+                            color: row.alert
+                              ? "#F97316"
+                              : resolvedTheme === "dark"
+                              ? "#f9fafb"
+                              : "#334155",
+                            fontSize: 14,
+                            lineHeight: 1.7,
+                            fontFamily: "'Sora', sans-serif",
+                            borderLeft: row.alert
+                              ? "3px solid #F97316"
+                              : "3px solid transparent",
+                          }}
+                        >
+                          {row.feature}
+                        </td>
+
+                        <td style={{ padding: "18px 20px" }}>
+                          <span
+                            style={{
+                              background: insydzBadge.bg,
+                              color: insydzBadge.text,
+                              padding: "8px 14px",
+                              borderRadius: 999,
+                              fontSize: 13,
+                              fontWeight: 700,
+                              display: "inline-block",
+                              fontFamily: "'Sora', sans-serif",
+                            }}
+                          >
+                            {row.insydz}
+                          </span>
+                        </td>
+
+                        <td style={{ padding: "18px 20px" }}>
+                          <span
+                            style={{
+                              background: manualBadge.bg,
+                              color: manualBadge.text,
+                              padding: "8px 14px",
+                              borderRadius: 999,
+                              fontSize: 13,
+                              fontWeight: 700,
+                              display: "inline-block",
+                              fontFamily: "'Sora', sans-serif",
+                            }}
+                          >
+                            {row.manual}
+                          </span>
+                        </td>
+
+                        <td style={{ padding: "18px 20px" }}>
+                          <span
+                            style={{
+                              background: heliumBadge.bg,
+                              color: heliumBadge.text,
+                              padding: "8px 14px",
+                              borderRadius: 999,
+                              fontSize: 13,
+                              fontWeight: 700,
+                              display: "inline-block",
+                              fontFamily: "'Sora', sans-serif",
+                            }}
+                          >
+                            {row.helium}
+                          </span>
+                        </td>
+
+                        <td style={{ padding: "18px 20px" }}>
+                          <span
+                            style={{
+                              background: jungleBadge.bg,
+                              color: jungleBadge.text,
+                              padding: "8px 14px",
+                              borderRadius: 999,
+                              fontSize: 13,
+                              fontWeight: 700,
+                              display: "inline-block",
+                              fontFamily: "'Sora', sans-serif",
+                            }}
+                          >
+                            {row.jungle}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
 
             <h2 id="faq" style={{ 
@@ -1300,23 +1542,23 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
             fontFamily: "'Sora', sans-serif", fontSize: "clamp(28px, 4.5vw, 42px)", fontWeight: 900, 
             color: "white", lineHeight: 1.2, letterSpacing: "-0.5px", marginBottom: 20 
           }}>
-            Stop Finding Out About Problems Two Days Late
+            Your Competitor Dropped Their Price Last Night. Do You Know?
           </h2>
           
           <p style={{ 
             fontFamily: "'Sora', sans-serif", fontSize: "clamp(15px, 2vw, 17px)", 
             color: "#94a3b8", lineHeight: 1.6, maxWidth: 640, margin: "0 auto 36px" 
           }}>
-            Insydz tracks your keyword rankings and competitor prices in real time so you know the morning a problem starts — not after it has already cost you two days of revenue.
+            Insydz monitors your Amazon India listings continuously and sends a WhatsApp alert the moment a competitor changes their price — so you respond in minutes, not hours.
           </p>
           
           <div style={{ 
             display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "12px 28px", 
             marginBottom: 40, fontSize: 14, color: "rgba(255,255,255,0.9)", fontFamily: "'Sora', sans-serif", fontWeight: 500 
           }}>
-            {["Daily rank tracking", "Competitor price alerts", "Amazon India and Flipkart", "Free to start"].map((f, i) => (
+            {["WhatsApp alerts within 1 hour", "Amazon India + Flipkart", "Buy Box status monitoring", "Free to start"].map((f, i) => (
               <span key={i} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ color: "#F97316", fontWeight: 900 }}>✓</span> {f}
+                <span style={{ color: "#F97316", fontWeight: 900 }}>✓</span> {f} 
               </span>
             ))}
           </div>
@@ -1331,7 +1573,7 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
             onMouseOver={(e) => { e.currentTarget.style.transform = "scale(1.05)"; e.currentTarget.style.background = "#EA580C"; }}
             onMouseOut={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.background = "#F97316"; }}
           >
-            Check Your Listing Free on Insydz &rarr;
+            Set Up Your First Alert Free on Insydz &rarr;
           </Link>
           
           <p style={{ 
