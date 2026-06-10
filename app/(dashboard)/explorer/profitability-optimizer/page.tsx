@@ -1447,6 +1447,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useTheme } from "next-themes";
 import { API_BASE_URL } from "@/lib/config";
 import axios from "axios";
 import { useAuth } from "@/lib/auth-context";
@@ -1470,14 +1471,15 @@ const API = `${API_BASE_URL}/api`;
 
 axios.defaults.withCredentials = true;
 
-const CHART_STYLE = {
-  backgroundColor: "rgba(255,255,255,0.97)",
+const getChartStyle = (isDark: boolean) => ({
+  backgroundColor: isDark ? "rgba(15,23,42,0.97)" : "rgba(255,255,255,0.97)",
   borderRadius: "12px",
-  border: "1.5px solid #e2e8f0",
-  boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
+  border: isDark ? "1.5px solid #1e293b" : "1.5px solid #e2e8f0",
+  boxShadow: isDark ? "none" : "0 4px 16px rgba(0,0,0,0.08)",
   fontSize: 12,
   padding: "8px 14px",
-};
+  color: isDark ? "#f8fafc" : "#0f172a",
+});
 
 const WATERFALL_COLORS: Record<string, string> = {
   product_cost: "#3b82f6",
@@ -1666,9 +1668,9 @@ function useOllamaStream() {
 
 function AlertBox({ type, message }: { type: string; message: string }) {
   const styles: Record<string, string> = {
-    danger:  "bg-red-50 border-red-400 text-red-800",
-    warn:    "bg-amber-50 border-amber-400 text-amber-800",
-    success: "bg-emerald-50 border-emerald-400 text-emerald-800",
+    danger:  "bg-red-50 dark:bg-red-950/20 border-red-400 dark:border-red-900/50 text-red-800 dark:text-red-400",
+    warn:    "bg-amber-50 dark:bg-amber-950/20 border-amber-400 dark:border-amber-900/50 text-amber-800 dark:text-amber-400",
+    success: "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-400 dark:border-emerald-900/50 text-emerald-800 dark:text-emerald-450",
   };
   const icons: Record<string, JSX.Element> = {
     danger:  <XCircle className="w-4 h-4 shrink-0 mt-0.5" />,
@@ -1694,15 +1696,15 @@ function SliderRow({
 }) {
   return (
     <div className={`flex items-center gap-3 py-1.5 ${locked ? "opacity-40 pointer-events-none" : ""}`}>
-      <label className="text-xs text-slate-500 w-36 shrink-0 flex items-center gap-1">
+      <label className="text-xs text-slate-500 dark:text-slate-400 w-36 shrink-0 flex items-center gap-1">
         {label}
         {locked && <Lock className="w-2.5 h-2.5 text-amber-500" />}
       </label>
       <input type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))} disabled={locked}
-        className="flex-1 accent-blue-500 h-1.5"
+        className="flex-1 accent-blue-500 dark:accent-sky-500 h-1.5 dark:bg-slate-850"
         data-track-id={`${label.toLowerCase().replace(/[^a-z0-9]+/g, "_")}_input`} />
-      <span className="text-xs font-semibold text-slate-700 w-16 text-right tabular-nums">
+      <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 w-16 text-right tabular-nums">
         {format(value)}
       </span>
     </div>

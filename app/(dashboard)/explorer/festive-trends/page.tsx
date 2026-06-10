@@ -1002,6 +1002,7 @@ import { API_BASE_URL } from "@/lib/config";
 
 import { useState, useEffect, useRef, Suspense, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
   Loader2, Sparkles, TrendingUp, AlertTriangle, Clock,
   Lock, ChevronRight, Star, Zap, BarChart3, ArrowUpRight,
@@ -1205,25 +1206,25 @@ const fmtPrice = (n: number | null | undefined): string =>
 // ─────────────────────────────────────────────────────────────────────────────
 
 const INTENSITY_COLORS: Record<string, string> = {
-  peak:   "bg-rose-100 text-rose-800 border-rose-200",
-  high:   "bg-amber-100 text-amber-800 border-amber-200",
-  medium: "bg-sky-100 text-sky-800 border-sky-200",
-  low:    "bg-slate-100 text-slate-600 border-slate-200",
+  peak:   "bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900/50",
+  high:   "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/50",
+  medium: "bg-sky-100 text-sky-800 border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-900/50",
+  low:    "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800/60",
 };
 
 const RISK_COLORS: Record<string, string> = {
-  critical: "text-rose-600 bg-rose-50 border-rose-200",
-  high:     "text-orange-600 bg-orange-50 border-orange-200",
-  medium:   "text-amber-600 bg-amber-50 border-amber-200",
-  low:      "text-emerald-600 bg-emerald-50 border-emerald-200",
-  unknown:  "text-slate-500 bg-slate-50 border-slate-200",
+  critical: "text-rose-600 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-950/30 dark:border-rose-900/50",
+  high:     "text-orange-600 bg-orange-50 border-orange-200 dark:text-orange-400 dark:bg-orange-950/30 dark:border-orange-900/50",
+  medium:   "text-amber-600 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-950/30 dark:border-amber-900/50",
+  low:      "text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-950/30 dark:border-emerald-900/50",
+  unknown:  "text-slate-500 bg-slate-50 border-slate-200 dark:text-slate-400 dark:bg-slate-900 dark:border-slate-800/60",
 };
 
 const TIER_BADGE: Record<string, string> = {
-  premium:    "bg-violet-50 text-violet-700 border-violet-200",
-  basic:      "bg-sky-50 text-sky-700 border-sky-200",
-  enterprise: "bg-amber-50 text-amber-700 border-amber-200",
-  free:       "bg-slate-50 text-slate-600 border-slate-200",
+  premium:    "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/30 dark:text-violet-400 dark:border-violet-900/40",
+  basic:      "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/30 dark:text-sky-400 dark:border-sky-900/40",
+  enterprise: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-450 dark:border-amber-900/40",
+  free:       "bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800/60",
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1251,13 +1252,13 @@ function FestiveCalendarStrip({
             "flex-shrink-0 flex flex-col items-center gap-1.5 px-5 py-3 rounded-2xl border text-center min-w-[116px] transition-all",
             ev.is_active
               ? "bg-sky-600 text-white border-sky-500 shadow-lg shadow-sky-200/60 scale-105"
-              : "bg-white border-slate-100 hover:border-sky-200 hover:shadow-sm"
+              : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-sky-200 hover:shadow-sm text-slate-800 dark:text-slate-100"
           )}
         >
           <span className="text-2xl leading-none">{ev.emoji}</span>
           <p className={cn(
             "text-[11px] font-extrabold truncate max-w-[96px] leading-tight",
-            ev.is_active ? "text-white" : "text-slate-800"
+            ev.is_active ? "text-white" : "text-slate-800 dark:text-slate-200"
           )}>
             {ev.name}
           </p>
@@ -1292,14 +1293,14 @@ function CategoryCard({
 }) {
   if (cat.locked) {
     return (
-      <div className="relative rounded-2xl border border-slate-200 bg-slate-50 p-6 overflow-hidden select-none">
-        <div className="absolute inset-0 backdrop-blur-[2px] bg-white/70 flex flex-col items-center justify-center gap-1.5 z-10 rounded-2xl">
+      <div className="relative rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 p-6 overflow-hidden select-none">
+        <div className="absolute inset-0 backdrop-blur-[2px] bg-white/70 dark:bg-slate-950/70 flex flex-col items-center justify-center gap-1.5 z-10 rounded-2xl">
           <Lock className="w-5 h-5 text-slate-400" />
           <p className="text-[11px] font-extrabold text-slate-500">Upgrade to Basic</p>
         </div>
         <div className="opacity-20 pointer-events-none">
           <div className="flex items-start justify-between gap-2 mb-3">
-            <p className="text-sm font-extrabold text-slate-800 leading-tight">{cat.category_name}</p>
+            <p className="text-sm font-extrabold text-slate-800 dark:text-slate-350 leading-tight">{cat.category_name}</p>
             <Badge variant="outline" className="text-[9px] font-bold shrink-0">#{index + 1}</Badge>
           </div>
           <p className="text-3xl font-black text-sky-600">₹ ——</p>
@@ -1314,18 +1315,18 @@ function CategoryCard({
       className={cn(
         "text-left w-full rounded-2xl border p-6 space-y-2.5 transition-all cursor-pointer shadow-sm",
         selected
-          ? "border-sky-500 bg-sky-50 shadow-sky-100"
-          : "border-slate-200 bg-white hover:border-sky-300 hover:shadow-md"
+          ? "border-sky-500 bg-sky-50 dark:bg-sky-950/20 shadow-sky-100 dark:shadow-none"
+          : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-sky-300 hover:shadow-md"
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-extrabold text-slate-800 leading-tight">{cat.category_name}</p>
-        <Badge variant="outline" className={cn("text-[9px] font-bold shrink-0", selected && "border-sky-400 text-sky-700")}>
+        <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200 leading-tight">{cat.category_name}</p>
+        <Badge variant="outline" className={cn("text-[9px] font-bold shrink-0", selected && "border-sky-400 text-sky-700 dark:text-sky-400 dark:border-sky-850")}>
           #{index + 1}
         </Badge>
       </div>
       <p className="text-3xl font-black text-sky-600 tracking-tighter">{fmtPrice(cat.avg_price)}</p>
-      <div className="flex items-center justify-between text-[10px] text-slate-500 font-extrabold uppercase tracking-wider">
+      <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wider">
         <span className="flex items-center gap-1">
           <Activity className="w-3 h-3" /> {fmt(cat.avg_sales_volume)} avg/mo
         </span>
@@ -1453,11 +1454,11 @@ function LockedOverlay({ tier = "basic" }: { tier?: "basic" | "premium" }) {
   const router = useRouter();
   const label  = tier === "premium" ? "Premium — ₹2,999/mo" : "Basic — ₹1,999/mo";
   return (
-    <div className="absolute inset-0 rounded-[2rem] bg-white/85 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
-      <div className="w-12 h-12 rounded-2xl bg-slate-100 flex items-center justify-center">
-        <Lock className="w-6 h-6 text-slate-400" />
+    <div className="absolute inset-0 rounded-[2rem] bg-white/85 dark:bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
+      <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+        <Lock className="w-6 h-6 text-slate-400 dark:text-slate-500" />
       </div>
-      <p className="text-sm font-extrabold text-slate-700">Upgrade to {label}</p>
+      <p className="text-sm font-extrabold text-slate-700 dark:text-slate-200">Upgrade to {label}</p>
       <Button
         onClick={() => router.push("/subscription")}
         size="sm"
@@ -1758,15 +1759,15 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
   return (
     <div className="relative">
       {locked && <LockedOverlay tier="premium" />}
-      <Card className="border-none shadow-xl shadow-slate-200/30 rounded-[2rem] bg-white overflow-hidden">
+      <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none shadow-slate-200/30 dark:bg-slate-900 rounded-[2rem] bg-white overflow-hidden">
         <CardHeader className="p-8 pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-sky-50 flex items-center justify-center">
-              <Target className="w-5 h-5 text-sky-600" />
+            <div className="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-950/35 flex items-center justify-center">
+              <Target className="w-5 h-5 text-sky-600 animate-pulse" />
             </div>
             <div>
-              <CardTitle className="text-base font-extrabold">Margin Simulation</CardTitle>
-              <CardDescription className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-0.5">
+              <CardTitle className="text-base font-extrabold text-slate-800 dark:text-slate-200">Margin Simulation</CardTitle>
+              <CardDescription className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
                 Base cost: {fmtPrice(data.base_cost)} · {data.platform_fee_pct}% platform fee
                 {data.source === "amazon" ? " (Amazon)" : data.source === "flipkart" ? " (Flipkart)" : ""}
               </CardDescription>
@@ -1774,15 +1775,15 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
           </div>
         </CardHeader>
         <CardContent className="px-8 pb-8 space-y-4">
-          <div className="overflow-hidden rounded-2xl border border-slate-100">
+          <div className="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-800">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-slate-50 border-b border-slate-100">
+                <tr className="bg-slate-50 dark:bg-slate-950/40 border-b border-slate-100 dark:border-slate-800">
                   {["Scenario", "Price", "Gross", "Net", ""].map((h, i) => (
                     <th
                       key={i}
                       className={cn(
-                        "p-4 text-[9px] font-extrabold text-slate-400 uppercase tracking-widest",
+                        "p-4 text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest",
                         i > 0 ? "text-right" : "text-left"
                       )}
                     >
@@ -1798,13 +1799,13 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
                     <tr
                       key={i}
                       className={cn(
-                        "border-b border-slate-50 last:border-0 transition-colors",
-                        isRec ? "bg-sky-50/70" : "bg-white hover:bg-slate-50/50"
+                        "border-b border-slate-50 dark:border-slate-800/60 last:border-0 transition-colors",
+                        isRec ? "bg-sky-50/70 dark:bg-sky-950/20" : "bg-white dark:bg-slate-900 hover:bg-slate-50/50 dark:hover:bg-slate-800/40"
                       )}
                     >
-                      <td className="p-4 font-extrabold text-slate-800 text-[13px]">{sc.label}</td>
-                      <td className="p-4 text-right font-bold text-slate-700">{fmtPrice(sc.price)}</td>
-                      <td className="p-4 text-right font-bold text-slate-500">{sc.gross_pct}%</td>
+                      <td className="p-4 font-extrabold text-slate-800 dark:text-slate-200 text-[13px]">{sc.label}</td>
+                      <td className="p-4 text-right font-bold text-slate-700 dark:text-slate-350">{fmtPrice(sc.price)}</td>
+                      <td className="p-4 text-right font-bold text-slate-500 dark:text-slate-400">{sc.gross_pct}%</td>
                       <td className={cn(
                         "p-4 text-right font-extrabold",
                         sc.net_pct > 0 ? "text-emerald-600" : "text-rose-500"
@@ -1829,7 +1830,7 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
               </tbody>
             </table>
           </div>
-          <p className="text-[11px] text-slate-400 font-bold">
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 font-bold">
             Market range: {fmtPrice(data.market_range?.min)} –{" "}
             {fmtPrice(data.market_range?.max)} · avg {fmtPrice(data.market_range?.avg)}
           </p>
@@ -1851,33 +1852,33 @@ function LaunchWindowCard({ data, userTier }: { data: LaunchData | null; userTie
   return (
     <div className="relative">
       {locked && <LockedOverlay tier="premium" />}
-      <Card className="border-none shadow-xl shadow-slate-200/30 rounded-[2rem] bg-white p-8 space-y-5">
+      <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none shadow-slate-200/30 rounded-[2rem] bg-white dark:bg-slate-900 p-8 space-y-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center">
-            <Clock className="w-5 h-5 text-indigo-600" />
+          <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/35 flex items-center justify-center">
+            <Clock className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           </div>
           <div>
-            <p className="text-base font-extrabold text-slate-800">Optimal Launch Window</p>
-            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-0.5">
+            <p className="text-base font-extrabold text-slate-800 dark:text-slate-200">Optimal Launch Window</p>
+            <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
               Premium · Price inflection analysis
             </p>
           </div>
         </div>
 
         {data.optimal_week ? (
-          <p className="text-3xl font-extrabold text-indigo-600 tracking-tight">{data.optimal_week}</p>
+          <p className="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 tracking-tight">{data.optimal_week}</p>
         ) : (
-          <p className="text-sm text-slate-400 font-medium italic">No clear window detected</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 font-medium italic">No clear window detected</p>
         )}
 
-        <p className="text-sm text-slate-600 font-medium leading-relaxed">{data.recommendation}</p>
+        <p className="text-sm text-slate-600 dark:text-slate-350 font-medium leading-relaxed">{data.recommendation}</p>
 
         <div className="space-y-1.5">
-          <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Price trend</p>
+          <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Price trend</p>
           <MiniSparkline data={data.price_trend} valueKey="avg_price" color="#6366f1" />
         </div>
 
-        <div className="flex items-center justify-between text-[11px] text-slate-400 font-bold">
+        <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-bold">
           <span>{data.weeks_available} weeks analysed</span>
           {data.best_score != null && (
             <span>score: {data.best_score}</span>
@@ -1908,11 +1909,11 @@ function VelocityChart({
         <div key={i} className="flex items-center gap-3">
           <p className={cn(
             "text-xs font-bold w-36 truncate shrink-0",
-            cat.category_name === highlighted ? "text-sky-700 font-extrabold" : "text-slate-500"
+            cat.category_name === highlighted ? "text-sky-700 dark:text-sky-400 font-extrabold" : "text-slate-500 dark:text-slate-400"
           )}>
             {cat.category_name}
           </p>
-          <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+          <div className="flex-1 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
             <div
               className={cn(
                 "h-full rounded-full transition-all",
@@ -1923,7 +1924,7 @@ function VelocityChart({
           </div>
           <p className={cn(
             "text-xs w-16 text-right shrink-0",
-            cat.category_name === highlighted ? "text-sky-700 font-extrabold" : "text-slate-600 font-bold"
+            cat.category_name === highlighted ? "text-sky-700 dark:text-sky-400 font-extrabold" : "text-slate-600 dark:text-slate-350 font-bold"
           )}>
             {fmt(cat.velocity)}
           </p>
@@ -1941,6 +1942,12 @@ function FestiveTrendContent() {
   const router   = useRouter();
   const { user } = useAuth();
   const { toast } = useToast();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // ── Tier ──────────────────────────────────────────────────────────────────
   // Seeded from /festive/tier-info on mount, then kept fresh from every
@@ -2092,10 +2099,10 @@ function FestiveTrendContent() {
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-extrabold text-slate-900 tracking-tight">
+          <h1 className="text-4xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
             Festive <span className="text-sky-600">Trends</span>
           </h1>
-          <p className="text-slate-500 font-medium mt-2 text-base">
+          <p className="text-slate-500 dark:text-slate-400 font-medium mt-2 text-base">
             Ride India's festive demand cycles — price smarter, stock right, list on time
           </p>
         </div>
@@ -2110,7 +2117,7 @@ function FestiveTrendContent() {
       {/* ── Festival calendar strip (FREE, dynamic) ─────────────────────────── */}
       {calendarData && (
         <div className="space-y-3">
-          <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
+          <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-550 uppercase tracking-widest">
             Upcoming Festive Events · {calendarData.year}
           </p>
           <FestiveCalendarStrip events={calendarData.events} upcoming={calendarData.upcoming} />
@@ -2118,12 +2125,12 @@ function FestiveTrendContent() {
       )}
 
       {/* ── Analysis config card ─────────────────────────────────────────────── */}
-      <Card className="border-none shadow-2xl shadow-slate-200/50 rounded-[2.5rem] bg-white overflow-hidden">
+      <Card className="border-none dark:border dark:border-slate-800 shadow-2xl dark:shadow-none shadow-slate-200/50 rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden">
         <CardHeader className="p-10 pb-0">
-          <CardTitle className="text-xl font-extrabold flex items-center gap-3 text-slate-800">
+          <CardTitle className="text-xl font-extrabold flex items-center gap-3 text-slate-800 dark:text-slate-100">
             <BarChart3 className="h-6 w-6 text-sky-600" /> Trend Analysis Setup
           </CardTitle>
-          <CardDescription className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-1">
+          <CardDescription className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">
             Configure your market parameters
           </CardDescription>
         </CardHeader>
@@ -2132,7 +2139,7 @@ function FestiveTrendContent() {
 
             {/* Marketplace */}
             <div className="space-y-3">
-              <Label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
+              <Label className="text-[10px] font-extrabold text-slate-400 dark:text-slate-550 uppercase tracking-widest ml-1 flex items-center gap-1.5">
                 <ShoppingBag className="w-3 h-3" /> Marketplace
               </Label>
               <select
@@ -2144,18 +2151,18 @@ function FestiveTrendContent() {
                   setMarginData(null);
                   setLaunchData(null);
                 }}
-                className="w-full h-14 px-5 rounded-2xl bg-slate-50 border border-transparent text-sm font-bold focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all hover:bg-slate-100 cursor-pointer"
+                className="w-full h-14 px-5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-transparent dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer"
                 data-track-id="marketplace_select"
                 data-filter-value={source}
               >
-                <option value="amazon">Amazon India</option>
-                <option value="flipkart">Flipkart India</option>
+                <option value="amazon" className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150">Amazon India</option>
+                <option value="flipkart" className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150">Flipkart India</option>
               </select>
             </div>
 
             {/* Category — requires Basic+ */}
             <div className="space-y-3">
-              <Label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
+              <Label className="text-[10px] font-extrabold text-slate-400 dark:text-slate-550 uppercase tracking-widest ml-1 flex items-center gap-1.5">
                 <Package className="w-3 h-3" /> Target Category
                 {!isBasic && <Lock className="w-3 h-3" />}
               </Label>
@@ -2164,24 +2171,24 @@ function FestiveTrendContent() {
                 onChange={e => setCategory(e.target.value)}
                 disabled={!isBasic}
                 className={cn(
-                  "w-full h-14 px-5 rounded-2xl bg-slate-50 border border-transparent text-sm font-bold focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all",
-                  !isBasic ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-100 cursor-pointer"
+                  "w-full h-14 px-5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-transparent dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all",
+                  !isBasic ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer"
                 )}
                 data-track-id="category_select"
                 data-filter-value={category}
               >
-                <option value="">
+                <option value="" className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150">
                   {isBasic ? "Select category…" : "Basic plan required"}
                 </option>
-                {categories.map(c => <option key={c} value={c}>{c}</option>)}
+                {categories.map(c => <option key={c} value={c} className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150">{c}</option>)}
               </select>
             </div>
 
             {/* Base / landing cost — requires Premium (used by margin-sim + AI) */}
             <div className="space-y-3">
-              <Label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1 flex items-center gap-1.5">
+              <Label className="text-[10px] font-extrabold text-slate-400 dark:text-slate-555 uppercase tracking-widest ml-1 flex items-center gap-1.5">
                 <IndianRupee className="w-3 h-3" /> Landing Cost (₹)
-                {!isPremium && <Lock className="w-3 h-3 text-slate-300" />}
+                {!isPremium && <Lock className="w-3 h-3 text-slate-300 dark:text-slate-600" />}
               </Label>
               <Input
                 value={baseCost}
@@ -2191,7 +2198,7 @@ function FestiveTrendContent() {
                 min={1}
                 disabled={!isPremium}
                 className={cn(
-                  "h-14 px-6 rounded-2xl bg-slate-50 border-transparent text-sm font-bold focus:ring-2 focus:ring-sky-500 outline-none transition-all",
+                  "h-14 px-6 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-transparent dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-500 outline-none transition-all",
                   !isPremium && "opacity-50 cursor-not-allowed"
                 )}
                 data-track-id="landing_cost_input"
@@ -2200,10 +2207,10 @@ function FestiveTrendContent() {
 
             {/* Analysis window — fixed at 90 days */}
             <div className="space-y-3">
-              <Label className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest ml-1">
+              <Label className="text-[10px] font-extrabold text-slate-400 dark:text-slate-555 uppercase tracking-widest ml-1">
                 Analysis Window
               </Label>
-              <div className="h-14 flex items-center px-6 rounded-2xl bg-slate-50 text-sm font-bold text-slate-400 select-none">
+              <div className="h-14 flex items-center px-6 rounded-2xl bg-slate-50 dark:bg-slate-800 text-sm font-bold text-slate-400 dark:text-slate-500 select-none">
                 90 days (fixed)
               </div>
             </div>
@@ -2212,7 +2219,7 @@ function FestiveTrendContent() {
           <Button
             onClick={runAnalysis}
             disabled={isLoading || !isBasic || !category}
-            className="w-full h-16 rounded-[1.25rem] bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-base shadow-2xl shadow-sky-100/60 disabled:opacity-50 transition-all"
+            className="w-full h-16 rounded-[1.25rem] bg-sky-600 hover:bg-sky-700 text-white font-extrabold text-base shadow-2xl shadow-sky-100/60 dark:shadow-none disabled:opacity-50 transition-all"
             data-track-id="analyze-btn"
           >
             {isLoading ? (
@@ -2223,7 +2230,7 @@ function FestiveTrendContent() {
           </Button>
 
           {!isBasic && (
-            <p className="text-center text-xs text-slate-400 font-medium">
+            <p className="text-center text-xs text-slate-400 dark:text-slate-500 font-medium">
               Category trend analysis requires Basic or Premium plan
             </p>
           )}
@@ -2291,58 +2298,58 @@ function FestiveTrendContent() {
             <>
               {/* KPI row */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="border-none shadow-md rounded-2xl bg-white p-6 space-y-1.5">
-                  <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Price Trend</p>
+                <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
+                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Price Trend</p>
                   <PriceDeltaBadge pct={trendData.price_delta_pct} />
-                  <p className="text-xs text-slate-400 font-medium">vs previous week</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">vs previous week</p>
                 </Card>
-                <Card className="border-none shadow-md rounded-2xl bg-white p-6 space-y-1.5">
-                  <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Velocity Rank</p>
-                  <p className="text-3xl font-extrabold text-slate-900">
+                <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
+                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Velocity Rank</p>
+                  <p className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">
                     #{trendData.velocity_rank ?? "—"}
                   </p>
-                  <p className="text-xs text-slate-400 font-medium">by avg sales volume</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">by avg sales volume</p>
                 </Card>
-                <Card className="border-none shadow-md rounded-2xl bg-white p-6 space-y-1.5">
-                  <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Stock Risk</p>
+                <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
+                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Stock Risk</p>
                   <div className="pt-1">
                     <StockRiskBadge risk={trendData.stock_risk} />
                   </div>
-                  <p className="text-xs text-slate-400 font-medium">
+                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
                     peak/avg ratio: {trendData.stock_risk?.ratio ?? "—"}×
                   </p>
                 </Card>
-                <Card className="border-none shadow-md rounded-2xl bg-white p-6 space-y-1.5">
-                  <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Data Points</p>
-                  <p className="text-3xl font-extrabold text-slate-900">{trendData.data_points}</p>
-                  <p className="text-xs text-slate-400 font-medium">weekly snapshots</p>
+                <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
+                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Data Points</p>
+                  <p className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">{trendData.data_points}</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">weekly snapshots</p>
                 </Card>
               </div>
 
               {/* Charts */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="border-none shadow-xl shadow-slate-200/30 rounded-[2rem] bg-white p-8 space-y-4">
+                <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none shadow-slate-200/30 rounded-[2rem] bg-white dark:bg-slate-900 p-8 space-y-4">
                   <div>
-                    <p className="text-sm font-extrabold text-slate-800">
+                    <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200">
                       Price Trend — {trendData.category_name}
                     </p>
-                    <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-0.5">
+                    <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
                       90-day weekly average
                     </p>
                   </div>
                   <MiniSparkline data={trendData.price_trend} valueKey="avg_price" />
                   {trendData.price_trend?.length > 0 && (
-                    <div className="flex justify-between text-xs text-slate-500 font-bold">
+                    <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 font-bold">
                       <span>Min {fmtPrice(Math.min(...trendData.price_trend.map(d => d.avg_price)))}</span>
                       <span>Max {fmtPrice(Math.max(...trendData.price_trend.map(d => d.avg_price)))}</span>
                     </div>
                   )}
                 </Card>
 
-                <Card className="border-none shadow-xl shadow-slate-200/30 rounded-[2rem] bg-white p-8 space-y-4">
+                <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none shadow-slate-200/30 rounded-[2rem] bg-white dark:bg-slate-900 p-8 space-y-4">
                   <div>
-                    <p className="text-sm font-extrabold text-slate-800">Category Velocity Leaderboard</p>
-                    <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-0.5">
+                    <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200">Category Velocity Leaderboard</p>
+                    <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
                       Avg monthly sales volume
                     </p>
                   </div>
@@ -2354,7 +2361,7 @@ function FestiveTrendContent() {
               {(loadingLaunch || loadingMargin || launchData || marginData) && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {loadingLaunch ? (
-                    <Card className="border-none shadow-xl rounded-[2rem] bg-white p-8 flex items-center justify-center h-52">
+                    <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none rounded-[2rem] bg-white dark:bg-slate-900 p-8 flex items-center justify-center h-52">
                       <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
                     </Card>
                   ) : (
@@ -2362,7 +2369,7 @@ function FestiveTrendContent() {
                   )}
 
                   {loadingMargin ? (
-                    <Card className="border-none shadow-xl rounded-[2rem] bg-white p-8 flex items-center justify-center h-52">
+                    <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none rounded-[2rem] bg-white dark:bg-slate-900 p-8 flex items-center justify-center h-52">
                       <Loader2 className="w-6 h-6 animate-spin text-sky-400" />
                     </Card>
                   ) : (

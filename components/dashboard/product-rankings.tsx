@@ -8,6 +8,7 @@ import { API_BASE_URL } from "@/lib/config";
 import { useFilters } from "@/components/dashboard/filters-context";
 import { useAISummary } from "@/hooks/use-ai-summary";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
+import { useTheme } from "next-themes";
 
 interface TrendingProduct {
   product_title?: string;
@@ -29,11 +30,24 @@ function ProductCard({
   index: number;
   source: string;
 }) {
-  const colors = ["bg-green-500", "bg-blue-500", "bg-purple-500"];
-  const gradients = [
-    "from-green-50 to-green-100",
-    "from-blue-50 to-blue-100",
-    "from-purple-50 to-purple-100",
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && resolvedTheme === "dark";
+
+  const colors = ["bg-emerald-500", "bg-blue-500", "bg-purple-500"];
+  const gradients = isDark ? [
+    "from-emerald-950/40 to-emerald-900/30 border-emerald-900/30",
+    "from-blue-950/40 to-blue-900/30 border-blue-900/30",
+    "from-purple-950/40 to-purple-900/30 border-purple-900/30",
+  ] : [
+    "from-green-50 to-green-100/70 border-slate-200/50",
+    "from-blue-50 to-blue-100/70 border-slate-200/50",
+    "from-purple-50 to-purple-100/70 border-slate-200/50",
   ];
 
   const productName = product.product_title || product.title || "Unknown Product";
@@ -48,7 +62,7 @@ function ProductCard({
   return (
     <div
       className={cn(
-        "flex items-center justify-between p-3 rounded-lg bg-gradient-to-r gap-3",
+        "flex items-center justify-between p-3 rounded-lg bg-gradient-to-r gap-3 border",
         gradients[index % gradients.length]
       )}
     >
@@ -62,25 +76,35 @@ function ProductCard({
           {index + 1}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-medium text-sm truncate" title={productName.replace(/"/g, "")}>
+          <p 
+            className={cn(
+              "font-semibold text-sm truncate",
+              isDark ? "text-slate-200" : "text-slate-800"
+            )}
+            title={productName.replace(/"/g, "")}
+          >
             {productName.replace(/"/g, "")}
           </p>
-          <p className="text-xs text-muted-foreground truncate">
+          <p className={cn("text-xs truncate", isDark ? "text-slate-400" : "text-slate-500")}>
             {Math.round(salesVolume).toLocaleString()} sales • ₹{price.toFixed(0)}
           </p>
         </div>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
-        <Badge variant="outline" className="text-xs whitespace-nowrap">
+        <Badge 
+          variant="outline" 
+          className={cn(
+            "text-xs whitespace-nowrap bg-transparent",
+            isDark ? "border-slate-700 text-slate-300" : "border-slate-250 text-slate-600"
+          )}
+        >
           {source === "flipkart" ? "Flipkart" : "Amazon"}
         </Badge>
-        <TrendingUp className="h-5 w-5 text-green-600" />
+        <TrendingUp className={cn("h-5 w-5", isDark ? "text-emerald-500" : "text-green-600")} />
       </div>
     </div>
   );
-}
-
-export default function ProductRankings({
+}export default function ProductRankings({
   selectedSource,
 }: {
   selectedSource: string;
@@ -88,7 +112,14 @@ export default function ProductRankings({
   const BASE_URL = API_BASE_URL;
   const { filters } = useFilters();
   const { canAccessFeature, currentTier } = useSubscriptionLimits();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDark = mounted && resolvedTheme === "dark";
   const [flipkartProducts, setFlipkartProducts] = useState<TrendingProduct[]>([]);
   const [amazonProducts, setAmazonProducts] = useState<TrendingProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -228,20 +259,25 @@ export default function ProductRankings({
                 Generating Smart summary...
               </div>
             ) : summary ? (
-              <div className="mb-3 text-sm font-medium p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200 flex items-start gap-2">
-                <Sparkles className="w-4 h-4 text-purple-600 flex-shrink-0 mt-0.5" />
-                <span className="text-slate-700">{summary}</span>
+              <div className={cn(
+                "mb-3 text-sm font-medium p-3 rounded-lg border flex items-start gap-2 bg-gradient-to-r",
+                isDark 
+                  ? "from-purple-950/30 to-blue-950/30 border-purple-900/40"
+                  : "from-purple-50 to-blue-50 border-purple-200"
+              )}>
+                <Sparkles className={cn("w-4 h-4 flex-shrink-0 mt-0.5", isDark ? "text-purple-400" : "text-purple-600")} />
+                <span className={isDark ? "text-slate-200" : "text-slate-700"}>{summary}</span>
               </div>
             ) : null
           ) : (
-            <div className="mb-3 p-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-lg">
+            <div className="mb-3 p-3 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/10 dark:to-orange-950/10 border border-amber-200 dark:border-amber-800/30 rounded-lg">
               <div className="flex items-start gap-2">
-                <Lock className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                <Lock className="w-4 h-4 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <p className="text-xs font-medium text-amber-900">
+                  <p className="text-xs font-medium text-amber-900 dark:text-amber-300">
                     🎯 AI Market Insights Locked
                   </p>
-                  <p className="text-xs text-amber-700 mt-1">
+                  <p className="text-xs text-amber-750 dark:text-amber-400 mt-1">
                     {currentTier === 'free'
                       ? 'Upgrade to Basic to get AI-powered analysis of market trends and product performance'
                       : 'Get instant insights on top-performing products'}

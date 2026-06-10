@@ -909,14 +909,13 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#080e1c]">
+    <div className="min-h-screen flex bg-background text-foreground">
 
       {/* ── Left Panel ── */}
-      <div className="hidden lg:flex flex-1 relative overflow-hidden items-center justify-center"
-        style={{ background: "linear-gradient(145deg, #050c1a 0%, #091525 50%, #060e1c 100%)" }}>
+      <div className="hidden lg:flex flex-1 relative overflow-hidden items-center justify-center bg-gradient-to-br from-slate-50 via-indigo-50/30 to-slate-100 dark:from-[#050c1a] dark:via-[#091525] dark:to-[#060e1c] border-r border-slate-200/50 dark:border-slate-800/30">
 
         {/* Grid overlay */}
-        <div className="absolute inset-0 opacity-[0.04]"
+        <div className="absolute inset-0 opacity-[0.04] dark:opacity-[0.04]"
           style={{
             backgroundImage: "linear-gradient(rgba(170,240,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(170,240,255,1) 1px, transparent 1px)",
             backgroundSize: "48px 48px",
@@ -960,23 +959,22 @@ export default function Login() {
         {/* Content */}
         <div className="relative z-10 px-12 max-w-lg">
           <div className="flex items-center gap-3 mb-10">
-            <div className="w-12 h-12 rounded-xl flex items-center justify-center"
-              style={{ background: "rgba(170,240,255,0.09)", border: "1px solid rgba(170,240,255,0.22)" }}>
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-[#AAF0FF]/15 border border-blue-500/20 dark:bg-white/5 dark:border-white/10">
               <Link href="/">
                 <img src="/logo.png" alt="Insydz" className="w-7 h-7 object-contain" />
               </Link>
             </div>
-            <span className="text-2xl font-bold text-white tracking-tight">Insydz</span>
+            <span className="text-2xl font-bold text-slate-800 dark:text-white tracking-tight">Insydz</span>
           </div>
 
-          <h1 className="text-4xl font-bold text-white leading-tight mb-4 tracking-tight">
+          <h1 className="text-4xl font-bold text-slate-800 dark:text-white leading-tight mb-4 tracking-tight">
             Real-time insights,{" "}
-            <span style={{ color: "#AAF0FF", textShadow: "0 0 40px rgba(170,240,255,0.4)" }}>
+            <span className="text-blue-600 dark:text-[#AAF0FF]" style={{ textShadow: "0 0 40px rgba(170,240,255,0.4)" }}>
               AI-powered
             </span>{" "}
             clarity.
           </h1>
-          <p className="text-white/40 text-sm leading-relaxed mb-8">
+          <p className="text-slate-500 dark:text-white/40 text-sm leading-relaxed mb-8">
             Turn review data into revenue strategy. Insydz gives your business the intelligence layer it's been missing.
           </p>
 
@@ -986,8 +984,8 @@ export default function Login() {
               { icon: "🛡", label: "Secure sessions" },
               { icon: "🧠", label: "AI-driven" },
             ].map((pill) => (
-              <div key={pill.label} className="flex items-center gap-2 px-4 py-2 rounded-full text-sm text-white/55"
-                style={{ background: "rgba(170,240,255,0.06)", border: "1px solid rgba(170,240,255,0.13)" }}>
+              <div key={pill.label} className="flex items-center gap-2 px-4 py-2 rounded-full text-sm text-slate-600 dark:text-white/55 bg-[#AAF0FF]/10 dark:bg-white/5 border border-blue-500/20 dark:border-white/10"
+                style={{ backdropFilter: "blur(4px)" }}>
                 <span>{pill.icon}</span>
                 <span>{pill.label}</span>
               </div>
@@ -997,34 +995,28 @@ export default function Login() {
       </div>
 
       {/* ── Right Panel: Form ── */}
-      <div className="w-full lg:w-[480px] flex items-center justify-center p-8 min-h-screen"
-        style={{ background: "rgba(7,13,26,0.97)", borderLeft: "1px solid rgba(170,240,255,0.07)" }}>
+      <div className="w-full lg:w-[480px] flex items-center justify-center p-8 min-h-screen bg-slate-50 dark:bg-[#070d1a]/95 border-l border-slate-200/50 dark:border-[#AAF0FF]/5">
         <div className="w-full max-w-sm">
 
           {/* Mobile logo */}
           <div className="flex lg:hidden flex-col items-center mb-8">
             <Link href="/" className="flex flex-col items-center group">
               <img src="/logo.png" alt="Insydz" className="w-14 h-14 object-contain mb-2 transition-transform group-hover:scale-110" />
-              <span className="text-xl font-bold text-white">Insydz</span>
+              <span className="text-xl font-bold text-slate-850 dark:text-white">Insydz</span>
             </Link>
           </div>
 
           {/* Glass card */}
-          <div className="rounded-2xl p-8"
-            style={{
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(170,240,255,0.11)",
-              boxShadow: "0 0 60px rgba(170,240,255,0.04), inset 0 1px 0 rgba(255,255,255,0.05)",
-            }}>
+          <div className="rounded-2xl p-8 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-[#AAF0FF]/10 shadow-lg dark:shadow-[0_0_60px_rgba(170,240,255,0.04)]">
 
             {/* Eyebrow */}
             <div className="flex items-center gap-2 mb-1">
               <span className="w-[7px] h-[7px] rounded-full bg-[#AAF0FF] animate-pulse"
                 style={{ boxShadow: "0 0 8px rgba(170,240,255,0.9)" }} />
-              <span className="text-[10px] text-[#AAF0FF] tracking-widest uppercase font-medium">Secure access</span>
+              <span className="text-[10px] text-blue-600 dark:text-[#AAF0FF] tracking-widest uppercase font-medium">Secure access</span>
             </div>
-            <h2 className="text-2xl font-bold text-white mb-1 tracking-tight">Welcome back</h2>
-            <p className="text-white/35 text-sm mb-6">Sign in to your analytics dashboard</p>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">Welcome back</h2>
+            <p className="text-slate-500 dark:text-white/35 text-sm mb-6">Sign in to your analytics dashboard</p>
 
             {/* Error */}
             {errorMessage && (
@@ -1034,7 +1026,7 @@ export default function Login() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email */}
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-white/50">Email Address</Label>
+                <Label className="text-xs font-medium text-slate-500 dark:text-white/50">Email Address</Label>
                 <Input
                   type="email"
                   placeholder="your@email.com"
@@ -1042,13 +1034,13 @@ export default function Login() {
                   onChange={handleInputChange("email")}
                   disabled={isLoading}
                   required
-                  className="h-11 text-sm bg-white/[0.04] border-[#AAF0FF]/10 text-white placeholder:text-white/20 focus-visible:ring-[#AAF0FF]/20 focus-visible:border-[#AAF0FF]/35 rounded-xl"
+                  className="h-11 text-sm bg-white dark:bg-[#080e1c] border-slate-200 dark:border-[#AAF0FF]/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus-visible:ring-blue-500/20 dark:focus-visible:ring-[#AAF0FF]/20 focus-visible:border-blue-500 dark:focus-visible:border-[#AAF0FF]/35 rounded-xl"
                 />
               </div>
 
               {/* Password */}
               <div className="space-y-1.5">
-                <Label className="text-xs font-medium text-white/50">Password</Label>
+                <Label className="text-xs font-medium text-slate-500 dark:text-white/50">Password</Label>
                 <Input
                   type="password"
                   placeholder="••••••••"
@@ -1056,7 +1048,7 @@ export default function Login() {
                   onChange={handleInputChange("password")}
                   disabled={isLoading}
                   required
-                  className="h-11 text-sm bg-white/[0.04] border-[#AAF0FF]/10 text-white placeholder:text-white/20 focus-visible:ring-[#AAF0FF]/20 focus-visible:border-[#AAF0FF]/35 rounded-xl"
+                  className="h-11 text-sm bg-white dark:bg-[#080e1c] border-slate-200 dark:border-[#AAF0FF]/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus-visible:ring-blue-500/20 dark:focus-visible:ring-[#AAF0FF]/20 focus-visible:border-blue-500 dark:focus-visible:border-[#AAF0FF]/35 rounded-xl"
                 />
               </div>
 
@@ -1068,15 +1060,15 @@ export default function Login() {
                     checked={rememberMe}
                     onCheckedChange={(c) => setRememberMe(c === true)}
                     disabled={isLoading}
-                    className="border-[#AAF0FF]/20 data-[state=checked]:bg-[#AAF0FF] data-[state=checked]:border-[#AAF0FF]"
+                    className="border-slate-350 dark:border-[#AAF0FF]/20 data-[state=checked]:bg-blue-600 dark:data-[state=checked]:bg-[#AAF0FF] data-[state=checked]:border-blue-600 dark:data-[state=checked]:border-[#AAF0FF]"
                   />
-                  <Label htmlFor="remember" className="text-xs text-white/40 cursor-pointer">Remember me</Label>
+                  <Label htmlFor="remember" className="text-xs text-slate-500 dark:text-white/40 cursor-pointer">Remember me</Label>
                 </div>
                 <button
                   type="button"
                   onClick={handleForgotPasswordClick}
                   disabled={isLoading}
-                  className="text-xs text-[#AAF0FF]/80 hover:text-[#AAF0FF] transition-colors bg-transparent border-none cursor-pointer"
+                  className="text-xs text-blue-600 dark:text-[#AAF0FF]/80 hover:text-blue-700 dark:hover:text-[#AAF0FF] transition-colors bg-transparent border-none cursor-pointer"
                 >
                   Forgot password?
                 </button>
@@ -1086,15 +1078,14 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-12 rounded-xl font-bold text-[#051020] text-sm transition-all duration-200 disabled:opacity-60"
+                className="w-full h-12 rounded-xl font-bold text-white dark:text-[#051020] text-sm transition-all duration-200 disabled:opacity-60 bg-blue-600 hover:bg-blue-700 dark:bg-gradient-to-r dark:from-[#AAF0FF] dark:to-[#7dd8f5]"
                 style={{
-                  background: "linear-gradient(135deg, #AAF0FF 0%, #7dd8f5 100%)",
-                  boxShadow: "0 0 24px rgba(170,240,255,0.22)",
+                  boxShadow: "0 4px 12px rgba(37,99,235,0.2)",
                 }}
               >
                 {isLoading ? (
                   <span className="flex items-center justify-center gap-2">
-                    <span className="w-4 h-4 border-2 border-[#051020]/30 border-t-[#051020] rounded-full animate-spin" />
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white dark:border-[#051020]/30 dark:border-t-[#051020] rounded-full animate-spin" />
                     Signing in...
                   </span>
                 ) : "Sign In"}
@@ -1102,11 +1093,11 @@ export default function Login() {
             </form>
 
             {/* Signup link */}
-            <div className="mt-5 pt-5 border-t border-white/[0.06] text-center space-y-3">
-              <p className="text-xs text-white/25">Secure authentication with session management</p>
-              <p className="text-sm text-white/35">
+            <div className="mt-5 pt-5 border-t border-slate-200 dark:border-white/[0.06] text-center space-y-3">
+              <p className="text-xs text-slate-400 dark:text-white/25">Secure authentication with session management</p>
+              <p className="text-sm text-slate-500 dark:text-white/35">
                 Don't have an account?{" "}
-                <Link href="/signup" className="text-[#AAF0FF] font-semibold hover:underline">
+                <Link href="/signup" className="text-blue-600 dark:text-[#AAF0FF] font-semibold hover:underline">
                   Create account
                 </Link>
               </p>
@@ -1117,26 +1108,25 @@ export default function Login() {
 
       {/* ── Forgot Password Dialog ── */}
       <Dialog open={showForgotDialog} onOpenChange={setShowForgotDialog}>
-        <DialogContent className="sm:max-w-md bg-[#0d1628] border-[#AAF0FF]/15 text-white">
+        <DialogContent className="sm:max-w-md bg-white dark:bg-[#0d1628] border-slate-200 dark:border-[#AAF0FF]/15 text-slate-900 dark:text-white">
 
           {/* Step dots */}
           <div className="flex gap-2 mb-1">
             {["email", "otp", "password"].map((s, i) => (
-              <div key={s} className="flex-1 h-[3px] rounded-full transition-colors duration-300"
-                style={{
-                  background: (resetStep === "otp" && i <= 1) || (resetStep === "password" && i <= 2) || (resetStep === "email" && i === 0)
-                    ? "#AAF0FF" : "rgba(255,255,255,0.1)",
-                }} />
+              <div key={s} className={`flex-1 h-[3px] rounded-full transition-colors duration-300 ${
+                (resetStep === "otp" && i <= 1) || (resetStep === "password" && i <= 2) || (resetStep === "email" && i === 0)
+                  ? "bg-blue-600 dark:bg-[#AAF0FF]" : "bg-slate-200 dark:bg-white/10"
+              }`} />
             ))}
           </div>
 
           <DialogHeader>
-            <DialogTitle className="text-white">
+            <DialogTitle className="text-slate-900 dark:text-white">
               {resetStep === "email" && "🔐 Forgot Password"}
               {resetStep === "otp" && "📧 Verify OTP"}
               {resetStep === "password" && "🔑 Set New Password"}
             </DialogTitle>
-            <DialogDescription className="text-white/40">
+            <DialogDescription className="text-slate-550 dark:text-white/40">
               {resetStep === "email" && "Enter your email to receive an OTP code"}
               {resetStep === "otp" && "Enter the 6-digit code sent to your email"}
               {resetStep === "password" && "Create a strong new password for your account"}
@@ -1146,14 +1136,14 @@ export default function Login() {
           <div className="space-y-4 py-2">
             {resetStep === "email" && (
               <div className="space-y-1.5">
-                <Label className="text-xs text-white/50">Email Address</Label>
+                <Label className="text-xs text-slate-500 dark:text-white/50">Email Address</Label>
                 <Input
                   type="email"
                   placeholder="your@email.com"
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
                   disabled={isProcessing}
-                  className="bg-white/[0.04] border-[#AAF0FF]/12 text-white placeholder:text-white/20 focus-visible:ring-[#AAF0FF]/20 focus-visible:border-[#AAF0FF]/35"
+                  className="bg-white dark:bg-white/[0.04] border-slate-200 dark:border-[#AAF0FF]/12 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus-visible:ring-blue-500/20 dark:focus-visible:ring-[#AAF0FF]/20 focus-visible:border-blue-500 dark:focus-visible:border-[#AAF0FF]/35"
                 />
               </div>
             )}
@@ -1161,7 +1151,7 @@ export default function Login() {
             {resetStep === "otp" && (
               <>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-white/50">OTP Code</Label>
+                  <Label className="text-xs text-slate-500 dark:text-white/50">OTP Code</Label>
                   <Input
                     type="text"
                     placeholder="000000"
@@ -1169,16 +1159,16 @@ export default function Login() {
                     onChange={(e) => setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))}
                     maxLength={6}
                     disabled={isProcessing}
-                    className="text-center text-2xl tracking-[12px] font-bold bg-white/[0.04] border-[#AAF0FF]/12 text-white placeholder:text-white/20 focus-visible:ring-[#AAF0FF]/20"
+                    className="text-center text-2xl tracking-[12px] font-bold bg-white dark:bg-white/[0.04] border-slate-200 dark:border-[#AAF0FF]/12 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus-visible:ring-blue-500/20 dark:focus-visible:ring-[#AAF0FF]/20 focus-visible:border-blue-500 dark:focus-visible:border-[#AAF0FF]/35"
                   />
-                  <p className="text-xs text-white/30 text-center">OTP sent to {forgotEmail}</p>
+                  <p className="text-xs text-slate-500 dark:text-white/30 text-center">OTP sent to {forgotEmail}</p>
                 </div>
                 <div className="flex justify-center">
                   {otpTimer > 0 ? (
-                    <p className="text-xs text-white/30">Resend OTP in {otpTimer}s</p>
+                    <p className="text-xs text-slate-500 dark:text-white/30">Resend OTP in {otpTimer}s</p>
                   ) : (
                     <button onClick={handleResendOTP} disabled={isProcessing}
-                      className="flex items-center gap-1 text-xs text-[#AAF0FF] bg-transparent border-none cursor-pointer hover:underline">
+                      className="flex items-center gap-1 text-xs text-blue-600 dark:text-[#AAF0FF] bg-transparent border-none cursor-pointer hover:underline">
                       <RefreshCw className="w-3 h-3" /> Resend OTP
                     </button>
                   )}
@@ -1189,16 +1179,16 @@ export default function Login() {
             {resetStep === "password" && (
               <div className="space-y-3">
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-white/50">New Password</Label>
+                  <Label className="text-xs text-slate-500 dark:text-white/50">New Password</Label>
                   <Input type="password" placeholder="Enter new password" value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)} minLength={6} disabled={isProcessing}
-                    className="bg-white/[0.04] border-[#AAF0FF]/12 text-white placeholder:text-white/20 focus-visible:ring-[#AAF0FF]/20" />
+                    className="bg-white dark:bg-white/[0.04] border-slate-200 dark:border-[#AAF0FF]/12 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus-visible:ring-blue-500/20 dark:focus-visible:ring-[#AAF0FF]/20 focus-visible:border-blue-500 dark:focus-visible:border-[#AAF0FF]/35" />
                 </div>
                 <div className="space-y-1.5">
-                  <Label className="text-xs text-white/50">Confirm Password</Label>
+                  <Label className="text-xs text-slate-500 dark:text-white/50">Confirm Password</Label>
                   <Input type="password" placeholder="Confirm new password" value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)} minLength={6} disabled={isProcessing}
-                    className="bg-white/[0.04] border-[#AAF0FF]/12 text-white placeholder:text-white/20 focus-visible:ring-[#AAF0FF]/20" />
+                    className="bg-white dark:bg-white/[0.04] border-slate-200 dark:border-[#AAF0FF]/12 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus-visible:ring-blue-500/20 dark:focus-visible:ring-[#AAF0FF]/20 focus-visible:border-blue-500 dark:focus-visible:border-[#AAF0FF]/35" />
                 </div>
               </div>
             )}
@@ -1206,27 +1196,24 @@ export default function Login() {
 
           <DialogFooter>
             <button onClick={() => { setShowForgotDialog(false); setResetStep("email"); }} disabled={isProcessing}
-              className="px-4 py-2 rounded-lg text-sm text-white/50 bg-white/[0.05] border border-white/10 cursor-pointer hover:bg-white/[0.08] transition-colors">
+              className="px-4 py-2 rounded-lg text-sm text-slate-600 dark:text-white/50 bg-slate-100 dark:bg-white/[0.05] border border-slate-200 dark:border-white/10 cursor-pointer hover:bg-slate-200 dark:hover:bg-white/[0.08] transition-colors">
               Cancel
             </button>
             {resetStep === "email" && (
               <button onClick={handleRequestOTP} disabled={isProcessing}
-                className="px-5 py-2 rounded-lg text-sm font-bold text-[#051020] cursor-pointer transition-all"
-                style={{ background: "linear-gradient(135deg, #AAF0FF 0%, #7dd8f5 100%)" }}>
+                className="px-5 py-2 rounded-lg text-sm font-bold text-white dark:text-[#051020] cursor-pointer transition-all bg-blue-600 hover:bg-blue-700 dark:bg-gradient-to-r dark:from-[#AAF0FF] dark:to-[#7dd8f5]">
                 {isProcessing ? "Sending..." : "Send OTP"}
               </button>
             )}
             {resetStep === "otp" && (
               <button onClick={handleVerifyOTP} disabled={isProcessing || otp.length !== 6}
-                className="px-5 py-2 rounded-lg text-sm font-bold text-[#051020] cursor-pointer transition-all disabled:opacity-50"
-                style={{ background: "linear-gradient(135deg, #AAF0FF 0%, #7dd8f5 100%)" }}>
+                className="px-5 py-2 rounded-lg text-sm font-bold text-white dark:text-[#051020] cursor-pointer transition-all disabled:opacity-50 bg-blue-600 hover:bg-blue-700 dark:bg-gradient-to-r dark:from-[#AAF0FF] dark:to-[#7dd8f5]">
                 {isProcessing ? "Verifying..." : "Verify OTP"}
               </button>
             )}
             {resetStep === "password" && (
               <button onClick={handleResetPassword} disabled={isProcessing}
-                className="px-5 py-2 rounded-lg text-sm font-bold text-[#051020] cursor-pointer transition-all"
-                style={{ background: "linear-gradient(135deg, #AAF0FF 0%, #7dd8f5 100%)" }}>
+                className="px-5 py-2 rounded-lg text-sm font-bold text-white dark:text-[#051020] cursor-pointer transition-all bg-blue-600 hover:bg-blue-700 dark:bg-gradient-to-r dark:from-[#AAF0FF] dark:to-[#7dd8f5]">
                 {isProcessing ? "Resetting..." : "Reset Password"}
               </button>
             )}

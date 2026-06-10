@@ -35,23 +35,23 @@ interface MetricCardProps {
 
 function MetricCard({ title, value, icon, description, trend }: MetricCardProps) {
   return (
-    <Card className="border-none shadow-sm bg-white rounded-2xl overflow-hidden hover:shadow-md transition-shadow group">
+    <Card className="border border-border/50 shadow-sm bg-card text-card-foreground rounded-2xl overflow-hidden hover:shadow-md transition-shadow group">
       <CardContent className="p-6">
         <div className="flex justify-between items-start mb-4">
-          <div className="p-3 bg-slate-50 rounded-xl group-hover:bg-blue-50 transition-colors">
+          <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl group-hover:bg-blue-50 dark:group-hover:bg-slate-700 transition-colors">
             {icon}
           </div>
           {trend && (
-            <div className={`flex items-center text-xs font-bold px-2 py-1 rounded-full ${trend.positive ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"}`}>
+            <div className={`flex items-center text-xs font-bold px-2 py-1 rounded-full ${trend.positive ? "bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400" : "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400"}`}>
               {trend.positive ? <TrendingUp className="w-3 h-3 mr-1" /> : <TrendingDown className="w-3 h-3 mr-1" />}
               {trend.value}
             </div>
           )}
         </div>
         <div>
-          <p className="text-sm font-medium text-slate-500">{title}</p>
-          <h3 className="text-2xl font-bold text-slate-900 mt-1">{value}</h3>
-          <p className="text-xs text-slate-400 mt-2">{description}</p>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
+          <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mt-1">{value}</h3>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">{description}</p>
         </div>
       </CardContent>
     </Card>
@@ -195,12 +195,12 @@ export default function SellerDashboardView() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Seller Intelligence</h1>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Seller Intelligence</h1>
           <div className="text-slate-500 mt-1 flex items-center flex-wrap gap-2 text-sm">
             <span>Real-time performance metrics for Merchant ID:</span>
-            <span className="font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded">{user?.seller_id}</span>
+            <span className="font-mono text-blue-600 dark:text-sky-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded">{user?.seller_id}</span>
             {isSyncing && (
-              <Badge variant="outline" className="animate-pulse bg-blue-50 text-blue-600 border-blue-200 text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
+              <Badge variant="outline" className="animate-pulse bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-sky-400 border-blue-200 dark:border-blue-800 text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
                 <Loader2 className="w-3 h-3 animate-spin text-blue-500" />
                 <span>Syncing store...</span>
               </Badge>
@@ -211,7 +211,7 @@ export default function SellerDashboardView() {
           <button
             onClick={handleDisconnectClick}
             disabled={disconnecting}
-            className="flex items-center gap-2 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-xl text-sm font-bold text-red-600 transition-all border border-red-100 disabled:opacity-50"
+            className="flex items-center gap-2 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-900/30 px-4 py-2 rounded-xl text-sm font-bold text-red-600 dark:text-red-400 transition-all border border-red-100 dark:border-red-900/50 disabled:opacity-50"
             data-track-id="seller_disconnect_store_btn"
           >
             Disconnect Store
@@ -219,7 +219,7 @@ export default function SellerDashboardView() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl text-sm font-bold text-slate-700 shadow-sm hover:shadow-md transition-all border border-slate-100 disabled:opacity-50"
+            className="flex items-center gap-2 bg-white dark:bg-slate-900 px-4 py-2 rounded-xl text-sm font-bold text-slate-700 dark:text-slate-300 shadow-sm hover:shadow-md transition-all border border-slate-100 dark:border-slate-800 disabled:opacity-50"
             data-track-id="seller_sync_now_btn"
           >
             <RefreshCcw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
@@ -286,7 +286,7 @@ export default function SellerDashboardView() {
       {/* 4 Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
         {/* Sales Trend */}
-        <Card className="border-none shadow-sm rounded-3xl bg-white overflow-hidden">
+        <Card className="border border-border/50 shadow-sm rounded-3xl bg-card text-card-foreground overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-blue-600" />
@@ -297,18 +297,18 @@ export default function SellerDashboardView() {
           <CardContent className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={charts.sales_trend}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.3} />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} dy={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} />
-                <Tooltip contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }} cursor={{ stroke: "#3b82f6", strokeWidth: 2 }} />
+                <Tooltip contentStyle={{ borderRadius: "12px", border: "1px solid var(--border)", backgroundColor: "var(--card)", color: "var(--foreground)", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }} cursor={{ stroke: "#3b82f6", strokeWidth: 2 }} />
                 <Line type="monotone" dataKey="sales" stroke="#3b82f6" strokeWidth={4} dot={{ r: 6, fill: "#3b82f6", strokeWidth: 2, stroke: "#fff" }} activeDot={{ r: 8, strokeWidth: 0 }} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        {/* Marketplace Distribution */}
-        <Card className="border-none shadow-sm rounded-3xl bg-white overflow-hidden">
+        {/* Marketplace Portfolio */}
+        <Card className="border border-border/50 shadow-sm rounded-3xl bg-card text-card-foreground overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShoppingCart className="w-5 h-5 text-purple-600" />
@@ -324,7 +324,7 @@ export default function SellerDashboardView() {
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }} />
+                <Tooltip contentStyle={{ borderRadius: "12px", border: "1px solid var(--border)", backgroundColor: "var(--card)", color: "var(--foreground)", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }} />
                 <Legend verticalAlign="bottom" height={36} />
               </PieChart>
             </ResponsiveContainer>
@@ -332,7 +332,7 @@ export default function SellerDashboardView() {
         </Card>
 
         {/* Review Sentiment */}
-        <Card className="border-none shadow-sm rounded-3xl bg-white overflow-hidden">
+        <Card className="border border-border/50 shadow-sm rounded-3xl bg-card text-card-foreground overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Star className="w-5 h-5 text-amber-500" />
@@ -344,8 +344,8 @@ export default function SellerDashboardView() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={charts.review_sentiment} layout="vertical">
                 <XAxis type="number" hide />
-                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: "#475569", fontWeight: "bold" }} width={80} />
-                <Tooltip contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }} />
+                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontWeight: "bold" }} width={80} />
+                <Tooltip contentStyle={{ borderRadius: "12px", border: "1px solid var(--border)", backgroundColor: "var(--card)", color: "var(--foreground)", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }} />
                 <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={40}>
                   {charts.review_sentiment.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.name === "Positive" ? "#10b981" : entry.name === "Neutral" ? "#f59e0b" : "#ef4444"} />
@@ -357,7 +357,7 @@ export default function SellerDashboardView() {
         </Card>
 
         {/* Rating Distribution — replaces BSR Trend, uses real product star ratings */}
-        <Card className="border-none shadow-sm rounded-3xl bg-white overflow-hidden">
+        <Card className="border border-border/50 shadow-sm rounded-3xl bg-card text-card-foreground overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Percent className="w-5 h-5 text-indigo-600" />
@@ -368,11 +368,11 @@ export default function SellerDashboardView() {
           <CardContent className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={charts.rating_distribution}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.3} />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 13 }} />
                 <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} />
                 <Tooltip
-                  contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }}
+                  contentStyle={{ borderRadius: "12px", border: "1px solid var(--border)", backgroundColor: "var(--card)", color: "var(--foreground)", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }}
                   formatter={(v: any) => [`${v} products`, "Count"]}
                 />
                 <Bar dataKey="count" radius={[8, 8, 0, 0]} barSize={48}>
@@ -387,18 +387,18 @@ export default function SellerDashboardView() {
       </div>
 
       <AlertDialog open={isConfirmOpen} onOpenChange={setIsConfirmOpen}>
-        <AlertDialogContent className="max-w-md bg-white border border-slate-100 shadow-2xl rounded-2xl p-6">
+        <AlertDialogContent className="max-w-md bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-2xl rounded-2xl p-6 text-slate-900 dark:text-slate-100">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl font-bold text-slate-900">
+            <AlertDialogTitle className="text-xl font-bold text-slate-900 dark:text-slate-100">
               Disconnect Store
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-500 mt-2">
+            <AlertDialogDescription className="text-slate-500 dark:text-slate-400 mt-2">
               Are you sure you want to disconnect this store? This will clear your Seller ID and return you to the store connection page.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-6 flex flex-col sm:flex-row gap-3">
             <AlertDialogCancel
-              className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold transition-all"
+              className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold transition-all bg-transparent"
               data-track-id="seller_disconnect_cancel_btn"
             >
               Cancel

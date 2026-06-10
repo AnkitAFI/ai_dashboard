@@ -199,14 +199,14 @@ export default function SentimentProductsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-sky-900 break-words">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-sky-900 dark:text-sky-400 break-words">
             {formatSentiment(sentiment)} Products
           </h2>
           <div className="flex flex-col gap-1 mt-1">
-            <p className="text-xs sm:text-sm text-gray-500">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
               {source === "flipkart" ? "Flipkart" : "Amazon"} • {totalProducts.toLocaleString()} products found
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 dark:text-slate-500">
               {sentiment === "positive" && "⭐ Rating 4.0+"}
               {sentiment === "neutral" && "⭐ Rating 3.5-3.99"}
               {sentiment === "negative" && "⭐ Rating below 3.5"}
@@ -215,40 +215,40 @@ export default function SentimentProductsPage() {
 
           {activeFiltersCount > 0 && (
             <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="text-xs text-gray-500 font-medium">Active Filters:</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Active Filters:</span>
               {categoryFilter && (
-                <Badge variant="outline" className="text-xs bg-blue-50 text-blue-700 border-blue-200 px-3 py-1">
+                <Badge variant="outline" className="text-xs bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-900/50 px-3 py-1">
                   📁 {categoryFilter}
                 </Badge>
               )}
               {(minPriceFilter && minPriceFilter !== '0') || (maxPriceFilter && maxPriceFilter !== '5000000') && (
-                <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200 px-3 py-1">
+                <Badge variant="outline" className="text-xs bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-900/50 px-3 py-1">
                   💰 ₹{minPriceFilter || '0'} - ₹{maxPriceFilter || '5000000'}
                 </Badge>
               )}
               {minRatingFilter && minRatingFilter !== '0' && (
-                <Badge variant="outline" className="text-xs bg-yellow-50 text-yellow-700 border-yellow-200 px-3 py-1">
+                <Badge variant="outline" className="text-xs bg-yellow-50 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-900/50 px-3 py-1">
                   ⭐ {minRatingFilter}+
                 </Badge>
               )}
               {dateRangeFilter && dateRangeFilter !== 'all' && (
-                <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200 px-3 py-1">
+                <Badge variant="outline" className="text-xs bg-purple-50 dark:bg-purple-950/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-900/50 px-3 py-1">
                   📅 {dateRangeFilter}
                 </Badge>
               )}
               {trendingOnlyFilter === 'true' && (
-                <Badge variant="outline" className="text-xs bg-rose-50 text-rose-700 border-rose-200 px-3 py-1">
+                <Badge variant="outline" className="text-xs bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-900/50 px-3 py-1">
                   🔥 Trending
                 </Badge>
               )}
               {sortByFilter && sortByFilter !== 'default' && (
-                <Badge variant="outline" className="text-xs bg-indigo-50 text-indigo-700 border-indigo-200 px-3 py-1">
+                <Badge variant="outline" className="text-xs bg-indigo-50 dark:bg-indigo-950/20 text-indigo-700 dark:text-indigo-400 border-indigo-200 dark:border-indigo-900/50 px-3 py-1">
                   🔄 {sortByFilter}
                 </Badge>
               )}
               <button
                 onClick={handleRemoveAllFilters}
-                className="text-xs text-gray-500 hover:text-red-600 transition-colors flex items-center gap-1 ml-2"
+                className="text-xs text-gray-500 hover:text-red-600 dark:hover:text-red-400 transition-colors flex items-center gap-1 ml-2"
               >
                 <X className="w-3 h-3" /> Clear All
               </button>
@@ -262,7 +262,7 @@ export default function SentimentProductsPage() {
           <Button
             variant="outline"
             onClick={() => router.push("/dashboard")}
-            className="text-xs sm:text-sm font-medium border-sky-200 text-sky-700 hover:bg-sky-50"
+            className="text-xs sm:text-sm font-medium border-sky-200 dark:border-slate-700 text-sky-700 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-800"
           >
             ← Back
           </Button>
@@ -270,13 +270,13 @@ export default function SentimentProductsPage() {
       </div>
 
       {!isLoading && !error && totalPages > 1 && (
-        <div className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-sm rounded-2xl p-4 mb-6">
+        <div className="bg-card text-card-foreground opacity-100 backdrop-blur-none border border-sky-100 dark:border-slate-850 shadow-sm rounded-2xl p-4 mb-6">
           <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="text-xs sm:text-sm text-gray-600">
-              Page <span className="font-semibold text-sky-900">{currentPage}</span> of{" "}
-              <span className="font-semibold text-sky-900">{totalPages}</span> • Showing{" "}
-              <span className="font-semibold text-sky-600">{products.length}</span> of{" "}
-              <span className="font-semibold text-sky-600">{totalProducts.toLocaleString()}</span> products
+            <div className="text-xs sm:text-sm text-gray-600 dark:text-slate-400">
+              Page <span className="font-semibold text-sky-900 dark:text-sky-400">{currentPage}</span> of{" "}
+              <span className="font-semibold text-sky-900 dark:text-sky-400">{totalPages}</span> • Showing{" "}
+              <span className="font-semibold text-sky-600 dark:text-sky-400">{products.length}</span> of{" "}
+              <span className="font-semibold text-sky-600 dark:text-sky-400">{totalProducts.toLocaleString()}</span> products
             </div>
             <div className="flex gap-2">
               <Button
@@ -301,7 +301,7 @@ export default function SentimentProductsPage() {
       )}
 
       {error && (
-        <div className="backdrop-blur-none bg-rose-50/70 border border-rose-100 shadow-lg rounded-2xl p-6 mb-6 text-rose-800 flex items-center gap-3">
+        <div className="backdrop-blur-none bg-rose-50/70 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/50 shadow-lg rounded-2xl p-6 mb-6 text-rose-800 dark:text-rose-300 flex items-center gap-3">
           <AlertCircle className="w-6 h-6" />
           <div>
             <p className="font-semibold">Error Loading Products</p>
@@ -313,12 +313,12 @@ export default function SentimentProductsPage() {
       {isLoading && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
           {[...Array(12)].map((_, i) => (
-            <Card key={i} className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-sm rounded-3xl overflow-hidden">
-              <Skeleton className="w-full h-48 bg-sky-100" />
+            <Card key={i} className="bg-card text-card-foreground opacity-100 backdrop-blur-none border border-sky-100 dark:border-slate-800 shadow-sm rounded-3xl overflow-hidden">
+              <Skeleton className="w-full h-48 bg-sky-100 dark:bg-slate-800" />
               <CardContent className="p-4">
-                <Skeleton className="h-6 w-3/4 mb-2 bg-sky-100" />
-                <Skeleton className="h-4 w-1/2 mb-4 bg-sky-100" />
-                <Skeleton className="h-8 w-full bg-sky-100" />
+                <Skeleton className="h-6 w-3/4 mb-2 bg-sky-100 dark:bg-slate-800" />
+                <Skeleton className="h-4 w-1/2 mb-4 bg-sky-100 dark:bg-slate-800" />
+                <Skeleton className="h-8 w-full bg-sky-100 dark:bg-slate-800" />
               </CardContent>
             </Card>
           ))}
@@ -326,9 +326,9 @@ export default function SentimentProductsPage() {
       )}
 
       {!isLoading && !error && products.length === 0 && (
-        <Card className="bg-background opacity-100 backdrop-blur-none border border-sky-100 shadow-sm rounded-3xl p-12 text-center">
-          <p className="text-gray-500 text-lg mb-2">No products found with {sentiment} sentiment matching your filters</p>
-          <button onClick={handleRemoveAllFilters} className="text-blue-600 hover:underline">Remove filters</button>
+        <Card className="bg-card text-card-foreground opacity-100 backdrop-blur-none border border-sky-100 dark:border-slate-800 shadow-sm rounded-3xl p-12 text-center">
+          <p className="text-gray-500 dark:text-gray-400 text-lg mb-2">No products found with {sentiment} sentiment matching your filters</p>
+          <button onClick={handleRemoveAllFilters} className="text-blue-600 dark:text-sky-400 hover:underline">Remove filters</button>
         </Card>
       )}
 
@@ -337,12 +337,12 @@ export default function SentimentProductsPage() {
           {products.map((product, index) => {
             const sentimentPercentage = calculateSentimentPercentage(product.rating, product.sentiment_score);
             return (
-              <Card key={index} className="overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => router.push(`/product/${encodeURIComponent(product.product_title)}?from=sentiment&source=${source}`)}>
+              <Card key={index} className="overflow-hidden bg-card text-card-foreground border border-sky-100 dark:border-slate-800 hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={() => router.push(`/product/${encodeURIComponent(product.product_title)}?from=sentiment&source=${source}`)}>
                 {product.image_url && (
-                  <div className="relative h-48 bg-slate-100 overflow-hidden">
+                  <div className="relative h-48 bg-slate-100 dark:bg-slate-800 overflow-hidden">
                     <img src={product.image_url} alt={product.product_title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
                     {product.rating && (
-                      <div className="absolute top-3 right-3 bg-background opacity-100 backdrop-blur px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
+                      <div className="absolute top-3 right-3 bg-background dark:bg-slate-900/80 text-foreground opacity-100 backdrop-blur px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
                         <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
                         <span className="text-sm font-semibold">{product.rating.toFixed(1)}</span>
                       </div>
@@ -350,7 +350,7 @@ export default function SentimentProductsPage() {
                   </div>
                 )}
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-base line-clamp-2 group-hover:text-blue-600">{product.product_title}</CardTitle>
+                  <CardTitle className="text-base line-clamp-2 text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-sky-400">{product.product_title}</CardTitle>
                   <div className="flex gap-2 mt-2 flex-wrap">
                     {product.category && <Badge variant="outline" className="text-xs">{product.category}</Badge>}
                     {product.brand && <Badge variant="secondary" className="text-xs">{product.brand}</Badge>}
@@ -358,15 +358,15 @@ export default function SentimentProductsPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-slate-800">₹{product.price?.toLocaleString('en-IN')}</span>
+                    <span className="text-2xl font-bold text-slate-800 dark:text-slate-200">₹{product.price?.toLocaleString('en-IN')}</span>
                     <TrendingUp className="w-5 h-5 text-emerald-500" />
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="font-medium text-slate-700">Sentiment Score</span>
-                      <span className="font-bold text-slate-900">{sentimentPercentage}%</span>
+                      <span className="font-medium text-slate-700 dark:text-slate-400">Sentiment Score</span>
+                      <span className="font-bold text-slate-900 dark:text-slate-200">{sentimentPercentage}%</span>
                     </div>
-                    <div className="relative h-3 bg-slate-200 rounded-full overflow-hidden">
+                    <div className="relative h-3 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
                       <div className={`h-full bg-gradient-to-r ${getProgressGradient(sentimentPercentage)} transition-all duration-1000`} style={{ width: `${sentimentPercentage}%` }} />
                     </div>
                   </div>

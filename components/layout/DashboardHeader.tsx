@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Bell, Filter, Menu, TrendingDown, TrendingUp, Star, Package, AlertCircle, ExternalLink, Lock, Crown } from "lucide-react";
+import { Bell, Filter, Menu, TrendingDown, TrendingUp, Star, Package, AlertCircle, ExternalLink, Lock, Crown, Sun, Moon } from "lucide-react";
 import { useFilters } from "@/components/dashboard/filters-context";
+import { useTheme } from "next-themes";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -79,6 +80,12 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
   const { limits, canAccessFeature, currentTier } = useSubscriptionLimits();
   const { showAlertDetails } = useAlerts();
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const selectedSource = filters.table || "amazon";
   const BASE_URL = API_BASE_URL;
@@ -157,21 +164,21 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
   };
 
   return (
-    <header className="bg-white/70 backdrop-blur-xl border border-sky-100 shadow-lg rounded-none sm:rounded-2xl px-4 sm:px-6 lg:px-8 py-4 sm:py-5 mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 sticky top-0 sm:top-4 z-20 mx-0 sm:mx-6">
+    <header className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-sky-100 dark:border-slate-800 shadow-lg rounded-none sm:rounded-2xl px-4 sm:px-6 lg:px-8 py-4 sm:py-5 mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 sticky top-0 sm:top-4 z-20 mx-0 sm:mx-6 text-foreground">
       <div className="flex items-center gap-3 w-full sm:w-auto">
-        <button onClick={onMobileMenuToggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors" data-track-id="toggle_mobile_menu_btn">
-          <Menu className="w-5 h-5 text-sky-900" />
+        <button onClick={onMobileMenuToggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100 dark:hover:bg-slate-800 transition-colors" data-track-id="toggle_mobile_menu_btn">
+          <Menu className="w-5 h-5 text-sky-900 dark:text-sky-400" />
         </button>
         <div className="flex-1 sm:flex-none">
-          <h2 className="text-xl sm:text-2xl font-bold text-sky-900 flex items-center gap-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-sky-900 dark:text-sky-100 flex items-center gap-2">
             {currentRoute.title} {isDashboard && (
               <span className="w-5 h-3 sm:w-6 sm:h-4 inline-block">
                 <img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" alt="Indian Flag" className="w-full h-full object-cover shadow-sm rounded-sm" />
               </span>
             )}
           </h2>
-          <p className="text-slate-600 text-[10px] sm:text-xs">
-            {currentRoute.subtitle} • <span className="font-semibold text-sky-600">{currentTier.toUpperCase()}</span>
+          <p className="text-slate-600 dark:text-slate-400 text-[10px] sm:text-xs">
+            {currentRoute.subtitle} • <span className="font-semibold text-sky-600 dark:text-sky-400">{currentTier.toUpperCase()}</span>
           </p>
         </div>
       </div>
@@ -183,7 +190,7 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
               id="tour-filters-btn"
               variant="outline" 
               size="sm" 
-              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold transition-all ${showFilters ? 'bg-sky-100 border-sky-300 text-sky-700 shadow-sm' : ''}`} 
+              className={`flex-1 sm:flex-none flex items-center justify-center gap-2 text-xs sm:text-sm font-semibold transition-all ${showFilters ? 'bg-sky-100 dark:bg-slate-800 border-sky-300 dark:border-slate-700 text-sky-700 dark:text-sky-400 shadow-sm' : 'dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800'}`} 
               onClick={onFilterToggle}
               data-track-id="toggle_filters_btn"
               data-filter-value={showFilters ? "hide" : "show"}
@@ -195,7 +202,7 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
 
 
             <select 
-              className="flex-1 sm:flex-none border border-slate-300 rounded-lg px-3 py-1.5 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-sky-500/20 transition-all font-medium" 
+              className="flex-1 sm:flex-none border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs sm:text-sm bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-500/20 transition-all font-medium" 
               value={selectedSource} 
               onChange={(e) => handleSourceChange(e.target.value)}
               data-track-id="source_platform_select"
@@ -208,17 +215,37 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
           </>
         )}
 
+        {/* Theme Toggle */}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="p-2 h-9 w-9 rounded-xl hover:bg-sky-50 dark:hover:bg-slate-800 transition-colors text-sky-900 dark:text-sky-400"
+          onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+          aria-label="Toggle theme"
+          data-track-id="header_theme_toggle_btn"
+        >
+          {mounted ? (
+            resolvedTheme === "dark" ? (
+              <Sun className="w-4 h-4 sm:w-5 h-5 text-yellow-500" />
+            ) : (
+              <Moon className="w-4 h-4 sm:w-5 h-5" />
+            )
+          ) : (
+            <div className="w-4 h-4 sm:w-5 h-5" />
+          )}
+        </Button>
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               id="tour-notifications-btn"
               variant="ghost"
               size="sm"
-              className="relative p-2 h-9 w-9 rounded-xl hover:bg-sky-50 transition-colors"
+              className="relative p-2 h-9 w-9 rounded-xl hover:bg-sky-50 dark:hover:bg-slate-800 transition-colors"
               data-track-id="header_notifications_btn"
               data-filter-value={notifications.length.toString()}
             >
-              <Bell className="w-4 h-4 sm:w-5 h-5 text-sky-900" />
+              <Bell className="w-4 h-4 sm:w-5 h-5 text-sky-900 dark:text-sky-400" />
               {notifications.length > 0 && (
                 <span className="absolute top-1 right-1 inline-flex items-center justify-center h-4 w-4 text-[10px] font-bold rounded-full bg-red-500 text-white shadow-sm ring-2 ring-white">
                   {notifications.length}
@@ -226,13 +253,13 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
               )}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-96 max-w-[95vw] rounded-2xl shadow-2xl bg-white max-h-[80vh] overflow-y-auto border-slate-200">
-            <DropdownMenuLabel className="font-bold text-slate-800 text-base sticky top-0 bg-white z-10 p-4 border-b border-slate-100">
+          <DropdownMenuContent align="end" className="w-96 max-w-[95vw] rounded-2xl shadow-2xl bg-white dark:bg-slate-900 max-h-[80vh] overflow-y-auto border-slate-200 dark:border-slate-800">
+            <DropdownMenuLabel className="font-bold text-slate-800 dark:text-slate-100 text-base sticky top-0 bg-white dark:bg-slate-900 z-10 p-4 border-b border-slate-100 dark:border-slate-800">
               🚨 Competitor Alerts
-              <p className="text-[10px] font-normal text-slate-500 mt-1 flex items-center gap-1">
+              <p className="text-[10px] font-normal text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
                 Real-time marketplace monitoring
                 {limits.maxNotifications < UNLIMITED && (
-                  <span className="text-amber-600 font-bold bg-amber-50 px-1.5 py-0.5 rounded ml-auto flex items-center gap-1">
+                  <span className="text-amber-600 font-bold bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded ml-auto flex items-center gap-1">
                     <Lock className="w-2.5 h-2.5" /> {notifications.filter(n => n.id !== 'upgrade-prompt').length}/{limits.maxNotifications}
                   </span>
                 )}
@@ -241,7 +268,7 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
             {notifications.length === 0 ? (
               <div className="text-sm text-slate-500 py-12 text-center">
                 <div className="flex flex-col items-center gap-3 w-full">
-                  <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
                     <Bell className="w-6 h-6 text-slate-200" />
                   </div>
                   <p className="font-medium">All caught up!</p>
@@ -249,11 +276,11 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
                 </div>
               </div>
             ) : (
-              <div className="divide-y divide-slate-100">
+              <div className="divide-y divide-slate-100 dark:divide-slate-800">
                 {notifications.map((n) => (
                   <DropdownMenuItem 
                     key={n.id} 
-                    className={`flex flex-col items-start py-4 px-4 hover:bg-sky-50/50 cursor-pointer transition-colors outline-none ${n.id === 'upgrade-prompt' ? 'bg-gradient-to-r from-amber-50/50 to-orange-50/50' : ''}`} 
+                    className={`flex flex-col items-start py-4 px-4 hover:bg-sky-50/50 dark:hover:bg-slate-800/50 cursor-pointer transition-colors outline-none ${n.id === 'upgrade-prompt' ? 'bg-gradient-to-r from-amber-50/50 to-orange-50/50 dark:from-amber-950/20 dark:to-orange-950/20' : ''}`} 
                     onClick={() => {
                       if (n.id === 'upgrade-prompt') {
                         router.push("/subscription");
@@ -269,9 +296,9 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <Badge variant="outline" className={`text-[10px] px-1.5 py-0 font-bold border-0 ${getSeverityColor(n.severity)}`}>{n.severity.toUpperCase()}</Badge>
-                          <span className="text-[10px] text-slate-400 font-medium tracking-wider">{n.type.replace(/_/g, " ").toUpperCase()}</span>
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium tracking-wider">{n.type.replace(/_/g, " ").toUpperCase()}</span>
                         </div>
-                        <p className="text-sm font-semibold text-slate-800 mb-1 leading-snug line-clamp-2">{n.message}</p>
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-1 leading-snug line-clamp-2">{n.message}</p>
                         <p className="text-[10px] text-slate-400 flex items-center gap-1">
                           <AlertCircle className="w-2.5 h-2.5" /> {n.time}
                         </p>
@@ -282,9 +309,9 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
                 ))}
               </div>
             )}
-            <div className="sticky bottom-0 bg-white p-3 border-t border-slate-100 flex gap-2">
-              <Button size="sm" variant="ghost" className="flex-1 text-xs font-bold text-slate-500 hover:text-slate-700" onClick={() => setNotifications([])} data-track-id="clear_alerts_btn">Clear All</Button>
-              <Button size="sm" className="flex-1 text-xs font-bold bg-sky-600 hover:bg-sky-700 shadow-md shadow-sky-100" onClick={() => fetchNotifications(selectedSource)} data-track-id="refresh_alerts_btn">Refresh Feed</Button>
+            <div className="sticky bottom-0 bg-white dark:bg-slate-900 p-3 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+              <Button size="sm" variant="ghost" className="flex-1 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300" onClick={() => setNotifications([])} data-track-id="clear_alerts_btn">Clear All</Button>
+              <Button size="sm" className="flex-1 text-xs font-bold bg-sky-600 hover:bg-sky-700 shadow-md shadow-sky-100 dark:shadow-none" onClick={() => fetchNotifications(selectedSource)} data-track-id="refresh_alerts_btn">Refresh Feed</Button>
             </div>
             {!canAccessFeature('hasRealTimeAlerts') && notifications.length > 0 && (
               <div className="m-3 p-4 bg-gradient-to-br from-indigo-600 to-sky-600 rounded-xl text-white shadow-lg">

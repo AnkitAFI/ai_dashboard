@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Check, X, Crown, Zap, Building2, Loader2, AlertCircle, Sparkles, Infinity as InfinityIcon, Shield, } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import PaymentModal, { type PaymentPlan } from "@/components/payment/payment-modal";
+import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 const API_BASE = API_BASE_URL;
 
@@ -158,27 +160,27 @@ const PLAN_STYLES: Record<
   { iconBg: string; ring: string; upgradeBtn: string; discountBadge: string }
 > = {
   free: {
-    iconBg: "bg-slate-100",
+    iconBg: "bg-slate-100 dark:bg-slate-850 text-slate-700 dark:text-slate-300",
     ring: "",
     upgradeBtn: "bg-slate-500 hover:bg-slate-600 text-white",
     discountBadge: "bg-slate-500",
   },
   basic: {
-    iconBg: "bg-sky-100",
-    ring: "ring-2 ring-sky-500 ring-offset-2",
-    upgradeBtn: "bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white shadow-sky-200",
+    iconBg: "bg-sky-100 dark:bg-sky-950/45 text-sky-700 dark:text-sky-450",
+    ring: "ring-2 ring-sky-500 ring-offset-2 dark:ring-offset-slate-900",
+    upgradeBtn: "bg-gradient-to-r from-sky-600 to-blue-700 hover:from-sky-700 hover:to-blue-800 text-white shadow-sky-200 dark:shadow-none",
     discountBadge: "bg-sky-600",
   },
   premium: {
-    iconBg: "bg-amber-100",
+    iconBg: "bg-amber-100 dark:bg-amber-950/45 text-amber-700 dark:text-amber-400",
     ring: "",
-    upgradeBtn: "bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-amber-200",
+    upgradeBtn: "bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-amber-200 dark:shadow-none",
     discountBadge: "bg-amber-500",
   },
   enterprise: {
-    iconBg: "bg-indigo-100",
+    iconBg: "bg-indigo-100 dark:bg-indigo-950/45 text-indigo-700 dark:text-indigo-400",
     ring: "",
-    upgradeBtn: "bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white shadow-indigo-200",
+    upgradeBtn: "bg-gradient-to-r from-indigo-600 to-purple-700 hover:from-indigo-700 hover:to-purple-800 text-white shadow-indigo-200 dark:shadow-none",
     discountBadge: "bg-indigo-600",
   },
 };
@@ -189,6 +191,9 @@ export default function Subscription() {
   const { user, refreshUser, isLoading: authLoading } = useAuth();
   const { currentTier } = useSubscriptionLimits();
   const { getAIUsage } = useSubscriptionSync();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  const isDark = mounted && resolvedTheme === "dark";
 
   const [selectedPlan, setSelectedPlan] = useState<string>(currentTier);
   const [loading, setLoading] = useState(false);
@@ -199,6 +204,7 @@ export default function Subscription() {
   const [paymentPlan, setPaymentPlan] = useState<PaymentPlan | null>(null);
 
   useEffect(() => {
+    setMounted(true);
     setSelectedPlan(currentTier);
     if (user) {
       getAIUsage().then(setAiUsage).catch(console.error);
@@ -330,38 +336,47 @@ export default function Subscription() {
 
       {/* Hero Header */}
       <div className="text-center space-y-4">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl mb-2 shadow-inner">
+        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-950/20 dark:to-cyan-950/20 rounded-2xl mb-2 shadow-inner">
           <Crown className="h-8 w-8 text-blue-500" />
         </div>
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
           Subscription & Licensing
         </h1>
-        <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+        <p className={cn("text-lg max-w-2xl mx-auto", isDark ? "text-slate-400" : "text-slate-500")}>
           Unlock the full potential of AI-powered analytics. Pick the plan that fits your growth.
         </p>
 
         {/* AI usage bar */}
         {aiUsage.limit > 0 && aiUsage.limit !== Infinity && (
-          <div className="mt-4 bg-white rounded-2xl p-5 max-w-sm mx-auto
-                          border border-slate-200 shadow-sm">
+          <div className={cn(
+            "mt-4 rounded-2xl p-5 max-w-sm mx-auto border shadow-sm",
+            isDark ? "bg-slate-900 border-slate-850" : "bg-white border-slate-200"
+          )}>
             <div className="flex items-center justify-between mb-2.5">
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+              <p className={cn("text-xs font-bold uppercase tracking-wider", isDark ? "text-slate-400" : "text-slate-500")}>
                 AI Chat Usage This Month
               </p>
-              <span className={`text-xs font-extrabold
-                ${limitReached ? "text-rose-600" : "text-sky-700"}`}>
+              <span className={cn(
+                "text-xs font-extrabold",
+                limitReached 
+                  ? "text-rose-600" 
+                  : isDark 
+                    ? "text-[#AAF0FF]" 
+                    : "text-sky-700"
+              )}>
                 {aiUsage.used} / {aiUsage.limit}
               </span>
             </div>
-            <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+            <div className={cn("h-2.5 rounded-full overflow-hidden", isDark ? "bg-slate-800" : "bg-slate-100")}>
               <div
-                className={`h-full rounded-full transition-all duration-700
-                  ${limitReached
+                className={cn(
+                  "h-full rounded-full transition-all duration-700",
+                  limitReached
                     ? "bg-gradient-to-r from-rose-400 to-rose-600"
                     : usagePct > 75
                       ? "bg-gradient-to-r from-amber-400 to-orange-500"
                       : "bg-gradient-to-r from-sky-500 to-blue-600"
-                  }`}
+                )}
                 style={{ width: `${usagePct}%` }}
               />
             </div>
@@ -385,12 +400,13 @@ export default function Subscription() {
 
           return (
             <Card key={plan.id}
-              className={`
-                    relative flex flex-col transition-all duration-300
-                    hover:shadow-xl hover:-translate-y-0.5 shadow-md border rounded-3xl
-                    ${styles.ring}
-                    ${isCurrentPlan ? "bg-sky-50/70 border-sky-300" : "bg-white border-slate-200"}
-                  `}>
+              className={cn(
+                "relative flex flex-col transition-all duration-300 hover:shadow-xl hover:-translate-y-0.5 shadow-md border rounded-3xl",
+                styles.ring,
+                isCurrentPlan 
+                  ? "bg-sky-50/70 border-sky-300 dark:bg-sky-950/20 dark:border-sky-850" 
+                  : "bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-800"
+              )}>
 
               {plan.isPopular && (
                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-10">
@@ -419,42 +435,41 @@ export default function Subscription() {
                   </div>
                 </div>
 
-                <CardTitle className="text-xl mb-1 font-extrabold text-slate-900">
+                <CardTitle className={cn("text-xl mb-1 font-extrabold", isDark ? "text-slate-100" : "text-slate-900")}>
                   {plan.name}
                 </CardTitle>
 
                 {plan.id !== "enterprise" ? (
                   <div className="flex items-baseline justify-center gap-1.5 mt-2 mb-1">
                     {plan.oldPrice && (
-                      <span className="text-slate-400 text-lg line-through">
+                      <span className={cn("text-lg line-through", isDark ? "text-slate-500" : "text-slate-400")}>
                         ₹{plan.oldPrice.toLocaleString("en-IN")}
                       </span>
                     )}
-                    <span className="text-3xl font-extrabold text-sky-900">
+                    <span className={cn("text-3xl font-extrabold", isDark ? "text-[#AAF0FF]" : "text-sky-900")}>
                       {plan.price === 0 ? "Free" : `₹${plan.price!.toLocaleString("en-IN")}`}
                     </span>
                     {plan.price !== 0 && (
-                      <span className="text-sm font-normal text-slate-400 self-end pb-0.5">
+                      <span className={cn("text-sm font-normal self-end pb-0.5", isDark ? "text-slate-500" : "text-slate-400")}>
                         /month
                       </span>
                     )}
                   </div>
                 ) : (
-                  <div className="text-xl font-extrabold text-indigo-700 mt-2 mb-1">
+                  <div className={cn("text-xl font-extrabold mt-2 mb-1", isDark ? "text-indigo-400" : "text-indigo-700")}>
                     Custom Pricing
                   </div>
                 )}
 
                 {plan.oldPrice && plan.price !== undefined && (
                   <div className="flex justify-center mt-1">
-                    <Badge className={`text-[10px] font-bold px-2.5 py-0.5
-                                       rounded-full text-white ${styles.discountBadge}`}>
+                    <Badge className={cn("text-[10px] font-bold px-2.5 py-0.5 rounded-full text-white", styles.discountBadge)}>
                       {Math.round(((plan.oldPrice - plan.price) / plan.oldPrice) * 100)}% OFF
                     </Badge>
                   </div>
                 )}
 
-                <CardDescription className="text-xs text-slate-400 mt-2">
+                <CardDescription className={cn("text-xs mt-2", isDark ? "text-slate-400" : "text-slate-500")}>
                   {plan.description}
                 </CardDescription>
               </CardHeader>
@@ -463,20 +478,18 @@ export default function Subscription() {
                 <div className="space-y-2 flex-1">
                   {plan.features.map((feature, index) => (
                     <div key={index} className="flex items-start gap-2">
-                      <div className="w-4 h-4 rounded-full bg-green-100 flex items-center
-                                      justify-center flex-shrink-0 mt-0.5">
-                        <Check className="h-2.5 w-2.5 text-green-600" />
+                      <div className="w-4 h-4 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Check className="h-2.5 w-2.5 text-green-600 dark:text-green-450" />
                       </div>
-                      <span className="text-sm text-slate-700">{feature}</span>
+                      <span className={cn("text-sm", isDark ? "text-slate-300" : "text-slate-700")}>{feature}</span>
                     </div>
                   ))}
                   {plan.limitations.map((limitation, index) => (
                     <div key={index} className="flex items-start gap-2 opacity-40">
-                      <div className="w-4 h-4 rounded-full bg-slate-100 flex items-center
-                                      justify-center flex-shrink-0 mt-0.5">
+                      <div className="w-4 h-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0 mt-0.5">
                         <X className="h-2.5 w-2.5 text-slate-400" />
                       </div>
-                      <span className="text-sm text-slate-400 line-through">{limitation}</span>
+                      <span className={cn("text-sm line-through", isDark ? "text-slate-400" : "text-slate-500")}>{limitation}</span>
                     </div>
                   ))}
                 </div>
@@ -533,28 +546,32 @@ export default function Subscription() {
       {/* Trust Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-5xl mx-auto">
         {TRUST_ITEMS.map((item, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-slate-100
-                                  shadow-sm p-4 flex flex-col gap-2">
-            <div className="w-9 h-9 bg-slate-50 rounded-xl flex items-center justify-center">
+          <div key={i} className={cn(
+            "rounded-2xl border shadow-sm p-4 flex flex-col gap-2",
+            isDark ? "bg-slate-900 border-slate-850" : "bg-white border-slate-100"
+          )}>
+            <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center", isDark ? "bg-slate-800" : "bg-slate-50")}>
               {item.icon}
             </div>
-            <p className="text-sm font-bold text-slate-800">{item.label}</p>
-            <p className="text-xs text-slate-400 leading-relaxed">{item.desc}</p>
+            <p className={cn("text-sm font-bold", isDark ? "text-slate-200" : "text-slate-800")}>{item.label}</p>
+            <p className={cn("text-xs leading-relaxed", isDark ? "text-slate-400" : "text-slate-450")}>{item.desc}</p>
           </div>
         ))}
       </div>
 
       {/* FAQ */}
       <div className="mt-4 max-w-4xl mx-auto">
-        <h3 className="text-xl font-extrabold text-slate-900 mb-6 text-center">
+        <h3 className={cn("text-xl font-extrabold mb-6 text-center", isDark ? "text-slate-100" : "text-slate-900")}>
           Frequently Asked Questions
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {FAQ.map((item, i) => (
-            <div key={i} className="bg-white rounded-2xl border border-slate-100
-                                    shadow-sm p-5 hover:shadow-md transition-shadow">
-              <h4 className="font-bold text-slate-800 mb-2 text-sm">{item.q}</h4>
-              <p className="text-sm text-slate-500 leading-relaxed">{item.a}</p>
+            <div key={i} className={cn(
+              "rounded-2xl border shadow-sm p-5 hover:shadow-md transition-shadow",
+              isDark ? "bg-slate-900 border-slate-850" : "bg-white border-slate-100"
+            )}>
+              <h4 className={cn("font-bold mb-2 text-sm", isDark ? "text-slate-200" : "text-slate-800")}>{item.q}</h4>
+              <p className={cn("text-sm leading-relaxed", isDark ? "text-slate-400" : "text-slate-500")}>{item.a}</p>
             </div>
           ))}
         </div>
