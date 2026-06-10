@@ -6131,6 +6131,12 @@ def create_session(user_id: int, remember_me: bool = False, ip_address: str = No
             expires_days * 24 * 60 * 60,  # Convert days to seconds
             json.dumps(session_data)
         )
+        
+        # Track session token under the user's set of active sessions
+        user_sessions_key = f"user:sessions:{user_id}"
+        r.sadd(user_sessions_key, session_token)
+        r.expire(user_sessions_key, expires_days * 24 * 60 * 60)
+        
         return session_token
     except Exception as e:
         print(f"❌ Redis create session error: {e}")
@@ -6152,28 +6158,29 @@ def validate_session(session_token: str) -> dict:
         return None
 
 def delete_session(session_token: str):
-    """Delete a session from Redis"""
+    """Delete a session from Redis and remove it from the user's session set"""
     try:
         key = f"{SESSION_PREFIX}{session_token}"
+        data = r.get(key)
+        if data:
+            session_data = json.loads(data)
+            user_id = session_data.get("user_id")
+            if user_id:
+                r.srem(f"user:sessions:{user_id}", session_token)
         r.delete(key)
     except Exception as e:
         print(f"❌ Redis delete session error: {e}")
 
 def delete_all_user_sessions(user_id: int):
-    """Delete all sessions for a specific user"""
+    """Delete all sessions for a specific user in O(1) without scanning"""
     try:
-        # Scan for all session keys
-        cursor = 0
-        while True:
-            cursor, keys = r.scan(cursor, match=f"{SESSION_PREFIX}*", count=100)
-            for key in keys:
-                data = r.get(key)
-                if data:
-                    session_data = json.loads(data)
-                    if session_data.get("user_id") == user_id:
-                        r.delete(key)
-            if cursor == 0:
-                break
+        user_sessions_key = f"user:sessions:{user_id}"
+        session_tokens = r.smembers(user_sessions_key)
+        if session_tokens:
+            for token_bytes in session_tokens:
+                token = token_bytes.decode('utf-8') if isinstance(token_bytes, bytes) else token_bytes
+                r.delete(f"{SESSION_PREFIX}{token}")
+        r.delete(user_sessions_key)
     except Exception as e:
         print(f"❌ Redis delete user sessions error: {e}")
 
@@ -6558,6 +6565,10 @@ def login_user(login_data: UserLogin, response: Response, request: Request, db: 
             
         user_agent = request.headers.get("user-agent")
 
+        # Clear all old sessions before creating a new one
+        # This prevents duplicate device entries in Settings
+        delete_all_user_sessions(user.id)
+
         # Create session in Redis
         session_token = create_session(
             user_id=user.id,
@@ -6782,6 +6793,9 @@ def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Req
             ip_address = raw_request.client.host if raw_request.client else "Unknown IP"
             
         user_agent = raw_request.headers.get("user-agent")
+
+        # Clear all old sessions before creating a new one
+        delete_all_user_sessions(user.id)
 
         # Create session
         session_token = create_session(
@@ -9875,27 +9889,31 @@ def get_user_sessions(
     
     active_sessions = []
     try:
-        cursor = 0
-        while True:
-            cursor, keys = r.scan(cursor, match=f"{SESSION_PREFIX}*", count=100)
-            for key in keys:
-                data = r.get(key)
-                if data:
-                    session_data = json.loads(data)
-                    if session_data.get("user_id") == user_id:
-                        token = key.replace(SESSION_PREFIX, "")
-                        is_current = (token == session_id)
-                        
-                        active_sessions.append({
-                            "session_token": token,
-                            "device": session_data.get("device", "Unknown Device"),
-                            "ip_address": session_data.get("ip_address", "Unknown IP"),
-                            "location": session_data.get("location", "Unknown Location"),
-                            "created_at": session_data.get("created_at"),
-                            "is_current": is_current
-                        })
-            if cursor == 0:
-                break
+        user_sessions_key = f"user:sessions:{user_id}"
+        session_tokens = r.smembers(user_sessions_key)
+        
+        expired_tokens = []
+        for token_bytes in session_tokens:
+            token = token_bytes.decode('utf-8') if isinstance(token_bytes, bytes) else token_bytes
+            key = f"{SESSION_PREFIX}{token}"
+            data = r.get(key)
+            if data:
+                session_data = json.loads(data)
+                is_current = (token == session_id)
+                active_sessions.append({
+                    "session_token": token,
+                    "device": session_data.get("device", "Unknown Device"),
+                    "ip_address": session_data.get("ip_address", "Unknown IP"),
+                    "location": session_data.get("location", "Unknown Location"),
+                    "created_at": session_data.get("created_at"),
+                    "is_current": is_current
+                })
+            else:
+                expired_tokens.append(token)
+                
+        # Self-cleaning: remove any expired sessions from the user's set in background
+        if expired_tokens:
+            r.srem(user_sessions_key, *expired_tokens)
                 
         active_sessions.sort(key=lambda s: (not s["is_current"], s.get("created_at", "")), reverse=True)
         return {"success": True, "sessions": active_sessions}

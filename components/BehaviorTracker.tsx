@@ -33,7 +33,7 @@ export default function BehaviorTracker() {
   // 1. Track route changes automatically - only after auth context is fully resolved
   useEffect(() => {
     if (isLoading) return;
-    if (pathname.includes("/admin")) return; // skip tracking on admin pages
+    if (pathname.includes("/admin") || pathname.includes("/portal-node-secure-x3a9")) return; // skip tracking on admin & secret login pages
 
     const fullPath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
     const now = Date.now();
@@ -58,7 +58,7 @@ export default function BehaviorTracker() {
       if (document.visibilityState === "hidden") {
         trackActivePageView(user?.email || null);
       } else if (document.visibilityState === "visible") {
-        if (pathname && !pathname.includes("/admin")) {
+        if (pathname && !pathname.includes("/admin") && !pathname.includes("/portal-node-secure-x3a9")) {
           activePagePath = pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
           activePageStartTime = Date.now();
         }
@@ -73,7 +73,7 @@ export default function BehaviorTracker() {
 
   // 2. Track rage clicks and regular clicks
   useEffect(() => {
-    if (pathname.includes("/admin")) return; // skip tracking on admin pages
+    if (pathname.includes("/admin") || pathname.includes("/portal-node-secure-x3a9")) return; // skip tracking on admin & secret login pages
     let clicks: { time: number; x: number; y: number; target: HTMLElement }[] = [];
     const RAGE_CLICK_LIMIT = 5;
     const TIME_WINDOW_MS = 1500;
