@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Search, X, Sparkles, ChevronRight } from "lucide-react";
+import { API_BASE_URL } from "@/lib/config";
 
 // ── Free Spell Correction Engine (Levenshtein Distance) ───────────────────────
 // 100% free, runs entirely in the browser — no paid APIs needed
@@ -117,27 +118,46 @@ export default function SmartSearchInput({
   const [activeIdx, setActiveIdx] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const lastQueryRef = useRef("");
 
   // Debounced suggestion + correction engine
-  const compute = useCallback(() => {
-    const q = value.trim().toLowerCase();
+  const compute = useCallback(async () => {
+    const q = value.trim();
+    const qLower = q.toLowerCase();
+    lastQueryRef.current = qLower;
 
-    // ── live suggestions (prefix / substring match on dictionary)
-    if (q.length > 0 && dictionary.length > 0) {
-      const matches = dictionary
-        .filter((d) => d.toLowerCase().includes(q) && d.toLowerCase() !== q)
-        .slice(0, maxSuggestions);
-      setSuggestions(matches);
-    } else {
+    if (qLower.length === 0) {
       setSuggestions([]);
+      setCorrection(null);
+      return;
     }
 
-    // ── autocorrect (only when there is no good prefix match)
-    if (q.length >= 3) {
-      const fix = correctQuery(q, dictionary);
-      setCorrection(fix);
-    } else {
-      setCorrection(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/white-space/autocomplete?q=${encodeURIComponent(q)}`);
+      if (!res.ok) throw new Error("Network error");
+      const data = await res.json();
+      
+      // Prevent race conditions
+      if (lastQueryRef.current !== qLower) return;
+
+      const rawSuggestions = (data.suggestions as string[]) || [];
+      setSuggestions(rawSuggestions);
+      setCorrection(data.correction || null);
+    } catch (err) {
+      // Fallback to local dictionary
+      if (lastQueryRef.current !== qLower) return;
+
+      const matches = dictionary
+        .filter((d) => d.toLowerCase().includes(qLower) && d.toLowerCase() !== qLower)
+        .slice(0, maxSuggestions);
+      setSuggestions(matches);
+
+      if (qLower.length >= 3) {
+        const fix = correctQuery(qLower, dictionary);
+        setCorrection(fix);
+      } else {
+        setCorrection(null);
+      }
     }
 
     setActiveIdx(-1);

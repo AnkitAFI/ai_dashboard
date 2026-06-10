@@ -718,10 +718,10 @@ function WhiteSpaceFinderContent() {
   ])[0] ?? [];
 
   const distData = [
-    { name: "Hot 80+",    count: sortedOpps.filter((o) => o.score >= 80).length,                 fill: "#639922" },
-    { name: "Good 65–79", count: sortedOpps.filter((o) => o.score >= 65 && o.score < 80).length, fill: "#378ADD" },
-    { name: "Mod 50–64",  count: sortedOpps.filter((o) => o.score >= 50 && o.score < 65).length, fill: "#BA7517" },
-    { name: "Skip <50",   count: sortedOpps.filter((o) => o.score < 50).length,                  fill: "#E24B4A" },
+    { name: "Hot 80+",    count: (result?.opportunities ?? []).filter((o) => o.score >= 80).length,                 fill: "#639922" },
+    { name: "Good 65–79", count: (result?.opportunities ?? []).filter((o) => o.score >= 65 && o.score < 80).length, fill: "#378ADD" },
+    { name: "Mod 50–64",  count: (result?.opportunities ?? []).filter((o) => o.score >= 50 && o.score < 65).length, fill: "#BA7517" },
+    { name: "Skip <50",   count: (result?.opportunities ?? []).filter((o) => o.score < 50).length,                  fill: "#E24B4A" },
   ];
 
   return (
@@ -1101,16 +1101,16 @@ function WhiteSpaceFinderContent() {
                       <span className="text-violet-600">"{result.query}"</span>
                     </h3>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      {sortedOpps.filter((o) => o.score >= 80).length} hot picks ·{" "}
-                      {sortedOpps.filter((o) => o.score >= 65 && o.score < 80).length} good gaps ·{" "}
-                      {sortedOpps.filter((o) => o.score < 50).length} to skip
+                      {(result?.opportunities ?? []).filter((o) => o.score >= 80).length} hot picks ·{" "}
+                      {(result?.opportunities ?? []).filter((o) => o.score >= 65 && o.score < 80).length} good gaps ·{" "}
+                      {(result?.opportunities ?? []).filter((o) => o.score < 50).length} to skip
                     </p>
                   </div>
                   {result.total_found > 0 && (
                     <div className="text-right">
                       <p className="text-xs text-slate-400">Top score</p>
-                      <p className={`text-xl font-bold ${getScoreColor(Math.max(...sortedOpps.map((o) => o.score)))}`}>
-                        {Math.max(...sortedOpps.map((o) => o.score))}
+                      <p className={`text-xl font-bold ${getScoreColor((result?.opportunities ?? []).length > 0 ? Math.max(...result.opportunities.map((o) => o.score)) : 0)}`}>
+                        {(result?.opportunities ?? []).length > 0 ? Math.max(...result.opportunities.map((o) => o.score)) : 0}
                       </p>
                     </div>
                   )}
@@ -1161,17 +1161,30 @@ function WhiteSpaceFinderContent() {
                 )}
 
                 {/* Opportunity cards */}
-                {sortedOpps.map((opp) => (
-                  <OpportunityCard
-                    key={opp.id}
-                    opp={opp}
-                    tier={tier}
-                    onUpgrade={(f) => showToast("Upgrade required", `"${f}" requires a higher plan.`, "error")}
-                    onWatchlist={handleWatchlist}
-                    watchlistItems={watchlistItems}
-                    watchlistLoading={watchlistLoading}
-                  />
-                ))}
+                {sortedOpps.length > 0 ? (
+                  sortedOpps.map((opp) => (
+                    <OpportunityCard
+                      key={opp.id}
+                      opp={opp}
+                      tier={tier}
+                      onUpgrade={(f) => showToast("Upgrade required", `"${f}" requires a higher plan.`, "error")}
+                      onWatchlist={handleWatchlist}
+                      watchlistItems={watchlistItems}
+                      watchlistLoading={watchlistLoading}
+                    />
+                  ))
+                ) : result.opportunities.length > 0 ? (
+                  <Card className="border border-slate-200 rounded-2xl bg-slate-50/50 p-8 text-center shadow-sm">
+                    <p className="text-sm font-medium text-slate-600">No opportunities match your current score filter.</p>
+                    <p className="text-xs text-slate-400 mt-1">Try lowering the minimum score or select "Any score".</p>
+                    <button
+                      onClick={() => setMinScore(0)}
+                      className="mt-3 text-xs px-3.5 py-1.5 bg-white border border-slate-300 rounded-full font-medium text-slate-700 hover:border-violet-300 hover:text-violet-600 transition-colors shadow-sm"
+                    >
+                      Clear score filter
+                    </button>
+                  </Card>
+                ) : null}
 
                 {/* Locked results */}
                 {result.locked_count > 0 &&

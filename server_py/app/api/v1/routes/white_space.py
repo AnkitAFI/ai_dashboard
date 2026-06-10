@@ -902,6 +902,217 @@ def get_categories(platform: str = "both", db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+def _levenshtein(s1: str, s2: str) -> int:
+    if len(s1) < len(s2):
+        return _levenshtein(s2, s1)
+    if len(s2) == 0:
+        return len(s1)
+    previous_row = range(len(s2) + 1)
+    for i, c1 in enumerate(s1):
+        current_row = [i + 1]
+        for j, c2 in enumerate(s2):
+            insertions = previous_row[j + 1] + 1
+            deletions = current_row[j] + 1
+            substitutions = previous_row[j] + (c1 != c2)
+            current_row.append(min(insertions, deletions, substitutions))
+        previous_row = current_row
+    return previous_row[-1]
+
+
+def _clean_title_suggestion(title: str) -> str:
+    import re
+    cleaned = re.sub(r'[^\w\s-]', '', title)
+    words = cleaned.split()
+    return " ".join(words[:4]).strip()
+
+
+_db_vocabulary = None
+
+
+def _get_db_vocabulary(db: Session) -> set:
+    global _db_vocabulary
+    if _db_vocabulary is not None:
+        return _db_vocabulary
+        
+    vocab = set()
+    try:
+        import re
+        # 1. Words from categories
+        res_cats = db.execute(text("""
+            SELECT DISTINCT category_name FROM (
+                SELECT category_name FROM rapidapi_amazon_products WHERE category_name IS NOT NULL
+                UNION
+                SELECT category_name FROM rapidapi_flipkart_products WHERE category_name IS NOT NULL
+            ) AS cats
+        """)).fetchall()
+        for row in res_cats:
+            if row[0]:
+                for word in re.findall(r'[a-zA-Z]{3,}', row[0]):
+                    vocab.add(word.lower())
+                    
+        # 2. Top 500 words from Amazon product titles
+        res_am_words = db.execute(text("""
+            SELECT word FROM (
+                SELECT regexp_split_to_table(LOWER(product_title), '\s+') AS word 
+                FROM rapidapi_amazon_products
+                WHERE product_title IS NOT NULL
+            ) AS w
+            WHERE length(word) >= 3 AND word ~ '^[a-z]+$'
+            GROUP BY word
+            ORDER BY count(*) DESC
+            LIMIT 500
+        """)).fetchall()
+        for row in res_am_words:
+            if row[0]:
+                vocab.add(row[0])
+                
+        # 3. Top 500 words from Flipkart product titles
+        res_fk_words = db.execute(text("""
+            SELECT word FROM (
+                SELECT regexp_split_to_table(LOWER(product_title), '\s+') AS word 
+                FROM rapidapi_flipkart_products
+                WHERE product_title IS NOT NULL
+            ) AS w
+            WHERE length(word) >= 3 AND word ~ '^[a-z]+$'
+            GROUP BY word
+            ORDER BY count(*) DESC
+            LIMIT 500
+        """)).fetchall()
+        for row in res_fk_words:
+            if row[0]:
+                vocab.add(row[0])
+                
+        _db_vocabulary = vocab
+        logger.info(f"[autocomplete] Built database vocabulary of {len(vocab)} words.")
+    except Exception as e:
+        print(f"[autocomplete] Error building vocabulary: {e}")
+        # Fallback basic list
+        _db_vocabulary = {
+            "shirt", "tshirt", "organizer", "bottle", "grooming",
+            "charger", "wireless", "holder", "shoes", "cable", "case", "glass",
+            "kitchen", "baby", "feeding", "grooming", "sleep", "aid", "skincare",
+            "tools", "scent", "accessories", "fitness", "gear", "care", "desk",
+            "water", "yoga", "mat", "air", "purifier", "led", "lights", "speaker",
+            "headphones", "earbuds"
+        }
+    return _db_vocabulary
+
+
+def _correct_query(query: str, vocab: set) -> Optional[str]:
+    import re
+    words = query.strip().split()
+    if not words:
+        return None
+        
+    corrected_words = []
+    has_correction = False
+    
+    for word in words:
+        word_clean = re.sub(r'[^a-zA-Z]', '', word).lower()
+        if len(word_clean) < 3:
+            corrected_words.append(word)
+            continue
+            
+        if word_clean in vocab:
+            corrected_words.append(word)
+            continue
+            
+        best_match = None
+        best_dist = float('inf')
+        max_allowed = 1 if len(word_clean) <= 4 else (2 if len(word_clean) <= 7 else 3)
+        
+        for vocab_word in vocab:
+            dist = _levenshtein(word_clean, vocab_word)
+            if dist < best_dist and dist <= max_allowed:
+                best_dist = dist
+                best_match = vocab_word
+                
+        if best_match:
+            corrected_words.append(best_match)
+            has_correction = True
+        else:
+            corrected_words.append(word)
+            
+    return " ".join(corrected_words) if has_correction else None
+
+
+@router.get("/autocomplete")
+def autocomplete_suggestions(q: str = "", db: Session = Depends(get_db)):
+    if not q or len(q.strip()) < 2:
+        return {"suggestions": [], "correction": None}
+        
+    q_clean = q.strip().lower()
+    
+    try:
+        # Check spelling first using database vocabulary
+        vocab = _get_db_vocabulary(db)
+        corrected_q = _correct_query(q_clean, vocab)
+        
+        correction = None
+        target_q = q_clean
+        
+        if corrected_q and corrected_q != q_clean:
+            correction = corrected_q
+            target_q = corrected_q
+            
+        # Query matching suggestions based on the target (original or corrected) query
+        like_target = f"%{target_q}%"
+        
+        # 1. Fetch matching categories (niches)
+        res_am_cats = db.execute(text("""
+            SELECT DISTINCT category_name 
+            FROM rapidapi_amazon_products 
+            WHERE category_name IS NOT NULL AND LOWER(category_name) LIKE :like_target
+            LIMIT 5
+        """), {"like_target": like_target}).fetchall()
+        
+        res_fk_cats = db.execute(text("""
+            SELECT DISTINCT category_name 
+            FROM rapidapi_flipkart_products 
+            WHERE category_name IS NOT NULL AND LOWER(category_name) LIKE :like_target
+            LIMIT 5
+        """), {"like_target": like_target}).fetchall()
+        
+        # 2. Fetch matching product titles for keyword suggestions
+        res_am_titles = db.execute(text("""
+            SELECT DISTINCT product_title 
+            FROM rapidapi_amazon_products 
+            WHERE product_title IS NOT NULL AND LOWER(product_title) LIKE :like_target
+            LIMIT 5
+        """), {"like_target": like_target}).fetchall()
+        
+        res_fk_titles = db.execute(text("""
+            SELECT DISTINCT product_title 
+            FROM rapidapi_flipkart_products 
+            WHERE product_title IS NOT NULL AND LOWER(product_title) LIKE :like_target
+            LIMIT 5
+        """), {"like_target": like_target}).fetchall()
+        
+        suggestions_set = set()
+        
+        # Add matching categories
+        for row in res_am_cats + res_fk_cats:
+            if row[0]:
+                suggestions_set.add(row[0].strip())
+                
+        # Add matching cleaned product titles
+        for row in res_am_titles + res_fk_titles:
+            if row[0]:
+                cleaned = _clean_title_suggestion(row[0])
+                if cleaned and cleaned.lower() != q_clean:
+                    suggestions_set.add(cleaned)
+                    
+        suggestions = sorted(list(suggestions_set))
+        
+        return {
+            "suggestions": suggestions[:5],
+            "correction": correction
+        }
+    except Exception as e:
+        print(f"[autocomplete] error: {e}")
+        return {"suggestions": [], "correction": None}
+
+
 # ── Main scan endpoint ────────────────────────────────────────────────────────
 
 @router.post("/scan", response_model=ScanResult)
@@ -1193,6 +1404,92 @@ def toggle_watchlist(
     Otherwise add it with full metadata. No tier restriction — available to all.
     """
     try:
+        existing = db.execute(
+            text("SELECT id FROM white_space_watchlist WHERE user_id = :uid AND niche = :niche"),
+            {"uid": user_id, "niche": req.niche},
+        ).fetchone()
+
+        if existing:
+            db.execute(
+                text("DELETE FROM white_space_watchlist WHERE user_id = :uid AND niche = :niche"),
+                {"uid": user_id, "niche": req.niche},
+            )
+            db.commit()
+            return {"action": "removed", "niche": req.niche}
+        else:
+            db.execute(
+                text("""
+                    INSERT INTO white_space_watchlist
+                        (user_id, niche, score, category, platform, avg_price, avg_rating,
+                         competitor_count, est_revenue_max, top_keyword, gap_summary, query, added_at)
+                    VALUES
+                        (:uid, :niche, :score, :category, :platform, :avg_price, :avg_rating,
+                         :competitor_count, :est_revenue_max, :top_keyword, :gap_summary, :query, NOW())
+                    ON CONFLICT (user_id, niche) DO UPDATE SET
+                        score = EXCLUDED.score,
+                        query = EXCLUDED.query,
+                        added_at = NOW()
+                """),
+                {
+                    "uid": user_id,
+                    "niche": req.niche,
+                    "score": req.score,
+                    "category": req.category,
+                    "platform": req.platform,
+                    "avg_price": req.avg_price,
+                    "avg_rating": req.avg_rating,
+                    "competitor_count": req.competitor_count,
+                    "est_revenue_max": req.est_revenue_max,
+                    "top_keyword": req.top_keyword,
+                    "gap_summary": req.gap_summary,
+                    "query": req.query,
+                },
+            )
+            db.commit()
+            return {"action": "added", "niche": req.niche}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/watchlist")
+def get_watchlist(db: Session = Depends(get_db), user_id: str = Depends(get_current_user_id)):
+    """Fetch all watchlist items for a user, ordered newest first."""
+    if not user_id:
+        raise HTTPException(status_code=400, detail="user_id required")
+    try:
+        res = db.execute(
+            text("""
+                SELECT niche, score, category, platform, avg_price, avg_rating,
+                       competitor_count, est_revenue_max, top_keyword, gap_summary,
+                       query, added_at
+                FROM white_space_watchlist
+                WHERE user_id = :uid
+                ORDER BY added_at DESC
+            """),
+            {"uid": user_id},
+        )
+        return {
+            "watchlist": [
+                {**dict(r._mapping), "added_at": r._mapping["added_at"].isoformat()}
+                for r in res.fetchall()
+            ]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/watchlist/remove")
+def remove_from_watchlist(niche: str, db: Session = Depends(get_db), user_id: str = Depends(get_current_user_id)):
+    """Remove a single niche from a user's watchlist."""
+    try:
+        db.execute(
+            text("DELETE FROM white_space_watchlist WHERE user_id = :uid AND niche = :niche"),
+            {"uid": user_id, "niche": niche},
+        )
+        db.commit()
+        return {"action": "removed", "niche": niche}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
         existing = db.execute(
             text("SELECT id FROM white_space_watchlist WHERE user_id = :uid AND niche = :niche"),
             {"uid": user_id, "niche": req.niche},
