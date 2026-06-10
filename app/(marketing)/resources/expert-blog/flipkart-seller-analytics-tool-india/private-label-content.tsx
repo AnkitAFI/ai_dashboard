@@ -52,7 +52,7 @@ const schemaPrivateLabel = {
         { "@type": "ListItem", "position": 1, "name": "Home",         "item": "https://insydz.com" },
         { "@type": "ListItem", "position": 2, "name": "Resources",    "item": "https://insydz.com/resources" },
         { "@type": "ListItem", "position": 3, "name": "Expert Blog",  "item": "https://insydz.com/resources/expert-blog" },
-        { "@type": "ListItem", "position": 4, "name": "Amazon Private Label India 2026", "item": "https://insydz.com/resources/expert-blog/amazon-private-label-india-2026" }
+        { "@type": "ListItem", "position": 4, "name": "Flipkart Seller Analytics Tool", "item": "https://insydz.com/resources/expert-blog/flipkart-seller-analytics-tool-india" }
       ]
     },
     {
