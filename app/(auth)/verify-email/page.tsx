@@ -239,6 +239,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 
 function getCookie(name: string): string | null {
@@ -324,7 +325,7 @@ export default function VerifyEmail() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#080e1c] p-4">
+    <div className="min-h-screen flex items-center justify-center bg-background text-foreground p-4">
 
       {/* Background effects */}
       <div className="fixed inset-0 pointer-events-none">
@@ -346,52 +347,42 @@ export default function VerifyEmail() {
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
           <a href="/" className="flex flex-col items-center group">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-3 transition-transform group-hover:scale-105"
-              style={{ background: "rgba(170,240,255,0.08)", border: "1px solid rgba(170,240,255,0.18)" }}>
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-3 transition-transform group-hover:scale-105 bg-[#AAF0FF]/15 border border-blue-500/20 dark:bg-white/5 dark:border-white/10">
               <img src="/logo.png" alt="Insydz" className="w-9 h-9 object-contain" />
             </div>
-            <span className="text-2xl font-bold text-white tracking-tight">Insydz</span>
+            <span className="text-2xl font-bold text-slate-850 dark:text-white tracking-tight">Insydz</span>
           </a>
         </div>
 
         {/* Glass card */}
-        <div className="rounded-2xl p-8"
-          style={{
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(170,240,255,0.11)",
-            boxShadow: "0 0 60px rgba(170,240,255,0.04), inset 0 1px 0 rgba(255,255,255,0.05)",
-          }}>
+        <div className="rounded-2xl p-8 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-[#AAF0FF]/10 shadow-lg dark:shadow-[0_0_60px_rgba(170,240,255,0.04)]">
 
           {/* Eyebrow */}
           <div className="flex items-center gap-2 mb-1">
             <span className="w-[7px] h-[7px] rounded-full bg-[#AAF0FF] animate-pulse"
               style={{ boxShadow: "0 0 8px rgba(170,240,255,0.9)" }} />
-            <span className="text-[10px] text-[#AAF0FF] tracking-widest uppercase font-medium">Email verification</span>
+            <span className="text-[10px] text-blue-600 dark:text-[#AAF0FF] tracking-widest uppercase font-medium">Email verification</span>
           </div>
 
           {/* Header */}
-          <h2 className="text-2xl font-bold text-white mb-1 tracking-tight">Check your inbox</h2>
-          <p className="text-white/40 text-sm mb-6 leading-relaxed">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">Check your inbox</h2>
+          <p className="text-slate-500 dark:text-white/40 text-sm mb-6 leading-relaxed">
             We sent a 6-digit code to{" "}
-            <span className="text-[#AAF0FF]/80 font-medium">{email}</span>
+            <span className="text-blue-600 dark:text-[#AAF0FF]/80 font-medium">{email}</span>
           </p>
 
           {/* Email icon visual */}
           <div className="flex justify-center mb-6">
             <div className="relative">
-              <div className="w-16 h-16 rounded-2xl flex items-center justify-center"
-                style={{
-                  background: "rgba(170,240,255,0.06)",
-                  border: "1px solid rgba(170,240,255,0.15)",
-                }}>
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#AAF0FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center bg-blue-50 dark:bg-[#AAF0FF]/10 border border-slate-200 dark:border-[#AAF0FF]/15">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-blue-600 dark:text-[#AAF0FF]" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.8">
                   <rect x="2" y="4" width="20" height="16" rx="2" />
                   <path d="m2 7 10 6 10-6" />
                 </svg>
               </div>
               {/* Glow ring */}
-              <div className="absolute inset-0 rounded-2xl animate-ping"
-                style={{ border: "1px solid rgba(170,240,255,0.15)", animationDuration: "2.5s" }} />
+              <div className="absolute inset-0 rounded-2xl animate-ping border border-blue-500/20 dark:border-[#AAF0FF]/15"
+                style={{ animationDuration: "2.5s" }} />
             </div>
           </div>
 
@@ -399,7 +390,7 @@ export default function VerifyEmail() {
 
             {/* OTP input */}
             <div className="space-y-1.5">
-              <Label className="text-xs font-medium text-white/50">Verification code</Label>
+              <Label className="text-xs font-medium text-slate-500 dark:text-white/50">Verification code</Label>
               <Input
                 id="otp"
                 placeholder="000000"
@@ -408,19 +399,19 @@ export default function VerifyEmail() {
                 maxLength={6}
                 disabled={isLoading}
                 autoFocus
-                className="h-14 text-center text-2xl tracking-[14px] font-bold bg-white/[0.04] border-[#AAF0FF]/10 text-white placeholder:text-white/15 placeholder:tracking-normal focus-visible:ring-[#AAF0FF]/20 focus-visible:border-[#AAF0FF]/35 rounded-xl font-mono"
+                className="h-14 text-center text-2xl tracking-[14px] font-bold bg-white dark:bg-[#080e1c] border-slate-200 dark:border-[#AAF0FF]/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/15 placeholder:tracking-normal focus-visible:ring-blue-500/20 dark:focus-visible:ring-[#AAF0FF]/20 focus-visible:border-blue-500 dark:focus-visible:border-[#AAF0FF]/35 rounded-xl font-mono"
               />
-              <p className="text-[11px] text-white/25 text-center">Check your inbox and spam folder</p>
+              <p className="text-[11px] text-slate-400 dark:text-white/25 text-center">Check your inbox and spam folder</p>
             </div>
 
             {/* OTP progress dots */}
             <div className="flex justify-center gap-2">
               {[0,1,2,3,4,5].map((i) => (
-                <div key={i} className="w-2 h-2 rounded-full transition-all duration-200"
-                  style={{
-                    background: i < otp.length ? "#AAF0FF" : "rgba(255,255,255,0.1)",
-                    boxShadow: i < otp.length ? "0 0 6px rgba(170,240,255,0.6)" : "none",
-                  }} />
+                <div key={i} className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                  i < otp.length
+                    ? "bg-blue-600 dark:bg-[#AAF0FF] shadow-[0_0_6px_rgba(37,99,235,0.4)] dark:shadow-[0_0_6px_rgba(170,240,255,0.6)]"
+                    : "bg-slate-200 dark:bg-slate-700/50"
+                }`} />
               ))}
             </div>
 
@@ -428,15 +419,14 @@ export default function VerifyEmail() {
             <button
               type="submit"
               disabled={isLoading || otp.length !== 6}
-              className="w-full h-12 rounded-xl font-bold text-[#051020] text-sm transition-all duration-200 disabled:opacity-40"
+              className="w-full h-12 rounded-xl font-bold text-white dark:text-[#051020] text-sm transition-all duration-200 disabled:opacity-40 bg-blue-600 hover:bg-blue-700 dark:bg-gradient-to-r dark:from-[#AAF0FF] dark:to-[#7dd8f5]"
               style={{
-                background: "linear-gradient(135deg, #AAF0FF 0%, #7dd8f5 100%)",
-                boxShadow: otp.length === 6 ? "0 0 24px rgba(170,240,255,0.25)" : "none",
+                boxShadow: otp.length === 6 ? "0 4px 12px rgba(37,99,235,0.2)5" : "none",
               }}
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
-                  <span className="w-4 h-4 border-2 border-[#051020]/30 border-t-[#051020] rounded-full animate-spin" />
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white dark:border-[#051020]/30 dark:border-t-[#051020] rounded-full animate-spin" />
                   Verifying...
                 </span>
               ) : "Verify email"}
@@ -444,17 +434,16 @@ export default function VerifyEmail() {
 
             {/* Resend */}
             <div className="text-center space-y-2">
-              <p className="text-xs text-white/30">Didn't receive the code?</p>
+              <p className="text-xs text-slate-500 dark:text-white/30">Didn't receive the code?</p>
               <button
                 type="button"
                 onClick={handleResend}
                 disabled={isResending || resendCooldown > 0}
-                className="w-full h-11 rounded-xl text-sm font-medium transition-all duration-200 disabled:opacity-40"
-                style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(170,240,255,0.1)",
-                  color: resendCooldown > 0 ? "rgba(255,255,255,0.3)" : "rgba(170,240,255,0.8)",
-                }}
+                className={cn(
+                  "w-full h-11 rounded-xl text-sm font-medium transition-all duration-200 disabled:opacity-40 border",
+                  "bg-slate-100 dark:bg-white/[0.04] border-slate-200 dark:border-slate-800",
+                  resendCooldown > 0 ? "text-slate-400 dark:text-white/20" : "text-blue-600 dark:text-[#AAF0FF]"
+                )}
               >
                 {resendCooldown > 0
                   ? `Resend in ${resendCooldown}s`
@@ -465,13 +454,13 @@ export default function VerifyEmail() {
             </div>
 
             {/* Back to signup */}
-            <div className="pt-3 border-t border-white/[0.06] text-center">
-              <p className="text-xs text-white/30">
+            <div className="pt-3 border-t border-slate-200 dark:border-white/[0.06] text-center">
+              <p className="text-xs text-slate-500 dark:text-white/30">
                 Wrong email?{" "}
                 <button
                   type="button"
                   onClick={() => { deleteCookie("verify_email"); router.push("/signup"); }}
-                  className="text-[#AAF0FF] font-semibold bg-transparent border-none cursor-pointer hover:underline text-xs"
+                  className="text-blue-600 dark:text-[#AAF0FF] font-semibold bg-transparent border-none cursor-pointer hover:underline text-xs"
                 >
                   Back to signup
                 </button>

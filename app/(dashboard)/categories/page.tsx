@@ -13,7 +13,8 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Tag, Star, ChevronRight } from "lucide-react";
-import { getCategoryIconComponent } from "@/lib/utils";
+import { getCategoryIconComponent, cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 interface Category {
   category: string;
@@ -25,6 +26,8 @@ interface Category {
 }
 
 export default function Categories() {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -34,12 +37,15 @@ export default function Categories() {
   const router = useRouter();
 
   useEffect(() => {
+    setMounted(true);
     axios
       .get(`${API_BASE_URL}/analytics/category`)
       .then((res) => setCategories(res.data.categories))
       .catch(() => setError("Failed to fetch category data"))
       .finally(() => setLoading(false));
   }, []);
+
+  const isDark = mounted && resolvedTheme === "dark";
 
   if (loading)
     return (
@@ -67,13 +73,13 @@ export default function Categories() {
     <div className="space-y-12">
       {/* Hero Section */}
       <div className="text-center space-y-6">
-        <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl mb-4 shadow-inner">
-          <Tag className="h-10 w-10 text-blue-500" />
+        <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-950/20 dark:to-cyan-950/25 rounded-2xl mb-4 shadow-inner border border-blue-200/20">
+          <Tag className="h-10 w-10 text-blue-500 dark:text-blue-400" />
         </div>
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
           Product Categories
         </h1>
-        <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+        <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
           Explore top-performing categories and jump directly to their
           product lists.
         </p>
@@ -81,17 +87,22 @@ export default function Categories() {
 
       {/* Filter Dropdown */}
       <div className="flex items-center gap-4">
-        <label className="font-medium text-slate-700">Filter by Table:</label>
+        <label className={cn("font-medium", isDark ? "text-slate-300" : "text-slate-700")}>Filter by Table:</label>
         <select
           value={tableFilter}
           onChange={(e) => setTableFilter(e.target.value as any)}
-          className="border border-slate-300 rounded-md px-2 py-1 bg-white"
+          className={cn(
+            "border rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-colors",
+            isDark 
+              ? "border-slate-700 bg-slate-900 text-slate-100" 
+              : "border-slate-300 bg-white text-slate-800"
+          )}
           data-track-id="table_filter_select"
           data-filter-value={tableFilter}
         >
-          <option value="all">All</option>
-          <option value="flipkart">Flipkart</option>
-          <option value="amazon">Amazon</option>
+          <option value="all" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>All</option>
+          <option value="flipkart" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Flipkart</option>
+          <option value="amazon" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Amazon</option>
         </select>
       </div>
 
@@ -102,41 +113,44 @@ export default function Categories() {
           return (
             <Card
               key={index}
-              className="relative bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
+              className={cn(
+                "relative rounded-2xl hover:shadow-lg hover:scale-[1.02] transition-all duration-300 border bg-card",
+                isDark ? "border-slate-800 bg-slate-900/40" : "border-slate-200"
+              )}
             >
               {/* Marketplace Badge */}
               {cat.source === "flipkart" ? (
-                <span className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-300 tracking-wide shadow-sm">
+                <span className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/35 text-blue-600 dark:text-blue-400 border border-blue-300 dark:border-blue-800/55 tracking-wide shadow-sm">
                   Flipkart
                 </span>
               ) : cat.source === "amazon" ? (
-                <span className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-50 text-orange-500 border border-orange-300 tracking-wide shadow-sm">
+                <span className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-50 dark:bg-orange-950/35 text-orange-500 dark:text-orange-400 border border-orange-300 dark:border-orange-800/55 tracking-wide shadow-sm">
                   Amazon
                 </span>
               ) : null}
 
               <CardHeader className="flex flex-col items-center text-center space-y-2">
-                <div className="w-12 h-12 bg-gradient-to-br from-cyan-100 to-blue-50 rounded-xl flex items-center justify-center">
-                  <CategoryIcon className="h-6 w-6 text-blue-600" />
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-100 to-blue-50 dark:from-cyan-950/20 dark:to-blue-900/30 rounded-xl flex items-center justify-center">
+                  <CategoryIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <CardTitle className="text-lg font-semibold text-slate-800">
+                <CardTitle className={cn("text-lg font-semibold", isDark ? "text-slate-100" : "text-slate-800")}>
                   {cat.category}
                 </CardTitle>
-                <CardDescription className="text-slate-500">
+                <CardDescription className={isDark ? "text-slate-400" : "text-slate-500"}>
                   {cat.total_products.toLocaleString()} products
                 </CardDescription>
               </CardHeader>
 
               <CardContent className="flex flex-col gap-3 mt-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-emerald-600 font-semibold">
+                  <span className="text-emerald-600 dark:text-emerald-450 font-semibold">
                     ₹{cat.avg_price ? cat.avg_price.toFixed(2) : "N/A"} avg. price
                   </span>
                   <span className="flex items-center gap-1 text-yellow-500 font-medium">
                     <Star className="h-4 w-4" /> {cat.avg_rating?.toFixed(1) ?? "N/A"}
                   </span>
                 </div>
-                <div className="text-slate-500 text-sm">
+                <div className={cn("text-sm", isDark ? "text-slate-400" : "text-slate-500")}>
                   Total Reviews: {cat.total_reviews?.toLocaleString() ?? 0}
                 </div>
 
@@ -150,7 +164,7 @@ export default function Categories() {
                   }
                   data-track-id="view_products_btn"
                   data-filter-value={cat.category}
-                  className="flex items-center justify-center mt-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg py-2 hover:from-blue-600 hover:to-cyan-600 shadow-md transition-all"
+                  className="flex items-center justify-center mt-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg py-2 hover:from-blue-600 hover:to-cyan-600 shadow-md transition-all font-semibold"
                 >
                   View Products <ChevronRight className="ml-2 h-5 w-5" />
                 </button>

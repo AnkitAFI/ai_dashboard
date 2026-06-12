@@ -1,300 +1,9 @@
-// "use client";
-
-// import { useState, useEffect } from "react";
-// import { useRouter } from "next/navigation";
-// import SellerIdInput from "@/components/dashboard/seller-id-input";
-// import { useAuth } from "@/lib/auth-context";
-// import {
-//   Loader2, Search, Star,
-//   BarChart2, MessageSquare,
-// } from "lucide-react";
-// import { Badge } from "@/components/ui/badge";
-// import { Input } from "@/components/ui/input";
-// import { cn } from "@/lib/utils";
-
-// const API_BASE = API_BASE_URL;
-
-// export default function SellerProductsPage() {
-//   const { user, refreshUser } = useAuth();
-//   const router = useRouter();
-
-//   const [localSellerId, setLocalSellerId] = useState<string | null>(null);
-//   const [products, setProducts] = useState<any[]>([]);
-//   const [loading, setLoading] = useState(false);
-//   const [searchQuery, setSearchQuery] = useState("");
-//   const [activeFilter, setActiveFilter] = useState<"all" | "prime" | "best_seller">("all");
-
-//   const activeSellerId = user?.seller_id || localSellerId;
-
-//   const fetchProducts = async () => {
-//     if (!activeSellerId) return;
-//     setLoading(true);
-//     try {
-//       const resp = await fetch(
-//         `${API_BASE}/api/seller/products?seller_id=${activeSellerId}`,
-//         { credentials: "include" }
-//       );
-//       if (resp.ok) {
-//         const data = await resp.json();
-//         setProducts(data.products || []);
-//       }
-//     } catch (err) {
-//       console.error("Failed to fetch products", err);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     if (activeSellerId) fetchProducts();
-//   }, [activeSellerId]);
-
-//   const filteredProducts = products.filter((p) => {
-//     const matchesSearch =
-//       p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-//       p.asin.toLowerCase().includes(searchQuery.toLowerCase());
-//     const matchesTab =
-//       activeFilter === "all"
-//         ? true
-//         : activeFilter === "prime"
-//         ? p.is_prime === true
-//         : p.is_best_seller === true;
-//     return matchesSearch && matchesTab;
-//   });
-
-//   const goToComparison = (
-//     e: React.MouseEvent,
-//     type: "price" | "review",
-//     asin: string
-//   ) => {
-//     e.stopPropagation();
-//     const params = new URLSearchParams({ asin, seller_id: activeSellerId || "" });
-//     router.push(type === "price"
-//       ? `/seller/price-comparison?${params.toString()}`
-//       : `/seller/review-comparison?${params.toString()}`
-//     );
-//   };
-
-//   return (
-//     <div className="space-y-6">
-//       {!activeSellerId ? (
-//         <div className="max-w-xl mx-auto">
-//           <SellerIdInput
-//             onSaved={(id) => {
-//               setLocalSellerId(id);
-//               refreshUser();
-//             }}
-//           />
-//         </div>
-//       ) : (
-//         <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-//           {/* Controls */}
-//           <div className="p-4 sm:p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
-//             <div>
-//               <h3 className="font-bold text-slate-800 text-lg">Product Catalog</h3>
-//               <p className="text-sm text-slate-500">{filteredProducts.length} products found</p>
-//             </div>
-//             <div className="flex flex-col sm:flex-row gap-3">
-//               <div className="relative">
-//                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-//                 <Input
-//                   placeholder="Search products..."
-//                   className="pl-9 w-full sm:w-64 bg-slate-50 border-none h-10 rounded-xl"
-//                   value={searchQuery}
-//                   onChange={(e) => setSearchQuery(e.target.value)}
-//                 />
-//               </div>
-//               <div className="flex gap-2 bg-slate-100 p-1 rounded-xl">
-//                 {(["all", "prime", "best_seller"] as const).map((f) => (
-//                   <button
-//                     key={f}
-//                     onClick={() => setActiveFilter(f)}
-//                     className={cn(
-//                       "px-4 py-1.5 text-sm font-medium rounded-lg transition-colors",
-//                       activeFilter === f
-//                         ? "bg-orange-500 text-white shadow-sm"
-//                         : "text-slate-600 hover:text-slate-900"
-//                     )}
-//                   >
-//                     {f === "all" ? "All" : f === "prime" ? "Prime" : "Best Seller"}
-//                     <span className="opacity-80 text-xs ml-1">
-//                       {f === "all"
-//                         ? products.length
-//                         : f === "prime"
-//                         ? products.filter((p) => p.is_prime).length
-//                         : products.filter((p) => p.is_best_seller).length}
-//                     </span>
-//                   </button>
-//                 ))}
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* Table */}
-//           <div className="overflow-x-auto">
-//             {loading ? (
-//               <div className="flex flex-col items-center justify-center h-64 gap-3">
-//                 <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
-//                 <p className="text-slate-500 font-medium">Loading catalog...</p>
-//               </div>
-//             ) : products.length === 0 ? (
-//               <div className="flex flex-col items-center justify-center p-12 text-center h-64">
-//                 <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-4">
-//                   <Search className="w-8 h-8" />
-//                 </div>
-//                 <h3 className="text-lg font-bold text-slate-800 mb-1">No products found</h3>
-//                 <p className="text-slate-500 max-w-sm">
-//                   We couldn't find any tracked products for your Seller ID.
-//                   Make sure you are tracking products in the Explorer mode first.
-//                 </p>
-//               </div>
-//             ) : (
-//               <table className="w-full text-sm text-left">
-//                 <thead className="text-xs text-slate-500 border-b border-slate-100 font-semibold sticky top-0 bg-white z-10 uppercase tracking-wider">
-//                   <tr>
-//                     <th className="px-6 py-4 w-[34%]">Product</th>
-//                     <th className="px-6 py-4">Price</th>
-//                     <th className="px-6 py-4">Rating</th>
-//                     <th className="px-6 py-4">Reviews</th>
-//                     <th className="px-6 py-4">Sales</th>
-//                     <th className="px-6 py-4">BSR</th>
-//                     <th className="px-6 py-4">Type</th>
-//                     <th className="px-6 py-4">Compare</th>
-//                   </tr>
-//                 </thead>
-//                 <tbody className="divide-y divide-slate-50">
-//                   {filteredProducts.map((p, idx) => (
-//                     <tr
-//                       key={idx}
-//                       className="hover:bg-slate-50/80 transition-colors"
-//                     >
-//                       {/* Product */}
-//                       <td className="px-6 py-4">
-//                         <div className="flex items-center gap-4">
-//                           <div className="w-12 h-12 bg-white border border-slate-100 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
-//                             {p.image ? (
-//                               <img src={p.image} alt={p.title} className="w-full h-full object-contain p-1" />
-//                             ) : (
-//                               <span className="text-slate-300 font-bold text-lg">{p.title.charAt(0)}</span>
-//                             )}
-//                           </div>
-//                           <div className="min-w-0">
-//                             <p 
-//                               className="font-semibold text-slate-800 line-clamp-1 cursor-pointer hover:text-sky-600 hover:underline transition-all" 
-//                               title={p.title}
-//                               onClick={() => router.push(`/product/${encodeURIComponent(p.title)}?from=seller&source=amazon`)}
-//                             >
-//                               {p.title}
-//                             </p>
-//                             <div className="flex items-center mt-1 gap-2 text-xs">
-//                               <span className="text-slate-400 font-mono">{p.asin}</span>
-//                               {p.is_prime && (
-//                                 <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-600 border-blue-200 px-1 py-0 h-4">
-//                                   PRIME
-//                                 </Badge>
-//                               )}
-//                               {p.is_best_seller && (
-//                                 <Badge variant="outline" className="text-[10px] bg-orange-50 text-orange-600 border-orange-200 px-1 py-0 h-4">
-//                                   BEST SELLER
-//                                 </Badge>
-//                               )}
-//                             </div>
-//                           </div>
-//                         </div>
-//                       </td>
-
-//                       {/* Price */}
-//                       <td className="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">
-//                         {p.price
-//                           ? p.price.toString().startsWith("₹") || p.price.toString().startsWith("$")
-//                             ? p.price
-//                             : `₹${p.price}`
-//                           : "N/A"}
-//                       </td>
-
-//                       {/* Rating */}
-//                       <td className="px-6 py-4 whitespace-nowrap">
-//                         <div className="flex items-center gap-1 font-bold text-slate-800">
-//                           <Star className="w-4 h-4 text-orange-400 fill-orange-400 -mt-0.5" />
-//                           {p.rating}
-//                         </div>
-//                       </td>
-
-//                       {/* Reviews */}
-//                       <td className="px-6 py-4 text-slate-500 whitespace-nowrap">
-//                         {p.reviews >= 1000
-//                           ? `${(p.reviews / 1000).toFixed(1)}K`
-//                           : p.reviews}
-//                       </td>
-
-//                       {/* Sales */}
-//                       <td className="px-6 py-4 whitespace-nowrap">
-//                         <span className="font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-md text-xs">
-//                           {p.sales}
-//                         </span>
-//                       </td>
-
-//                       {/* BSR */}
-//                       <td className="px-6 py-4 text-slate-500 whitespace-nowrap font-mono text-xs">
-//                         {p.bsr}
-//                       </td>
-
-//                       {/* Type */}
-//                       <td className="px-6 py-4 whitespace-nowrap">
-//                         {p.is_fba ? (
-//                           <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200 uppercase text-[10px] tracking-wider font-bold">
-//                             FBA
-//                           </Badge>
-//                         ) : (
-//                           <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 uppercase text-[10px] tracking-wider font-bold">
-//                             FBM
-//                           </Badge>
-//                         )}
-//                       </td>
-
-//                       {/* Compare buttons — always visible, click to navigate */}
-//                       <td className="px-6 py-4 whitespace-nowrap">
-//                         <div className="flex items-center gap-2">
-//                           <button
-//                             onClick={(e) => goToComparison(e, "price", p.asin)}
-//                             className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
-//                           >
-//                             <BarChart2 className="w-3.5 h-3.5" />
-//                             Price
-//                           </button>
-//                           <button
-//                             onClick={(e) => goToComparison(e, "review", p.asin)}
-//                             className="flex items-center gap-1.5 px-3 py-1.5 bg-violet-500 hover:bg-violet-600 text-white rounded-lg text-xs font-semibold transition-colors shadow-sm"
-//                           >
-//                             <MessageSquare className="w-3.5 h-3.5" />
-//                             Reviews
-//                           </button>
-//                         </div>
-//                       </td>
-//                     </tr>
-//                   ))}
-//                 </tbody>
-//               </table>
-//             )}
-//           </div>
-
-//           {/* Footer */}
-//           {products.length > 0 && !loading && (
-//             <div className="p-4 border-t border-slate-100 text-xs text-slate-500 flex justify-between items-center bg-slate-50/50">
-//               <p>Showing {filteredProducts.length} of {products.length} products</p>
-//             </div>
-//           )}
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
 "use client";
 import { API_BASE_URL } from "@/lib/config";
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 
 import SellerIdInput from "@/components/dashboard/seller-id-input";
 import { useAuth } from "@/lib/auth-context";
@@ -308,6 +17,8 @@ import { useSelectedProduct } from "@/lib/selected-product-context";
 function SellerProductsContent() {
   const { user, refreshUser } = useAuth();
   const router = useRouter();
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   const [localSellerId, setLocalSellerId] = useState<string | null>(null);
   const [products, setProducts] = useState<any[]>([]);
@@ -319,6 +30,10 @@ function SellerProductsContent() {
   const itemsPerPage = 10;
 
   const activeSellerId = user?.seller_id || localSellerId;
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const fetchProducts = async () => {
     if (!activeSellerId) return;
@@ -377,18 +92,22 @@ function SellerProductsContent() {
     router.push(`/seller/price-comparison?${params}`);
   };
 
+  if (!mounted) return null;
+
+  const isDark = resolvedTheme === "dark";
+
   return (
     <div className="space-y-6">
 
       {/* Premium Hero Header */}
       <div className="text-center space-y-4 mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl mb-2 shadow-inner">
-          <Star className="h-8 w-8 text-blue-500" />
+        <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-2 shadow-inner ${isDark ? 'bg-gradient-to-br from-blue-900/50 to-cyan-900/50 border border-blue-800/50' : 'bg-gradient-to-br from-blue-100 to-cyan-100'}`}>
+          <Star className={`h-8 w-8 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
         </div>
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
           Seller Product Catalog
         </h1>
-        <p className="text-lg text-slate-500 max-w-2xl mx-auto">
+        <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
           Manage your tracked seller inventory and launch competitive benchmarks.
         </p>
       </div>
@@ -401,12 +120,12 @@ function SellerProductsContent() {
           }}
         />
       ) : (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className={`rounded-2xl shadow-sm border overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
           {/* Controls */}
-          <div className="p-4 sm:p-6 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className={`p-4 sm:p-6 border-b flex flex-col md:flex-row md:items-center justify-between gap-4 ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
             <div>
-              <h3 className="font-bold text-slate-800 text-lg">Product Catalog</h3>
-              <p className="text-sm text-slate-500">{filteredProducts.length} products found</p>
+              <h3 className={`font-bold text-lg ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>Product Catalog</h3>
+              <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{filteredProducts.length} products found</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
               <SmartSearchInput
@@ -414,11 +133,11 @@ function SellerProductsContent() {
                 onChange={setSearchQuery}
                 placeholder="Search products..."
                 className="w-full sm:w-64"
-                inputClassName="bg-slate-50 border-slate-200 h-10"
+                inputClassName={`${isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-50 border-slate-200'} h-10`}
                 dictionary={products.flatMap((p: any) => [p.title, p.asin].filter(Boolean))}
                 maxSuggestions={5}
               />
-              <div className="flex gap-2 bg-slate-100 p-1 rounded-xl">
+              <div className={`flex gap-2 p-1 rounded-xl ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
                 {(["all", "prime", "best_seller"] as const).map((f) => (
                   <button
                     key={f}
@@ -426,7 +145,9 @@ function SellerProductsContent() {
                     className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${
                       activeFilter === f
                         ? "bg-orange-500 text-white shadow-sm"
-                        : "text-slate-600 hover:text-slate-900"
+                        : isDark
+                          ? "text-slate-300 hover:text-slate-100"
+                          : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
                     {f === "all" ? "All" : f === "prime" ? "Prime" : "Best Seller"}
@@ -447,23 +168,23 @@ function SellerProductsContent() {
           <div className="overflow-x-auto">
             {loading ? (
               <div className="flex flex-col items-center justify-center h-64 gap-3">
-                <Loader2 className="w-8 h-8 animate-spin text-sky-600" />
-                <p className="text-slate-500 font-medium">Loading catalog...</p>
+                <Loader2 className={`w-8 h-8 animate-spin ${isDark ? 'text-sky-400' : 'text-sky-600'}`} />
+                <p className={`font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Loading catalog...</p>
               </div>
             ) : products.length === 0 ? (
               <div className="flex flex-col items-center justify-center p-12 text-center h-64">
-                <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mb-4">
+                <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 ${isDark ? 'bg-slate-800 text-slate-500' : 'bg-slate-100 text-slate-400'}`}>
                   <Search className="w-8 h-8" />
                 </div>
-                <h3 className="text-lg font-bold text-slate-800 mb-1">No products found</h3>
-                <p className="text-slate-500 max-w-sm">
+                <h3 className={`text-lg font-bold mb-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>No products found</h3>
+                <p className={`max-w-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                   We couldn't find any tracked products for your Seller ID.
                   Make sure you are tracking products in the Explorer mode first.
                 </p>
               </div>
             ) : (
               <table className="w-full text-sm text-left">
-                <thead className="text-xs text-slate-500 border-b border-slate-100 font-semibold sticky top-0 bg-white z-10 uppercase tracking-wider">
+                <thead className={`text-xs font-semibold sticky top-0 z-10 uppercase tracking-wider border-b ${isDark ? 'bg-slate-900 text-slate-400 border-slate-800' : 'bg-white text-slate-500 border-slate-100'}`}>
                   <tr>
                     <th className="px-6 py-4 w-[40%]">Product</th>
                     <th className="px-6 py-4">Price</th>
@@ -475,7 +196,7 @@ function SellerProductsContent() {
                     <th className="px-6 py-4"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
+                <tbody className={`divide-y ${isDark ? 'divide-slate-800' : 'divide-slate-50'}`}>
                   {currentItems.map((p, idx) => {
                     const isSelected = selectedAsin === p.asin;
                     return (
@@ -484,33 +205,37 @@ function SellerProductsContent() {
                         onClick={() => handleRowClick(p)}
                         className={`cursor-pointer transition-colors ${
                           isSelected
-                            ? "bg-sky-50 border-l-4 border-l-sky-500"
-                            : "hover:bg-slate-50/80"
+                            ? isDark ? "bg-sky-900/20 border-l-4 border-l-sky-500" : "bg-sky-50 border-l-4 border-l-sky-500"
+                            : isDark ? "hover:bg-slate-800/50" : "hover:bg-slate-50/80"
                         }`}
                       >
                         {/* Product */}
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-white border border-slate-100 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
+                            <div className={`w-12 h-12 border rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-100'}`}>
                               {p.image ? (
                                 <img src={p.image} alt={p.title} className="w-full h-full object-contain p-1" />
                               ) : (
-                                <span className="text-slate-300 font-bold text-lg">{p.title.charAt(0)}</span>
+                                <span className={`font-bold text-lg ${isDark ? 'text-slate-600' : 'text-slate-300'}`}>{p.title.charAt(0)}</span>
                               )}
                             </div>
                             <div className="min-w-0">
-                              <p className={`font-semibold line-clamp-1 ${isSelected ? "text-sky-700" : "text-slate-800"}`} title={p.title}>
+                              <p className={`font-semibold line-clamp-1 ${
+                                isSelected 
+                                  ? isDark ? "text-sky-400" : "text-sky-700" 
+                                  : isDark ? "text-slate-200" : "text-slate-800"
+                              }`} title={p.title}>
                                 {p.title}
                               </p>
                               <div className="flex items-center mt-1 gap-2 text-xs">
-                                <span className="text-slate-400 font-mono">{p.asin}</span>
+                                <span className={`font-mono ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{p.asin}</span>
                                 {p.is_prime && (
-                                  <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-600 border-blue-200 px-1 py-0 h-4">
+                                  <Badge variant="outline" className={`text-[10px] px-1 py-0 h-4 ${isDark ? 'bg-blue-900/30 text-blue-400 border-blue-800/50' : 'bg-blue-50 text-blue-600 border-blue-200'}`}>
                                     PRIME
                                   </Badge>
                                 )}
                                 {p.is_best_seller && (
-                                  <Badge variant="outline" className="text-[10px] bg-orange-50 text-orange-600 border-orange-200 px-1 py-0 h-4">
+                                  <Badge variant="outline" className={`text-[10px] px-1 py-0 h-4 ${isDark ? 'bg-orange-900/30 text-orange-400 border-orange-800/50' : 'bg-orange-50 text-orange-600 border-orange-200'}`}>
                                     BEST SELLER
                                   </Badge>
                                 )}
@@ -520,7 +245,7 @@ function SellerProductsContent() {
                         </td>
 
                         {/* Price */}
-                        <td className="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">
+                        <td className={`px-6 py-4 font-bold whitespace-nowrap ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                           {p.price
                             ? p.price.toString().startsWith("₹") || p.price.toString().startsWith("$")
                               ? p.price
@@ -530,14 +255,14 @@ function SellerProductsContent() {
 
                         {/* Rating */}
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center gap-1 font-bold text-slate-800">
+                          <div className={`flex items-center gap-1 font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
                             <Star className="w-4 h-4 text-orange-400 fill-orange-400 -mt-0.5" />
                             {p.rating}
                           </div>
                         </td>
 
                         {/* Reviews */}
-                        <td className="px-6 py-4 text-slate-500 whitespace-nowrap">
+                        <td className={`px-6 py-4 whitespace-nowrap ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                           {p.reviews >= 1000
                             ? `${(p.reviews / 1000).toFixed(1)}K`
                             : p.reviews}
@@ -545,24 +270,24 @@ function SellerProductsContent() {
 
                         {/* Sales */}
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-md text-xs">
+                          <span className={`font-bold px-2.5 py-1 rounded-md text-xs ${isDark ? 'bg-slate-800 text-slate-200' : 'bg-slate-100 text-slate-800'}`}>
                             {p.sales}
                           </span>
                         </td>
 
                         {/* BSR */}
-                        <td className="px-6 py-4 text-slate-500 whitespace-nowrap font-mono text-xs">
+                        <td className={`px-6 py-4 whitespace-nowrap font-mono text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                           {p.bsr}
                         </td>
 
                         {/* Type */}
                         <td className="px-6 py-4 whitespace-nowrap">
                           {p.is_fba ? (
-                            <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200 uppercase text-[10px] tracking-wider font-bold">
+                            <Badge variant="outline" className={`uppercase text-[10px] tracking-wider font-bold ${isDark ? 'bg-emerald-900/30 text-emerald-400 border-emerald-800/50' : 'bg-emerald-50 text-emerald-600 border-emerald-200'}`}>
                               FBA
                             </Badge>
                           ) : (
-                            <Badge variant="outline" className="bg-slate-50 text-slate-600 border-slate-200 uppercase text-[10px] tracking-wider font-bold">
+                            <Badge variant="outline" className={`uppercase text-[10px] tracking-wider font-bold ${isDark ? 'bg-slate-800 text-slate-400 border-slate-700' : 'bg-slate-50 text-slate-600 border-slate-200'}`}>
                               FBM
                             </Badge>
                           )}
@@ -570,7 +295,11 @@ function SellerProductsContent() {
 
                         {/* Arrow indicator */}
                         <td className="px-4 py-4 whitespace-nowrap">
-                          <ChevronRight className={`w-4 h-4 transition-colors ${isSelected ? "text-sky-500" : "text-slate-300"}`} />
+                          <ChevronRight className={`w-4 h-4 transition-colors ${
+                            isSelected 
+                              ? isDark ? "text-sky-400" : "text-sky-500" 
+                              : isDark ? "text-slate-600" : "text-slate-300"
+                          }`} />
                         </td>
                       </tr>
                     );
@@ -582,14 +311,14 @@ function SellerProductsContent() {
 
           {/* Footer & Pagination */}
           {filteredProducts.length > 0 && !loading && (
-            <div className="p-4 border-t border-slate-100 text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50/50">
+            <div className={`p-4 border-t text-xs flex flex-col sm:flex-row justify-between items-center gap-4 ${isDark ? 'bg-slate-800/30 border-slate-800 text-slate-400' : 'bg-slate-50/50 border-slate-100 text-slate-500'}`}>
               <div className="flex flex-col sm:flex-row items-center gap-2">
                 <p>
                   Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredProducts.length)} of {filteredProducts.length} products
                   {filteredProducts.length !== products.length && ` (filtered from ${products.length} total)`}
                 </p>
-                <span className="hidden sm:inline text-slate-300">|</span>
-                <p className="text-slate-400">Click a row to analyze it</p>
+                <span className={`hidden sm:inline ${isDark ? 'text-slate-600' : 'text-slate-300'}`}>|</span>
+                <p className={isDark ? 'text-slate-500' : 'text-slate-400'}>Click a row to analyze it</p>
               </div>
               
               {totalPages > 1 && (
@@ -597,19 +326,19 @@ function SellerProductsContent() {
                   <button
                     onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
-                    className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:pointer-events-none transition-colors"
+                    className={`p-1.5 rounded-lg border disabled:opacity-50 disabled:pointer-events-none transition-colors ${isDark ? 'bg-slate-800 border-slate-700 hover:bg-slate-700' : 'bg-white border-slate-200 hover:bg-slate-50'}`}
                   >
-                    <ChevronLeft className="w-4 h-4 text-slate-600" />
+                    <ChevronLeft className={`w-4 h-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`} />
                   </button>
-                  <span className="font-semibold text-slate-700">
+                  <span className={`font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
                     Page {currentPage} of {totalPages}
                   </span>
                   <button
                     onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                     disabled={currentPage === totalPages}
-                    className="p-1.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:pointer-events-none transition-colors"
+                    className={`p-1.5 rounded-lg border disabled:opacity-50 disabled:pointer-events-none transition-colors ${isDark ? 'bg-slate-800 border-slate-700 hover:bg-slate-700' : 'bg-white border-slate-200 hover:bg-slate-50'}`}
                   >
-                    <ChevronRight className="w-4 h-4 text-slate-600" />
+                    <ChevronRight className={`w-4 h-4 ${isDark ? 'text-slate-400' : 'text-slate-600'}`} />
                   </button>
                 </div>
               )}

@@ -55,6 +55,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { useSelectedProduct } from "@/lib/selected-product-context";
+import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 import {
   Menu, Crown, RefreshCw, Package, Send,
   Bot, User, Sparkles, TrendingUp, Star,
@@ -96,20 +98,31 @@ function genId() {
 // ── Tier Gate ─────────────────────────────────────────────────────────────────
 function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  const { resolvedTheme } = useTheme();
+  const isDark = mounted && resolvedTheme === "dark";
+
   return (
-    <div className="absolute inset-0 bg-white/88 backdrop-blur-[3px] rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
-      <div className={`w-11 h-11 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? "bg-blue-50" : "bg-amber-50"}`}>
-        <Lock className={`w-5 h-5 ${tier === "premium" ? "text-blue-500" : "text-amber-500"}`} />
+    <div className="absolute inset-0 bg-white/88 dark:bg-slate-900/85 backdrop-blur-[3px] rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
+      <div className={cn(
+        "w-11 h-11 rounded-full flex items-center justify-center shadow-sm",
+        tier === "premium" ? "bg-blue-50 dark:bg-blue-950/40 text-blue-500" : "bg-amber-50 dark:bg-amber-950/40 text-amber-500"
+      )}>
+        <Lock className="w-5 h-5" />
       </div>
       <div className="text-center px-4">
-        <p className="font-bold text-slate-800 text-sm">{feature}</p>
-        <p className="text-xs text-slate-400 mt-0.5">
+        <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">{feature}</p>
+        <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
           {tier === "premium" ? "Premium · ₹2,999/mo" : "Basic · ₹1,999/mo"}
         </p>
       </div>
       <button
         onClick={() => router.push("/subscription")}
-        className={`flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold text-white shadow-md transition-all hover:scale-105 ${tier === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-amber-500 to-orange-500"}`}
+        className={cn(
+          "flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold text-white shadow-md transition-all hover:scale-105 border-none",
+          tier === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-amber-500 to-orange-500"
+        )}
       >
         <Crown className="w-3 h-3" /> Upgrade
       </button>
@@ -122,9 +135,9 @@ function SuggestionChip({ text, onClick }: { text: string; onClick: () => void }
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700 transition-all text-left"
+      className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-350 hover:border-sky-300 dark:hover:border-slate-800 hover:bg-sky-50 dark:hover:bg-slate-900 hover:text-sky-700 dark:hover:text-sky-400 transition-all text-left"
     >
-      <ChevronRight className="w-3 h-3 shrink-0 text-slate-400" />
+      <ChevronRight className="w-3 h-3 shrink-0 text-slate-400 dark:text-slate-505" />
       {text}
     </button>
   );
@@ -145,11 +158,11 @@ function MessageBubble({
   if (isUser) {
     return (
       <div className="flex items-end justify-end gap-2">
-        <div className="max-w-[75%] bg-sky-600 text-white rounded-2xl rounded-br-md px-4 py-3 text-sm leading-relaxed shadow-sm">
+        <div className="max-w-[75%] bg-sky-600 dark:bg-sky-750 text-white rounded-2xl rounded-br-md px-4 py-3 text-sm leading-relaxed shadow-sm">
           {message.content}
         </div>
-        <div className="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center flex-shrink-0 mb-1">
-          <User className="w-3.5 h-3.5 text-sky-600" />
+        <div className="w-7 h-7 rounded-full bg-sky-100 dark:bg-sky-950/40 flex items-center justify-center flex-shrink-0 mb-1">
+          <User className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
         </div>
       </div>
     );
@@ -161,19 +174,19 @@ function MessageBubble({
         <Bot className="w-3.5 h-3.5 text-white" />
       </div>
       <div className="max-w-[80%] group">
-        <div className={`bg-white border border-slate-100 rounded-2xl rounded-bl-md px-4 py-3 shadow-sm ${message.loading ? "min-w-[80px]" : ""}`}>
+        <div className={`bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl rounded-bl-md px-4 py-3 shadow-sm ${message.loading ? "min-w-[80px]" : ""}`}>
           {message.loading ? (
             <div className="flex items-center gap-1.5 py-0.5">
-              <span className="w-2 h-2 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-              <span className="w-2 h-2 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-              <span className="w-2 h-2 bg-slate-300 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+              <span className="w-2 h-2 bg-slate-300 dark:bg-slate-700 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="w-2 h-2 bg-slate-300 dark:bg-slate-700 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="w-2 h-2 bg-slate-300 dark:bg-slate-700 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
           ) : (
-            <div className="prose prose-sm max-w-none text-slate-800 leading-relaxed text-sm
-              prose-headings:text-slate-800 prose-headings:font-bold prose-headings:text-sm
-              prose-strong:text-slate-900 prose-strong:font-bold
-              prose-li:text-slate-700 prose-p:text-slate-800
-              prose-code:bg-slate-100 prose-code:px-1 prose-code:rounded prose-code:text-xs">
+            <div className="prose prose-sm dark:prose-invert max-w-none text-slate-800 dark:text-slate-200 leading-relaxed text-sm
+              prose-headings:text-slate-800 dark:prose-headings:text-slate-100 prose-headings:font-bold prose-headings:text-sm
+              prose-strong:text-slate-900 dark:prose-strong:text-white prose-strong:font-bold
+              prose-li:text-slate-700 dark:prose-li:text-slate-300 prose-p:text-slate-800 dark:prose-p:text-slate-200
+              prose-code:bg-slate-100 dark:prose-code:bg-slate-950 prose-code:px-1 prose-code:rounded prose-code:text-xs">
               <ReactMarkdown>{message.content}</ReactMarkdown>
             </div>
           )}
@@ -183,21 +196,21 @@ function MessageBubble({
           <div className="flex items-center gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={() => onCopy(message.content)}
-              className="p-1 rounded-md hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
+              className="p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
               title="Copy"
             >
               <Copy className="w-3 h-3" />
             </button>
             <button
               onClick={() => onFeedback(message.id, "up")}
-              className="p-1 rounded-md hover:bg-emerald-50 text-slate-400 hover:text-emerald-600 transition-colors"
+              className="p-1 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/20 text-slate-400 dark:text-slate-505 hover:text-emerald-600 dark:hover:text-emerald-450 transition-colors"
               title="Helpful"
             >
               <ThumbsUp className="w-3 h-3" />
             </button>
             <button
               onClick={() => onFeedback(message.id, "down")}
-              className="p-1 rounded-md hover:bg-red-50 text-slate-400 hover:text-red-500 transition-colors"
+              className="p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-950/20 text-slate-400 dark:text-slate-505 hover:text-red-500 dark:hover:text-red-400 transition-colors"
               title="Not helpful"
             >
               <ThumbsDown className="w-3 h-3" />
@@ -220,15 +233,15 @@ function ContextPanel({ context, selectedAsin, onSelectProduct }: {
   return (
     <div className="w-64 shrink-0 space-y-3 hidden lg:block">
       {/* Store summary */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-        <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-3">Your Store</p>
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4">
+        <p className="text-xs font-bold text-slate-505 dark:text-slate-400 uppercase tracking-wide mb-3">Your Store</p>
         <div className="space-y-2">
           {[
-            { label: "Products", value: String(context.total_products), icon: Package, color: "text-sky-600" },
-            { label: "Avg Rating", value: `${context.avg_rating?.toFixed(1) || "—"}★`, icon: Star, color: "text-amber-500" },
+            { label: "Products", value: String(context.total_products), icon: Package, color: "text-sky-600 dark:text-sky-400" },
+            { label: "Avg Rating", value: `${context.avg_rating?.toFixed(1) || "—"}★`, icon: Star, color: "text-amber-500 dark:text-amber-400" },
           ].map((s) => (
             <div key={s.label} className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs text-slate-500">
+              <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
                 <s.icon className="w-3 h-3" />
                 {s.label}
               </div>
@@ -239,15 +252,15 @@ function ContextPanel({ context, selectedAsin, onSelectProduct }: {
       </div>
 
       {/* Product selector */}
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4">
-        <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-3">Ask about a product</p>
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4">
+        <p className="text-xs font-bold text-slate-505 dark:text-slate-400 uppercase tracking-wide mb-3">Ask about a product</p>
         <div className="space-y-1.5 max-h-72 overflow-y-auto">
           <button
             onClick={() => onSelectProduct("", "All products")}
             className={`w-full text-left px-2.5 py-2 rounded-xl text-xs transition-all ${
               selectedAsin === ""
-                ? "bg-sky-50 text-sky-700 font-bold border border-sky-200"
-                : "text-slate-600 hover:bg-slate-50 border border-transparent"
+                ? "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 font-bold border border-sky-200 dark:border-sky-900"
+                : "text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent"
             }`}
           >
             All products
@@ -258,23 +271,23 @@ function ContextPanel({ context, selectedAsin, onSelectProduct }: {
               onClick={() => onSelectProduct(p.asin, p.title)}
               className={`w-full text-left px-2.5 py-2 rounded-xl text-xs transition-all ${
                 selectedAsin === p.asin
-                  ? "bg-sky-50 text-sky-700 font-bold border border-sky-200"
-                  : "text-slate-600 hover:bg-slate-50 border border-transparent"
+                  ? "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 font-bold border border-sky-200 dark:border-sky-900"
+                  : "text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent"
               }`}
             >
               <span className="line-clamp-2 leading-relaxed">{p.title}</span>
-              <span className="text-[10px] text-slate-400 font-mono mt-0.5 block">{p.asin}</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-550 font-mono mt-0.5 block">{p.asin}</span>
             </button>
           ))}
         </div>
       </div>
 
       {/* Quick tips */}
-      <div className="bg-gradient-to-br from-sky-50 to-blue-50 rounded-2xl border border-sky-100 p-4">
-        <p className="text-xs font-bold text-sky-700 mb-2 flex items-center gap-1.5">
+      <div className="bg-gradient-to-br from-sky-50 to-blue-50 dark:from-slate-950 dark:to-slate-900/50 rounded-2xl border border-sky-100 dark:border-slate-800/80 p-4">
+        <p className="text-xs font-bold text-sky-700 dark:text-sky-450 mb-2 flex items-center gap-1.5">
           <Lightbulb className="w-3.5 h-3.5" /> Tips
         </p>
-        <div className="space-y-1.5 text-[11px] text-sky-700">
+        <div className="space-y-1.5 text-[11px] text-sky-700 dark:text-sky-450">
           <p>• Select a product to ask specific questions</p>
           <p>• Ask about pricing, reviews, or keywords</p>
           <p>• Compare your performance vs competitors</p>
@@ -308,6 +321,11 @@ function AIAdvisorContent() {
   const { user }   = useAuth();
   const { toggle } = useSidebar();
   const { selected } = useSelectedProduct();
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  const { resolvedTheme } = useTheme();
+  const isDark = mounted && resolvedTheme === "dark";
 
   const sellerId  = selected?.sellerId || user?.seller_id || "";
   const userEmail = user?.email || "";
@@ -514,35 +532,35 @@ function AIAdvisorContent() {
   return (
     <div className="min-h-screen flex flex-col bg-transparent">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-xl border-b border-sky-100 shadow-sm px-4 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-20 -mx-4 sm:-mx-6 lg:-mx-8">
+      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-sky-100 dark:border-slate-800 shadow-sm px-4 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-20 -mx-4 sm:-mx-6 lg:-mx-8">
         <div className="flex items-center gap-3">
-          <button onClick={toggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100">
-            <Menu className="w-5 h-5 text-sky-900" />
+          <button onClick={toggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100 dark:hover:bg-slate-800">
+            <Menu className="w-5 h-5 text-sky-900 dark:text-sky-100" />
           </button>
-          <div className="w-px h-5 bg-slate-200" />
+          <div className="w-px h-5 bg-slate-200 dark:bg-slate-800" />
           <div>
-            <h2 className="text-lg sm:text-xl font-bold text-sky-900 flex items-center gap-2">
+            <h2 className="text-lg sm:text-xl font-bold text-sky-900 dark:text-sky-100 flex items-center gap-2">
               <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
                 <Bot className="w-3.5 h-3.5 text-white" />
               </div>
               AI Advisor
             </h2>
-            <p className="text-xs text-slate-500 hidden sm:block">Your personal store intelligence, powered by your data</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Your personal store intelligence, powered by your data</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {selectedAsin && (
-            <span className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold text-sky-600 bg-sky-50 border border-sky-200 px-2.5 py-1 rounded-full">
+            <span className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/45 border border-sky-200 dark:border-sky-900 px-2.5 py-1 rounded-full">
               <Package className="w-3 h-3" />
               {selectedTitle ? selectedTitle.substring(0, 25) + "…" : selectedAsin}
             </span>
           )}
-          <Badge className={`text-xs font-bold ${tier === "premium" ? "bg-blue-100 text-blue-700" : tier === "basic" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"}`}>
+          <Badge className={`text-xs font-bold ${tier === "premium" ? "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-900" : tier === "basic" ? "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"}`}>
             {tier.toUpperCase()}
           </Badge>
           <button
             onClick={handleReset}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold transition-all"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold transition-all"
             title="Clear conversation"
           >
             <RotateCcw className="w-3 h-3" /> Clear
@@ -561,16 +579,16 @@ function AIAdvisorContent() {
       {/* No seller ID */}
       {!sellerId && (
         <div className="flex flex-col items-center justify-center h-64 gap-4 text-center mt-8">
-          <div className="w-16 h-16 bg-sky-100 rounded-full flex items-center justify-center">
-            <Bot className="w-8 h-8 text-sky-400" />
+          <div className="w-16 h-16 bg-sky-100 dark:bg-sky-950/40 rounded-full flex items-center justify-center">
+            <Bot className="w-8 h-8 text-sky-400 dark:text-sky-300" />
           </div>
           <div>
-            <p className="text-lg font-bold text-slate-700">No seller account connected</p>
-            <p className="text-sm text-slate-400 mt-1">Go to My Products and connect your Seller ID first.</p>
+            <p className="text-lg font-bold text-slate-700 dark:text-slate-200">No seller account connected</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Go to My Products and connect your Seller ID first.</p>
           </div>
           <button
             onClick={() => router.push("/seller/my-products")}
-            className="px-5 py-2 bg-sky-600 text-white rounded-full text-sm font-semibold hover:bg-sky-700 transition-colors"
+            className="px-5 py-2 bg-sky-600 text-white rounded-full text-sm font-semibold hover:bg-sky-700 transition-colors border-none"
           >
             Connect Seller ID
           </button>
@@ -591,22 +609,22 @@ function AIAdvisorContent() {
 
             {/* Free tier gate */}
             {!isBasic && (
-              <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm p-6 overflow-hidden mb-5">
+              <div className="relative bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-6 overflow-hidden mb-5">
                 <TierGate tier="basic" feature="AI Advisor — Seller Intelligence" />
                 <div className="blur-sm pointer-events-none space-y-4">
                   <div className="flex items-end gap-2">
                     <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center shrink-0">
                       <Bot className="w-3.5 h-3.5 text-white" />
                     </div>
-                    <div className="bg-white border border-slate-100 rounded-2xl rounded-bl-md px-4 py-3 max-w-sm shadow-sm">
-                      <p className="text-sm text-slate-700">Hey! I've analysed your store. Your top product is priced 12% above market average — here's what I'd do about it…</p>
+                    <div className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 rounded-2xl rounded-bl-md px-4 py-3 max-w-sm shadow-sm">
+                      <p className="text-sm text-slate-700 dark:text-slate-350">Hey! I've analysed your store. Your top product is priced 12% above market average — here's what I'd do about it…</p>
                     </div>
                   </div>
                   <div className="flex items-end justify-end gap-2">
                     <div className="bg-sky-600 text-white rounded-2xl rounded-br-md px-4 py-3 max-w-sm shadow-sm">
                       <p className="text-sm">Which product should I focus on improving first?</p>
                     </div>
-                    <div className="w-7 h-7 rounded-full bg-sky-100 flex items-center justify-center shrink-0">
+                    <div className="w-7 h-7 rounded-full bg-sky-100 dark:bg-sky-950/40 flex items-center justify-center shrink-0">
                       <User className="w-3.5 h-3.5 text-sky-600" />
                     </div>
                   </div>
@@ -621,7 +639,7 @@ function AIAdvisorContent() {
             {isBasic && (
               <>
                 {/* Messages */}
-                <div className="flex-1 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden flex flex-col" style={{ minHeight: 500, maxHeight: "calc(100vh - 280px)" }}>
+                <div className="flex-1 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col" style={{ minHeight: 500, maxHeight: "calc(100vh - 280px)" }}>
                   <div className="flex-1 overflow-y-auto p-5 space-y-4">
                     {messages.map((msg) => (
                       <MessageBubble
@@ -635,7 +653,7 @@ function AIAdvisorContent() {
                     {/* Starter suggestions */}
                     {showSuggestions && (
                       <div className="pt-2">
-                        <p className="text-xs text-slate-400 font-semibold mb-2 flex items-center gap-1.5">
+                        <p className="text-xs text-slate-400 dark:text-slate-500 font-semibold mb-2 flex items-center gap-1.5">
                           <Sparkles className="w-3.5 h-3.5" /> Try asking
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -650,17 +668,17 @@ function AIAdvisorContent() {
                   </div>
 
                   {/* Input */}
-                  <div className="border-t border-slate-100 p-4">
+                  <div className="border-t border-slate-100 dark:border-slate-800 p-4">
                     {/* Selected product context bar */}
                     {selectedAsin && (
                       <div className="flex items-center gap-2 mb-2 px-1">
-                        <span className="text-[10px] text-sky-600 font-semibold bg-sky-50 border border-sky-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <span className="text-[10px] text-sky-600 dark:text-sky-400 font-semibold bg-sky-50 dark:bg-sky-955/45 border border-sky-200 dark:border-sky-900 px-2 py-0.5 rounded-full flex items-center gap-1">
                           <Package className="w-2.5 h-2.5" />
                           Asking about: {selectedTitle ? selectedTitle.substring(0, 40) + "…" : selectedAsin}
                         </span>
                         <button
                           onClick={() => handleSelectProduct("", "")}
-                          className="text-[10px] text-slate-400 hover:text-slate-600"
+                          className="text-[10px] text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-305"
                         >
                           × Clear
                         </button>
@@ -680,7 +698,7 @@ function AIAdvisorContent() {
                         }
                         rows={1}
                         disabled={streaming}
-                        className="flex-1 resize-none bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-300 transition-all disabled:opacity-50 disabled:cursor-not-allowed max-h-32"
+                        className="flex-1 resize-none bg-slate-50 dark:bg-slate-950/30 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-800 focus:border-sky-300 dark:focus:border-sky-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed max-h-32 dark:text-slate-100"
                         style={{ overflowY: "auto" }}
                         onInput={(e) => {
                           const el = e.currentTarget;
@@ -691,7 +709,7 @@ function AIAdvisorContent() {
                       <button
                         onClick={() => sendMessage(input)}
                         disabled={streaming || !input.trim()}
-                        className="flex items-center gap-1.5 px-4 py-3 bg-sky-600 hover:bg-sky-500 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold rounded-xl transition-all shrink-0"
+                        className="flex items-center gap-1.5 px-4 py-3 bg-sky-600 hover:bg-sky-500 disabled:bg-slate-200 disabled:text-slate-400 dark:disabled:bg-slate-800 dark:disabled:text-slate-600 text-white font-bold rounded-xl transition-all shrink-0 border-none"
                       >
                         {streaming
                           ? <RefreshCw className="w-4 h-4 animate-spin" />
@@ -699,7 +717,7 @@ function AIAdvisorContent() {
                         }
                       </button>
                     </div>
-                    <p className="text-[10px] text-slate-400 mt-2 text-center">
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 text-center">
                       Press Enter to send · Shift+Enter for new line
                     </p>
                   </div>
@@ -718,7 +736,7 @@ function AIAdvisorContent() {
                     </div>
                     <button
                       onClick={() => router.push("/subscription")}
-                      className="flex items-center gap-2 px-4 py-2 bg-white text-blue-600 rounded-full font-bold text-xs shadow hover:shadow-md hover:scale-105 transition-all shrink-0"
+                      className="flex items-center gap-2 px-4 py-2 bg-white text-blue-600 rounded-full font-bold text-xs shadow hover:shadow-md hover:scale-105 transition-all shrink-0 border-none"
                     >
                       <Crown className="w-3.5 h-3.5" /> Upgrade
                     </button>

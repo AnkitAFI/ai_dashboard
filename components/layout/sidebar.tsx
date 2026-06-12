@@ -6,6 +6,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth-context";
+import { useTheme } from "next-themes";
 import {
   Home,
   MessageSquare,
@@ -37,7 +38,9 @@ import {
   Star,
   Bookmark,
   Calculator,
-  HelpCircle
+  HelpCircle,
+  Sun,
+  Moon
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -182,6 +185,13 @@ interface SidebarProps {
 export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const { theme, setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [mode, setMode] = useState<'explorer' | 'seller'>('explorer');
 
@@ -289,13 +299,13 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
       <div
         className={cn(
-          "fixed left-0 top-0 h-full z-50 transform transition-transform duration-300 flex flex-col border-r border-white/20 backdrop-blur-2xl shadow-lg",
-          "bg-gradient-to-b from-[#E8F9FF]/90 via-[#DFF6FF]/80 to-[#C7EFFF]/90",
+          "fixed left-0 top-0 h-full z-50 transform transition-transform duration-300 flex flex-col border-r border-white/20 dark:border-slate-800/50 backdrop-blur-2xl shadow-lg",
+          "bg-gradient-to-b from-[#E8F9FF]/90 via-[#DFF6FF]/80 to-[#C7EFFF]/90 dark:from-slate-900/95 dark:via-slate-950/90 dark:to-slate-900/95",
           isCollapsed ? "w-16 -translate-x-full lg:translate-x-0" : "w-64 translate-x-0"
         )}
       >
         {/* Header */}
-        <div className="p-4 border-b border-white/20 flex items-center justify-between">
+        <div className="p-4 border-b border-white/20 dark:border-slate-800/50 flex items-center justify-between">
           <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center")}>
             <Link href="/" className="cursor-pointer">
               <img
@@ -304,11 +314,11 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                 className="w-10 h-10 object-contain rounded-xl shadow-md hover:scale-105 transition"
               />
             </Link>
-
+ 
             {!isCollapsed && (
               <div>
-                <h1 className="font-bold text-lg text-[#003366] tracking-tight">Insydz</h1>
-                <p className="text-xs text-slate-600">Analytics Dashboard</p>
+                <h1 className="font-bold text-lg text-[#003366] dark:text-[#AAF0FF] tracking-tight">Insydz</h1>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Analytics Dashboard</p>
               </div>
             )}
           </div>
@@ -387,7 +397,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                   <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest whitespace-nowrap">
                     {section.label}
                   </p>
-                  <div className="h-[1px] flex-1 bg-slate-200/50" />
+                  <div className="h-[1px] flex-1 bg-slate-200/50 dark:bg-slate-800/50" />
                 </div>
               )}
 
@@ -405,7 +415,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                           isCollapsed && "justify-center px-2",
                           isActive(item.href)
                             ? "bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-md"
-                            : "text-slate-700 hover:bg-white/60",
+                            : "text-slate-700 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-800/60",
                           item.disabled && "opacity-50 grayscale select-none"
                         )}
                         data-track-id={`sidebar_nav_${item.label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "")}`}
@@ -440,9 +450,9 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
         </div>
 
         {/* Profile */}
-        <div className="p-2 px-3 border-t border-white/20 backdrop-blur-lg">
+        <div className="p-2 px-3 border-t border-white/20 dark:border-slate-800/50 backdrop-blur-lg">
           <div className={cn(
-            "flex items-center p-2 bg-white/70 rounded-xl shadow-sm",
+            "flex items-center p-2 bg-white/70 dark:bg-slate-900/60 rounded-xl shadow-sm border border-white/10 dark:border-slate-800/50",
             isCollapsed && "justify-center"
           )}>
             <Link href="/settings" className="flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-sm hover:scale-105 transition-transform">
@@ -451,7 +461,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
             {!isCollapsed && (
               <div className="flex-1 ml-2.5 min-w-0">
-                <p className="font-semibold text-sm text-[#003366] truncate">
+                <p className="font-semibold text-sm text-[#003366] dark:text-slate-200 truncate">
                   {getDisplayName()}
                 </p>
                 <Badge
@@ -467,6 +477,19 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                   }
                 </Badge>
               </div>
+            )}
+
+            {!isCollapsed && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-slate-500 hover:text-[#0072FF] h-8 w-8 p-0 mr-1 flex items-center justify-center shrink-0"
+                onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
+                title={resolvedTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                data-track-id="sidebar_theme_toggle_btn"
+              >
+                {mounted && (resolvedTheme === "dark" ? <Sun className="h-4 w-4 text-yellow-500" /> : <Moon className="h-4 w-4" />)}
+              </Button>
             )}
 
             <AlertDialog>

@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import SmartSearchInput from "@/components/ui/smart-search-input";
+import { useTheme } from "next-themes";
 
 const API = `${API_BASE_URL}/api`;
 
@@ -67,21 +68,29 @@ interface SavedProduct extends SavedProductDB {
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-const TabSlider = ({ activeTab, onChange, whiteSpaceCount, profitCount }: any) => {
+const TabSlider = ({ activeTab, onChange, whiteSpaceCount, profitCount, isDark }: any) => {
   return (
-    <div className="bg-slate-200/50 p-1 rounded-2xl flex items-center w-full max-w-sm mx-auto shadow-inner">
+    <div className={cn(
+      "bg-slate-200/50 p-1 rounded-2xl flex items-center w-full max-w-sm mx-auto shadow-inner",
+      isDark && "bg-slate-800/50 shadow-none"
+    )}>
       <button
         onClick={() => onChange("whitespace")}
         className={cn(
           "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all duration-300",
           activeTab === "whitespace"
-            ? "bg-white text-violet-700 shadow-lg scale-[1.02]"
-            : "text-slate-500 hover:text-slate-700"
+            ? isDark ? "bg-slate-900 text-violet-400 shadow-lg scale-[1.02]" : "bg-white text-violet-700 shadow-lg scale-[1.02]"
+            : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-250"
         )}
       >
         <Sparkles className="w-4 h-4" />
         Niches
-        <span className={cn("text-[10px] px-1.5 py-0.5 rounded-md", activeTab === "whitespace" ? "bg-violet-100 text-violet-600" : "bg-slate-200 text-slate-500")}>
+        <span className={cn(
+          "text-[10px] px-1.5 py-0.5 rounded-md", 
+          activeTab === "whitespace" 
+            ? isDark ? "bg-violet-950/80 text-violet-300" : "bg-violet-100 text-violet-600" 
+            : isDark ? "bg-slate-800/60 text-slate-400" : "bg-slate-200 text-slate-500"
+        )}>
           {whiteSpaceCount}
         </span>
       </button>
@@ -90,13 +99,18 @@ const TabSlider = ({ activeTab, onChange, whiteSpaceCount, profitCount }: any) =
         className={cn(
           "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all duration-300",
           activeTab === "profit"
-            ? "bg-white text-blue-700 shadow-lg scale-[1.02]"
-            : "text-slate-500 hover:text-slate-700"
+            ? isDark ? "bg-slate-900 text-blue-400 shadow-lg scale-[1.02]" : "bg-white text-blue-700 shadow-lg scale-[1.02]"
+            : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-250"
         )}
       >
         <Calculator className="w-4 h-4" />
         Calculator
-        <span className={cn("text-[10px] px-1.5 py-0.5 rounded-md", activeTab === "profit" ? "bg-blue-100 text-blue-600" : "bg-slate-200 text-slate-500")}>
+        <span className={cn(
+          "text-[10px] px-1.5 py-0.5 rounded-md", 
+          activeTab === "profit" 
+            ? isDark ? "bg-blue-950/80 text-blue-300" : "bg-blue-100 text-blue-600" 
+            : isDark ? "bg-slate-800/60 text-slate-400" : "bg-slate-200 text-slate-500"
+        )}>
           {profitCount}
         </span>
       </button>
@@ -107,6 +121,11 @@ const TabSlider = ({ activeTab, onChange, whiteSpaceCount, profitCount }: any) =
 export default function MyWatchlist() {
   const { user } = useAuth();
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  const { resolvedTheme } = useTheme();
+  const isDark = mounted && resolvedTheme === "dark";
+
   const [activeTab, setActiveTab] = useState<"whitespace" | "profit">("whitespace");
   const [items, setItems] = useState<WatchlistItem[]>([]);
   const [savedProducts, setSavedProducts] = useState<SavedProduct[]>([]);
@@ -216,17 +235,17 @@ export default function MyWatchlist() {
   const apiLoading = activeTab === "whitespace" ? wsLoading : profitLoading;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 pb-4 border-b border-sky-100/80">
+    <div className="space-y-6 text-slate-900 dark:text-slate-100">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 pb-4 border-b border-sky-100/80 dark:border-slate-800/80">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-violet-100 to-indigo-100 rounded-2xl flex items-center justify-center shadow-inner">
-            <Bookmark className="h-6 w-6 text-violet-600 fill-violet-200" />
+          <div className="w-12 h-12 bg-gradient-to-br from-violet-100 to-indigo-100 dark:from-violet-950/40 dark:to-indigo-950/40 rounded-2xl flex items-center justify-center shadow-inner">
+            <Bookmark className="h-6 w-6 text-violet-600 fill-violet-200 dark:text-violet-400 dark:fill-violet-850/30" />
           </div>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
               My Watchlist
             </h1>
-            <p className="text-slate-500 text-sm font-medium">
+            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
               Your saved opportunities and product calculations, synced across all your devices.
             </p>
           </div>
@@ -238,14 +257,14 @@ export default function MyWatchlist() {
             size="icon"
             onClick={() => { fetchWatchlist(); fetchSavedProducts(); }}
             disabled={apiLoading}
-            className="rounded-xl"
+            className="rounded-xl border-slate-200 dark:border-slate-800"
           >
             <RefreshCw className={cn("w-4 h-4", apiLoading && "animate-spin")} />
           </Button>
 
           <Button
             onClick={() => router.push("/explorer/white-space-finder")}
-            className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl shadow hover:opacity-90 transition-all"
+            className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl shadow hover:opacity-90 transition-all border-none"
           >
             <Sparkles className="w-4 h-4 mr-2" />
             Find more gaps
@@ -259,18 +278,19 @@ export default function MyWatchlist() {
           onChange={setActiveTab}
           whiteSpaceCount={items.length}
           profitCount={savedProducts.length}
+          isDark={isDark}
         />
 
         {/* Controls */}
         {userId && (items.length > 0 || savedProducts.length > 0) && (
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <div className="relative flex-1">
-            <SmartSearchInput
+              <SmartSearchInput
                 value={search}
                 onChange={setSearch}
                 placeholder={activeTab === "whitespace" ? "Search niches, categories..." : "Search products, categories..."}
                 className="flex-1"
-                inputClassName="py-2.5 border-slate-300"
+                inputClassName="py-2.5 border-slate-300 dark:border-slate-800 dark:bg-slate-900"
                 dictionary={[
                   ...items.map((i: any) => i.niche),
                   ...items.map((i: any) => i.category),
@@ -285,20 +305,20 @@ export default function MyWatchlist() {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white text-slate-600 focus:ring-2 focus:ring-violet-300 outline-none"
+                  className="h-10 px-3 text-xs border border-slate-300 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-800 outline-none"
                 >
                   <option value="added">Recently added</option>
                   <option value="score">Highest score</option>
                   <option value="revenue">Est. revenue</option>
                 </select>
                 {!confirmClear ? (
-                  <Button variant="outline" size="sm" onClick={() => setConfirmClear(true)} className="text-red-500 border-red-200 hover:bg-red-50 rounded-xl">
+                  <Button variant="outline" size="sm" onClick={() => setConfirmClear(true)} className="text-red-500 border-red-200 dark:border-red-950/30 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl">
                     <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Clear
                   </Button>
                 ) : (
                   <div className="flex items-center gap-1.5">
-                    <Button size="sm" onClick={clearAll} className="bg-red-500 text-white rounded-xl hover:bg-red-600">Confirm</Button>
-                    <Button size="sm" variant="outline" onClick={() => setConfirmClear(false)} className="rounded-xl">X</Button>
+                    <Button size="sm" onClick={clearAll} className="bg-red-500 text-white rounded-xl hover:bg-red-600 border-none">Confirm</Button>
+                    <Button size="sm" variant="outline" onClick={() => setConfirmClear(false)} className="rounded-xl border-slate-200 dark:border-slate-800">X</Button>
                   </div>
                 )}
               </div>
@@ -306,7 +326,7 @@ export default function MyWatchlist() {
               <select
                 value={profitSortBy}
                 onChange={(e) => setProfitSortBy(e.target.value as any)}
-                className="h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white text-slate-600 focus:ring-2 focus:ring-blue-300 outline-none"
+                className="h-10 px-3 text-xs border border-slate-300 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800 outline-none"
               >
                 <option value="added">Recently added</option>
                 <option value="margin">Best margin</option>
@@ -319,83 +339,83 @@ export default function MyWatchlist() {
         {/* Content */}
         {!userId ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <div className="w-20 h-20 bg-amber-50 rounded-2xl flex items-center justify-center mb-6 border border-amber-100"><Bookmark className="w-9 h-9 text-amber-300" /></div>
-            <h3 className="text-lg font-semibold text-slate-800 mb-2">Sign in to see your watchlist</h3>
-            <p className="text-sm text-slate-400 max-w-sm mb-6">Your watchlist is saved to your account so it's available on all your devices.</p>
-            <Button onClick={() => router.push("/login")}>Sign In Now</Button>
+            <div className="w-20 h-20 bg-amber-50 dark:bg-slate-900 rounded-2xl flex items-center justify-center mb-6 border border-amber-100 dark:border-slate-800"><Bookmark className="w-9 h-9 text-amber-350" /></div>
+            <h3 className="text-lg font-semibold text-slate-850 dark:text-slate-100 mb-2">Sign in to see your watchlist</h3>
+            <p className="text-sm text-slate-400 dark:text-slate-500 max-w-sm mb-6">Your watchlist is saved to your account so it's available on all your devices.</p>
+            <Button onClick={() => router.push("/login")} className="rounded-xl">Sign In Now</Button>
           </div>
         ) : apiLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[1, 2, 3, 4].map((n) => (
-              <div key={n} className="h-64 bg-slate-100 rounded-3xl animate-pulse" />
+              <div key={n} className="h-64 bg-slate-100 dark:bg-slate-900 rounded-3xl animate-pulse" />
             ))}
           </div>
         ) : activeTab === "whitespace" ? (
           items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center bg-background border border-slate-200 border-dashed rounded-3xl">
-              <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4"><Sparkles className="w-7 h-7 text-slate-300" /></div>
-              <p className="text-slate-500 font-medium">Your niche watchlist is empty</p>
-              <Button variant="link" onClick={() => router.push("/explorer/white-space-finder")} className="mt-2 text-violet-600">Start exploring market gaps</Button>
+            <div className="flex flex-col items-center justify-center py-24 text-center bg-background border border-slate-200 dark:border-slate-800 border-dashed rounded-3xl">
+              <div className="w-16 h-16 bg-slate-100 dark:bg-slate-900 rounded-2xl flex items-center justify-center mb-4"><Sparkles className="w-7 h-7 text-slate-350" /></div>
+              <p className="text-slate-500 dark:text-slate-400 font-medium">Your niche watchlist is empty</p>
+              <Button variant="link" onClick={() => router.push("/explorer/white-space-finder")} className="mt-2 text-violet-600 dark:text-violet-400">Start exploring market gaps</Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredItems.map((item) => (
-                <Card key={item.query} className="overflow-hidden border-slate-200/60 hover:shadow-xl hover:shadow-violet-500/5 transition-all duration-300 group rounded-3xl">
+                <Card key={item.query} className="overflow-hidden border-slate-200/60 dark:border-slate-800/80 bg-white dark:bg-slate-900 hover:shadow-xl hover:shadow-violet-500/5 dark:hover:shadow-violet-500/2 transition-all duration-300 group rounded-3xl">
                   <CardContent className="p-0">
                     <div className="p-5 space-y-4">
                       <div className="flex items-start justify-between gap-4">
                         <div className="space-y-1">
-                          <h3 className="font-bold text-slate-900 group-hover:text-violet-600 transition-colors">{item.niche}</h3>
-                          <p className="text-xs text-slate-500 flex items-center gap-1">
+                          <h3 className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">{item.niche}</h3>
+                          <p className="text-xs text-slate-500 dark:text-slate-450 flex items-center gap-1">
                             {item.platform === "flipkart" ? "🛒 Flipkart" : "📦 Amazon"} • {item.category}
                           </p>
                         </div>
                         <div className="flex flex-col items-end gap-2">
                           <div className={cn(
                             "px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase",
-                            item.score >= 80 ? "bg-emerald-100 text-emerald-700" :
-                              item.score >= 60 ? "bg-amber-100 text-amber-700" : "bg-rose-100 text-rose-700"
+                            item.score >= 80 ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-400" :
+                              item.score >= 60 ? "bg-amber-100 text-amber-700 dark:bg-amber-950/35 dark:text-amber-400" : "bg-rose-100 text-rose-700 dark:bg-rose-950/35 dark:text-rose-400"
                           )}>
                             Score: {item.score}
                           </div>
-                          <button onClick={() => removeItem(item.niche)} className="p-1.5 text-slate-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => removeItem(item.niche)} className="p-1.5 text-slate-350 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-2 bg-slate-50 rounded-2xl p-3 border border-slate-100">
+                      <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-950/30 rounded-2xl p-3 border border-slate-100 dark:border-slate-800/60">
                         <div className="text-center">
-                          <p className="text-[10px] text-slate-400 font-medium uppercase mb-0.5">Rating</p>
-                          <p className="text-xs font-bold text-slate-700 flex items-center justify-center gap-0.5">{item.avg_rating} <Star className="w-2.5 h-2.5 text-amber-400 fill-amber-400" /></p>
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase mb-0.5">Rating</p>
+                          <p className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-0.5">{item.avg_rating} <Star className="w-2.5 h-2.5 text-amber-400 fill-amber-400" /></p>
                         </div>
-                        <div className="text-center border-x border-slate-200">
-                          <p className="text-[10px] text-slate-400 font-medium uppercase mb-0.5">Price</p>
-                          <p className="text-xs font-bold text-slate-700">₹{Math.round(item.avg_price)}</p>
+                        <div className="text-center border-x border-slate-200 dark:border-slate-800">
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase mb-0.5">Price</p>
+                          <p className="text-xs font-bold text-slate-700 dark:text-slate-300">₹{Math.round(item.avg_price)}</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-[10px] text-slate-400 font-medium uppercase mb-0.5">Competition</p>
-                          <p className="text-xs font-bold text-slate-700">{item.competitor_count}</p>
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase mb-0.5">Competition</p>
+                          <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{item.competitor_count}</p>
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300">
                           <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
-                          Top Keyword: <span className="text-violet-600">{item.top_keyword}</span>
+                          Top Keyword: <span className="text-violet-600 dark:text-violet-400">{item.top_keyword}</span>
                         </div>
-                        <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed italic border-l-2 border-violet-100 pl-3">"{item.gap_summary}"</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed italic border-l-2 border-violet-100 dark:border-violet-900 pl-3">"{item.gap_summary}"</p>
                       </div>
                     </div>
 
-                    <div className="flex border-t border-slate-100">
+                    <div className="flex border-t border-slate-100 dark:border-slate-800">
                       <button
                         onClick={() => router.push(`/explorer/white-space-finder?q=${encodeURIComponent(item.query)}&platform=${item.platform}&category=${encodeURIComponent(item.category)}`)}
-                        className="flex-1 py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-1.5 transition-colors border-r border-slate-100"
+                        className="flex-1 py-3.5 text-xs font-bold text-slate-650 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-1.5 transition-colors border-r border-slate-100 dark:border-slate-800"
                       >
                         <RefreshCw className="w-3.5 h-3.5" /> Analyze Now
                       </button>
                       <button
                         onClick={() => window.open(item.platform === "flipkart" ? `https://www.flipkart.com/search?q=${item.query}` : `https://www.amazon.in/s?k=${item.query}`, "_blank")}
-                        className="flex-1 py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 flex items-center justify-center gap-1.5 transition-colors"
+                        className="flex-1 py-3.5 text-xs font-bold text-slate-650 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-1.5 transition-colors"
                       >
                         <ExternalLink className="w-3.5 h-3.5" /> Search Live
                       </button>
@@ -407,49 +427,49 @@ export default function MyWatchlist() {
           )
         ) : (
           savedProducts.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 text-center bg-background border border-slate-200 border-dashed rounded-3xl">
-              <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mb-4"><Calculator className="w-7 h-7 text-slate-300" /></div>
-              <p className="text-slate-500 font-medium">No saved calculations yet</p>
-              <Button variant="link" onClick={() => router.push("/explorer/profitability-optimizer")} className="mt-2 text-blue-600">Open Profit Calculator</Button>
+            <div className="flex flex-col items-center justify-center py-24 text-center bg-background border border-slate-200 dark:border-slate-800 border-dashed rounded-3xl">
+              <div className="w-16 h-16 bg-slate-100 dark:bg-slate-900 rounded-2xl flex items-center justify-center mb-4"><Calculator className="w-7 h-7 text-slate-350" /></div>
+              <p className="text-slate-500 dark:text-slate-400 font-medium">No saved calculations yet</p>
+              <Button variant="link" onClick={() => router.push("/explorer/profitability-optimizer")} className="mt-2 text-blue-600 dark:text-blue-400">Open Profit Calculator</Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredProfit.map((p) => (
-                <Card key={p.id} className="overflow-hidden border-slate-200/60 hover:shadow-xl hover:shadow-blue-500/5 transition-all duration-300 group rounded-3xl">
+                <Card key={p.id} className="overflow-hidden border-slate-200/60 dark:border-slate-800/80 bg-white dark:bg-slate-900 hover:shadow-xl hover:shadow-blue-500/5 dark:hover:shadow-blue-500/2 transition-all duration-300 group rounded-3xl">
                   <CardContent className="p-0">
                     <div className="p-5 space-y-4">
                       <div className="flex items-start justify-between gap-4">
                         <div className="space-y-1 flex-1">
-                          <h3 className="font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">{p.name}</h3>
+                          <h3 className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1">{p.name}</h3>
                           <div className="flex items-center gap-2">
-                            <Badge variant="secondary" className="text-[9px] uppercase px-1.5 py-0">{p.inputs.marketplace}</Badge>
-                            <span className="text-[10px] text-slate-400">{p.inputs.category}</span>
+                            <Badge variant="secondary" className="text-[9px] uppercase px-1.5 py-0 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">{p.inputs.marketplace}</Badge>
+                            <span className="text-[10px] text-slate-400 dark:text-slate-550">{p.inputs.category}</span>
                           </div>
                         </div>
-                        <button onClick={() => removeSavedProduct(p.id)} className="p-1.5 text-slate-300 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => removeSavedProduct(p.id)} className="p-1.5 text-slate-350 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
-                        <div className="bg-blue-50/50 p-3 rounded-2xl border border-blue-100/50">
-                          <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Monthly Profit</p>
-                          <p className="text-lg font-black text-blue-600">₹{Math.round(p.monthly_profit).toLocaleString()}</p>
+                        <div className="bg-blue-50/50 dark:bg-blue-950/20 p-3 rounded-2xl border border-blue-100/50 dark:border-blue-900/30">
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mb-1">Monthly Profit</p>
+                          <p className="text-lg font-black text-blue-600 dark:text-blue-400">₹{Math.round(p.monthly_profit).toLocaleString()}</p>
                         </div>
-                        <div className="bg-emerald-50/50 p-3 rounded-2xl border border-emerald-100/50">
-                          <p className="text-[10px] text-slate-400 font-bold uppercase mb-1">Net Margin</p>
-                          <p className="text-lg font-black text-emerald-600">{p.net_margin_pct.toFixed(1)}%</p>
+                        <div className="bg-emerald-50/50 dark:bg-emerald-950/20 p-3 rounded-2xl border border-emerald-100/50 dark:border-emerald-900/30">
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mb-1">Net Margin</p>
+                          <p className="text-lg font-black text-emerald-600 dark:text-emerald-400">{p.net_margin_pct.toFixed(1)}%</p>
                         </div>
                       </div>
 
                       <div className="grid grid-cols-3 gap-2 py-1">
-                        <div><p className="text-[9px] text-slate-400 uppercase font-medium">Price</p><p className="text-xs font-bold text-slate-700">₹{p.inputs.selling_price}</p></div>
-                        <div><p className="text-[9px] text-slate-400 uppercase font-medium">Cost</p><p className="text-xs font-bold text-slate-700">₹{p.inputs.product_cost}</p></div>
-                        <div><p className="text-[9px] text-slate-400 uppercase font-medium">Volume</p><p className="text-xs font-bold text-slate-700">{p.inputs.monthly_units}</p></div>
+                        <div><p className="text-[9px] text-slate-400 dark:text-slate-500 uppercase font-medium">Price</p><p className="text-xs font-bold text-slate-700 dark:text-slate-300">₹{p.inputs.selling_price}</p></div>
+                        <div><p className="text-[9px] text-slate-400 dark:text-slate-500 uppercase font-medium">Cost</p><p className="text-xs font-bold text-slate-700 dark:text-slate-300">₹{p.inputs.product_cost}</p></div>
+                        <div><p className="text-[9px] text-slate-400 dark:text-slate-500 uppercase font-medium">Volume</p><p className="text-xs font-bold text-slate-700 dark:text-slate-300">{p.inputs.monthly_units}</p></div>
                       </div>
                     </div>
 
                     <button
                       onClick={() => router.push(`/explorer/profitability-optimizer?id=${p.id}`)}
-                      className="w-full py-3.5 text-xs font-bold text-slate-600 hover:bg-slate-50 border-t border-slate-100 flex items-center justify-center gap-1.5 transition-colors"
+                      className="w-full py-3.5 text-xs font-bold text-slate-650 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-1.5 transition-colors"
                     >
                       <ArrowRight className="w-3.5 h-3.5" /> View Full Breakdown
                     </button>

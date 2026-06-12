@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useTheme } from "next-themes";
 import { API_BASE_URL as CONFIG_API_BASE_URL } from "@/lib/config";
 import axios from "axios";
 import { useAuth } from "@/lib/auth-context";
@@ -222,14 +223,15 @@ const QUADRANT_COLORS: Record<string, string> = {
   "Poor Value": "#94a3b8",
 };
 
-const CustomTooltipStyle = {
-  backgroundColor: "rgba(255,255,255,0.97)",
+const getTooltipStyle = (isDark: boolean) => ({
+  backgroundColor: isDark ? "rgba(15,23,42,0.97)" : "rgba(255,255,255,0.97)",
   borderRadius: "12px",
-  border: "1.5px solid #e2e8f0",
-  boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+  border: isDark ? "1.5px solid #1e293b" : "1.5px solid #e2e8f0",
+  boxShadow: isDark ? "none" : "0 4px 16px rgba(0,0,0,0.10)",
   fontSize: 13,
   padding: "10px 16px",
-};
+  color: isDark ? "#f8fafc" : "#0f172a",
+});
 
 function Pagination({
   currentPage,
@@ -252,32 +254,33 @@ function Pagination({
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="p-2 rounded-lg border border-slate-300 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        className="p-2 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-slate-600 dark:text-slate-300"
         data-track-id="sov_prev_page_btn"
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
       {start > 1 && (
         <>
-          <button 
-            onClick={() => onPageChange(1)} 
-            className="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-blue-50 text-sm transition-colors"
+          <button
+            onClick={() => onPageChange(1)}
+            className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm transition-colors text-slate-700 dark:text-slate-300"
             data-track-id="sov_page_num_btn"
             data-filter-value="1"
           >
             1
           </button>
-          {start > 2 && <span className="text-slate-400 text-sm">…</span>}
+          {start > 2 && <span className="text-slate-400 dark:text-slate-500 text-sm">…</span>}
         </>
       )}
       {pages.map((p) => (
         <button
           key={p}
           onClick={() => onPageChange(p)}
-          className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${currentPage === p
-            ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-blue-500 shadow-sm"
-            : "border-slate-300 hover:bg-blue-50"
-            }`}
+          className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${
+            currentPage === p
+              ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-blue-500 shadow-sm"
+              : "border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-slate-700 dark:text-slate-300"
+          }`}
           data-track-id="sov_page_num_btn"
           data-filter-value={p}
         >
@@ -286,10 +289,10 @@ function Pagination({
       ))}
       {end < totalPages && (
         <>
-          {end < totalPages - 1 && <span className="text-slate-400 text-sm">…</span>}
-          <button 
-            onClick={() => onPageChange(totalPages)} 
-            className="px-3 py-1.5 rounded-lg border border-slate-300 hover:bg-blue-50 text-sm transition-colors"
+          {end < totalPages - 1 && <span className="text-slate-400 dark:text-slate-500 text-sm">…</span>}
+          <button
+            onClick={() => onPageChange(totalPages)}
+            className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm transition-colors text-slate-700 dark:text-slate-300"
             data-track-id="sov_page_num_btn"
             data-filter-value={totalPages}
           >
@@ -300,12 +303,12 @@ function Pagination({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="p-2 rounded-lg border border-slate-300 hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        className="p-2 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-slate-600 dark:text-slate-300"
         data-track-id="sov_next_page_btn"
       >
         <ChevronRight className="w-4 h-4" />
       </button>
-      <span className="ml-3 text-xs text-gray-500">Page {currentPage} / {totalPages}</span>
+      <span className="ml-3 text-xs text-gray-500 dark:text-slate-400">Page {currentPage} / {totalPages}</span>
     </div>
   );
 }
@@ -334,10 +337,10 @@ function ScoreRing({ score, color, size = 80 }: { score: number; color: string; 
 
 function OppBadge({ opp }: { opp: string }) {
   const map: Record<string, string> = {
-    High: "bg-green-100 text-green-700 border border-green-200",
-    Medium: "bg-yellow-100 text-yellow-700 border border-yellow-200",
-    Low: "bg-slate-100 text-slate-600 border border-slate-200",
-    Crowded: "bg-red-100 text-red-600 border border-red-200",
+    High: "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800",
+    Medium: "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800",
+    Low: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700",
+    Crowded: "bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800",
   };
   return (
     <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${map[opp] || map.Low}`}>
@@ -350,6 +353,11 @@ export default function ShareOfVoice() {
   const { user, isLoading } = useAuth();
   const userEmail = user?.email || "";
   const userId = user?.id;
+
+  const [sovMounted, setSovMounted] = useState(false);
+  useEffect(() => { setSovMounted(true); }, []);
+  const { resolvedTheme } = useTheme();
+  const isDark = sovMounted && resolvedTheme === "dark";
 
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -567,21 +575,21 @@ export default function ShareOfVoice() {
       {/* ── Upgrade Modal ── */}
       {showUpgradeModal && (
         <div className="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl opacity-100 backdrop-blur-none">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
             <div className="text-center">
               <div className="mx-auto w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center mb-4">
                 <Lock className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">SOV Limit Reached</h3>
-              <p className="text-slate-600 mb-4">
-                You've used all{" "}
-                <span className="font-bold text-red-600">{usageLimits?.limit}</span>{" "}
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">SOV Limit Reached</h3>
+              <p className="text-slate-600 dark:text-slate-400 mb-4">
+                You&apos;ve used all{" "}
+                <span className="font-bold text-red-600 dark:text-red-400">{usageLimits?.limit}</span>{" "}
                 analyses this month on the{" "}
-                <span className="font-semibold">{usageLimits?.subscription_tier.toUpperCase()}</span> plan.
+                <span className="font-semibold dark:text-slate-200">{usageLimits?.subscription_tier.toUpperCase()}</span> plan.
               </p>
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 mb-6 border-2 border-blue-200">
+              <div className="bg-gradient-to-br from-blue-50 dark:from-blue-900/30 to-purple-50 dark:to-purple-900/20 rounded-xl p-4 mb-6 border-2 border-blue-200 dark:border-blue-800">
                 <Crown className="h-6 w-6 text-yellow-500 mx-auto mb-2" />
-                <p className="text-sm font-medium text-slate-700">{getUpgradeMessage()}</p>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{getUpgradeMessage()}</p>
               </div>
               <div className="flex gap-3">
                 <Button variant="outline" className="flex-1" onClick={() => setShowUpgradeModal(false)}>Cancel</Button>
@@ -602,15 +610,18 @@ export default function ShareOfVoice() {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`flex items-start gap-3 p-4 rounded-xl shadow-lg border-2 backdrop-blur-none ${t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
-              }`}
+            className={`flex items-start gap-3 p-4 rounded-xl shadow-lg border-2 ${
+              t.variant === "success"
+                ? "bg-green-50 dark:bg-green-950/60 border-green-300 dark:border-green-800"
+                : "bg-red-50 dark:bg-red-950/60 border-red-300 dark:border-red-800"
+            }`}
           >
-            {t.variant === "success" ? <CheckCircle className="h-5 w-5 text-green-600 shrink-0 mt-0.5" /> : <XCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />}
+            {t.variant === "success" ? <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" /> : <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />}
             <div className="flex-1 min-w-0">
-              <p className={`font-semibold text-sm ${t.variant === "success" ? "text-green-900" : "text-red-900"}`}>{t.title}</p>
-              <p className={`text-xs mt-0.5 ${t.variant === "success" ? "text-green-700" : "text-red-700"}`}>{t.description}</p>
+              <p className={`font-semibold text-sm ${t.variant === "success" ? "text-green-900 dark:text-green-300" : "text-red-900 dark:text-red-300"}`}>{t.title}</p>
+              <p className={`text-xs mt-0.5 ${t.variant === "success" ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}`}>{t.description}</p>
             </div>
-            <button onClick={() => removeToast(t.id)} className="text-slate-400 hover:text-slate-600">
+            <button onClick={() => removeToast(t.id)} className="text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300">
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -628,42 +639,42 @@ export default function ShareOfVoice() {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Marketplace</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Marketplace</label>
                 <select
                   value={marketplace}
                   onChange={(e) => setMarketplace(e.target.value as any)}
                   disabled={!!userId && !canAnalyze}
-                  className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
                   data-track-id="marketplace_select"
                   data-filter-value={marketplace}
                 >
-                  <option value="flipkart">Flipkart</option>
-                  <option value="amazon">Amazon</option>
+                  <option value="flipkart" className="bg-white dark:bg-slate-800">Flipkart</option>
+                  <option value="amazon" className="bg-white dark:bg-slate-800">Amazon</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Category</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Category</label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
                   disabled={!!userId && !canAnalyze}
-                  className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
                   data-track-id="category_select"
                   data-filter-value={selectedCategory}
                 >
-                  <option value="">Select Category</option>
-                  {categories.map((c, i) => <option key={i} value={c}>{c}</option>)}
+                  <option value="" className="bg-white dark:bg-slate-800">Select Category</option>
+                  {categories.map((c, i) => <option key={i} value={c} className="bg-white dark:bg-slate-800">{c}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Your Brand <span className="text-gray-400 text-xs">(Optional)</span></label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Your Brand <span className="text-gray-400 dark:text-slate-500 text-xs">(Optional)</span></label>
                 <input
                   type="text" value={yourBrand}
                   onChange={(e) => setYourBrand(e.target.value)}
                   placeholder="Enter your brand name"
                   disabled={!!userId && !canAnalyze}
-                  className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                  className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
                   data-track-id="your_brand_input"
                 />
               </div>
@@ -671,8 +682,9 @@ export default function ShareOfVoice() {
                 <Button
                   onClick={analyzeCategorySov}
                   disabled={loading || (!!userId && !canAnalyze)}
-                  className={`w-full py-3 rounded-lg text-white font-medium flex items-center justify-center gap-2 ${userId && !canAnalyze ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
-                    }`}
+                  className={`w-full py-3 rounded-lg text-white font-medium flex items-center justify-center gap-2 ${
+                    userId && !canAnalyze ? "bg-slate-300 dark:bg-slate-600 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
+                  }`}
                   data-track-id="analyze_category_sov_btn"
                 >
                   {loading ? <><RefreshCw className="w-4 h-4 animate-spin" /> Analyzing…</>
@@ -683,17 +695,17 @@ export default function ShareOfVoice() {
             </div>
 
             {yourBrand && (
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200">
+              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Target Share (%)</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Target Share (%)</label>
                   <input type="number" value={targetShare} onChange={(e) => setTargetShare(Number(e.target.value))} min="0" max="100" disabled={!!userId && !canAnalyze}
-                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm"
                     data-track-id="target_share_input" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Target Days</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Target Days</label>
                   <input type="number" value={targetDays} onChange={(e) => setTargetDays(Number(e.target.value))} min="1" disabled={!!userId && !canAnalyze}
-                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm"
                     data-track-id="target_days_input" />
                 </div>
               </div>
@@ -703,7 +715,7 @@ export default function ShareOfVoice() {
 
         {/* Error */}
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 rounded-xl p-4 flex items-center gap-2 text-red-700 shadow">
+          <div className="bg-red-50 dark:bg-red-950/30 border-l-4 border-red-500 rounded-xl p-4 flex items-center gap-2 text-red-700 dark:text-red-400 shadow">
             <AlertCircle className="w-5 h-5 shrink-0" />
             <span className="text-sm font-medium">{error}</span>
           </div>
@@ -806,12 +818,14 @@ export default function ShareOfVoice() {
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center gap-3 mb-2">
-                        <div className={`px-3 py-1 rounded-full text-sm font-bold ${marketHealth.trend.trend === "Growing" ? "bg-green-100 text-green-700" :
-                          marketHealth.trend.trend === "Declining" ? "bg-red-100 text-red-700" : "bg-slate-100 text-slate-700"
-                          }`}>
+                        <div className={`px-3 py-1 rounded-full text-sm font-bold ${
+                          marketHealth.trend.trend === "Growing" ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400" :
+                          marketHealth.trend.trend === "Declining" ? "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400" :
+                          "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                        }`}>
                           {marketHealth.trend.trend === "Growing" ? "📈" : marketHealth.trend.trend === "Declining" ? "📉" : "➡️"} {marketHealth.trend.trend}
                         </div>
-                        <span className={`text-lg font-black ${marketHealth.trend.growth_proxy_pct > 0 ? "text-green-600" : "text-red-600"}`}>
+                        <span className={`text-lg font-black ${marketHealth.trend.growth_proxy_pct > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
                           {marketHealth.trend.growth_proxy_pct > 0 ? "+" : ""}{marketHealth.trend.growth_proxy_pct.toFixed(1)}%
                         </span>
                       </div>
@@ -874,10 +888,10 @@ export default function ShareOfVoice() {
                         ].map((item) => (
                           <div key={item.label}>
                             <div className="flex justify-between text-sm mb-1">
-                              <span className="text-slate-600 font-medium">{item.label}</span>
-                              <span className="font-bold text-slate-800">{item.val}/25</span>
+                              <span className="text-slate-600 dark:text-slate-300 font-medium">{item.label}</span>
+                              <span className="font-bold text-slate-800 dark:text-slate-100">{item.val}/25</span>
                             </div>
-                            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                            <div className="h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
                               <div
                                 className={`h-full rounded-full transition-all ${item.val >= 20 ? "bg-green-500" : item.val >= 10 ? "bg-blue-500" : "bg-slate-400"}`}
                                 style={{ width: `${(item.val / 25) * 100}%` }}
@@ -888,7 +902,7 @@ export default function ShareOfVoice() {
                       </div>
                       <div className="space-y-2">
                         {marketHealth.launch_readiness.reasoning.map((r, i) => (
-                          <div key={i} className="flex items-start gap-2 text-sm text-slate-600 bg-slate-50 rounded-lg p-2.5">
+                          <div key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/50 rounded-lg p-2.5">
                             <span className="text-blue-500 font-bold shrink-0">{i + 1}.</span> {r}
                           </div>
                         ))}
@@ -925,17 +939,17 @@ export default function ShareOfVoice() {
                           <Cell key={i} fill={COLORS[i % COLORS.length]} stroke="#fff" strokeWidth={2} />
                         ))}
                       </Pie>
-                      <Tooltip contentStyle={CustomTooltipStyle} formatter={(v: any) => [`${v}%`, "Share"]} />
+                      <Tooltip contentStyle={getTooltipStyle(isDark)} formatter={(v: any) => [`${v}%`, "Share"]} />
                       <Legend
                         iconType="circle" iconSize={8}
-                        formatter={(v) => <span className="text-xs text-slate-600">{v}</span>}
+                        formatter={(v) => <span className="text-xs text-slate-600 dark:text-slate-300">{v}</span>}
                       />
                     </PieChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
 
-              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
+              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 dark:border-slate-800 rounded-2xl shadow-lg">
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-base">
                     <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
@@ -952,10 +966,10 @@ export default function ShareOfVoice() {
                       layout="vertical" margin={{ left: 0, right: 20, top: 4, bottom: 4 }}
                       barCategoryGap="25%"
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
-                      <XAxis type="number" tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                      <YAxis type="category" dataKey="brand" tick={{ fontSize: 11, fill: "#64748b" }} width={80} axisLine={false} tickLine={false} />
-                      <Tooltip contentStyle={CustomTooltipStyle} formatter={(v: any, n: string) => [n === "reviews" ? v.toLocaleString() : `${v}%`, n === "reviews" ? "Reviews" : "Share"]} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} horizontal={false} />
+                      <XAxis type="number" tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} tick={{ fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
+                      <YAxis type="category" dataKey="brand" tick={{ fontSize: 11, fill: isDark ? "#94a3b8" : "#64748b" }} width={80} axisLine={false} tickLine={false} />
+                      <Tooltip contentStyle={getTooltipStyle(isDark)} formatter={(v: any, n: string) => [n === "reviews" ? v.toLocaleString() : `${v}%`, n === "reviews" ? "Reviews" : "Share"]} />
                       <Bar dataKey="reviews" radius={[0, 6, 6, 0]} maxBarSize={22}>
                         {sovData.brands.slice(0, 8).map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                       </Bar>
@@ -966,7 +980,7 @@ export default function ShareOfVoice() {
             </div>
 
             {marketHealth && marketHealth.all_price_gaps.length > 0 && (
-              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
+              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 dark:border-slate-800 rounded-2xl shadow-lg">
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-base">
                     <Map className="w-5 h-5 text-blue-600" /> Price Band Whitespace Map
@@ -985,18 +999,18 @@ export default function ShareOfVoice() {
                       margin={{ left: 0, right: 10, top: 4, bottom: 60 }}
                       barCategoryGap="12%"
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                      <XAxis dataKey="band" tick={{ fontSize: 10, fill: "#94a3b8" }} angle={-35} textAnchor="end" interval="preserveStartEnd" minTickGap={20} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} vertical={false} />
+                      <XAxis dataKey="band" tick={{ fontSize: 10, fill: isDark ? "#64748b" : "#94a3b8" }} angle={-35} textAnchor="end" interval="preserveStartEnd" minTickGap={20} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
                       <Tooltip
-                        contentStyle={CustomTooltipStyle}
+                        contentStyle={getTooltipStyle(isDark)}
                         content={({ active, payload }) => {
                           if (!active || !payload?.length) return null;
                           const d = payload[0].payload;
                           return (
-                            <div style={CustomTooltipStyle}>
-                              <p className="font-semibold text-slate-800 text-xs">₹{d.band}</p>
-                              <p className="text-xs text-slate-600">{d.brands} brand(s) · {d.rating}★ avg</p>
+                            <div style={getTooltipStyle(isDark)}>
+                              <p className="font-semibold text-slate-800 dark:text-slate-100 text-xs">₹{d.band}</p>
+                              <p className="text-xs text-slate-600 dark:text-slate-300">{d.brands} brand(s) · {d.rating}★ avg</p>
                               <p className="text-xs font-bold mt-1"><OppBadge opp={d.opp} /></p>
                             </div>
                           );
@@ -1017,7 +1031,7 @@ export default function ShareOfVoice() {
                     {[["#10b981", "High Opportunity"], ["#f59e0b", "Medium"], ["#3b82f6", "Low"], ["#ef4444", "Crowded"]].map(([c, l]) => (
                       <div key={l} className="flex items-center gap-1.5">
                         <div className="w-3 h-3 rounded-sm" style={{ background: c }} />
-                        <span className="text-xs text-slate-500">{l}</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400">{l}</span>
                       </div>
                     ))}
                   </div>
@@ -1026,7 +1040,7 @@ export default function ShareOfVoice() {
             )}
 
             {marketHealth && scatterData.length > 0 && (
-              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
+              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 dark:border-slate-800 rounded-2xl shadow-lg">
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-base">
                     <Star className="w-5 h-5 text-yellow-500" /> Brand Value Map
@@ -1036,22 +1050,22 @@ export default function ShareOfVoice() {
                 <CardContent>
                   <ResponsiveContainer width="100%" height={300}>
                     <ScatterChart margin={{ top: 10, right: 20, bottom: 10, left: 10 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                      <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} />
                       <XAxis type="number" dataKey="x" name="Avg Price" tickFormatter={(v) => `₹${v.toLocaleString()}`}
-                        tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} label={{ value: "Avg Price (₹)", position: "insideBottom", offset: -4, fontSize: 11, fill: "#94a3b8" }} />
+                        tick={{ fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} label={{ value: "Avg Price (₹)", position: "insideBottom", offset: -4, fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} />
                       <YAxis type="number" dataKey="y" name="Avg Rating" domain={[2.5, 5]} tickFormatter={(v) => `${v}★`}
-                        tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} label={{ value: "Rating", angle: -90, position: "insideLeft", fontSize: 11, fill: "#94a3b8" }} />
+                        tick={{ fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} label={{ value: "Rating", angle: -90, position: "insideLeft", fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} />
                       <ZAxis type="number" dataKey="z" range={[40, 600]} />
                       <Tooltip
-                        contentStyle={CustomTooltipStyle}
+                        contentStyle={getTooltipStyle(isDark)}
                         content={({ active, payload }) => {
                           if (!active || !payload?.length) return null;
                           const d = payload[0].payload;
                           return (
-                            <div style={CustomTooltipStyle}>
-                              <p className="font-bold text-slate-800 text-sm">{d.name}</p>
-                              <p className="text-xs text-slate-600">₹{d.x.toLocaleString()} · {d.y}★</p>
-                              <p className="text-xs text-slate-500">{d.z.toLocaleString()} reviews · {d.share.toFixed(1)}% share</p>
+                            <div style={getTooltipStyle(isDark)}>
+                              <p className="font-bold text-slate-800 dark:text-slate-100 text-sm">{d.name}</p>
+                              <p className="text-xs text-slate-600 dark:text-slate-300">₹{d.x.toLocaleString()} · {d.y}★</p>
+                              <p className="text-xs text-slate-500 dark:text-slate-400">{d.z.toLocaleString()} reviews · {d.share.toFixed(1)}% share</p>
                               <span className="text-xs font-bold" style={{ color: QUADRANT_COLORS[d.quadrant] || "#64748b" }}>{d.quadrant}</span>
                             </div>
                           );
@@ -1065,7 +1079,7 @@ export default function ShareOfVoice() {
                       })}
                       <Legend
                         payload={Object.entries(QUADRANT_COLORS).map(([q, c]) => ({ value: q, type: "circle" as const, color: c }))}
-                        formatter={(v) => <span className="text-xs text-slate-600">{v}</span>}
+                        formatter={(v) => <span className="text-xs text-slate-600 dark:text-slate-300">{v}</span>}
                       />
                     </ScatterChart>
                   </ResponsiveContainer>
@@ -1074,7 +1088,7 @@ export default function ShareOfVoice() {
             )}
 
             {marketHealth && marketHealth.review_velocity.length > 0 && (
-              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
+              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 dark:border-slate-800 rounded-2xl shadow-lg">
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-base">
                     <TrendingUp className="w-5 h-5 text-emerald-500" /> Review Velocity
@@ -1092,10 +1106,10 @@ export default function ShareOfVoice() {
                       margin={{ left: 0, right: 10, top: 4, bottom: 40 }}
                       barCategoryGap="20%"
                     >
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                      <XAxis dataKey="brand" tick={{ fontSize: 10, fill: "#94a3b8" }} angle={-35} textAnchor="end" interval={0} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                      <Tooltip contentStyle={CustomTooltipStyle} formatter={(v: any) => [v.toFixed(1), "Reviews/product"]} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} vertical={false} />
+                      <XAxis dataKey="brand" tick={{ fontSize: 10, fill: isDark ? "#64748b" : "#94a3b8" }} angle={-35} textAnchor="end" interval={0} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
+                      <Tooltip contentStyle={getTooltipStyle(isDark)} formatter={(v: any) => [v.toFixed(1), "Reviews/product"]} />
                       <Bar dataKey="density" radius={[4, 4, 0, 0]} maxBarSize={32}>
                         {marketHealth.review_velocity.slice(0, 12).map((v, i) => (
                           <Cell key={i} fill={v.velocity_label === "Rising" ? "#10b981" : v.velocity_label === "Declining" ? "#ef4444" : "#3b82f6"} />
@@ -1131,21 +1145,25 @@ export default function ShareOfVoice() {
                 <CardContent>
                   <div className="space-y-4">
                     {marketHealth.action_plan.steps.map((step) => (
-                      <div key={step.step} className="flex gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-blue-200 hover:bg-blue-50/30 transition-all">
-                        <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow ${step.priority === "Critical" ? "bg-red-500" : step.priority === "High" ? "bg-orange-500" : "bg-blue-500"
-                          }`}>
+                      <div key={step.step} className="flex gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-700 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-all">
+                        <div className={`shrink-0 w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow ${
+                          step.priority === "Critical" ? "bg-red-500" : step.priority === "High" ? "bg-orange-500" : "bg-blue-500"
+                        }`}>
                           {step.step}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap mb-1">
-                            <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">{step.area}</span>
-                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${step.priority === "Critical" ? "bg-red-100 text-red-700" : step.priority === "High" ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-600"
-                              }`}>{step.priority}</span>
-                            <span className="text-xs text-slate-400">{step.timeline}</span>
+                            <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/40 px-2 py-0.5 rounded-full">{step.area}</span>
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                              step.priority === "Critical" ? "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400" :
+                              step.priority === "High" ? "bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-400" :
+                              "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                            }`}>{step.priority}</span>
+                            <span className="text-xs text-slate-400 dark:text-slate-500">{step.timeline}</span>
                           </div>
-                          <p className="font-semibold text-slate-800 text-sm mb-1">{step.action}</p>
-                          <p className="text-xs text-slate-600 line-clamp-2">{step.detail}</p>
-                          <p className="text-xs text-emerald-600 font-medium mt-1.5">💡 {step.impact}</p>
+                          <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm mb-1">{step.action}</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-300 line-clamp-2">{step.detail}</p>
+                          <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1.5">💡 {step.impact}</p>
                         </div>
                       </div>
                     ))}
@@ -1166,7 +1184,7 @@ export default function ShareOfVoice() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wide">
+                        <tr className="border-b border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                           <th className="p-3 text-left font-semibold">Price Band</th>
                           <th className="p-3 text-right font-semibold">Brands</th>
                           <th className="p-3 text-right font-semibold">Products</th>
@@ -1176,11 +1194,11 @@ export default function ShareOfVoice() {
                       </thead>
                       <tbody>
                         {marketHealth.top_price_gaps.map((g, i) => (
-                          <tr key={i} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                            <td className="p-3 font-semibold text-slate-800">{g.price_band}</td>
-                            <td className="p-3 text-right text-slate-600">{g.brand_count}</td>
-                            <td className="p-3 text-right text-slate-600">{g.total_products}</td>
-                            <td className="p-3 text-right"><span className="text-yellow-600 font-semibold">⭐ {g.avg_rating}</span></td>
+                          <tr key={i} className="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                            <td className="p-3 font-semibold text-slate-800 dark:text-slate-100">{g.price_band}</td>
+                            <td className="p-3 text-right text-slate-600 dark:text-slate-300">{g.brand_count}</td>
+                            <td className="p-3 text-right text-slate-600 dark:text-slate-300">{g.total_products}</td>
+                            <td className="p-3 text-right"><span className="text-yellow-600 dark:text-yellow-400 font-semibold">⭐ {g.avg_rating}</span></td>
                             <td className="p-3 text-center"><OppBadge opp={g.opportunity} /></td>
                           </tr>
                         ))}
@@ -1335,10 +1353,10 @@ export default function ShareOfVoice() {
                   <CardContent>
                     <ResponsiveContainer width="100%" height={260}>
                       <LineChart data={progressData.weekly_progress} margin={{ left: 0, right: 20, top: 4, bottom: 4 }}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                        <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fontSize: 11, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
-                        <Tooltip contentStyle={CustomTooltipStyle} />
+                        <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} />
+                        <XAxis dataKey="date" tick={{ fontSize: 10, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
+                        <Tooltip contentStyle={getTooltipStyle(isDark)} />
                         <Line type="monotone" dataKey="share_percentage" stroke="#10b981" strokeWidth={2.5} name="Market Share %" dot={{ fill: "#10b981", r: 3 }} activeDot={{ r: 6 }} />
                       </LineChart>
                     </ResponsiveContainer>

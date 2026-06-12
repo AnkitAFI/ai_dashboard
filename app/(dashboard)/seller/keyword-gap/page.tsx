@@ -5,6 +5,7 @@ import { API_BASE_URL } from "@/lib/config";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
+import { useTheme } from "next-themes";
 import {
   Lock, Crown, RefreshCw, Menu, X, Package,
   Search, TrendingUp, CheckCircle, AlertTriangle,
@@ -18,16 +19,16 @@ import { useSelectedProduct } from "@/lib/selected-product-context";
 const BASE_URL = API_BASE_URL;
 
 // ── Cluster icon + colour map ─────────────────────────────────────────────────
-const CLUSTER_META: Record<string, { color: string; bg: string; border: string; emoji: string }> = {
-  "Speed & Performance":   { color: "text-red-600",    bg: "bg-red-50",    border: "border-red-200",    emoji: "⚡" },
-  "Storage Capacity":      { color: "text-blue-600",   bg: "bg-blue-50",   border: "border-blue-200",   emoji: "💾" },
-  "Compatibility":         { color: "text-violet-600", bg: "bg-violet-50", border: "border-violet-200", emoji: "🔌" },
-  "Durability & Build":    { color: "text-emerald-600",bg: "bg-emerald-50",border: "border-emerald-200",emoji: "🛡️" },
-  "Format & Standard":     { color: "text-amber-600",  bg: "bg-amber-50",  border: "border-amber-200",  emoji: "📋" },
-  "Brand & Certification": { color: "text-sky-600",    bg: "bg-sky-50",    border: "border-sky-200",    emoji: "✅" },
-  "Use Case":              { color: "text-pink-600",   bg: "bg-pink-50",   border: "border-pink-200",   emoji: "🎯" },
-  "Gap Keywords":          { color: "text-slate-600",  bg: "bg-slate-50",  border: "border-slate-200",  emoji: "🔑" },
-  "Other":                 { color: "text-slate-500",  bg: "bg-slate-50",  border: "border-slate-100",  emoji: "📦" },
+const CLUSTER_META: Record<string, { color: string; colorDark: string; bg: string; bgDark: string; border: string; borderDark: string; emoji: string }> = {
+  "Speed & Performance":   { color: "text-red-600",    colorDark: "text-red-400",    bg: "bg-red-50",    bgDark: "bg-red-900/30",    border: "border-red-200",    borderDark: "border-red-800/50",    emoji: "⚡" },
+  "Storage Capacity":      { color: "text-blue-600",   colorDark: "text-blue-400",   bg: "bg-blue-50",   bgDark: "bg-blue-900/30",   border: "border-blue-200",   borderDark: "border-blue-800/50",   emoji: "💾" },
+  "Compatibility":         { color: "text-violet-600", colorDark: "text-violet-400", bg: "bg-violet-50", bgDark: "bg-violet-900/30", border: "border-violet-200", borderDark: "border-violet-800/50", emoji: "🔌" },
+  "Durability & Build":    { color: "text-emerald-600",colorDark: "text-emerald-400",bg: "bg-emerald-50",bgDark: "bg-emerald-900/30",border: "border-emerald-200",borderDark: "border-emerald-800/50",emoji: "🛡️" },
+  "Format & Standard":     { color: "text-amber-600",  colorDark: "text-amber-400",  bg: "bg-amber-50",  bgDark: "bg-amber-900/30",  border: "border-amber-200",  borderDark: "border-amber-800/50",  emoji: "📋" },
+  "Brand & Certification": { color: "text-sky-600",    colorDark: "text-sky-400",    bg: "bg-sky-50",    bgDark: "bg-sky-900/30",    border: "border-sky-200",    borderDark: "border-sky-800/50",    emoji: "✅" },
+  "Use Case":              { color: "text-pink-600",   colorDark: "text-pink-400",   bg: "bg-pink-50",   bgDark: "bg-pink-900/30",   border: "border-pink-200",   borderDark: "border-pink-800/50",   emoji: "🎯" },
+  "Gap Keywords":          { color: "text-slate-600",  colorDark: "text-slate-400",  bg: "bg-slate-50",  bgDark: "bg-slate-800",     border: "border-slate-200",  borderDark: "border-slate-700",     emoji: "🔑" },
+  "Other":                 { color: "text-slate-500",  colorDark: "text-slate-500",  bg: "bg-slate-50",  bgDark: "bg-slate-800",     border: "border-slate-100",  borderDark: "border-slate-700",     emoji: "📦" },
 };
 
 function clusterMeta(name: string) {
@@ -35,11 +36,11 @@ function clusterMeta(name: string) {
 }
 
 // ── Placement badge ───────────────────────────────────────────────────────────
-function PlacementBadge({ placement }: { placement: string }) {
+function PlacementBadge({ placement, isDark }: { placement: string; isDark: boolean }) {
   const map: Record<string, string> = {
-    title:   "bg-violet-100 text-violet-700 border-violet-200",
-    bullets: "bg-amber-100 text-amber-700 border-amber-200",
-    backend: "bg-sky-100 text-sky-700 border-sky-200",
+    title:   isDark ? "bg-violet-900/30 text-violet-400 border-violet-800/50" : "bg-violet-100 text-violet-700 border-violet-200",
+    bullets: isDark ? "bg-amber-900/30 text-amber-400 border-amber-800/50" : "bg-amber-100 text-amber-700 border-amber-200",
+    backend: isDark ? "bg-sky-900/30 text-sky-400 border-sky-800/50" : "bg-sky-100 text-sky-700 border-sky-200",
   };
   const label: Record<string, string> = {
     title:   "→ Title",
@@ -55,26 +56,26 @@ function PlacementBadge({ placement }: { placement: string }) {
 }
 
 // ── Semantic distance indicator ───────────────────────────────────────────────
-function SemanticBadge({ sim }: { sim: number }) {
+function SemanticBadge({ sim, isDark }: { sim: number; isDark: boolean }) {
   if (sim == null) return null;
   if (sim >= 0.5)
-    return <span title="Semantically close — easy to add" className="text-[9px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full">≈ Similar</span>;
+    return <span title="Semantically close — easy to add" className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${isDark ? 'text-emerald-400 bg-emerald-900/30 border-emerald-800/50' : 'text-emerald-600 bg-emerald-50 border-emerald-200'}`}>≈ Similar</span>;
   if (sim >= 0.25)
-    return <span title="Partially related concept" className="text-[9px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full">~ Partial</span>;
-  return <span title="Genuinely new concept — high discovery value" className="text-[9px] font-bold text-red-600 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded-full">✦ New concept</span>;
+    return <span title="Partially related concept" className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${isDark ? 'text-amber-400 bg-amber-900/30 border-amber-800/50' : 'text-amber-600 bg-amber-50 border-amber-200'}`}>~ Partial</span>;
+  return <span title="Genuinely new concept — high discovery value" className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${isDark ? 'text-red-400 bg-red-900/30 border-red-800/50' : 'text-red-600 bg-red-50 border-red-200'}`}>✦ New concept</span>;
 }
 
 // ── Tier Gate ─────────────────────────────────────────────────────────────────
-function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
+function TierGate({ tier, feature, isDark }: { tier: "basic" | "premium"; feature: string; isDark: boolean }) {
   const router = useRouter();
   return (
-    <div className="absolute inset-0 bg-white/88 backdrop-blur-[3px] rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
-      <div className={`w-11 h-11 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? "bg-blue-50" : "bg-amber-50"}`}>
-        <Lock className={`w-5 h-5 ${tier === "premium" ? "text-blue-500" : "text-amber-500"}`} />
+    <div className={`absolute inset-0 backdrop-blur-[3px] rounded-2xl flex flex-col items-center justify-center z-10 gap-3 ${isDark ? 'bg-slate-900/85' : 'bg-white/88'}`}>
+      <div className={`w-11 h-11 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? isDark ? "bg-blue-900/50" : "bg-blue-50" : isDark ? "bg-amber-900/50" : "bg-amber-50"}`}>
+        <Lock className={`w-5 h-5 ${tier === "premium" ? isDark ? "text-blue-400" : "text-blue-500" : isDark ? "text-amber-400" : "text-amber-500"}`} />
       </div>
       <div className="text-center px-4">
-        <p className="font-bold text-slate-800 text-sm">{feature}</p>
-        <p className="text-xs text-slate-400 mt-0.5">
+        <p className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{feature}</p>
+        <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
           {tier === "premium" ? "Premium · ₹2,999/mo" : "Basic · ₹1,999/mo"}
         </p>
       </div>
@@ -89,7 +90,7 @@ function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: strin
 }
 
 // ── Coverage Score Ring ───────────────────────────────────────────────────────
-function CoverageRing({ score }: { score: number }) {
+function CoverageRing({ score, isDark }: { score: number; isDark: boolean }) {
   const r = 32, circ = 2 * Math.PI * r;
   const offset = circ - (circ * score) / 100;
   const color = score >= 70 ? "#10b981" : score >= 40 ? "#f59e0b" : "#ef4444";
@@ -98,14 +99,14 @@ function CoverageRing({ score }: { score: number }) {
     <div className="flex flex-col items-center gap-1.5">
       <div className="relative w-24 h-24">
         <svg className="w-24 h-24 -rotate-90" viewBox="0 0 72 72">
-          <circle cx="36" cy="36" r={r} fill="none" stroke="#f1f5f9" strokeWidth="7" />
+          <circle cx="36" cy="36" r={r} fill="none" stroke={isDark ? "#334155" : "#f1f5f9"} strokeWidth="7" />
           <circle cx="36" cy="36" r={r} fill="none" stroke={color} strokeWidth="7"
             strokeDasharray={circ} strokeDashoffset={offset}
             strokeLinecap="round" style={{ transition: "stroke-dashoffset 1.2s ease" }} />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-xl font-black text-slate-800">{score}</span>
-          <span className="text-[9px] text-slate-400 font-semibold">/100</span>
+          <span className={`text-xl font-black ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{score}</span>
+          <span className={`text-[9px] font-semibold ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>/100</span>
         </div>
       </div>
       <span className="text-xs font-bold" style={{ color }}>{label} Coverage</span>
@@ -114,11 +115,11 @@ function CoverageRing({ score }: { score: number }) {
 }
 
 // ── Priority Pill ─────────────────────────────────────────────────────────────
-function PriorityPill({ priority }: { priority: string }) {
+function PriorityPill({ priority, isDark }: { priority: string; isDark: boolean }) {
   const map: Record<string, string> = {
-    High:   "bg-red-50 text-red-600 border-red-200",
-    Medium: "bg-amber-50 text-amber-600 border-amber-200",
-    Low:    "bg-slate-50 text-slate-500 border-slate-200",
+    High:   isDark ? "bg-red-900/30 text-red-400 border-red-800/50" : "bg-red-50 text-red-600 border-red-200",
+    Medium: isDark ? "bg-amber-900/30 text-amber-400 border-amber-800/50" : "bg-amber-50 text-amber-600 border-amber-200",
+    Low:    isDark ? "bg-slate-800 text-slate-400 border-slate-700" : "bg-slate-50 text-slate-500 border-slate-200",
   };
   return (
     <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${map[priority] || map.Low}`}>
@@ -128,40 +129,40 @@ function PriorityPill({ priority }: { priority: string }) {
 }
 
 // ── Opportunity Score Bar ─────────────────────────────────────────────────────
-function OpportunityBar({ score, keyword, reason, add_to, is_spec }: {
-  score: number; keyword: string; reason: string; add_to?: string; is_spec?: boolean;
+function OpportunityBar({ score, keyword, reason, add_to, is_spec, isDark }: {
+  score: number; keyword: string; reason: string; add_to?: string; is_spec?: boolean; isDark: boolean;
 }) {
   const color = score >= 8 ? "#ef4444" : score >= 6 ? "#f59e0b" : score >= 4 ? "#3b82f6" : "#94a3b8";
   return (
-    <div className="flex items-start gap-3 py-2.5 border-b border-slate-50 last:border-0">
+    <div className={`flex items-start gap-3 py-2.5 border-b last:border-0 ${isDark ? 'border-slate-800' : 'border-slate-50'}`}>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1 flex-wrap">
-          <span className="text-sm font-bold text-slate-800 font-mono">{keyword}</span>
+          <span className={`text-sm font-bold font-mono ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{keyword}</span>
           <span className="text-xs font-black tabular-nums" style={{ color }}>{score}/10</span>
-          {add_to && <PlacementBadge placement={add_to} />}
+          {add_to && <PlacementBadge placement={add_to} isDark={isDark} />}
           {is_spec && (
-            <span className="text-[9px] font-bold text-violet-600 bg-violet-50 border border-violet-200 px-1.5 py-0.5 rounded-full">SPEC</span>
+            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${isDark ? 'text-violet-400 bg-violet-900/30 border-violet-800/50' : 'text-violet-600 bg-violet-50 border-violet-200'}`}>SPEC</span>
           )}
         </div>
-        <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden mb-1">
+        <div className={`h-1.5 rounded-full overflow-hidden mb-1 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
           <div
             className="h-full rounded-full transition-all duration-700"
             style={{ width: `${score * 10}%`, background: color }}
           />
         </div>
-        <p className="text-[11px] text-slate-400">{reason}</p>
+        <p className={`text-[11px] ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{reason}</p>
       </div>
     </div>
   );
 }
 
 // ── Keyword Pill ──────────────────────────────────────────────────────────────
-function KwPill({ kw, variant }: { kw: string; variant: "gap" | "shared" | "unique" | "review" }) {
+function KwPill({ kw, variant, isDark }: { kw: string; variant: "gap" | "shared" | "unique" | "review"; isDark: boolean }) {
   const styles = {
-    gap:    "bg-red-50 text-red-700 border-red-200",
-    shared: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    unique: "bg-purple-50 text-purple-700 border-purple-200",
-    review: "bg-blue-50 text-blue-700 border-blue-200",
+    gap:    isDark ? "bg-red-900/30 text-red-400 border-red-800/50" : "bg-red-50 text-red-700 border-red-200",
+    shared: isDark ? "bg-emerald-900/30 text-emerald-400 border-emerald-800/50" : "bg-emerald-50 text-emerald-700 border-emerald-200",
+    unique: isDark ? "bg-purple-900/30 text-purple-400 border-purple-800/50" : "bg-purple-50 text-purple-700 border-purple-200",
+    review: isDark ? "bg-blue-900/30 text-blue-400 border-blue-800/50" : "bg-blue-50 text-blue-700 border-blue-200",
   };
   return (
     <span className={`inline-flex items-center px-2 py-0.5 rounded-lg border text-[11px] font-semibold font-mono ${styles[variant]}`}>
@@ -171,22 +172,22 @@ function KwPill({ kw, variant }: { kw: string; variant: "gap" | "shared" | "uniq
 }
 
 // ── Heatmap Row ───────────────────────────────────────────────────────────────
-function HeatmapRow({ item, maxFreq }: { item: any; maxFreq: number }) {
+function HeatmapRow({ item, maxFreq, isDark }: { item: any; maxFreq: number; isDark: boolean }) {
   const pct  = Math.max((item.freq / maxFreq) * 100, 3);
   const color = item.in_yours ? "#0ea5e9" : item.freq / maxFreq >= 0.5 ? "#ef4444" : "#f59e0b";
   return (
     <div className="flex items-center gap-3 py-1.5">
-      <span className="text-xs font-mono text-slate-700 w-36 shrink-0 truncate">{item.keyword}</span>
-      <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+      <span className={`text-xs font-mono w-36 shrink-0 truncate ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{item.keyword}</span>
+      <div className={`flex-1 h-2 rounded-full overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
         <div className="h-full rounded-full transition-all duration-500" style={{ width: `${pct}%`, background: color }} />
       </div>
-      <span className="text-xs text-slate-400 w-14 text-right shrink-0">
+      <span className={`text-xs w-14 text-right shrink-0 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
         {item.freq} title{item.freq !== 1 ? "s" : ""}
       </span>
       <span className="w-16 text-right shrink-0">
         {item.in_yours
-          ? <span className="text-[10px] font-bold text-sky-600 bg-sky-50 px-1.5 py-0.5 rounded">✓ Yours</span>
-          : <span className="text-[10px] font-semibold text-red-400">Missing</span>
+          ? <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${isDark ? 'text-sky-400 bg-sky-900/30' : 'text-sky-600 bg-sky-50'}`}>✓ Yours</span>
+          : <span className={`text-[10px] font-semibold ${isDark ? 'text-red-500' : 'text-red-400'}`}>Missing</span>
         }
       </span>
     </div>
@@ -194,21 +195,21 @@ function HeatmapRow({ item, maxFreq }: { item: any; maxFreq: number }) {
 }
 
 // ── Expandable Section ────────────────────────────────────────────────────────
-function Section({ title, icon: Icon, children, defaultOpen = true, count, accent }: any) {
+function Section({ title, icon: Icon, children, defaultOpen = true, count, accent, isDark }: any) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+    <div className={`rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50 transition-colors"
+        className={`w-full flex items-center justify-between px-5 py-4 transition-colors ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}
       >
         <div className="flex items-center gap-2">
-          <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${accent || "bg-sky-50"}`}>
-            <Icon className="w-4 h-4 text-sky-600" />
+          <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${accent || (isDark ? "bg-sky-900/30" : "bg-sky-50")}`}>
+            <Icon className={`w-4 h-4 ${isDark ? 'text-sky-400' : 'text-sky-600'}`} />
           </div>
-          <span className="font-bold text-slate-800 text-sm">{title}</span>
+          <span className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{title}</span>
           {count != null && (
-            <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{count}</span>
+            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'text-slate-400 bg-slate-800' : 'text-slate-400 bg-slate-100'}`}>{count}</span>
           )}
         </div>
         {open ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
@@ -219,13 +220,13 @@ function Section({ title, icon: Icon, children, defaultOpen = true, count, accen
 }
 
 // ── Semantic Gap Clusters ────────────────────────────────────────────────
-function GapClusters({ clusters }: { clusters: Record<string, string[]> }) {
+function GapClusters({ clusters, isDark }: { clusters: Record<string, string[]>; isDark: boolean }) {
   const entries = Object.entries(clusters).filter(([, kws]) => kws.length > 0);
   if (entries.length === 0) return null;
 
   return (
-    <Section title="Semantic Keyword Clusters" icon={Layers} defaultOpen={true} accent="bg-violet-50">
-      <p className="text-xs text-slate-400 mb-4">
+    <Section title="Semantic Keyword Clusters" icon={Layers} defaultOpen={true} accent={isDark ? "bg-violet-900/30" : "bg-violet-50"} isDark={isDark}>
+      <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
         Gap keywords grouped by concept. Each cluster represents a content area your listing is missing.
         Focus on clusters with the most keywords first.
       </p>
@@ -235,23 +236,23 @@ function GapClusters({ clusters }: { clusters: Record<string, string[]> }) {
           .map(([name, kws]) => {
             const meta = clusterMeta(name);
             return (
-              <div key={name} className={`rounded-xl border p-3 ${meta.bg} ${meta.border}`}>
+              <div key={name} className={`rounded-xl border p-3 ${isDark ? meta.bgDark : meta.bg} ${isDark ? meta.borderDark : meta.border}`}>
                 <div className="flex items-center justify-between mb-2">
-                  <span className={`text-xs font-black ${meta.color} flex items-center gap-1.5`}>
+                  <span className={`text-xs font-black flex items-center gap-1.5 ${isDark ? meta.colorDark : meta.color}`}>
                     <span>{meta.emoji}</span> {name}
                   </span>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/70 border ${meta.border} ${meta.color}`}>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${isDark ? 'bg-slate-900/50' : 'bg-white/70'} ${isDark ? meta.borderDark : meta.border} ${isDark ? meta.colorDark : meta.color}`}>
                     {kws.length} keyword{kws.length !== 1 ? "s" : ""}
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-1">
                   {kws.slice(0, 6).map((kw, i) => (
-                    <span key={i} className={`text-[10px] font-semibold font-mono px-1.5 py-0.5 rounded-md bg-white/60 border ${meta.border} ${meta.color}`}>
+                    <span key={i} className={`text-[10px] font-semibold font-mono px-1.5 py-0.5 rounded-md border ${isDark ? 'bg-slate-900/60' : 'bg-white/60'} ${isDark ? meta.borderDark : meta.border} ${isDark ? meta.colorDark : meta.color}`}>
                       {kw}
                     </span>
                   ))}
                   {kws.length > 6 && (
-                    <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-white/40 ${meta.color}`}>
+                    <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md ${isDark ? 'bg-slate-900/40' : 'bg-white/40'} ${isDark ? meta.colorDark : meta.color}`}>
                       +{kws.length - 6} more
                     </span>
                   )}
@@ -265,7 +266,7 @@ function GapClusters({ clusters }: { clusters: Record<string, string[]> }) {
 }
 
 // ── Gap Keywords Table ───────────────────
-function GapKeywordsTable({ items }: { items: any[] }) {
+function GapKeywordsTable({ items, isDark }: { items: any[]; isDark: boolean }) {
   const [filter, setFilter]       = useState<"All" | "High" | "Medium" | "Low">("All");
   const [showBigrams, setShowBigrams] = useState(true);
   const [showSemantic, setShowSemantic] = useState(true);
@@ -290,8 +291,8 @@ function GapKeywordsTable({ items }: { items: any[] }) {
                 ? f === "High" ? "bg-red-500 text-white border-red-500"
                 : f === "Medium" ? "bg-amber-400 text-white border-amber-400"
                 : f === "All" ? "bg-sky-500 text-white border-sky-500"
-                : "bg-slate-400 text-white border-slate-400"
-                : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
+                : "bg-slate-500 text-white border-slate-500"
+                : isDark ? "bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-600" : "bg-white text-slate-500 border-slate-200 hover:border-slate-300"
             }`}
           >
             {f}
@@ -301,7 +302,7 @@ function GapKeywordsTable({ items }: { items: any[] }) {
           <button
             onClick={() => setShowSemantic(!showSemantic)}
             className={`flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full border transition-all ${
-              showSemantic ? "bg-violet-50 text-violet-600 border-violet-200" : "bg-white text-slate-400 border-slate-200"
+              showSemantic ? isDark ? "bg-violet-900/30 text-violet-400 border-violet-800/50" : "bg-violet-50 text-violet-600 border-violet-200" : isDark ? "bg-slate-800 text-slate-400 border-slate-700" : "bg-white text-slate-400 border-slate-200"
             }`}
           >
             <Cpu className="w-3 h-3" /> Semantic
@@ -309,7 +310,7 @@ function GapKeywordsTable({ items }: { items: any[] }) {
           <button
             onClick={() => setShowBigrams(!showBigrams)}
             className={`flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full border transition-all ${
-              showBigrams ? "bg-white text-slate-600 border-slate-200" : "bg-slate-100 text-slate-400 border-slate-200"
+              showBigrams ? isDark ? "bg-slate-800 text-slate-300 border-slate-700" : "bg-white text-slate-600 border-slate-200" : isDark ? "bg-slate-900 text-slate-500 border-slate-800" : "bg-slate-100 text-slate-400 border-slate-200"
             }`}
           >
             {showBigrams ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
@@ -320,12 +321,12 @@ function GapKeywordsTable({ items }: { items: any[] }) {
 
       {/* Legend for semantic badges */}
       {showSemantic && (
-        <div className="flex flex-wrap gap-2 mb-3 p-2.5 bg-slate-50 rounded-xl border border-slate-100">
-          <span className="text-[10px] text-slate-400 font-semibold mr-1 self-center">Semantic distance:</span>
-          <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full">≈ Similar</span>
-          <span className="text-[9px] text-slate-400 self-center">easy to rephrase into title</span>
-          <span className="text-[9px] font-bold text-red-600 bg-red-50 border border-red-200 px-1.5 py-0.5 rounded-full">✦ New concept</span>
-          <span className="text-[9px] text-slate-400 self-center">genuinely missing content area</span>
+        <div className={`flex flex-wrap gap-2 mb-3 p-2.5 rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
+          <span className={`text-[10px] font-semibold mr-1 self-center ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Semantic distance:</span>
+          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${isDark ? 'text-emerald-400 bg-emerald-900/30 border-emerald-800/50' : 'text-emerald-600 bg-emerald-50 border-emerald-200'}`}>≈ Similar</span>
+          <span className={`text-[9px] self-center ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>easy to rephrase into title</span>
+          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border ${isDark ? 'text-red-400 bg-red-900/30 border-red-800/50' : 'text-red-600 bg-red-50 border-red-200'}`}>✦ New concept</span>
+          <span className={`text-[9px] self-center ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>genuinely missing content area</span>
         </div>
       )}
 
@@ -333,26 +334,26 @@ function GapKeywordsTable({ items }: { items: any[] }) {
       <div className="space-y-1">
         {filtered.slice(0, 30).map((item, i) => (
           <div key={i} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-colors flex-wrap ${
-            item.priority === "High" ? "bg-red-50 border border-red-100" : "bg-slate-50 border border-slate-100"
+            item.priority === "High" ? isDark ? "bg-red-900/10 border border-red-900/30" : "bg-red-50 border border-red-100" : isDark ? "bg-slate-800/50 border border-slate-700/50" : "bg-slate-50 border border-slate-100"
           }`}>
-            <span className="text-xs font-mono font-bold text-slate-800 flex-1 min-w-0 truncate">
+            <span className={`text-xs font-mono font-bold flex-1 min-w-0 truncate ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
               {item.keyword}
               {item.is_partial && (
-                <span className="ml-1.5 text-[9px] text-amber-600 bg-amber-50 px-1 py-0.5 rounded font-semibold">words exist</span>
+                <span className={`ml-1.5 text-[9px] px-1 py-0.5 rounded font-semibold ${isDark ? 'text-amber-400 bg-amber-900/30' : 'text-amber-600 bg-amber-50'}`}>words exist</span>
               )}
             </span>
-            <span className="text-xs text-slate-500 shrink-0">{item.comp_freq} comp</span>
+            <span className={`text-xs shrink-0 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>{item.comp_freq} comp</span>
             {showSemantic && item.semantic_sim_to_yours != null && (
-              <SemanticBadge sim={item.semantic_sim_to_yours} />
+              <SemanticBadge sim={item.semantic_sim_to_yours} isDark={isDark} />
             )}
-            <PriorityPill priority={item.priority} />
+            <PriorityPill priority={item.priority} isDark={isDark} />
           </div>
         ))}
         {filtered.length === 0 && (
-          <p className="text-sm text-slate-400 text-center py-6">No keywords match this filter.</p>
+          <p className={`text-sm text-center py-6 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>No keywords match this filter.</p>
         )}
         {filtered.length > 30 && (
-          <p className="text-xs text-slate-400 text-center pt-2">
+          <p className={`text-xs text-center pt-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
             Showing top 30 of {filtered.length} — narrow filter to see more
           </p>
         )}
@@ -367,6 +368,8 @@ function KeywordGapContent() {
   const { user } = useAuth();
   const { toggle } = useSidebar();
   const { selected } = useSelectedProduct();
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
   const asin     = searchParams.get("asin")      || selected?.asin     || "";
   const sellerId = searchParams.get("seller_id") || selected?.sellerId || user?.seller_id || "";
@@ -377,6 +380,10 @@ function KeywordGapContent() {
   const tier      = data?.tier || user?.subscriptionTier || "free";
   const isBasic   = tier === "basic" || tier === "premium";
   const isPremium = tier === "premium";
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!asin || !sellerId) return;
@@ -401,29 +408,35 @@ function KeywordGapContent() {
   const maxHeatFreq    = heatmap.length ? Math.max(...heatmap.map((h: any) => h.freq)) : 1;
   const embeddingModel = data?.embedding_model || null;
 
+  if (!mounted) return null;
+  const isDark = resolvedTheme === "dark";
+
   return (
     <div className="min-h-screen flex flex-col bg-transparent">
-        <header className="bg-transparent border-b border-sky-100/80 pb-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <header className={`bg-transparent border-b pb-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${isDark ? 'border-sky-900/50' : 'border-sky-100/80'}`}>
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl flex items-center justify-center shadow-inner shrink-0">
-              <Search className="w-6 h-6 text-sky-600 animate-pulse" />
+            <button onClick={toggle} className={`lg:hidden p-2 rounded-xl mr-1 shadow-sm ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-sky-50 hover:bg-sky-100'}`}>
+              <Menu className={`w-5 h-5 ${isDark ? 'text-sky-400' : 'text-sky-900'}`} />
+            </button>
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner shrink-0 ${isDark ? 'bg-gradient-to-br from-blue-900/50 to-cyan-900/50' : 'bg-gradient-to-br from-blue-100 to-cyan-100'}`}>
+              <Search className={`w-6 h-6 animate-pulse ${isDark ? 'text-sky-400' : 'text-sky-600'}`} />
             </div>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
                 Keyword Gap Analysis
               </h1>
-              <p className="text-sm text-slate-500 font-medium">
+              <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
                 Discover keywords your competitors use that are absent from your listing.
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {embeddingModel && embeddingModel !== "jaccard_fallback" && (
-              <span className="flex items-center gap-1 text-[10px] font-bold text-violet-600 bg-violet-50 border border-violet-200 px-2 py-1 rounded-full shadow-sm">
+              <span className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full shadow-sm border ${isDark ? 'text-violet-400 bg-violet-900/30 border-violet-800/50' : 'text-violet-600 bg-violet-50 border-violet-200'}`}>
                 <Cpu className="w-3 h-3" /> Semantic AI
               </span>
             )}
-            <Badge className={`text-xs font-bold ${tier === "premium" ? "bg-blue-100 text-blue-700" : tier === "basic" ? "bg-amber-100 text-amber-700" : "bg-slate-100 text-slate-600"}`}>
+            <Badge className={`text-xs font-bold ${tier === "premium" ? isDark ? "bg-blue-900/30 text-blue-400" : "bg-blue-100 text-blue-700" : tier === "basic" ? isDark ? "bg-amber-900/30 text-amber-400" : "bg-amber-100 text-amber-700" : isDark ? "bg-slate-800 text-slate-400" : "bg-slate-100 text-slate-600"}`}>
               {tier.toUpperCase()}
             </Badge>
             {!isPremium && (
@@ -438,12 +451,12 @@ function KeywordGapContent() {
         <main className="flex-1 py-6 space-y-5">
           {!asin && (
             <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
-              <div className="w-16 h-16 bg-sky-100 rounded-full flex items-center justify-center">
+              <div className={`w-16 h-16 rounded-full flex items-center justify-center ${isDark ? 'bg-sky-900/30' : 'bg-sky-100'}`}>
                 <Search className="w-8 h-8 text-sky-400" />
               </div>
               <div>
-                <p className="text-lg font-bold text-slate-700">No product selected</p>
-                <p className="text-sm text-slate-400 mt-1">Select a product from My Products to analyse its keyword gaps.</p>
+                <p className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>No product selected</p>
+                <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Select a product from My Products to analyse its keyword gaps.</p>
               </div>
               <button onClick={() => router.push("/seller/my-products")}
                 className="px-5 py-2 bg-sky-600 text-white rounded-full text-sm font-semibold hover:bg-sky-700 transition-colors">
@@ -456,8 +469,8 @@ function KeywordGapContent() {
             <div className="flex flex-col items-center justify-center h-64 gap-3">
               <RefreshCw className="w-8 h-8 animate-spin text-sky-500" />
               <div className="text-center">
-                <p className="text-slate-600 font-semibold">Analysing keyword gaps…</p>
-                <p className="text-slate-400 text-xs animate-pulse mt-1">We are analyzing the data. This may take 1–2 minutes.</p>
+                <p className={`font-semibold ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>Analysing keyword gaps…</p>
+                <p className={`text-xs animate-pulse mt-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>We are analyzing the data. This may take 1–2 minutes.</p>
               </div>
             </div>
           )}
@@ -465,32 +478,32 @@ function KeywordGapContent() {
           {asin && !loading && data && (
             <>
               {/* Product card */}
-              <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                <div className="w-16 h-16 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-center overflow-hidden flex-shrink-0">
+              <div className={`rounded-2xl border shadow-sm p-4 sm:p-5 flex flex-col sm:flex-row gap-4 items-start sm:items-center ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
+                <div className={`w-16 h-16 rounded-xl border flex items-center justify-center overflow-hidden flex-shrink-0 ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
                   {data.product_photo
                     ? <img src={data.product_photo} alt={data.product_title} className="w-full h-full object-contain p-1" />
-                    : <Package className="w-8 h-8 text-slate-300" />
+                    : <Package className={`w-8 h-8 ${isDark ? 'text-slate-600' : 'text-slate-300'}`} />
                   }
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-slate-800 text-base line-clamp-2">{data.product_title}</p>
+                  <p className={`font-bold text-base line-clamp-2 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{data.product_title}</p>
                   <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                    <span className="text-xs text-slate-400 font-mono">{data.asin}</span>
-                    {data.is_prime && <Badge className="text-[10px] bg-blue-50 text-blue-600 border-blue-200 px-1.5 py-0">PRIME</Badge>}
-                    {data.is_best_seller && <Badge className="text-[10px] bg-orange-50 text-orange-600 border-orange-200 px-1.5 py-0">BEST SELLER</Badge>}
+                    <span className={`text-xs font-mono ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{data.asin}</span>
+                    {data.is_prime && <Badge className={`text-[10px] px-1.5 py-0 ${isDark ? 'bg-blue-900/30 text-blue-400 border-blue-800/50' : 'bg-blue-50 text-blue-600 border-blue-200'}`}>PRIME</Badge>}
+                    {data.is_best_seller && <Badge className={`text-[10px] px-1.5 py-0 ${isDark ? 'bg-orange-900/30 text-orange-400 border-orange-800/50' : 'bg-orange-50 text-orange-600 border-orange-200'}`}>BEST SELLER</Badge>}
                     {data.data_quality === "live" && (
-                      <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                      <span className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'text-emerald-400 bg-emerald-900/30 border-emerald-800/50' : 'text-emerald-600 bg-emerald-50 border-emerald-200'}`}>
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         {data.competitor_count} competitors analysed
                       </span>
                     )}
                     {data.data_quality === "limited" && (
-                      <span className="flex items-center gap-1 text-[10px] font-semibold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full">
+                      <span className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'text-amber-400 bg-amber-900/30 border-amber-800/50' : 'text-amber-600 bg-amber-50 border-amber-200'}`}>
                         <AlertTriangle className="w-3 h-3" /> Limited data ({data.competitor_count})
                       </span>
                     )}
                     {embeddingModel && embeddingModel !== "jaccard_fallback" && (
-                      <span className="flex items-center gap-1 text-[10px] font-semibold text-violet-600 bg-violet-50 border border-violet-200 px-2 py-0.5 rounded-full">
+                      <span className={`flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'text-violet-400 bg-violet-900/30 border-violet-800/50' : 'text-violet-600 bg-violet-50 border-violet-200'}`}>
                         <Cpu className="w-3 h-3" /> Semantic similarity
                       </span>
                     )}
@@ -499,16 +512,16 @@ function KeywordGapContent() {
 
                 {isBasic && data.coverage_score != null && (
                   <div className="flex-shrink-0">
-                    <CoverageRing score={data.coverage_score} />
+                    <CoverageRing score={data.coverage_score} isDark={isDark} />
                   </div>
                 )}
 
                 {!isBasic && (
                   <div className="flex-shrink-0 text-right">
                     <p className="text-3xl font-black text-red-500">{data.gap_count_teaser ?? "—"}</p>
-                    <p className="text-xs text-slate-400 mt-0.5">keyword gaps found</p>
+                    <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>keyword gaps found</p>
                     <button onClick={() => router.push("/subscription")}
-                      className="mt-2 text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 hover:bg-amber-100 transition-colors">
+                      className={`mt-2 text-xs font-bold px-3 py-1 rounded-full border transition-colors ${isDark ? 'text-amber-400 bg-amber-900/30 border-amber-800/50 hover:bg-amber-900/50' : 'text-amber-600 bg-amber-50 border-amber-200 hover:bg-amber-100'}`}>
                       Unlock all →
                     </button>
                   </div>
@@ -516,41 +529,41 @@ function KeywordGapContent() {
               </div>
 
               {/* Your keywords */}
-              <Section title="Your Title Keywords" icon={FileText} count={data.your_keyword_count} defaultOpen={true}>
-                <p className="text-xs text-slate-400 mb-3">Every keyword extracted from your current product title</p>
+              <Section title="Your Title Keywords" icon={FileText} count={data.your_keyword_count} defaultOpen={true} isDark={isDark}>
+                <p className={`text-xs mb-3 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Every keyword extracted from your current product title</p>
                 <div className="flex flex-wrap gap-1.5">
                   {(data.your_keywords || []).map((kw: string, i: number) => (
-                    <KwPill key={i} kw={kw} variant="shared" />
+                    <KwPill key={i} kw={kw} variant="shared" isDark={isDark} />
                   ))}
                   {(data.your_keywords || []).length === 0 && (
-                    <p className="text-sm text-slate-400">No keywords found in title.</p>
+                    <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>No keywords found in title.</p>
                   )}
                 </div>
               </Section>
 
               {/* teaser gate */}
               {!isBasic && (
-                <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm p-5 overflow-hidden">
-                  <TierGate tier="basic" feature="Full Keyword Gap Analysis" />
+                <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
+                  <TierGate tier="basic" feature="Full Keyword Gap Analysis" isDark={isDark} />
                   <div className="blur-sm pointer-events-none">
                     <div className="grid grid-cols-3 gap-4 mb-5">
                       {[
                         { label: "Gap Keywords", value: data.gap_count_teaser ?? "—", color: "text-red-500" },
                         { label: "Coverage Score", value: "—/100", color: "text-amber-500" },
-                        { label: "Competitors Scanned", value: "—", color: "text-sky-600" },
+                        { label: "Competitors Scanned", value: "—", color: isDark ? "text-sky-400" : "text-sky-600" },
                       ].map((s) => (
-                        <div key={s.label} className="bg-slate-50 rounded-xl p-3 text-center border border-slate-100">
+                        <div key={s.label} className={`rounded-xl p-3 text-center border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
                           <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
-                          <p className="text-xs text-slate-400 mt-0.5">{s.label}</p>
+                          <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{s.label}</p>
                         </div>
                       ))}
                     </div>
                     <div className="space-y-2">
                       {["memory card", "high speed", "4k uhd", "class 10", "waterproof"].map((kw, i) => (
-                        <div key={i} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-red-50 border border-red-100">
-                          <span className="text-xs font-mono font-bold text-slate-800 flex-1">{kw}</span>
-                          <span className="text-xs text-slate-500">3 competitors</span>
-                          <PriorityPill priority="High" />
+                        <div key={i} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl border ${isDark ? 'bg-red-900/10 border-red-900/30' : 'bg-red-50 border-red-100'}`}>
+                          <span className={`text-xs font-mono font-bold flex-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{kw}</span>
+                          <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>3 competitors</span>
+                          <PriorityPill priority="High" isDark={isDark} />
                         </div>
                       ))}
                     </div>
@@ -562,15 +575,15 @@ function KeywordGapContent() {
               {isBasic && (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {[
-                    { label: "Gap Keywords",    value: String(data.gap_count_teaser ?? "—"), sub: "not in your title", color: "text-red-500" },
-                    { label: "Shared Keywords", value: String(sharedKeywords.length),        sub: "matching competitors", color: "text-emerald-600" },
-                    { label: "Your Unique KWs", value: String(uniqueKeywords.length),        sub: "only in your title", color: "text-purple-600" },
-                    { label: "Coverage Score",  value: `${data.coverage_score ?? "—"}/100`,  sub: "vs top 40 competitor KWs", color: "text-sky-600" },
+                    { label: "Gap Keywords",    value: String(data.gap_count_teaser ?? "—"), sub: "not in your title", color: isDark ? "text-red-400" : "text-red-500" },
+                    { label: "Shared Keywords", value: String(sharedKeywords.length),        sub: "matching competitors", color: isDark ? "text-emerald-400" : "text-emerald-600" },
+                    { label: "Your Unique KWs", value: String(uniqueKeywords.length),        sub: "only in your title", color: isDark ? "text-purple-400" : "text-purple-600" },
+                    { label: "Coverage Score",  value: `${data.coverage_score ?? "—"}/100`,  sub: "vs top 40 competitor KWs", color: isDark ? "text-sky-400" : "text-sky-600" },
                   ].map((s) => (
-                    <div key={s.label} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
-                      <p className="text-xs text-slate-400 font-medium mb-1">{s.label}</p>
+                    <div key={s.label} className={`rounded-2xl p-4 border shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
+                      <p className={`text-xs font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{s.label}</p>
                       <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">{s.sub}</p>
+                      <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{s.sub}</p>
                     </div>
                   ))}
                 </div>
@@ -579,37 +592,37 @@ function KeywordGapContent() {
               {/* Gap keywords */}
               {isBasic && (
                 <Section title="Missing Keywords (Gap)" icon={AlertTriangle} count={gapKeywords.length}
-                  accent="bg-red-50" defaultOpen={true}>
-                  <p className="text-xs text-slate-400 mb-4">
+                  accent={isDark ? "bg-red-900/30" : "bg-red-50"} defaultOpen={true} isDark={isDark}>
+                  <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
                     Keywords your competitors use that are absent from your title.
-                    <span className="ml-1 text-red-500 font-semibold">Red = High priority</span> (50%+ of competitors).
+                    <span className={`ml-1 font-semibold ${isDark ? 'text-red-400' : 'text-red-500'}`}>Red = High priority</span> (50%+ of competitors).
                     Semantic badges show whether the concept is new or just rephrased.
                   </p>
                   {gapKeywords.length > 0
-                    ? <GapKeywordsTable items={gapKeywords} />
-                    : <p className="text-sm text-slate-400 text-center py-6">No gap keywords — excellent coverage!</p>
+                    ? <GapKeywordsTable items={gapKeywords} isDark={isDark} />
+                    : <p className={`text-sm text-center py-6 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>No gap keywords — excellent coverage!</p>
                   }
                 </Section>
               )}
 
               {/* Semantic Gap Clusters */}
               {isBasic && Object.keys(gapClusters).length > 0 && (
-                <GapClusters clusters={gapClusters} />
+                <GapClusters clusters={gapClusters} isDark={isDark} />
               )}
 
               {/* Keyword heatmap */}
               {isBasic && (
-                <Section title="Competitor Keyword Heatmap" icon={BarChart2} defaultOpen={false}>
-                  <p className="text-xs text-slate-400 mb-4">
+                <Section title="Competitor Keyword Heatmap" icon={BarChart2} defaultOpen={false} isDark={isDark}>
+                  <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
                     How often each keyword appears across competitor titles.
-                    <span className="ml-1 text-sky-500 font-semibold">Blue = in your title</span>,
-                    <span className="ml-1 text-red-500 font-semibold">Red = high-frequency gap</span>.
+                    <span className={`ml-1 font-semibold ${isDark ? 'text-sky-400' : 'text-sky-500'}`}>Blue = in your title</span>,
+                    <span className={`ml-1 font-semibold ${isDark ? 'text-red-400' : 'text-red-500'}`}>Red = high-frequency gap</span>.
                   </p>
                   <div className="space-y-0.5 max-h-80 overflow-y-auto pr-1">
                     {heatmap.map((item: any, i: number) => (
-                      <HeatmapRow key={i} item={item} maxFreq={maxHeatFreq} />
+                      <HeatmapRow key={i} item={item} maxFreq={maxHeatFreq} isDark={isDark} />
                     ))}
-                    {heatmap.length === 0 && <p className="text-sm text-slate-400 text-center py-4">No heatmap data.</p>}
+                    {heatmap.length === 0 && <p className={`text-sm text-center py-4 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>No heatmap data.</p>}
                   </div>
                 </Section>
               )}
@@ -617,26 +630,26 @@ function KeywordGapContent() {
               {/* Shared + Unique */}
               {isBasic && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                  <Section title="Shared Keywords" icon={CheckCircle} count={sharedKeywords.length} accent="bg-emerald-50" defaultOpen={false}>
-                    <p className="text-xs text-slate-400 mb-3">Keywords you share with competitors — good coverage here.</p>
+                  <Section title="Shared Keywords" icon={CheckCircle} count={sharedKeywords.length} accent={isDark ? "bg-emerald-900/30" : "bg-emerald-50"} defaultOpen={false} isDark={isDark}>
+                    <p className={`text-xs mb-3 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Keywords you share with competitors — good coverage here.</p>
                     <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto">
                       {sharedKeywords.map((s: any, i: number) => (
                         <div key={i} className="flex items-center gap-1">
-                          <KwPill kw={s.keyword} variant="shared" />
-                          {s.comp_freq > 1 && <span className="text-[9px] text-slate-400">×{s.comp_freq}</span>}
+                          <KwPill kw={s.keyword} variant="shared" isDark={isDark} />
+                          {s.comp_freq > 1 && <span className={`text-[9px] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>×{s.comp_freq}</span>}
                         </div>
                       ))}
-                      {sharedKeywords.length === 0 && <p className="text-sm text-slate-400">None found.</p>}
+                      {sharedKeywords.length === 0 && <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>None found.</p>}
                     </div>
                   </Section>
 
-                  <Section title="Your Unique Keywords" icon={Star} count={uniqueKeywords.length} accent="bg-purple-50" defaultOpen={false}>
-                    <p className="text-xs text-slate-400 mb-3">Keywords only in your title — your differentiators. Keep them.</p>
+                  <Section title="Your Unique Keywords" icon={Star} count={uniqueKeywords.length} accent={isDark ? "bg-purple-900/30" : "bg-purple-50"} defaultOpen={false} isDark={isDark}>
+                    <p className={`text-xs mb-3 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Keywords only in your title — your differentiators. Keep them.</p>
                     <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto">
                       {uniqueKeywords.map((kw: string, i: number) => (
-                        <KwPill key={i} kw={kw} variant="unique" />
+                        <KwPill key={i} kw={kw} variant="unique" isDark={isDark} />
                       ))}
-                      {uniqueKeywords.length === 0 && <p className="text-sm text-slate-400">Closely aligned with competitors.</p>}
+                      {uniqueKeywords.length === 0 && <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Closely aligned with competitors.</p>}
                     </div>
                   </Section>
                 </div>
@@ -644,40 +657,40 @@ function KeywordGapContent() {
 
               {/* Competitors analysed */}
               {isBasic && competitors.length > 0 && (
-                <Section title="Competitors Analysed" icon={Eye} count={competitors.length} defaultOpen={false}>
-                  <p className="text-xs text-slate-400 mb-4">
+                <Section title="Competitors Analysed" icon={Eye} count={competitors.length} defaultOpen={false} isDark={isDark}>
+                  <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
                     Products ranked by semantic similarity to your title.
                     {embeddingModel && embeddingModel !== "jaccard_fallback" &&
-                      <span className="ml-1 text-violet-500 font-semibold">Scores use AI embeddings.</span>
+                      <span className={`ml-1 font-semibold ${isDark ? 'text-violet-400' : 'text-violet-500'}`}>Scores use AI embeddings.</span>
                     }
                   </p>
                   <div className="space-y-2">
                     {competitors.map((c: any, i: number) => (
-                      <div key={i} className="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                        <div className="w-9 h-9 rounded-lg bg-white border border-slate-100 flex items-center justify-center overflow-hidden flex-shrink-0">
+                      <div key={i} className={`flex items-center gap-3 p-3 border rounded-xl ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
+                        <div className={`w-9 h-9 rounded-lg border flex items-center justify-center overflow-hidden flex-shrink-0 ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-slate-100'}`}>
                           {c.photo
                             ? <img src={c.photo} alt="" className="w-full h-full object-contain p-0.5" />
-                            : <Package className="w-4 h-4 text-slate-300" />
+                            : <Package className={`w-4 h-4 ${isDark ? 'text-slate-600' : 'text-slate-300'}`} />
                           }
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-semibold text-slate-700 line-clamp-1">{c.title}</p>
+                          <p className={`text-xs font-semibold line-clamp-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{c.title}</p>
                           <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className="text-[10px] text-slate-400 font-mono">{c.asin}</span>
+                            <span className={`text-[10px] font-mono ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{c.asin}</span>
                             <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
-                              c.similarity >= 0.5 ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                              : c.similarity >= 0.3 ? "bg-amber-50 text-amber-700 border-amber-200"
-                              : "bg-slate-50 text-slate-500 border-slate-200"
+                              c.similarity >= 0.5 ? isDark ? "bg-emerald-900/30 text-emerald-400 border-emerald-800/50" : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                              : c.similarity >= 0.3 ? isDark ? "bg-amber-900/30 text-amber-400 border-amber-800/50" : "bg-amber-50 text-amber-700 border-amber-200"
+                              : isDark ? "bg-slate-800 text-slate-400 border-slate-700" : "bg-slate-50 text-slate-500 border-slate-200"
                             }`}>
                               {Math.round(c.similarity * 100)}% match
                             </span>
-                            {c.is_prime && <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1 rounded">P</span>}
+                            {c.is_prime && <span className={`text-[10px] font-bold px-1 rounded ${isDark ? 'text-blue-400 bg-blue-900/30' : 'text-blue-600 bg-blue-50'}`}>P</span>}
                           </div>
                         </div>
                         {c.star_rating && (
                           <div className="text-right shrink-0">
                             <p className="text-xs font-black text-amber-500">{c.star_rating}★</p>
-                            {c.num_ratings && <p className="text-[10px] text-slate-400">{c.num_ratings.toLocaleString()}</p>}
+                            {c.num_ratings && <p className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{c.num_ratings.toLocaleString()}</p>}
                           </div>
                         )}
                       </div>
@@ -687,43 +700,43 @@ function KeywordGapContent() {
               )}
 
               {/* Review keywords */}
-              <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                {!isPremium && <TierGate tier="premium" feature="Customer Review Keyword Mining" />}
+              <div className={`relative rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
+                {!isPremium && <TierGate tier="premium" feature="Customer Review Keyword Mining" isDark={isDark} />}
                 <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
-                  <div className="px-5 py-4 border-b border-slate-50 flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center">
-                      <Lightbulb className="w-4 h-4 text-blue-500" />
+                  <div className={`px-5 py-4 border-b flex items-center gap-2 ${isDark ? 'border-slate-800' : 'border-slate-50'}`}>
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${isDark ? 'bg-blue-900/30' : 'bg-blue-50'}`}>
+                      <Lightbulb className={`w-4 h-4 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
                     </div>
-                    <span className="font-bold text-slate-800 text-sm">Customer Review Keyword Mining</span>
-                    {isPremium && <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{reviewKeywords.length}</span>}
+                    <span className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Customer Review Keyword Mining</span>
+                    {isPremium && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'text-slate-400 bg-slate-800' : 'text-slate-400 bg-slate-100'}`}>{reviewKeywords.length}</span>}
                   </div>
                   <div className="px-5 pb-5 pt-3">
-                    <p className="text-xs text-slate-400 mb-4">
+                    <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
                       Keywords your customers actually use in reviews — often missed in titles but highly converting.
                     </p>
                     {reviewKeywords.length > 0 ? (
                       <div className="space-y-2">
                         {reviewKeywords.map((rk: any, i: number) => (
-                          <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-blue-50 border border-blue-100 rounded-xl">
-                            <span className="text-xs font-mono font-bold text-slate-800 flex-1">{rk.keyword}</span>
-                            <span className="text-[10px] text-slate-500">{rk.review_freq} reviews</span>
+                          <div key={i} className={`flex items-center gap-3 px-3 py-2.5 border rounded-xl ${isDark ? 'bg-blue-900/10 border-blue-900/30' : 'bg-blue-50 border-blue-100'}`}>
+                            <span className={`text-xs font-mono font-bold flex-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{rk.keyword}</span>
+                            <span className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>{rk.review_freq} reviews</span>
                             {rk.in_competitors > 0 && (
-                              <span className="text-[10px] text-sky-600 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded font-semibold">
+                              <span className={`text-[10px] border px-1.5 py-0.5 rounded font-semibold ${isDark ? 'text-sky-400 bg-sky-900/30 border-sky-800/50' : 'text-sky-600 bg-sky-50 border-sky-200'}`}>
                                 {rk.in_competitors} comp
                               </span>
                             )}
-                            <PriorityPill priority={rk.priority} />
+                            <PriorityPill priority={rk.priority} isDark={isDark} />
                           </div>
                         ))}
                       </div>
                     ) : isPremium ? (
-                      <p className="text-sm text-slate-400 text-center py-4">No review-specific keywords found.</p>
+                      <p className={`text-sm text-center py-4 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>No review-specific keywords found.</p>
                     ) : (
                       <div className="space-y-2">
                         {["fast delivery", "works great", "easy setup", "good value", "highly recommend"].map((kw, i) => (
-                          <div key={i} className="flex items-center gap-3 px-3 py-2.5 bg-blue-50 border border-blue-100 rounded-xl">
-                            <span className="text-xs font-mono font-bold text-slate-800 flex-1">{kw}</span>
-                            <PriorityPill priority={i < 2 ? "High" : "Medium"} />
+                          <div key={i} className={`flex items-center gap-3 px-3 py-2.5 border rounded-xl ${isDark ? 'bg-blue-900/10 border-blue-900/30' : 'bg-blue-50 border-blue-100'}`}>
+                            <span className={`text-xs font-mono font-bold flex-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{kw}</span>
+                            <PriorityPill priority={i < 2 ? "High" : "Medium"} isDark={isDark} />
                           </div>
                         ))}
                       </div>
@@ -733,35 +746,35 @@ function KeywordGapContent() {
               </div>
 
               {/* AI opportunity scores */}
-              <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                {!isPremium && <TierGate tier="premium" feature="AI Keyword Opportunity Scores" />}
+              <div className={`relative rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
+                {!isPremium && <TierGate tier="premium" feature="AI Keyword Opportunity Scores" isDark={isDark} />}
                 <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
-                  <div className="px-5 py-4 border-b border-slate-50 flex items-center gap-2">
+                  <div className={`px-5 py-4 border-b flex items-center gap-2 ${isDark ? 'border-slate-800' : 'border-slate-50'}`}>
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
                       <Sparkles className="w-4 h-4 text-white" />
                     </div>
-                    <span className="font-bold text-slate-800 text-sm">AI Keyword Opportunity Scores</span>
+                    <span className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>AI Keyword Opportunity Scores</span>
                   </div>
                   <div className="px-5 pb-5 pt-3">
-                    <p className="text-xs text-slate-400 mb-1">
+                    <p className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
                       AI-ranked by opportunity value (1–10). Includes placement advice — where to add each keyword.
                     </p>
                     <div className="flex flex-wrap gap-2 mb-4">
-                      <PlacementBadge placement="title" />
-                      <PlacementBadge placement="bullets" />
-                      <PlacementBadge placement="backend" />
+                      <PlacementBadge placement="title" isDark={isDark} />
+                      <PlacementBadge placement="bullets" isDark={isDark} />
+                      <PlacementBadge placement="backend" isDark={isDark} />
                     </div>
                     {aiScores.length > 0 ? (
                       aiScores.map((s: any, i: number) => (
-                        <OpportunityBar key={i} score={s.score} keyword={s.keyword} reason={s.reason} add_to={s.add_to} is_spec={s.is_spec} />
+                        <OpportunityBar key={i} score={s.score} keyword={s.keyword} reason={s.reason} add_to={s.add_to} is_spec={s.is_spec} isDark={isDark} />
                       ))
                     ) : isPremium ? (
-                      <p className="text-sm text-slate-400 text-center py-4">AI scoring not available — no gap keywords found.</p>
+                      <p className={`text-sm text-center py-4 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>AI scoring not available — no gap keywords found.</p>
                     ) : (
                       [{ score: 9, keyword: "high speed", reason: "Used by 4/5 competitors; core search term", add_to: "title" },
                        { score: 8, keyword: "class 10",   reason: "Specification term buyers search directly", add_to: "title" },
                        { score: 6, keyword: "waterproof", reason: "Feature differentiator", add_to: "bullets" }].map((s, i) => (
-                        <OpportunityBar key={i} {...s} />
+                        <OpportunityBar key={i} {...s} isDark={isDark} />
                       ))
                     )}
                   </div>
@@ -769,45 +782,45 @@ function KeywordGapContent() {
               </div>
 
               {/* AI listing rewrite */}
-              <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                {!isPremium && <TierGate tier="premium" feature="AI Listing Rewrite Suggestion" />}
+              <div className={`relative rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
+                {!isPremium && <TierGate tier="premium" feature="AI Listing Rewrite Suggestion" isDark={isDark} />}
                 <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
-                  <div className="px-5 py-4 border-b border-slate-50 flex items-center gap-2">
+                  <div className={`px-5 py-4 border-b flex items-center gap-2 ${isDark ? 'border-slate-800' : 'border-slate-50'}`}>
                     <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center">
                       <Zap className="w-4 h-4 text-white" />
                     </div>
-                    <span className="font-bold text-slate-800 text-sm">AI-Suggested Title Rewrite</span>
+                    <span className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>AI-Suggested Title Rewrite</span>
                   </div>
                   <div className="px-5 pb-5 pt-4">
                     {data.ai_listing_rewrite ? (
                       <>
                         <div className="mb-3">
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">Current Title</p>
-                          <p className="text-sm text-slate-500 bg-slate-50 rounded-xl px-4 py-3 border border-slate-100">{data.product_title}</p>
+                          <p className={`text-[10px] font-bold uppercase tracking-wide mb-1.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Current Title</p>
+                          <p className={`text-sm rounded-xl px-4 py-3 border ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-50 border-slate-100 text-slate-500'}`}>{data.product_title}</p>
                         </div>
-                        <ArrowRight className="w-4 h-4 text-slate-300 mx-auto my-2" />
+                        <ArrowRight className={`w-4 h-4 mx-auto my-2 ${isDark ? 'text-slate-600' : 'text-slate-300'}`} />
                         <div>
-                          <p className="text-[10px] font-bold text-violet-500 uppercase tracking-wide mb-1.5">AI Suggested Title</p>
-                          <p className="text-sm font-semibold text-slate-800 bg-violet-50 rounded-xl px-4 py-3 border border-violet-200 leading-relaxed">
+                          <p className={`text-[10px] font-bold uppercase tracking-wide mb-1.5 ${isDark ? 'text-violet-400' : 'text-violet-500'}`}>AI Suggested Title</p>
+                          <p className={`text-sm font-semibold rounded-xl px-4 py-3 border leading-relaxed ${isDark ? 'bg-violet-900/20 border-violet-800/50 text-slate-200' : 'bg-violet-50 border-violet-200 text-slate-800'}`}>
                             {data.ai_listing_rewrite}
                           </p>
                         </div>
-                        <p className="text-[10px] text-slate-400 mt-3 flex items-center gap-1">
+                        <p className={`text-[10px] mt-3 flex items-center gap-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
                           <Info className="w-3 h-3" /> Always verify this complies with Amazon's title policy before using.
                         </p>
                       </>
                     ) : isPremium ? (
-                      <p className="text-sm text-slate-400 text-center py-4">Rewrite not available — insufficient gap data.</p>
+                      <p className={`text-sm text-center py-4 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Rewrite not available — insufficient gap data.</p>
                     ) : (
                       <div>
                         <div className="mb-3">
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide mb-1.5">Current Title</p>
-                          <p className="text-sm text-slate-500 bg-slate-50 rounded-xl px-4 py-3 border border-slate-100 line-clamp-2">{data.product_title}</p>
+                          <p className={`text-[10px] font-bold uppercase tracking-wide mb-1.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Current Title</p>
+                          <p className={`text-sm rounded-xl px-4 py-3 border line-clamp-2 ${isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-50 border-slate-100 text-slate-500'}`}>{data.product_title}</p>
                         </div>
-                        <ArrowRight className="w-4 h-4 text-slate-300 mx-auto my-2" />
+                        <ArrowRight className={`w-4 h-4 mx-auto my-2 ${isDark ? 'text-slate-600' : 'text-slate-300'}`} />
                         <div>
-                          <p className="text-[10px] font-bold text-violet-500 uppercase tracking-wide mb-1.5">AI Suggested Title</p>
-                          <p className="text-sm font-semibold text-slate-400 bg-violet-50 rounded-xl px-4 py-3 border border-violet-100 blur-sm select-none">
+                          <p className={`text-[10px] font-bold uppercase tracking-wide mb-1.5 ${isDark ? 'text-violet-400' : 'text-violet-500'}`}>AI Suggested Title</p>
+                          <p className={`text-sm font-semibold rounded-xl px-4 py-3 border blur-sm select-none ${isDark ? 'bg-violet-900/20 border-violet-800/50 text-slate-400' : 'bg-violet-50 border-violet-100 text-slate-400'}`}>
                             SANDISK 64GB Extreme PRO SDXC Memory Card High Speed Class 10 U3 V30 4K UHD Waterproof — SDSDXXU-064G
                           </p>
                         </div>
@@ -818,29 +831,29 @@ function KeywordGapContent() {
               </div>
 
               {/* Action plan */}
-              <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-                {!isPremium && <TierGate tier="premium" feature="AI Prioritised Action Plan" />}
+              <div className={`relative rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
+                {!isPremium && <TierGate tier="premium" feature="AI Prioritised Action Plan" isDark={isDark} />}
                 <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
-                  <div className="px-5 py-4 border-b border-slate-50 flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center">
-                      <Target className="w-4 h-4 text-emerald-600" />
+                  <div className={`px-5 py-4 border-b flex items-center gap-2 ${isDark ? 'border-slate-800' : 'border-slate-50'}`}>
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${isDark ? 'bg-emerald-900/30' : 'bg-emerald-50'}`}>
+                      <Target className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
                     </div>
-                    <span className="font-bold text-slate-800 text-sm">Prioritised Action Plan</span>
+                    <span className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Prioritised Action Plan</span>
                   </div>
                   <div className="px-5 pb-5 pt-4">
                     {actionPlan.length > 0 ? (
                       <div className="space-y-3">
                         {actionPlan.map((step: string, i: number) => (
-                          <div key={i} className="flex items-start gap-3 p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+                          <div key={i} className={`flex items-start gap-3 p-3 border rounded-xl ${isDark ? 'bg-emerald-900/10 border-emerald-900/30' : 'bg-emerald-50 border-emerald-100'}`}>
                             <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                               <span className="text-xs font-black text-white">{i + 1}</span>
                             </div>
-                            <p className="text-sm text-slate-700 leading-relaxed">{step}</p>
+                            <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{step}</p>
                           </div>
                         ))}
                       </div>
                     ) : isPremium ? (
-                      <p className="text-sm text-slate-400 text-center py-4">Action plan not available.</p>
+                      <p className={`text-sm text-center py-4 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Action plan not available.</p>
                     ) : (
                       <div className="space-y-3">
                         {[
@@ -848,11 +861,11 @@ function KeywordGapContent() {
                           "Use backend search terms in Seller Central for keywords that don't fit the title",
                           "Keep your differentiators — they are unique to your listing",
                         ].map((step, i) => (
-                          <div key={i} className="flex items-start gap-3 p-3 bg-emerald-50 border border-emerald-100 rounded-xl">
+                          <div key={i} className={`flex items-start gap-3 p-3 border rounded-xl ${isDark ? 'bg-emerald-900/10 border-emerald-900/30' : 'bg-emerald-50 border-emerald-100'}`}>
                             <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0 mt-0.5">
                               <span className="text-xs font-black text-white">{i + 1}</span>
                             </div>
-                            <p className="text-sm text-slate-500 leading-relaxed">{step}</p>
+                            <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{step}</p>
                           </div>
                         ))}
                       </div>
