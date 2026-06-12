@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { API_BASE_URL } from "@/lib/config";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -125,11 +126,11 @@ interface UsageLimits {
 }
 
 const SOURCE_TYPE_LABELS: Record<string, { label: string; color: string }> = {
-  exact_match: { label: "Exact Match", color: "bg-green-100 text-green-800 border-green-300" },
-  keyword_match: { label: "Keyword Match", color: "bg-blue-100 text-blue-800 border-blue-300" },
-  broad_match: { label: "Broad Match", color: "bg-yellow-100 text-yellow-800 border-yellow-300" },
-  category_fallback: { label: "Category Fallback", color: "bg-orange-100 text-orange-800 border-orange-300" },
-  no_data: { label: "No Data", color: "bg-red-100 text-red-800 border-red-300" },
+  exact_match: { label: "Exact Match", color: "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 border-green-300 dark:border-green-800" },
+  keyword_match: { label: "Keyword Match", color: "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-800" },
+  broad_match: { label: "Broad Match", color: "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-800" },
+  category_fallback: { label: "Category Fallback", color: "bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-800" },
+  no_data: { label: "No Data", color: "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800" },
 };
 
 const TIER_LABELS: Record<string, string> = {
@@ -148,11 +149,11 @@ function ConfidencePanel({ cs }: { cs: NonNullable<ApiResponse["confidence_score
     cs.label === "High" ? "bg-green-500" :
       cs.label === "Medium" ? "bg-yellow-500" : "bg-red-500";
   const textColor =
-    cs.label === "High" ? "text-green-700" :
-      cs.label === "Medium" ? "text-yellow-700" : "text-red-700";
+    cs.label === "High" ? "text-green-700 dark:text-green-400" :
+      cs.label === "Medium" ? "text-yellow-700 dark:text-yellow-400" : "text-red-700 dark:text-red-400";
   const bgColor =
-    cs.label === "High" ? "bg-green-50 border-green-200" :
-      cs.label === "Medium" ? "bg-yellow-50 border-yellow-200" : "bg-red-50 border-red-200";
+    cs.label === "High" ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800" :
+      cs.label === "Medium" ? "bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800" : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800";
 
   return (
     <div className={`rounded-xl border-2 p-4 ${bgColor}`}>
@@ -166,14 +167,14 @@ function ConfidencePanel({ cs }: { cs: NonNullable<ApiResponse["confidence_score
             <p className={`font-semibold text-sm ${textColor}`}>
               Data Confidence: {cs.label}
             </p>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               {TIER_LABELS[cs.tier_used] ?? cs.tier_used} · {cs.sample_size} products analysed
             </p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <div className="w-24 h-2 bg-slate-200 rounded-full overflow-hidden">
+            <div className="w-24 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
               <div className={`h-2 rounded-full ${barColor}`} style={{ width: `${pct}%` }} />
             </div>
             <span className={`text-sm font-bold ${textColor}`}>{pct}%</span>
@@ -183,26 +184,26 @@ function ConfidencePanel({ cs }: { cs: NonNullable<ApiResponse["confidence_score
       </button>
 
       {open && (
-        <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3 border-t border-slate-200 pt-4">
+        <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-3 border-t border-slate-200 dark:border-slate-700 pt-4">
           <div className="text-center">
-            <p className="text-xs text-slate-500 mb-1">Sample Size</p>
-            <p className="font-bold text-slate-800">{cs.sample_size}</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Sample Size</p>
+            <p className="font-bold text-slate-800 dark:text-slate-100">{cs.sample_size}</p>
           </div>
           <div className="text-center">
-            <p className="text-xs text-slate-500 mb-1">Sales Data</p>
-            <p className={`font-bold ${cs.has_sales_data ? "text-green-600" : "text-red-500"}`}>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Sales Data</p>
+            <p className={`font-bold ${cs.has_sales_data ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}`}>
               {cs.has_sales_data ? "✓ Present" : "✗ Missing"}
             </p>
           </div>
           <div className="text-center">
-            <p className="text-xs text-slate-500 mb-1">Review Data</p>
-            <p className={`font-bold ${cs.has_review_data ? "text-green-600" : "text-red-500"}`}>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Review Data</p>
+            <p className={`font-bold ${cs.has_review_data ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}`}>
               {cs.has_review_data ? "✓ Present" : "✗ Missing"}
             </p>
           </div>
           <div className="text-center">
-            <p className="text-xs text-slate-500 mb-1">Price Spread</p>
-            <p className="font-bold text-slate-800">{cs.price_spread_pct.toFixed(1)}%</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">Price Spread</p>
+            <p className="font-bold text-slate-800 dark:text-slate-100">{cs.price_spread_pct.toFixed(1)}%</p>
           </div>
         </div>
       )}
@@ -223,21 +224,21 @@ function MetaBar({
   const st = SOURCE_TYPE_LABELS[sourceType] ?? { label: sourceType, color: "bg-slate-100 text-slate-700 border-slate-300" };
 
   return (
-    <div className="rounded-xl bg-slate-50 border border-slate-200 px-4 py-3">
+    <div className="rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 px-4 py-3">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <Badge className={`text-xs ${st.color}`}>{st.label}</Badge>
-          <span className="flex items-center gap-1 text-xs text-slate-500">
+          <span className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
             <Clock className="h-3.5 w-3.5" />
             {latencyMs.toFixed(0)} ms total
           </span>
-          <span className="hidden sm:block text-xs text-slate-400 font-mono truncate max-w-[200px]">
+          <span className="hidden sm:block text-xs text-slate-400 dark:text-slate-500 font-mono truncate max-w-[200px]">
             ID: {requestId}
           </span>
         </div>
         {stepTimings && Object.keys(stepTimings).length > 0 && (
           <button
-            className="flex items-center gap-1 text-xs text-blue-600 hover:underline"
+            className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
             onClick={() => setOpen(v => !v)}
           >
             <Activity className="h-3.5 w-3.5" />
@@ -248,11 +249,11 @@ function MetaBar({
       </div>
 
       {open && stepTimings && (
-        <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 border-t border-slate-200 pt-3">
+        <div className="mt-3 grid grid-cols-2 sm:grid-cols-4 gap-2 border-t border-slate-200 dark:border-slate-700 pt-3">
           {Object.entries(stepTimings).map(([k, v]) => (
             <div key={k} className="text-center">
-              <p className="text-[10px] text-slate-400 capitalize">{k.replace(/_/g, " ")}</p>
-              <p className="text-xs font-semibold text-slate-700">{typeof v === "number" ? `${v} ms` : String(v)}</p>
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 capitalize">{k.replace(/_/g, " ")}</p>
+              <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">{typeof v === "number" ? `${v} ms` : String(v)}</p>
             </div>
           ))}
         </div>
@@ -264,9 +265,9 @@ function MetaBar({
 /** Fallback / category-match warning banner */
 function FallbackBanner({ reason }: { reason: string }) {
   return (
-    <Alert className="border-orange-300 bg-orange-50">
-      <Zap className="h-4 w-4 text-orange-600" />
-      <AlertDescription className="text-sm text-orange-800">{reason}</AlertDescription>
+    <Alert className="border-orange-300 dark:border-orange-800 bg-orange-50 dark:bg-orange-900/20">
+      <Zap className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+      <AlertDescription className="text-sm text-orange-800 dark:text-orange-300">{reason}</AlertDescription>
     </Alert>
   );
 }
@@ -275,6 +276,11 @@ export default function ProductTracker() {
   const { user, isLoading } = useAuth();
   const userEmail = user?.email || "";
   const userId = user?.id;
+
+  const [ptMounted, setPtMounted] = useState(false);
+  useEffect(() => { setPtMounted(true); }, []);
+  const { resolvedTheme } = useTheme();
+  const isDark = ptMounted && resolvedTheme === "dark";
 
   const [productName, setProductName] = useState("");
   const [category, setCategory] = useState("");
@@ -419,30 +425,29 @@ export default function ProductTracker() {
   };
 
   const getConfidenceBadgeColor = (c: string) =>
-    c === "High" ? "bg-green-100 text-green-800 border-green-300" :
-      c === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-300" :
-        c === "Critical" ? "bg-red-100 text-red-800 border-red-300" :
-          "bg-red-100 text-red-800 border-red-300";
+    c === "High" ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 border-green-300 dark:border-green-800" :
+      c === "Medium" ? "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-800" :
+        "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800";
 
   const getDemandBadgeColor = (d: string) =>
-    d === "High" ? "bg-emerald-100 text-emerald-800 border-emerald-300" :
-      d === "Medium" ? "bg-blue-100 text-blue-800 border-blue-300" :
-        "bg-slate-100 text-slate-800 border-slate-300";
+    d === "High" ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800" :
+      d === "Medium" ? "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-800" :
+        "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-600";
 
   const getSourceColor = (s: string) =>
     s.toLowerCase() === "amazon"
-      ? "bg-orange-100 text-orange-800 border-orange-300"
-      : "bg-yellow-100 text-yellow-800 border-yellow-300";
+      ? "bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-800"
+      : "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-800";
 
   const getSeverityColor = (s: string) =>
-    s === "High" ? "border-red-300 bg-red-50" :
-      s === "Medium" ? "border-yellow-300 bg-yellow-50" :
-        "border-slate-200 bg-slate-50";
+    s === "High" ? "border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-900/20" :
+      s === "Medium" ? "border-yellow-300 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20" :
+        "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40";
 
   const getSeverityBadgeColor = (s: string) =>
-    s === "High" ? "bg-red-100 text-red-800 border-red-300" :
-      s === "Medium" ? "bg-yellow-100 text-yellow-800 border-yellow-300" :
-        "bg-slate-100 text-slate-800 border-slate-300";
+    s === "High" ? "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800" :
+      s === "Medium" ? "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-800" :
+        "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-600";
 
   return (
     <div className="space-y-6">
@@ -450,19 +455,19 @@ export default function ProductTracker() {
       {/* Upgrade Modal */}
       {showUpgradeModal && (
         <div className="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
             <div className="text-center">
               <div className="mx-auto w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center mb-4">
                 <Lock className="h-8 w-8 text-white" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 mb-2">Analysis Limit Reached</h3>
-              <p className="text-slate-600 mb-4">
-                You've used all <span className="font-bold text-red-600">{usageLimits?.limit}</span> analyses this month on the{" "}
-                <span className="font-semibold">{usageLimits?.subscription_tier.toUpperCase()}</span> plan.
+              <h3 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">Analysis Limit Reached</h3>
+              <p className="text-slate-600 dark:text-slate-400 mb-4">
+                You&apos;ve used all <span className="font-bold text-red-600 dark:text-red-400">{usageLimits?.limit}</span> analyses this month on the{" "}
+                <span className="font-semibold dark:text-slate-200">{usageLimits?.subscription_tier.toUpperCase()}</span> plan.
               </p>
-              <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 mb-6 border-2 border-blue-200">
+              <div className="bg-gradient-to-br from-blue-50 dark:from-blue-900/30 to-purple-50 dark:to-purple-900/20 rounded-xl p-4 mb-6 border-2 border-blue-200 dark:border-blue-800">
                 <Crown className="h-6 w-6 text-yellow-500 mx-auto mb-2" />
-                <p className="text-sm font-medium text-slate-700">{getUpgradeMessage()}</p>
+                <p className="text-sm font-medium text-slate-700 dark:text-slate-200">{getUpgradeMessage()}</p>
               </div>
               <div className="flex gap-3">
                 <Button variant="outline" className="flex-1" onClick={() => setShowUpgradeModal(false)}>Cancel</Button>
@@ -481,16 +486,19 @@ export default function ProductTracker() {
       {/* Toasts */}
       <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-md">
         {toasts.map(t => (
-          <div key={t.id} className={`flex items-start gap-3 p-4 rounded-lg shadow-lg border-2 backdrop-blur-none animate-in slide-in-from-right ${t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
-            }`}>
+          <div key={t.id} className={`flex items-start gap-3 p-4 rounded-lg shadow-lg border-2 animate-in slide-in-from-right ${
+            t.variant === "success"
+              ? "bg-green-50 dark:bg-green-950/60 border-green-300 dark:border-green-800"
+              : "bg-red-50 dark:bg-red-950/60 border-red-300 dark:border-red-800"
+          }`}>
             {t.variant === "success"
-              ? <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
-              : <XCircle className="h-5 w-5 text-red-600 mt-0.5" />}
+              ? <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
+              : <XCircle className="h-5 w-5 text-red-600 dark:text-red-400 mt-0.5" />}
             <div className="flex-1 min-w-0">
-              <p className={`font-semibold text-sm ${t.variant === "success" ? "text-green-900" : "text-red-900"}`}>{t.title}</p>
-              <p className={`text-sm mt-1 ${t.variant === "success" ? "text-green-700" : "text-red-700"}`}>{t.description}</p>
+              <p className={`font-semibold text-sm ${t.variant === "success" ? "text-green-900 dark:text-green-300" : "text-red-900 dark:text-red-300"}`}>{t.title}</p>
+              <p className={`text-sm mt-1 ${t.variant === "success" ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}`}>{t.description}</p>
             </div>
-            <button onClick={() => removeToast(t.id)} className={t.variant === "success" ? "text-green-600 hover:text-green-800" : "text-red-600 hover:text-red-800"}>
+            <button onClick={() => removeToast(t.id)} className={t.variant === "success" ? "text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-200" : "text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-200"}>
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -518,14 +526,14 @@ export default function ProductTracker() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-lg font-semibold text-slate-700">Product Information</CardTitle>
-                  <CardDescription className="text-slate-500">
+                  <CardTitle className="text-lg font-semibold text-slate-700 dark:text-slate-200">Product Information</CardTitle>
+                  <CardDescription className="text-slate-500 dark:text-slate-400">
                     Enter your product details to get AI-powered market insights from {source === "amazon" ? "Amazon" : "Flipkart"}
                   </CardDescription>
                 </div>
                 <a
                   href="/product-tracker/history"
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg border border-blue-200 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 rounded-lg border border-blue-200 dark:border-blue-800 transition-colors"
                   data-track-id="analytics_history_btn"
                 >
                   <History className="h-4 w-4" />
@@ -656,10 +664,10 @@ export default function ProductTracker() {
               )}
 
               {/* Pricing */}
-              <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 backdrop-blur-none">
+              <Card className="shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-background">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-700">
+                    <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-700 dark:text-slate-200">
                       <DollarSign className="h-5 w-5 text-green-600" />
                       Pricing Strategy
                     </CardTitle>
@@ -673,22 +681,19 @@ export default function ProductTracker() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-lg border-2 border-blue-200">
-                      <p className="text-sm text-slate-600 mb-1">Recommended Price</p>
-                      <p className="text-3xl font-bold text-blue-600">₹{result.pricing.recommended_price.toLocaleString()}</p>
+                    <div className="bg-gradient-to-br from-blue-50 dark:from-blue-900/30 to-cyan-50 dark:to-cyan-900/20 p-4 rounded-lg border-2 border-blue-200 dark:border-blue-800">
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Recommended Price</p>
+                      <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">₹{result.pricing.recommended_price.toLocaleString()}</p>
                     </div>
-                    <div className="bg-slate-50 p-4 rounded-lg border-2 border-slate-200">
-                      <p className="text-sm text-slate-600 mb-1">Price Range</p>
-                      <p className="text-xl font-semibold text-slate-700">
+                    <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border-2 border-slate-200 dark:border-slate-700">
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Price Range</p>
+                      <p className="text-xl font-semibold text-slate-700 dark:text-slate-200">
                         ₹{result.pricing.min_price.toLocaleString()} – ₹{result.pricing.max_price.toLocaleString()}
                       </p>
-                      {/* <p className="text-xs text-slate-400 mt-1">
-                        Market avg: ₹{result.pricing.market_avg_price.toLocaleString()}
-                      </p> */}
                     </div>
-                    <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-lg border-2 border-green-200">
-                      <p className="text-sm text-slate-600 mb-1">Profit Margin</p>
-                      <p className="text-3xl font-bold text-green-600">{result.pricing.profit_margin.toFixed(1)}%</p>
+                    <div className="bg-gradient-to-br from-green-50 dark:from-green-900/30 to-emerald-50 dark:to-emerald-900/20 p-4 rounded-lg border-2 border-green-200 dark:border-green-800">
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Profit Margin</p>
+                      <p className="text-3xl font-bold text-green-600 dark:text-green-400">{result.pricing.profit_margin.toFixed(1)}%</p>
                     </div>
                   </div>
                 </CardContent>
@@ -696,21 +701,21 @@ export default function ProductTracker() {
 
               {/* Sales & Competition */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 backdrop-blur-none">
+                <Card className="shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-background">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-700">
+                    <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-700 dark:text-slate-200">
                       <TrendingUp className="h-5 w-5 text-purple-600" />
                       Sales Forecast
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <p className="text-sm text-slate-600 mb-1">Estimated Monthly Sales</p>
-                      <p className="text-2xl font-bold text-slate-900">{result.sales.estimated_monthly_sales} units</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Estimated Monthly Sales</p>
+                      <p className="text-2xl font-bold text-slate-900 dark:text-slate-100">{result.sales.estimated_monthly_sales} units</p>
                     </div>
                     <div>
-                      <p className="text-sm text-slate-600 mb-1">Daily Average</p>
-                      <p className="text-xl font-semibold text-slate-700">{result.sales.estimated_daily_sales.toFixed(0)} units/day</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Daily Average</p>
+                      <p className="text-xl font-semibold text-slate-700 dark:text-slate-200">{result.sales.estimated_daily_sales.toFixed(0)} units/day</p>
                     </div>
                     <Badge className={getDemandBadgeColor(result.sales.market_demand)}>
                       {result.sales.market_demand} Demand
@@ -718,31 +723,31 @@ export default function ProductTracker() {
                   </CardContent>
                 </Card>
 
-                <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 backdrop-blur-none">
+                <Card className="shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-background">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-700">
+                    <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-700 dark:text-slate-200">
                       <Users className="h-5 w-5 text-orange-600" />
                       Competition Analysis
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-slate-600">Total Competitors</span>
-                      <span className="text-xl font-bold text-slate-900">{result.competition.total_competitors}</span>
+                      <span className="text-sm text-slate-600 dark:text-slate-400">Total Competitors</span>
+                      <span className="text-xl font-bold text-slate-900 dark:text-slate-100">{result.competition.total_competitors}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-slate-600">Avg Price</span>
-                      <span className="text-lg font-semibold text-slate-700">₹{result.competition.avg_competitor_price.toLocaleString()}</span>
+                      <span className="text-sm text-slate-600 dark:text-slate-400">Avg Price</span>
+                      <span className="text-lg font-semibold text-slate-700 dark:text-slate-200">₹{result.competition.avg_competitor_price.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm text-slate-600">Avg Rating</span>
-                      <span className="text-lg font-semibold text-slate-700">{result.competition.avg_competitor_rating.toFixed(1)}★</span>
+                      <span className="text-sm text-slate-600 dark:text-slate-400">Avg Rating</span>
+                      <span className="text-lg font-semibold text-slate-700 dark:text-slate-200">{result.competition.avg_competitor_rating.toFixed(1)}★</span>
                     </div>
                     {result.competition.top_competitor && (
-                      <div className="mt-4 p-3 bg-orange-50 rounded-lg border border-orange-200">
-                        <p className="text-xs font-semibold text-orange-800 mb-2">Top Competitor on {result.source}</p>
-                        <p className="text-sm text-slate-700 mb-1 truncate">{result.competition.top_competitor.name}</p>
-                        <div className="flex gap-3 text-xs text-slate-600">
+                      <div className="mt-4 p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border border-orange-200 dark:border-orange-800">
+                        <p className="text-xs font-semibold text-orange-800 dark:text-orange-300 mb-2">Top Competitor on {result.source}</p>
+                        <p className="text-sm text-slate-700 dark:text-slate-200 mb-1 truncate">{result.competition.top_competitor.name}</p>
+                        <div className="flex gap-3 text-xs text-slate-600 dark:text-slate-400">
                           <span>₹{result.competition.top_competitor.price.toLocaleString()}</span>
                           <span>{result.competition.top_competitor.rating}★</span>
                           <span>{result.competition.top_competitor.reviews.toLocaleString()} reviews</span>
@@ -755,9 +760,9 @@ export default function ProductTracker() {
 
               {/* Location Insights */}
               {result.location_insights?.length > 0 && (
-                <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 backdrop-blur-none">
+                <Card className="shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-background">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-700">
+                    <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-700 dark:text-slate-200">
                       <MapPin className="h-5 w-5 text-red-600" />
                       Market Distribution in India
                     </CardTitle>
@@ -765,9 +770,9 @@ export default function ProductTracker() {
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {result.location_insights.map((loc, i) => (
-                        <div key={i} className="p-4 bg-gradient-to-br from-slate-50 to-blue-50 rounded-lg border-2 border-slate-200">
-                          <p className="font-semibold text-slate-900">{loc.country}</p>
-                          <p className="text-2xl font-bold text-blue-600">{loc.market_share}</p>
+                        <div key={i} className="p-4 bg-gradient-to-br from-slate-50 dark:from-slate-800 to-blue-50 dark:to-blue-900/20 rounded-lg border-2 border-slate-200 dark:border-slate-700">
+                          <p className="font-semibold text-slate-900 dark:text-slate-100">{loc.country}</p>
+                          <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{loc.market_share}</p>
                           <Badge variant="outline" className="mt-2">{loc.demand_level} Demand</Badge>
                         </div>
                       ))}
@@ -777,27 +782,27 @@ export default function ProductTracker() {
               )}
 
               {/* AI Strategy */}
-              <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden backdrop-blur-none bg-gradient-to-br from-purple-50 to-pink-50">
+              <Card className="shadow-sm border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden bg-gradient-to-br from-purple-50 dark:from-purple-900/20 to-pink-50 dark:to-pink-900/10">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-700">
+                  <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-700 dark:text-slate-200">
                     <Lightbulb className="h-5 w-5 text-yellow-600" />
                     AI-Powered Strategy for {result.source}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-slate-700 leading-relaxed whitespace-pre-line">{result.ai_strategy}</p>
+                  <p className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">{result.ai_strategy}</p>
                 </CardContent>
               </Card>
 
               {/* Market Gaps */}
               {result.market_gaps?.length > 0 && (
-                <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 backdrop-blur-none">
+                <Card className="shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-background">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-700">
+                    <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-700 dark:text-slate-200">
                       <AlertTriangle className="h-5 w-5 text-orange-600" />
                       Market Gap Analysis
                     </CardTitle>
-                    <CardDescription className="text-slate-500">
+                    <CardDescription className="text-slate-500 dark:text-slate-400">
                       Exploitable gaps found in your competitor landscape
                     </CardDescription>
                   </CardHeader>
@@ -808,14 +813,14 @@ export default function ProductTracker() {
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
                               <span className="text-xl">{gap.icon}</span>
-                              <span className="font-semibold text-slate-800 text-sm">{gap.title}</span>
+                              <span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{gap.title}</span>
                             </div>
                             <Badge className={getSeverityBadgeColor(gap.severity)}>{gap.severity}</Badge>
                           </div>
-                          <p className="text-sm text-slate-600 mb-3">{gap.description}</p>
-                          <div className="bg-background rounded-lg p-2 border border-slate-200">
-                            <p className="text-xs font-semibold text-slate-500 mb-1">ACTION</p>
-                            <p className="text-xs text-slate-700">{gap.action}</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300 mb-3">{gap.description}</p>
+                          <div className="bg-background rounded-lg p-2 border border-slate-200 dark:border-slate-700">
+                            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">ACTION</p>
+                            <p className="text-xs text-slate-700 dark:text-slate-300">{gap.action}</p>
                           </div>
                         </div>
                       ))}
@@ -826,32 +831,33 @@ export default function ProductTracker() {
 
               {/* Final Verdict */}
               {result.final_verdict && (
-                <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden backdrop-blur-none bg-gradient-to-br from-slate-50 to-blue-50">
+                <Card className="shadow-sm border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden bg-gradient-to-br from-slate-50 dark:from-slate-800/60 to-blue-50 dark:to-blue-900/20">
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-700">
+                      <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-700 dark:text-slate-200">
                         <Target className="h-5 w-5 text-blue-600" />
                         Final Verdict
                       </CardTitle>
                       <div className="flex items-center gap-3">
                         <div className="text-right">
-                          <p className="text-xs text-slate-500">Opportunity Score</p>
-                          <p className="text-3xl font-bold text-blue-600">
+                          <p className="text-xs text-slate-500 dark:text-slate-400">Opportunity Score</p>
+                          <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                             {result.final_verdict.opportunity_score}
-                            <span className="text-base text-slate-400">/100</span>
+                            <span className="text-base text-slate-400 dark:text-slate-500">/100</span>
                           </p>
                         </div>
-                        <div className="w-16 h-16 rounded-full border-4 border-blue-200 flex items-center justify-center bg-white">
-                          <span className="text-lg font-bold text-blue-600">{result.final_verdict.opportunity_score}</span>
+                        <div className="w-16 h-16 rounded-full border-4 border-blue-200 dark:border-blue-800 flex items-center justify-center bg-white dark:bg-slate-900">
+                          <span className="text-lg font-bold text-blue-600 dark:text-blue-400">{result.final_verdict.opportunity_score}</span>
                         </div>
                       </div>
                     </div>
                     <div className="mt-2">
-                      <Badge className={`text-base px-4 py-1 ${result.final_verdict.verdict_color === "green" ? "bg-green-100 text-green-800 border-green-300" :
-                        result.final_verdict.verdict_color === "blue" ? "bg-blue-100 text-blue-800 border-blue-300" :
-                          result.final_verdict.verdict_color === "orange" ? "bg-orange-100 text-orange-800 border-orange-300" :
-                            "bg-red-100 text-red-800 border-red-300"
-                        }`}>
+                      <Badge className={`text-base px-4 py-1 ${
+                        result.final_verdict.verdict_color === "green" ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 border-green-300 dark:border-green-800" :
+                        result.final_verdict.verdict_color === "blue" ? "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-800" :
+                        result.final_verdict.verdict_color === "orange" ? "bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300 border-orange-300 dark:border-orange-800" :
+                        "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800"
+                      }`}>
                         {result.final_verdict.verdict_label}
                       </Badge>
                     </div>
@@ -860,14 +866,14 @@ export default function ProductTracker() {
 
                     {/* How to Beat Competitors */}
                     <div>
-                      <p className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2">
                         <TrendingUp className="h-4 w-4 text-green-600" /> How to Beat Competitors
                       </p>
                       <div className="space-y-2">
                         {result.final_verdict.beat_actions.map((a, i) => (
-                          <div key={i} className="flex gap-3 p-3 bg-white rounded-lg border border-green-200">
-                            <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold">{i + 1}</div>
-                            <p className="text-sm text-slate-700">{a}</p>
+                          <div key={i} className="flex gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-green-200 dark:border-green-800">
+                            <div className="flex-shrink-0 w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 flex items-center justify-center text-xs font-bold">{i + 1}</div>
+                            <p className="text-sm text-slate-700 dark:text-slate-300">{a}</p>
                           </div>
                         ))}
                       </div>
@@ -875,13 +881,13 @@ export default function ProductTracker() {
 
                     {/* Before You Launch */}
                     <div>
-                      <p className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
+                      <p className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2">
                         <Lightbulb className="h-4 w-4 text-yellow-600" /> Before You Launch
                       </p>
                       <div className="space-y-2">
                         {result.final_verdict.improvements.map((item, i) => (
-                          <div key={i} className="flex gap-3 p-3 bg-white rounded-lg border border-yellow-200">
-                            <p className="text-sm text-slate-700">{item}</p>
+                          <div key={i} className="flex gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                            <p className="text-sm text-slate-700 dark:text-slate-300">{item}</p>
                           </div>
                         ))}
                       </div>
@@ -890,39 +896,39 @@ export default function ProductTracker() {
                     {/* Risk Flags */}
                     {result.final_verdict.risks?.length > 0 && (
                       <div>
-                        <p className="text-sm font-bold text-slate-700 mb-3 flex items-center gap-2">
+                        <p className="text-sm font-bold text-slate-700 dark:text-slate-200 mb-3 flex items-center gap-2">
                           <AlertTriangle className="h-4 w-4 text-red-600" /> Risk Flags
                         </p>
                         <div className="space-y-2">
                           {result.final_verdict.risks.map((r, i) => (
-                            <div key={i} className="flex gap-3 p-3 bg-white rounded-lg border border-red-200">
-                              <p className="text-sm text-slate-700">{r}</p>
+                            <div key={i} className="flex gap-3 p-3 bg-white dark:bg-slate-800 rounded-lg border border-red-200 dark:border-red-800">
+                              <p className="text-sm text-slate-700 dark:text-slate-300">{r}</p>
                             </div>
                           ))}
                         </div>
                       </div>
                     )}
 
-                    {/* Gap Summary + [NEW] confidence score inline */}
+                    {/* Gap Summary */}
                     <div className="flex gap-3 pt-2">
-                      <div className="flex-1 bg-red-50 border border-red-200 rounded-lg p-3 text-center">
-                        <p className="text-2xl font-bold text-red-600">{result.final_verdict.high_gaps_count}</p>
-                        <p className="text-xs text-slate-600">High Priority Gaps</p>
+                      <div className="flex-1 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-red-600 dark:text-red-400">{result.final_verdict.high_gaps_count}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400">High Priority Gaps</p>
                       </div>
-                      <div className="flex-1 bg-yellow-50 border border-yellow-200 rounded-lg p-3 text-center">
-                        <p className="text-2xl font-bold text-yellow-600">{result.final_verdict.medium_gaps_count}</p>
-                        <p className="text-xs text-slate-600">Medium Priority Gaps</p>
+                      <div className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{result.final_verdict.medium_gaps_count}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400">Medium Priority Gaps</p>
                       </div>
-                      <div className="flex-1 bg-blue-50 border border-blue-200 rounded-lg p-3 text-center">
-                        <p className="text-2xl font-bold text-blue-600">{result.final_verdict.opportunity_score}</p>
-                        <p className="text-xs text-slate-600">Opportunity Score</p>
+                      <div className="flex-1 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 text-center">
+                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{result.final_verdict.opportunity_score}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400">Opportunity Score</p>
                       </div>
                       {apiResponse.confidence_score && (
-                        <div className="flex-1 bg-purple-50 border border-purple-200 rounded-lg p-3 text-center">
-                          <p className="text-2xl font-bold text-purple-600">
+                        <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 text-center">
+                          <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                             {Math.round(apiResponse.confidence_score.score * 100)}%
                           </p>
-                          <p className="text-xs text-slate-600">Data Confidence</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">Data Confidence</p>
                         </div>
                       )}
                     </div>
