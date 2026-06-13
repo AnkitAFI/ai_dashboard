@@ -28,7 +28,7 @@ engine = create_engine(
     pool_size=5,
     max_overflow=5,
     pool_pre_ping=True,  # Verify connections before using them
-    pool_recycle=3600,   # Recycle connections after 1 hour
+    pool_recycle=180,    # Recycle connections every 3 minutes to prevent NAT/Firewall idle drops
     echo=False,
     connect_args={
         "connect_timeout": 30,
