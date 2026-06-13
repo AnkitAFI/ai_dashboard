@@ -173,7 +173,11 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden bg-white border-none shadow-2xl rounded-3xl">
+      <DialogContent 
+        className="sm:max-w-[600px] p-0 overflow-hidden bg-white border-none shadow-2xl rounded-3xl [&>button]:hidden"
+        onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
 
         {/* Progress Header */}
         <div className="bg-[#0f2a43] p-6 text-white">
