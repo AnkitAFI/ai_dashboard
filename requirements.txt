@@ -52,3 +52,7 @@ sentence-transformers>=2.7.0
 kokoro-onnx
 soundfile
 faster-whisper
+
+# Festival libraries
+ephem==4.2
+hijridate==2.4.0

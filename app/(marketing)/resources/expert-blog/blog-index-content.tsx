@@ -85,6 +85,16 @@ type Article = {
 
 // Sample articles data
 const articles: Article[] = [
+    {
+    id: "20",
+    title: "Amazon Zero Referral Fee India",
+    excerpt: "Learn how zero-fee on Amazon India can help sellers save up to ₹50,000/month, improve profitability, increase visibility, and maintain competitive pricing—and if it’s the right move for your brand.",
+    category: "Pricing Strategy",
+    readTime: "12 min read",
+    image: "/amazon-zero-referral-fee-india_Image2.png",
+    route: "/resources/expert-blog/amazon-zero-referral-fee",
+    popular: true
+  },
   {
     id: "19",
     title: "Competitor Undercutting on Amazon India",
