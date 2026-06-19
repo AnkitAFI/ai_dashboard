@@ -18071,6 +18071,7 @@ async def sitemap():
         "/resources/expert-blog/best-amazon-keyword-research-tool-india",
         "/resources/expert-blog/best-flipkart-analytics-tool",
         "/resources/expert-blog/flipkart-keyword-research-tool",
+        "/resources/expert-blog/flipkart-seller-analytics-tool",
         "/resources/expert-blog/insydz-vs-sellerapp-india",
         "/resources/expert-blog/amazon-review-analysis-guide-india",
         "/resources/expert-blog/manual-vs-automated-competitor-tracking-tool",

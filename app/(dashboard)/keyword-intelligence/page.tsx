@@ -17,6 +17,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
 import { useKIUsage } from "@/hooks/use-ki-usage";
 import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
   Loader2, X, TrendingUp, TrendingDown, Minus,
   Plus, Trash2, RefreshCw, BarChart3, Target, Crown,
@@ -161,12 +162,12 @@ function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: strin
   const router = useRouter();
   return (
     <div className="absolute inset-0 bg-background/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
-      <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? "bg-blue-50" : "bg-amber-50"}`}>
-        <Lock className={`w-6 h-6 ${tier === "premium" ? "text-blue-500" : "text-amber-500"}`} />
+      <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? "bg-blue-50 dark:bg-blue-950/40" : "bg-amber-50 dark:bg-amber-950/40"}`}>
+        <Lock className={`w-6 h-6 ${tier === "premium" ? "text-blue-500 dark:text-blue-400" : "text-amber-500 dark:text-amber-400"}`} />
       </div>
       <div className="text-center px-6">
-        <p className="font-bold text-slate-800 text-sm">{feature} is locked</p>
-        <p className="text-xs text-slate-400 mt-1">{tier === "premium" ? "Available on Premium · ₹2,999/mo" : "Available on Basic · ₹1,999/mo"}</p>
+        <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">{feature} is locked</p>
+        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{tier === "premium" ? "Available on Premium · ₹2,999/mo" : "Available on Basic · ₹1,999/mo"}</p>
       </div>
       <button
         onClick={() => router.push("/subscription")}
@@ -184,15 +185,15 @@ function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: strin
 
 function AIInsightCard({ insight, label = "AI Insight" }: { insight: string; label?: string }) {
   return (
-    <div className="flex gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl">
+    <div className="flex gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 border border-purple-200 dark:border-purple-900/40 rounded-xl">
       <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
         <Bot className="h-4 w-4 text-white" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-[10px] font-bold text-purple-600 uppercase tracking-wider mb-1 flex items-center gap-1">
+        <p className="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-1 flex items-center gap-1">
           <Sparkles className="h-3 w-3" />{label}
         </p>
-        <p className="text-sm text-slate-700 leading-relaxed">{insight}</p>
+        <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{insight}</p>
       </div>
     </div>
   );
@@ -203,7 +204,7 @@ function AIInsightCard({ insight, label = "AI Insight" }: { insight: string; lab
 function RankBadge({ rank, change }: { rank: number | null; change: number | null }) {
   if (rank === null) {
     return (
-      <span className="inline-flex items-center gap-1 text-xs text-slate-400 bg-slate-100 px-2 py-1 rounded-full">
+      <span className="inline-flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800/50 px-2 py-1 rounded-full">
         <Minus className="h-3 w-3" /> Not ranked
       </span>
     );
@@ -211,10 +212,10 @@ function RankBadge({ rank, change }: { rank: number | null; change: number | nul
   const page = Math.ceil(rank / 10);
   return (
     <div className="flex flex-col items-end gap-0.5">
-      <span className="font-bold text-slate-800 text-sm">#{rank}</span>
-      <span className="text-[10px] text-slate-400">Page {page}</span>
+      <span className="font-bold text-slate-800 dark:text-slate-200 text-sm">#{rank}</span>
+      <span className="text-[10px] text-slate-400 dark:text-slate-500">Page {page}</span>
       {change !== null && change !== 0 && (
-        <span className={`flex items-center gap-0.5 text-[10px] font-semibold ${change > 0 ? "text-green-600" : "text-red-500"}`}>
+        <span className={`flex items-center gap-0.5 text-[10px] font-semibold ${change > 0 ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}`}>
           {change > 0 ? <ArrowUp className="h-2.5 w-2.5" /> : <ArrowDown className="h-2.5 w-2.5" />}
           {Math.abs(change)}
         </span>
@@ -269,13 +270,13 @@ function HistoryModal({ kw, onClose }: { kw: KeywordOut; onClose: () => void }) 
 
   return (
     <div className="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[85vh] overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[85vh] overflow-y-auto border border-slate-200 dark:border-slate-800">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="font-semibold text-slate-800">{kw.keyword}</p>
-            <p className="text-xs text-slate-400">{kw.asin_or_pid} · {kw.platform}</p>
+            <p className="font-semibold text-slate-800 dark:text-slate-200">{kw.keyword}</p>
+            <p className="text-xs text-slate-400 dark:text-slate-500">{kw.asin_or_pid} · {kw.platform}</p>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700">
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -287,9 +288,9 @@ function HistoryModal({ kw, onClose }: { kw: KeywordOut; onClose: () => void }) 
         )}
 
         {error && (
-          <Alert className="border-orange-200 bg-orange-50">
-            <Lock className="h-4 w-4 text-orange-600" />
-            <AlertDescription className="text-orange-800 text-sm">{error}</AlertDescription>
+          <Alert className="border-orange-200 bg-orange-50 dark:bg-orange-950/20 dark:border-orange-900/40">
+            <Lock className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+            <AlertDescription className="text-orange-800 dark:text-orange-300 text-sm">{error}</AlertDescription>
           </Alert>
         )}
 
@@ -307,13 +308,13 @@ function HistoryModal({ kw, onClose }: { kw: KeywordOut; onClose: () => void }) 
 
             <div className="space-y-2 max-h-56 overflow-y-auto">
               {data.history.length === 0 && (
-                <p className="text-sm text-slate-400 text-center py-4">
+                <p className="text-sm text-slate-400 dark:text-slate-500 text-center py-4">
                   No history yet — refresh rank to start logging.
                 </p>
               )}
               {[...data.history].reverse().map((h, i) => (
-                <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 last:border-0">
-                  <span className="text-xs text-slate-500">
+                <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800 last:border-0">
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
                     {new Date(h.checked_at).toLocaleString("en-IN", {
                       day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
                     })}
@@ -338,19 +339,19 @@ function DifficultyGauge({ value }: { value: number }) {
   const circumference = normalizedRadius * 2 * Math.PI;
   const strokeDashoffset = circumference - (value / 100) * circumference;
 
-  let strokeColor = "stroke-green-500";
-  let bgClass = "bg-green-50 text-green-700 border-green-200";
+  let strokeColor = "stroke-green-500 dark:stroke-green-400";
+  let bgClass = "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800/40";
   let label = "Easy";
   let desc = "Low organic barrier. Highly actionable to rank on page 1.";
 
   if (value >= 60) {
-    strokeColor = "stroke-rose-500";
-    bgClass = "bg-rose-50 text-rose-700 border-rose-200";
+    strokeColor = "stroke-rose-500 dark:stroke-rose-400";
+    bgClass = "bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800/40";
     label = "Hard";
     desc = "High brand concentration. Needs significant reviews to compete.";
   } else if (value >= 30) {
-    strokeColor = "stroke-amber-500";
-    bgClass = "bg-amber-50 text-amber-700 border-amber-200";
+    strokeColor = "stroke-amber-500 dark:stroke-amber-400";
+    bgClass = "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/40";
     label = "Medium";
     desc = "Moderate listings authority. Possible with solid optimizations.";
   }
@@ -379,29 +380,29 @@ function DifficultyGauge({ value }: { value: number }) {
             strokeLinecap="round"
           />
         </svg>
-        <span className="absolute text-sm font-extrabold text-slate-800">{value}%</span>
+        <span className="absolute text-sm font-extrabold text-slate-800 dark:text-slate-200">{value}%</span>
       </div>
       <div>
         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold border ${bgClass}`}>
           {label}
         </span>
-        <p className="text-xs text-slate-400 mt-1">{desc}</p>
+        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{desc}</p>
       </div>
     </div>
   );
 }
 
 function IntentBadge({ intent }: { intent: string }) {
-  let badgeClass = "bg-blue-50 text-blue-700 border-blue-200";
+  let badgeClass = "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800/40";
   let label = "Researching (Informational)";
   let desc = "Buyer is seeking product details, specs, or guides.";
 
   if (intent === "Transactional") {
-    badgeClass = "bg-purple-50 text-purple-700 border-purple-200";
+    badgeClass = "bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-800/40";
     label = "Ready to Buy (Transactional)";
     desc = "Highest purchase intent. Buyer is looking to buy immediately.";
   } else if (intent === "Commercial") {
-    badgeClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
+    badgeClass = "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40";
     label = "Comparing Brands (Commercial)";
     desc = "Buyer is comparing prices, reviews, and features.";
   }
@@ -411,7 +412,7 @@ function IntentBadge({ intent }: { intent: string }) {
       <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold border ${badgeClass}`}>
         {label}
       </span>
-      <p className="text-xs text-slate-400 mt-1">{desc}</p>
+      <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{desc}</p>
     </div>
   );
 }
@@ -494,27 +495,27 @@ function QuickTrackModal({
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full p-6 border border-slate-200 shadow-2xl relative">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl relative">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+          className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
           data-track-id="close_track_modal_btn"
         >
           <X className="h-5 w-5" />
         </button>
 
-        <h3 className="text-base font-bold text-slate-800 flex items-center gap-2 mb-2">
-          <Sparkles className="h-5 w-5 text-purple-600 animate-pulse" />
+        <h3 className="text-base font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 mb-2">
+          <Sparkles className="h-5 w-5 text-purple-600 dark:text-purple-400 animate-pulse" />
           Track Keyword
         </h3>
-        <p className="text-xs text-slate-500 mb-6">
-          Add <strong className="text-slate-700">"{keyword}"</strong> on {platform === "amazon" ? "Amazon" : "Flipkart"} to your dashboard rankings.
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
+          Add <strong className="text-slate-700 dark:text-slate-300">"{keyword}"</strong> on {platform === "amazon" ? "Amazon" : "Flipkart"} to your dashboard rankings.
         </p>
 
         <div className="space-y-4">
           {platformMatchedProducts.length > 0 && (
-            <div className="flex items-center gap-4 p-2 bg-slate-50 rounded-lg border border-slate-200 mb-4">
-              <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+            <div className="flex items-center gap-4 p-2 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-800 mb-4">
+              <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer">
                 <input
                   type="radio"
                   checked={useExisting}
@@ -524,7 +525,7 @@ function QuickTrackModal({
                 />
                 Use Tracked Product
               </label>
-              <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+              <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer">
                 <input
                   type="radio"
                   checked={!useExisting}
@@ -582,7 +583,7 @@ function QuickTrackModal({
           </div>
 
           <div className="pt-4 flex gap-3">
-            <Button variant="outline" onClick={onClose} className="flex-1" disabled={loading} data-track-id="track_rank_cancel_btn">
+            <Button variant="outline" onClick={onClose} className="flex-1 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" disabled={loading} data-track-id="track_rank_cancel_btn">
               Cancel
             </Button>
             <Button onClick={handleTrack} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white" disabled={loading} data-track-id="track_rank_submit_btn">
@@ -610,6 +611,11 @@ function KeywordExplorerPanel({
   onKeywordAdded,
   userTier = "free",
 }: KeywordExplorerProps) {
+  const [mounted, setMounted] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const isDark = mounted && resolvedTheme === "dark";
+  useEffect(() => { setMounted(true); }, []);
+
   // ── Server-side usage tracking ───────────────────────────────────────
   const { isLocked, isAtLimit, remaining: remainingSearches, limit: searchLimit, incrementUsage } = useKIUsage();
   const [keyword, setKeyword] = useState("");
@@ -737,17 +743,17 @@ function KeywordExplorerPanel({
   return (
     <div className="space-y-6">
       {/* Search Bar Section */}
-      <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 relative">
+      <Card className="shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-background opacity-100 relative">
         <CardContent className="p-5">
           {/* Usage counter badge */}
           {!isLocked && remainingSearches !== null && (
             <div className="flex justify-end mb-3">
               <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${
                 remainingSearches === 0
-                  ? "bg-red-50 text-red-600 border-red-200"
+                  ? "bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/40"
                   : remainingSearches <= 1
-                  ? "bg-amber-50 text-amber-600 border-amber-200"
-                  : "bg-purple-50 text-purple-600 border-purple-200"
+                  ? "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/40"
+                  : "bg-purple-50 text-purple-600 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800/40"
               }`}>
                 {remainingSearches === 0
                   ? "No searches left this month"
@@ -759,9 +765,9 @@ function KeywordExplorerPanel({
             <div className="flex-1 space-y-2 w-full">
               <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Search Keyword</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3 top-3.5 h-4 w-4 text-slate-400 dark:text-slate-500" />
                 <Input
-                  className="pl-10 h-11 border-slate-200 focus-visible:ring-purple-600 rounded-xl"
+                  className="pl-10 h-11 border-slate-200 dark:border-slate-800 focus-visible:ring-purple-600 dark:focus-visible:ring-purple-500 rounded-xl bg-transparent"
                   placeholder="Analyze products, volume, & KD (e.g. bluetooth speakers, face serum)"
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
@@ -773,7 +779,7 @@ function KeywordExplorerPanel({
             <div className="w-full md:w-44 space-y-2">
               <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Marketplace</Label>
               <Select value={platform} onValueChange={setPlatform}>
-                <SelectTrigger className="h-11 border-slate-200 rounded-xl" data-track-id="marketplace-select" data-filter-value={platform}>
+                <SelectTrigger className="h-11 border-slate-200 dark:border-slate-800 bg-transparent rounded-xl" data-track-id="marketplace-select" data-filter-value={platform}>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -814,14 +820,14 @@ function KeywordExplorerPanel({
 
       {/* Loading Overlay */}
       {loading && (
-        <Card className="border border-purple-100 bg-gradient-to-r from-purple-50 to-indigo-50 shadow-sm animate-pulse rounded-2xl">
+        <Card className="border border-purple-100 dark:border-purple-900/40 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 shadow-sm animate-pulse rounded-2xl">
           <CardContent className="p-8 flex flex-col items-center justify-center text-center space-y-3">
-            <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+            <Loader2 className="h-8 w-8 animate-spin text-purple-600 dark:text-purple-400" />
             <div>
-              <h4 className="font-bold text-purple-950">
+              <h4 className="font-bold text-purple-950 dark:text-purple-100">
                 Retrieving Marketplace Intel
               </h4>
-              <p className="text-xs text-purple-700 mt-1 max-w-md">
+              <p className="text-xs text-purple-700 dark:text-purple-300 mt-1 max-w-md">
                 We are scanning local search index data, calculating product demand, classifying search intentions, and compiling search recommendations. This process operates 100% free of charge.
               </p>
             </div>
@@ -831,14 +837,14 @@ function KeywordExplorerPanel({
 
       {/* Empty State Banner */}
       {!data && !loading && (
-        <Card className="border border-dashed border-slate-300 bg-slate-50/50 rounded-2xl">
+        <Card className="border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl">
           <CardContent className="p-12 flex flex-col items-center justify-center text-center space-y-4">
-            <div className="w-12 h-12 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600">
+            <div className="w-12 h-12 rounded-2xl bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-purple-600 dark:text-purple-400">
               <Compass className="h-6 w-6 animate-pulse" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 text-lg">Keyword Explorer</h3>
-              <p className="text-sm text-slate-500 max-w-sm mt-1.5 mx-auto">
+              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-lg">Keyword Explorer</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mt-1.5 mx-auto">
                 Type in any search term above (e.g., "face serum", "water bottle") and click Analyze to retrieve search volumes, buyer intent, regional demand, competitor SERPs, and local AI advice.
               </p>
             </div>
@@ -854,33 +860,33 @@ function KeywordExplorerPanel({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
 
             {/* Search Volume */}
-            <Card className="shadow-xs border border-slate-200 rounded-2xl bg-white">
+            <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
               <CardHeader className="pb-2">
                 <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
                   Monthly Volume
                   <BarChart3 className="h-4 w-4 text-slate-400" />
                 </CardDescription>
-                <CardTitle className="text-3xl font-extrabold text-slate-800">
+                <CardTitle className="text-3xl font-extrabold text-slate-800 dark:text-slate-200">
                   {data.search_volume.toLocaleString("en-IN")}
                 </CardTitle>
                 <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
                   Monthly searches by buyers. Higher means more potential customers.
                 </p>
               </CardHeader>
-              <CardContent className="pt-2 text-xs text-slate-400 space-y-1.5 border-t border-slate-100 mt-2">
+              <CardContent className="pt-2 text-xs text-slate-400 dark:text-slate-500 space-y-1.5 border-t border-slate-100 dark:border-slate-800 mt-2">
                 <div className="flex justify-between">
                   <span>Est. Impressions (Views):</span>
-                  <span className="font-semibold text-slate-600">{data.estimated_impressions.toLocaleString("en-IN")}</span>
+                  <span className="font-semibold text-slate-600 dark:text-slate-300">{data.estimated_impressions.toLocaleString("en-IN")}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Est. Clicks (Visits):</span>
-                  <span className="font-semibold text-slate-600">{data.estimated_clicks.toLocaleString("en-IN")}</span>
+                  <span className="font-semibold text-slate-600 dark:text-slate-300">{data.estimated_clicks.toLocaleString("en-IN")}</span>
                 </div>
               </CardContent>
             </Card>
 
             {/* Keyword Difficulty */}
-            <Card className="shadow-xs border border-slate-200 rounded-2xl bg-white">
+            <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
               <CardHeader className="pb-2">
                 <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
                   KD%
@@ -896,58 +902,58 @@ function KeywordExplorerPanel({
             </Card>
 
             {/* Regional Breakdown */}
-            <Card className="shadow-xs border border-slate-200 rounded-2xl bg-white">
+            <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
               <CardHeader className="pb-2">
                 <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
                   Regional Breakdown
                   <MapPin className="h-4 w-4 text-emerald-500" />
                 </CardDescription>
-                <CardTitle className="text-3xl font-extrabold text-slate-800">
+                <CardTitle className="text-3xl font-extrabold text-slate-800 dark:text-slate-200">
                   India
                 </CardTitle>
                 <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
                   Estimated search volume by Indian region.
                 </p>
               </CardHeader>
-              <CardContent className="pt-2 border-t border-slate-100 mt-2 space-y-1 text-xs">
+              <CardContent className="pt-2 border-t border-slate-100 dark:border-slate-800 mt-2 space-y-1 text-xs">
                 {regionalBreakdown.length > 0 ? (
                   regionalBreakdown.map((region) => (
-                    <div key={region.name} className="flex justify-between text-slate-600">
+                    <div key={region.name} className="flex justify-between text-slate-600 dark:text-slate-300">
                       <span className="truncate">{region.name}</span>
-                      <span className="font-bold text-slate-700">
+                      <span className="font-bold text-slate-700 dark:text-slate-200">
                         {region.volume.toLocaleString("en-IN")} ({region.percentage}%)
                       </span>
                     </div>
                   ))
                 ) : (
-                  <div className="text-xs text-slate-400">No regional data.</div>
+                  <div className="text-xs text-slate-400 dark:text-slate-500">No regional data.</div>
                 )}
               </CardContent>
             </Card>
 
             {/* Competitive Density */}
-            <Card className="shadow-xs border border-slate-200 rounded-2xl bg-white">
+            <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
               <CardHeader className="pb-2">
                 <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
                   Competitive Density
                   <Sparkles className="h-4 w-4 text-indigo-500" />
                 </CardDescription>
-                <CardTitle className="text-3xl font-extrabold text-slate-800">
+                <CardTitle className="text-3xl font-extrabold text-slate-800 dark:text-slate-200">
                   {data.competitive_density !== undefined ? data.competitive_density.toFixed(2) : "0.00"}
                 </CardTitle>
                 <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
                   PPC competition index from 0.00 to 1.00.
                 </p>
               </CardHeader>
-              <CardContent className="pt-2 border-t border-slate-100 mt-2">
+              <CardContent className="pt-2 border-t border-slate-100 dark:border-slate-800 mt-2">
                 <div className="space-y-1">
-                  <div className="flex justify-between text-xs font-semibold text-slate-600">
+                  <div className="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300">
                     <span>PPC Competition</span>
                     <span>
                       {data.competitive_density >= 0.80 ? "High" : data.competitive_density >= 0.50 ? "Medium" : "Low"}
                     </span>
                   </div>
-                  <div className="w-full bg-slate-100 rounded-full h-2">
+                  <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                     <div
                       className={`h-2 rounded-full transition-all duration-1000 ${data.competitive_density >= 0.80 ? "bg-rose-500" : data.competitive_density >= 0.50 ? "bg-amber-500" : "bg-green-500"
                         }`}
@@ -959,7 +965,7 @@ function KeywordExplorerPanel({
             </Card>
 
             {/* Intent & CPC */}
-            <Card className="shadow-xs border border-slate-200 rounded-2xl bg-white">
+            <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
               <CardHeader className="pb-2">
                 <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
                   Mindset & Ad Cost
@@ -971,11 +977,11 @@ function KeywordExplorerPanel({
               </CardHeader>
               <CardContent className="space-y-3 pt-1">
                 <IntentBadge intent={data.intent} />
-                <div className="border-t border-slate-100 pt-2 flex justify-between items-center">
+                <div className="border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between items-center">
                   <div>
-                    <span className="text-xs font-semibold text-slate-600 block">Est. CPC:</span>
+                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 block">Est. CPC:</span>
                   </div>
-                  <span className="text-sm font-extrabold text-slate-700">₹{data.cpc.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <span className="text-sm font-extrabold text-slate-700 dark:text-slate-300">₹{data.cpc.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                 </div>
               </CardContent>
             </Card>
@@ -985,10 +991,10 @@ function KeywordExplorerPanel({
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
             {/* Search Trend Chart */}
-            <Card className="shadow-xs border border-slate-200 rounded-2xl p-6 bg-white lg:col-span-3">
+            <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl p-6 bg-white dark:bg-slate-900 lg:col-span-3">
               <CardHeader className="p-0 pb-4">
-                <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                  <BarChart3 className="h-4 w-4 text-indigo-500" />
+                <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
                   12-Month Search Volume Trend
                 </CardTitle>
                 <CardDescription className="text-xs">
@@ -1003,7 +1009,7 @@ function KeywordExplorerPanel({
                       return { month: monthNames[idx % 12], Volume: vol };
                     })
                   } margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? "#334155" : "#f1f5f9"} />
                     <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={10} stroke="#94a3b8" />
                     <YAxis
                       tickLine={false}
@@ -1014,8 +1020,8 @@ function KeywordExplorerPanel({
                       tickFormatter={(val) => val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}
                     />
                     <Tooltip
-                      contentStyle={{ background: "#ffffff", border: "1px solid #e2e8f0", borderRadius: "8px", fontSize: "12px" }}
-                      labelClassName="font-bold text-slate-700"
+                      contentStyle={{ background: isDark ? "#0f172a" : "#ffffff", border: isDark ? "1px solid #1e293b" : "1px solid #e2e8f0", borderRadius: "8px", fontSize: "12px", color: isDark ? "#f8fafc" : "#334155" }}
+                      labelClassName="font-bold"
                     />
                     <Bar dataKey="Volume" fill="#6366f1" radius={[4, 4, 0, 0]} />
                   </BarChart>
@@ -1024,10 +1030,10 @@ function KeywordExplorerPanel({
             </Card>
 
             {/* Geo breakdown list */}
-            <Card className="shadow-xs border border-slate-200 rounded-2xl lg:col-span-2 relative overflow-hidden">
+            <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl lg:col-span-2 relative overflow-hidden bg-white dark:bg-slate-900">
               <CardHeader>
-                <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-rose-500" />
+                <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-rose-500 dark:text-rose-400" />
                   State-wise Interest Distribution
                 </CardTitle>
                 <CardDescription className="text-xs">
@@ -1041,11 +1047,11 @@ function KeywordExplorerPanel({
                     .slice(0, showAllStates ? undefined : 8)
                     .map(([state, pct]) => (
                       <div key={state} className="space-y-1">
-                        <div className="flex justify-between text-xs font-semibold text-slate-700">
+                        <div className="flex justify-between text-xs font-semibold text-slate-700 dark:text-slate-300">
                           <span>{state}</span>
                           <span>{pct}%</span>
                         </div>
-                        <div className="w-full bg-slate-100 rounded-full h-2">
+                        <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                           <div
                             className="bg-indigo-500 h-2 rounded-full transition-all duration-1000"
                             style={{ width: `${pct}%` }}
@@ -1054,10 +1060,10 @@ function KeywordExplorerPanel({
                       </div>
                     ))}
                 </div>
-                <div className="pt-3 text-center border-t border-slate-100 mt-3">
+                <div className="pt-3 text-center border-t border-slate-100 dark:border-slate-800 mt-3">
                   <button
                     onClick={() => setShowAllStates(!showAllStates)}
-                    className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 transition-colors focus:outline-none inline-flex items-center gap-1.5"
+                    className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors focus:outline-none inline-flex items-center gap-1.5"
                   >
                     {showAllStates ? "Show Top 8 States" : "Show All 36 States & UTs"}
                   </button>
@@ -1069,10 +1075,10 @@ function KeywordExplorerPanel({
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
             {/* Keyword variations table */}
-            <Card className="shadow-xs border border-slate-200 rounded-2xl lg:col-span-5">
+            <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl lg:col-span-5 bg-white dark:bg-slate-900">
               <CardHeader>
-                <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                  <Compass className="h-4 w-4 text-indigo-500" />
+                <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                  <Compass className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
                   Related Keyword Variations
                 </CardTitle>
                 <CardDescription className="text-xs">
@@ -1083,7 +1089,7 @@ function KeywordExplorerPanel({
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-y border-slate-100 bg-slate-50 text-slate-500 font-semibold">
+                      <tr className="border-y border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-semibold">
                         <th className="p-3">Keyword</th>
                         <th className="p-3 text-right">Vol</th>
                         <th className="p-3 text-center">KD%</th>
@@ -1092,14 +1098,14 @@ function KeywordExplorerPanel({
                         <th className="p-3 text-center">Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-slate-700">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                       {data.variations.map((v, i) => (
-                        <tr key={i} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="p-3 font-medium text-slate-800">
+                        <tr key={i} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                          <td className="p-3 font-medium text-slate-800 dark:text-slate-200">
                             <button
                               onClick={() => handleSearch(v.keyword)}
                               disabled={loading}
-                              className="hover:underline text-purple-700 text-left disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
+                              className="hover:underline text-purple-700 dark:text-purple-400 text-left disabled:opacity-50 disabled:no-underline disabled:cursor-not-allowed"
                               data-track-id="related_keyword_variation_btn"
                             >
                               {v.keyword}
@@ -1109,10 +1115,10 @@ function KeywordExplorerPanel({
                           <td className="p-3 text-center font-medium">
                             <span
                               className={`px-1.5 py-0.5 rounded text-[10px] ${v.difficulty >= 60
-                                  ? "bg-rose-50 text-rose-600 border border-rose-100"
+                                  ? "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-800/40"
                                   : v.difficulty >= 30
-                                    ? "bg-amber-50 text-amber-600 border border-amber-100"
-                                    : "bg-green-50 text-green-600 border border-green-100"
+                                    ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/40"
+                                    : "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-100 dark:border-green-800/40"
                                 }`}
                             >
                               {v.difficulty}%
@@ -1121,10 +1127,10 @@ function KeywordExplorerPanel({
                           <td className="p-3 text-center">
                             <span
                               className={`px-1.5 py-0.5 rounded-[4px] text-[10px] font-semibold ${v.intent === "Transactional"
-                                  ? "bg-purple-100 text-purple-700"
+                                  ? "bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400"
                                   : v.intent === "Commercial"
-                                    ? "bg-emerald-100 text-emerald-700"
-                                    : "bg-blue-100 text-blue-700"
+                                    ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400"
+                                    : "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400"
                                 }`}
                             >
                               {v.intent.charAt(0)}
@@ -1135,7 +1141,7 @@ function KeywordExplorerPanel({
                             <button
                               onClick={() => handleQuickTrack(v.keyword)}
                               disabled={loading}
-                              className="p-1 hover:bg-purple-100 text-purple-600 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="p-1 hover:bg-purple-100 dark:hover:bg-purple-900/40 text-purple-600 dark:text-purple-400 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                               title="Add to Rank Tracker"
                               data-track-id="quick_track_keyword_btn"
                               data-filter-value={v.keyword}
@@ -1154,10 +1160,10 @@ function KeywordExplorerPanel({
 
           {/* SERP Features Badges */}
           {data.serp_features && data.serp_features.length > 0 && (
-            <div className="flex flex-wrap gap-2 items-center bg-slate-50 border border-slate-200 p-3 rounded-xl">
-              <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">SERP Features:</span>
+            <div className="flex flex-wrap gap-2 items-center bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 p-3 rounded-xl">
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">SERP Features:</span>
               {data.serp_features.map((feature, idx) => (
-                <Badge key={idx} variant="secondary" className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-150 text-[10px] font-semibold">
+                <Badge key={idx} variant="secondary" className="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 border border-indigo-150 dark:border-indigo-800/40 text-[10px] font-semibold">
                   {feature}
                 </Badge>
               ))}
@@ -1165,10 +1171,10 @@ function KeywordExplorerPanel({
           )}
 
           {/* SERP Analysis top 10 products */}
-          <Card className="shadow-xs border border-slate-200 rounded-2xl">
+          <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
             <CardHeader>
-              <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                <ShoppingBag className="h-4 w-4 text-orange-500" />
+              <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                <ShoppingBag className="h-4 w-4 text-orange-500 dark:text-orange-400" />
                 SERP Analysis (Top 10 Results)
               </CardTitle>
               <CardDescription className="text-xs">
@@ -1179,7 +1185,7 @@ function KeywordExplorerPanel({
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs border-collapse">
                   <thead>
-                    <tr className="border-y border-slate-100 bg-slate-50 text-slate-500 font-semibold">
+                    <tr className="border-y border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-semibold">
                       <th className="p-3 text-center w-12">Pos</th>
                       <th className="p-3">Product Name</th>
                       <th className="p-3">Brand</th>
@@ -1190,21 +1196,21 @@ function KeywordExplorerPanel({
                       <th className="p-3 w-28">ASIN/PID</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-700">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                     {data.serp.length === 0 ? (
                       <tr>
-                        <td colSpan={8} className="p-8 text-center text-slate-400">
+                        <td colSpan={8} className="p-8 text-center text-slate-400 dark:text-slate-500">
                           No matching items cataloged in the database.
                         </td>
                       </tr>
                     ) : (
                       data.serp.map((item) => (
-                        <tr key={item.position} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="p-3 text-center font-bold text-slate-500">{item.position}</td>
-                          <td className="p-3 max-w-sm font-medium text-slate-800 truncate" title={item.title}>
+                        <tr key={item.position} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                          <td className="p-3 text-center font-bold text-slate-500 dark:text-slate-400">{item.position}</td>
+                          <td className="p-3 max-w-sm font-medium text-slate-800 dark:text-slate-200 truncate" title={item.title}>
                             {item.title}
                           </td>
-                          <td className="p-3 text-slate-500 font-medium">
+                          <td className="p-3 text-slate-500 dark:text-slate-400 font-medium">
                             {(() => {
                               const brandVal = item.brand;
                               if (brandVal && brandVal !== "None" && brandVal !== "—" && brandVal.trim() !== "") {
@@ -1223,16 +1229,16 @@ function KeywordExplorerPanel({
                           <td className="p-3 text-right font-semibold">
                             {item.price ? `₹${item.price.toLocaleString("en-IN")}` : "—"}
                           </td>
-                          <td className="p-3 text-center font-bold text-amber-600">
+                          <td className="p-3 text-center font-bold text-amber-600 dark:text-amber-400">
                             {item.rating ? `${item.rating}★` : "—"}
                           </td>
-                          <td className="p-3 text-right font-medium text-slate-600">
+                          <td className="p-3 text-right font-medium text-slate-600 dark:text-slate-300">
                             {item.reviews ? item.reviews.toLocaleString("en-IN") : "—"}
                           </td>
-                          <td className="p-3 text-right font-bold text-indigo-600">
+                          <td className="p-3 text-right font-bold text-indigo-600 dark:text-indigo-400">
                             {item.sales_volume ? item.sales_volume.toLocaleString("en-IN") : "—"}
                           </td>
-                          <td className="p-3 font-mono text-slate-400 text-[10px] select-all">
+                          <td className="p-3 font-mono text-slate-400 dark:text-slate-500 text-[10px] select-all">
                             {item.asin_or_pid}
                           </td>
                         </tr>
@@ -1245,10 +1251,10 @@ function KeywordExplorerPanel({
           </Card>
 
           {/* AI Copywriting & PPC Bidding Strategy Card */}
-          <Card className="shadow-xs border border-slate-200 rounded-2xl overflow-hidden relative">
-            <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 border-b border-slate-100">
-              <CardTitle className="text-sm font-bold text-slate-700 flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-purple-600 animate-pulse" />
+          <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden relative bg-white dark:bg-slate-900">
+            <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 border-b border-slate-100 dark:border-slate-800">
+              <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
+                <Sparkles className="h-4 w-4 text-purple-600 dark:text-purple-400 animate-pulse" />
                 AI Copywriting & PPC Bidding Strategy
               </CardTitle>
               <CardDescription className="text-xs">
@@ -1258,20 +1264,20 @@ function KeywordExplorerPanel({
             <CardContent className="p-6 min-h-[200px] relative">
               {strategyLoading ? (
                 <div className="flex flex-col items-center justify-center py-12 space-y-3">
-                  <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-                  <p className="text-xs text-slate-500 font-medium">Generating copywriting & PPC strategy via Llama 3.2...</p>
+                  <Loader2 className="h-8 w-8 animate-spin text-purple-600 dark:text-purple-400" />
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Generating copywriting & PPC strategy via Llama 3.2...</p>
                 </div>
               ) : strategyError ? (
-                <div className="text-xs text-rose-600 p-4 border border-rose-100 rounded-lg bg-rose-50/50">
+                <div className="text-xs text-rose-600 dark:text-rose-400 p-4 border border-rose-100 dark:border-rose-900/40 rounded-lg bg-rose-50/50 dark:bg-rose-900/20">
                   Failed to generate AI strategy: {strategyError}
                 </div>
               ) : strategyText ? (
                 <div
-                  className="prose prose-sm max-w-none text-xs text-slate-600 space-y-4"
+                  className="prose prose-sm dark:prose-invert max-w-none text-xs text-slate-600 dark:text-slate-300 space-y-4"
                   dangerouslySetInnerHTML={{ __html: strategyText }}
                 />
               ) : (
-                <div className="text-xs text-slate-400 py-8 text-center">
+                <div className="text-xs text-slate-400 dark:text-slate-500 py-8 text-center">
                   Analyze a keyword to generate copywriting & advertising strategy advice from your local LLM.
                 </div>
               )}
@@ -1305,6 +1311,14 @@ function KeywordExplorerPanel({
 function KeywordTrackerIntelligenceContent() {
   const { user, isLoading } = useAuth();
   const userId = user?.id;
+
+  const [mounted, setMounted] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const isDark = mounted && resolvedTheme === "dark";
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const [dashboard, setDashboard] = useState<Dashboard | null>(null);
   const [loadingDash, setLoadingDash] = useState(false);
@@ -1362,13 +1376,13 @@ function KeywordTrackerIntelligenceContent() {
 
           {/* Page Header */}
           <div className="text-center space-y-4 pt-4">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-2xl mb-2 shadow-inner">
-              <Compass className="h-8 w-8 text-purple-600" />
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 rounded-2xl mb-2 shadow-inner">
+              <Compass className="h-8 w-8 text-purple-600 dark:text-purple-400" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 text-transparent bg-clip-text">
+            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 dark:from-purple-400 dark:via-indigo-400 dark:to-blue-400 text-transparent bg-clip-text">
               Keyword Intelligence
             </h1>
-            <p className="text-base sm:text-lg text-slate-500 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
               Explore high-opportunity buyer search terms, analyze search volumes, and track buyer keywords.
             </p>
           </div>

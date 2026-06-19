@@ -282,7 +282,7 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
                   {[
                     { id: "amazon_india", label: "Amazon India", icon: Package },
                     { id: "flipkart", label: "Flipkart", icon: ShoppingCart },
-                    { id: "both", label: "Both / Meesho", icon: Globe },
+                    { id: "both", label: "Both", icon: Globe },
                   ].map((market) => {
                     const isMarketComingSoon =
                       formData.onboarding_goal === "existing_seller" &&
