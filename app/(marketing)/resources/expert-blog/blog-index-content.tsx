@@ -85,6 +85,36 @@ type Article = {
 
 // Sample articles data
 const articles: Article[] = [
+    {
+    id: "20",
+    title: "Amazon Zero Referral Fee India",
+    excerpt: "Learn how zero-fee on Amazon India can help sellers save up to ₹50,000/month, improve profitability, increase visibility, and maintain competitive pricing—and if it’s the right move for your brand.",
+    category: "Pricing Strategy",
+    readTime: "12 min read",
+    image: "/amazon-zero-referral-fee-india_Image2.png",
+    route: "/resources/expert-blog/amazon-zero-referral-fee",
+    popular: true
+  },
+  {
+    id: "19",
+    title: "Competitor Undercutting on Amazon India",
+    excerpt: "Learn why your Amazon sales might drop and how to recover them in 2026. From product research to sourcing and building a D2C brand.",
+    category: "Seller Tools & Strategy",
+    readTime: "12 min read",
+    image: "/Banner_competitor-undercutting-amazon-india.png",
+    route: "/resources/expert-blog/competitor-undercutting-amazon-india",
+    popular: true
+  },
+  {
+    id: "18",
+    title: "Amazon Sales Drop in 2026: The Complete Guide",
+    excerpt: "Learn why your Amazon sales might drop and how to recover them in 2026. From product research to sourcing and building a D2C brand.",
+    category: "Seller Tools & Strategy",
+    readTime: "12 min read",
+    image: "/Banner image.png",
+    route: "/resources/expert-blog/amazon-sales-drop",
+    popular: true
+  },
   {
     id: "17",
     title: "Flipkart Seller Analytics Tool India: The Complete Guide (2026)",
