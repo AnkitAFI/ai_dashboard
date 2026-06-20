@@ -412,7 +412,7 @@ export default function ShareOfVoice() {
   const getUpgradeMessage = () => {
     if (!usageLimits) return "";
     const tier = usageLimits.subscription_tier.toLowerCase();
-    if (tier === "free") return "Upgrade to Basic for 15 SOV analyses per month";
+    if (tier === "free") return "Upgrade to Basic for 10 SOV analyses per month";
     if (tier === "basic") return "Upgrade to Premium for unlimited SOV analyses";
     return "Upgrade for more features";
   };

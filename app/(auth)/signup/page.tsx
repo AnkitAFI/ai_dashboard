@@ -482,7 +482,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LOCATIONS } from "@/lib/locations";
-import { CheckCircle2, Moon, Sun } from "lucide-react";
+import { CheckCircle2, Moon, Sun, Eye, EyeOff } from "lucide-react";
 import { useTheme } from "next-themes";
 import ExpertButton from "../components/Expertbutton";
 import VideoButton from "../components/Videobutton";
@@ -872,18 +872,6 @@ export default function Signup() {
             {/* Stats */}
             <div className="flex items-center gap-10">
               <div>
-                <div className="text-3xl font-extrabold text-white mb-1">
-                  2,400+
-                </div>
-              ))}
-            </div>
-
-            {/* Divider */}
-            <div className="w-full h-px bg-white/20 dark:bg-white/10 mb-8" />
-
-            {/* Stats */}
-            <div className="flex items-center gap-10">
-              <div>
                 <div className="text-3xl font-extrabold text-white mb-1">2,400+</div>
                 <div className="text-white/70 dark:text-slate-400 text-xs">Active sellers</div>
               </div>
@@ -902,7 +890,7 @@ export default function Signup() {
         </div>
 
         {/* ── Right Panel: Scrollable Form ── */}
-        <div className="w-full lg:w-[520px] h-full min-h-0 overflow-y-auto overscroll-contain flex justify-center p-8 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-white/30 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700 dark:[&::-webkit-scrollbar-thumb:hover]:bg-slate-600">
+        <div className="w-full lg:w-[520px] h-full min-h-0 overflow-y-auto overscroll-contain flex justify-center p-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <div className="w-full max-w-[480px]">
             {/* Mobile logo */}
             <div className="flex lg:hidden flex-col items-center mb-8">
@@ -1005,21 +993,62 @@ export default function Signup() {
 
                 {/* Password */}
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
-                    Password *
-                  </Label>
-                  <Input
-                    type="password"
-                    placeholder="••••••••"
-                    value={formData.password}
-                    onChange={handleInputChange("password")}
-                    minLength={6}
-                    disabled={isLoading}
-                    className="h-11 text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500/20 focus-visible:border-blue-500 rounded-xl"
-                  />
-                  <p className="text-[11px] text-gray-400 dark:text-slate-500">
-                    Minimum 6 characters
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
+                      Password *
+                    </Label>
+                    <button
+                      type="button"
+                      onClick={handleSuggestPassword}
+                      className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                    >
+                      Suggest strong password
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={formData.password}
+                      onChange={handleInputChange("password")}
+                      minLength={6}
+                      disabled={isLoading}
+                      className="h-11 text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500/20 focus-visible:border-blue-500 rounded-xl pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                  <div className="flex flex-col gap-1.5 mt-1">
+                    <div className="flex gap-1 h-1.5 w-full bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                      {[1, 2, 3, 4].map((level) => (
+                        <div
+                          key={level}
+                          className={`flex-1 transition-colors duration-300 ${
+                            strength.score >= level ? strength.color : "bg-transparent"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <p className="text-[11px] text-gray-400 dark:text-slate-500">
+                        Minimum 6 characters
+                      </p>
+                      {strength.label && (
+                        <span className={`text-[11px] font-medium ${strength.text}`}>
+                          {strength.label}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Business Name */}

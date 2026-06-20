@@ -10517,8 +10517,8 @@ def admin_get_user_profile(
 DB_TIMEOUT_MS = 8_000
  
 SOV_TIER_LIMITS: Dict[str, int] = {
-    "free":       3,
-    "basic":      15,
+    "free":       1,
+    "basic":      10,
     "premium":    -1,
     "enterprise": -1,
 }
