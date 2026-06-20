@@ -643,7 +643,7 @@ export default function ShareOfVoice() {
                 <select
                   value={marketplace}
                   onChange={(e) => setMarketplace(e.target.value as any)}
-                  disabled={!!userId && !canAnalyze}
+                  disabled={loading}
                   className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
                   data-track-id="marketplace_select"
                   data-filter-value={marketplace}
@@ -658,7 +658,7 @@ export default function ShareOfVoice() {
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  disabled={!!userId && !canAnalyze}
+                  disabled={loading}
                   className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
                   data-track-id="category_select"
                   data-filter-value={selectedCategory}
@@ -673,7 +673,7 @@ export default function ShareOfVoice() {
                   type="text" value={yourBrand}
                   onChange={(e) => setYourBrand(e.target.value)}
                   placeholder="Enter your brand name"
-                  disabled={!!userId && !canAnalyze}
+                  disabled={loading}
                   className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
                   data-track-id="your_brand_input"
                 />
@@ -681,9 +681,9 @@ export default function ShareOfVoice() {
               <div className="flex items-end">
                 <Button
                   onClick={analyzeCategorySov}
-                  disabled={loading || (!!userId && !canAnalyze)}
+                  disabled={loading}
                   className={`w-full py-3 rounded-lg text-white font-medium flex items-center justify-center gap-2 ${
-                    userId && !canAnalyze ? "bg-slate-300 dark:bg-slate-600 cursor-not-allowed" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
+                    userId && !canAnalyze ? "bg-slate-600 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 shadow-md" : "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 shadow-md"
                   }`}
                   data-track-id="analyze_category_sov_btn"
                 >
@@ -698,13 +698,13 @@ export default function ShareOfVoice() {
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Target Share (%)</label>
-                  <input type="number" value={targetShare} onChange={(e) => setTargetShare(Number(e.target.value))} min="0" max="100" disabled={!!userId && !canAnalyze}
+                  <input type="number" value={targetShare} onChange={(e) => setTargetShare(Number(e.target.value))} min="0" max="100" disabled={loading}
                     className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm"
                     data-track-id="target_share_input" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Target Days</label>
-                  <input type="number" value={targetDays} onChange={(e) => setTargetDays(Number(e.target.value))} min="1" disabled={!!userId && !canAnalyze}
+                  <input type="number" value={targetDays} onChange={(e) => setTargetDays(Number(e.target.value))} min="1" disabled={loading}
                     className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm"
                     data-track-id="target_days_input" />
                 </div>
