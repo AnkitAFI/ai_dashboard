@@ -168,6 +168,9 @@ export default function ContactUsPage() {
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const { name, email, company, inquiry, message } = formState;
+    const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0ACompany: ${company}%0D%0AInquiry: ${inquiry}%0D%0A%0D%0AMessage:%0D%0A${message.replace(/\n/g, '%0D%0A')}`;
+    window.location.href = `mailto:support@insydz.com?subject=New Inquiry: ${inquiry}&body=${body}`;
     setSubmitted(true);
   };
 
@@ -329,16 +332,8 @@ export default function ContactUsPage() {
             Questions about the product, partnerships, or support? We're here to help.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button
-              onClick={() => router.push("/login")}
-              size="lg"
-              className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-6 text-base rounded-full shadow-lg hover:shadow-orange-400/30 transition-all group"
-            >
-              Book a Demo
-              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
             <a
-              href=""
+              href="mailto:support@insydz.com"
               className="inline-flex items-center justify-center gap-2 border-2 border-gray-300 text-gray-700 hover:border-orange-400 hover:text-orange-600 font-semibold px-8 py-3 text-base rounded-full transition-all"
             >
               <Mail className="w-4 h-4" />
@@ -363,10 +358,10 @@ export default function ContactUsPage() {
               {
                 icon: <HelpCircle className="w-6 h-6" />,
                 title: "Product Questions",
-                desc: "For feature clarifications, onboarding help, and demo requests.",
-                cta: "Book a Demo",
-                ctaHref: "/login",
-                ctaType: "route",
+                desc: "For feature clarifications and onboarding help.",
+                cta: "support@insydz.com",
+                ctaHref: "mailto:support@insydz.com",
+                ctaType: "email",
                 color: "bg-orange-100 text-orange-600",
               },
               {
@@ -630,38 +625,7 @@ export default function ContactUsPage() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════
-          SECTION 6 — FINAL CTA
-      ══════════════════════════════════════════ */}
-      <section className="py-20 px-4 bg-orange-50 border-t border-orange-200">
-        <div className="max-w-2xl mx-auto text-center">
-          <div className="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-md">
-            <ArrowUpRight className="w-6 h-6 text-white" />
-          </div>
-          <h2 className="text-3xl lg:text-4xl font-black text-gray-900 mb-3 tracking-tight">
-            Looking for a Personalized Walkthrough?
-          </h2>
-          <p className="text-gray-500 mb-7 text-base">See how INSYDZ fits your selling model.</p>
-          <Button
-            onClick={() => router.push("/login")}
-            size="lg"
-            className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-10 py-6 text-base rounded-full shadow-xl hover:shadow-orange-400/30 transition-all group"
-          >
-            Book a Demo
-            <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </Button>
-        </div>
-      </section>
 
-      {/* ── STICKY MOBILE CTA ── */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 px-4 py-3 shadow-lg">
-        <Button
-          onClick={() => router.push("/login")}
-          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-full text-sm shadow-md"
-        >
-          Book a Demo →
-        </Button>
-      </div>
 
       
       {/* Footer */}
