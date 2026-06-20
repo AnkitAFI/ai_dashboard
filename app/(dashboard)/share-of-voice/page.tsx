@@ -574,7 +574,7 @@ export default function ShareOfVoice() {
 
       {/* ── Upgrade Modal ── */}
       {showUpgradeModal && (
-        <div className="fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/80 z-[100] flex items-center justify-center p-4 !mt-0">
           <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
             <div className="text-center">
               <div className="mx-auto w-16 h-16 bg-gradient-to-br from-orange-400 to-red-500 rounded-full flex items-center justify-center mb-4">
