@@ -131,6 +131,7 @@ export default function ContactUsPage() {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -166,12 +167,29 @@ export default function ContactUsPage() {
     setFormState({ ...formState, [e.target.name]: e.target.value });
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { name, email, company, inquiry, message } = formState;
-    const body = `Name: ${name}%0D%0AEmail: ${email}%0D%0ACompany: ${company}%0D%0AInquiry: ${inquiry}%0D%0A%0D%0AMessage:%0D%0A${message.replace(/\n/g, '%0D%0A')}`;
-    window.location.href = `mailto:support@insydz.com?subject=New Inquiry: ${inquiry}&body=${body}`;
-    setSubmitted(true);
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formState),
+      });
+      
+      if (response.ok) {
+        setSubmitted(true);
+      } else {
+        alert("Failed to send message. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error sending message:", error);
+      alert("An error occurred while sending the message.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -521,10 +539,11 @@ export default function ContactUsPage() {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-1">
                   <Button
                     type="submit"
-                    className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-3 rounded-full shadow-md transition-all group"
+                    disabled={isSubmitting}
+                    className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-3 rounded-full shadow-md transition-all group disabled:opacity-70 disabled:cursor-not-allowed"
                   >
-                    Send Message
-                    <Send className="ml-2 w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                    {isSubmitting ? "Sending..." : "Send Message"}
+                    {!isSubmitting && <Send className="ml-2 w-4 h-4 group-hover:translate-x-0.5 transition-transform" />}
                   </Button>
                   <p className="text-xs text-gray-400 leading-relaxed">
                     We typically respond within <span className="font-semibold text-gray-500">24–48 hours</span> on business days.
