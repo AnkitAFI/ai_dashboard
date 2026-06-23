@@ -16,7 +16,7 @@ import {
   AlertTriangle, Lightbulb, X, ShoppingBag, CheckCircle2,
   XCircle, History, Crown, Lock, Shield, Clock, Activity,
   ChevronDown, ChevronUp, Zap, BarChart3,
-  AlertCircle,
+  AlertCircle, Star, TrendingDown, Truck, Trophy, Package,
 } from "lucide-react";
 
 interface GapItem {
@@ -272,6 +272,24 @@ function FallbackBanner({ reason }: { reason: string }) {
   );
 }
 
+const getGapIcon = (iconText: string) => {
+  if (!iconText) return <AlertCircle className="h-5 w-5" />;
+  const t = iconText.toUpperCase();
+  if (t.includes('MONEY') || t.includes('DOLLAR') || t.includes('PRICE') || t.includes('PROFIT')) return <DollarSign className="h-5 w-5" />;
+  if (t.includes('TROPHY') || t.includes('WIN') || t.includes('BEST') || t.includes('LEAD')) return <Trophy className="h-5 w-5" />;
+  if (t.includes('STAR') || t.includes('RATING') || t.includes('REVIEW')) return <Star className="h-5 w-5" />;
+  if (t.includes('DOWN') || t.includes('LOW') || t.includes('DROP')) return <TrendingDown className="h-5 w-5" />;
+  if (t.includes('UP') || t.includes('HIGH') || t.includes('GROW')) return <TrendingUp className="h-5 w-5" />;
+  if (t.includes('TRUCK') || t.includes('SHIP') || t.includes('DELIVER') || t.includes('PRIME')) return <Truck className="h-5 w-5" />;
+  if (t.includes('WARN') || t.includes('ALERT') || t.includes('RISK')) return <AlertTriangle className="h-5 w-5" />;
+  if (t.includes('BOX') || t.includes('PACKAGE') || t.includes('PRODUCT') || t.includes('INVENT')) return <Package className="h-5 w-5" />;
+  
+  // Emoji fallback if it's actually an emoji or short symbol
+  if (t.length <= 2) return <span className="text-xl">{iconText}</span>;
+
+  return <AlertCircle className="h-5 w-5" />;
+};
+
 export default function ProductTracker() {
   const { user, isLoading } = useAuth();
   const userEmail = user?.email || "";
@@ -440,14 +458,14 @@ export default function ProductTracker() {
       : "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-800";
 
   const getSeverityColor = (s: string) =>
-    s === "High" ? "border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-900/20" :
-      s === "Medium" ? "border-yellow-300 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20" :
-        "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/40";
+    s === "High" ? "border-red-200 dark:border-red-900/40 bg-gradient-to-br from-red-50 to-rose-50/50 dark:from-red-950/40 dark:to-rose-950/20 shadow-sm" :
+      s === "Medium" ? "border-amber-200 dark:border-amber-900/40 bg-gradient-to-br from-amber-50 to-yellow-50/50 dark:from-amber-950/40 dark:to-yellow-950/20 shadow-sm" :
+        "border-slate-200 dark:border-slate-700 bg-gradient-to-br from-slate-50 to-gray-50/50 dark:from-slate-900/40 dark:to-gray-800/20 shadow-sm";
 
   const getSeverityBadgeColor = (s: string) =>
-    s === "High" ? "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border-red-300 dark:border-red-800" :
-      s === "Medium" ? "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 border-yellow-300 dark:border-yellow-800" :
-        "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-600";
+    s === "High" ? "bg-red-100 dark:bg-red-900/60 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800 shadow-sm" :
+      s === "Medium" ? "bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800 shadow-sm" :
+        "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 shadow-sm";
 
   return (
     <div className="space-y-6">
@@ -647,20 +665,55 @@ export default function ProductTracker() {
 
               {/* Warnings (now from ApiResponse.warnings, not result.warnings) */}
               {apiResponse.warnings && apiResponse.warnings.length > 0 && (
-                <Alert className={
-                  apiResponse.warnings[0].includes("CRITICAL") || apiResponse.warnings[0].includes("DANGER")
-                    ? "border-red-300 bg-red-50"
-                    : apiResponse.warnings[0].includes("EXCELLENT") || apiResponse.warnings[0].includes("VIABLE")
-                      ? "border-green-300 bg-green-50"
-                      : "border-yellow-300 bg-yellow-50"
-                }>
-                  <AlertTriangle className="h-4 w-4" />
-                  <AlertDescription>
-                    <ul className="space-y-1">
-                      {apiResponse.warnings.map((w, i) => <li key={i} className="text-sm">{w}</li>)}
-                    </ul>
-                  </AlertDescription>
-                </Alert>
+                <div className="space-y-3">
+                  {apiResponse.warnings.map((w, i) => {
+                    const isCritical = w.includes("CRITICAL") || w.includes("DANGER") || w.includes("impossible") || w.includes("Cannot compete");
+                    const isPositive = w.includes("EXCELLENT") || w.includes("VIABLE");
+                    const isSolution = w.toLowerCase().startsWith("solution");
+                    
+                    let typeColor = "border-amber-200 dark:border-amber-900/40 bg-gradient-to-br from-amber-50 to-yellow-50/50 dark:from-amber-950/40 dark:to-yellow-950/20 text-amber-800 dark:text-amber-300";
+                    let Icon = AlertTriangle;
+                    let iconColor = "text-amber-600 dark:text-amber-400";
+
+                    if (isCritical) {
+                      typeColor = "border-red-200 dark:border-red-900/40 bg-gradient-to-br from-red-50 to-rose-50/50 dark:from-red-950/40 dark:to-rose-950/20 text-red-800 dark:text-red-300";
+                      Icon = XCircle;
+                      iconColor = "text-red-600 dark:text-red-400";
+                    } else if (isPositive) {
+                      typeColor = "border-emerald-200 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-emerald-950/40 dark:to-green-950/20 text-emerald-800 dark:text-emerald-300";
+                      Icon = CheckCircle2;
+                      iconColor = "text-emerald-600 dark:text-emerald-400";
+                    } else if (isSolution) {
+                      typeColor = "border-blue-200 dark:border-blue-900/40 bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-blue-950/40 dark:to-indigo-950/20 text-blue-800 dark:text-blue-300";
+                      Icon = Lightbulb;
+                      iconColor = "text-blue-600 dark:text-blue-400";
+                    }
+
+                    const renderText = (text: string) => {
+                      const match = text.match(/^(CRITICAL|DANGER|Solution|WARNING|EXCELLENT|VIABLE):\s*(.*)/i);
+                      if (match) {
+                        return (
+                          <>
+                            <span className="font-bold uppercase tracking-wider text-[11px] px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/10 mr-2 shadow-sm border border-black/5 dark:border-white/10">{match[1]}</span>
+                            {match[2]}
+                          </>
+                        );
+                      }
+                      return text;
+                    };
+
+                    return (
+                      <div key={i} className={`p-4 rounded-xl border flex items-start gap-3 shadow-sm ${typeColor}`}>
+                        <div className="mt-0.5 shrink-0 bg-white/50 dark:bg-black/20 p-1.5 rounded-lg shadow-sm border border-black/5 dark:border-white/5">
+                          <Icon className={`h-4 w-4 ${iconColor}`} />
+                        </div>
+                        <div className="text-sm font-medium leading-relaxed pt-1.5 flex-1">
+                          {renderText(w)}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
 
               {/* Pricing */}
@@ -691,9 +744,17 @@ export default function ProductTracker() {
                         ₹{result.pricing.min_price.toLocaleString()} – ₹{result.pricing.max_price.toLocaleString()}
                       </p>
                     </div>
-                    <div className="bg-gradient-to-br from-green-50 dark:from-green-900/30 to-emerald-50 dark:to-emerald-900/20 p-4 rounded-lg border-2 border-green-200 dark:border-green-800">
+                    <div className={`p-4 rounded-lg border-2 ${
+                      result.pricing.profit_margin >= 20 ? 'bg-gradient-to-br from-green-50 dark:from-green-900/30 to-emerald-50 dark:to-emerald-900/20 border-green-200 dark:border-green-800' :
+                      result.pricing.profit_margin >= 0 ? 'bg-gradient-to-br from-amber-50 dark:from-amber-900/30 to-yellow-50 dark:to-yellow-900/20 border-amber-200 dark:border-amber-800' :
+                      'bg-gradient-to-br from-red-50 dark:from-red-900/30 to-rose-50 dark:to-rose-900/20 border-red-200 dark:border-red-800'
+                    }`}>
                       <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Profit Margin</p>
-                      <p className="text-3xl font-bold text-green-600 dark:text-green-400">{result.pricing.profit_margin.toFixed(1)}%</p>
+                      <p className={`text-3xl font-bold ${
+                        result.pricing.profit_margin >= 20 ? 'text-green-600 dark:text-green-400' :
+                        result.pricing.profit_margin >= 0 ? 'text-amber-600 dark:text-amber-400' :
+                        'text-red-600 dark:text-red-400'
+                      }`}>{result.pricing.profit_margin.toFixed(1)}%</p>
                     </div>
                   </div>
                 </CardContent>
@@ -790,7 +851,7 @@ export default function ProductTracker() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">{result.ai_strategy}</p>
+                  <p className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">{result.ai_strategy.replace(/\x1B\[[0-9;]*[a-zA-Z]/g, '')}</p>
                 </CardContent>
               </Card>
 
@@ -807,20 +868,25 @@ export default function ProductTracker() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       {result.market_gaps.map((gap, i) => (
-                        <div key={i} className={`p-4 rounded-xl border-2 ${getSeverityColor(gap.severity)}`}>
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-2">
-                              <span className="text-xl">{gap.icon}</span>
-                              <span className="font-semibold text-slate-800 dark:text-slate-100 text-sm">{gap.title}</span>
+                        <div key={i} className={`p-5 rounded-2xl border ${getSeverityColor(gap.severity)} relative overflow-hidden group hover:shadow-md transition-shadow`}>
+                          <div className="flex items-start justify-between mb-3 relative z-10">
+                            <div className="flex items-center gap-3">
+                              <div className={`p-2.5 rounded-xl bg-white/60 dark:bg-slate-950/40 shadow-sm border ${gap.severity === 'High' ? 'border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400' : gap.severity === 'Medium' ? 'border-amber-200 dark:border-amber-900/30 text-amber-600 dark:text-amber-400' : 'border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400'}`}>
+                                {getGapIcon(gap.icon)}
+                              </div>
+                              <span className="font-bold text-slate-800 dark:text-slate-100 text-base tracking-tight">{gap.title}</span>
                             </div>
                             <Badge className={getSeverityBadgeColor(gap.severity)}>{gap.severity}</Badge>
                           </div>
-                          <p className="text-sm text-slate-600 dark:text-slate-300 mb-3">{gap.description}</p>
-                          <div className="bg-background rounded-lg p-2 border border-slate-200 dark:border-slate-700">
-                            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">ACTION</p>
-                            <p className="text-xs text-slate-700 dark:text-slate-300">{gap.action}</p>
+                          <p className="text-sm text-slate-600 dark:text-slate-300 mb-4 leading-relaxed relative z-10">{gap.description}</p>
+                          <div className="bg-white/60 dark:bg-slate-900/60 rounded-xl p-4 border border-slate-200/50 dark:border-slate-700/50 relative z-10">
+                            <div className="flex items-center gap-1.5 mb-2">
+                              <Zap className="h-4 w-4 text-blue-500" />
+                              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Recommended Action</p>
+                            </div>
+                            <p className="text-sm font-medium text-slate-800 dark:text-slate-200">{gap.action}</p>
                           </div>
                         </div>
                       ))}
