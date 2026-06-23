@@ -12,6 +12,7 @@ export const users = pgTable("users", {
   businessName: text("business_name"),
   location: text("location"),
   subscriptionTier: text("subscription_tier").notNull().default("free"), // free, basic, premium
+  subscriptionExpiresAt: timestamp("subscription_expires_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
