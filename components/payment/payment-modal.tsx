@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import {
   X, CreditCard, Building2, CheckCircle2, AlertCircle,
   Loader2, Receipt, ChevronRight, Shield, User, Mail,
@@ -250,6 +251,12 @@ export default function PaymentModal({
     companyName: "", billingAddress: "", hasGst: false, gstNumber: "",
   });
   const [errs, setErrs] = useState<Partial<Record<keyof BillingForm, string>>>({});
+  const [promoCode, setPromoCode] = useState("");
+  const [promoDiscount, setPromoDiscount] = useState(0);
+  const [promoError, setPromoError] = useState("");
+  const [promoSuccess, setPromoSuccess] = useState("");
+  const [isValidatingPromo, setIsValidatingPromo] = useState(false);
+
   const [breakup, setBreakup] = useState<PriceBreakup>({
     basePrice: plan.price, gstRate: 18, gstAmount: 0, total: plan.price,
   });
@@ -258,15 +265,19 @@ export default function PaymentModal({
     if (isOpen) {
       setStep(0); setError(null); setDone(false); setInvoiceId(null); setErrs({});
       paymentHandledRef.current = false;
+      setPromoCode(""); setPromoDiscount(0); setPromoError(""); setPromoSuccess("");
       setForm((p) => ({ ...p, fullName: userName || p.fullName, email: userEmail || p.email }));
       setBreakup({ basePrice: plan.price, gstRate: 18, gstAmount: 0, total: plan.price });
     }
   }, [isOpen]);
 
   useEffect(() => {
-    const gst = form.hasGst ? Math.round((plan.price * 18) / 100) : 0;
-    setBreakup({ basePrice: plan.price, gstRate: 18, gstAmount: gst, total: plan.price + gst });
-  }, [plan.price, form.hasGst]);
+    const discountedPrice = promoDiscount 
+      ? Math.max(0, plan.price - Math.floor((plan.price * promoDiscount) / 100))
+      : plan.price;
+    const gst = form.hasGst ? Math.round((discountedPrice * 18) / 100) : 0;
+    setBreakup({ basePrice: discountedPrice, gstRate: 18, gstAmount: gst, total: discountedPrice + gst });
+  }, [plan.price, form.hasGst, promoDiscount]);
 
   const set = (k: keyof BillingForm, v: string | boolean) => {
     setForm((p) => ({ ...p, [k]: v }));
@@ -283,6 +294,24 @@ export default function PaymentModal({
     if (form.hasGst && form.gstNumber && !isValidGST(form.gstNumber)) e.gstNumber = "Invalid GSTIN format. Example: 29ABCDE1234F1Z5";
     setErrs(e);
     return Object.keys(e).length === 0;
+  };
+
+  const validatePromo = async () => {
+    if (!promoCode.trim()) return;
+    setIsValidatingPromo(true); setPromoError(""); setPromoSuccess("");
+    try {
+      const res = await fetch(`${API_BASE}/api/promo/validate?code=${promoCode}&user_id=${userId}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || "Invalid promo code.");
+      
+      setPromoDiscount(data.discount_percentage);
+      setPromoSuccess(`${data.discount_percentage}% discount applied!`);
+    } catch (err) {
+      setPromoError(err instanceof Error ? err.message : "Invalid promo code.");
+      setPromoDiscount(0);
+    } finally {
+      setIsValidatingPromo(false);
+    }
   };
 
   const verify = useCallback(async (r: RazorpayResponse, dbId: number) => {
@@ -336,6 +365,7 @@ export default function PaymentModal({
             gst_amount: breakup.gstAmount,
             base_amount: breakup.basePrice,
           },
+          promo_code: promoDiscount ? promoCode : null,
         }),
       });
 
@@ -397,8 +427,8 @@ export default function PaymentModal({
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+  const modalContent = (
+    <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4"
       style={{ backgroundColor: "rgba(15,23,42,0.65)", backdropFilter: "blur(6px)" }}>
 
       <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl flex flex-col"
@@ -570,6 +600,45 @@ export default function PaymentModal({
                     )}
                   </div>
 
+                  {/* PROMO CODE */}
+                  <div className="rounded-2xl border border-slate-200 p-4 bg-white">
+                    <Label className="text-xs font-bold text-slate-600 uppercase tracking-wider mb-2 block">
+                      Promo Code
+                    </Label>
+                    <div className="flex gap-2">
+                      <Input 
+                        value={promoCode} 
+                        onChange={(e) => {
+                          setPromoCode(e.target.value.toUpperCase());
+                          if (promoDiscount) { setPromoDiscount(0); setPromoSuccess(""); }
+                          setPromoError("");
+                        }}
+                        placeholder="e.g. INSYDZ-WELCOME" 
+                        className={`rounded-xl h-11 transition-colors flex-1
+                          ${promoSuccess ? "border-green-400 bg-green-50" : ""}
+                          ${promoError ? "border-rose-400 bg-rose-50" : ""}`}
+                      />
+                      <Button 
+                        onClick={validatePromo} 
+                        disabled={!promoCode.trim() || isValidatingPromo}
+                        variant="secondary"
+                        className="h-11 rounded-xl px-6 font-semibold"
+                      >
+                        {isValidatingPromo ? <Loader2 className="h-4 w-4 animate-spin" /> : "Apply"}
+                      </Button>
+                    </div>
+                    {promoError && (
+                      <p className="text-xs text-rose-500 flex items-center gap-1 mt-2">
+                        <AlertCircle className="h-3 w-3" />{promoError}
+                      </p>
+                    )}
+                    {promoSuccess && (
+                      <p className="text-xs text-green-600 flex items-center gap-1 mt-2 font-semibold">
+                        <CheckCircle2 className="h-3 w-3" />{promoSuccess}
+                      </p>
+                    )}
+                  </div>
+
                   <Button onClick={() => { if (validate()) setStep(1); }}
                     className="w-full h-12 rounded-xl font-bold text-sm
                                      bg-gradient-to-r from-sky-600 to-blue-700
@@ -671,4 +740,9 @@ export default function PaymentModal({
       </div>
     </div>
   );
+
+  // Use createPortal to mount the modal directly to document.body
+  // This escapes any parent stacking contexts (like transform/opacity)
+  if (typeof document === "undefined") return null;
+  return createPortal(modalContent, document.body);
 }

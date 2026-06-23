@@ -22,6 +22,7 @@ class PaymentOrder(Base):
 
     status              = Column(String(20),  default="created", nullable=False)
     invoice_number      = Column(String(50),  nullable=True)
+    promo_code_id       = Column(Integer, nullable=True)
 
     billing_full_name   = Column(String(200), nullable=True)
     billing_email       = Column(String(200), nullable=True)

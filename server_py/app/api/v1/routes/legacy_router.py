@@ -6455,14 +6455,15 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
             models.User.email == request.email
         ).first()
         
-        if not user:
+        # Check if previous OTP exists
+        existing_otp = get_otp(request.email)
+
+        if not user and not (existing_otp and existing_otp.get("purpose") == "signup"):
             raise HTTPException(
                 status_code=404,
                 detail="No account found with this email address"
             )
         
-        # Check if previous OTP exists
-        existing_otp = get_otp(request.email)
         if existing_otp:
             created_at = datetime.fromisoformat(existing_otp["created_at"])
             time_diff = (datetime.now() - created_at).total_seconds()
@@ -6485,6 +6486,9 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
             "verified": False,
             "purpose": existing_otp.get("purpose", "signup") if existing_otp else "signup"
         }
+        if existing_otp and "user_data" in existing_otp:
+            otp_data["user_data"] = existing_otp["user_data"]
+            
         store_otp(request.email, otp_data)
         
         # Send OTP via email
@@ -6638,7 +6642,7 @@ def signup_user(
         
         if existing_user:
             if not existing_user.is_verified:
-                # Queue OTP resend in background task
+                # Queue OTP resend in background task for legacy unverified DB users
                 otp = generate_otp()
                 store_otp(user_data.email, {
                     "otp": otp,
@@ -6660,38 +6664,33 @@ def signup_user(
                 detail="Email already registered. Please login instead."
             )
         
-        # Create new user
         hashed_password = get_password_hash(user_data.password)
         current_month = datetime.now().strftime("%Y-%m")
-        
-        new_user = models.User(
-            first_name=user_data.first_name,
-            last_name=user_data.last_name,
-            email=user_data.email,
-            password_hash=hashed_password,
-            business_name=user_data.business_name,
-            location=user_data.location,
-            business_interests=user_data.business_interests,
-            mobile_number=user_data.mobile_number,
-            subscription_tier='free',
-            ai_chat_used=0,
-            ai_chat_month=current_month,
-            is_verified=False,
-        )
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
         
         otp = generate_otp()
         print(f"OTP for {user_data.email}: {otp}")
         
-        # Store OTP in Redis synchronously (<1ms)
+        # Store OTP and user data in Redis synchronously (<1ms)
         store_otp(user_data.email, {
             "otp": otp,
             "created_at": datetime.now().isoformat(),
             "attempts": 0,
             "verified": False,
-            "purpose": "signup"
+            "purpose": "signup",
+            "user_data": {
+                "first_name": user_data.first_name,
+                "last_name": user_data.last_name,
+                "email": user_data.email,
+                "password_hash": hashed_password,
+                "business_name": user_data.business_name,
+                "location": user_data.location,
+                "business_interests": user_data.business_interests,
+                "mobile_number": user_data.mobile_number,
+                "subscription_tier": 'free',
+                "ai_chat_used": 0,
+                "ai_chat_month": current_month,
+                "is_verified": False
+            }
         })
         
         # Queue email sending in the background
@@ -6759,22 +6758,43 @@ def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Req
             models.User.email == request.email
         ).first()
         
-        if not user:
-            raise HTTPException(
-                status_code=404, 
-                detail="User not found. Please sign up again."
+        if user:
+            if user.is_verified:
+                raise HTTPException(
+                    status_code=400, 
+                    detail="Email already verified. Please login."
+                )
+            
+            # Legacy path: mark existing unverified user as verified
+            user.is_verified = True
+            db.commit()
+            db.refresh(user)
+        else:
+            # New path: create user from Redis stored data
+            stored_user_data = otp_data.get("user_data")
+            if not stored_user_data:
+                raise HTTPException(
+                    status_code=400,
+                    detail="User data expired or invalid. Please sign up again."
+                )
+            
+            user = models.User(
+                first_name=stored_user_data["first_name"],
+                last_name=stored_user_data["last_name"],
+                email=stored_user_data["email"],
+                password_hash=stored_user_data["password_hash"],
+                business_name=stored_user_data.get("business_name"),
+                location=stored_user_data.get("location"),
+                business_interests=stored_user_data.get("business_interests"),
+                mobile_number=stored_user_data.get("mobile_number"),
+                subscription_tier=stored_user_data.get("subscription_tier", "free"),
+                ai_chat_used=stored_user_data.get("ai_chat_used", 0),
+                ai_chat_month=stored_user_data.get("ai_chat_month"),
+                is_verified=True,
             )
-        
-        if user.is_verified:
-            raise HTTPException(
-                status_code=400, 
-                detail="Email already verified. Please login."
-            )
-        
-        # Mark as verified
-        user.is_verified = True
-        db.commit()
-        db.refresh(user)
+            db.add(user)
+            db.commit()
+            db.refresh(user)
         
         # Clear OTP from Redis
         delete_otp(request.email)
@@ -7076,10 +7096,41 @@ def get_admin_stats(
         "mobile_number": u.mobile_number,
 
         "created_at": str(u.created_at),
-        "updated_at": str(u.updated_at),
     }
     for u in users
 ]
+
+    # Fetch all promo codes
+    promo_records = db.query(models.PromoCode).all()
+    promo_codes_list = []
+    for p in promo_records:
+        redemptions_query = db.query(models.PromoCodeRedemption, models.User).join(
+            models.User, models.PromoCodeRedemption.user_id == models.User.id
+        ).filter(models.PromoCodeRedemption.promo_code_id == p.id).order_by(models.PromoCodeRedemption.redeemed_at.desc()).all()
+        
+        redemptions_data = []
+        for redemption, user in redemptions_query:
+            redemptions_data.append({
+                "user_id": user.id,
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "redeemed_at": str(redemption.redeemed_at)
+            })
+
+        promo_codes_list.append({
+            "id": p.id,
+            "code": p.code,
+            "discount_percentage": float(p.discount_percentage),
+            "max_uses_per_user": p.max_uses_per_user,
+            "marketing_channel": p.marketing_channel,
+            "is_active": p.is_active,
+            "valid_from": str(p.valid_from) if p.valid_from else None,
+            "expires_at": str(p.expires_at) if p.expires_at else None,
+            "created_at": str(p.created_at),
+            "total_redemptions": len(redemptions_data),
+            "redemptions": redemptions_data
+        })
 
     return {
         "stats": {
@@ -7093,7 +7144,8 @@ def get_admin_stats(
                 "premium": premium_users,
             }
         },
-        "users": user_list
+        "users": user_list,
+        "promo_codes": promo_codes_list
     }
 
 import asyncio

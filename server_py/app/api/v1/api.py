@@ -49,3 +49,5 @@ api_router.include_router(seller_ai_advisor_router)
 api_router.include_router(festive_router)
 api_router.include_router(watchlist_router)
 api_router.include_router(seller_festive_router)
+from app.api.v1.routes.promo_router import router as promo_router
+api_router.include_router(promo_router, prefix="/promo", tags=["Promo Codes"])

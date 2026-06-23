@@ -410,6 +410,7 @@ class PaymentOrder(Base):
     paid_at             = Column(DateTime, nullable=True)
     expires_at          = Column(DateTime, nullable=True)
     refunded_at         = Column(DateTime, nullable=True)
+    promo_code_id       = Column(Integer, ForeignKey("promo_codes.id", ondelete="SET NULL"), nullable=True)
 
     user = relationship("User", back_populates="payment_orders")
 
@@ -777,4 +778,53 @@ class UserBehaviorLog(Base):
     ip_address = Column(String(45), nullable=True)
     user_agent = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.utcnow(), index=True)
+
+
+class PromoCode(Base):
+    """
+    Master table for all promo codes.
+    """
+    __tablename__ = "promo_codes"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    code = Column(String(50), unique=True, index=True, nullable=False)
+    discount_percentage = Column(Numeric(5, 2), nullable=False, default=20.00) # strictly 20%
+    max_uses_per_user = Column(Integer, default=1, nullable=False) # 1 means one-time use per user
+    marketing_channel = Column(String(100), nullable=True) # e.g., 'YouTube', 'WhatsApp'
+    is_active = Column(Boolean, default=True, nullable=False)
+    valid_from = Column(DateTime(timezone=True), nullable=True) # Optional global start time
+    expires_at = Column(DateTime(timezone=True), nullable=True) # Optional global end time
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.utcnow())
+
+
+class PromoCodeSchedule(Base):
+    """
+    Allows scheduling active windows for codes (e.g. Festivals).
+    """
+    __tablename__ = "promo_code_schedules"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    promo_code_id = Column(Integer, ForeignKey("promo_codes.id", ondelete="CASCADE"), nullable=False, index=True)
+    event_name = Column(String(200), nullable=False) # e.g., 'Diwali 2024'
+    start_date = Column(DateTime(timezone=True), nullable=False)
+    end_date = Column(DateTime(timezone=True), nullable=False)
+
+    promo_code = relationship("PromoCode", backref="schedules")
+
+
+class PromoCodeRedemption(Base):
+    """
+    Ledger of who used what code, preventing multiple uses.
+    """
+    __tablename__ = "promo_code_redemptions"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    promo_code_id = Column(Integer, ForeignKey("promo_codes.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    source = Column(String(100), nullable=True) # 'manual' or from URL parameter
+    redeemed_at = Column(DateTime(timezone=True), default=lambda: datetime.utcnow())
+
+    __table_args__ = (
+        UniqueConstraint("promo_code_id", "user_id", name="uq_promo_redemption_user"),
+    )
 

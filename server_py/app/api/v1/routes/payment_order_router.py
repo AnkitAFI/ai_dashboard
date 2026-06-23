@@ -4,6 +4,9 @@ import io
 import json
 import os
 from datetime import datetime, timedelta
+
+def get_ist_now():
+    return datetime.utcnow() + timedelta(hours=5, minutes=30)
 from typing import Optional
 
 import razorpay
@@ -18,6 +21,7 @@ from app.db.session import get_db
 from app.api.deps import get_current_user
 from app.db.models.payment_order_model import PaymentOrder
 from app.db.models.user_model import User
+from app.models.legacy_models import PromoCode, PromoCodeSchedule, PromoCodeRedemption
 from app.schemas.payment_order_schema import BillingInfo, CreateOrderRequest, VerifyPaymentRequest
 
 # ─── Router ───────────────────────────────────────────────────────────────────
@@ -71,6 +75,7 @@ class CreateOrderRequest(BaseModel):
     plan_id: str
     amount:  int          # ignored — always recalculated server-side
     billing: BillingInfo
+    promo_code: Optional[str] = None
 
 class VerifyPaymentRequest(BaseModel):
     razorpay_payment_id: str
@@ -93,11 +98,11 @@ def _rank(plan_id: str) -> int:
 
 
 def _expiry(from_dt: Optional[datetime] = None) -> datetime:
-    return (from_dt or datetime.now()) + timedelta(days=SUBSCRIPTION_DAYS)
+    return (from_dt or get_ist_now()) + timedelta(days=SUBSCRIPTION_DAYS)
 
 
 def _invoice_number(order_id: int) -> str:
-    now = datetime.now()
+    now = get_ist_now()
     return f"INV-{now.year}{now.month:02d}-{order_id:05d}"
 
 
@@ -119,7 +124,7 @@ def _active_order(user_id: int, db: Session) -> Optional["PaymentOrder"]:
         .filter(
             PaymentOrder.user_id    == user_id,
             PaymentOrder.status     == "paid",
-            PaymentOrder.expires_at >  datetime.now(),
+            PaymentOrder.expires_at >  get_ist_now(),
         )
         .order_by(PaymentOrder.expires_at.desc())
         .first()
@@ -134,7 +139,7 @@ def _sync_user(user: "User", order: "PaymentOrder", db: Session) -> None:
     if order.paid_at:
         user.ki_cycle_start  = order.paid_at
         user.ki_searches_used = 0   # reset counter on new subscription
-    user.updated_at              = datetime.now()
+    user.updated_at              = get_ist_now()
     db.commit()
     db.refresh(user)
     print(f"✅ _sync_user: user {user.id} → {order.plan_id} until {order.expires_at:%Y-%m-%d}")
@@ -148,11 +153,11 @@ def _prorated_upgrade_price(current_order: "PaymentOrder", new_plan_id: str) -> 
     """
     new_price      = PLAN_PRICES.get(new_plan_id, 0)
     old_price      = PLAN_PRICES.get(current_order.plan_id or "", 0)
-    paid_at        = current_order.paid_at or current_order.created_at or datetime.now()
-    expires_at     = current_order.expires_at or datetime.now()
+    paid_at        = current_order.paid_at or current_order.created_at or get_ist_now()
+    expires_at     = current_order.expires_at or get_ist_now()
     total_days     = max(1, (expires_at - paid_at).days)
-    days_used      = max(0, (datetime.now() - paid_at).days)
-    days_remaining = max(0, (expires_at - datetime.now()).days)
+    days_used      = max(0, (get_ist_now() - paid_at).days)
+    days_remaining = max(0, (expires_at - get_ist_now()).days)
 
     if days_used < total_days / 2:
         charge      = new_price
@@ -245,7 +250,7 @@ def _email_payment_confirmed(
     </a>
   </td></tr>
   <tr><td style="background:#f8fafc;padding:20px 40px;text-align:center;border-top:1px solid #e2e8f0;">
-    <p style="margin:0;color:#94a3b8;font-size:12px;">&copy; {datetime.now().year} {APP_NAME}.</p>
+    <p style="margin:0;color:#94a3b8;font-size:12px;">&copy; {get_ist_now().year} {APP_NAME}.</p>
   </td></tr>
 </table></td></tr></table></body></html>""")
 
@@ -325,7 +330,7 @@ def _build_invoice_pdf(order: "PaymentOrder") -> bytes:
     plan_label = PLAN_LABELS.get(order.plan_id or "", (order.plan_id or "").capitalize())
     rows = [
         ["#", "Description", "Amount"],
-        ["1", f"{plan_label} Plan — Monthly\nPeriod: {datetime.now().strftime('%B %Y')}",
+        ["1", f"{plan_label} Plan — Monthly\nPeriod: {get_ist_now().strftime('%B %Y')}",
          f"₹{order.base_amount:,}"],
     ]
     if order.gst_amount:
@@ -439,7 +444,7 @@ def create_payment_order(
     if data.plan_id not in PLAN_PRICES:
         raise HTTPException(400, f"Unknown plan: {data.plan_id}")
 
-    now    = datetime.now()
+    now    = get_ist_now()
     active = _active_order(current_user.id, db)
 
     # Same plan already active — self-heal if needed
@@ -463,6 +468,29 @@ def create_payment_order(
     else:
         charge = PLAN_PRICES[data.plan_id]
 
+    promo_code_id = None
+    if data.promo_code:
+        promo = db.query(PromoCode).filter(PromoCode.code == data.promo_code).first()
+        if not promo or not promo.is_active:
+            raise HTTPException(400, "Invalid or inactive promo code.")
+        if promo.valid_from and promo.valid_from > now:
+            raise HTTPException(400, "Promo code not active yet.")
+        if promo.expires_at and promo.expires_at < now:
+            raise HTTPException(400, "Promo code has expired.")
+        schedules = db.query(PromoCodeSchedule).filter(PromoCodeSchedule.promo_code_id == promo.id).all()
+        if schedules and not any(s.start_date <= now <= s.end_date for s in schedules):
+            raise HTTPException(400, "Promo code is not valid during this period.")
+        redemptions = db.query(PromoCodeRedemption).filter(
+            PromoCodeRedemption.promo_code_id == promo.id,
+            PromoCodeRedemption.user_id == current_user.id
+        ).count()
+        if redemptions >= promo.max_uses_per_user:
+            raise HTTPException(400, "You have already used this promo code.")
+            
+        discount_amount = (charge * float(promo.discount_percentage)) / 100.0
+        charge = max(0, charge - int(discount_amount))
+        promo_code_id = promo.id
+
     gst_amount   = round((charge * GST_RATE) / 100) if data.billing.gst_number else 0
     total_inr    = charge + gst_amount
     amount_paise = total_inr * 100
@@ -472,6 +500,7 @@ def create_payment_order(
         db.query(PaymentOrder)
         .filter(PaymentOrder.user_id == current_user.id,
                 PaymentOrder.plan_id == data.plan_id,
+                PaymentOrder.amount  == total_inr,
                 PaymentOrder.status  == "created")
         .order_by(PaymentOrder.created_at.desc())
         .first()
@@ -515,6 +544,7 @@ def create_payment_order(
             billing_company   = data.billing.company_name,
             billing_address   = data.billing.billing_address,
             created_at        = now,
+            promo_code_id     = promo_code_id,
         )
         db.add(db_order)
         db.commit()
@@ -590,9 +620,18 @@ def verify_payment(
         order.status              = "paid"
         order.razorpay_payment_id = data.razorpay_payment_id
         order.razorpay_signature  = data.razorpay_signature
-        order.paid_at             = datetime.now()
+        order.paid_at             = get_ist_now()
         order.expires_at          = expiry
         order.invoice_number      = _invoice_number(order.id)
+        
+        if getattr(order, "promo_code_id", None):
+            redemption = PromoCodeRedemption(
+                promo_code_id=order.promo_code_id,
+                user_id=current_user.id,
+                source="checkout"
+            )
+            db.add(redemption)
+
         db.flush()
         _sync_user(current_user, order, db)
     except Exception as e:
@@ -711,9 +750,18 @@ async def razorpay_webhook(
         # Store webhook HMAC so razorpay_signature is never NULL
         # Prefixed with "webhook:" to distinguish from client signature
         order.razorpay_signature  = f"webhook:{x_razorpay_signature}"
-        order.paid_at             = datetime.now()
+        order.paid_at             = get_ist_now()
         order.expires_at          = expiry
         order.invoice_number      = _invoice_number(order.id)
+        
+        if getattr(order, "promo_code_id", None):
+            redemption = PromoCodeRedemption(
+                promo_code_id=order.promo_code_id,
+                user_id=order.user_id,
+                source="webhook"
+            )
+            db.add(redemption)
+            
         db.flush()
         user = db.query(User).filter(User.id == order.user_id).first()
         if user:
@@ -743,7 +791,7 @@ def subscription_status(
     if current_user.id != user_id:
         raise HTTPException(403, "Not authorised")
 
-    now    = datetime.now()
+    now    = get_ist_now()
     active = _active_order(user_id, db)
 
     # Self-heal: paid order exists but users table is stale

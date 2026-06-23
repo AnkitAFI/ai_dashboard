@@ -18,6 +18,7 @@ from sqlalchemy.orm import Session
 from .database_config import get_db
 from .dependencies import get_current_user
 from . import models
+from app.models.legacy_models import PromoCode, PromoCodeSchedule, PromoCodeRedemption
 
 # ─── Router ───────────────────────────────────────────────────────────────────
 router = APIRouter()
@@ -70,6 +71,7 @@ class CreateOrderRequest(BaseModel):
     plan_id: str
     amount:  int          # ignored — always recalculated server-side
     billing: BillingInfo
+    promo_code: Optional[str] = None
 
 class VerifyPaymentRequest(BaseModel):
     razorpay_payment_id: str
@@ -434,7 +436,7 @@ def create_payment_order(
     if data.plan_id not in PLAN_PRICES:
         raise HTTPException(400, f"Unknown plan: {data.plan_id}")
 
-    now    = datetime.now()
+    now    = datetime.utcnow() + timedelta(hours=5, minutes=30)
     active = _active_order(current_user.id, db)
 
     # Same plan already active — self-heal if needed
@@ -458,6 +460,29 @@ def create_payment_order(
     else:
         charge = PLAN_PRICES[data.plan_id]
 
+    promo_code_id = None
+    if data.promo_code:
+        promo = db.query(PromoCode).filter(PromoCode.code == data.promo_code).first()
+        if not promo or not promo.is_active:
+            raise HTTPException(400, "Invalid or inactive promo code.")
+        if promo.valid_from and promo.valid_from > now:
+            raise HTTPException(400, "Promo code not active yet.")
+        if promo.expires_at and promo.expires_at < now:
+            raise HTTPException(400, "Promo code has expired.")
+        schedules = db.query(PromoCodeSchedule).filter(PromoCodeSchedule.promo_code_id == promo.id).all()
+        if schedules and not any(s.start_date <= now <= s.end_date for s in schedules):
+            raise HTTPException(400, "Promo code is not valid during this period.")
+        redemptions = db.query(PromoCodeRedemption).filter(
+            PromoCodeRedemption.promo_code_id == promo.id,
+            PromoCodeRedemption.user_id == current_user.id
+        ).count()
+        if redemptions >= promo.max_uses_per_user:
+            raise HTTPException(400, "You have already used this promo code.")
+            
+        discount_amount = (charge * float(promo.discount_percentage)) / 100.0
+        charge = max(0, charge - int(discount_amount))
+        promo_code_id = promo.id
+
     gst_amount   = round((charge * GST_RATE) / 100) if data.billing.gst_number else 0
     total_inr    = charge + gst_amount
     amount_paise = total_inr * 100
@@ -467,6 +492,7 @@ def create_payment_order(
         db.query(models.PaymentOrder)
         .filter(models.PaymentOrder.user_id == current_user.id,
                 models.PaymentOrder.plan_id == data.plan_id,
+                models.PaymentOrder.amount  == total_inr,
                 models.PaymentOrder.status  == "created")
         .order_by(models.PaymentOrder.created_at.desc())
         .first()
@@ -510,6 +536,7 @@ def create_payment_order(
             billing_company   = data.billing.company_name,
             billing_address   = data.billing.billing_address,
             created_at        = now,
+            promo_code_id     = promo_code_id,
         )
         db.add(db_order)
         db.commit()
@@ -588,6 +615,15 @@ def verify_payment(
         order.paid_at             = datetime.now()
         order.expires_at          = expiry
         order.invoice_number      = _invoice_number(order.id)
+        
+        if getattr(order, "promo_code_id", None):
+            redemption = PromoCodeRedemption(
+                promo_code_id=order.promo_code_id,
+                user_id=current_user.id,
+                source="checkout"
+            )
+            db.add(redemption)
+            
         db.flush()
         _sync_user(current_user, order, db)
     except Exception as e:
@@ -709,6 +745,15 @@ async def razorpay_webhook(
         order.paid_at             = datetime.now()
         order.expires_at          = expiry
         order.invoice_number      = _invoice_number(order.id)
+        
+        if getattr(order, "promo_code_id", None):
+            redemption = PromoCodeRedemption(
+                promo_code_id=order.promo_code_id,
+                user_id=order.user_id,
+                source="webhook"
+            )
+            db.add(redemption)
+            
         db.flush()
         user = db.query(models.User).filter(models.User.id == order.user_id).first()
         if user:
