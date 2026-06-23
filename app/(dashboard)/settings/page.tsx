@@ -784,6 +784,18 @@ export default function Settings() {
                 : "Free Plan"}
             </Badge>
           </div>
+          {user.subscriptionTier !== "free" && user.subscriptionExpiresAt && (
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-muted-foreground">Plan Expires On</span>
+              <span className="text-sm font-medium">
+                {new Date(user.subscriptionExpiresAt).toLocaleDateString(undefined, {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </span>
+            </div>
+          )}
           {user.createdAt && (
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Member Since</span>

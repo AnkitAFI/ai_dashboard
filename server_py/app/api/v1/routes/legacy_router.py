@@ -8133,8 +8133,7 @@ def analyze_pricing(products: List[Dict], base_cost: float) -> Dict:
  
     mkt_min = float(np.percentile(clean, 10))
     mkt_max = float(np.percentile(clean, 90))
-    rec_raw = min(w_med, mkt_avg * 1.05)
-    rec     = round(max(rec_raw, base_cost * 1.20) if base_cost > 0 else rec_raw)
+    rec     = round(min(w_med, mkt_avg * 1.05))
     profit  = rec - base_cost if base_cost > 0 else rec
     margin  = (profit / rec * 100) if rec > 0 else 0.0
     n       = len(clean)
@@ -9004,7 +9003,6 @@ async def analyze_product_opportunity(
     fallback_reason = None
     fw = DEFAULT_FALLBACK_POLICY.fallback_warning(tier_used)
     if fw:
-        warnings.insert(0, fw)
         fallback_reason = fw
  
     if confidence.label == "Low":

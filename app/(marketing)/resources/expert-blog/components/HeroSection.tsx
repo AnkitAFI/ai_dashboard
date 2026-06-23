@@ -1,44 +1,47 @@
-"use client";
-
-import { useTheme } from "next-themes";
-
-interface Stat {
-  value: string;
-  description: string;
-}
+import { useRouter } from "next/navigation";
 
 interface HeroSectionProps {
-  badge: string;
-  title: string;
-  highlightedText?: string;
-  accentColor: string;
-  backgroundColor?: string;
-  author: string;
-  readTime: string;
+  resolvedTheme?: string;
+  badgeText: string;
+  title: React.ReactNode;
+  description: React.ReactNode;
+  authorName: string;
+  authorUrl: string;
   publishDate: string;
-  stats: Stat[];
+  readTime: string;
+  tags?: string[];
+  bgColor?: {
+    light: string;
+    dark: string;
+  };
+  highlightColor?: string;
 }
 
 export default function HeroSection({
-  badge,
+  resolvedTheme,
+  badgeText,
   title,
-  accentColor,
-  backgroundColor = "#F1F2FF",
-  author,
+  description,
+  authorName,
+  authorUrl,
   publishDate,
   readTime,
-  stats,
+  tags = [],
+  bgColor = {
+    light: "#F1F2FF",
+    dark: "#0f1120",
+  },
+  highlightColor = "#6366F1",
 }: HeroSectionProps) {
-  const { resolvedTheme } = useTheme();
+  const router = useRouter();
 
   return (
-    <section
+    <div
       style={{
-        background:
-          resolvedTheme === "dark"
-            ? "#0f1120"
-            : backgroundColor,
+        background: resolvedTheme === "dark" ? bgColor.dark : bgColor.light,
         padding: "48px 0",
+        borderBottom:
+          resolvedTheme === "dark" ? "1px solid #1f2937" : "1px solid #E2E8F0",
       }}
     >
       <div
@@ -47,76 +50,142 @@ export default function HeroSection({
           margin: "0 auto",
           padding: "0 16px",
         }}
+        className="w-full"
       >
-        <div
-          style={{
-            display: "inline-flex",
-            padding: "6px 16px",
-            borderRadius: 999,
-            background: `${accentColor}20`,
-            color: accentColor,
-            fontWeight: 800,
-            marginBottom: 20,
-          }}
-        >
-          ● {badge}
-        </div>
-
-        <h1
-          style={{
-            fontSize: "clamp(28px,4vw,48px)",
-            fontWeight: 900,
-            lineHeight: 1.1,
-          }}
-        >
-          {title}
-        </h1>
-
-        <div
-          style={{
-            display: "flex",
-            gap: 20,
-            flexWrap: "wrap",
-            marginTop: 20,
-          }}
-        >
-          <span>{author}</span>
-          <span>{publishDate}</span>
-          <span>{readTime}</span>
-        </div>
-
-        {/* Stats */}
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4"
-          style={{
-            marginTop: 40,
-            border: "1px solid #E5E7EB",
-            borderRadius: 12,
-          }}
-        >
-          {stats.map((stat, index) => (
-            <div
-              key={index}
+        <div className="w-full">
+          {/* Badge */}
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              background:
+                resolvedTheme === "dark"
+                  ? `${highlightColor}20`
+                  : `${highlightColor}15`,
+              color: highlightColor,
+              fontSize: 11,
+              fontWeight: 800,
+              letterSpacing: 0.5,
+              textTransform: "uppercase",
+              padding: "6px 16px",
+              borderRadius: 20,
+              marginBottom: 20,
+              fontFamily: "'Sora',sans-serif",
+            }}
+          >
+            <span
               style={{
-                padding: 20,
-                textAlign: "center",
+                marginRight: 8,
+                color: highlightColor,
               }}
             >
-              <div
+              ●
+            </span>
+            {badgeText}
+          </div>
+
+          {/* Title */}
+          <h1
+            style={{
+              fontFamily: "'Sora',sans-serif",
+              fontSize: "clamp(28px, 4.5vw, 48px)",
+              fontWeight: 900,
+              lineHeight: 1.1,
+              color: resolvedTheme === "dark" ? "white" : "#111827",
+              letterSpacing: "-1px",
+              marginBottom: 20,
+            }}
+          >
+            {title}
+          </h1>
+
+          {/* Description */}
+          <p
+            style={{
+              margin: 0,
+              fontSize: 18,
+              color: resolvedTheme === "dark" ? "#d1d5db" : "#4B5563",
+              lineHeight: 1.8,
+              fontFamily: "'Lora', serif",
+            }}
+          >
+            {description}
+          </p>
+
+          {/* Meta */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "4px 28px",
+              // marginBottom: 16,
+              marginTop: 16,
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                fontSize: "clamp(12px,2vw,14px)",
+                color: "#64748B",
+              }}
+            >
+              👤{" "}
+              <strong
+                className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer"
+                onClick={() => router.push(authorUrl)}
+              >
+                {authorName}
+              </strong>
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                fontSize: "clamp(12px,2vw,14px)",
+                color: "#64748B",
+              }}
+            >
+              🕐 {publishDate}
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                fontSize: "clamp(12px,2vw,14px)",
+                color: "#64748B",
+              }}
+            >
+              📖 <strong>{readTime}</strong>
+            </div>
+
+            {tags.map((tag, index) => (
+              <span
+                key={index}
                 style={{
-                  color: accentColor,
-                  fontSize: 30,
-                  fontWeight: 900,
+                  background:
+                    index % 2 === 0
+                      ? "rgba(244,80,10,.12)"
+                      : "rgba(10,191,164,.12)",
+                  color: index % 2 === 0 ? "#F4500A" : "#0ABFA4",
+                  fontSize: "clamp(11px,2vw,13px)",
+                  fontWeight: 700,
+                  padding: "3px 10px",
+                  borderRadius: 20,
                 }}
               >
-                {stat.value}
-              </div>
-
-              <div>{stat.description}</div>
-            </div>
-          ))}
+                {tag}
+              </span>
+            ))}
+          </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 }

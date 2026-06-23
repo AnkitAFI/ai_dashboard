@@ -86,6 +86,16 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
     {
+    id: "21",
+    title: "Find Competitor Keywords Amazon India",
+    excerpt: "Discover exactly which keywords your Amazon India competitors rank for and use that gap to outrank them in 2026. Reverse ASIN research made practical.",
+    category: "Seller Tools & Strategy",
+    readTime: "12 min read",
+    image: "/Blog2_find-competitor-keywords-amazon-india_BlogBanner.png",
+    route: "/resources/expert-blog/find-competitor-keywords-amazon-india",
+    popular: true
+    },
+    {
     id: "20",
     title: "Amazon Zero Referral Fee India",
     excerpt: "Learn how zero-fee on Amazon India can help sellers save up to ₹50,000/month, improve profitability, increase visibility, and maintain competitive pricing—and if it’s the right move for your brand.",
