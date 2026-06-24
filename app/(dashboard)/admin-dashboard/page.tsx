@@ -791,6 +791,26 @@ interface Stats {
   by_tier: { free: number; basic: number; premium: number };
 }
 
+interface PromoCode {
+  id: number;
+  code: string;
+  discount_percentage: number;
+  max_uses_per_user: number;
+  marketing_channel: string;
+  is_active: boolean;
+  valid_from: string | null;
+  expires_at: string | null;
+  created_at: string;
+  total_redemptions: number;
+  redemptions: {
+    user_id: number;
+    email: string;
+    first_name: string;
+    last_name: string;
+    redeemed_at: string;
+  }[];
+}
+
 interface UserRow {
   id: number;
   first_name: string;
@@ -843,17 +863,19 @@ export default function AdminDashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState<Stats | null>(null);
   const [users, setUsers] = useState<UserRow[]>([]);
+  const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterTier, setFilterTier] = useState("all");
   const [filterVerified, setFilterVerified] = useState("all");
   const [lastUpd, setLastUpd] = useState(new Date());
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [expandedPromoId, setExpandedPromoId] = useState<number | null>(null);
   const [sortField, setSortField] = useState<keyof UserRow>("created_at");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
   // Tab & User Behavior logs state
-  const [activeTab, setActiveTab] = useState<"overview" | "behavior">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "behavior" | "promo">("overview");
   const [behaviorLogs, setBehaviorLogs] = useState<BehaviorLog[]>([]);
   const [behaviorLimit, setBehaviorLimit] = useState<number>(100);
   const [behaviorSearch, setBehaviorSearch] = useState<string>("");
@@ -888,6 +910,7 @@ export default function AdminDashboard() {
       const data = await res.json();
       setStats(data.stats);
       setUsers(data.users);
+      setPromoCodes(data.promo_codes || []);
       setLastUpd(new Date());
     } catch { router.push("/dashboard"); }
     finally { setIsLoading(false); }
@@ -998,12 +1021,14 @@ export default function AdminDashboard() {
       <div className="flex-between mb-6 fade-in">
         <div>
           <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>
-            {activeTab === "overview" ? "Admin Overview" : "User Behavior Analytics"}
+            {activeTab === "overview" ? "Admin Overview" : activeTab === "behavior" ? "User Behavior Analytics" : "Promo Codes & Marketing"}
           </h1>
           <p style={{ margin: "4px 0 0", fontSize: 13, color: "#94a3b8" }}>
             {activeTab === "overview"
               ? "Full user database — all columns visible."
-              : "Detailed clickstreams, page views, and user journeys."}
+              : activeTab === "behavior"
+              ? "Detailed clickstreams, page views, and user journeys."
+              : "Track active promotional campaigns and redemptions."}
           </p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -1058,6 +1083,23 @@ export default function AdminDashboard() {
           }}
         >
           User Behavior & Journeys
+        </button>
+        <button
+          onClick={() => setActiveTab("promo")}
+          style={{
+            padding: "6px 16px",
+            borderRadius: 8,
+            fontSize: 12,
+            fontWeight: 600,
+            background: activeTab === "promo" ? "white" : "transparent",
+            color: activeTab === "promo" ? "#4f46e5" : "#64748b",
+            boxShadow: activeTab === "promo" ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+            border: "none",
+            cursor: "pointer",
+            transition: "all 0.2s"
+          }}
+        >
+          Promo Codes
         </button>
       </div>
 
@@ -1405,6 +1447,99 @@ export default function AdminDashboard() {
         </div>
       </div>
         </>
+      ) : activeTab === "promo" ? (
+        <div className="fade-in">
+          <div className="panel" style={{ padding: 0, overflow: "hidden" }}>
+            <div style={{ padding: "18px 24px", borderBottom: "1px solid #f1f5f9", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <div>
+                <p style={{ margin: "0 0 2px", fontSize: 15, fontWeight: 700, color: "#1e293b" }}>Promo Codes & Campaigns</p>
+                <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>{promoCodes.length} tracking codes found</p>
+              </div>
+            </div>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <thead>
+                  <tr style={{ background: "#f8fafc" }}>
+                    {["Code", "Channel", "Discount", "Valid From", "Expires At", "Redemptions", "Status"].map(h => (
+                      <th key={h} style={{ padding: "10px 18px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.1em", whiteSpace: "nowrap", borderBottom: "1px solid #f1f5f9" }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {promoCodes.length === 0 ? (
+                    <tr><td colSpan={7} style={{ padding: 52, textAlign: "center", color: "#94a3b8", fontSize: 14 }}>No promo codes found</td></tr>
+                  ) : promoCodes.map(p => {
+                    const isActive = p.is_active && (!p.expires_at || new Date(p.expires_at).getTime() > Date.now());
+                    const isOpen = expandedPromoId === p.id;
+                    return (
+                      <Fragment key={p.id}>
+                        <tr onClick={() => setExpandedPromoId(isOpen ? null : p.id)} className="tbl-row" style={{ cursor: "pointer", background: isOpen ? "#f8fafc" : "transparent" }}>
+                          <td style={{ padding: "12px 18px", fontSize: 13, fontWeight: 600, color: "#1e293b" }}>{p.code}</td>
+                          <td style={{ padding: "12px 18px", fontSize: 12, color: "#64748b" }}>{p.marketing_channel || "—"}</td>
+                          <td style={{ padding: "12px 18px", fontSize: 13, fontWeight: 600, color: "#10b981" }}>{p.discount_percentage}% OFF</td>
+                          <td style={{ padding: "12px 18px", fontSize: 12, color: "#94a3b8" }}>{p.valid_from ? new Date(p.valid_from).toLocaleString("en-IN", { timeZone: "UTC" }) : "—"}</td>
+                          <td style={{ padding: "12px 18px", fontSize: 12, color: "#94a3b8" }}>{p.expires_at ? new Date(p.expires_at).toLocaleString("en-IN", { timeZone: "UTC" }) : "—"}</td>
+                          <td style={{ padding: "12px 18px", fontSize: 13, fontWeight: 600, color: "#4f46e5" }}>{p.total_redemptions}</td>
+                          <td style={{ padding: "12px 18px" }}>
+                            <span style={{ fontSize: 11, fontWeight: 600, padding: "4px 8px", borderRadius: 6, background: isActive ? "#dcfce7" : "#fef2f2", color: isActive ? "#16a34a" : "#ef4444" }}>{isActive ? "Active" : "Expired"}</span>
+                          </td>
+                        </tr>
+                        {isOpen && (
+                          <tr key={`exp-promo-${p.id}`}>
+                            <td colSpan={7} style={{ padding: 0, background: "#f8fafc", borderTop: "1px solid #f1f5f9", borderBottom: "2px solid #e2e8f0" }}>
+                              <div style={{ padding: "18px 24px" }}>
+                                <p style={{ margin: "0 0 12px", fontSize: 13, fontWeight: 700, color: "#1e293b" }}>Redemption History</p>
+                                {p.redemptions && p.redemptions.length > 0 ? (
+                                  <table style={{ width: "100%", borderCollapse: "collapse", background: "white", borderRadius: 8, overflow: "hidden", border: "1px solid #e2e8f0" }}>
+                                    <thead>
+                                      <tr style={{ background: "#f1f5f9" }}>
+                                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>User</th>
+                                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Email</th>
+                                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Times Used</th>
+                                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "#64748b", textTransform: "uppercase" }}>Latest Redemption (IST)</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {Object.values(
+                                        p.redemptions.reduce((acc, r) => {
+                                          if (!acc[r.user_id]) acc[r.user_id] = { ...r, times_used: 1 };
+                                          else {
+                                            acc[r.user_id].times_used += 1;
+                                            if (new Date(r.redeemed_at) > new Date(acc[r.user_id].redeemed_at)) {
+                                              acc[r.user_id].redeemed_at = r.redeemed_at;
+                                            }
+                                          }
+                                          return acc;
+                                        }, {} as Record<number, typeof p.redemptions[0] & { times_used: number }>)
+                                      )
+                                      .sort((a, b) => new Date(b.redeemed_at).getTime() - new Date(a.redeemed_at).getTime())
+                                      .map((r, i) => (
+                                        <tr key={i} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                                          <td style={{ padding: "8px 12px", fontSize: 12, fontWeight: 500, color: "#1e293b" }}>{r.first_name || ""} {r.last_name || ""}</td>
+                                          <td style={{ padding: "8px 12px", fontSize: 12, color: "#64748b" }}>{r.email}</td>
+                                          <td style={{ padding: "8px 12px", fontSize: 12, fontWeight: 600, color: "#4f46e5" }}>{r.times_used} / {p.max_uses_per_user}</td>
+                                          <td style={{ padding: "8px 12px", fontSize: 12, color: "#94a3b8" }}>{new Date(r.redeemed_at).toLocaleString("en-IN", { timeZone: "UTC" })}</td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                ) : (
+                                  <div style={{ padding: "16px", background: "white", borderRadius: 8, border: "1px dashed #cbd5e1", textAlign: "center", color: "#94a3b8", fontSize: 12 }}>
+                                    No redemptions yet
+                                  </div>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </Fragment>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       ) : (
         /* â”€â”€ BEHAVIOR TAB â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
         (() => {

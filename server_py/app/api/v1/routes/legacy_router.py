@@ -5611,365 +5611,182 @@ def send_welcome_email(email: str, first_name: str) -> bool:
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to Insydz</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     * {{ margin: 0; padding: 0; box-sizing: border-box; }}
     body {{
       font-family: 'Inter', Arial, sans-serif;
-      background-color: #060d1c;
-      color: #ffffff;
+      background-color: #f4f7fb;
+      color: #333333;
       -webkit-font-smoothing: antialiased;
+      padding: 40px 20px;
     }}
     .email-wrapper {{
       max-width: 600px;
       margin: 0 auto;
-      background-color: #060d1c;
+      width: 100%;
     }}
-    /* ── Header ── */
-    .header {{
-      background: linear-gradient(160deg, #050c1a 0%, #091525 50%, #060e1c 100%);
-      padding: 40px 48px 32px;
+    .card {{
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
       text-align: center;
-      border-bottom: 1px solid rgba(170,240,255,0.08);
-      position: relative;
-      overflow: hidden;
     }}
-    .header-glow {{
-      position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
-      width: 320px; height: 200px;
-      background: radial-gradient(ellipse, rgba(170,240,255,0.12) 0%, transparent 70%);
-      pointer-events: none;
+    .logo-container {{
+      margin-bottom: 24px;
     }}
-    .logo-ring {{
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 64px; height: 64px; border-radius: 16px;
-      background: rgba(170,240,255,0.08); border: 1px solid rgba(170,240,255,0.2);
+    .logo-container img {{
+      height: auto;
+      max-width: 200px;
+    }}
+    .separator {{
+      width: 40px;
+      height: 3px;
+      background-color: #3b82f6;
+      margin: 0 auto 24px auto;
+      border-radius: 2px;
+    }}
+    .title {{
+      color: #1e3a8a;
+      font-size: 26px;
+      font-weight: 700;
       margin-bottom: 16px;
     }}
-    .logo-ring img {{ width: 36px; height: 36px; object-fit: contain; }}
-    .brand-name {{
-      font-size: 22px; font-weight: 800; color: #ffffff;
-      letter-spacing: -0.5px; margin-bottom: 4px;
+    .subtitle {{
+      color: #4b5563;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 32px;
     }}
-    .badge {{
-      display: inline-block; background: rgba(170,240,255,0.1);
-      border: 1px solid rgba(170,240,255,0.2); border-radius: 20px;
-      padding: 4px 12px; font-size: 11px; font-weight: 600; color: #AAF0FF;
-      letter-spacing: 1.5px; text-transform: uppercase; margin-top: 8px;
+    .features-list {{
+      text-align: left;
+      margin-bottom: 32px;
     }}
-    /* ── Hero ── */
-    .hero {{
-      background: linear-gradient(160deg, #091525 0%, #060d1c 100%);
-      padding: 48px 48px 40px; text-align: center;
-      border-bottom: 1px solid rgba(170,240,255,0.06);
+    .feature-item {{
+      padding: 16px 0;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
     }}
-    .confetti {{ font-size: 36px; margin-bottom: 16px; }}
-    .hero-title {{
-      font-size: 30px; font-weight: 800; color: #ffffff;
-      letter-spacing: -0.8px; line-height: 1.2; margin-bottom: 8px;
+    .feature-item:last-child {{
+      border-bottom: none;
     }}
-    .hero-title span {{ color: #AAF0FF; text-shadow: 0 0 30px rgba(170,240,255,0.4); }}
-    .hero-subtitle {{
-      font-size: 15px; color: rgba(255,255,255,0.45);
-      line-height: 1.6; max-width: 400px; margin: 0 auto 28px;
+    .check-icon {{
+      color: #2563eb;
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 2px;
     }}
-    /* ── CTA ── */
-    .cta-wrapper {{ text-align: center; margin: 28px 0 0; }}
+    .feature-text {{
+      font-size: 15px;
+      color: #374151;
+      line-height: 1.5;
+    }}
+    .feature-title {{
+      font-weight: 700;
+      color: #1e3a8a;
+    }}
+    .cta-container {{
+      margin-bottom: 24px;
+    }}
     .cta-btn {{
-      display: inline-block; padding: 14px 36px;
-      background: linear-gradient(135deg, #AAF0FF 0%, #60c8e0 100%);
-      color: #060d1c; font-weight: 700; font-size: 14px;
-      border-radius: 10px; text-decoration: none; letter-spacing: 0.3px;
-      box-shadow: 0 8px 24px rgba(170,240,255,0.25);
+      display: inline-block;
+      background-color: #2563eb;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
     }}
-    /* ── India Marketplaces ── */
-    .india-section {{
-      padding: 36px 48px;
-      background: linear-gradient(160deg, #07111f 0%, #060d1c 100%);
-      border-bottom: 1px solid rgba(170,240,255,0.06);
+    .helper-text {{
+      color: #9ca3af;
+      font-size: 13px;
     }}
-    .section-eyebrow {{
-      font-size: 11px; font-weight: 700; color: rgba(255,200,100,0.7);
-      letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px;
-    }}
-    .section-title {{
-      font-size: 17px; font-weight: 700; color: #ffffff;
-      margin-bottom: 18px; letter-spacing: -0.3px;
-    }}
-    .platform-row {{
-      display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;
-    }}
-    .platform-pill {{
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px; padding: 10px 16px;
-      font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8);
-    }}
-    .platform-dot-amazon {{ width: 8px; height: 8px; border-radius: 50%; background: #FF9900; flex-shrink: 0; }}
-    .platform-dot-flipkart {{ width: 8px; height: 8px; border-radius: 50%; background: #2874F0; flex-shrink: 0; }}
-    /* ── Festival Banner ── */
-    .festival-banner {{
-      background: linear-gradient(135deg, rgba(255,150,0,0.1) 0%, rgba(255,80,0,0.07) 100%);
-      border: 1px solid rgba(255,150,0,0.2);
-      border-radius: 12px; padding: 18px 20px; margin-top: 4px;
-    }}
-    .festival-banner-title {{
-      font-size: 14px; font-weight: 700; color: #FFB347; margin-bottom: 4px;
-    }}
-    .festival-banner-desc {{
-      font-size: 13px; color: rgba(255,255,255,0.45); line-height: 1.5;
-    }}
-    /* ── Features Grid ── */
-    .features {{
-      padding: 36px 48px; background-color: #060d1c;
-      border-bottom: 1px solid rgba(170,240,255,0.06);
-    }}
-    .features-title {{
-      font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.35);
-      letter-spacing: 1.5px; text-transform: uppercase;
-      margin-bottom: 22px; text-align: center;
-    }}
-    .feature-row {{
-      display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px;
-    }}
-    .feature-icon {{
-      width: 40px; height: 40px; border-radius: 10px;
-      background: rgba(170,240,255,0.07); border: 1px solid rgba(170,240,255,0.12);
-      font-size: 18px; flex-shrink: 0; text-align: center; line-height: 40px;
-    }}
-    .feature-text-title {{
-      font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.85); margin-bottom: 3px;
-    }}
-    .feature-text-desc {{ font-size: 13px; color: rgba(255,255,255,0.35); line-height: 1.5; }}
-    /* ── Quick Start ── */
-    .quickstart {{
-      padding: 32px 48px; background: #060d1c;
-      border-bottom: 1px solid rgba(170,240,255,0.06);
-    }}
-    .step-row {{
-      display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px;
-    }}
-    .step-num {{
-      width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
-      background: rgba(170,240,255,0.1); border: 1px solid rgba(170,240,255,0.2);
-      font-size: 12px; font-weight: 700; color: #AAF0FF;
-      text-align: center; line-height: 28px;
-    }}
-    .step-title {{ font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.8); margin-bottom: 2px; }}
-    .step-desc {{ font-size: 12px; color: rgba(255,255,255,0.35); line-height: 1.5; }}
-    /* ── GST Card ── */
-    .gst-card {{
-      margin: 0 48px 8px;
-      background: rgba(100,220,150,0.05); border: 1px solid rgba(100,220,150,0.15);
-      border-radius: 12px; padding: 16px 20px;
-      display: flex; align-items: flex-start; gap: 12px;
-    }}
-    .gst-icon {{ font-size: 22px; flex-shrink: 0; }}
-    .gst-title {{ font-size: 13px; font-weight: 700; color: rgba(100,220,150,0.9); margin-bottom: 3px; }}
-    .gst-desc {{ font-size: 12px; color: rgba(255,255,255,0.4); line-height: 1.5; }}
-    /* ── Account Card ── */
-    .account-card {{
-      margin: 20px 48px 8px;
-      background: rgba(170,240,255,0.04); border: 1px solid rgba(170,240,255,0.1);
-      border-radius: 12px; padding: 20px 24px;
-    }}
-    .account-label {{
-      font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.3);
-      letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 6px;
-    }}
-    .account-email {{ font-size: 14px; font-weight: 600; color: #AAF0FF; }}
-    .account-tier {{
-      display: inline-block; margin-top: 8px;
-      background: rgba(170,240,255,0.08); border: 1px solid rgba(170,240,255,0.15);
-      border-radius: 6px; padding: 3px 10px; font-size: 11px; font-weight: 600;
-      color: #AAF0FF; text-transform: uppercase; letter-spacing: 0.8px;
-    }}
-    /* ── Support Note ── */
-    .support-note {{
-      margin: 0 48px 24px;
-      background: rgba(170,240,255,0.03); border: 1px solid rgba(170,240,255,0.07);
-      border-radius: 10px; padding: 14px 18px;
-      font-size: 12px; color: rgba(255,255,255,0.35); line-height: 1.6;
-    }}
-    .support-note strong {{ color: rgba(170,240,255,0.6); }}
-    /* ── Footer ── */
     .footer {{
-      background: #040b18; padding: 28px 48px; text-align: center;
-      border-top: 1px solid rgba(170,240,255,0.06);
+      text-align: center;
+      margin-top: 24px;
+      color: #9ca3af;
+      font-size: 13px;
+      line-height: 1.6;
     }}
-    .footer-brand {{ font-size: 14px; font-weight: 700; color: rgba(255,255,255,0.5); margin-bottom: 8px; }}
-    .footer-text {{ font-size: 12px; color: rgba(255,255,255,0.22); line-height: 1.6; }}
-    .footer-link {{ color: rgba(170,240,255,0.5); text-decoration: none; }}
-    .divider {{ height: 1px; background: rgba(170,240,255,0.06); margin: 0 48px; }}
+    .footer a {{
+      color: #3b82f6;
+      text-decoration: none;
+    }}
+    .footer a:hover {{
+      text-decoration: underline;
+    }}
+
+    @media only screen and (max-width: 600px) {{
+      body {{
+        padding: 20px 10px;
+      }}
+      .card {{
+        padding: 30px 20px !important;
+      }}
+      .title {{
+        font-size: 22px !important;
+      }}
+      .subtitle {{
+        font-size: 14px !important;
+      }}
+      .feature-text {{
+        font-size: 14px !important;
+      }}
+      .cta-btn {{
+        width: 100%;
+        box-sizing: border-box;
+      }}
+    }}
   </style>
 </head>
 <body>
   <div class="email-wrapper">
-
-    <!-- Header -->
-    <div class="header">
-      <div class="header-glow"></div>
-      <div class="logo-ring">
-        <img src="https://insydz.com/logo.png" alt="Insydz" />
+    <div class="card">
+      <div class="logo-container">
+        <img src="https://insydz.com/logo.png" alt="Insydz Logo" />
       </div>
-      <div class="brand-name">Insydz</div>
-      <div class="badge">✦ Account Verified</div>
-    </div>
-
-    <!-- Hero -->
-    <div class="hero">
-      <div class="confetti">🎉</div>
-      <div class="hero-title">
-        Welcome aboard,<br /><span>{first_name}!</span>
-      </div>
-      <p class="hero-subtitle">
-        Your account is verified and ready. Start unlocking powerful AI-driven insights built specifically for Indian marketplace sellers.
+      <div class="separator"></div>
+      
+      <h1 class="title">Welcome to Insydz</h1>
+      <p class="subtitle">
+        Your account is now active. Insydz helps you make confident, data backed decisions for your Amazon business. Here is what you can start with today.
       </p>
-      <div class="cta-wrapper">
-        <a href="https://insydz.com/dashboard" class="cta-btn">
-          Go to Your Dashboard →
-        </a>
+
+      <div class="features-list">
+        <div class="feature-item">
+          <div class="check-icon">&#10003;</div>
+          <div class="feature-text"><span class="feature-title">Listing Audit:</span> identify gaps in your listings instantly</div>
+        </div>
+        <div class="feature-item">
+          <div class="check-icon">&#10003;</div>
+          <div class="feature-text"><span class="feature-title">Competitor Analysis:</span> understand exactly how rivals are positioned</div>
+        </div>
+        <div class="feature-item">
+          <div class="check-icon">&#10003;</div>
+          <div class="feature-text"><span class="feature-title">AI Price Optimizer:</span> set the right price to protect your margin</div>
+        </div>
+        <div class="feature-item">
+          <div class="check-icon">&#10003;</div>
+          <div class="feature-text"><span class="feature-title">WhatsApp Alerts:</span> receive important updates directly on WhatsApp</div>
+        </div>
       </div>
+
+      <div class="cta-container">
+        <a href="https://insydz.com/dashboard" class="cta-btn">Go to Dashboard</a>
+      </div>
+
+      <p class="helper-text">
+        Have a question? Simply reply to this email and our team will assist you.
+      </p>
     </div>
 
-    <div class="divider"></div>
-
-    <!-- India Marketplaces Section -->
-    <div class="india-section">
-      <div class="section-eyebrow">🇮🇳 Built for India</div>
-      <div class="section-title">Supports India's biggest marketplaces</div>
-      <div class="platform-row">
-        <div class="platform-pill">
-          <div class="platform-dot-amazon"></div>
-          Amazon.in
-        </div>
-        <div class="platform-pill">
-          <div class="platform-dot-flipkart"></div>
-          Flipkart
-        </div>
-      </div>
-
-      <!-- Festival Banner -->
-      <div class="festival-banner">
-        <div class="festival-banner-title">🪔 Festival Season Ready</div>
-        <div class="festival-banner-desc">
-          Prepare for <strong style="color:rgba(255,179,71,0.9)">Diwali, Big Billion Days &amp; Great Indian Festival</strong> with AI-powered demand forecasting, competitor analysis, and review sentiment — weeks before the rush hits.
-        </div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <!-- Features -->
-    <div class="features">
-      <div class="features-title">What's waiting for you</div>
-
-      <div class="feature-row">
-        <div class="feature-icon">📊</div>
-        <div>
-          <div class="feature-text-title">Real-time Dashboards</div>
-          <div class="feature-text-desc">Live analytics pulled from your Amazon.in &amp; Flipkart reviews — updated continuously.</div>
-        </div>
-      </div>
-
-      <div class="feature-row">
-        <div class="feature-icon">🤖</div>
-        <div>
-          <div class="feature-text-title">AI-Generated Insights</div>
-          <div class="feature-text-desc">Detect trends, sentiment shifts, and market patterns across Hindi &amp; regional language reviews.</div>
-        </div>
-      </div>
-
-      <div class="feature-row">
-        <div class="feature-icon">📍</div>
-        <div>
-          <div class="feature-text-title">City-Level Intelligence</div>
-          <div class="feature-text-desc">Understand what's selling in Mumbai vs Delhi vs Bangalore — region-specific, not one-size-fits-all.</div>
-        </div>
-      </div>
-
-      <div class="feature-row">
-        <div class="feature-icon">🔑</div>
-        <div>
-          <div class="feature-text-title">Keyword Rank Tracker</div>
-          <div class="feature-text-desc">Monitor your product rankings on Amazon.in and Flipkart and discover high-opportunity keywords.</div>
-        </div>
-      </div>
-
-      <div class="feature-row">
-        <div class="feature-icon">📈</div>
-        <div>
-          <div class="feature-text-title">Profitability Calculator</div>
-          <div class="feature-text-desc">Calculate net margins in ₹ after marketplace fees, shipping &amp; returns — know your true profit.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <!-- Quick Start Steps -->
-    <div class="quickstart">
-      <div class="features-title">Get started in 3 steps</div>
-
-      <div class="step-row">
-        <div class="step-num">1</div>
-        <div>
-          <div class="step-title">Connect your Seller ID</div>
-          <div class="step-desc">Go to your dashboard → Onboarding → enter your Amazon.in or Flipkart Seller ID to import your data automatically.</div>
-        </div>
-      </div>
-
-      <div class="step-row">
-        <div class="step-num">2</div>
-        <div>
-          <div class="step-title">Explore your Review Analytics</div>
-          <div class="step-desc">See what customers really think — broken down by product, category, star rating, and sentiment.</div>
-        </div>
-      </div>
-
-      <div class="step-row">
-        <div class="step-num">3</div>
-        <div>
-          <div class="step-title">Ask the AI Assistant</div>
-          <div class="step-desc">Type any question about your products in plain English — our AI will answer with data-backed insights.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <!-- GST Note -->
-    <div style="padding: 20px 0 0;">
-      <div class="gst-card">
-        <div class="gst-icon">🧾</div>
-        <div>
-          <div class="gst-title">GST-Friendly Analytics</div>
-          <div class="gst-desc">All pricing insights and profitability calculations are displayed in <strong style="color:rgba(100,220,150,0.7)">Indian Rupees (₹)</strong>, with marketplace fee structures aligned to Amazon.in &amp; Flipkart's current GST-inclusive commission slabs.</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Account Card -->
-    <div class="account-card">
-      <div class="account-label">Your account</div>
-      <div class="account-email">{email}</div>
-      <div class="account-tier">Free Plan · 🇮🇳 India</div>
-    </div>
-
-    <!-- Support Note -->
-    <div class="support-note">
-      💬 <strong>Need help?</strong> Our support team is available <strong>Mon–Sat, 10 AM – 7 PM IST</strong>. Just reply to this email or visit <a href="https://insydz.com" style="color:rgba(170,240,255,0.5);">insydz.com</a>.
-    </div>
-
-    <!-- Footer -->
     <div class="footer">
-      <div class="footer-brand">Insydz</div>
-      <p class="footer-text">
-        © 2026 Insydz. All rights reserved.<br />
-        <a href="https://insydz.com/privacy-policy" class="footer-link">Privacy Policy</a> &nbsp;·&nbsp;
-        <a href="https://insydz.com/terms-service" class="footer-link">Terms of Service</a>
-      </p>
+      &copy; 2026 Insydz &middot; Amazon seller analytics made for India<br>
+      <a href="https://insydz.com">insydz.com</a> &middot; <a href="{{{{unsubscribe}}}}">Unsubscribe</a>
     </div>
-
   </div>
 </body>
 </html>"""
@@ -5989,6 +5806,229 @@ def send_welcome_email(email: str, first_name: str) -> bool:
     except ApiException as e:
         print(f"❌ Brevo API error sending welcome email: {e}")
         return False
+
+
+# ============================================
+# Unverified Reminder Email
+# ============================================
+
+def send_unverified_reminder_email(email: str, verify_link: str) -> bool:
+    """Send a reminder email to users who signed up but didn't verify their email."""
+    try:
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+            sib_api_v3_sdk.ApiClient(configuration)
+        )
+
+        html_content = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>You are almost there</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+    body {{
+      font-family: 'Inter', Arial, sans-serif;
+      background-color: #f4f7fb;
+      color: #333333;
+      -webkit-font-smoothing: antialiased;
+      padding: 40px 20px;
+    }}
+    .email-wrapper {{
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+    }}
+    .card {{
+      background-color: #ffffff;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }}
+    .logo-container {{
+      margin-bottom: 24px;
+    }}
+    .logo-container img {{
+      height: auto;
+      max-width: 200px;
+    }}
+    .separator {{
+      width: 40px;
+      height: 3px;
+      background-color: #3b82f6;
+      margin: 0 auto 24px auto;
+      border-radius: 2px;
+    }}
+    .title {{
+      color: #1e3a8a;
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }}
+    .subtitle {{
+      color: #4b5563;
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+    }}
+    .list-header {{
+      font-size: 12px;
+      font-weight: 700;
+      color: #1e3a8a;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-align: left;
+      margin-bottom: 16px;
+    }}
+    .steps-list {{
+      text-align: left;
+      margin-bottom: 32px;
+    }}
+    .step-item {{
+      margin-bottom: 20px;
+    }}
+    .step-item:last-child {{
+      margin-bottom: 0;
+    }}
+    .step-circle {{
+      display: inline-block;
+      width: 28px;
+      height: 28px;
+      border-radius: 14px;
+      background-color: #2563eb;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 14px;
+      text-align: center;
+      line-height: 28px;
+      margin-right: 12px;
+      vertical-align: middle;
+    }}
+    .step-text {{
+      display: inline-block;
+      font-size: 15px;
+      color: #374151;
+      vertical-align: middle;
+    }}
+    .cta-container {{
+      margin-bottom: 24px;
+    }}
+    .cta-btn {{
+      display: inline-block;
+      background-color: #2563eb;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 16px;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+    }}
+    .helper-text {{
+      color: #9ca3af;
+      font-size: 13px;
+      line-height: 1.5;
+    }}
+    .footer {{
+      text-align: center;
+      margin-top: 24px;
+      color: #9ca3af;
+      font-size: 13px;
+      line-height: 1.6;
+    }}
+    .footer a {{
+      color: #3b82f6;
+      text-decoration: none;
+    }}
+    .footer a:hover {{
+      text-decoration: underline;
+    }}
+
+    @media only screen and (max-width: 600px) {{
+      body {{
+        padding: 20px 10px;
+      }}
+      .card {{
+        padding: 30px 20px !important;
+      }}
+      .title {{
+        font-size: 22px !important;
+      }}
+      .subtitle {{
+        font-size: 14px !important;
+      }}
+      .step-text {{
+        font-size: 14px !important;
+      }}
+      .cta-btn {{
+        width: 100%;
+        box-sizing: border-box;
+      }}
+    }}
+  </style>
+</head>
+<body>
+  <div class="email-wrapper">
+    <div class="card">
+      <div class="logo-container">
+        <img src="https://insydz.com/logo.png" alt="Insydz Logo" />
+      </div>
+      <div class="separator"></div>
+      
+      <h1 class="title">You are almost there</h1>
+      <p class="subtitle">
+        We noticed that your Insydz sign up was not completed. Your details are saved, so you can pick up right where you left off. It takes less than a minute to finish.
+      </p>
+
+      <div class="list-header">WHAT IS LEFT TO DO</div>
+      <div class="steps-list">
+        <div class="step-item">
+          <div class="step-circle">1</div>
+          <div class="step-text">Verify your email address</div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">2</div>
+          <div class="step-text">Connect your store to begin tracking</div>
+        </div>
+        <div class="step-item">
+          <div class="step-circle">3</div>
+          <div class="step-text">Open your dashboard and explore your insights</div>
+        </div>
+      </div>
+
+      <div class="cta-container">
+        <a href="{verify_link}" class="cta-btn">Complete Sign Up</a>
+      </div>
+
+      <p class="helper-text">
+        This link will remain active for 7 days. If you did not start a sign up, you can safely ignore this email.
+      </p>
+    </div>
+
+    <div class="footer">
+      &copy; 2026 Insydz &middot; Amazon seller analytics made for India<br>
+      <a href="https://insydz.com">insydz.com</a> &middot; <a href="{{{{unsubscribe}}}}">Unsubscribe</a>
+    </div>
+  </div>
+</body>
+</html>"""
+
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=[{"email": email}],
+            sender={"email": BREVO_SENDER_EMAIL, "name": BREVO_SENDER_NAME},
+            subject="Complete your Insydz sign up",
+            html_content=html_content
+        )
+
+        api_instance.send_transac_email(send_smtp_email)
+        print(f"✅ Unverified reminder email sent to {email}")
+        return True
+
+    except Exception as e:
+        print(f"❌ Error sending unverified reminder email: {str(e)}")
+        return False
+
     except Exception as e:
         print(f"❌ Error sending welcome email: {str(e)}")
         return False
@@ -6044,6 +6084,33 @@ def update_otp(email: str, otp_data: dict):
             r.setex(key, OTP_EXPIRY_MINUTES * 60, json.dumps(otp_data))
     except Exception as e:
         print(f"❌ Redis update OTP error: {e}")
+
+
+ABANDONED_SIGNUP_PREFIX = "abandoned_signup:"
+
+def store_abandoned_signup(email: str, data: dict):
+    try:
+        key = f"{ABANDONED_SIGNUP_PREFIX}{email}"
+        r.setex(key, 7 * 24 * 60 * 60, json.dumps(data))
+    except Exception as e:
+        print(f"❌ Redis store abandoned signup error: {e}")
+
+def get_abandoned_signup(email: str) -> dict:
+    try:
+        key = f"{ABANDONED_SIGNUP_PREFIX}{email}"
+        data = r.get(key)
+        return json.loads(data) if data else None
+    except Exception as e:
+        print(f"❌ Redis get abandoned signup error: {e}")
+        return None
+
+def delete_abandoned_signup(email: str):
+    try:
+        key = f"{ABANDONED_SIGNUP_PREFIX}{email}"
+        r.delete(key)
+    except Exception as e:
+        print(f"❌ Redis delete abandoned signup error: {e}")
+
 
 # ============================================
 # Session Management with Redis
@@ -6419,6 +6486,7 @@ def reset_password_with_otp(request: ResetPasswordRequest, db: Session = Depends
         
         # Clear OTP from Redis
         delete_otp(request.email)
+        delete_abandoned_signup(request.email)
         
         # Invalidate all existing sessions for this user (force re-login)
         delete_all_user_sessions(user.id)
@@ -6455,14 +6523,15 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
             models.User.email == request.email
         ).first()
         
-        if not user:
+        # Check if previous OTP exists
+        existing_otp = get_otp(request.email)
+
+        if not user and not (existing_otp and existing_otp.get("purpose") == "signup"):
             raise HTTPException(
                 status_code=404,
                 detail="No account found with this email address"
             )
         
-        # Check if previous OTP exists
-        existing_otp = get_otp(request.email)
         if existing_otp:
             created_at = datetime.fromisoformat(existing_otp["created_at"])
             time_diff = (datetime.now() - created_at).total_seconds()
@@ -6485,6 +6554,9 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
             "verified": False,
             "purpose": existing_otp.get("purpose", "signup") if existing_otp else "signup"
         }
+        if existing_otp and "user_data" in existing_otp:
+            otp_data["user_data"] = existing_otp["user_data"]
+            
         store_otp(request.email, otp_data)
         
         # Send OTP via email
@@ -6638,7 +6710,7 @@ def signup_user(
         
         if existing_user:
             if not existing_user.is_verified:
-                # Queue OTP resend in background task
+                # Queue OTP resend in background task for legacy unverified DB users
                 otp = generate_otp()
                 store_otp(user_data.email, {
                     "otp": otp,
@@ -6660,38 +6732,41 @@ def signup_user(
                 detail="Email already registered. Please login instead."
             )
         
-        # Create new user
         hashed_password = get_password_hash(user_data.password)
         current_month = datetime.now().strftime("%Y-%m")
-        
-        new_user = models.User(
-            first_name=user_data.first_name,
-            last_name=user_data.last_name,
-            email=user_data.email,
-            password_hash=hashed_password,
-            business_name=user_data.business_name,
-            location=user_data.location,
-            business_interests=user_data.business_interests,
-            mobile_number=user_data.mobile_number,
-            subscription_tier='free',
-            ai_chat_used=0,
-            ai_chat_month=current_month,
-            is_verified=False,
-        )
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
         
         otp = generate_otp()
         print(f"OTP for {user_data.email}: {otp}")
         
-        # Store OTP in Redis synchronously (<1ms)
+        # Store OTP and user data in Redis synchronously (<1ms)
+        user_data_dict = {
+            "first_name": user_data.first_name,
+            "last_name": user_data.last_name,
+            "email": user_data.email,
+            "password_hash": hashed_password,
+            "business_name": user_data.business_name,
+            "location": user_data.location,
+            "business_interests": user_data.business_interests,
+            "mobile_number": user_data.mobile_number,
+            "subscription_tier": 'free',
+            "ai_chat_used": 0,
+            "ai_chat_month": current_month,
+            "is_verified": False
+        }
+        
+        store_abandoned_signup(user_data.email, {
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "user_data": user_data_dict,
+            "reminders_sent": []
+        })
+        
         store_otp(user_data.email, {
             "otp": otp,
             "created_at": datetime.now().isoformat(),
             "attempts": 0,
             "verified": False,
-            "purpose": "signup"
+            "purpose": "signup",
+            "user_data": user_data_dict
         })
         
         # Queue email sending in the background
@@ -6759,25 +6834,47 @@ def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Req
             models.User.email == request.email
         ).first()
         
-        if not user:
-            raise HTTPException(
-                status_code=404, 
-                detail="User not found. Please sign up again."
+        if user:
+            if user.is_verified:
+                raise HTTPException(
+                    status_code=400, 
+                    detail="Email already verified. Please login."
+                )
+            
+            # Legacy path: mark existing unverified user as verified
+            user.is_verified = True
+            db.commit()
+            db.refresh(user)
+        else:
+            # New path: create user from Redis stored data
+            stored_user_data = otp_data.get("user_data")
+            if not stored_user_data:
+                raise HTTPException(
+                    status_code=400,
+                    detail="User data expired or invalid. Please sign up again."
+                )
+            
+            user = models.User(
+                first_name=stored_user_data["first_name"],
+                last_name=stored_user_data["last_name"],
+                email=stored_user_data["email"],
+                password_hash=stored_user_data["password_hash"],
+                business_name=stored_user_data.get("business_name"),
+                location=stored_user_data.get("location"),
+                business_interests=stored_user_data.get("business_interests"),
+                mobile_number=stored_user_data.get("mobile_number"),
+                subscription_tier=stored_user_data.get("subscription_tier", "free"),
+                ai_chat_used=stored_user_data.get("ai_chat_used", 0),
+                ai_chat_month=stored_user_data.get("ai_chat_month"),
+                is_verified=True,
             )
-        
-        if user.is_verified:
-            raise HTTPException(
-                status_code=400, 
-                detail="Email already verified. Please login."
-            )
-        
-        # Mark as verified
-        user.is_verified = True
-        db.commit()
-        db.refresh(user)
+            db.add(user)
+            db.commit()
+            db.refresh(user)
         
         # Clear OTP from Redis
         delete_otp(request.email)
+        delete_abandoned_signup(request.email)
 
         # Send welcome email (non-blocking — failure doesn't break verification)
         try:
@@ -7076,10 +7173,41 @@ def get_admin_stats(
         "mobile_number": u.mobile_number,
 
         "created_at": str(u.created_at),
-        "updated_at": str(u.updated_at),
     }
     for u in users
 ]
+
+    # Fetch all promo codes
+    promo_records = db.query(models.PromoCode).all()
+    promo_codes_list = []
+    for p in promo_records:
+        redemptions_query = db.query(models.PromoCodeRedemption, models.User).join(
+            models.User, models.PromoCodeRedemption.user_id == models.User.id
+        ).filter(models.PromoCodeRedemption.promo_code_id == p.id).order_by(models.PromoCodeRedemption.redeemed_at.desc()).all()
+        
+        redemptions_data = []
+        for redemption, user in redemptions_query:
+            redemptions_data.append({
+                "user_id": user.id,
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "redeemed_at": str(redemption.redeemed_at)
+            })
+
+        promo_codes_list.append({
+            "id": p.id,
+            "code": p.code,
+            "discount_percentage": float(p.discount_percentage),
+            "max_uses_per_user": p.max_uses_per_user,
+            "marketing_channel": p.marketing_channel,
+            "is_active": p.is_active,
+            "valid_from": str(p.valid_from) if p.valid_from else None,
+            "expires_at": str(p.expires_at) if p.expires_at else None,
+            "created_at": str(p.created_at),
+            "total_redemptions": len(redemptions_data),
+            "redemptions": redemptions_data
+        })
 
     return {
         "stats": {
@@ -7093,7 +7221,8 @@ def get_admin_stats(
                 "premium": premium_users,
             }
         },
-        "users": user_list
+        "users": user_list,
+        "promo_codes": promo_codes_list
     }
 
 import asyncio
@@ -13589,7 +13718,62 @@ def get_ai_insights(
 
 
 # # ─────────────────────────────────────────
-# # APSCHEDULER — background auto-rank updates
+# 
+def _background_abandoned_signup_reminders():
+    """Check for abandoned signups and send 6h, 24h, 72h reminders"""
+    try:
+        keys = r.keys(f"{ABANDONED_SIGNUP_PREFIX}*")
+        now = datetime.now(timezone.utc)
+        for key_bytes in keys:
+            key = key_bytes.decode('utf-8') if isinstance(key_bytes, bytes) else key_bytes
+            email = key.replace(ABANDONED_SIGNUP_PREFIX, "")
+            data_str = r.get(key)
+            if not data_str:
+                continue
+                
+            data = json.loads(data_str)
+            created_at_str = data.get("created_at")
+            if not created_at_str:
+                continue
+                
+            try:
+                created_at = datetime.fromisoformat(created_at_str)
+                if created_at.tzinfo is None:
+                    created_at = created_at.replace(tzinfo=timezone.utc)
+            except ValueError:
+                continue
+                
+            hours_passed = (now - created_at).total_seconds() / 3600.0
+            reminders_sent = data.get("reminders_sent", [])
+            
+            should_update = False
+            verify_link = f"https://insydz.com/signup?resume={email}"
+            
+            if hours_passed >= 72 and "72h" not in reminders_sent:
+                print(f"📧 Sending 72h abandoned signup reminder to {email}")
+                send_unverified_reminder_email(email, verify_link)
+                reminders_sent.append("72h")
+                should_update = True
+            elif hours_passed >= 24 and hours_passed < 72 and "24h" not in reminders_sent:
+                print(f"📧 Sending 24h abandoned signup reminder to {email}")
+                send_unverified_reminder_email(email, verify_link)
+                reminders_sent.append("24h")
+                should_update = True
+            elif hours_passed >= 6 and hours_passed < 24 and "6h" not in reminders_sent:
+                print(f"📧 Sending 6h abandoned signup reminder to {email}")
+                send_unverified_reminder_email(email, verify_link)
+                reminders_sent.append("6h")
+                should_update = True
+                
+            if should_update:
+                data["reminders_sent"] = reminders_sent
+                ttl = r.ttl(key)
+                if ttl > 0:
+                    r.setex(key, ttl, json.dumps(data))
+    except Exception as e:
+        print(f"❌ Error in _background_abandoned_signup_reminders: {e}")
+
+# APSCHEDULER — background auto-rank updates
 # # ─────────────────────────────────────────
 
 # def _background_rank_update_all():
@@ -13725,6 +13909,7 @@ def get_ai_insights(
 # scheduler = BackgroundScheduler(timezone="UTC")
 # scheduler.add_job(_background_rank_update_all,    CronTrigger(hour=6, minute=0),  id="daily_rank_update")
 # scheduler.add_job(_background_snapshot_competitors, CronTrigger(hour=7, minute=0), id="daily_snapshots")
+    scheduler.add_job(_background_abandoned_signup_reminders, CronTrigger(minute=0), id="abandoned_signup_reminders")
 # scheduler.start()
 
 
@@ -16451,6 +16636,61 @@ def generate_pdf_report(product: TrackedProductResponse, rank_history: list,
 
 
 # ─────────────────────────────────────────
+
+def _background_abandoned_signup_reminders():
+    """Check for abandoned signups and send 6h, 24h, 72h reminders"""
+    try:
+        keys = r.keys(f"{ABANDONED_SIGNUP_PREFIX}*")
+        now = datetime.now(timezone.utc)
+        for key_bytes in keys:
+            key = key_bytes.decode('utf-8') if isinstance(key_bytes, bytes) else key_bytes
+            email = key.replace(ABANDONED_SIGNUP_PREFIX, "")
+            data_str = r.get(key)
+            if not data_str:
+                continue
+                
+            data = json.loads(data_str)
+            created_at_str = data.get("created_at")
+            if not created_at_str:
+                continue
+                
+            try:
+                created_at = datetime.fromisoformat(created_at_str)
+                if created_at.tzinfo is None:
+                    created_at = created_at.replace(tzinfo=timezone.utc)
+            except ValueError:
+                continue
+                
+            hours_passed = (now - created_at).total_seconds() / 3600.0
+            reminders_sent = data.get("reminders_sent", [])
+            
+            should_update = False
+            verify_link = f"https://insydz.com/signup?resume={email}"
+            
+            if hours_passed >= 72 and "72h" not in reminders_sent:
+                print(f"📧 Sending 72h abandoned signup reminder to {email}")
+                send_unverified_reminder_email(email, verify_link)
+                reminders_sent.append("72h")
+                should_update = True
+            elif hours_passed >= 24 and hours_passed < 72 and "24h" not in reminders_sent:
+                print(f"📧 Sending 24h abandoned signup reminder to {email}")
+                send_unverified_reminder_email(email, verify_link)
+                reminders_sent.append("24h")
+                should_update = True
+            elif hours_passed >= 6 and hours_passed < 24 and "6h" not in reminders_sent:
+                print(f"📧 Sending 6h abandoned signup reminder to {email}")
+                send_unverified_reminder_email(email, verify_link)
+                reminders_sent.append("6h")
+                should_update = True
+                
+            if should_update:
+                data["reminders_sent"] = reminders_sent
+                ttl = r.ttl(key)
+                if ttl > 0:
+                    r.setex(key, ttl, json.dumps(data))
+    except Exception as e:
+        print(f"❌ Error in _background_abandoned_signup_reminders: {e}")
+
 # APSCHEDULER — background auto-rank updates
 # ─────────────────────────────────────────
 
@@ -16583,6 +16823,7 @@ def _background_snapshot_competitors():
 scheduler = BackgroundScheduler(timezone="UTC")
 scheduler.add_job(_background_rank_update_all,      CronTrigger(hour=6, minute=0), id="daily_rank_update")
 scheduler.add_job(_background_snapshot_competitors, CronTrigger(hour=7, minute=0), id="daily_snapshots")
+scheduler.add_job(_background_abandoned_signup_reminders, CronTrigger(minute=0), id="abandoned_signup_reminders")
 scheduler.start()
 
 
