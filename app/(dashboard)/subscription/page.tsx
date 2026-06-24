@@ -224,7 +224,7 @@ export default function Subscription() {
       return;
     }
     if (planId === "enterprise") {
-      alert("Please contact our sales team at sales@insydz.com for Enterprise plan.");
+      window.location.href = "mailto:support@insydz.com";
       return;
     }
 
@@ -500,7 +500,7 @@ export default function Subscription() {
                     <Button variant="outline"
                       className="w-full h-11 rounded-xl border-2 border-indigo-200
                                        text-indigo-700 hover:bg-indigo-50 font-bold text-sm"
-                      onClick={() => alert("Contact our sales team at sales@insydz.com")}>
+                      onClick={() => window.location.href = "mailto:support@insydz.com"}>
                       Contact Sales
                     </Button>
 
