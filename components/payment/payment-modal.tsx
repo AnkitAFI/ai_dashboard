@@ -613,7 +613,7 @@ export default function PaymentModal({
                           if (promoDiscount) { setPromoDiscount(0); setPromoSuccess(""); }
                           setPromoError("");
                         }}
-                        placeholder="e.g. INSYDZ-WELCOME" 
+                        placeholder="Enter promo code (optional)" 
                         className={`rounded-xl h-11 transition-colors flex-1
                           ${promoSuccess ? "border-green-400 bg-green-50" : ""}
                           ${promoError ? "border-rose-400 bg-rose-50" : ""}`}

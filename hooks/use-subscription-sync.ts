@@ -72,14 +72,15 @@ export function useSubscriptionSync() {
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to track AI usage: ${response.statusText}`);
+        console.warn(`Failed to track AI usage: ${response.statusText}`);
+        return null;
       }
 
       const data = await response.json();
       return data;
     } catch (error) {
-      console.error('❌ Failed to track AI usage:', error);
-      throw error;
+      console.warn('❌ Failed to track AI usage:', error);
+      return null;
     }
   };
 

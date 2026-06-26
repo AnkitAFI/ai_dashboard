@@ -2934,7 +2934,7 @@ def get_notifications(
                         "severity": "low",
                         "platform": "Amazon",
                         "message": f"🆕 New competitor product: {row.product_title[:50]}...",
-                        "time": f"Listed recently · ₹{row.product_price_numeric:.0f}",
+                        "time": f"Listed recently · ₹{row.product_price_numeric:.0f}" if row.product_price_numeric is not None else "Listed recently",
                         "details": {
                             "product_id": row.id,
                             "product_title": row.product_title,
@@ -5593,6 +5593,113 @@ def send_otp_email(email: str, otp: str) -> bool:
         print(f"⚠️ [DEV FALLBACK] Your OTP is: {otp}")
         return True
 
+def send_signup_otp_email(email: str, otp: str) -> bool:
+    """Send Signup OTP via Brevo email"""
+    try:
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+            sib_api_v3_sdk.ApiClient(configuration)
+        )
+        
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=[{"email": email}],
+            sender={"email": BREVO_SENDER_EMAIL, "name": BREVO_SENDER_NAME},
+            subject="Verify your email - Insydz",
+            html_content=f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ 
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                        color: white; 
+                        padding: 30px; 
+                        text-align: center; 
+                        border-radius: 10px 10px 0 0; 
+                    }}
+                    .content {{ 
+                        background: #f9f9f9; 
+                        padding: 30px; 
+                        border-radius: 0 0 10px 10px; 
+                    }}
+                    .otp-box {{ 
+                        background: white; 
+                        border: 2px dashed #667eea; 
+                        padding: 20px; 
+                        text-align: center; 
+                        font-size: 32px; 
+                        font-weight: bold; 
+                        letter-spacing: 8px; 
+                        margin: 20px 0; 
+                        border-radius: 8px; 
+                        color: #667eea;
+                    }}
+                    .warning {{ 
+                        background: #fff3cd; 
+                        border-left: 4px solid #ffc107; 
+                        padding: 15px; 
+                        margin: 20px 0; 
+                    }}
+                    .footer {{ 
+                        text-align: center; 
+                        margin-top: 20px; 
+                        color: #666; 
+                        font-size: 12px; 
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>✉️ Email Verification</h1>
+                    </div>
+                    <div class="content">
+                        <p>Hello,</p>
+                        <p>Welcome to Insydz! Please use the following One-Time Password (OTP) to verify your email address:</p>
+                        
+                        <div class="otp-box">
+                            {otp}
+                        </div>
+                        
+                        <div class="warning">
+                            <strong>⚠️ Security Notice:</strong>
+                            <ul style="margin: 10px 0;">
+                                <li>This OTP is valid for {OTP_EXPIRY_MINUTES} minutes only</li>
+                                <li>Never share this OTP with anyone</li>
+                                <li>Insydz will never ask for your OTP via phone or email</li>
+                            </ul>
+                        </div>
+                        
+                        <p>If you didn't create an account, please ignore this email.</p>
+                        
+                        <p>Best regards,<br>The Insydz Team</p>
+                    </div>
+                    <div class="footer">
+                        <p>© 2025 Insydz. All rights reserved.</p>
+                        <p>This is an automated email. Please do not reply.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        )
+        
+        api_response = api_instance.send_transac_email(send_smtp_email)
+        print(f"✅ Signup OTP email sent to {email}")
+        print(otp)
+        return True
+        
+    except ApiException as e:
+        print(f"❌ Brevo API error: {e}")
+        print(f"⚠️ [DEV FALLBACK] Your OTP is: {otp}")
+        # Allow signup to proceed if IP is unauthorized
+        return True
+    except Exception as e:
+        print(f"❌ Error sending email: {str(e)}")
+        print(f"⚠️ [DEV FALLBACK] Your OTP is: {otp}")
+        return True
+
 # ============================================
 # Welcome Email
 # ============================================
@@ -6560,7 +6667,10 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
         store_otp(request.email, otp_data)
         
         # Send OTP via email
-        email_sent = send_otp_email(request.email, otp)
+        if otp_data["purpose"] == "signup":
+            email_sent = send_signup_otp_email(request.email, otp)
+        else:
+            email_sent = send_otp_email(request.email, otp)
         
         if not email_sent:
             delete_otp(request.email)
@@ -6719,7 +6829,7 @@ def signup_user(
                     "verified": False,
                     "purpose": "signup"
                 })
-                background_tasks.add_task(send_otp_email, user_data.email, otp)
+                background_tasks.add_task(send_signup_otp_email, user_data.email, otp)
                 print(f"✅ Verification email queued for resend: {user_data.email}")
                 return {
                     "success": True,
@@ -6770,7 +6880,7 @@ def signup_user(
         })
         
         # Queue email sending in the background
-        background_tasks.add_task(send_otp_email, user_data.email, otp)
+        background_tasks.add_task(send_signup_otp_email, user_data.email, otp)
         
         print(f"✅ New user created and verification email queued in background: {user_data.email}")
         
@@ -7173,6 +7283,7 @@ def get_admin_stats(
         "mobile_number": u.mobile_number,
 
         "created_at": str(u.created_at),
+        "updated_at": str(u.updated_at) if u.updated_at else None,
     }
     for u in users
 ]

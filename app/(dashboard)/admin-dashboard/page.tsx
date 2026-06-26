@@ -1424,8 +1424,8 @@ export default function AdminDashboard() {
 
                               {/* Timestamps */}
                               <DetailCard title="Timestamps" icon={<RefreshCw size={14} />} color="#94a3b8">
-                                <DetailRow label="Joined" value={new Date(u.created_at).toLocaleString("en-IN")} />
-                                <DetailRow label="Updated" value={new Date(u.updated_at).toLocaleString("en-IN")} />
+                                <DetailRow label="Joined" value={u.created_at ? new Date(u.created_at).toLocaleString("en-IN") : "—"} />
+                                <DetailRow label="Updated" value={u.updated_at ? new Date(u.updated_at).toLocaleString("en-IN") : "—"} />
                               </DetailCard>
 
                             </div>
