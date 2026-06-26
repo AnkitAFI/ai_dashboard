@@ -4,15 +4,21 @@ from dotenv import load_dotenv
 import os
 
 # Load environment variables from .env
-load_dotenv()
+# Load environment variables from .env
+env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".env"))
+print(f"Loading .env from: {env_path}")
+load_dotenv(dotenv_path=env_path)
+print(f"HMAC loaded in main.py: {os.environ.get('HMAC_SECRET_KEY', 'NOT_FOUND')[:5]}...")
 
 from app.api.v1.api import api_router
 from app.api.v1.routes.legacy_router import router as legacy_router
 from app.db.session import engine
 from app.models import legacy_models as models
+from app.db_setup import run_startup_setup
 
-# Initialize Database (Legacy approach preserved)
-models.Base.metadata.create_all(bind=engine)
+# ── Database startup: creates all tables, the `users` VIEW, and both
+# ── INSTEAD OF triggers. Safe to run on every restart (idempotent).
+run_startup_setup()
 
 # Initialize FastAPI App
 app = FastAPI(title="AI Dashboard API", version="1.0.0")

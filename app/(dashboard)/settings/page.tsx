@@ -430,6 +430,11 @@ export default function Settings() {
   const [sessions, setSessions] = useState<any[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(true);
 
+  // --- DPDP Compliance State ---
+  const [consents, setConsents] = useState<any[]>([]);
+  const [consentsLoading, setConsentsLoading] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
+
   const handleDeleteAccount = async () => {
     if (deleteConfirmText !== "DELETE") return;
     if (!user?.id) return;
@@ -447,8 +452,8 @@ export default function Settings() {
       }
 
       toast({
-        title: "Account deleted",
-        description: "Your account and all associated data have been permanently deleted.",
+        title: "Account deactivated",
+        description: "Your account has been deactivated. Your personal data will be permanently deleted within 30 days per our retention policy.",
       });
 
       // Clear auth state and redirect
@@ -499,6 +504,96 @@ export default function Settings() {
     }
   };
 
+  const fetchConsents = async () => {
+    if (!user?.id) return;
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/users/me/consents`, {
+        credentials: "include",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setConsents(data);
+      }
+    } catch (error) {
+      console.error("Error fetching consents:", error);
+    } finally {
+      setConsentsLoading(false);
+    }
+  };
+
+  const handleToggleConsent = async (consentType: string, newStatus: boolean) => {
+    try {
+      // Optimistic UI update
+      setConsents(prev => 
+        prev.map(c => c.consent_type === consentType ? { ...c, status: newStatus } : c)
+      );
+      
+      const response = await fetch(`${API_BASE_URL}/api/v1/users/me/consents`, {
+        method: "PATCH",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          consents: [{ consent_type: consentType, status: newStatus }]
+        }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update consent");
+      
+      toast({
+        title: "Preferences Updated",
+        description: "Your privacy preferences have been saved.",
+      });
+    } catch (error) {
+      console.error("Error updating consent:", error);
+      toast({
+        title: "Update Failed",
+        description: "Could not save your preferences. Please try again.",
+        variant: "destructive",
+      });
+      fetchConsents(); // Revert on error
+    }
+  };
+
+  const handleDownloadData = async () => {
+    if (!user?.id) return;
+    setIsDownloading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/v1/data/export`, {
+        credentials: "include",
+      });
+      
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error("Export data failed on backend:", errText);
+        throw new Error(`Failed to export data: ${errText}`);
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `my_data_export_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({
+        title: "Export Successful",
+        description: "Your data has been downloaded securely.",
+      });
+    } catch (error) {
+      console.error("Error downloading data:", error);
+      toast({
+        title: "Export Failed",
+        description: "Could not export your data. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   const handleRevokeSession = async (token: string) => {
     if (!user?.id) return;
     try {
@@ -528,6 +623,7 @@ export default function Settings() {
   useEffect(() => {
     if (user?.id) {
       fetchSessions();
+      fetchConsents();
     }
   }, [user]);
 
@@ -875,6 +971,52 @@ export default function Settings() {
             )}
           </div>
 
+          {/* Privacy & Consents */}
+          <div className="border-t pt-4 mt-6">
+            <h4 className="text-sm font-semibold mb-3">Privacy & Consents</h4>
+            <p className="text-xs text-muted-foreground mb-4">
+              Manage your legal agreements and privacy preferences.
+            </p>
+            {consentsLoading ? (
+              <div className="flex items-center justify-center py-4">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-primary"></div>
+              </div>
+            ) : consents.length === 0 ? (
+              <p className="text-xs text-muted-foreground italic py-2">No consent records found.</p>
+            ) : (
+              <div className="space-y-4">
+                {consents.map((consent, idx) => (
+                  <div key={idx} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 border rounded-lg bg-card shadow-sm">
+                    <div>
+                      <Label className="capitalize">{consent.consent_type.replace(/_/g, ' ')}</Label>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        Recorded on: {consent.created_at ? new Date(consent.created_at).toLocaleDateString() : 'Unknown'}
+                      </p>
+                    </div>
+                    <Switch 
+                      checked={consent.status} 
+                      onCheckedChange={(checked) => handleToggleConsent(consent.consent_type, checked)}
+                      disabled={consent.consent_type === "terms_of_service" || consent.consent_type === "privacy_policy" || consent.consent_type === "data_processing"}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Data Portability */}
+          <div className="border-t pt-4 mt-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h4 className="text-sm font-semibold">Download My Data</h4>
+                <p className="text-xs text-muted-foreground mt-0.5">Export a copy of all your personal data in JSON format.</p>
+              </div>
+              <Button variant="outline" size="sm" onClick={handleDownloadData} disabled={isDownloading}>
+                {isDownloading ? "Downloading..." : "Export Data"}
+              </Button>
+            </div>
+          </div>
+
           {/* Clean and Simple Danger Zone Row */}
           <div className="border-t pt-4 mt-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -896,7 +1038,7 @@ export default function Settings() {
                     <AlertDialogTitle className="text-destructive">Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription className="space-y-3">
                       <span>
-                        This action cannot be undone. This will permanently delete your account, cancel all active subscriptions, and remove all your data from our servers.
+                        This will immediately deactivate your account and cancel all active subscriptions. Your personal data will be permanently and irreversibly deleted from our servers within 30 days, in accordance with our DPDP data retention policy.
                       </span>
                       <span className="block font-medium text-foreground mt-2">
                         Please type <span className="font-mono bg-muted px-1.5 py-0.5 rounded border border-destructive/20 text-destructive font-bold">DELETE</span> to confirm:

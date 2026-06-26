@@ -23,6 +23,7 @@ import pandas as pd
 from app.services.legacy_services import lstm_forecast
 from app.schemas import legacy_schemas as schemas
 from app.models import legacy_models as models
+from app.core.cryptography import HashedString
 from app.services import legacy_services as crud
 from datetime import datetime, timedelta
 import requests, traceback, logging
@@ -6429,7 +6430,7 @@ def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db
     try:
         # Check if user exists
         user = db.query(models.User).filter(
-            models.User.email == request.email
+            models.User.email_hash == HashedString().process_bind_param(request.email, None)
         ).first()
         
         if not user:
@@ -6578,7 +6579,7 @@ def reset_password_with_otp(request: ResetPasswordRequest, db: Session = Depends
         
         # Find user
         user = db.query(models.User).filter(
-            models.User.email == request.email
+            models.User.email_hash == HashedString().process_bind_param(request.email, None)
         ).first()
         
         if not user:
@@ -6627,7 +6628,7 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
     try:
         # Check if user exists
         user = db.query(models.User).filter(
-            models.User.email == request.email
+            models.User.email_hash == HashedString().process_bind_param(request.email, None)
         ).first()
         
         # Check if previous OTP exists
@@ -6706,7 +6707,7 @@ def login_user(login_data: UserLogin, response: Response, request: Request, db: 
         print(f"🔍 Login attempt for: {login_data.email}")
         
         user = db.query(models.User).filter(
-            models.User.email == login_data.email
+            models.User.email_hash == HashedString().process_bind_param(login_data.email, None)
         ).first()
        
         if not user:
@@ -6815,7 +6816,7 @@ def signup_user(
 ):
     try:
         existing_user = db.query(models.User).filter(
-            models.User.email == user_data.email
+            models.User.email_hash == HashedString().process_bind_param(user_data.email, None)
         ).first()
         
         if existing_user:
@@ -6918,7 +6919,7 @@ def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Req
             delete_otp(request.email)
             # Also delete the unverified user so they can sign up fresh
             unverified_user = db.query(models.User).filter(
-                models.User.email == request.email,
+                models.User.email_hash == HashedString().process_bind_param(request.email, None),
                 models.User.is_verified == False
             ).first()
             if unverified_user:
@@ -6941,7 +6942,7 @@ def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Req
         
         # Find user
         user = db.query(models.User).filter(
-            models.User.email == request.email
+            models.User.email_hash == HashedString().process_bind_param(request.email, None)
         ).first()
         
         if user:
@@ -7163,7 +7164,7 @@ def logout(response: Response, session_id: str = Cookie(None)):
 def check_email_exists(email: str, db: Session = Depends(get_db)):
     """Check if an email is already registered"""
     user = db.query(models.User).filter(
-        models.User.email == email
+        models.User.email_hash == HashedString().process_bind_param(email, None)
     ).first()
    
     return {
@@ -7190,7 +7191,7 @@ def get_user_profile(
         )
     
     user = db.query(models.User).filter(
-        models.User.email == email
+        models.User.email_hash == HashedString().process_bind_param(email, None)
     ).first()
    
     if not user:
@@ -9165,7 +9166,7 @@ async def analyze_product_opportunity(
     # ── Quota check ──────────────────────────────────────────────────────────
     user = None
     if request_body.user_email:
-        user = db.query(models.User).filter(models.User.email == request_body.user_email).first()
+        user = db.query(models.User).filter(models.User.email_hash == HashedString().process_bind_param(request_body.user_email, None)).first()
         if user:
             current_month = datetime.now().strftime("%Y-%m")
             if user.analysis_month != current_month:
@@ -10034,70 +10035,83 @@ def delete_user_account(
     response: Response = None,
     db: Session = Depends(get_db)
 ):
-    """Delete a user account and purge all associated data (requires authentication)"""
+    """
+    Delete a user account.
+
+    DPDP Retention Policy:
+    - Legacy tracking data (products, ranks, alerts) → deleted IMMEDIATELY.
+    - Core identity data (users_auth, profiles, consents) → SOFT-DELETED.
+      A nightly scheduler hard-purges soft-deleted records after 30 days.
+    """
     try:
-        # Check authorization
+        # Authorization check
         if current_user.id != user_id:
             raise HTTPException(
                 status_code=403,
                 detail="Not authorized to delete this account"
             )
-        
+
         user_email = current_user.email
-        
-        # 1. PaymentOrder (no cascade in db, delete manually)
-        db.query(models.PaymentOrder).filter(models.PaymentOrder.user_id == user_id).delete(synchronize_session=False)
-        
-        # 2. TrackedProduct (user_email relation)
+
+        # ── Immediate cleanup of all legacy tracking / analytics data ──────────
+
+        # TrackedProduct + children
         user_products = db.query(models.TrackedProduct).filter(models.TrackedProduct.user_email == user_email).all()
         for prod in user_products:
             db.query(models.KeywordRankHistory).filter(models.KeywordRankHistory.tracked_product_id == prod.id).delete(synchronize_session=False)
             db.query(models.PriceAlert).filter(models.PriceAlert.tracked_product_id == prod.id).delete(synchronize_session=False)
         db.query(models.TrackedProduct).filter(models.TrackedProduct.user_email == user_email).delete(synchronize_session=False)
-        
-        # 3. PriceAlert
+
+        # PriceAlert
         db.query(models.PriceAlert).filter(models.PriceAlert.user_email == user_email).delete(synchronize_session=False)
-        
-        # 4. CompetitorSnapshot
+
+        # CompetitorSnapshot
         db.query(models.CompetitorSnapshot).filter(models.CompetitorSnapshot.user_email == user_email).delete(synchronize_session=False)
-        
-        # 5. RankTrackedKeyword
+
+        # RankTracking
         db.query(models.RankTrackedKeyword).filter(models.RankTrackedKeyword.user_email == user_email).delete(synchronize_session=False)
-        
-        # 6. RankSnapshot
         db.query(models.RankSnapshot).filter(models.RankSnapshot.user_email == user_email).delete(synchronize_session=False)
-        
-        # 7. RankAlertLog
         db.query(models.RankAlertLog).filter(models.RankAlertLog.user_email == user_email).delete(synchronize_session=False)
-        
-        # 8. ProductTrackerAnalysis
+
+        # ProductTrackerAnalysis
         db.query(models.ProductTrackerAnalysis).filter(models.ProductTrackerAnalysis.user_email == user_email).delete(synchronize_session=False)
-        
-        # 9. Feedback
+
+        # Feedback
         db.query(models.Feedback).filter(models.Feedback.user_id == user_id).delete(synchronize_session=False)
-        
-        # 10. UserBehaviorLog
-        db.query(models.UserBehaviorLog).filter(models.UserBehaviorLog.user_id == user_id).delete(synchronize_session=False)
-        
-        # 11. WhiteSpaceWatchlist & WhiteSpaceScan & KwTracked
-        db.query(models.WhiteSpaceWatchlist).filter(models.WhiteSpaceWatchlist.user_id == user_id).delete(synchronize_session=False)
-        db.query(models.WhiteSpaceScan).filter(models.WhiteSpaceScan.user_id == user_id).delete(synchronize_session=False)
-        
+
+        # KwTracked + children
         user_kws = db.query(models.KwTracked).filter(models.KwTracked.user_id == user_id).all()
         for kw in user_kws:
             db.query(models.KwRankHistory).filter(models.KwRankHistory.kw_id == kw.id).delete(synchronize_session=False)
             db.query(models.KwCompetitor).filter(models.KwCompetitor.kw_id == kw.id).delete(synchronize_session=False)
             db.query(models.KwAlertSettings).filter(models.KwAlertSettings.kw_id == kw.id).delete(synchronize_session=False)
         db.query(models.KwTracked).filter(models.KwTracked.user_id == user_id).delete(synchronize_session=False)
-        
-        # Redis Session Cleanup
-        delete_all_user_sessions(user_id)
-        
-        # Delete user
-        db.query(models.User).filter(models.User.id == user_id).delete(synchronize_session=False)
+
+        # WhiteSpace
+        db.query(models.WhiteSpaceWatchlist).filter(models.WhiteSpaceWatchlist.user_id == user_id).delete(synchronize_session=False)
+        db.query(models.WhiteSpaceScan).filter(models.WhiteSpaceScan.user_id == user_id).delete(synchronize_session=False)
+
+        # ── Soft-delete core identity data (DPDP 30-day grace period) ─────────
+        from app.models.schema_v2 import UserAuth
+        from datetime import datetime, timezone
+
+        db.query(UserAuth).filter(UserAuth.id == user_id).update({
+            "is_active": False,
+            "deleted_at": datetime.now(timezone.utc),
+        }, synchronize_session=False)
+
+        # Record in deleted_users for compliance audit trail
+        from app.models.schema_v2 import DeletedUser
+        db.add(DeletedUser(
+            email_hash=current_user.email_hash,
+            deletion_reason="user_self_requested",
+        ))
+
         db.commit()
-        
-        # Delete cookie
+
+        # ── Clear all active sessions immediately ──────────────────────────────
+        delete_all_user_sessions(user_id)
+
         if response:
             response.delete_cookie(
                 key="session_id",
@@ -10105,12 +10119,21 @@ def delete_user_account(
                 secure=SESSION_COOKIE_SECURE,
                 samesite="lax",
             )
-            
-        return {"success": True, "message": "Account and all associated data deleted successfully."}
+
+        return {
+            "success": True,
+            "message": (
+                "Your account has been deactivated and your personal data is "
+                "scheduled for permanent deletion within 30 days, as required "
+                "by our data retention policy."
+            )
+        }
     except Exception as e:
         db.rollback()
         print(f"❌ Delete account error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error deleting account: {str(e)}")
+
+
 
 @router.get("/users/{user_id}/sessions")
 def get_user_sessions(
@@ -16935,7 +16958,67 @@ scheduler = BackgroundScheduler(timezone="UTC")
 scheduler.add_job(_background_rank_update_all,      CronTrigger(hour=6, minute=0), id="daily_rank_update")
 scheduler.add_job(_background_snapshot_competitors, CronTrigger(hour=7, minute=0), id="daily_snapshots")
 scheduler.add_job(_background_abandoned_signup_reminders, CronTrigger(minute=0), id="abandoned_signup_reminders")
+
+
+# ─────────────────────────────────────────
+# DPDP DATA RETENTION — nightly cleanup
+# ─────────────────────────────────────────
+
+def _background_data_retention():
+    """
+    DPDP Data Retention Policy — runs nightly at 02:00 UTC.
+
+    1. Hard-purge users_auth rows where deleted_at is older than 30 days.
+       (Cascades automatically to user_profiles, user_business_info,
+       user_subscriptions, user_app_state, user_consents via FK ON DELETE CASCADE.)
+
+    2. Anonymize audit_log entries older than 90 days — strip resource_id
+       to remove any user-identifiable reference while keeping the action
+       type and timestamp for compliance.
+    """
+    from datetime import datetime, timezone, timedelta
+    from sqlalchemy import text as _text
+
+    db = SessionLocal()
+    try:
+        cutoff_hard_delete = datetime.now(timezone.utc) - timedelta(days=30)
+        cutoff_anonymize   = datetime.now(timezone.utc) - timedelta(days=90)
+
+        # ── 1. Hard-purge soft-deleted users (30-day grace period expired) ────
+        result = db.execute(_text("""
+            DELETE FROM users_auth
+            WHERE deleted_at IS NOT NULL
+              AND deleted_at < :cutoff
+        """), {"cutoff": cutoff_hard_delete})
+        purged = result.rowcount
+        db.commit()
+
+        # ── 2. Anonymize old audit log entries (90 days) ──────────────────────
+        db.execute(_text("""
+            UPDATE audit_logs
+            SET resource_id = '[anonymized]'
+            WHERE created_at < :cutoff
+              AND resource_id IS NOT NULL
+              AND resource_id != '[anonymized]'
+        """), {"cutoff": cutoff_anonymize})
+        db.commit()
+
+        print(f"[retention] ✅ Hard-purged {purged} expired user(s). Audit logs anonymized.")
+    except Exception as e:
+        db.rollback()
+        print(f"[retention] ❌ Error during retention cleanup: {e}")
+    finally:
+        db.close()
+
+
+scheduler.add_job(
+    _background_data_retention,
+    CronTrigger(hour=2, minute=0),   # 02:00 UTC daily
+    id="dpdp_data_retention"
+)
+
 scheduler.start()
+
 
 
 # ═══════════════════════════════════════════════════════

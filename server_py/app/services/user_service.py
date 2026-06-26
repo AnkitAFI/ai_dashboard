@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from fastapi import HTTPException
 from app.core.security import get_password_hash
 from app.schemas.user_schema import UserCreate
+import hashlib
 from app.repositories.user_repository import UserRepository
 from app.services.inbound_service import SellerInboundService
 
@@ -14,7 +15,7 @@ class UserService:
     def format_business_interests(self, interests: list) -> list:
         return [i.strip().lower() for i in interests if i.strip()]
 
-    def register_user(self, db: Session, user: UserCreate):
+    def register_user(self, db: Session, user: UserCreate, request=None):
         existing_user = user_repo.get_by_email(db, user.email)
         if existing_user:
             raise HTTPException(status_code=400, detail="Email already registered")
@@ -22,7 +23,12 @@ class UserService:
         hashed = self.hash_password(user.password)
         interests = self.format_business_interests(user.business_interests)
         
-        return user_repo.create(db, user, hashed, interests)
+        ip_hash = "unknown"
+        if request and request.client:
+            ip = request.client.host
+            ip_hash = hashlib.sha256(ip.encode('utf-8')).hexdigest()
+        
+        return user_repo.create(db, user, hashed, interests, ip_hash=ip_hash)
 
     def update_onboarding(self, db: Session, user_id: int, onboarding_data: dict, background_tasks=None):
         user = user_repo.update_onboarding(db, user_id, onboarding_data)

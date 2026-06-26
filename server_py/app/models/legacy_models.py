@@ -2,7 +2,8 @@ from sqlalchemy import Column, String, Text, Integer, Float, Boolean, JSON, TIME
 from app.db.session import Base
 from sqlalchemy.sql import func
 from datetime import datetime
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
+from app.core.cryptography import EncryptedString, HashedString
 
 
 class AmazonReview(Base):
@@ -180,16 +181,24 @@ class User(Base):
     __tablename__ = "users"
    
     id = Column(Integer, primary_key=True, index=True)
-    first_name = Column(String(100), nullable=False)
-    last_name = Column(String(100), nullable=False)
-    email = Column(String(255), unique=True, nullable=False, index=True)
+    first_name = Column(EncryptedString(), nullable=False)
+    last_name = Column(EncryptedString(), nullable=False)
+    email = Column(EncryptedString(), unique=True, nullable=False, index=True)
+    email_hash = Column(String(255), unique=True, index=True)
+   
+    @validates('email')
+    def validate_email(self, key, address):
+        if address:
+            hash_type = HashedString()
+            self.email_hash = hash_type.process_bind_param(address, None)
+        return address
    
     # IMPORTANT: password_hash must be at least VARCHAR(255) for bcrypt
     # Bcrypt hashes are 60 characters long but we use 255 for safety
     password_hash = Column(String(255), nullable=False)
    
     business_name = Column(String(255), nullable=True)
-    location = Column(String(100), nullable=True)
+    location = Column(EncryptedString(), nullable=True)
     business_interests = Column(ARRAY(String), nullable=True, default=[])
    
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -218,7 +227,7 @@ class User(Base):
     ki_cycle_start = Column(DateTime, nullable=True)  # set to paid_at when user subscribes
 
     subscription_expires_at = Column(DateTime, nullable=True)
-    payment_orders = relationship("PaymentOrder", back_populates="user")
+    payment_orders = relationship("app.models.legacy_models.PaymentOrder", back_populates="user")
     scheduled_downgrade_to = Column(String(50), nullable=True)
 
     # Onboarding fields
@@ -227,9 +236,9 @@ class User(Base):
     onboarding_goal = Column(String(100), nullable=True)
     onboarding_marketplace = Column(String(100), nullable=True)
     onboarding_details = Column(String(500), nullable=True)
-    seller_id = Column(String(100), nullable=True)
+    seller_id = Column(EncryptedString(), nullable=True)
     seller_sync_status = Column(String(20), default='IDLE') # IDLE, SYNCING, COMPLETED, FAILED
-    mobile_number = Column(String, nullable=False)
+    mobile_number = Column(EncryptedString(), nullable=False)
 
     # Onboarding Guide fields
     explorer_tour_completed = Column(Boolean, default=False, nullable=False)
@@ -381,6 +390,7 @@ class KeywordRankHistory(Base):
 
 class PaymentOrder(Base):
     __tablename__ = "payment_orders"
+    __table_args__ = {'extend_existing': True}
 
     id                  = Column(Integer, primary_key=True, index=True, autoincrement=True)
     user_id             = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
@@ -767,6 +777,7 @@ class RankAlertLog(Base):
 
 class UserBehaviorLog(Base):
     __tablename__ = "user_behavior_logs"
+    __table_args__ = {'extend_existing': True}
 
     id         = Column(Integer, primary_key=True, autoincrement=True)
     user_id    = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
@@ -785,6 +796,7 @@ class PromoCode(Base):
     Master table for all promo codes.
     """
     __tablename__ = "promo_codes"
+    __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(String(50), unique=True, index=True, nullable=False)
@@ -809,7 +821,7 @@ class PromoCodeSchedule(Base):
     start_date = Column(DateTime(timezone=True), nullable=False)
     end_date = Column(DateTime(timezone=True), nullable=False)
 
-    promo_code = relationship("PromoCode", backref="schedules")
+    promo_code = relationship("app.models.legacy_models.PromoCode", backref="schedules")
 
 
 class PromoCodeRedemption(Base):
