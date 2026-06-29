@@ -82,6 +82,17 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "23",
+    title: "Negative Reviews Impact Amazon India Sales",
+    excerpt:
+      "Negative Amazon reviews are killing your sales—and you’re probably responding the wrong way. Learn how to convert 1-star complaints into more revenue.",
+    category: "Review Intelligence",
+    readTime: "11 min read",
+    image: "/Negative Reviews Blog_Banner.png",
+    route: "/resources/expert-blog/negative-reviews-amazon-india",
+    popular: true,
+  },
+  {
     id: "22",
     title: "Amazon Listing Not Ranking in India? Fix It in 2026",
     excerpt:
