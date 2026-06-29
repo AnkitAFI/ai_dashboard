@@ -946,6 +946,24 @@ export default function AdminDashboard() {
     else { setSortField(field); setSortDir("asc"); }
   };
 
+  const togglePromoStatus = async (e: React.MouseEvent, promoId: number) => {
+    e.stopPropagation();
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/promo/${promoId}/toggle`, {
+        method: "PATCH",
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setPromoCodes(prev => prev.map(p => 
+          p.id === promoId ? { ...p, is_active: data.is_active } : p
+        ));
+      }
+    } catch (err) {
+      console.error("Failed to toggle promo code status", err);
+    }
+  };
+
   const basicCount = stats?.by_tier?.basic ?? 0;
   const premiumCount = stats?.by_tier?.premium ?? 0;
   const freeCount = stats?.by_tier?.free ?? 0;
@@ -1460,16 +1478,21 @@ export default function AdminDashboard() {
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
                   <tr style={{ background: "#f8fafc" }}>
-                    {["Code", "Channel", "Discount", "Valid From", "Expires At", "Redemptions", "Status"].map(h => (
+                    {["Code", "Channel", "Discount", "Valid From", "Expires At", "Redemptions", "Status", "Actions"].map(h => (
                       <th key={h} style={{ padding: "10px 18px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.1em", whiteSpace: "nowrap", borderBottom: "1px solid #f1f5f9" }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {promoCodes.length === 0 ? (
-                    <tr><td colSpan={7} style={{ padding: 52, textAlign: "center", color: "#94a3b8", fontSize: 14 }}>No promo codes found</td></tr>
+                    <tr><td colSpan={8} style={{ padding: 52, textAlign: "center", color: "#94a3b8", fontSize: 14 }}>No promo codes found</td></tr>
                   ) : promoCodes.map(p => {
-                    const isActive = p.is_active && (!p.expires_at || new Date(p.expires_at).getTime() > Date.now());
+                    const isDateValid = !p.expires_at || new Date(p.expires_at).getTime() > Date.now();
+                    const isActive = p.is_active && isDateValid;
+                    const statusText = isActive ? "Active" : (p.is_active ? "Expired" : "Disabled");
+                    const statusBg = isActive ? "#dcfce7" : (p.is_active ? "#fef2f2" : "#f1f5f9");
+                    const statusColor = isActive ? "#16a34a" : (p.is_active ? "#ef4444" : "#64748b");
+                    
                     const isOpen = expandedPromoId === p.id;
                     return (
                       <Fragment key={p.id}>
@@ -1481,12 +1504,33 @@ export default function AdminDashboard() {
                           <td style={{ padding: "12px 18px", fontSize: 12, color: "#94a3b8" }}>{p.expires_at ? new Date(p.expires_at).toLocaleString("en-IN", { timeZone: "UTC" }) : "—"}</td>
                           <td style={{ padding: "12px 18px", fontSize: 13, fontWeight: 600, color: "#4f46e5" }}>{p.total_redemptions}</td>
                           <td style={{ padding: "12px 18px" }}>
-                            <span style={{ fontSize: 11, fontWeight: 600, padding: "4px 8px", borderRadius: 6, background: isActive ? "#dcfce7" : "#fef2f2", color: isActive ? "#16a34a" : "#ef4444" }}>{isActive ? "Active" : "Expired"}</span>
+                            <span style={{ fontSize: 11, fontWeight: 600, padding: "4px 8px", borderRadius: 6, background: statusBg, color: statusColor }}>{statusText}</span>
+                          </td>
+                          <td style={{ padding: "12px 18px" }}>
+                            <div 
+                              onClick={(e) => togglePromoStatus(e, p.id)}
+                              style={{ 
+                                width: 44, height: 24, borderRadius: 12, 
+                                background: p.is_active ? "#10b981" : "#e2e8f0", 
+                                cursor: "pointer", position: "relative",
+                                transition: "background 0.3s ease",
+                                border: "1px solid",
+                                borderColor: p.is_active ? "#10b981" : "#cbd5e1"
+                              }}
+                            >
+                              <div style={{
+                                width: 18, height: 18, borderRadius: "50%",
+                                background: "white", position: "absolute",
+                                top: 2, left: p.is_active ? 22 : 2,
+                                transition: "left 0.3s ease",
+                                boxShadow: "0 1px 2px rgba(0,0,0,0.2)"
+                              }} />
+                            </div>
                           </td>
                         </tr>
                         {isOpen && (
                           <tr key={`exp-promo-${p.id}`}>
-                            <td colSpan={7} style={{ padding: 0, background: "#f8fafc", borderTop: "1px solid #f1f5f9", borderBottom: "2px solid #e2e8f0" }}>
+                            <td colSpan={8} style={{ padding: 0, background: "#f8fafc", borderTop: "1px solid #f1f5f9", borderBottom: "2px solid #e2e8f0" }}>
                               <div style={{ padding: "18px 24px" }}>
                                 <p style={{ margin: "0 0 12px", fontSize: 13, fontWeight: 700, color: "#1e293b" }}>Redemption History</p>
                                 {p.redemptions && p.redemptions.length > 0 ? (

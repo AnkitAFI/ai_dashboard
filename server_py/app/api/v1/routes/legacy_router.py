@@ -7337,6 +7337,25 @@ def get_admin_stats(
         "promo_codes": promo_codes_list
     }
 
+@router.patch("/api/admin/promo/{promo_id}/toggle")
+def toggle_promo_code(
+    promo_id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if current_user.email != ADMIN_EMAIL:
+        raise HTTPException(status_code=404, detail="Not found")
+    
+    promo = db.query(models.PromoCode).filter(models.PromoCode.id == promo_id).first()
+    if not promo:
+        raise HTTPException(status_code=404, detail="Promo code not found")
+        
+    promo.is_active = not promo.is_active
+    db.commit()
+    db.refresh(promo)
+    
+    return {"message": "Success", "is_active": promo.is_active}
+
 import asyncio
 import contextlib
 import hashlib
