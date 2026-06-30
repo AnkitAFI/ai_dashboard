@@ -41,6 +41,13 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
             headers={"WWW-Authenticate": "Bearer"},
         )
         
+    # Block soft-deleted accounts from logging in
+    if getattr(user, "is_active", True) is False:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Your account has been deleted. Please contact support to restore it."
+        )
+        
     access_token_expires = timedelta(minutes=30)
     access_token = create_access_token(
         data={"sub": user.email}, expires_delta=access_token_expires
