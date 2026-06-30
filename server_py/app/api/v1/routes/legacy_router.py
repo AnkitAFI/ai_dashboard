@@ -6724,8 +6724,15 @@ def login_user(login_data: UserLogin, response: Response, request: Request, db: 
                 detail="Incorrect password. Please try again or reset your password."
             )
 
+        # Block soft-deleted accounts
+        if getattr(user, "is_active", True) is False:
+            raise HTTPException(
+                status_code=403,
+                detail="Your account has been deleted. Please contact support to restore it."
+            )
+
         # ADD IT HERE ↓
-        if not user.is_verified:
+        if getattr(user, "is_verified", False) is False:
             raise HTTPException(
                 status_code=403,
                 detail="Please verify your email before logging in."
@@ -6820,7 +6827,14 @@ def signup_user(
         ).first()
         
         if existing_user:
-            if not existing_user.is_verified:
+            # Block deleted users with a specific support message
+            if getattr(existing_user, "is_active", True) is False:
+                raise HTTPException(
+                    status_code=400, 
+                    detail="Your account has been deleted. If you want to recover your account, please contact the support team."
+                )
+
+            if getattr(existing_user, "is_verified", False) is False:
                 # Queue OTP resend in background task for legacy unverified DB users
                 otp = generate_otp()
                 store_otp(user_data.email, {
@@ -7214,6 +7228,27 @@ def get_user_profile(
         "created_at": str(user.created_at)
     }
 
+@router.patch("/api/admin/users/{user_id}/recover")
+def recover_user_account(
+    user_id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # return 404 so no one knows this page exists if not admin
+    if current_user.email != ADMIN_EMAIL:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    from app.models.schema_v2 import UserAuth
+    
+    user_auth = db.query(UserAuth).filter(UserAuth.id == user_id).first()
+    if not user_auth:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    user_auth.is_active = True
+    user_auth.deleted_at = None
+    db.commit()
+    
+    return {"success": True, "message": "User account recovered"}
 @router.get("/api/admin/stats")
 def get_admin_stats(
     current_user: models.User = Depends(get_current_user),

@@ -11,7 +11,7 @@ export async function POST(req: Request) {
 
     // We will use your existing Brevo API key from the .env file!
     const apiKey = process.env.BREVO_API_KEY;
-    const senderEmail = process.env.BREVO_SENDER_EMAIL || 'noreply@insydz.com';
+    const senderEmail = 'support@insydz.com'; // WARNING: Must be verified in Brevo!
 
     if (!apiKey) {
       console.error("Missing BREVO_API_KEY in environment variables.");

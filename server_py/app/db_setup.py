@@ -33,9 +33,19 @@ def _create_all_tables():
     from app.db.session import Base as SessionBase
     from app.db.base import Base as DBBase
 
-    SessionBase.metadata.create_all(bind=engine)
-    LegacyBase.metadata.create_all(bind=engine)
-    DBBase.metadata.create_all(bind=engine)
+    # ── CRITICAL FIX ──
+    # We must explicitly exclude the 'users' table from ALL Bases before create_all.
+    # Otherwise SQLAlchemy will create a physical empty table named 'users' 
+    # instead of letting us create the 'users' VIEW.
+    
+    session_tables = [t for name, t in SessionBase.metadata.tables.items() if name != "users"]
+    legacy_tables = [t for name, t in LegacyBase.metadata.tables.items() if name != "users"]
+    db_tables = [t for name, t in DBBase.metadata.tables.items() if name != "users"]
+
+    SessionBase.metadata.create_all(bind=engine, tables=session_tables)
+    LegacyBase.metadata.create_all(bind=engine, tables=legacy_tables)
+    DBBase.metadata.create_all(bind=engine, tables=db_tables)
+
     logger.info("✅ [db_setup] All SQLAlchemy tables created/verified.")
 
 
