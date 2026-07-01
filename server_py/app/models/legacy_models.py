@@ -399,7 +399,7 @@ class PaymentOrder(Base):
     amount              = Column(Integer,     nullable=False)
     base_amount         = Column(Integer,     nullable=False, default=0)
     gst_amount          = Column(Integer,     nullable=False, default=0)
-    gst_number          = Column(String(20),  nullable=True)
+    gst_number          = Column(EncryptedString(),  nullable=True)
     currency            = Column(String(10),  default="INR")
 
     razorpay_order_id   = Column(String(100), unique=True, index=True, nullable=False)
@@ -410,11 +410,11 @@ class PaymentOrder(Base):
     status              = Column(String(20),  default="created", nullable=False)
     invoice_number      = Column(String(50),  nullable=True)
 
-    billing_full_name   = Column(String(200), nullable=True)
-    billing_email       = Column(String(200), nullable=True)
-    billing_mobile      = Column(String(20),  nullable=True)
-    billing_company     = Column(String(200), nullable=True)
-    billing_address     = Column(Text,        nullable=True)
+    billing_full_name   = Column(EncryptedString(), nullable=True)
+    billing_email       = Column(EncryptedString(), nullable=True)
+    billing_mobile      = Column(EncryptedString(), nullable=True)
+    billing_company     = Column(EncryptedString(), nullable=True)
+    billing_address     = Column(EncryptedString(), nullable=True)
 
     created_at          = Column(DateTime, nullable=False)
     paid_at             = Column(DateTime, nullable=True)
@@ -781,12 +781,12 @@ class UserBehaviorLog(Base):
 
     id         = Column(Integer, primary_key=True, autoincrement=True)
     user_id    = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
-    user_email = Column(String(255), nullable=True, index=True)
+    user_email = Column(EncryptedString(), nullable=True, index=True)
     session_id = Column(String(100), nullable=False, index=True)
     event_type = Column(String(100), nullable=False, index=True)
     page_path  = Column(Text, nullable=False)
     properties = Column(JSON, nullable=True)
-    ip_address = Column(String(45), nullable=True)
+    ip_address = Column(EncryptedString(), nullable=True)
     user_agent = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.utcnow(), index=True)
 
@@ -839,4 +839,25 @@ class PromoCodeRedemption(Base):
     __table_args__ = (
         UniqueConstraint("promo_code_id", "user_id", name="uq_promo_redemption_user"),
     )
+
+class KwExplorerCache(Base):
+    __tablename__ = "kw_explorer_cache"
+
+    keyword = Column(String(500), primary_key=True, nullable=False)
+    platform = Column(String(50), primary_key=True, nullable=False)
+    
+    search_volume = Column(Integer, nullable=True)
+    difficulty = Column(Integer, nullable=True)
+    intent = Column(String(100), nullable=True)
+    cpc = Column(Float, nullable=True)
+    geo_data = Column(JSON, nullable=True)
+    variations = Column(JSON, nullable=True)
+    serp = Column(JSON, nullable=True)
+    trend = Column(JSON, nullable=True)
+    global_search_volume = Column(Integer, nullable=True)
+    global_breakdown = Column(JSON, nullable=True)
+    competitive_density = Column(Float, nullable=True)
+    serp_features = Column(JSON, nullable=True)
+    
+    cached_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

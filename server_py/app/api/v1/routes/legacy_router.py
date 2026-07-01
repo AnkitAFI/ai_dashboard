@@ -1668,17 +1668,20 @@ Guidelines:
 Think about {analysis_focus} and respond conversationally:"""
 
     try:
-        result = subprocess.run(
-            ["ollama", "run", "llama3.2:3b"],
-            input=prompt,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="ignore",
+        import requests
+        from app.core.config import settings
+        
+        ollama_url = settings.OLLAMA_BASE_URL
+        response = requests.post(
+            f"{ollama_url}/api/generate",
+            json={
+                "model": "llama3.2:3b",
+                "prompt": prompt,
+                "stream": False
+            },
             timeout=30
         )
-
-        raw_output = (result.stdout or result.stderr or "").strip()
+        raw_output = response.json().get("response", "").strip()
         
         # Clean AI output
         clean_output = (
@@ -2897,13 +2900,15 @@ def get_notifications(
                 high_sales = db.execute(sales_query, {"limit": limit // 4}).fetchall()
                 
                 for row in high_sales:
+                    price_str = f"₹{row.product_price_numeric:.0f}" if row.product_price_numeric else "Price N/A"
+                    rating_str = f"{row.product_star_rating_numeric}★" if row.product_star_rating_numeric else "Unrated"
                     notifications.append({
                         "id": f"amazon_sales_spike_{row.id}",
                         "type": "sales_spike",
                         "severity": "high",
                         "platform": "Amazon",
                         "message": f"📈 Competitor: {row.product_title[:50]}... selling {row.sales_volume}",
-                        "time": f"₹{row.product_price_numeric:.0f} · {row.product_star_rating_numeric}★",
+                        "time": f"{price_str} · {rating_str}",
                         "details": {
                             "product_id": row.id,
                             "product_title": row.product_title,
@@ -10133,6 +10138,20 @@ def delete_user_account(
         # Feedback
         db.query(models.Feedback).filter(models.Feedback.user_id == user_id).delete(synchronize_session=False)
 
+        # ── DPDP: Anonymize behavior logs ───────────────────────────────────────
+        db.query(models.UserBehaviorLog).filter(
+            models.UserBehaviorLog.user_email == user_email
+        ).update(
+            {
+                "user_id": None,
+                "user_email": None,
+                "ip_address": None,
+                "properties": None,
+                "session_id": "anonymized"
+            },
+            synchronize_session=False
+        )
+
         # KwTracked + children
         user_kws = db.query(models.KwTracked).filter(models.KwTracked.user_id == user_id).all()
         for kw in user_kws:
@@ -17057,7 +17076,15 @@ def _background_data_retention():
         """), {"cutoff": cutoff_anonymize})
         db.commit()
 
-        print(f"[retention] ✅ Hard-purged {purged} expired user(s). Audit logs anonymized.")
+        # ── 3. Data Minimization: Purge old behavior logs (90 days) ───────────
+        result_logs = db.execute(_text("""
+            DELETE FROM user_behavior_logs
+            WHERE created_at < :cutoff
+        """), {"cutoff": cutoff_anonymize})
+        purged_logs = result_logs.rowcount
+        db.commit()
+
+        print(f"[retention] ✅ Hard-purged {purged} expired user(s). Audit logs anonymized. Purged {purged_logs} old behavior logs.")
     except Exception as e:
         db.rollback()
         print(f"[retention] ❌ Error during retention cleanup: {e}")
