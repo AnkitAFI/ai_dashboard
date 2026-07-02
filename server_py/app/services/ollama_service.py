@@ -313,6 +313,35 @@ async def complete_ollama(prompt: str, system: str = SYSTEM_PROMPT) -> str:
 
     return text
 
+async def analyze_product_image_with_moondream(image_base64: str) -> str:
+    """
+    Sends the base64 image to the local Ollama 'moondream' model to extract product details.
+    """
+    # Clean up base64 string if it contains the data URI prefix (e.g., data:image/jpeg;base64,)
+    if "base64," in image_base64:
+        image_base64 = image_base64.split("base64,")[1]
+        
+    prompt = "You are an expert ecommerce product analyst. Describe this product in extreme detail. Include its color, material, shape, potential use case, and any text written on it. Do not hallucinate."
+    
+    payload = {
+        "model": "moondream",
+        "prompt": prompt,
+        "images": [image_base64],
+        "stream": False
+    }
+    
+    try:
+        async with httpx.AsyncClient(timeout=OLLAMA_TIMEOUT) as client:
+            response = await client.post(f"{OLLAMA_BASE_URL}/api/generate", json=payload)
+            if response.status_code != 200:
+                logger.error(f"Vision model error: {response.text}")
+                return ""
+                
+            data = response.json()
+            return data.get("response", "").strip()
+    except Exception as e:
+        logger.error(f"Failed to analyze image with moondream: {e}")
+        return ""
 
 # ── Prompt builders ────────────────────────────────────────────────────────────
 
@@ -423,3 +452,52 @@ MY SELLING PRICE: ₹{selling_price:,}
 MY PRICE POSITION: {intel.get('your_price_position', 'Unknown')}
 
 Give me 3 specific pricing and positioning recommendations based on this real market data."""
+
+# ── Listing Agent Prompts ──────────────────────────────────────────────────────
+
+def build_amazon_listing_prompt(raw_description: str, category: str = "General") -> str:
+    return f"""You are an expert Amazon India SEO copywriter.
+Take the following raw product details and generate an optimized Amazon listing.
+
+CONFLICT RESOLUTION RULE: The provided data has an "ABSOLUTE SOURCE OF TRUTH (Visual AI Analysis)" and "UNVERIFIED USER INPUT". If the user input contradicts the visual analysis (e.g., wrong brand, wrong product, wrong color), you MUST completely discard the contradicting user input and use ONLY the visual analysis. Do not try to merge contradictory items. The image facts are final.
+
+RAW PRODUCT DETAILS:
+{raw_description}
+CATEGORY: {category}
+
+You must strictly return a JSON object with the following keys exactly:
+- "amazon_title": A title between 150-200 characters, rich in high-volume keywords, avoiding promotional words like 'best' or 'cheapest'.
+- "amazon_bullets": An array of exactly 5 bullet points. Each bullet must be under 200 characters. Start each bullet with a capitalized summary phrase followed by a colon.
+- "amazon_description": A 2-paragraph HTML formatted product description (use <p> and <b> tags). MUST BE ENCLOSED IN QUOTES AS A VALID JSON STRING. Do not output raw unquoted HTML.
+- "amazon_search_terms": A single string of backend search terms (max 249 bytes), space-separated, no commas, no duplicate words.
+
+Respond ONLY with valid JSON. Do not include any markdown formatting like ```json. Ensure all string values are properly escaped and enclosed in double quotes."""
+
+def build_flipkart_listing_prompt(raw_description: str, category: str = "General") -> str:
+    return f"""You are an expert Flipkart SEO copywriter.
+Take the following raw product details and generate an optimized Flipkart listing.
+
+CONFLICT RESOLUTION RULE: The provided data has an "ABSOLUTE SOURCE OF TRUTH (Visual AI Analysis)" and "UNVERIFIED USER INPUT". If the user input contradicts the visual analysis (e.g., wrong brand, wrong product, wrong color), you MUST completely discard the contradicting user input and use ONLY the visual analysis. Do not try to merge contradictory items. The image facts are final.
+
+RAW PRODUCT DETAILS:
+{raw_description}
+CATEGORY: {category}
+
+You must strictly return a JSON object with the following keys exactly:
+- "flipkart_title": A concise, brand-first title (max 100 characters). Format: [Brand] [Core Product] [Key Feature].
+- "flipkart_description": A clean, bulleted text description (no HTML allowed for Flipkart) focusing on specifications and warranty. MUST BE ENCLOSED IN QUOTES AS A VALID JSON STRING.
+
+Respond ONLY with valid JSON. Do not include any markdown formatting like ```json. Ensure all string values are properly escaped and enclosed in double quotes."""
+
+def build_attribute_extraction_prompt(raw_description: str) -> str:
+    return f"""You are an expert Ecommerce Catalog Specialist.
+Analyze the following product details and extract the core physical attributes required by Amazon and Flipkart APIs.
+
+PRODUCT DETAILS:
+{raw_description}
+
+Extract the attributes and return them STRICTLY as a valid JSON object. 
+If an attribute is unknown or not mentioned, omit it or use an empty string. 
+Keys must be lowercase (e.g. brand, color, size, material, style).
+
+Respond ONLY with valid JSON. Do not include any markdown formatting like ```json."""
