@@ -14,11 +14,11 @@ router = APIRouter(tags=["Auth"])
 user_service = UserService()
 
 @router.post("/signup", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-def signup(user: UserCreate, request: Request, db: Session = Depends(get_db)):
+def signup(user: UserCreate, request: Request, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     """
     Create a new user with hashed password and formatted business interests.
     """
-    return user_service.register_user(db, user, request=request)
+    return user_service.register_user(db, user, request=request, background_tasks=background_tasks)
 
 @router.post("/login")
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):

@@ -6922,7 +6922,7 @@ def signup_user(
         )
 
 @router.post("/users/verify-email")
-def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Request, db: Session = Depends(get_db)):
+def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Request, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     try:
         # Get OTP data from Redis
         otp_data = get_otp(request.email)
@@ -7011,6 +7011,16 @@ def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Req
             send_welcome_email(email=user.email, first_name=user.first_name)
         except Exception as _e:
             print(f"⚠️ Welcome email failed (non-critical): {_e}")
+
+        # Add to Brevo Contacts in background
+        from app.services.brevo_service import BrevoService
+        background_tasks.add_task(
+            BrevoService.add_contact_to_brevo, 
+            user.email, 
+            getattr(user, 'mobile_number', None),
+            getattr(user, 'first_name', None),
+            getattr(user, 'last_name', None)
+        )
 
         # Extract IP and User-Agent metadata
         ip_address = raw_request.headers.get("x-forwarded-for") or raw_request.headers.get("x-real-ip")
