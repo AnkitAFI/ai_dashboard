@@ -15,7 +15,7 @@ class UserService:
     def format_business_interests(self, interests: list) -> list:
         return [i.strip().lower() for i in interests if i.strip()]
 
-    def register_user(self, db: Session, user: UserCreate, request=None):
+    def register_user(self, db: Session, user: UserCreate, request=None, background_tasks=None):
         existing_user = user_repo.get_by_email(db, user.email)
         if existing_user:
             raise HTTPException(status_code=400, detail="Email already registered")
@@ -28,7 +28,13 @@ class UserService:
             ip = request.client.host
             ip_hash = hashlib.sha256(ip.encode('utf-8')).hexdigest()
         
-        return user_repo.create(db, user, hashed, interests, ip_hash=ip_hash)
+        new_user = user_repo.create(db, user, hashed, interests, ip_hash=ip_hash)
+        
+        if background_tasks:
+            from app.services.brevo_service import BrevoService
+            background_tasks.add_task(BrevoService.add_contact_to_brevo, user.email)
+            
+        return new_user
 
     def update_onboarding(self, db: Session, user_id: int, onboarding_data: dict, background_tasks=None):
         user = user_repo.update_onboarding(db, user_id, onboarding_data)
