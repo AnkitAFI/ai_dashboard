@@ -169,6 +169,11 @@ export interface User {
   mobileNumber?: string;          // ← Added
   subscriptionTier: string;
   subscriptionExpiresAt?: string | null;
+  
+  aiListingsGenerated?: number;
+  aiListingsMonth?: string;
+  aiCreditsBalance?: number;
+  
   aiChatUsed?: number;
   aiChatMonth?: string;
   businessInterests?: string[];
@@ -257,6 +262,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           mobileNumber: data.mobile_number || "",   // ← Added
           subscriptionTier: data.subscription_tier || "free",
           subscriptionExpiresAt: data.subscription_expires_at || null,
+          
+          aiListingsGenerated: data.ai_listings_generated || 0,
+          aiListingsMonth: data.ai_listings_month,
+          aiCreditsBalance: data.ai_credits_balance || 0,
+          
           aiChatUsed: data.ai_chat_used,
           aiChatMonth: data.ai_chat_month,
           businessInterests: data.business_interests,

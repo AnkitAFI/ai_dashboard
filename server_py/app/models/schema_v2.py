@@ -87,6 +87,11 @@ class UserSubscription(Base):
     keyword_tracker_used = Column(Integer, default=0)
     keyword_tracker_month = Column(String(7))
     ki_searches_used = Column(Integer, default=0)
+    
+    # AI Listing Studio Tracking
+    ai_listings_generated = Column(Integer, default=0)
+    ai_listings_month = Column(String(7))
+    ai_credits_balance = Column(Integer, default=0)
 
     auth = relationship("UserAuth", back_populates="subscriptions")
 

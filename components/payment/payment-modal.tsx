@@ -48,6 +48,7 @@ export interface PaymentModalProps {
   userEmail?: string;
   userName?: string;
   onPaymentSuccess: (planId: string) => void;
+  isCreditMode?: boolean;
 }
 
 // ─── Razorpay globals ─────────────────────────────────────────────────────────
@@ -230,7 +231,27 @@ function PriceCard({
 // MAIN COMPONENT
 
 export default function PaymentModal({
-  isOpen, onClose, plan, userId, userEmail = "", userName = "", onPaymentSuccess,
+  isOpen, onClose, plan, userId, userEmail, userName, onPaymentSuccess, isCreditMode = false
+}: PaymentModalProps) {
+  if (!isOpen) return null;
+  
+  return createPortal(
+    <PaymentModalInner
+      isOpen={isOpen}
+      onClose={onClose}
+      plan={plan}
+      userId={userId}
+      userEmail={userEmail}
+      userName={userName}
+      onPaymentSuccess={onPaymentSuccess}
+      isCreditMode={isCreditMode}
+    />,
+    document.body
+  );
+}
+
+function PaymentModalInner({
+  isOpen, onClose, plan, userId, userEmail = "", userName = "", onPaymentSuccess, isCreditMode,
 }: PaymentModalProps) {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -316,16 +337,33 @@ export default function PaymentModal({
 
   const verify = useCallback(async (r: RazorpayResponse, dbId: number) => {
     try {
-      const res = await fetch(`${API_BASE}/api/payments/verify`, {
+      const verifyEndpoint = isCreditMode 
+        ? `${API_BASE}/api/payments/verify-credit-order`
+        : `${API_BASE}/api/payments/verify`;
+        
+      const verifyBody = isCreditMode
+        ? {
+            razorpay_payment_id: r.razorpay_payment_id,
+            razorpay_order_id: r.razorpay_order_id,
+            razorpay_signature: r.razorpay_signature,
+            order_db_id: dbId, 
+            user_id: userId, 
+            credits: parseInt(plan.id.replace("ai_credits_", ""))
+          }
+        : {
+            razorpay_payment_id: r.razorpay_payment_id,
+            razorpay_order_id: r.razorpay_order_id,
+            razorpay_signature: r.razorpay_signature,
+            order_db_id: dbId, 
+            user_id: userId, 
+            plan_id: plan.id,
+          };
+
+      const res = await fetch(verifyEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          razorpay_payment_id: r.razorpay_payment_id,
-          razorpay_order_id: r.razorpay_order_id,
-          razorpay_signature: r.razorpay_signature,
-          order_db_id: dbId, user_id: userId, plan_id: plan.id,
-        }),
+        body: JSON.stringify(verifyBody),
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
@@ -349,24 +387,41 @@ export default function PaymentModal({
       const sdkLoaded = await loadRazorpay();
       if (!sdkLoaded) throw new Error("Failed to load Razorpay. Check your internet connection.");
 
-      const res = await fetch(`${API_BASE}/api/payments/create-order`, {
+      const createEndpoint = isCreditMode 
+        ? `${API_BASE}/api/payments/create-credit-order`
+        : `${API_BASE}/api/payments/create-order`;
+        
+      const billingDetails = {
+        full_name: form.fullName,
+        email: form.email,
+        mobile: form.mobile,
+        company_name: form.companyName || null,
+        billing_address: form.billingAddress,
+        gst_number: form.hasGst ? form.gstNumber.toUpperCase() : null,
+        gst_amount: breakup.gstAmount,
+        base_amount: breakup.basePrice,
+      };
+
+      const bodyPayload = isCreditMode
+        ? {
+            user_id: userId, 
+            credits: parseInt(plan.id.replace("ai_credits_", "")),
+            amount: breakup.total,
+            billing: billingDetails
+          }
+        : {
+            user_id: userId, 
+            plan_id: plan.id, 
+            amount: breakup.total,
+            billing: billingDetails,
+            promo_code: promoDiscount ? promoCode : null,
+          };
+
+      const res = await fetch(createEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          user_id: userId, plan_id: plan.id, amount: breakup.total,
-          billing: {
-            full_name: form.fullName,
-            email: form.email,
-            mobile: form.mobile,
-            company_name: form.companyName || null,
-            billing_address: form.billingAddress,
-            gst_number: form.hasGst ? form.gstNumber.toUpperCase() : null,
-            gst_amount: breakup.gstAmount,
-            base_amount: breakup.basePrice,
-          },
-          promo_code: promoDiscount ? promoCode : null,
-        }),
+        body: JSON.stringify(bodyPayload),
       });
 
       if (!res.ok) {

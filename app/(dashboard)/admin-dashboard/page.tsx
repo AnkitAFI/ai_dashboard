@@ -765,9 +765,10 @@
 "use client";
 import { API_BASE_URL } from "@/lib/config";
 
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useState, Fragment, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import {
   RefreshCw, Search, ArrowUpRight, ArrowDownRight,
   Users, ShieldCheck, ShieldOff, TrendingUp,
@@ -995,6 +996,37 @@ export default function AdminDashboard() {
   const totalMRR = basicCount * TIER_PRICE.basic + premiumCount * TIER_PRICE.premium;
   const paidUsers = basicCount + premiumCount;
 
+  const chartData = useMemo(() => {
+    const data: { date: string; users: number; dateObj: Date }[] = [];
+    const sortedUsers = [...users].filter(u => u.created_at).sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+    
+    if (sortedUsers.length === 0) return [];
+    
+    const earliestDate = new Date(sortedUsers[0].created_at);
+    const now = new Date();
+    
+    let curr = new Date(earliestDate.getFullYear(), earliestDate.getMonth(), 1);
+    const end = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    while (curr <= end) {
+      const monthStr = curr.toLocaleDateString("en-IN", { month: "short", year: "numeric" });
+      data.push({ date: monthStr, users: 0, dateObj: new Date(curr) });
+      curr.setMonth(curr.getMonth() + 1);
+    }
+    
+    users.forEach(u => {
+      if (!u.created_at) return;
+      const uDate = new Date(u.created_at);
+      const monthStr = uDate.toLocaleDateString("en-IN", { month: "short", year: "numeric" });
+      const monthData = data.find(d => d.date === monthStr);
+      if (monthData) {
+        monthData.users += 1;
+      }
+    });
+
+    return data;
+  }, [users]);
+
   const filtered = users
     .filter(u => {
       const q = search.toLowerCase();
@@ -1177,6 +1209,44 @@ export default function AdminDashboard() {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* User Signups Line Graph */}
+          <div className="panel fade-in" style={{ marginBottom: 20, animationDelay: "0.10s" }}>
+            <PanelHead title="User Growth" sub="New user signups per month" />
+            <div style={{ width: "100%", height: 300, marginTop: 20 }}>
+              <ResponsiveContainer>
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis 
+                    dataKey="date" 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fontSize: 12, fill: "#94a3b8" }} 
+                    dy={10} 
+                  />
+                  <YAxis 
+                    axisLine={false} 
+                    tickLine={false} 
+                    tick={{ fontSize: 12, fill: "#94a3b8" }} 
+                    dx={-10} 
+                  />
+                  <Tooltip 
+                    contentStyle={{ borderRadius: 8, border: "none", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                    itemStyle={{ color: "#1e293b", fontWeight: 600 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="users" 
+                    name="Signups"
+                    stroke="#6366f1" 
+                    strokeWidth={3} 
+                    dot={{ fill: "#6366f1", strokeWidth: 2, r: 4 }} 
+                    activeDot={{ r: 6, strokeWidth: 0 }} 
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
 
           {/* Tier + Revenue row */}

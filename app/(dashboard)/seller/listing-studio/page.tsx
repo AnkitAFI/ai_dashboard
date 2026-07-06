@@ -11,10 +11,28 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, Image as ImageIcon, Send, AlertCircle, ShoppingCart, ArrowRight, FileText, Type, List, FileSearch, Hash, LineChart, Clock, Check } from "lucide-react";
+import { Sparkles, Image as ImageIcon, Send, AlertCircle, ShoppingCart, ArrowRight, FileText, Type, List, FileSearch, Hash, LineChart, Clock, Check, Lock, Wallet } from "lucide-react";
 import { API_BASE_URL } from "@/lib/config";
+import { useAuth } from "@/lib/auth-context";
+import PaymentModal, { type PaymentPlan } from "@/components/payment/payment-modal";
+
+const CREDIT_PACKS: Record<string, PaymentPlan[]> = {
+  basic: [
+    { id: "ai_credits_10", name: "10 SKU Credits", price: 750, description: "Generate & Publish 10 SKUs (₹75/SKU)" },
+    { id: "ai_credits_20", name: "20 SKU Credits", price: 1500, description: "Generate & Publish 20 SKUs (₹75/SKU)" },
+  ],
+  premium: [
+    { id: "ai_credits_50", name: "50 SKU Credits", price: 2500, description: "Generate & Publish 50 SKUs (₹50/SKU)" },
+    { id: "ai_credits_100", name: "100 SKU Credits", price: 5000, description: "Generate & Publish 100 SKUs (₹50/SKU)" },
+    { id: "ai_credits_500", name: "500 SKU Credits", price: 25000, description: "Generate & Publish 500 SKUs (₹50/SKU)" },
+    { id: "ai_credits_1000", name: "1,000 SKU Credits", price: 50000, description: "High-volume cataloging (₹50/SKU)" },
+    { id: "ai_credits_2000", name: "2,000 SKU Credits", price: 100000, description: "Enterprise volume (₹50/SKU)" },
+    { id: "ai_credits_3000", name: "3,000 SKU Credits", price: 150000, description: "Maximum volume (₹50/SKU)" },
+  ]
+};
 
 export default function ListingStudioPage() {
+  const { user, refreshUser, isLoading: authLoading } = useAuth();
   const [description, setDescription] = useState("");
   const [imageBase64, setImageBase64] = useState<string>("");
   const [imagePreview, setImagePreview] = useState<string>("");
@@ -23,6 +41,10 @@ export default function ListingStudioPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isRemovingBg, setIsRemovingBg] = useState(false);
+  
+  const [isTopUpOpen, setIsTopUpOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [selectedCreditPack, setSelectedCreditPack] = useState<PaymentPlan | null>(null);
   
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
@@ -48,6 +70,22 @@ export default function ListingStudioPage() {
   const { toast } = useToast();
 
   const handleGenerate = async () => {
+    if (!user) return;
+    
+    if (user.subscriptionTier === "free") {
+      toast({
+        title: "Upgrade Required",
+        description: "AI Listing Studio is a premium feature. Please upgrade to Basic or Premium.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    if ((user.aiCreditsBalance || 0) <= 0) {
+      setIsTopUpOpen(true);
+      return;
+    }
+    
     if (!imageBase64) {
       toast({
         title: "Image Required",
@@ -78,12 +116,25 @@ export default function ListingStudioPage() {
         title: "Success!",
         description: "Your optimized listings have been generated.",
       });
+      
+      // Silently refresh user to update credit balance locally
+      refreshUser();
     } catch (err: any) {
-      toast({
-        title: "Generation Failed",
-        description: err.message,
-        variant: "destructive"
-      });
+      if (err.message === "INSUFFICIENT_CREDITS") {
+        setIsTopUpOpen(true);
+        toast({
+          title: "Out of SKU Credits ⚠️",
+          description: "You have 0 credits remaining. Please top up your Wallet to generate this listing.",
+          variant: "destructive",
+          duration: 5000,
+        });
+      } else {
+        toast({
+          title: "Generation Failed",
+          description: err.message,
+          variant: "destructive"
+        });
+      }
     } finally {
       setIsGenerating(false);
     }
@@ -207,14 +258,54 @@ export default function ListingStudioPage() {
     }
   };
 
+  if (authLoading) return <div className="p-8 text-center text-slate-500 flex justify-center items-center h-[50vh]"><Clock className="animate-spin w-8 h-8 text-blue-500" /></div>;
+
+  const isFreeTier = user?.subscriptionTier === "free" || !user?.subscriptionTier;
+  const credits = user?.aiCreditsBalance || 0;
+  
+  if (isFreeTier) {
+    return (
+      <div className="p-8 max-w-[1000px] mx-auto h-[80vh] flex flex-col items-center justify-center text-center">
+        <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-200">
+          <Lock className="w-12 h-12 text-slate-400" />
+        </div>
+        <h1 className="text-4xl font-extrabold tracking-tight mb-4 text-slate-900">
+          Unlock Automated Cataloging
+        </h1>
+        <p className="text-slate-500 text-lg max-w-xl mb-8">
+          Stop struggling with manual cataloging. Instantly generate and publish high-ranking Amazon and Flipkart listings that actually get you more sales. Upgrade your plan to access our automated One-Click Cataloger.
+        </p>
+        <Button size="lg" className="h-12 px-8 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg" onClick={() => window.location.href = '/subscription'}>
+          View Upgrade Plans <ArrowRight className="w-5 h-5 ml-2" />
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8 max-w-[1400px] mx-auto">
-      <div className="mb-10">
-        <h1 className="text-4xl font-extrabold tracking-tight mb-3 text-slate-900 flex items-center gap-3">
-          <Sparkles className="text-blue-600 w-10 h-10 drop-shadow-sm" /> 
-          AI Listing Studio
-        </h1>
-        <p className="text-slate-500 text-lg max-w-2xl">Upload a single product photo and let AI instantly generate your complete Amazon & Flipkart catalog, optimized with Hinglish keywords for maximum reach.</p>
+      <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h1 className="text-4xl font-extrabold tracking-tight mb-2 text-slate-900 flex items-center gap-3">
+            <Sparkles className="text-blue-600 w-10 h-10 drop-shadow-sm" /> 
+            One-Click Cataloger
+          </h1>
+          <p className="text-slate-500 text-lg max-w-2xl">Upload a single product photo and instantly auto-generate your complete Amazon & Flipkart catalog.</p>
+        </div>
+        
+        {/* Wallet Banner */}
+        <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-4">
+          <div className="bg-indigo-50 p-2 rounded-lg">
+            <Wallet className="w-6 h-6 text-indigo-600" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-500 uppercase tracking-wider">SKU Credits</p>
+            <p className="text-xl font-bold text-slate-900">{credits} Remaining</p>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => setIsTopUpOpen(true)} className="ml-2 font-semibold">
+            Top-up
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -321,7 +412,7 @@ export default function ListingStudioPage() {
               {/* Header */}
               <div className="text-center mb-6 mt-4">
                 <h2 className="text-3xl font-extrabold text-slate-800 flex items-center justify-center gap-2">
-                  Let AI build your Amazon & Flipkart catalog <Sparkles className="w-7 h-7 text-blue-600 drop-shadow-sm" />
+                  Let our Smart Engine build your Amazon & Flipkart catalog <Sparkles className="w-7 h-7 text-blue-600 drop-shadow-sm" />
                 </h2>
                 <p className="text-slate-500 font-medium mt-3">Just 3 simple steps to outrank your competitors</p>
               </div>
@@ -336,7 +427,7 @@ export default function ListingStudioPage() {
                       <ImageIcon className="w-8 h-8 text-indigo-500" />
                     </div>
                     <h4 className="font-bold text-slate-800 text-[15px]">Upload Product Image</h4>
-                    <p className="text-xs text-slate-500 mt-2.5 max-w-[180px] leading-relaxed">Upload a clear image of your product so our AI can understand it better.</p>
+                    <p className="text-xs text-slate-500 mt-2.5 max-w-[180px] leading-relaxed">Upload a clear image of your product so our Smart Engine can understand it better.</p>
                   </CardContent>
                 </Card>
 
@@ -363,8 +454,8 @@ export default function ListingStudioPage() {
                     <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center mb-5 mt-2">
                       <FileText className="w-8 h-8 text-emerald-500" />
                     </div>
-                    <h4 className="font-bold text-slate-800 text-[15px]">AI Creates Your Listing</h4>
-                    <p className="text-xs text-slate-500 mt-2.5 max-w-[180px] leading-relaxed">Our AI will instantly generate a high-converting Amazon listing for you.</p>
+                    <h4 className="font-bold text-slate-800 text-[15px]">Auto-Generate Your Listing</h4>
+                    <p className="text-xs text-slate-500 mt-2.5 max-w-[180px] leading-relaxed">Our Smart Engine will instantly generate a high-converting catalog for you.</p>
                   </CardContent>
                 </Card>
               </div>
@@ -372,17 +463,17 @@ export default function ListingStudioPage() {
               {/* What AI Generates */}
               <Card className="border-slate-100 shadow-sm bg-white overflow-hidden rounded-2xl">
                 <div className="bg-slate-50/50 py-3 text-center border-b border-slate-100">
-                  <h4 className="font-bold text-sm text-slate-800">What AI will generate for you</h4>
+                  <h4 className="font-bold text-sm text-slate-800">What our Smart Engine generates for you</h4>
                 </div>
                 <CardContent className="p-8">
                   <div className="flex justify-between items-center max-w-3xl mx-auto px-4">
                     {[
                       { icon: Type, label: "SEO Optimized\nTitle" },
-                      { icon: List, label: "Bullet Points" },
-                      { icon: FileSearch, label: "Product\nDescription" },
-                      { icon: Hash, label: "Backend\nSearch Terms" },
-                      { icon: Sparkles, label: "AI Keywords", color: "text-emerald-500", bg: "bg-emerald-50" },
-                      { icon: LineChart, label: "SEO Score &\nSuggestions", color: "text-emerald-500", bg: "bg-emerald-50" },
+                      { icon: List, label: "Key Feature\nBullets" },
+                      { icon: FileSearch, label: "HTML\nDescription" },
+                      { icon: Hash, label: "Hidden\nSearch Terms" },
+                      { icon: Sparkles, label: "Premium A+\nContent", color: "text-amber-500", bg: "bg-amber-50" },
+                      { icon: ShoppingCart, label: "Amazon & Flipkart\nReady", color: "text-blue-500", bg: "bg-blue-50" },
                     ].map((item, i) => (
                       <div key={i} className="flex flex-col items-center text-center">
                         <div className={`w-14 h-14 rounded-full ${item.bg || 'bg-blue-50'} flex items-center justify-center mb-3 shadow-sm border border-slate-50`}>
@@ -402,10 +493,10 @@ export default function ListingStudioPage() {
                     <h4 className="font-bold text-sm text-slate-800 mb-5">Why sellers love it</h4>
                     <ul className="space-y-3.5">
                       {[
-                        "Saves hours of writing",
-                        "SEO & conversion optimized",
-                        "Keyword rich content",
-                        "Better rankings & more sales"
+                        "Save ₹450+ per SKU vs. traditional cataloging agencies",
+                        "Go live in 20 seconds instead of waiting 3-5 days",
+                        "Zero back-and-forth emails or manual data entry",
+                        "Rank on Page 1 instantly with perfectly tuned SEO"
                       ].map((text, i) => (
                         <li key={i} className="flex items-center gap-3 text-sm font-medium text-slate-600">
                           <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
@@ -882,6 +973,77 @@ export default function ListingStudioPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Top-up Dialog */}
+      <Dialog open={isTopUpOpen} onOpenChange={setIsTopUpOpen}>
+        <DialogContent className="sm:max-w-[550px] p-6 max-h-[90vh] overflow-y-auto overflow-x-hidden">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+              <Wallet className="text-indigo-600 w-6 h-6" /> 
+              Top-up SKU Credits
+            </DialogTitle>
+            <DialogDescription>
+              Purchase SKU credits to instantly generate and publish SEO-optimized product listings. 1 Credit = 1 SKU generated & published.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid grid-cols-2 gap-3 py-2">
+            {(CREDIT_PACKS[user?.subscriptionTier || "basic"] || CREDIT_PACKS["basic"]).map((pack) => (
+              <div 
+                key={pack.id} 
+                className={`border-2 rounded-xl p-3 cursor-pointer transition-all flex flex-col justify-center ${
+                  selectedCreditPack?.id === pack.id ? 'border-indigo-600 bg-indigo-50 shadow-sm' : 'border-slate-200 hover:border-indigo-300 hover:bg-slate-50'
+                }`}
+                onClick={() => setSelectedCreditPack(pack)}
+              >
+                <div className="flex justify-between items-start mb-1">
+                  <h4 className="font-bold text-base text-slate-800 leading-tight">{pack.name}</h4>
+                  <span className="font-bold text-indigo-700 text-base ml-2 shrink-0">₹{pack.price.toLocaleString('en-IN')}</span>
+                </div>
+                <p className="text-slate-500 text-xs leading-tight mt-1">{pack.description}</p>
+              </div>
+            ))}
+          </div>
+
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setIsTopUpOpen(false)}>Cancel</Button>
+            <Button 
+              disabled={!selectedCreditPack}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8"
+              onClick={() => {
+                setIsPaymentModalOpen(true);
+              }}
+            >
+              Proceed to Pay
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Payment Modal */}
+      {selectedCreditPack && (
+        <PaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={() => {
+            setIsPaymentModalOpen(false);
+          }}
+          plan={selectedCreditPack}
+          userId={user?.id || 0}
+          userEmail={user?.email}
+          userName={user?.name || user?.firstName}
+          onPaymentSuccess={() => {
+            setIsPaymentModalOpen(false);
+            setIsTopUpOpen(false);
+            setSelectedCreditPack(null);
+            refreshUser();
+            toast({
+              title: "SKU Credits Added!",
+              description: "Your SKU Credits have been successfully topped up.",
+            });
+          }}
+          isCreditMode={true}
+        />
+      )}
     </div>
   );
 }

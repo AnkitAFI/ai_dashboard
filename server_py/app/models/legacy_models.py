@@ -227,6 +227,12 @@ class User(Base):
     ki_cycle_start = Column(DateTime, nullable=True)  # set to paid_at when user subscribes
 
     subscription_expires_at = Column(DateTime, nullable=True)
+    
+    # AI Listing Studio Tracking
+    ai_listings_generated = Column(Integer, default=0)
+    ai_listings_month = Column(String(7))
+    ai_credits_balance = Column(Integer, default=0)
+
     payment_orders = relationship("app.models.legacy_models.PaymentOrder", back_populates="user")
     scheduled_downgrade_to = Column(String(50), nullable=True)
 

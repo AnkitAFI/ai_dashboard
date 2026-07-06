@@ -7113,6 +7113,11 @@ def get_me(
 
         "ai_chat_used": current_user.ai_chat_used or 0,
         "ai_chat_month": current_user.ai_chat_month or current_month,
+        
+        "ai_listings_generated": current_user.ai_listings_generated or 0,
+        "ai_listings_month": current_user.ai_listings_month or current_month,
+        "ai_credits_balance": current_user.ai_credits_balance or 0,
+        
         "created_at": str(current_user.created_at),
         "onboarding_completed": current_user.onboarding_completed,
         "onboarding_goal": current_user.onboarding_goal,

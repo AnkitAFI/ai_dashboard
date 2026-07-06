@@ -656,6 +656,132 @@ def verify_payment(
         "expires_at":        str(expiry),
     }
 
+
+# ═════════════════════════════════════════════════════════════════════════════
+# ENDPOINT 3.5 — AI CREDITS  (POST)
+# ═════════════════════════════════════════════════════════════════════════════
+
+class CreateCreditOrderRequest(BaseModel):
+    user_id: int
+    credits: int
+    amount: int
+    billing: BillingInfo
+
+class VerifyCreditPaymentRequest(BaseModel):
+    razorpay_payment_id: str
+    razorpay_order_id:   str
+    razorpay_signature:  str
+    order_db_id:         int
+    user_id:             int
+    credits:             int
+
+@router.post("/create-credit-order")
+def create_credit_order(
+    data:         CreateCreditOrderRequest,
+    current_user: User = Depends(get_current_user),
+    db:           Session = Depends(get_db),
+):
+    if current_user.id != data.user_id:
+        raise HTTPException(403, "Not authorised")
+        
+    gst_amount   = round((data.amount * GST_RATE) / 100) if data.billing.gst_number else 0
+    total_inr    = data.amount + gst_amount
+    amount_paise = total_inr * 100
+    now = get_ist_now()
+
+    try:
+        rzp_order = rzp_client.order.create({
+            "amount":   amount_paise,
+            "currency": "INR",
+            "receipt":  f"rcpt_cred_{current_user.id}_{int(now.timestamp())}",
+            "notes":    {"type": "ai_credits", "credits": data.credits, "user_id": str(current_user.id)},
+        })
+    except Exception as e:
+        raise HTTPException(502, f"Razorpay error: {e}")
+
+    try:
+        db_order = PaymentOrder(
+            user_id           = current_user.id,
+            plan_id           = f"ai_credits_{data.credits}",
+            razorpay_order_id = rzp_order["id"],
+            amount            = total_inr,
+            base_amount       = data.amount,
+            gst_amount        = gst_amount,
+            gst_number        = data.billing.gst_number,
+            currency          = "INR",
+            status            = "created",
+            billing_full_name = data.billing.full_name,
+            billing_email     = data.billing.email,
+            billing_mobile    = data.billing.mobile,
+            billing_company   = data.billing.company_name,
+            billing_address   = data.billing.billing_address,
+            created_at        = now,
+        )
+        db.add(db_order)
+        db.commit()
+        db.refresh(db_order)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(500, f"DB error: {e}")
+
+    return {
+        "razorpay_order_id": rzp_order["id"],
+        "razorpay_key_id":   RAZORPAY_KEY_ID,
+        "amount":            amount_paise,
+        "currency":          "INR",
+        "order_db_id":       db_order.id,
+    }
+
+
+@router.post("/verify-credit-order")
+def verify_credit_order(
+    data:         VerifyCreditPaymentRequest,
+    current_user: User = Depends(get_current_user),
+    db:           Session = Depends(get_db),
+):
+    if current_user.id != data.user_id:
+        raise HTTPException(403, "Not authorised")
+
+    order = (
+        db.query(PaymentOrder)
+        .filter(PaymentOrder.id == data.order_db_id, PaymentOrder.user_id == current_user.id)
+        .first()
+    )
+    if not order:
+        raise HTTPException(404, "Order not found")
+
+    if order.status == "paid":
+        return {"success": True, "message": "Already added"}
+
+    if not _verify_razorpay_sig(data.razorpay_order_id, data.razorpay_payment_id, data.razorpay_signature):
+        order.status = "failed"
+        db.commit()
+        raise HTTPException(400, "Invalid payment signature")
+
+    try:
+        order.status              = "paid"
+        order.razorpay_payment_id = data.razorpay_payment_id
+        order.razorpay_signature  = data.razorpay_signature
+        order.paid_at             = get_ist_now()
+        order.invoice_number      = _invoice_number(order.id)
+        
+        # Add credits to user
+        from app.models.schema_v2 import UserSubscription
+        sub = db.query(UserSubscription).filter(UserSubscription.user_id == current_user.id).first()
+        if sub:
+            sub.ai_credits_balance += data.credits
+            
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(500, f"DB error adding credits: {e}")
+
+    return {
+        "success": True,
+        "message": f"Added {data.credits} credits to your wallet.",
+        "invoice_number": order.invoice_number,
+    }
+
 # ═════════════════════════════════════════════════════════════════════════════
 # ENDPOINT 4 — INVOICE PDF  (GET)
 # ═════════════════════════════════════════════════════════════════════════════

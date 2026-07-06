@@ -60,6 +60,11 @@ export const userSubscriptions = pgTable("user_subscriptions", {
   keywordTrackerUsed: integer("keyword_tracker_used").default(0),
   keywordTrackerMonth: varchar("keyword_tracker_month", { length: 7 }),
   kiSearchesUsed: integer("ki_searches_used").default(0),
+  
+  // AI Listing Studio Tracking
+  aiListingsGenerated: integer("ai_listings_generated").default(0),
+  aiListingsMonth: varchar("ai_listings_month", { length: 7 }),
+  aiCreditsBalance: integer("ai_credits_balance").default(0),
 });
 
 // 5. Application State

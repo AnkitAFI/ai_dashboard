@@ -55,6 +55,9 @@ def build_facade():
             us.ki_cycle_start, 
             us.subscription_expires_at, 
             us.scheduled_downgrade_to, 
+            us.ai_listings_generated,
+            us.ai_listings_month,
+            us.ai_credits_balance,
             ua.is_verified, 
             uas.onboarding_completed, 
             ub.onboarding_goal, 
@@ -65,7 +68,8 @@ def build_facade():
             up.mobile_number, 
             uas.explorer_tour_completed, 
             uas.seller_tour_completed, 
-            uas.welcome_card_dismissed
+            uas.welcome_card_dismissed,
+            ua.role
         FROM users_auth ua
         LEFT JOIN user_profiles up ON ua.id = up.user_id
         LEFT JOIN user_business_info ub ON ua.id = ub.user_id
@@ -91,8 +95,8 @@ def build_facade():
             -- We must generate a placeholder or the app must provide it. 
             -- Actually, if we add email_hash to legacy_models.User, the app will auto-generate it!
             
-            INSERT INTO users_auth (email_hash, password_hash, is_active, is_verified, created_at)
-            VALUES (NEW.email_hash, NEW.password_hash, COALESCE(NEW.is_active, true), COALESCE(NEW.is_verified, false), COALESCE(NEW.created_at, now()))
+            INSERT INTO users_auth (email_hash, password_hash, is_active, is_verified, role, created_at)
+            VALUES (NEW.email_hash, NEW.password_hash, COALESCE(NEW.is_active, true), COALESCE(NEW.is_verified, false), COALESCE(NEW.role, 'user'), COALESCE(NEW.created_at, now()))
             RETURNING id INTO new_user_id;
 
             -- Insert into user_profiles
@@ -104,8 +108,8 @@ def build_facade():
             VALUES (new_user_id, NEW.business_name, NEW.seller_id, NEW.business_interests, NEW.seller_sync_status, NEW.onboarding_goal, NEW.onboarding_marketplace, NEW.onboarding_details);
 
             -- Insert into user_subscriptions
-            INSERT INTO user_subscriptions (user_id, subscription_tier, subscription_expires_at, scheduled_downgrade_to, ki_cycle_start, ai_chat_used, ai_chat_month, analysis_used, analysis_month, sov_used, sov_month, keyword_tracker_used, keyword_tracker_month, ki_searches_used)
-            VALUES (new_user_id, COALESCE(NEW.subscription_tier, 'free'), NEW.subscription_expires_at, NEW.scheduled_downgrade_to, NEW.ki_cycle_start, COALESCE(NEW.ai_chat_used, 0), NEW.ai_chat_month, COALESCE(NEW.analysis_used, 0), NEW.analysis_month, COALESCE(NEW.sov_used, 0), NEW.sov_month, COALESCE(NEW.keyword_tracker_used, 0), NEW.keyword_tracker_month, COALESCE(NEW.ki_searches_used, 0));
+            INSERT INTO user_subscriptions (user_id, subscription_tier, subscription_expires_at, scheduled_downgrade_to, ki_cycle_start, ai_chat_used, ai_chat_month, analysis_used, analysis_month, sov_used, sov_month, keyword_tracker_used, keyword_tracker_month, ki_searches_used, ai_listings_generated, ai_listings_month, ai_credits_balance)
+            VALUES (new_user_id, COALESCE(NEW.subscription_tier, 'free'), NEW.subscription_expires_at, NEW.scheduled_downgrade_to, NEW.ki_cycle_start, COALESCE(NEW.ai_chat_used, 0), NEW.ai_chat_month, COALESCE(NEW.analysis_used, 0), NEW.analysis_month, COALESCE(NEW.sov_used, 0), NEW.sov_month, COALESCE(NEW.keyword_tracker_used, 0), NEW.keyword_tracker_month, COALESCE(NEW.ki_searches_used, 0), COALESCE(NEW.ai_listings_generated, 0), NEW.ai_listings_month, COALESCE(NEW.ai_credits_balance, 0));
 
             -- Insert into user_app_state
             INSERT INTO user_app_state (user_id, onboarding_completed, explorer_tour_completed, seller_tour_completed, welcome_card_dismissed)
@@ -130,7 +134,7 @@ def build_facade():
         RETURNS TRIGGER AS $$
         BEGIN
             UPDATE users_auth 
-            SET password_hash = NEW.password_hash, is_active = NEW.is_active, is_verified = NEW.is_verified, updated_at = now()
+            SET password_hash = NEW.password_hash, is_active = NEW.is_active, is_verified = NEW.is_verified, role = NEW.role, updated_at = now()
             WHERE id = OLD.id;
 
             UPDATE user_profiles
@@ -142,7 +146,7 @@ def build_facade():
             WHERE user_id = OLD.id;
 
             UPDATE user_subscriptions
-            SET subscription_tier = NEW.subscription_tier, subscription_expires_at = NEW.subscription_expires_at, scheduled_downgrade_to = NEW.scheduled_downgrade_to, ki_cycle_start = NEW.ki_cycle_start, ai_chat_used = NEW.ai_chat_used, ai_chat_month = NEW.ai_chat_month, analysis_used = NEW.analysis_used, analysis_month = NEW.analysis_month, sov_used = NEW.sov_used, sov_month = NEW.sov_month, keyword_tracker_used = NEW.keyword_tracker_used, keyword_tracker_month = NEW.keyword_tracker_month, ki_searches_used = NEW.ki_searches_used
+            SET subscription_tier = NEW.subscription_tier, subscription_expires_at = NEW.subscription_expires_at, scheduled_downgrade_to = NEW.scheduled_downgrade_to, ki_cycle_start = NEW.ki_cycle_start, ai_chat_used = NEW.ai_chat_used, ai_chat_month = NEW.ai_chat_month, analysis_used = NEW.analysis_used, analysis_month = NEW.analysis_month, sov_used = NEW.sov_used, sov_month = NEW.sov_month, keyword_tracker_used = NEW.keyword_tracker_used, keyword_tracker_month = NEW.keyword_tracker_month, ki_searches_used = NEW.ki_searches_used, ai_listings_generated = NEW.ai_listings_generated, ai_listings_month = NEW.ai_listings_month, ai_credits_balance = NEW.ai_credits_balance
             WHERE user_id = OLD.id;
 
             UPDATE user_app_state

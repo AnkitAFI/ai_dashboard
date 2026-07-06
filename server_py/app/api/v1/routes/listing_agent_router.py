@@ -61,6 +61,27 @@ async def api_generate_listing(
     listings using the local Llama 3 AI.
     """
     try:
+        # ENFORCEMENT LOGIC
+        from app.models.schema_v2 import UserSubscription
+        sub = db.query(UserSubscription).filter(UserSubscription.user_id == user_id).first()
+        
+        if not sub or sub.subscription_tier == "free":
+            raise HTTPException(status_code=403, detail="Free Tier locked. Please upgrade to Basic or Premium to access AI Listing Studio.")
+            
+        if sub.subscription_tier == "basic":
+            if sub.ai_listings_generated >= 20:
+                raise HTTPException(status_code=403, detail="You have reached your 20 SKU limit for this month. Please upgrade to Premium for unlimited access.")
+        
+        # Check Wallet Balance (Option A)
+        if sub.ai_credits_balance <= 0:
+            # 402 Payment Required
+            raise HTTPException(status_code=402, detail="INSUFFICIENT_CREDITS")
+            
+        # Deduct balance and track generation
+        sub.ai_credits_balance -= 1
+        sub.ai_listings_generated += 1
+        db.commit()
+
         new_listing = await generate_listings_for_product(
             db=db,
             user_id=user_id, 
