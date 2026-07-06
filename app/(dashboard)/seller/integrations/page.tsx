@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { API_BASE_URL } from "@/lib/config";
-import { CheckCircle2, Link as LinkIcon, Loader2 } from "lucide-react";
+import { CheckCircle2, Link as LinkIcon, Loader2, Sparkles } from "lucide-react";
 
 export default function IntegrationsPage() {
   const { toast } = useToast();
@@ -58,25 +58,38 @@ export default function IntegrationsPage() {
 
   return (
     <div className="p-8 max-w-5xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight mb-2">API Integrations</h1>
-        <p className="text-slate-500">Connect your marketplace accounts to enable one-click publishing and syncing. All tokens are secured with military-grade AES encryption.</p>
+      <div className="mb-10 text-center">
+        <h1 className="text-4xl font-extrabold tracking-tight mb-3 text-slate-900">API Integrations</h1>
+        <p className="text-slate-500 max-w-2xl mx-auto text-lg">Connect your marketplace accounts to enable one-click publishing and syncing. All tokens are secured with military-grade AES encryption.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="max-w-4xl mx-auto mb-8 bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
+        <div className="bg-blue-100 p-2 rounded-lg text-blue-600 mt-0.5">
+          <Sparkles className="w-5 h-5" />
+        </div>
+        <div>
+          <h3 className="font-semibold text-blue-900">Next Steps</h3>
+          <p className="text-blue-800/80 text-sm mt-1">
+            Once your accounts are connected, head over to the <a href="/seller/listing-studio" className="font-bold underline decoration-blue-300 underline-offset-2 hover:text-blue-600 transition-colors">AI Listing Studio</a> to generate and publish your products directly in one click!
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         {/* Amazon Card */}
-        <Card>
+        <Card className="border-t-4 border-t-[#FF9900] shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF9900]/5 rounded-bl-full -z-10"></div>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-2xl font-bold text-slate-800">
                   Amazon SP-API
-                  {amazonConnected && <CheckCircle2 className="h-5 w-5 text-emerald-500" />}
+                  {amazonConnected && <CheckCircle2 className="h-6 w-6 text-emerald-500" />}
                 </CardTitle>
-                <CardDescription className="mt-2">Connect to your Amazon Seller Central account.</CardDescription>
+                <CardDescription className="mt-2 text-sm font-medium">Connect to your Amazon Seller Central account.</CardDescription>
               </div>
-              <div className="h-12 w-12 rounded-full bg-[#FF9900]/10 flex items-center justify-center">
-                <span className="text-[#FF9900] font-bold text-xl">a</span>
+              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#FF9900]/20 to-[#FF9900]/5 flex items-center justify-center border border-[#FF9900]/20 shadow-sm">
+                <span className="text-[#FF9900] font-extrabold text-3xl">a</span>
               </div>
             </div>
           </CardHeader>
@@ -92,34 +105,35 @@ export default function IntegrationsPage() {
                 </Button>
               </div>
             ) : (
-              <div className="py-4 text-center">
-                <p className="text-sm text-slate-500 mb-6">Click below to securely login with your Amazon seller account. You will be redirected to Amazon for authorization.</p>
+              <div className="py-8 text-center bg-slate-50/50 rounded-xl border border-slate-100 mt-4">
+                <p className="text-sm text-slate-600 px-6 font-medium">Click below to securely authenticate with your Amazon seller account.</p>
               </div>
             )}
           </CardContent>
           {!amazonConnected && (
-            <CardFooter>
-              <Button onClick={handleConnectAmazon} className="w-full bg-[#FF9900] hover:bg-[#E68A00] text-black">
-                <LinkIcon className="h-4 w-4 mr-2" />
-                Login with Amazon
+            <CardFooter className="pt-2 pb-6 px-6">
+              <Button onClick={handleConnectAmazon} className="w-full h-12 text-base font-bold bg-[#FF9900] hover:bg-[#E68A00] text-black shadow-lg shadow-[#FF9900]/20 transition-all active:scale-[0.98]">
+                <LinkIcon className="h-5 w-5 mr-2" />
+                Connect Amazon
               </Button>
             </CardFooter>
           )}
         </Card>
 
         {/* Flipkart Card */}
-        <Card>
+        <Card className="border-t-4 border-t-[#2874F0] shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#2874F0]/5 rounded-bl-full -z-10"></div>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 text-2xl font-bold text-slate-800">
                   Flipkart Seller API
-                  {flipkartConnected && <CheckCircle2 className="h-5 w-5 text-emerald-500" />}
+                  {flipkartConnected && <CheckCircle2 className="h-6 w-6 text-emerald-500" />}
                 </CardTitle>
-                <CardDescription className="mt-2">Connect to your Flipkart Seller Hub.</CardDescription>
+                <CardDescription className="mt-2 text-sm font-medium">Connect to your Flipkart Seller Hub.</CardDescription>
               </div>
-              <div className="h-12 w-12 rounded-full bg-[#2874F0]/10 flex items-center justify-center">
-                <span className="text-[#2874F0] font-bold text-xl italic">f</span>
+              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#2874F0]/20 to-[#2874F0]/5 flex items-center justify-center border border-[#2874F0]/20 shadow-sm">
+                <span className="text-[#2874F0] font-extrabold text-3xl italic">f</span>
               </div>
             </div>
           </CardHeader>
@@ -135,15 +149,15 @@ export default function IntegrationsPage() {
                 </Button>
               </div>
             ) : (
-              <div className="py-4 text-center">
-                <p className="text-sm text-slate-500 mb-6">Click below to securely authenticate with your Flipkart seller account.</p>
+              <div className="py-8 text-center bg-slate-50/50 rounded-xl border border-slate-100 mt-4">
+                <p className="text-sm text-slate-600 px-6 font-medium">Click below to securely authenticate with your Flipkart seller account.</p>
               </div>
             )}
           </CardContent>
           {!flipkartConnected && (
-            <CardFooter>
-              <Button onClick={handleConnectFlipkart} className="w-full bg-[#2874F0] hover:bg-[#1E5BBE] text-white">
-                <LinkIcon className="h-4 w-4 mr-2" />
+            <CardFooter className="pt-2 pb-6 px-6">
+              <Button onClick={handleConnectFlipkart} className="w-full h-12 text-base font-bold bg-[#2874F0] hover:bg-[#1E5BBE] text-white shadow-lg shadow-[#2874F0]/20 transition-all active:scale-[0.98]">
+                <LinkIcon className="h-5 w-5 mr-2" />
                 Connect Flipkart
               </Button>
             </CardFooter>

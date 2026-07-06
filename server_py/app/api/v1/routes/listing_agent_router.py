@@ -7,6 +7,7 @@ from app.db.session import get_db
 from app.api.deps import get_current_user_id
 from app.services.listing_agent_service import generate_listings_for_product
 from app.services.listing_api_integrations import publish_to_amazon, publish_to_flipkart
+from app.services.image_processing_service import make_amazon_compliant_image
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/listing-agent", tags=["Listing Agent"])
@@ -16,6 +17,10 @@ class GenerateListingRequest(BaseModel):
     category: str = "General"
     image_url: str = None
     image_base64: str = None
+    use_hinglish: bool = False
+
+class RemoveBackgroundRequest(BaseModel):
+    image_base64: str
 
 class PublishListingRequest(BaseModel):
     listing_id: int
@@ -28,6 +33,22 @@ class PublishListingRequest(BaseModel):
     quantity: int
     product_id: str
     product_id_type: str # 'UPC', 'EAN', 'ASIN', 'GCID'
+
+@router.post("/remove-background")
+async def api_remove_background(req: RemoveBackgroundRequest, user_id: str = Depends(get_current_user_id)):
+    """
+    Takes a base64 image, removes the background locally using rembg, 
+    and returns a clean white background image for Amazon compliance.
+    """
+    try:
+        if not req.image_base64:
+            raise HTTPException(status_code=400, detail="Image base64 is required.")
+        
+        cleaned_base64 = make_amazon_compliant_image(req.image_base64)
+        return {"status": "success", "image_base64": cleaned_base64}
+    except Exception as e:
+        logger.error(f"Error in remove_background: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/generate")
 async def api_generate_listing(
@@ -46,7 +67,8 @@ async def api_generate_listing(
             raw_description=req.raw_description,
             category=req.category,
             image_url=req.image_url,
-            image_base64=req.image_base64
+            image_base64=req.image_base64,
+            use_hinglish=req.use_hinglish
         )
         return {"status": "success", "listing_id": new_listing.id, "data": new_listing}
     except Exception as e:

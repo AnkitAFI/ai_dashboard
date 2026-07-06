@@ -8,7 +8,8 @@ from app.services.ollama_service import (
     build_amazon_listing_prompt,
     build_flipkart_listing_prompt,
     analyze_product_image_with_moondream,
-    build_attribute_extraction_prompt
+    build_attribute_extraction_prompt,
+    build_aplus_content_prompt
 )
 
 logger = logging.getLogger(__name__)
@@ -68,10 +69,11 @@ def extract_json_from_llm(response_str: str) -> dict:
 async def generate_listings_for_product(
     db: Session, 
     user_id: int, 
-    raw_description: str, 
-    category: str = "General", 
+    raw_description: str,
+    category: str = "General",
     image_url: str = None,
-    image_base64: str = None
+    image_base64: str = None,
+    use_hinglish: bool = False
 ) -> ProductListing:
     """
     Takes a raw product description (and optionally an image) and uses AI to generate 
@@ -89,24 +91,30 @@ async def generate_listings_for_product(
             logger.info(f"Extracted image details: {image_details}")
             
     # 1. Generate Amazon Listing
-    amazon_prompt = build_amazon_listing_prompt(raw_description, category)
+    amazon_prompt = build_amazon_listing_prompt(raw_description, category, use_hinglish)
     amazon_response_str = await complete_ollama(amazon_prompt)
     
     amazon_data = extract_json_from_llm(amazon_response_str)
         
     # 2. Generate Flipkart Listing
-    flipkart_prompt = build_flipkart_listing_prompt(raw_description, category)
+    flipkart_prompt = build_flipkart_listing_prompt(raw_description, category, use_hinglish)
     flipkart_response_str = await complete_ollama(flipkart_prompt)
     
     flipkart_data = extract_json_from_llm(flipkart_response_str)
+    
+    # 3. Generate A+ Content (Premium)
+    aplus_prompt = build_aplus_content_prompt(raw_description, category)
+    aplus_response_str = await complete_ollama(aplus_prompt)
+    
+    aplus_data = extract_json_from_llm(aplus_response_str)
 
-    # 3. Extract Attributes
+    # 4. Extract Attributes
     attr_prompt = build_attribute_extraction_prompt(raw_description)
     attr_response_str = await complete_ollama(attr_prompt)
     
     extracted_attributes = extract_json_from_llm(attr_response_str)
 
-    # 4. Save to Database
+    # 5. Save to Database
     new_listing = ProductListing(
         user_id=user_id,
         raw_description=raw_description,
@@ -119,7 +127,9 @@ async def generate_listings_for_product(
         amazon_search_terms=amazon_data.get("amazon_search_terms", ""),
         
         flipkart_title=flipkart_data.get("flipkart_title", ""),
-        flipkart_description=flipkart_data.get("flipkart_description", "")
+        flipkart_description=flipkart_data.get("flipkart_description", ""),
+        
+        a_plus_content=aplus_data
     )
     
     db.add(new_listing)

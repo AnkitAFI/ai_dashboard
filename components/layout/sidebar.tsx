@@ -218,11 +218,17 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
   }, [isMobileOpen]);
 
   useEffect(() => {
-    const savedMode = localStorage.getItem('sidebar-mode');
-    if (savedMode === 'explorer' || savedMode === 'seller') {
-      setMode(savedMode);
+    if (pathname?.startsWith('/seller')) {
+      setMode('seller');
+    } else if (pathname?.startsWith('/explorer')) {
+      setMode('explorer');
+    } else {
+      const savedMode = localStorage.getItem('sidebar-mode');
+      if (savedMode === 'explorer' || savedMode === 'seller') {
+        setMode(savedMode);
+      }
     }
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     localStorage.setItem('sidebar-mode', mode);

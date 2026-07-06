@@ -24,6 +24,9 @@ class ProductListing(Base):
     flipkart_title = Column(String(500), nullable=True)
     flipkart_description = Column(Text, nullable=True)
     
+    # Premium A+ / Rich Description
+    a_plus_content = Column(JSON, nullable=True)
+    
     # Status
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())

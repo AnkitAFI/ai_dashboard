@@ -455,7 +455,11 @@ Give me 3 specific pricing and positioning recommendations based on this real ma
 
 # ── Listing Agent Prompts ──────────────────────────────────────────────────────
 
-def build_amazon_listing_prompt(raw_description: str, category: str = "General") -> str:
+def build_amazon_listing_prompt(raw_description: str, category: str = "General", use_hinglish: bool = False) -> str:
+    hinglish_instruction = ""
+    if use_hinglish:
+        hinglish_instruction = "CRITICAL INSTRUCTION: Include highly searched colloquial 'Hinglish' variations of this product in the backend search terms (e.g., if it's a water bottle, include 'pani ki bottle'). This is targeting Tier 2/3 Indian cities.\n"
+
     return f"""You are an expert Amazon India SEO copywriter.
 Take the following raw product details and generate an optimized Amazon listing.
 
@@ -464,7 +468,7 @@ CONFLICT RESOLUTION RULE: The provided data has an "ABSOLUTE SOURCE OF TRUTH (Vi
 RAW PRODUCT DETAILS:
 {raw_description}
 CATEGORY: {category}
-
+{hinglish_instruction}
 You must strictly return a JSON object with the following keys exactly:
 - "amazon_title": A title between 150-200 characters, rich in high-volume keywords, avoiding promotional words like 'best' or 'cheapest'.
 - "amazon_bullets": An array of exactly 5 bullet points. Each bullet must be under 200 characters. Start each bullet with a capitalized summary phrase followed by a colon.
@@ -473,7 +477,11 @@ You must strictly return a JSON object with the following keys exactly:
 
 Respond ONLY with valid JSON. Do not include any markdown formatting like ```json. Ensure all string values are properly escaped and enclosed in double quotes."""
 
-def build_flipkart_listing_prompt(raw_description: str, category: str = "General") -> str:
+def build_flipkart_listing_prompt(raw_description: str, category: str = "General", use_hinglish: bool = False) -> str:
+    hinglish_instruction = ""
+    if use_hinglish:
+        hinglish_instruction = "CRITICAL INSTRUCTION: Include highly searched colloquial 'Hinglish' variations of this product in the flipkart description text seamlessly (e.g., if it's a water bottle, include 'pani ki bottle'). This is targeting Tier 2/3 Indian cities.\n"
+
     return f"""You are an expert Flipkart SEO copywriter.
 Take the following raw product details and generate an optimized Flipkart listing.
 
@@ -482,7 +490,7 @@ CONFLICT RESOLUTION RULE: The provided data has an "ABSOLUTE SOURCE OF TRUTH (Vi
 RAW PRODUCT DETAILS:
 {raw_description}
 CATEGORY: {category}
-
+{hinglish_instruction}
 You must strictly return a JSON object with the following keys exactly:
 - "flipkart_title": A concise, brand-first title (max 100 characters). Format: [Brand] [Core Product] [Key Feature].
 - "flipkart_description": A clean, bulleted text description (no HTML allowed for Flipkart) focusing on specifications and warranty. MUST BE ENCLOSED IN QUOTES AS A VALID JSON STRING.
@@ -501,3 +509,25 @@ If an attribute is unknown or not mentioned, omit it or use an empty string.
 Keys must be lowercase (e.g. brand, color, size, material, style).
 
 Respond ONLY with valid JSON. Do not include any markdown formatting like ```json."""
+
+def build_aplus_content_prompt(raw_description: str, category: str = "General") -> str:
+    return f"""You are an expert Premium E-commerce Brand Copywriter.
+Take the following raw product details and generate a visually engaging Premium A+ Content (Amazon) and Rich Description (Flipkart) copy.
+
+CONFLICT RESOLUTION RULE: The provided data has an "ABSOLUTE SOURCE OF TRUTH (Visual AI Analysis)" and "UNVERIFIED USER INPUT". If the user input contradicts the visual analysis (e.g., wrong brand, wrong product, wrong color), you MUST completely discard the contradicting user input and use ONLY the visual analysis. Do not try to merge contradictory items. The image facts are final.
+
+RAW PRODUCT DETAILS:
+{raw_description}
+CATEGORY: {category}
+
+You must strictly return a JSON object representing the "Standard 3-Image Text Module" and a "Brand Story".
+Use the following keys exactly:
+- "brand_story_hook": A short, catchy 1-2 sentence hook about the brand's mission or product's core value (max 150 characters).
+- "feature_1_headline": A short, punchy 3-5 word headline highlighting the first major feature.
+- "feature_1_body": A short paragraph (30-50 words) elaborating on feature 1.
+- "feature_2_headline": A short, punchy 3-5 word headline highlighting the second major feature.
+- "feature_2_body": A short paragraph (30-50 words) elaborating on feature 2.
+- "feature_3_headline": A short, punchy 3-5 word headline highlighting the third major feature.
+- "feature_3_body": A short paragraph (30-50 words) elaborating on feature 3.
+
+Respond ONLY with valid JSON. Do not include any markdown formatting like ```json. Ensure all string values are properly escaped and enclosed in double quotes."""
