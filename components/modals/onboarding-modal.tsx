@@ -1,11 +1,7 @@
-
 import React, { useState, useEffect } from "react";
 import { API_BASE_URL } from "@/lib/config";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { analytics } from "@/lib/analytics";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -60,14 +56,17 @@ const MARKETPLACE_API_MAP: Record<string, string> = {
 async function fetchCategories(marketplace: string): Promise<string[]> {
   const param = MARKETPLACE_API_MAP[marketplace] ?? "amazon";
   const res = await fetch(
-    `${API_BASE_URL}/api/onboarding/categories?marketplace=${param}`
+    `${API_BASE_URL}/api/onboarding/categories?marketplace=${param}`,
   );
   if (!res.ok) return [];
   const data = await res.json();
   return data.categories ?? [];
 }
 
-async function connectSellerAccount(sellerId: string, country: string): Promise<void> {
+async function connectSellerAccount(
+  sellerId: string,
+  country: string,
+): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/api/seller/update-seller-id`, {
     method: "POST",
     credentials: "include",
@@ -80,7 +79,11 @@ async function connectSellerAccount(sellerId: string, country: string): Promise<
 // Marketplaces where existing seller is NOT yet supported
 const COMING_SOON_SELLER_MARKETPLACES = ["flipkart", "both"];
 
-export default function OnboardingModal({ isOpen, onClose, onComplete }: OnboardingModalProps) {
+export default function OnboardingModal({
+  isOpen,
+  onClose,
+  onComplete,
+}: OnboardingModalProps) {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<OnboardingData>({
     onboarding_goal: "",
@@ -102,7 +105,11 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
 
   // Fetch categories when marketplace chosen and goal is new_seller
   useEffect(() => {
-    if (!formData.onboarding_marketplace || formData.onboarding_goal !== "new_seller") return;
+    if (
+      !formData.onboarding_marketplace ||
+      formData.onboarding_goal !== "new_seller"
+    )
+      return;
 
     setLoadingCategories(true);
     setCategoryError(false);
@@ -146,7 +153,9 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
       setIsConnected(true);
       setFormData((prev) => ({ ...prev, seller_id: sellerId }));
     } catch (err: any) {
-      setConnectionError(err.message || "Something went wrong. Please try again.");
+      setConnectionError(
+        err.message || "Something went wrong. Please try again.",
+      );
     } finally {
       setIsConnecting(false);
     }
@@ -158,6 +167,19 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
       finalData.seller_id = formData.onboarding_details;
     }
     onComplete(finalData);
+  };
+
+  const handleSkipSellerId = () => {
+    analytics.track("onboarding_seller_id_skipped", {
+      marketplace: formData.onboarding_marketplace,
+      step: 3,
+    });
+    const skipData: OnboardingData = {
+      ...formData,
+      onboarding_details: "skipped",
+      seller_id: "",
+    };
+    onComplete(skipData);
   };
 
   const isStepValid = () => {
@@ -173,32 +195,38 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent 
+      <DialogContent
         className="sm:max-w-[600px] p-0 overflow-hidden bg-white border-none shadow-2xl rounded-3xl [&>button]:hidden"
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
-
         {/* Progress Header */}
         <div className="bg-[#0f2a43] p-6 text-white">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-4">
             {steps.map((step) => (
-              <div key={step.id} className="flex items-center flex-1 last:flex-none">
+              <div
+                key={step.id}
+                className="flex items-center flex-1 last:flex-none"
+              >
                 <div
                   className={cn(
                     "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300",
                     currentStep >= step.id
                       ? "bg-amber-500 text-white"
-                      : "bg-slate-700 text-slate-400"
+                      : "bg-slate-700 text-slate-400",
                   )}
                 >
-                  {currentStep > step.id ? <CheckCircle2 className="w-5 h-5" /> : step.id}
+                  {currentStep > step.id ? (
+                    <CheckCircle2 className="w-5 h-5" />
+                  ) : (
+                    step.id
+                  )}
                 </div>
                 {step.id < 3 && (
                   <div
                     className={cn(
                       "h-[2px] flex-1 mx-2 transition-all duration-500",
-                      currentStep > step.id ? "bg-amber-500" : "bg-slate-700"
+                      currentStep > step.id ? "bg-amber-500" : "bg-slate-700",
                     )}
                   />
                 )}
@@ -209,12 +237,16 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
             <span className="text-amber-500 text-xs font-semibold uppercase tracking-wider">
               Step {currentStep} of 3
             </span>
-            <DialogTitle className="text-2xl font-bold text-white">{steps[currentStep - 1].title}</DialogTitle>
-            <p className="text-slate-400 text-sm">{steps[currentStep - 1].subtitle}</p>
+            <DialogTitle className="text-2xl font-bold text-white">
+              {steps[currentStep - 1].title}
+            </DialogTitle>
+            <p className="text-slate-400 text-sm">
+              {steps[currentStep - 1].subtitle}
+            </p>
           </div>
         </div>
 
-        <div className="p-8 bg-white min-h-[300px] flex flex-col">
+        <div className="p-6 bg-white min-h-[300px] flex flex-col">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
@@ -224,51 +256,68 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
               transition={{ duration: 0.3 }}
               className="flex-1"
             >
-
               {/* ── Step 1: Goal ── */}
               {currentStep === 1 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 h-full py-4">
                   <button
-                    onClick={() => setFormData({ ...formData, onboarding_goal: "new_seller" })}
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        onboarding_goal: "new_seller",
+                      })
+                    }
                     className={cn(
                       "flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all group",
                       formData.onboarding_goal === "new_seller"
                         ? "border-sky-500 bg-sky-50 shadow-md"
-                        : "border-slate-100 hover:border-sky-200 hover:bg-slate-50"
+                        : "border-slate-100 hover:border-sky-200 hover:bg-slate-50",
                     )}
                   >
-                    <div className={cn(
-                      "w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors",
-                      formData.onboarding_goal === "new_seller"
-                        ? "bg-sky-500 text-white"
-                        : "bg-slate-100 text-slate-500 group-hover:bg-sky-100 group-hover:text-sky-600"
-                    )}>
+                    <div
+                      className={cn(
+                        "w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors",
+                        formData.onboarding_goal === "new_seller"
+                          ? "bg-sky-500 text-white"
+                          : "bg-slate-100 text-slate-500 group-hover:bg-sky-100 group-hover:text-sky-600",
+                      )}
+                    >
                       <Search className="w-6 h-6" />
                     </div>
-                    <span className="font-bold text-slate-800 text-lg mb-2">New Seller</span>
+                    <span className="font-bold text-slate-800 text-lg mb-2">
+                      New Seller
+                    </span>
                     <p className="text-sm text-slate-500 text-center">
                       Research markets, find demand, check competition
                     </p>
                   </button>
 
                   <button
-                    onClick={() => setFormData({ ...formData, onboarding_goal: "existing_seller" })}
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        onboarding_goal: "existing_seller",
+                      })
+                    }
                     className={cn(
                       "flex flex-col items-center justify-center p-6 rounded-2xl border-2 transition-all group",
                       formData.onboarding_goal === "existing_seller"
                         ? "border-sky-500 bg-sky-50 shadow-md"
-                        : "border-slate-100 hover:border-sky-200 hover:bg-slate-50"
+                        : "border-slate-100 hover:border-sky-200 hover:bg-slate-50",
                     )}
                   >
-                    <div className={cn(
-                      "w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors",
-                      formData.onboarding_goal === "existing_seller"
-                        ? "bg-sky-500 text-white"
-                        : "bg-slate-100 text-slate-500 group-hover:bg-sky-100 group-hover:text-sky-600"
-                    )}>
+                    <div
+                      className={cn(
+                        "w-12 h-12 rounded-xl flex items-center justify-center mb-2 transition-colors",
+                        formData.onboarding_goal === "existing_seller"
+                          ? "bg-sky-500 text-white"
+                          : "bg-slate-100 text-slate-500 group-hover:bg-sky-100 group-hover:text-sky-600",
+                      )}
+                    >
                       <BarChart3 className="w-6 h-6" />
                     </div>
-                    <span className="font-bold text-slate-800 text-lg mb-2">Existing Seller</span>
+                    <span className="font-bold text-slate-800 text-lg mb-2">
+                      Existing Seller
+                    </span>
                     <p className="text-sm text-slate-500 text-center">
                       Track rankings, monitor competitors, get alerts
                     </p>
@@ -280,7 +329,11 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
               {currentStep === 2 && (
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 py-4">
                   {[
-                    { id: "amazon_india", label: "Amazon India", icon: Package },
+                    {
+                      id: "amazon_india",
+                      label: "Amazon India",
+                      icon: Package,
+                    },
                     { id: "flipkart", label: "Flipkart", icon: ShoppingCart },
                     { id: "both", label: "Both", icon: Globe },
                   ].map((market) => {
@@ -304,7 +357,7 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
                             ? "border-sky-500 bg-sky-50"
                             : isMarketComingSoon
                               ? "border-slate-100 bg-slate-50 opacity-70"
-                              : "border-slate-100 hover:border-sky-200"
+                              : "border-slate-100 hover:border-sky-200",
                         )}
                       >
                         {/* Coming soon badge on the card */}
@@ -313,17 +366,21 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
                             Soon
                           </span>
                         )}
-                        <div className={cn(
-                          "w-10 h-10 rounded-lg flex items-center justify-center mb-3 transition-colors",
-                          formData.onboarding_marketplace === market.id
-                            ? "bg-sky-500 text-white"
-                            : isMarketComingSoon
-                              ? "bg-slate-200 text-slate-400"
-                              : "bg-slate-100 text-slate-500"
-                        )}>
+                        <div
+                          className={cn(
+                            "w-10 h-10 rounded-lg flex items-center justify-center mb-3 transition-colors",
+                            formData.onboarding_marketplace === market.id
+                              ? "bg-sky-500 text-white"
+                              : isMarketComingSoon
+                                ? "bg-slate-200 text-slate-400"
+                                : "bg-slate-100 text-slate-500",
+                          )}
+                        >
                           <market.icon className="w-5 h-5" />
                         </div>
-                        <span className="font-semibold text-slate-800 text-sm">{market.label}</span>
+                        <span className="font-semibold text-slate-800 text-sm">
+                          {market.label}
+                        </span>
                       </button>
                     );
                   })}
@@ -332,11 +389,10 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
 
               {/* ── Step 3: Details ── */}
               {currentStep === 3 && (
-                <div className="space-y-6 py-4">
-
+                <div className="space-y-4 py-1 mb-4">
                   {/* NEW SELLER — category picker */}
                   {formData.onboarding_goal === "new_seller" && (
-                    <div className="space-y-4">
+                    <div className="space-y-2">
                       <label className="text-base font-bold text-slate-800">
                         What category are you thinking about?
                       </label>
@@ -357,7 +413,10 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
                         <Select
                           value={formData.onboarding_details}
                           onValueChange={(val) =>
-                            setFormData({ ...formData, onboarding_details: val })
+                            setFormData({
+                              ...formData,
+                              onboarding_details: val,
+                            })
                           }
                         >
                           <SelectTrigger className="w-full h-12 rounded-xl border-slate-200">
@@ -365,7 +424,9 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
                           </SelectTrigger>
                           <SelectContent className="rounded-xl overflow-hidden shadow-xl max-h-60">
                             {categories.map((cat) => (
-                              <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                              <SelectItem key={cat} value={cat}>
+                                {cat}
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
@@ -373,7 +434,12 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
 
                       <button
                         type="button"
-                        onClick={() => setFormData({ ...formData, onboarding_details: "general" })}
+                        onClick={() =>
+                          setFormData({
+                            ...formData,
+                            onboarding_details: "general",
+                          })
+                        }
                         className="text-sm text-sky-600 font-medium hover:underline"
                       >
                         Or skip this — I'll explore on my own
@@ -382,166 +448,196 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
                   )}
 
                   {/* EXISTING SELLER — coming soon for flipkart/both */}
-                  {formData.onboarding_goal === "existing_seller" && isComingSoon && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="flex flex-col items-center justify-center py-8 gap-5 text-center"
-                    >
-                      <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center">
-                        <Clock className="w-8 h-8 text-amber-500" />
-                      </div>
-                      <div className="space-y-2">
-                        <h3 className="text-xl font-bold text-slate-800">Coming Soon</h3>
-                        <p className="text-sm text-slate-500 max-w-xs mx-auto">
-                          Seller dashboard support for{" "}
-                          <span className="font-semibold text-slate-700">
-                            {formData.onboarding_marketplace === "flipkart" ? "Flipkart" : "Meesho / Both"}
-                          </span>{" "}
-                          is currently in development. We'll notify you when it's ready!
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-100 rounded-xl text-xs text-amber-700 font-medium">
-                        <Clock className="w-3 h-3" />
-                        Expected: 2026
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => prevStep()}
-                        className="text-sm text-sky-600 font-medium hover:underline"
+                  {formData.onboarding_goal === "existing_seller" &&
+                    isComingSoon && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex flex-col items-center justify-center py-4 gap-5 text-center"
                       >
-                        Go back and choose Amazon India instead
-                      </button>
-                    </motion.div>
-                  )}
+                        <div className="w-16 h-16 bg-amber-50 rounded-2xl flex items-center justify-center">
+                          <Clock className="w-8 h-8 text-amber-500" />
+                        </div>
+                        <div className="space-y-2">
+                          <h3 className="text-xl font-bold text-slate-800">
+                            Coming Soon
+                          </h3>
+                          <p className="text-sm text-slate-500 max-w-xs mx-auto">
+                            Seller dashboard support for{" "}
+                            <span className="font-semibold text-slate-700">
+                              {formData.onboarding_marketplace === "flipkart"
+                                ? "Flipkart"
+                                : "Meesho / Both"}
+                            </span>{" "}
+                            is currently in development. We'll notify you when
+                            it's ready!
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-100 rounded-xl text-xs text-amber-700 font-medium">
+                          <Clock className="w-3 h-3" />
+                          Expected: 2026
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => prevStep()}
+                          className="text-sm text-sky-600 font-medium hover:underline"
+                        >
+                          Go back and choose Amazon India instead
+                        </button>
+                      </motion.div>
+                    )}
 
                   {/* EXISTING SELLER — Amazon seller ID connection */}
-                  {formData.onboarding_goal === "existing_seller" && !isComingSoon && (
-                    <div className="space-y-4">
-
-                      {/* Connected success state */}
-                      {isConnected ? (
-                        <motion.div
-                          initial={{ scale: 0.95, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          className="flex flex-col items-center justify-center py-6 gap-4"
-                        >
-                          <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center">
-                            <CheckCircle2 className="w-8 h-8 text-green-500" />
-                          </div>
-                          <div className="text-center">
-                            <p className="font-bold text-slate-800 text-lg">Store Connected!</p>
-                            <p className="text-sm text-slate-500 mt-1">
-                              Seller ID{" "}
-                              <span className="font-mono font-semibold text-slate-700">
-                                {formData.onboarding_details}
-                              </span>{" "}
-                              is linked.
-                            </p>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setIsConnected(false);
-                              setFormData((prev) => ({ ...prev, onboarding_details: "", seller_id: "" }));
-                            }}
-                            className="text-xs text-slate-400 hover:text-slate-600 hover:underline"
+                  {formData.onboarding_goal === "existing_seller" &&
+                    !isComingSoon && (
+                      <div className="space-y-2">
+                        {/* Connected success state */}
+                        {isConnected ? (
+                          <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            className="flex flex-col items-center justify-center py-4 gap-4"
                           >
-                            Use a different ID
-                          </button>
-                        </motion.div>
-                      ) : (
-                        <>
-                          <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
-                              <ShoppingBag className="w-5 h-5 text-amber-600" />
+                            <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center">
+                              <CheckCircle2 className="w-8 h-8 text-green-500" />
                             </div>
-                            <div>
-                              <label className="text-base font-bold text-slate-800 block">
-                                Connect your store
-                              </label>
-                              <p className="text-xs text-slate-400">
-                                Enter your Amazon Merchant ID
+                            <div className="text-center">
+                              <p className="font-bold text-slate-800 text-lg">
+                                Store Connected!
+                              </p>
+                              <p className="text-sm text-slate-500 mt-1">
+                                Seller ID{" "}
+                                <span className="font-mono font-semibold text-slate-700">
+                                  {formData.onboarding_details}
+                                </span>{" "}
+                                is linked.
                               </p>
                             </div>
-                          </div>
-
-                          <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700">
-                              Seller / Merchant ID
-                            </label>
-                            <Input
-                              placeholder="e.g. A2P3M1XXXXXXX"
-                              className="h-12 rounded-xl border-slate-200 focus:ring-2 focus:ring-[#0f2a43]"
-                              value={formData.onboarding_details}
-                              onChange={(e) => {
-                                setConnectionError(null);
-                                setFormData({ ...formData, onboarding_details: e.target.value });
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsConnected(false);
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  onboarding_details: "",
+                                  seller_id: "",
+                                }));
                               }}
-                              disabled={isConnecting}
-                            />
-                          </div>
-
-                          <div className="space-y-2">
-                            <label className="text-sm font-semibold text-slate-700">
-                              Marketplace Region
-                            </label>
-                            <Select
-                              value={sellerCountry}
-                              onValueChange={setSellerCountry}
-                              disabled={isConnecting}
+                              className="text-xs text-slate-400 hover:text-slate-600 hover:underline"
                             >
-                              <SelectTrigger className="h-12 rounded-xl border-slate-200">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="IN">India 🇮🇳</SelectItem>
-                                <SelectItem value="US">United States 🇺🇸</SelectItem>
-                              </SelectContent>
-                            </Select>
-                            <p className="text-[10px] text-slate-400 font-medium">
-                              Data will be fetched specifically for this region.
-                            </p>
-                          </div>
-
-                          {connectionError && (
-                            <div className="flex items-center gap-2 p-3 bg-red-50 text-red-600 rounded-xl border border-red-100 text-sm">
-                              <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                              <span>{connectionError}</span>
+                              Use a different ID
+                            </button>
+                          </motion.div>
+                        ) : (
+                          <>
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center">
+                                <ShoppingBag className="w-5 h-5 text-amber-600" />
+                              </div>
+                              <div>
+                                <label className="text-base font-bold text-slate-800 block">
+                                  Connect your store
+                                </label>
+                                <p className="text-xs text-slate-400">
+                                  Enter your Amazon Merchant ID
+                                </p>
+                              </div>
                             </div>
-                          )}
 
-                          <Button
-                            onClick={handleConnectSeller}
-                            disabled={isConnecting || !formData.onboarding_details.trim()}
-                            className="w-full h-12 rounded-xl bg-[#0f2a43] hover:bg-[#1a3d5c] text-white font-bold transition-all"
-                          >
-                            {isConnecting ? (
-                              <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Connecting your store…
-                              </>
-                            ) : (
-                              <>
-                                <ShoppingBag className="w-4 h-4 mr-2" />
-                                Connect Store
-                              </>
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-slate-700">
+                                Seller / Merchant ID
+                              </label>
+                              <Input
+                                placeholder="e.g. A2P3M1XXXXXXX"
+                                className="h-12 rounded-xl border-slate-200 focus:ring-2 focus:ring-[#0f2a43]"
+                                value={formData.onboarding_details}
+                                onChange={(e) => {
+                                  setConnectionError(null);
+                                  setFormData({
+                                    ...formData,
+                                    onboarding_details: e.target.value,
+                                  });
+                                }}
+                                disabled={isConnecting}
+                              />
+                            </div>
+
+                            <div className="space-y-2">
+                              <label className="text-sm font-semibold text-slate-700">
+                                Marketplace Region
+                              </label>
+                              <Select
+                                value={sellerCountry}
+                                onValueChange={setSellerCountry}
+                                disabled={isConnecting}
+                              >
+                                <SelectTrigger className="h-12 rounded-xl border-slate-200">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="IN">India 🇮🇳</SelectItem>
+                                  <SelectItem value="US">
+                                    United States 🇺🇸
+                                  </SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <p className="text-[10px] text-slate-400 font-medium">
+                                Data will be fetched specifically for this
+                                region.
+                              </p>
+                            </div>
+
+                            {connectionError && (
+                              <div className="flex items-center gap-2 p-3 bg-red-50 text-red-600 rounded-xl border border-red-100 text-sm">
+                                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                                <span>{connectionError}</span>
+                              </div>
                             )}
-                          </Button>
 
-                          <p className="text-[10px] text-slate-400 text-center uppercase tracking-widest font-medium">
-                            🔒 Secure Read-Only Access
-                          </p>
-                        </>
-                      )}
-                    </div>
-                  )}
+                            <Button
+                              onClick={handleConnectSeller}
+                              disabled={
+                                isConnecting ||
+                                !formData.onboarding_details.trim()
+                              }
+                              className="w-full h-12 rounded-xl bg-[#0f2a43] hover:bg-[#1a3d5c] text-white font-bold transition-all"
+                            >
+                              {isConnecting ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                  Connecting your store…
+                                </>
+                              ) : (
+                                <>
+                                  <ShoppingBag className="w-4 h-4 mr-2" />
+                                  Connect Store
+                                </>
+                              )}
+                            </Button>
+
+                            <p className="text-[10px] text-slate-400 text-center uppercase tracking-widest font-medium">
+                              🔒 Secure Read-Only Access
+                            </p>
+
+                            <button
+                              type="button"
+                              onClick={handleSkipSellerId}
+                              className="text-sm text-sky-600 font-medium hover:underline mt-2 block mx-auto"
+                              data-track-id="onboarding-skip-seller-id"
+                            >
+                              Skip for now — I'll add it later
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
                 </div>
               )}
             </motion.div>
           </AnimatePresence>
 
-          <div className="flex items-center justify-between gap-4 mt-8">
+          <div className="flex items-center justify-between gap-4 mt-4">
             {currentStep > 1 ? (
               <Button
                 variant="outline"
@@ -562,7 +658,7 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }: Onboard
                 "flex-[2] h-12 rounded-xl font-bold transition-all",
                 currentStep === 3
                   ? "bg-[#0f2a43] hover:bg-[#1a3d5c] text-white"
-                  : "bg-slate-300 text-slate-600"
+                  : "bg-slate-300 text-slate-600",
               )}
             >
               {currentStep === 3 ? (
