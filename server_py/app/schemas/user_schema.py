@@ -35,7 +35,7 @@ class UserOut(BaseModel):
 class OnboardingUpdate(BaseModel):
     onboarding_goal: str
     onboarding_marketplace: str
-    onboarding_details: str
+    onboarding_details: Optional[str] = None
     seller_id: Optional[str] = None
 
     
