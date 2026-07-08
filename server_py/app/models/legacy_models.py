@@ -786,7 +786,7 @@ class UserBehaviorLog(Base):
     __table_args__ = {'extend_existing': True}
 
     id         = Column(Integer, primary_key=True, autoincrement=True)
-    user_id    = Column(Integer, ForeignKey("users_auth.id", ondelete="SET NULL"), nullable=True, index=True)
+    user_id    = Column(Integer, nullable=True, index=True)
     user_email = Column(EncryptedString(), nullable=True, index=True)
     session_id = Column(String(100), nullable=False, index=True)
     event_type = Column(String(100), nullable=False, index=True)
