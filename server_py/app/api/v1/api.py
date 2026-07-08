@@ -24,6 +24,9 @@ from app.api.v1.routes.seller_ai_advisor_router import router as seller_ai_advis
 from app.api.v1.routes.festive_router import router as festive_router
 from app.api.v1.routes.watchlist_router import router as watchlist_router
 from app.api.v1.routes.seller_festive_router import router as seller_festive_router
+from app.api.v1.routes.consent_router import router as consent_router
+from app.api.v1.routes.data_router import router as data_router
+from app.api.v1.routes.listing_agent_router import router as listing_agent_router
 
 api_router = APIRouter()
 
@@ -50,4 +53,10 @@ api_router.include_router(festive_router)
 api_router.include_router(watchlist_router)
 api_router.include_router(seller_festive_router)
 from app.api.v1.routes.promo_router import router as promo_router
-api_router.include_router(promo_router, prefix="/promo", tags=["Promo Codes"])
+api_router.include_router(promo_router, prefix="/promo", tags=["Promo Codes"])
+api_router.include_router(consent_router)
+api_router.include_router(data_router)
+api_router.include_router(listing_agent_router)
+
+from app.api.v1.routes.credentials_router import router as credentials_router
+api_router.include_router(credentials_router)

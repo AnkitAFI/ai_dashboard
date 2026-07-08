@@ -2,7 +2,8 @@ from sqlalchemy import Column, String, Text, Integer, Float, Boolean, JSON, TIME
 from app.db.session import Base
 from sqlalchemy.sql import func
 from datetime import datetime
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
+from app.core.cryptography import EncryptedString, HashedString
 
 
 class AmazonReview(Base):
@@ -180,16 +181,24 @@ class User(Base):
     __tablename__ = "users"
    
     id = Column(Integer, primary_key=True, index=True)
-    first_name = Column(String(100), nullable=False)
-    last_name = Column(String(100), nullable=False)
-    email = Column(String(255), unique=True, nullable=False, index=True)
+    first_name = Column(String(255), nullable=False)
+    last_name = Column(String(255), nullable=False)
+    email = Column(EncryptedString(), unique=True, nullable=False, index=True)
+    email_hash = Column(String(255), unique=True, index=True)
+   
+    @validates('email')
+    def validate_email(self, key, address):
+        if address:
+            hash_type = HashedString()
+            self.email_hash = hash_type.process_bind_param(address, None)
+        return address
    
     # IMPORTANT: password_hash must be at least VARCHAR(255) for bcrypt
     # Bcrypt hashes are 60 characters long but we use 255 for safety
     password_hash = Column(String(255), nullable=False)
    
     business_name = Column(String(255), nullable=True)
-    location = Column(String(100), nullable=True)
+    location = Column(EncryptedString(), nullable=True)
     business_interests = Column(ARRAY(String), nullable=True, default=[])
    
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -218,7 +227,13 @@ class User(Base):
     ki_cycle_start = Column(DateTime, nullable=True)  # set to paid_at when user subscribes
 
     subscription_expires_at = Column(DateTime, nullable=True)
-    payment_orders = relationship("PaymentOrder", back_populates="user")
+    
+    # AI Listing Studio Tracking
+    ai_listings_generated = Column(Integer, default=0)
+    ai_listings_month = Column(String(7))
+    ai_credits_balance = Column(Integer, default=0)
+
+    payment_orders = relationship("app.models.legacy_models.PaymentOrder", back_populates="user", primaryjoin="User.id == foreign(PaymentOrder.user_id)")
     scheduled_downgrade_to = Column(String(50), nullable=True)
 
     # Onboarding fields
@@ -227,16 +242,16 @@ class User(Base):
     onboarding_goal = Column(String(100), nullable=True)
     onboarding_marketplace = Column(String(100), nullable=True)
     onboarding_details = Column(String(500), nullable=True)
-    seller_id = Column(String(100), nullable=True)
+    seller_id = Column(EncryptedString(), nullable=True)
     seller_sync_status = Column(String(20), default='IDLE') # IDLE, SYNCING, COMPLETED, FAILED
-    mobile_number = Column(String, nullable=False)
+    mobile_number = Column(EncryptedString(), nullable=False)
 
     # Onboarding Guide fields
     explorer_tour_completed = Column(Boolean, default=False, nullable=False)
     seller_tour_completed = Column(Boolean, default=False, nullable=False)
     welcome_card_dismissed = Column(Boolean, default=False, nullable=False)
 
-    watchlist_items = relationship("WhiteSpaceWatchlist", back_populates="user", cascade="all, delete-orphan")   
+    watchlist_items = relationship("WhiteSpaceWatchlist", back_populates="user", cascade="all, delete-orphan", primaryjoin="User.id == foreign(WhiteSpaceWatchlist.user_id)")   
     # Relationships
     def __repr__(self):
         return f"<User {self.email}>"  
@@ -381,15 +396,16 @@ class KeywordRankHistory(Base):
 
 class PaymentOrder(Base):
     __tablename__ = "payment_orders"
+    __table_args__ = {'extend_existing': True}
 
     id                  = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id             = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    user_id             = Column(Integer, ForeignKey("users_auth.id"), nullable=False, index=True)
 
     plan_id             = Column(String(50),  nullable=False)
     amount              = Column(Integer,     nullable=False)
     base_amount         = Column(Integer,     nullable=False, default=0)
     gst_amount          = Column(Integer,     nullable=False, default=0)
-    gst_number          = Column(String(20),  nullable=True)
+    gst_number          = Column(EncryptedString(),  nullable=True)
     currency            = Column(String(10),  default="INR")
 
     razorpay_order_id   = Column(String(100), unique=True, index=True, nullable=False)
@@ -400,11 +416,11 @@ class PaymentOrder(Base):
     status              = Column(String(20),  default="created", nullable=False)
     invoice_number      = Column(String(50),  nullable=True)
 
-    billing_full_name   = Column(String(200), nullable=True)
-    billing_email       = Column(String(200), nullable=True)
-    billing_mobile      = Column(String(20),  nullable=True)
-    billing_company     = Column(String(200), nullable=True)
-    billing_address     = Column(Text,        nullable=True)
+    billing_full_name   = Column(EncryptedString(), nullable=True)
+    billing_email       = Column(EncryptedString(), nullable=True)
+    billing_mobile      = Column(EncryptedString(), nullable=True)
+    billing_company     = Column(EncryptedString(), nullable=True)
+    billing_address     = Column(EncryptedString(), nullable=True)
 
     created_at          = Column(DateTime, nullable=False)
     paid_at             = Column(DateTime, nullable=True)
@@ -412,7 +428,7 @@ class PaymentOrder(Base):
     refunded_at         = Column(DateTime, nullable=True)
     promo_code_id       = Column(Integer, ForeignKey("promo_codes.id", ondelete="SET NULL"), nullable=True)
 
-    user = relationship("User", back_populates="payment_orders")
+    user = relationship("User", back_populates="payment_orders", primaryjoin="User.id == foreign(PaymentOrder.user_id)")
 
 class PriceAlert(Base):
     __tablename__ = "price_alerts"
@@ -476,7 +492,7 @@ class Feedback(Base):
     __tablename__ = "feedback"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), index=True, nullable=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="SET NULL"), index=True, nullable=True)
     rating = Column(SmallInteger)
     comment = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=True)
@@ -526,7 +542,7 @@ class WhiteSpaceWatchlist(Base):
     __tablename__ = "white_space_watchlist"
  
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
  
     # Niche identity
     niche = Column(String(500), nullable=False)
@@ -546,7 +562,7 @@ class WhiteSpaceWatchlist(Base):
     added_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
  
     # Relationship back to user
-    user = relationship("User", back_populates="watchlist_items")
+    user = relationship("User", back_populates="watchlist_items", primaryjoin="User.id == foreign(WhiteSpaceWatchlist.user_id)")
  
     __table_args__ = (
         UniqueConstraint("user_id", "niche", name="uq_whitespace_watchlist_user_niche"),
@@ -565,7 +581,7 @@ class WhiteSpaceScan(Base):
     __tablename__ = "white_space_scans"
  
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
     query = Column(String(500), nullable=False)
     tier = Column(String(20), nullable=False, default="free")
     results_count = Column(Integer, nullable=True, default=0)
@@ -587,7 +603,7 @@ class KwTracked(Base):
     __tablename__ = "kw_tracked"
  
     id              = Column(Integer, primary_key=True, autoincrement=True)
-    user_id         = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id         = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
     keyword         = Column(String(500), nullable=False)
     asin_or_pid     = Column(String(200), nullable=False)
     platform        = Column(String(20),  nullable=False)   # 'amazon' | 'flipkart'
@@ -767,15 +783,16 @@ class RankAlertLog(Base):
 
 class UserBehaviorLog(Base):
     __tablename__ = "user_behavior_logs"
+    __table_args__ = {'extend_existing': True}
 
     id         = Column(Integer, primary_key=True, autoincrement=True)
-    user_id    = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
-    user_email = Column(String(255), nullable=True, index=True)
+    user_id    = Column(Integer, ForeignKey("users_auth.id", ondelete="SET NULL"), nullable=True, index=True)
+    user_email = Column(EncryptedString(), nullable=True, index=True)
     session_id = Column(String(100), nullable=False, index=True)
     event_type = Column(String(100), nullable=False, index=True)
     page_path  = Column(Text, nullable=False)
     properties = Column(JSON, nullable=True)
-    ip_address = Column(String(45), nullable=True)
+    ip_address = Column(EncryptedString(), nullable=True)
     user_agent = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.utcnow(), index=True)
 
@@ -785,6 +802,7 @@ class PromoCode(Base):
     Master table for all promo codes.
     """
     __tablename__ = "promo_codes"
+    __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     code = Column(String(50), unique=True, index=True, nullable=False)
@@ -809,7 +827,7 @@ class PromoCodeSchedule(Base):
     start_date = Column(DateTime(timezone=True), nullable=False)
     end_date = Column(DateTime(timezone=True), nullable=False)
 
-    promo_code = relationship("PromoCode", backref="schedules")
+    promo_code = relationship("app.models.legacy_models.PromoCode", backref="schedules")
 
 
 class PromoCodeRedemption(Base):
@@ -820,11 +838,32 @@ class PromoCodeRedemption(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     promo_code_id = Column(Integer, ForeignKey("promo_codes.id", ondelete="CASCADE"), nullable=False, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
     source = Column(String(100), nullable=True) # 'manual' or from URL parameter
     redeemed_at = Column(DateTime(timezone=True), default=lambda: datetime.utcnow())
 
     __table_args__ = (
         UniqueConstraint("promo_code_id", "user_id", name="uq_promo_redemption_user"),
     )
+
+class KwExplorerCache(Base):
+    __tablename__ = "kw_explorer_cache"
+
+    keyword = Column(String(500), primary_key=True, nullable=False)
+    platform = Column(String(50), primary_key=True, nullable=False)
+    
+    search_volume = Column(Integer, nullable=True)
+    difficulty = Column(Integer, nullable=True)
+    intent = Column(String(100), nullable=True)
+    cpc = Column(Float, nullable=True)
+    geo_data = Column(JSON, nullable=True)
+    variations = Column(JSON, nullable=True)
+    serp = Column(JSON, nullable=True)
+    trend = Column(JSON, nullable=True)
+    global_search_volume = Column(Integer, nullable=True)
+    global_breakdown = Column(JSON, nullable=True)
+    competitive_density = Column(Float, nullable=True)
+    serp_features = Column(JSON, nullable=True)
+    
+    cached_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 

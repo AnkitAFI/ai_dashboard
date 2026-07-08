@@ -324,6 +324,7 @@ from sqlalchemy import text
 from fastapi import HTTPException
 from app.models import legacy_models as models
 from app.models.legacy_models import TrackedProduct, RapidapiAmazonProducts, User
+from app.models.schema_v2 import UserProfile, UserBusinessInfo
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -428,7 +429,7 @@ class SellerInboundService:
     @staticmethod
     def check_keyword_tracker_limit(user_id: int, db: Session) -> dict:
         row = db.execute(
-            text("SELECT subscription_tier, COALESCE(keyword_tracker_used,0), keyword_tracker_month FROM users WHERE id=:uid"),
+            text("SELECT subscription_tier, COALESCE(keyword_tracker_used,0), keyword_tracker_month FROM user_subscriptions WHERE user_id=:uid"),
             {"uid": user_id},
         ).fetchone()
         if not row:
@@ -439,7 +440,7 @@ class SellerInboundService:
 
         if tracked_month != current_month:
             db.execute(
-                text("UPDATE users SET keyword_tracker_used=0, keyword_tracker_month=:m WHERE id=:uid"),
+                text("UPDATE user_subscriptions SET keyword_tracker_used=0, keyword_tracker_month=:m WHERE user_id=:uid"),
                 {"m": current_month, "uid": user_id},
             )
             db.commit()
@@ -452,7 +453,7 @@ class SellerInboundService:
     @staticmethod
     def atomic_increment_usage(user_id: int, increment: int, db: Session) -> bool:
         row = db.execute(
-            text("SELECT subscription_tier, COALESCE(keyword_tracker_used,0), keyword_tracker_month FROM users WHERE id=:uid FOR UPDATE"),
+            text("SELECT subscription_tier, COALESCE(keyword_tracker_used,0), keyword_tracker_month FROM user_subscriptions WHERE user_id=:uid FOR UPDATE"),
             {"uid": user_id},
         ).fetchone()
         if not row:
@@ -469,7 +470,7 @@ class SellerInboundService:
             return False
 
         db.execute(
-            text("UPDATE users SET keyword_tracker_used=COALESCE(keyword_tracker_used,0)+:inc, keyword_tracker_month=:m WHERE id=:uid"),
+            text("UPDATE user_subscriptions SET keyword_tracker_used=COALESCE(keyword_tracker_used,0)+:inc, keyword_tracker_month=:m WHERE user_id=:uid"),
             {"inc": increment, "m": current_month, "uid": user_id},
         )
         db.commit()
@@ -694,14 +695,15 @@ class SellerInboundService:
 
             # ── Done ───────────────────────────────────────────────────────────
             if user_id:
-                db.query(User).filter(User.id == user_id).update({"seller_sync_status": "COMPLETED"})
+                db.query(UserBusinessInfo).filter(UserBusinessInfo.user_id == user_id).update({"seller_sync_status": "COMPLETED"})
                 db.commit()
 
             return saved_products
 
         except Exception as e:
+            db.rollback()
             with open(log_file, "a") as f:
                 f.write(f"[{datetime.utcnow()}] [ingest] CRITICAL ERROR: {str(e)}\n")
             if user_id:
-                db.query(User).filter(User.id == user_id).update({"seller_sync_status": "FAILED"})
+                db.query(UserBusinessInfo).filter(UserBusinessInfo.user_id == user_id).update({"seller_sync_status": "FAILED"})
                 db.commit()

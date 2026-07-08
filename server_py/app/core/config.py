@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     TASK_WAIT_TIME: int = 90
 
     class Config:
-        env_file = ".env"
+        env_file = "../../.env"
         case_sensitive = False
         extra = "ignore"
 

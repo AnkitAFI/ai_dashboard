@@ -733,6 +733,15 @@ export default function Signup() {
               "This email is already registered. Please login instead.",
             variant: "destructive",
           });
+        } else if (
+          response.status === 400 &&
+          errorData.detail?.includes("deleted")
+        ) {
+          toast({
+            title: "Account Deleted",
+            description: errorData.detail,
+            variant: "destructive",
+          });
         } else {
           toast({
             title: "Signup failed",

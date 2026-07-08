@@ -1565,7 +1565,7 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
       return;
     }
     if (ollamaReady === false) {
-      toast({ title: "AI Engine Offline", description: "Run `ollama serve` + `ollama pull llama3.2:3b`.", variant: "destructive" });
+      toast({ title: "AI Engine Offline", description: "Insydz is offline.", variant: "destructive" });
       return;
     }
 
@@ -1661,10 +1661,10 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
               <div>
                 <p className="text-amber-300 text-sm font-extrabold">AI engine offline</p>
                 <p className="text-amber-200/60 text-xs font-medium mt-1 leading-relaxed">
-                  Start Ollama:{" "}
-                  <code className="bg-white/10 px-1.5 py-0.5 rounded text-amber-200">ollama serve</code>
+                  Start Insydz:{" "}
+                  <code className="bg-white/10 px-1.5 py-0.5 rounded text-amber-200">Insydz serve</code>
                   {" "}then pull the model:{" "}
-                  <code className="bg-white/10 px-1.5 py-0.5 rounded text-amber-200">ollama pull llama3.2:3b</code>
+                  <code className="bg-white/10 px-1.5 py-0.5 rounded text-amber-200">Insydz pull Insydz</code>
                 </p>
               </div>
             </div>

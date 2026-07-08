@@ -396,7 +396,7 @@ function OpportunityCard({
           <div className="space-y-2 mb-3">
             <div className="flex items-center gap-2">
               <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">AI insights</p>
-              <span className="text-[9px] font-mono text-slate-405 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">llama3.2:3b</span>
+              <span className="text-[9px] font-mono text-slate-405 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">Insydz</span>
             </div>
             {opp.ai_insights.map((ins, i) => (
               <AIInsightBadge key={i} insight={ins} />
@@ -790,7 +790,7 @@ function WhiteSpaceFinderContent() {
                 </div>
                 <span className="text-[10px] font-mono text-slate-300">
                   {ollamaStatus.status === "checking" ? "Checking AI…" :
-                   ollamaStatus.status === "ready"    ? `${ollamaStatus.model ?? "llama3.2:3b"} · ready` :
+                   ollamaStatus.status === "ready"    ? `Insydz · ready` :
                    ollamaStatus.status === "no_model" ? "Model missing" : "AI offline"}
                 </span>
                 {(ollamaStatus.status === "no_model" || ollamaStatus.status === "offline") && ollamaStatus.setup_hint && (
@@ -1136,7 +1136,7 @@ function WhiteSpaceFinderContent() {
                       <div className="flex items-center gap-2 mb-1">
                         <p className="text-xs font-semibold text-violet-700 dark:text-violet-400">AI market summary</p>
                         <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-mono border ${ollamaStatus.status === "ready" ? "bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-400 border-green-200/50 dark:border-green-900/30" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700"}`}>
-                          {ollamaStatus.status === "ready" ? "llama3.2:3b" : "static fallback"}
+                          {ollamaStatus.status === "ready" ? "Insydz" : "static fallback"}
                         </span>
                       </div>
                       <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">{result.ai_market_summary}</p>
@@ -1149,7 +1149,7 @@ function WhiteSpaceFinderContent() {
                     <div>
                       <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">AI market summary unavailable</p>
                       <p className="text-xs text-slate-400 dark:text-slate-500">
-                        {ollamaStatus.status === "offline"  ? "Ollama is offline. Run: " :
+                        {ollamaStatus.status === "offline"  ? "Insydz is offline. Run: " :
                          ollamaStatus.status === "no_model" ? "Model not loaded. Run: " :
                          "AI summary not generated."}
                         {(ollamaStatus.status === "offline" || ollamaStatus.status === "no_model") && ollamaStatus.setup_hint && (
@@ -1166,7 +1166,7 @@ function WhiteSpaceFinderContent() {
                   >
                     <Bot className="w-4 h-4 text-violet-400 dark:text-violet-450 shrink-0" />
                     <p className="text-xs text-violet-600 dark:text-violet-400 flex-1">
-                      AI market summary + strategic insights (llama3.2:3b) — Premium
+                      AI market summary + strategic insights (Insydz) — Premium
                     </p>
                     <ChevronRight className="w-3.5 h-3.5 text-violet-400 dark:text-violet-500" />
                   </div>

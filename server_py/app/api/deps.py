@@ -7,6 +7,7 @@ import os
 import redis
 from jose import JWTError, jwt
 from app.core.config import settings
+from app.core.cryptography import HashedString
 
 r = redis.Redis(
     host=os.getenv("REDIS_HOST", "localhost"),
@@ -50,6 +51,49 @@ def get_current_user(session_id: str = Cookie(None), db: Session = Depends(get_d
     
     return user
 
+def get_admin_user(current_user = Depends(get_current_user)):
+    if getattr(current_user, 'role', 'user') != 'admin':
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="Forbidden: Admin access required"
+        )
+    return current_user
+
+def log_admin_action(
+    db: Session,
+    admin_id: int,
+    action: str,
+    resource_type: str = None,
+    resource_id: str = None,
+    ip_address: str = None,
+):
+    """
+    Silently writes an entry to admin_audit_logs.
+    Call this inside any admin endpoint to record the action.
+    """
+    from app.models.schema_v2 import AuditLog
+    from app.core.cryptography import HashedString
+
+    ip_hash = None
+    if ip_address:
+        hasher = HashedString()
+        ip_hash = hasher.process_bind_param(ip_address, None)
+
+    try:
+        log_entry = AuditLog(
+            actor_user_id=admin_id,
+            action=action,
+            resource_type=resource_type,
+            resource_id=str(resource_id) if resource_id else None,
+            ip_hash=ip_hash,
+        )
+        db.add(log_entry)
+        db.commit()
+    except Exception as e:
+        # Never let logging failure break the actual request
+        db.rollback()
+        print(f"⚠️ Audit log write failed (non-critical): {e}")
+
 async def get_current_user_jwt(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     from app.db.models.user_model import User
     
@@ -66,7 +110,9 @@ async def get_current_user_jwt(token: str = Depends(oauth2_scheme), db: Session 
     except JWTError:
         raise credentials_exception
         
-    user = db.query(User).filter(User.email == email).first()
+        
+    hash_type = HashedString()
+    user = db.query(User).filter(User.email_hash == hash_type.process_bind_param(email, None)).first()
     if user is None:
         raise credentials_exception
     return user

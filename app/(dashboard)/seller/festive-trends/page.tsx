@@ -1208,7 +1208,7 @@ function SellerFestiveTrendsContent() {
 
                     {/* Premium: AI SSE forecast card */}
                     <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm p-5 overflow-hidden">
-                      {!isPremium && <TierGate tier="premium" feature="AI Forecast (Ollama · llama3.2:3b)" />}
+                      {!isPremium && <TierGate tier="premium" feature="AI Forecast (Insydz)" />}
                       <div className={`flex gap-3 ${!isPremium ? "blur-sm pointer-events-none" : ""}`}>
                         <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center flex-shrink-0 shadow">
                           <Zap className="w-4 h-4 text-white" />
@@ -1216,7 +1216,7 @@ function SellerFestiveTrendsContent() {
                         <div className="flex-1">
                           <p className="font-bold text-slate-800 text-sm mb-1">AI Festive Forecast</p>
                           <p className="text-xs text-slate-500 leading-relaxed">
-                            Personalised demand forecast, pricing strategy, stock prep, and listing actions for your catalog — powered by Ollama llama3.2:3b, streamed in real-time.
+                            Personalised demand forecast, pricing strategy, stock prep, and listing actions for your catalog — powered by Insydz, streamed in real-time.
                           </p>
                           {isPremium && (
                             <button

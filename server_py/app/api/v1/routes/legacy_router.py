@@ -6,7 +6,7 @@ router = APIRouter()
 from fastapi import FastAPI, Depends, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from sqlalchemy import text, inspect
+from sqlalchemy import text, inspect, null
 from typing import List, Optional, Dict, Any
 import subprocess, json
 from pydantic import BaseModel, Field, field_validator
@@ -23,6 +23,8 @@ import pandas as pd
 from app.services.legacy_services import lstm_forecast
 from app.schemas import legacy_schemas as schemas
 from app.models import legacy_models as models
+from app.models.schema_v2 import UserConsent
+from app.core.cryptography import HashedString
 from app.services import legacy_services as crud
 from datetime import datetime, timedelta
 import requests, traceback, logging
@@ -33,7 +35,6 @@ from app.models.legacy_models import AmazonReview, Product, AmazonProductDetails
 from app.core.security import verify_password, get_password_hash
 from app.core.config import settings
 from app.services.inbound_service import SellerInboundService
-models.Base.metadata.create_all(bind=engine)
 # app = FastAPI(title="API", version="1.0.0")
 import os
 # IS_LOCAL = os.getenv("FASTAPI_LOCAL", "false").lower() == "true"
@@ -1667,17 +1668,20 @@ Guidelines:
 Think about {analysis_focus} and respond conversationally:"""
 
     try:
-        result = subprocess.run(
-            ["ollama", "run", "llama3.2:3b"],
-            input=prompt,
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="ignore",
+        import requests
+        from app.core.config import settings
+        
+        ollama_url = settings.OLLAMA_BASE_URL
+        response = requests.post(
+            f"{ollama_url}/api/generate",
+            json={
+                "model": "llama3.2:3b",
+                "prompt": prompt,
+                "stream": False
+            },
             timeout=30
         )
-
-        raw_output = (result.stdout or result.stderr or "").strip()
+        raw_output = response.json().get("response", "").strip()
         
         # Clean AI output
         clean_output = (
@@ -2896,13 +2900,15 @@ def get_notifications(
                 high_sales = db.execute(sales_query, {"limit": limit // 4}).fetchall()
                 
                 for row in high_sales:
+                    price_str = f"₹{row.product_price_numeric:.0f}" if row.product_price_numeric else "Price N/A"
+                    rating_str = f"{row.product_star_rating_numeric}★" if row.product_star_rating_numeric else "Unrated"
                     notifications.append({
                         "id": f"amazon_sales_spike_{row.id}",
                         "type": "sales_spike",
                         "severity": "high",
                         "platform": "Amazon",
                         "message": f"📈 Competitor: {row.product_title[:50]}... selling {row.sales_volume}",
-                        "time": f"₹{row.product_price_numeric:.0f} · {row.product_star_rating_numeric}★",
+                        "time": f"{price_str} · {rating_str}",
                         "details": {
                             "product_id": row.id,
                             "product_title": row.product_title,
@@ -2934,7 +2940,7 @@ def get_notifications(
                         "severity": "low",
                         "platform": "Amazon",
                         "message": f"🆕 New competitor product: {row.product_title[:50]}...",
-                        "time": f"Listed recently · ₹{row.product_price_numeric:.0f}",
+                        "time": f"Listed recently · ₹{row.product_price_numeric:.0f}" if row.product_price_numeric is not None else "Listed recently",
                         "details": {
                             "product_id": row.id,
                             "product_title": row.product_title,
@@ -5593,6 +5599,113 @@ def send_otp_email(email: str, otp: str) -> bool:
         print(f"⚠️ [DEV FALLBACK] Your OTP is: {otp}")
         return True
 
+def send_signup_otp_email(email: str, otp: str) -> bool:
+    """Send Signup OTP via Brevo email"""
+    try:
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(
+            sib_api_v3_sdk.ApiClient(configuration)
+        )
+        
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=[{"email": email}],
+            sender={"email": BREVO_SENDER_EMAIL, "name": BREVO_SENDER_NAME},
+            subject="Verify your email - Insydz",
+            html_content=f"""
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
+                    .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
+                    .header {{ 
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                        color: white; 
+                        padding: 30px; 
+                        text-align: center; 
+                        border-radius: 10px 10px 0 0; 
+                    }}
+                    .content {{ 
+                        background: #f9f9f9; 
+                        padding: 30px; 
+                        border-radius: 0 0 10px 10px; 
+                    }}
+                    .otp-box {{ 
+                        background: white; 
+                        border: 2px dashed #667eea; 
+                        padding: 20px; 
+                        text-align: center; 
+                        font-size: 32px; 
+                        font-weight: bold; 
+                        letter-spacing: 8px; 
+                        margin: 20px 0; 
+                        border-radius: 8px; 
+                        color: #667eea;
+                    }}
+                    .warning {{ 
+                        background: #fff3cd; 
+                        border-left: 4px solid #ffc107; 
+                        padding: 15px; 
+                        margin: 20px 0; 
+                    }}
+                    .footer {{ 
+                        text-align: center; 
+                        margin-top: 20px; 
+                        color: #666; 
+                        font-size: 12px; 
+                    }}
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>✉️ Email Verification</h1>
+                    </div>
+                    <div class="content">
+                        <p>Hello,</p>
+                        <p>Welcome to Insydz! Please use the following One-Time Password (OTP) to verify your email address:</p>
+                        
+                        <div class="otp-box">
+                            {otp}
+                        </div>
+                        
+                        <div class="warning">
+                            <strong>⚠️ Security Notice:</strong>
+                            <ul style="margin: 10px 0;">
+                                <li>This OTP is valid for {OTP_EXPIRY_MINUTES} minutes only</li>
+                                <li>Never share this OTP with anyone</li>
+                                <li>Insydz will never ask for your OTP via phone or email</li>
+                            </ul>
+                        </div>
+                        
+                        <p>If you didn't create an account, please ignore this email.</p>
+                        
+                        <p>Best regards,<br>The Insydz Team</p>
+                    </div>
+                    <div class="footer">
+                        <p>© 2025 Insydz. All rights reserved.</p>
+                        <p>This is an automated email. Please do not reply.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """
+        )
+        
+        api_response = api_instance.send_transac_email(send_smtp_email)
+        print(f"✅ Signup OTP email sent to {email}")
+        print(otp)
+        return True
+        
+    except ApiException as e:
+        print(f"❌ Brevo API error: {e}")
+        print(f"⚠️ [DEV FALLBACK] Your OTP is: {otp}")
+        # Allow signup to proceed if IP is unauthorized
+        return True
+    except Exception as e:
+        print(f"❌ Error sending email: {str(e)}")
+        print(f"⚠️ [DEV FALLBACK] Your OTP is: {otp}")
+        return True
+
 # ============================================
 # Welcome Email
 # ============================================
@@ -6322,7 +6435,7 @@ def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db
     try:
         # Check if user exists
         user = db.query(models.User).filter(
-            models.User.email == request.email
+            models.User.email_hash == HashedString().process_bind_param(request.email, None)
         ).first()
         
         if not user:
@@ -6434,7 +6547,7 @@ def verify_otp(request: VerifyOTPRequest):
 # ============================================
 
 @router.post("/api/auth/reset-password-with-otp")
-def reset_password_with_otp(request: ResetPasswordRequest, db: Session = Depends(get_db)):
+def reset_password_with_otp(request: ResetPasswordRequest, raw_request: Request, db: Session = Depends(get_db)):
     """
     Step 3: Reset password after OTP verification
     """
@@ -6471,7 +6584,7 @@ def reset_password_with_otp(request: ResetPasswordRequest, db: Session = Depends
         
         # Find user
         user = db.query(models.User).filter(
-            models.User.email == request.email
+            models.User.email_hash == HashedString().process_bind_param(request.email, None)
         ).first()
         
         if not user:
@@ -6490,6 +6603,19 @@ def reset_password_with_otp(request: ResetPasswordRequest, db: Session = Depends
         
         # Invalidate all existing sessions for this user (force re-login)
         delete_all_user_sessions(user.id)
+        
+        # Record audit log for password change
+        from app.models.schema_v2 import AuditLog
+        client_ip = raw_request.client.host if raw_request and raw_request.client else "unknown"
+        audit_log = AuditLog(
+            actor_user_id=user.id,
+            action="password_changed",
+            resource_type="User",
+            resource_id=str(user.id),
+            ip_hash=client_ip
+        )
+        db.add(audit_log)
+        db.commit()
         
         print(f"✅ Password reset successful for {request.email}")
         
@@ -6520,7 +6646,7 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
     try:
         # Check if user exists
         user = db.query(models.User).filter(
-            models.User.email == request.email
+            models.User.email_hash == HashedString().process_bind_param(request.email, None)
         ).first()
         
         # Check if previous OTP exists
@@ -6560,7 +6686,10 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
         store_otp(request.email, otp_data)
         
         # Send OTP via email
-        email_sent = send_otp_email(request.email, otp)
+        if otp_data["purpose"] == "signup":
+            email_sent = send_signup_otp_email(request.email, otp)
+        else:
+            email_sent = send_otp_email(request.email, otp)
         
         if not email_sent:
             delete_otp(request.email)
@@ -6596,7 +6725,7 @@ def login_user(login_data: UserLogin, response: Response, request: Request, db: 
         print(f"🔍 Login attempt for: {login_data.email}")
         
         user = db.query(models.User).filter(
-            models.User.email == login_data.email
+            models.User.email_hash == HashedString().process_bind_param(login_data.email, None)
         ).first()
        
         if not user:
@@ -6613,8 +6742,15 @@ def login_user(login_data: UserLogin, response: Response, request: Request, db: 
                 detail="Incorrect password. Please try again or reset your password."
             )
 
+        # Block soft-deleted accounts
+        if getattr(user, "is_active", True) is False:
+            raise HTTPException(
+                status_code=403,
+                detail="Your account has been deleted. Please contact support to restore it."
+            )
+
         # ADD IT HERE ↓
-        if not user.is_verified:
+        if getattr(user, "is_verified", False) is False:
             raise HTTPException(
                 status_code=403,
                 detail="Please verify your email before logging in."
@@ -6659,6 +6795,18 @@ def login_user(login_data: UserLogin, response: Response, request: Request, db: 
             max_age=max_age,
             # domain=".insydz.com"
         )
+        
+        # Record audit log for successful login
+        from app.models.schema_v2 import AuditLog
+        audit_log = AuditLog(
+            actor_user_id=user.id,
+            action="user_logged_in",
+            resource_type="User",
+            resource_id=str(user.id),
+            ip_hash=ip_address
+        )
+        db.add(audit_log)
+        db.commit()
         
         response_data = {
             "success": True,
@@ -6705,11 +6853,18 @@ def signup_user(
 ):
     try:
         existing_user = db.query(models.User).filter(
-            models.User.email == user_data.email
+            models.User.email_hash == HashedString().process_bind_param(user_data.email, None)
         ).first()
         
         if existing_user:
-            if not existing_user.is_verified:
+            # Block deleted users with a specific support message
+            if getattr(existing_user, "is_active", True) is False:
+                raise HTTPException(
+                    status_code=400, 
+                    detail="Your account has been deleted. If you want to recover your account, please contact the support team."
+                )
+
+            if getattr(existing_user, "is_verified", False) is False:
                 # Queue OTP resend in background task for legacy unverified DB users
                 otp = generate_otp()
                 store_otp(user_data.email, {
@@ -6719,7 +6874,7 @@ def signup_user(
                     "verified": False,
                     "purpose": "signup"
                 })
-                background_tasks.add_task(send_otp_email, user_data.email, otp)
+                background_tasks.add_task(send_signup_otp_email, user_data.email, otp)
                 print(f"✅ Verification email queued for resend: {user_data.email}")
                 return {
                     "success": True,
@@ -6770,7 +6925,7 @@ def signup_user(
         })
         
         # Queue email sending in the background
-        background_tasks.add_task(send_otp_email, user_data.email, otp)
+        background_tasks.add_task(send_signup_otp_email, user_data.email, otp)
         
         print(f"✅ New user created and verification email queued in background: {user_data.email}")
         
@@ -6792,7 +6947,7 @@ def signup_user(
         )
 
 @router.post("/users/verify-email")
-def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Request, db: Session = Depends(get_db)):
+def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Request, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     try:
         # Get OTP data from Redis
         otp_data = get_otp(request.email)
@@ -6808,7 +6963,7 @@ def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Req
             delete_otp(request.email)
             # Also delete the unverified user so they can sign up fresh
             unverified_user = db.query(models.User).filter(
-                models.User.email == request.email,
+                models.User.email_hash == HashedString().process_bind_param(request.email, None),
                 models.User.is_verified == False
             ).first()
             if unverified_user:
@@ -6831,7 +6986,7 @@ def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Req
         
         # Find user
         user = db.query(models.User).filter(
-            models.User.email == request.email
+            models.User.email_hash == HashedString().process_bind_param(request.email, None)
         ).first()
         
         if user:
@@ -6871,6 +7026,29 @@ def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Req
             db.add(user)
             db.commit()
             db.refresh(user)
+            
+            # Extract real IP and dynamically generate GDPR/DPDP consents
+            client_ip = raw_request.client.host if raw_request and raw_request.client else "unknown"
+            consents = [
+                UserConsent(user_id=user.id, consent_type='terms_of_service', status=True, policy_version='v1.0', ip_hash=client_ip),
+                UserConsent(user_id=user.id, consent_type='privacy_policy', status=True, policy_version='v1.0', ip_hash=client_ip),
+                UserConsent(user_id=user.id, consent_type='data_processing', status=True, policy_version='v1.0', ip_hash=client_ip),
+                UserConsent(user_id=user.id, consent_type='marketing_emails', status=False, policy_version='v1.0', ip_hash=client_ip, accepted_at=null())
+            ]
+            db.add_all(consents)
+            db.commit()
+
+            # Record audit log for account creation
+            from app.models.schema_v2 import AuditLog
+            audit_log = AuditLog(
+                actor_user_id=user.id,
+                action="account_created",
+                resource_type="User",
+                resource_id=str(user.id),
+                ip_hash=client_ip
+            )
+            db.add(audit_log)
+            db.commit()
         
         # Clear OTP from Redis
         delete_otp(request.email)
@@ -6881,6 +7059,16 @@ def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Req
             send_welcome_email(email=user.email, first_name=user.first_name)
         except Exception as _e:
             print(f"⚠️ Welcome email failed (non-critical): {_e}")
+
+        # Add to Brevo Contacts in background
+        from app.services.brevo_service import BrevoService
+        background_tasks.add_task(
+            BrevoService.add_contact_to_brevo, 
+            user.email, 
+            getattr(user, 'mobile_number', None),
+            getattr(user, 'first_name', None),
+            getattr(user, 'last_name', None)
+        )
 
         # Extract IP and User-Agent metadata
         ip_address = raw_request.headers.get("x-forwarded-for") or raw_request.headers.get("x-real-ip")
@@ -6973,6 +7161,11 @@ def get_me(
 
         "ai_chat_used": current_user.ai_chat_used or 0,
         "ai_chat_month": current_user.ai_chat_month or current_month,
+        
+        "ai_listings_generated": current_user.ai_listings_generated or 0,
+        "ai_listings_month": current_user.ai_listings_month or current_month,
+        "ai_credits_balance": current_user.ai_credits_balance or 0,
+        
         "created_at": str(current_user.created_at),
         "onboarding_completed": current_user.onboarding_completed,
         "onboarding_goal": current_user.onboarding_goal,
@@ -7053,7 +7246,7 @@ def logout(response: Response, session_id: str = Cookie(None)):
 def check_email_exists(email: str, db: Session = Depends(get_db)):
     """Check if an email is already registered"""
     user = db.query(models.User).filter(
-        models.User.email == email
+        models.User.email_hash == HashedString().process_bind_param(email, None)
     ).first()
    
     return {
@@ -7080,7 +7273,7 @@ def get_user_profile(
         )
     
     user = db.query(models.User).filter(
-        models.User.email == email
+        models.User.email_hash == HashedString().process_bind_param(email, None)
     ).first()
    
     if not user:
@@ -7103,6 +7296,27 @@ def get_user_profile(
         "created_at": str(user.created_at)
     }
 
+@router.patch("/api/admin/users/{user_id}/recover")
+def recover_user_account(
+    user_id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    # return 404 so no one knows this page exists if not admin
+    if current_user.email != ADMIN_EMAIL:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    from app.models.schema_v2 import UserAuth
+    
+    user_auth = db.query(UserAuth).filter(UserAuth.id == user_id).first()
+    if not user_auth:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    user_auth.is_active = True
+    user_auth.deleted_at = None
+    db.commit()
+    
+    return {"success": True, "message": "User account recovered"}
 @router.get("/api/admin/stats")
 def get_admin_stats(
     current_user: models.User = Depends(get_current_user),
@@ -7173,6 +7387,7 @@ def get_admin_stats(
         "mobile_number": u.mobile_number,
 
         "created_at": str(u.created_at),
+        "updated_at": str(u.updated_at) if u.updated_at else None,
     }
     for u in users
 ]
@@ -7224,6 +7439,25 @@ def get_admin_stats(
         "users": user_list,
         "promo_codes": promo_codes_list
     }
+
+@router.patch("/api/admin/promo/{promo_id}/toggle")
+def toggle_promo_code(
+    promo_id: int,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    if current_user.email != ADMIN_EMAIL:
+        raise HTTPException(status_code=404, detail="Not found")
+    
+    promo = db.query(models.PromoCode).filter(models.PromoCode.id == promo_id).first()
+    if not promo:
+        raise HTTPException(status_code=404, detail="Promo code not found")
+        
+    promo.is_active = not promo.is_active
+    db.commit()
+    db.refresh(promo)
+    
+    return {"message": "Success", "is_active": promo.is_active}
 
 import asyncio
 import contextlib
@@ -9054,7 +9288,7 @@ async def analyze_product_opportunity(
     # ── Quota check ──────────────────────────────────────────────────────────
     user = None
     if request_body.user_email:
-        user = db.query(models.User).filter(models.User.email == request_body.user_email).first()
+        user = db.query(models.User).filter(models.User.email_hash == HashedString().process_bind_param(request_body.user_email, None)).first()
         if user:
             current_month = datetime.now().strftime("%Y-%m")
             if user.analysis_month != current_month:
@@ -9919,74 +10153,114 @@ def update_user_profile(
 @router.delete("/users/{user_id}")
 def delete_user_account(
     user_id: int,
+    raw_request: Request,
     current_user: models.User = Depends(get_current_user),
     response: Response = None,
     db: Session = Depends(get_db)
 ):
-    """Delete a user account and purge all associated data (requires authentication)"""
+    """
+    Delete a user account.
+
+    DPDP Retention Policy:
+    - Legacy tracking data (products, ranks, alerts) → deleted IMMEDIATELY.
+    - Core identity data (users_auth, profiles, consents) → SOFT-DELETED.
+      A nightly scheduler hard-purges soft-deleted records after 30 days.
+    """
     try:
-        # Check authorization
+        # Authorization check
         if current_user.id != user_id:
             raise HTTPException(
                 status_code=403,
                 detail="Not authorized to delete this account"
             )
-        
+
         user_email = current_user.email
-        
-        # 1. PaymentOrder (no cascade in db, delete manually)
-        db.query(models.PaymentOrder).filter(models.PaymentOrder.user_id == user_id).delete(synchronize_session=False)
-        
-        # 2. TrackedProduct (user_email relation)
+
+        # ── Immediate cleanup of all legacy tracking / analytics data ──────────
+
+        # TrackedProduct + children
         user_products = db.query(models.TrackedProduct).filter(models.TrackedProduct.user_email == user_email).all()
         for prod in user_products:
             db.query(models.KeywordRankHistory).filter(models.KeywordRankHistory.tracked_product_id == prod.id).delete(synchronize_session=False)
             db.query(models.PriceAlert).filter(models.PriceAlert.tracked_product_id == prod.id).delete(synchronize_session=False)
         db.query(models.TrackedProduct).filter(models.TrackedProduct.user_email == user_email).delete(synchronize_session=False)
-        
-        # 3. PriceAlert
+
+        # PriceAlert
         db.query(models.PriceAlert).filter(models.PriceAlert.user_email == user_email).delete(synchronize_session=False)
-        
-        # 4. CompetitorSnapshot
+
+        # CompetitorSnapshot
         db.query(models.CompetitorSnapshot).filter(models.CompetitorSnapshot.user_email == user_email).delete(synchronize_session=False)
-        
-        # 5. RankTrackedKeyword
+
+        # RankTracking
         db.query(models.RankTrackedKeyword).filter(models.RankTrackedKeyword.user_email == user_email).delete(synchronize_session=False)
-        
-        # 6. RankSnapshot
         db.query(models.RankSnapshot).filter(models.RankSnapshot.user_email == user_email).delete(synchronize_session=False)
-        
-        # 7. RankAlertLog
         db.query(models.RankAlertLog).filter(models.RankAlertLog.user_email == user_email).delete(synchronize_session=False)
-        
-        # 8. ProductTrackerAnalysis
+
+        # ProductTrackerAnalysis
         db.query(models.ProductTrackerAnalysis).filter(models.ProductTrackerAnalysis.user_email == user_email).delete(synchronize_session=False)
-        
-        # 9. Feedback
+
+        # Feedback
         db.query(models.Feedback).filter(models.Feedback.user_id == user_id).delete(synchronize_session=False)
-        
-        # 10. UserBehaviorLog
-        db.query(models.UserBehaviorLog).filter(models.UserBehaviorLog.user_id == user_id).delete(synchronize_session=False)
-        
-        # 11. WhiteSpaceWatchlist & WhiteSpaceScan & KwTracked
-        db.query(models.WhiteSpaceWatchlist).filter(models.WhiteSpaceWatchlist.user_id == user_id).delete(synchronize_session=False)
-        db.query(models.WhiteSpaceScan).filter(models.WhiteSpaceScan.user_id == user_id).delete(synchronize_session=False)
-        
+
+        # ── DPDP: Anonymize behavior logs ───────────────────────────────────────
+        db.query(models.UserBehaviorLog).filter(
+            models.UserBehaviorLog.user_email == user_email
+        ).update(
+            {
+                "user_id": None,
+                "user_email": None,
+                "ip_address": None,
+                "properties": None,
+                "session_id": "anonymized"
+            },
+            synchronize_session=False
+        )
+
+        # KwTracked + children
         user_kws = db.query(models.KwTracked).filter(models.KwTracked.user_id == user_id).all()
         for kw in user_kws:
             db.query(models.KwRankHistory).filter(models.KwRankHistory.kw_id == kw.id).delete(synchronize_session=False)
             db.query(models.KwCompetitor).filter(models.KwCompetitor.kw_id == kw.id).delete(synchronize_session=False)
             db.query(models.KwAlertSettings).filter(models.KwAlertSettings.kw_id == kw.id).delete(synchronize_session=False)
         db.query(models.KwTracked).filter(models.KwTracked.user_id == user_id).delete(synchronize_session=False)
-        
-        # Redis Session Cleanup
-        delete_all_user_sessions(user_id)
-        
-        # Delete user
-        db.query(models.User).filter(models.User.id == user_id).delete(synchronize_session=False)
+
+        # WhiteSpace
+        db.query(models.WhiteSpaceWatchlist).filter(models.WhiteSpaceWatchlist.user_id == user_id).delete(synchronize_session=False)
+        db.query(models.WhiteSpaceScan).filter(models.WhiteSpaceScan.user_id == user_id).delete(synchronize_session=False)
+
+        # ── Soft-delete core identity data (DPDP 30-day grace period) ─────────
+        from app.models.schema_v2 import UserAuth
+        from datetime import datetime, timezone
+
+        db.query(UserAuth).filter(UserAuth.id == user_id).update({
+            "is_active": False,
+            "deleted_at": datetime.now(timezone.utc),
+        }, synchronize_session=False)
+
+        # Record in deleted_users for compliance audit trail
+        from app.models.schema_v2 import DeletedUser
+        db.add(DeletedUser(
+            email_hash=current_user.email_hash,
+            deletion_reason="user_self_requested",
+        ))
+
+        # Record audit log for account deletion
+        from app.models.schema_v2 import AuditLog
+        client_ip = raw_request.client.host if raw_request and raw_request.client else "unknown"
+        audit_log = AuditLog(
+            actor_user_id=user_id,
+            action="account_deleted",
+            resource_type="User",
+            resource_id=str(user_id),
+            ip_hash=client_ip
+        )
+        db.add(audit_log)
+
         db.commit()
-        
-        # Delete cookie
+
+        # ── Clear all active sessions immediately ──────────────────────────────
+        delete_all_user_sessions(user_id)
+
         if response:
             response.delete_cookie(
                 key="session_id",
@@ -9994,12 +10268,21 @@ def delete_user_account(
                 secure=SESSION_COOKIE_SECURE,
                 samesite="lax",
             )
-            
-        return {"success": True, "message": "Account and all associated data deleted successfully."}
+
+        return {
+            "success": True,
+            "message": (
+                "Your account has been deactivated and your personal data is "
+                "scheduled for permanent deletion within 30 days, as required "
+                "by our data retention policy."
+            )
+        }
     except Exception as e:
         db.rollback()
         print(f"❌ Delete account error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Error deleting account: {str(e)}")
+
+
 
 @router.get("/users/{user_id}/sessions")
 def get_user_sessions(
@@ -16824,7 +17107,75 @@ scheduler = BackgroundScheduler(timezone="UTC")
 scheduler.add_job(_background_rank_update_all,      CronTrigger(hour=6, minute=0), id="daily_rank_update")
 scheduler.add_job(_background_snapshot_competitors, CronTrigger(hour=7, minute=0), id="daily_snapshots")
 scheduler.add_job(_background_abandoned_signup_reminders, CronTrigger(minute=0), id="abandoned_signup_reminders")
+
+
+# ─────────────────────────────────────────
+# DPDP DATA RETENTION — nightly cleanup
+# ─────────────────────────────────────────
+
+def _background_data_retention():
+    """
+    DPDP Data Retention Policy — runs nightly at 02:00 UTC.
+
+    1. Hard-purge users_auth rows where deleted_at is older than 30 days.
+       (Cascades automatically to user_profiles, user_business_info,
+       user_subscriptions, user_app_state, user_consents via FK ON DELETE CASCADE.)
+
+    2. Anonymize audit_log entries older than 90 days — strip resource_id
+       to remove any user-identifiable reference while keeping the action
+       type and timestamp for compliance.
+    """
+    from datetime import datetime, timezone, timedelta
+    from sqlalchemy import text as _text
+
+    db = SessionLocal()
+    try:
+        cutoff_hard_delete = datetime.now(timezone.utc) - timedelta(days=30)
+        cutoff_anonymize   = datetime.now(timezone.utc) - timedelta(days=90)
+
+        # ── 1. Hard-purge soft-deleted users (30-day grace period expired) ────
+        result = db.execute(_text("""
+            DELETE FROM users_auth
+            WHERE deleted_at IS NOT NULL
+              AND deleted_at < :cutoff
+        """), {"cutoff": cutoff_hard_delete})
+        purged = result.rowcount
+        db.commit()
+
+        # ── 2. Anonymize old audit log entries (90 days) ──────────────────────
+        db.execute(_text("""
+            UPDATE audit_logs
+            SET resource_id = '[anonymized]'
+            WHERE created_at < :cutoff
+              AND resource_id IS NOT NULL
+              AND resource_id != '[anonymized]'
+        """), {"cutoff": cutoff_anonymize})
+        db.commit()
+
+        # ── 3. Data Minimization: Purge old behavior logs (90 days) ───────────
+        result_logs = db.execute(_text("""
+            DELETE FROM user_behavior_logs
+            WHERE created_at < :cutoff
+        """), {"cutoff": cutoff_anonymize})
+        purged_logs = result_logs.rowcount
+        db.commit()
+
+        print(f"[retention] ✅ Hard-purged {purged} expired user(s). Audit logs anonymized. Purged {purged_logs} old behavior logs.")
+    except Exception as e:
+        db.rollback()
+        print(f"[retention] ❌ Error during retention cleanup: {e}")
+    finally:
+        db.close()
+
+
+scheduler.add_job(
+    _background_data_retention,
+    CronTrigger(hour=2, minute=0),   # 02:00 UTC daily
+    id="dpdp_data_retention"
+)
+
 scheduler.start()
+
 
 
 # ═══════════════════════════════════════════════════════

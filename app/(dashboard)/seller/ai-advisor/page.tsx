@@ -479,7 +479,7 @@ function AIAdvisorContent() {
             ? {
                 ...m,
                 loading: false,
-                content: "Something went wrong. Make sure Ollama is running (`ollama serve`) and try again.",
+                content: "Something went wrong. Make sure Insydz is running and try again.",
               }
             : m
         )

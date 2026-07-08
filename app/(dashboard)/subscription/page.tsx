@@ -22,7 +22,7 @@ interface SubscriptionPlan {
   price?: number;
   oldPrice?: number;
   description: string;
-  features: string[];
+  features: (string | { title: string; detail: string })[];
   limitations: string[];
   isPopular?: boolean;
   icon: React.ReactNode;
@@ -73,6 +73,7 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "20 AI chat messages/month",
       "15 notifications",
       "AI Chart Summaries",
+      { title: "One-Click Cataloger", detail: "Generate & publish up to 20 SKUs (Top-ups available at ₹75/SKU)" },
       "Daily reports",
       "Basic competitor alerts",
       "Email support",
@@ -93,6 +94,7 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "Unlimited AI chat",
       "Unlimited notifications",
       "Advanced AI chatbot",
+      { title: "One-Click Cataloger", detail: "Generate & publish up to 3,000 SKUs (Top-ups available at ₹50/SKU)" },
       "Real-time data & alerts",
       "Priority support",
       "Advanced analytics",
@@ -476,14 +478,31 @@ export default function Subscription() {
 
               <CardContent className="space-y-4 flex flex-col flex-1 pb-6">
                 <div className="space-y-2 flex-1">
-                  {plan.features.map((feature, index) => (
-                    <div key={index} className="flex items-start gap-2">
-                      <div className="w-4 h-4 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center flex-shrink-0 mt-0.5">
-                        <Check className="h-2.5 w-2.5 text-green-600 dark:text-green-450" />
+                  {plan.features.map((feature, index) => {
+                    const isObj = typeof feature === 'object';
+                    const title = isObj ? feature.title : feature as string;
+                    const detail = isObj ? feature.detail : null;
+                    
+                    return (
+                      <div key={index} className="flex items-start gap-2 w-full">
+                        <div className="w-4 h-4 rounded-full bg-green-100 dark:bg-green-950 flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <Check className="h-2.5 w-2.5 text-green-600 dark:text-green-450" />
+                        </div>
+                        {detail ? (
+                          <details className="group cursor-pointer flex-1">
+                            <summary className="list-none outline-none text-sm border-b border-dashed border-slate-300 dark:border-slate-600 pb-0.5 w-fit">
+                              <span className={cn(isDark ? "text-slate-300" : "text-slate-700")}>{title}</span>
+                            </summary>
+                            <div className="pt-1.5 pb-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed pr-2">
+                              {detail}
+                            </div>
+                          </details>
+                        ) : (
+                          <span className={cn("text-sm", isDark ? "text-slate-300" : "text-slate-700")}>{title}</span>
+                        )}
                       </div>
-                      <span className={cn("text-sm", isDark ? "text-slate-300" : "text-slate-700")}>{feature}</span>
-                    </div>
-                  ))}
+                    );
+                  })}
                   {plan.limitations.map((limitation, index) => (
                     <div key={index} className="flex items-start gap-2 opacity-40">
                       <div className="w-4 h-4 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center flex-shrink-0 mt-0.5">

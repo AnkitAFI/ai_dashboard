@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import {
-  TrendingUp, Menu, X, Sun, Moon, Trophy, Target, DollarSign, Globe, BookOpen, 
-  Users, ChevronDown, ShoppingBag, TrendingDown, MessageCircle, Search, Package, 
+  TrendingUp, Menu, X, Sun, Moon, Trophy, Target, DollarSign, Globe, BookOpen,
+  Users, ChevronDown, ShoppingBag, TrendingDown, MessageCircle, Search, Package,
   Bell, Code, Briefcase, Store, Flame, LayoutGrid, Layers
 } from "lucide-react";
 
@@ -29,16 +29,16 @@ type NavigationMenu = {
 };
 
 const Zap = ({ className }: { className?: string }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width="24" 
-    height="24" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     className={className}
   >
     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
@@ -180,11 +180,10 @@ export function MarketingHeader() {
       <Link
         href={item.route}
         onClick={() => { setActiveDropdown(null); setIsMenuOpen(false); }}
-        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 group ${
-          isActive 
-            ? "bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400" 
+        className={`w-full px-4 py-3 text-left transition-colors flex items-center gap-3 group ${isActive
+            ? "bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
             : "hover:bg-purple-50 dark:hover:bg-purple-900/20 text-gray-700 dark:text-gray-300"
-        }`}
+          }`}
       >
         <span className={`transition-transform group-hover:scale-110 ${isActive ? "text-purple-600 dark:text-purple-400" : "text-purple-600 dark:text-purple-400"}`}>
           {item.icon}
@@ -226,11 +225,10 @@ export function MarketingHeader() {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
           ? "bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg"
           : "bg-white/80 dark:bg-gray-900/80 backdrop-blur-md"
-      }`}
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
@@ -256,11 +254,10 @@ export function MarketingHeader() {
                   onMouseEnter={() => setActiveDropdown(menu)}
                   aria-haspopup="true"
                   aria-expanded={activeDropdown === menu}
-                  className={`px-3 py-2 text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${
-                    isSectionActive(menu)
+                  className={`px-3 py-2 text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${isSectionActive(menu)
                       ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
                       : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                  }`}
+                    }`}
                 >
                   {menu}
                   <ChevronDown className={`w-3.5 h-3.5 transition-transform ${activeDropdown === menu ? 'rotate-180' : ''}`} />
@@ -281,11 +278,10 @@ export function MarketingHeader() {
             <Link
               href="/pricing"
               onMouseEnter={() => setActiveDropdown(null)}
-              className={`px-3 py-2 text-sm font-medium rounded-lg transition-all ${
-                pathname === "/pricing"
+              className={`px-3 py-2 text-sm font-medium rounded-lg transition-all ${pathname === "/pricing"
                   ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
                   : "text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-              }`}
+                }`}
             >
               Pricing
             </Link>
@@ -303,7 +299,7 @@ export function MarketingHeader() {
               onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
               aria-label="Toggle dark mode"
             >
-              {mounted && (resolvedTheme === "dark" ? <Sun className="w-5 h-5 text-yellow-400"/> : <Moon className="w-5 h-5 text-gray-800"/>)}
+              {mounted && (resolvedTheme === "dark" ? <Sun className="w-5 h-5 text-yellow-400" /> : <Moon className="w-5 h-5 text-gray-800" />)}
             </button>
           </div>
 
@@ -325,11 +321,10 @@ export function MarketingHeader() {
           <div className="px-4 py-4 space-y-2">
             <button
               onClick={() => scrollToSection('Home')}
-              className={`block w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${
-                pathname === "/"
+              className={`block w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${pathname === "/"
                   ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
                   : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-              }`}
+                }`}
             >
               Home
             </button>
@@ -339,11 +334,10 @@ export function MarketingHeader() {
                 <button
                   onClick={() => toggleMobileMenu(menuName)}
                   aria-expanded={mobileActiveMenu === menuName}
-                  className={`flex items-center justify-between w-full px-4 py-2 rounded-lg font-medium transition-colors ${
-                    isSectionActive(menuName)
+                  className={`flex items-center justify-between w-full px-4 py-2 rounded-lg font-medium transition-colors ${isSectionActive(menuName)
                       ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
                       : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                  }`}
+                    }`}
                 >
                   {menuName}
                   <ChevronDown className={`w-4 h-4 transition-transform ${mobileActiveMenu === menuName ? 'rotate-180' : ''}`} />
@@ -361,11 +355,10 @@ export function MarketingHeader() {
             <Link
               href="/pricing"
               onClick={() => setIsMenuOpen(false)}
-              className={`block w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${
-                pathname === "/pricing"
+              className={`block w-full text-left px-4 py-2 rounded-lg font-medium transition-colors ${pathname === "/pricing"
                   ? "text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30"
                   : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-              }`}
+                }`}
             >
               Pricing
             </Link>
@@ -385,12 +378,12 @@ export function MarketingHeader() {
             >
               {mounted && (resolvedTheme === "dark" ? (
                 <div className="flex items-center gap-2">
-                  <Sun className="w-5 h-5 text-yellow-400"/>
+                  <Sun className="w-5 h-5 text-yellow-400" />
                   <span className="text-sm font-medium text-gray-300">Switch to Light Mode</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Moon className="w-5 h-5 text-gray-800"/>
+                  <Moon className="w-5 h-5 text-gray-800" />
                   <span className="text-sm font-medium text-gray-700">Switch to Dark Mode</span>
                 </div>
               ))}
