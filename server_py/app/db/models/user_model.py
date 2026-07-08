@@ -8,8 +8,8 @@ class User(Base):
     __tablename__ = "users"
    
     id = Column(Integer, primary_key=True, index=True)
-    first_name = Column(EncryptedString(), nullable=False)
-    last_name = Column(EncryptedString(), nullable=False)
+    first_name = Column(String(255), nullable=False)
+    last_name = Column(String(255), nullable=False)
     email = Column(EncryptedString(), unique=True, nullable=False, index=True)
     email_hash = Column(String(255), unique=True, index=True)
 
@@ -44,7 +44,7 @@ class User(Base):
     keyword_tracker_month = Column(String)
 
     subscription_expires_at = Column(DateTime, nullable=True)
-    payment_orders = relationship("app.db.models.payment_order_model.PaymentOrder", back_populates="user")
+    payment_orders = relationship("app.db.models.payment_order_model.PaymentOrder", back_populates="user", primaryjoin="User.id == foreign(PaymentOrder.user_id)")
     scheduled_downgrade_to = Column(String(50), nullable=True)
 
     is_verified = Column(Boolean, default=False)

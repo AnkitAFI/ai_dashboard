@@ -33,8 +33,8 @@ class UserProfile(Base):
     
     # Highly Sensitive PII - Encrypted via AES-256-GCM
     email = Column(EncryptedString(), nullable=False)
-    first_name = Column(EncryptedString())
-    last_name = Column(EncryptedString())
+    first_name = Column(String(255))
+    last_name = Column(String(255))
     mobile_number = Column(EncryptedString())
     location = Column(EncryptedString())
     

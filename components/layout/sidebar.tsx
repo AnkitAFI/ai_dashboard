@@ -131,8 +131,9 @@ const SELLER_SECTIONS: NavSection[] = [
     icon: Store,
     items: [
       { href: "/dashboard", label: "Dashboard", icon: Home },
-      { href: "/seller/listing-studio", label: "AI Listing Studio", icon: Sparkles, badge: "NEW" },
-      { href: "/seller/integrations", label: "Integrations", icon: LinkIcon, badge: "NEW" },
+      // Temporarily hidden until API keys are secured
+      // { href: "/seller/listing-studio", label: "One-Click Cataloger", icon: Sparkles, badge: "NEW" },
+      // { href: "/seller/integrations", label: "Integrations", icon: LinkIcon, badge: "NEW" },
       { href: "/seller/my-products", label: "My Products", icon: Tag, badge: "NEW" },
       { href: "/seller/listing-audit", label: "Listing Audit", icon: Search, badge: "NEW" },
     ],

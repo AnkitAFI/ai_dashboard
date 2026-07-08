@@ -6,7 +6,7 @@ router = APIRouter()
 from fastapi import FastAPI, Depends, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from sqlalchemy import text, inspect
+from sqlalchemy import text, inspect, null
 from typing import List, Optional, Dict, Any
 import subprocess, json
 from pydantic import BaseModel, Field, field_validator
@@ -23,6 +23,7 @@ import pandas as pd
 from app.services.legacy_services import lstm_forecast
 from app.schemas import legacy_schemas as schemas
 from app.models import legacy_models as models
+from app.models.schema_v2 import UserConsent
 from app.core.cryptography import HashedString
 from app.services import legacy_services as crud
 from datetime import datetime, timedelta
@@ -34,7 +35,6 @@ from app.models.legacy_models import AmazonReview, Product, AmazonProductDetails
 from app.core.security import verify_password, get_password_hash
 from app.core.config import settings
 from app.services.inbound_service import SellerInboundService
-models.Base.metadata.create_all(bind=engine)
 # app = FastAPI(title="API", version="1.0.0")
 import os
 # IS_LOCAL = os.getenv("FASTAPI_LOCAL", "false").lower() == "true"
@@ -6547,7 +6547,7 @@ def verify_otp(request: VerifyOTPRequest):
 # ============================================
 
 @router.post("/api/auth/reset-password-with-otp")
-def reset_password_with_otp(request: ResetPasswordRequest, db: Session = Depends(get_db)):
+def reset_password_with_otp(request: ResetPasswordRequest, raw_request: Request, db: Session = Depends(get_db)):
     """
     Step 3: Reset password after OTP verification
     """
@@ -6603,6 +6603,19 @@ def reset_password_with_otp(request: ResetPasswordRequest, db: Session = Depends
         
         # Invalidate all existing sessions for this user (force re-login)
         delete_all_user_sessions(user.id)
+        
+        # Record audit log for password change
+        from app.models.schema_v2 import AuditLog
+        client_ip = raw_request.client.host if raw_request and raw_request.client else "unknown"
+        audit_log = AuditLog(
+            actor_user_id=user.id,
+            action="password_changed",
+            resource_type="User",
+            resource_id=str(user.id),
+            ip_hash=client_ip
+        )
+        db.add(audit_log)
+        db.commit()
         
         print(f"✅ Password reset successful for {request.email}")
         
@@ -6782,6 +6795,18 @@ def login_user(login_data: UserLogin, response: Response, request: Request, db: 
             max_age=max_age,
             # domain=".insydz.com"
         )
+        
+        # Record audit log for successful login
+        from app.models.schema_v2 import AuditLog
+        audit_log = AuditLog(
+            actor_user_id=user.id,
+            action="user_logged_in",
+            resource_type="User",
+            resource_id=str(user.id),
+            ip_hash=ip_address
+        )
+        db.add(audit_log)
+        db.commit()
         
         response_data = {
             "success": True,
@@ -7001,6 +7026,29 @@ def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Req
             db.add(user)
             db.commit()
             db.refresh(user)
+            
+            # Extract real IP and dynamically generate GDPR/DPDP consents
+            client_ip = raw_request.client.host if raw_request and raw_request.client else "unknown"
+            consents = [
+                UserConsent(user_id=user.id, consent_type='terms_of_service', status=True, policy_version='v1.0', ip_hash=client_ip),
+                UserConsent(user_id=user.id, consent_type='privacy_policy', status=True, policy_version='v1.0', ip_hash=client_ip),
+                UserConsent(user_id=user.id, consent_type='data_processing', status=True, policy_version='v1.0', ip_hash=client_ip),
+                UserConsent(user_id=user.id, consent_type='marketing_emails', status=False, policy_version='v1.0', ip_hash=client_ip, accepted_at=null())
+            ]
+            db.add_all(consents)
+            db.commit()
+
+            # Record audit log for account creation
+            from app.models.schema_v2 import AuditLog
+            audit_log = AuditLog(
+                actor_user_id=user.id,
+                action="account_created",
+                resource_type="User",
+                resource_id=str(user.id),
+                ip_hash=client_ip
+            )
+            db.add(audit_log)
+            db.commit()
         
         # Clear OTP from Redis
         delete_otp(request.email)
@@ -10105,6 +10153,7 @@ def update_user_profile(
 @router.delete("/users/{user_id}")
 def delete_user_account(
     user_id: int,
+    raw_request: Request,
     current_user: models.User = Depends(get_current_user),
     response: Response = None,
     db: Session = Depends(get_db)
@@ -10194,6 +10243,18 @@ def delete_user_account(
             email_hash=current_user.email_hash,
             deletion_reason="user_self_requested",
         ))
+
+        # Record audit log for account deletion
+        from app.models.schema_v2 import AuditLog
+        client_ip = raw_request.client.host if raw_request and raw_request.client else "unknown"
+        audit_log = AuditLog(
+            actor_user_id=user_id,
+            action="account_deleted",
+            resource_type="User",
+            resource_id=str(user_id),
+            ip_hash=client_ip
+        )
+        db.add(audit_log)
 
         db.commit()
 

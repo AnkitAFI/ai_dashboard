@@ -181,8 +181,8 @@ class User(Base):
     __tablename__ = "users"
    
     id = Column(Integer, primary_key=True, index=True)
-    first_name = Column(EncryptedString(), nullable=False)
-    last_name = Column(EncryptedString(), nullable=False)
+    first_name = Column(String(255), nullable=False)
+    last_name = Column(String(255), nullable=False)
     email = Column(EncryptedString(), unique=True, nullable=False, index=True)
     email_hash = Column(String(255), unique=True, index=True)
    
@@ -233,7 +233,7 @@ class User(Base):
     ai_listings_month = Column(String(7))
     ai_credits_balance = Column(Integer, default=0)
 
-    payment_orders = relationship("app.models.legacy_models.PaymentOrder", back_populates="user")
+    payment_orders = relationship("app.models.legacy_models.PaymentOrder", back_populates="user", primaryjoin="User.id == foreign(PaymentOrder.user_id)")
     scheduled_downgrade_to = Column(String(50), nullable=True)
 
     # Onboarding fields
@@ -251,7 +251,7 @@ class User(Base):
     seller_tour_completed = Column(Boolean, default=False, nullable=False)
     welcome_card_dismissed = Column(Boolean, default=False, nullable=False)
 
-    watchlist_items = relationship("WhiteSpaceWatchlist", back_populates="user", cascade="all, delete-orphan")   
+    watchlist_items = relationship("WhiteSpaceWatchlist", back_populates="user", cascade="all, delete-orphan", primaryjoin="User.id == foreign(WhiteSpaceWatchlist.user_id)")   
     # Relationships
     def __repr__(self):
         return f"<User {self.email}>"  
@@ -399,7 +399,7 @@ class PaymentOrder(Base):
     __table_args__ = {'extend_existing': True}
 
     id                  = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id             = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    user_id             = Column(Integer, ForeignKey("users_auth.id"), nullable=False, index=True)
 
     plan_id             = Column(String(50),  nullable=False)
     amount              = Column(Integer,     nullable=False)
@@ -428,7 +428,7 @@ class PaymentOrder(Base):
     refunded_at         = Column(DateTime, nullable=True)
     promo_code_id       = Column(Integer, ForeignKey("promo_codes.id", ondelete="SET NULL"), nullable=True)
 
-    user = relationship("User", back_populates="payment_orders")
+    user = relationship("User", back_populates="payment_orders", primaryjoin="User.id == foreign(PaymentOrder.user_id)")
 
 class PriceAlert(Base):
     __tablename__ = "price_alerts"
@@ -492,7 +492,7 @@ class Feedback(Base):
     __tablename__ = "feedback"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), index=True, nullable=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="SET NULL"), index=True, nullable=True)
     rating = Column(SmallInteger)
     comment = Column(Text, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=True)
@@ -542,7 +542,7 @@ class WhiteSpaceWatchlist(Base):
     __tablename__ = "white_space_watchlist"
  
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
  
     # Niche identity
     niche = Column(String(500), nullable=False)
@@ -562,7 +562,7 @@ class WhiteSpaceWatchlist(Base):
     added_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
  
     # Relationship back to user
-    user = relationship("User", back_populates="watchlist_items")
+    user = relationship("User", back_populates="watchlist_items", primaryjoin="User.id == foreign(WhiteSpaceWatchlist.user_id)")
  
     __table_args__ = (
         UniqueConstraint("user_id", "niche", name="uq_whitespace_watchlist_user_niche"),
@@ -581,7 +581,7 @@ class WhiteSpaceScan(Base):
     __tablename__ = "white_space_scans"
  
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
     query = Column(String(500), nullable=False)
     tier = Column(String(20), nullable=False, default="free")
     results_count = Column(Integer, nullable=True, default=0)
@@ -603,7 +603,7 @@ class KwTracked(Base):
     __tablename__ = "kw_tracked"
  
     id              = Column(Integer, primary_key=True, autoincrement=True)
-    user_id         = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id         = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
     keyword         = Column(String(500), nullable=False)
     asin_or_pid     = Column(String(200), nullable=False)
     platform        = Column(String(20),  nullable=False)   # 'amazon' | 'flipkart'
@@ -786,7 +786,7 @@ class UserBehaviorLog(Base):
     __table_args__ = {'extend_existing': True}
 
     id         = Column(Integer, primary_key=True, autoincrement=True)
-    user_id    = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
+    user_id    = Column(Integer, ForeignKey("users_auth.id", ondelete="SET NULL"), nullable=True, index=True)
     user_email = Column(EncryptedString(), nullable=True, index=True)
     session_id = Column(String(100), nullable=False, index=True)
     event_type = Column(String(100), nullable=False, index=True)
@@ -838,7 +838,7 @@ class PromoCodeRedemption(Base):
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     promo_code_id = Column(Integer, ForeignKey("promo_codes.id", ondelete="CASCADE"), nullable=False, index=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False, index=True)
     source = Column(String(100), nullable=True) # 'manual' or from URL parameter
     redeemed_at = Column(DateTime(timezone=True), default=lambda: datetime.utcnow())
 

@@ -82,6 +82,9 @@ SELECT
     us.keyword_tracker_month,
     us.ki_searches_used,
     us.ki_cycle_start,
+    us.ai_listings_generated,
+    us.ai_listings_month,
+    us.ai_credits_balance,
     ua.is_verified,
     uas.onboarding_completed,
     ubi.onboarding_goal,
@@ -114,20 +117,21 @@ DECLARE
     new_user_id   INTEGER;
     new_created_at TIMESTAMPTZ;
 BEGIN
-    INSERT INTO users_auth (email_hash, password_hash, is_active, is_verified)
+    INSERT INTO users_auth (email_hash, password_hash, is_active, is_verified, role)
     VALUES (
         NEW.email_hash,
         NEW.password_hash,
         COALESCE(NEW.is_active,   TRUE),
-        COALESCE(NEW.is_verified, FALSE)
+        COALESCE(NEW.is_verified, FALSE),
+        COALESCE(NEW.role,        'user')
     )
     RETURNING id, created_at INTO new_user_id, new_created_at;
 
     NEW.id         := new_user_id;
     NEW.created_at := new_created_at;
 
-    INSERT INTO user_profiles (user_id, first_name, last_name, email, location, mobile_number)
-    VALUES (new_user_id, NEW.first_name, NEW.last_name, NEW.email, NEW.location, NEW.mobile_number);
+    INSERT INTO user_profiles (user_id, first_name, last_name, email, location, mobile_number, key_version)
+    VALUES (new_user_id, NEW.first_name, NEW.last_name, NEW.email, NEW.location, NEW.mobile_number, 1);
 
     INSERT INTO user_business_info (
         user_id, business_name, business_interests,
@@ -145,16 +149,18 @@ BEGIN
     );
 
     INSERT INTO user_subscriptions (
-        user_id, subscription_tier,
+        user_id, subscription_tier, subscription_expires_at, scheduled_downgrade_to,
         ai_chat_used, ai_chat_month,
         analysis_used, analysis_month,
         sov_used, sov_month,
         keyword_tracker_used, keyword_tracker_month,
         ki_searches_used, ki_cycle_start,
-        subscription_expires_at, scheduled_downgrade_to
+        ai_listings_generated, ai_listings_month, ai_credits_balance
     ) VALUES (
         new_user_id,
         COALESCE(NEW.subscription_tier, 'free'),
+        NEW.subscription_expires_at,
+        NEW.scheduled_downgrade_to,
         COALESCE(NEW.ai_chat_used,         0),
         NEW.ai_chat_month,
         COALESCE(NEW.analysis_used,        0),
@@ -165,8 +171,9 @@ BEGIN
         NEW.keyword_tracker_month,
         COALESCE(NEW.ki_searches_used,     0),
         NEW.ki_cycle_start,
-        NEW.subscription_expires_at,
-        NEW.scheduled_downgrade_to
+        COALESCE(NEW.ai_listings_generated, 0),
+        NEW.ai_listings_month,
+        COALESCE(NEW.ai_credits_balance,    0)
     );
 
     INSERT INTO user_app_state (
@@ -244,7 +251,10 @@ BEGIN
         keyword_tracker_used    = COALESCE(NEW.keyword_tracker_used,    OLD.keyword_tracker_used),
         keyword_tracker_month   = COALESCE(NEW.keyword_tracker_month,   OLD.keyword_tracker_month),
         ki_searches_used        = COALESCE(NEW.ki_searches_used,        OLD.ki_searches_used),
-        ki_cycle_start          = COALESCE(NEW.ki_cycle_start,          OLD.ki_cycle_start)
+        ki_cycle_start          = COALESCE(NEW.ki_cycle_start,          OLD.ki_cycle_start),
+        ai_listings_generated   = COALESCE(NEW.ai_listings_generated,   OLD.ai_listings_generated),
+        ai_listings_month       = COALESCE(NEW.ai_listings_month,       OLD.ai_listings_month),
+        ai_credits_balance      = COALESCE(NEW.ai_credits_balance,      OLD.ai_credits_balance)
     WHERE user_id = OLD.id;
 
     UPDATE user_app_state SET
