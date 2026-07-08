@@ -212,56 +212,56 @@ CREATE OR REPLACE FUNCTION users_update_trigger_fn()
 RETURNS TRIGGER AS $$
 BEGIN
     UPDATE users_auth SET
-        password_hash       = COALESCE(NEW.password_hash,       OLD.password_hash),
-        is_active           = COALESCE(NEW.is_active,           OLD.is_active),
-        is_verified         = COALESCE(NEW.is_verified,         OLD.is_verified),
-        role                = COALESCE(NEW.role,                OLD.role),
+        password_hash       = NEW.password_hash,
+        is_active           = NEW.is_active,
+        is_verified         = NEW.is_verified,
+        role                = NEW.role,
         updated_at          = NOW()
     WHERE id = OLD.id;
 
     UPDATE user_profiles SET
-        first_name          = COALESCE(NEW.first_name,    OLD.first_name),
-        last_name           = COALESCE(NEW.last_name,     OLD.last_name),
-        email               = COALESCE(NEW.email,         OLD.email),
-        location            = COALESCE(NEW.location,      OLD.location),
-        mobile_number       = COALESCE(NEW.mobile_number, OLD.mobile_number),
+        first_name          = NEW.first_name,
+        last_name           = NEW.last_name,
+        email               = NEW.email,
+        location            = NEW.location,
+        mobile_number       = NEW.mobile_number,
         updated_at          = NOW()
     WHERE user_id = OLD.id;
 
     UPDATE user_business_info SET
-        business_name           = COALESCE(NEW.business_name,          OLD.business_name),
-        business_interests      = COALESCE(NEW.business_interests,     OLD.business_interests),
-        seller_id               = COALESCE(NEW.seller_id,              OLD.seller_id),
-        seller_sync_status      = COALESCE(NEW.seller_sync_status,     OLD.seller_sync_status),
-        onboarding_goal         = COALESCE(NEW.onboarding_goal,        OLD.onboarding_goal),
-        onboarding_marketplace  = COALESCE(NEW.onboarding_marketplace, OLD.onboarding_marketplace),
-        onboarding_details      = COALESCE(NEW.onboarding_details,     OLD.onboarding_details)
+        business_name           = NEW.business_name,
+        business_interests      = NEW.business_interests,
+        seller_id               = NEW.seller_id,
+        seller_sync_status      = NEW.seller_sync_status,
+        onboarding_goal         = NEW.onboarding_goal,
+        onboarding_marketplace  = NEW.onboarding_marketplace,
+        onboarding_details      = NEW.onboarding_details
     WHERE user_id = OLD.id;
 
     UPDATE user_subscriptions SET
-        subscription_tier       = COALESCE(NEW.subscription_tier,       OLD.subscription_tier),
-        subscription_expires_at = COALESCE(NEW.subscription_expires_at, OLD.subscription_expires_at),
-        scheduled_downgrade_to  = COALESCE(NEW.scheduled_downgrade_to,  OLD.scheduled_downgrade_to),
-        ai_chat_used            = COALESCE(NEW.ai_chat_used,            OLD.ai_chat_used),
-        ai_chat_month           = COALESCE(NEW.ai_chat_month,           OLD.ai_chat_month),
-        analysis_used           = COALESCE(NEW.analysis_used,           OLD.analysis_used),
-        analysis_month          = COALESCE(NEW.analysis_month,          OLD.analysis_month),
-        sov_used                = COALESCE(NEW.sov_used,                OLD.sov_used),
-        sov_month               = COALESCE(NEW.sov_month,               OLD.sov_month),
-        keyword_tracker_used    = COALESCE(NEW.keyword_tracker_used,    OLD.keyword_tracker_used),
-        keyword_tracker_month   = COALESCE(NEW.keyword_tracker_month,   OLD.keyword_tracker_month),
-        ki_searches_used        = COALESCE(NEW.ki_searches_used,        OLD.ki_searches_used),
-        ki_cycle_start          = COALESCE(NEW.ki_cycle_start,          OLD.ki_cycle_start),
-        ai_listings_generated   = COALESCE(NEW.ai_listings_generated,   OLD.ai_listings_generated),
-        ai_listings_month       = COALESCE(NEW.ai_listings_month,       OLD.ai_listings_month),
-        ai_credits_balance      = COALESCE(NEW.ai_credits_balance,      OLD.ai_credits_balance)
+        subscription_tier       = NEW.subscription_tier,
+        subscription_expires_at = NEW.subscription_expires_at,
+        scheduled_downgrade_to  = NEW.scheduled_downgrade_to,
+        ai_chat_used            = NEW.ai_chat_used,
+        ai_chat_month           = NEW.ai_chat_month,
+        analysis_used           = NEW.analysis_used,
+        analysis_month          = NEW.analysis_month,
+        sov_used                = NEW.sov_used,
+        sov_month               = NEW.sov_month,
+        keyword_tracker_used    = NEW.keyword_tracker_used,
+        keyword_tracker_month   = NEW.keyword_tracker_month,
+        ki_searches_used        = NEW.ki_searches_used,
+        ki_cycle_start          = NEW.ki_cycle_start,
+        ai_listings_generated   = NEW.ai_listings_generated,
+        ai_listings_month       = NEW.ai_listings_month,
+        ai_credits_balance      = NEW.ai_credits_balance
     WHERE user_id = OLD.id;
 
     UPDATE user_app_state SET
-        onboarding_completed    = COALESCE(NEW.onboarding_completed,    OLD.onboarding_completed),
-        explorer_tour_completed = COALESCE(NEW.explorer_tour_completed, OLD.explorer_tour_completed),
-        seller_tour_completed   = COALESCE(NEW.seller_tour_completed,   OLD.seller_tour_completed),
-        welcome_card_dismissed  = COALESCE(NEW.welcome_card_dismissed,  OLD.welcome_card_dismissed)
+        onboarding_completed    = NEW.onboarding_completed,
+        explorer_tour_completed = NEW.explorer_tour_completed,
+        seller_tour_completed   = NEW.seller_tour_completed,
+        welcome_card_dismissed  = NEW.welcome_card_dismissed
     WHERE user_id = OLD.id;
 
     RETURN NEW;
