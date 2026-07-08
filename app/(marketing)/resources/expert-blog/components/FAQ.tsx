@@ -77,16 +77,6 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
-
-
 "use client";
 
 import { useState } from "react";
@@ -101,10 +91,7 @@ interface FAQProps {
   accentColor: string;
 }
 
-export default function FAQ({
-  faqs,
-  accentColor,
-}: FAQProps) {
+export default function FAQ({ faqs, accentColor }: FAQProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   return (
@@ -121,17 +108,11 @@ export default function FAQ({
           key={index}
           style={{
             borderBottom:
-              index !== faqs.length - 1
-                ? "1px solid rgba(0,0,0,0.08)"
-                : "none",
+              index !== faqs.length - 1 ? "1px solid rgba(0,0,0,0.08)" : "none",
           }}
         >
           <div
-            onClick={() =>
-              setOpenFaq(
-                openFaq === index ? null : index
-              )
-            }
+            onClick={() => setOpenFaq(openFaq === index ? null : index)}
             style={{
               padding: "18px 24px",
               cursor: "pointer",
@@ -142,13 +123,13 @@ export default function FAQ({
             }}
           >
             <h3
-  style={{
-    margin: 0,
-    fontSize:"16px",
-    fontWeight: 600,
-    lineHeight: "24px",
-  }}
->
+              style={{
+                margin: 0,
+                fontSize: "16px",
+                fontWeight: 600,
+                lineHeight: "24px",
+              }}
+            >
               {faq.q}
             </h3>
 
@@ -173,11 +154,11 @@ export default function FAQ({
 
           {openFaq === index && (
             <div
+              className="text-black dark:text-gray-300"
               style={{
                 padding: "0 24px 24px",
                 fontSize: "17px",
                 lineHeight: 1.8,
-                color: "#555",
               }}
             >
               {faq.a}

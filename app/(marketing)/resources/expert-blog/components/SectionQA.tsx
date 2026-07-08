@@ -22,12 +22,12 @@ export default function SectionQA({
           color: resolvedTheme === "dark" ? "#f9fafb" : "#0A0F1A",
           lineHeight: 1.2,
           letterSpacing: "-0.5px",
-          paddingBottom: "16px",
+          paddingBottom: "12px",
           borderBottom:
             resolvedTheme === "dark"
               ? "1px solid #1f2937"
               : "1px solid #E5E7EB",
-          margin: "0 0 28px",
+          margin: "36px 0 16px",
         }}
       >
         {title}

@@ -1,5 +1,64 @@
-"use client";
+// "use client";
 
+// import { useTheme } from "next-themes";
+
+// interface InfoBannerProps {
+//   title: string;
+//   content: string;
+//   accentColor?: string;
+//   backgroundColor?: string;
+// }
+
+// export default function InfoBanner({
+//   title,
+//   content,
+//   accentColor = "#F59E0B",
+//   backgroundColor,
+// }: InfoBannerProps) {
+//   const { resolvedTheme } = useTheme();
+
+//   const defaultBackground = resolvedTheme === "dark" ? "#1F2937" : "#F7F3E8";
+
+//   return (
+//     <div
+//       style={{
+//         background: backgroundColor || defaultBackground,
+//         borderLeft: `4px solid ${accentColor}`,
+//         borderRadius: 16,
+//         padding: "18px 22px",
+//         marginBottom: 24,
+//       }}
+//     >
+//       <div
+//         style={{
+//           color: accentColor,
+//           fontSize: 13,
+//           fontWeight: 700,
+//           letterSpacing: "1px",
+//           textTransform: "uppercase",
+//           marginBottom: 10,
+//           display: "flex",
+//           alignItems: "center",
+//           gap: 6,
+//         }}
+//       >
+//         {title}
+//       </div>
+
+//       <div
+//         style={{
+//           color: resolvedTheme === "dark" ? "#E5E7EB" : "#334155",
+//           fontSize: 16,
+//           lineHeight: "28px",
+//         }}
+//       >
+//         {content}
+//       </div>
+//     </div>
+//   );
+// }
+
+"use client";
 import { useTheme } from "next-themes";
 
 interface InfoBannerProps {
@@ -7,6 +66,7 @@ interface InfoBannerProps {
   content: string;
   accentColor?: string;
   backgroundColor?: string;
+  darkBackgroundColor?: string; // ← add a dark mode override
 }
 
 export default function InfoBanner({
@@ -14,15 +74,22 @@ export default function InfoBanner({
   content,
   accentColor = "#F59E0B",
   backgroundColor,
+  darkBackgroundColor,
 }: InfoBannerProps) {
   const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
-  const defaultBackground = resolvedTheme === "dark" ? "#1F2937" : "#F7F3E8";
+  // Derive a dark-mode background from the accent color if none provided
+  const derivedDarkBg = accentColor + "1A"; // 10% opacity of accent color
+
+  const resolvedBackground = isDark
+    ? darkBackgroundColor || derivedDarkBg
+    : backgroundColor || "#F7F3E8";
 
   return (
     <div
       style={{
-        background: backgroundColor || defaultBackground,
+        background: resolvedBackground,
         borderLeft: `4px solid ${accentColor}`,
         borderRadius: 16,
         padding: "18px 22px",
@@ -32,7 +99,7 @@ export default function InfoBanner({
       <div
         style={{
           color: accentColor,
-          fontSize: 11,
+          fontSize: 13,
           fontWeight: 700,
           letterSpacing: "1px",
           textTransform: "uppercase",
@@ -44,10 +111,9 @@ export default function InfoBanner({
       >
         {title}
       </div>
-
       <div
         style={{
-          color: resolvedTheme === "dark" ? "#E5E7EB" : "#334155",
+          color: isDark ? "#E5E7EB" : "#334155",
           fontSize: 16,
           lineHeight: "28px",
         }}

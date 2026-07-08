@@ -14,7 +14,7 @@ import BlogImageSection from "../components/BlogImageSection";
 import SectionQA from "../components/SectionQA";
 import DataTable, { TableColumn, TableRow } from "../components/DataTable";
 import InsightCards from "../components/InsightCard";
-import { ArrowRight, FileText, Search } from "lucide-react";
+import { ArrowRight, FileText, Search, Shield } from "lucide-react";
 import FeatureCTA from "../components/FeatureCTA";
 import StepsList from "../components/NumberedCards";
 import NumberedCards from "../components/NumberedCards";
@@ -23,7 +23,7 @@ import { title } from "process";
 export const dynamic = "force-static";
 
 // ── Schema ─────────────────────────────────────────────────────────────────────
-const schemaFindCompetitorKeywordsAmazonIndia = {
+const schemaNegativeReviewsAmazonIndia = {
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -124,356 +124,378 @@ const schemaFindCompetitorKeywordsAmazonIndia = {
   ],
 };
 
-const keyTakeaways = [
-  "The biggest ranking gains come from keywords you are not targeting at all, not from small improvements to keywords you already rank for.",
-  "Reverse ASIN lookup shows every keyword a competitor's product ranks for in Amazon search, including terms you would never have thought to target.",
-  "Backend search terms are the fastest way to add gap keywords without redesigning your listing. You can be indexed for 10 new terms in under 30 minutes.",
-  "Search frequency rank is the best proxy for keyword demand on Amazon India. Focus first on gap keywords with a search frequency rank under 50,000.",
-  "Hindi transliterations of product names are systematically under targeted by most sellers and offer low competition, high conversion opportunities, especially for tier 2 and tier 3 city buyers.",
+const negativeReviewsKeyTakeaways = [
+  "Your star rating is a conversion signal buyers act on in under a second. The drop from 4.2 to 3.9 looks small but sits right on the cliff where buyers default to a higher rated competitor.",
+  "Reviews are also a ranking signal. Recent review velocity and average rating both feed how Amazon ranks and shows your listing, so a cluster of fresh negatives compounds quickly.",
+  "One bad review is noise. The same complaint repeated across many reviews is a product, listing, or fulfilment signal. The pattern is the intelligence, not the individual review.",
+  "Most negative reviews fall into fixable listing problems rather than true product faults. A wrong size chart or a misleading image creates more one star reviews than people realise.",
+  "You cannot reply publicly to a review, but Brand Registered sellers can privately contact a critical reviewer through Seller Central and often get the review updated or removed.",
 ];
 
 // ── TOC ───────────────────────────────────────────────────────────────────────
 
-const TOC = [
+const negativeReviewsTOC = [
   { id: "key-takeaways", label: "Key Takeaways" },
-  { id: "keyword-gap-analysis", label: "Why Keyword Gap Analysis?" },
-  { id: "reverse-asin", label: "What Is Reverse ASIN Research?" },
-  { id: "real-category-gap", label: "Keyword Gap in a Real Category" },
-  { id: "prioritise-gap-keywords", label: "Prioritise Gap Keywords" },
-  { id: "add-gap-keywords", label: "Add Gap Keywords to Your Listing" },
-  { id: "free-methods", label: "Find Keywords Without a Paid Tool" },
+  { id: "ranking-signal", label: "Reviews as a Ranking Signal" },
+  { id: "rating-cliff", label: "The 4.2 to 3.9 Cliff" },
+  {
+    id: "pattern-is-intelligence",
+    label: "Why the Pattern Is the Intelligence",
+  },
+  { id: "reading-analytically", label: "Reading Reviews Analytically" },
+  { id: "what-to-fix-first", label: "What to Fix First" },
+  { id: "how-to-respond", label: "How to Respond Properly" },
+  { id: "detecting-fake-reviews", label: "Detecting Fake Reviews" },
   { id: "faq", label: "FAQs" },
 ];
 
-const steps = [
+const negativeReviewsSteps = [
   {
-    title: "Filter by search frequency rank under 50,000 first",
+    title: "Group your negatives by theme, not by date",
     description:
-      "On Amazon India, a search frequency rank under 50,000 represents a term searched frequently enough to drive meaningful traffic. Start your gap list here. Below 50,000 gives you 10 to 30 high priority targets for most categories.",
+      "Pull every review at 3 stars and below and sort them into the five buckets: packaging, sizing, quality, listing mismatch, and delivery. Count each. This single step replaces hours of emotional reading with a five line summary you can act on.",
   },
   {
-    title: "Filter out broad head terms with low buying intent",
+    title: "Identify the single largest cluster",
     description:
-      'A term like "earphones" has high search volume but low conversion because buyers are browsing, not buying. Prioritise gap keywords with buying signals: "buy earphones under 500", "earphones with warranty india". These convert at 2 to 3 times the rate of generic terms.',
+      "The biggest count is your priority. If packaging is 11 of 23 negatives, packaging is the fix that removes the most future one star reviews. Resist the urge to fix the loudest review. Fix the most common complaint.",
   },
   {
-    title: "Check the competitor's rank on the gap keyword",
+    title: "Classify the cluster as listing, product, or fulfilment",
     description:
-      "If your competitor ranks #4 to #15 for a gap keyword, there is room to enter and compete. If they rank #1 to #3 on a high volume term, you may need Sponsored Products investment first before organic rank is realistic. Target the keywords where they rank #8 to #20 as your fastest wins.",
+      "Listing problems mean you set the wrong expectation. Product problems mean the item underperforms in use. Fulfilment problems mean damage or delay in transit. The classification decides both what you change and how quickly you can change it.",
   },
   {
-    title: "Separate Hindi gap keywords for separate prioritisation",
+    title: "Fix the listing issues first",
     description:
-      "Hindi gap keywords compete in a different pool from English terms. Do not deprioritise them just because their search frequency rank appears lower. Competition for Hindi terms is typically 60 to 80 percent lower than for equivalent English terms, making them easier to rank for even from a standing start.",
+      "Update the size chart, replace the misleading image, correct the specification, and rewrite any bullet that overpromises. These changes go live in minutes and stop new reviews of the same type almost immediately. Most sellers find a meaningful share of their negatives were listing problems all along.",
   },
   {
-    title: "Pick 5 to 8 gap keywords to act on this week",
+    title: "Address product and fulfilment causes in parallel",
     description:
-      "More than 8 is too many to track meaningfully. Pick the 5 to 8 top gap keywords, add them to your listing, and run Sponsored Products on each for 7 days. Then check rank movement with Insydz and repeat with the next batch.",
+      "Raise durability and quality faults with your supplier and switch fragile items to sturdier packaging or to FBA where handling is more consistent. These take weeks rather than minutes, so start them now while the listing fixes are already working.",
+  },
+  {
+    title: "Track rating velocity for the next 30 days",
+    description:
+      "Watch the share of incoming reviews that are positive. As fixes land, fresh positive reviews start lifting your average, and because Amazon weights recent reviews heavily, the recovery shows up faster than the slow decline did. Insydz tracks this daily so you know the fix is working before your rating fully recovers.",
   },
 ];
 
-const keywordGapColumns: TableColumn[] = [
+const negativeReviewsKeywordGapColumns: TableColumn[] = [
   {
-    key: "keyword",
-    label: "KEYWORD",
+    key: "rating",
+    label: "VISIBLE RATING",
     headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
   },
   {
-    key: "searchFreq",
-    label: "SEARCH FREQ. RANK",
+    key: "buyerRead",
+    label: "HOW BUYERS READ IT",
     headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
   },
   {
-    key: "competitorRank",
-    label: "COMPETITOR RANK",
+    key: "searchImpact",
+    label: "SEARCH CLICK IMPACT",
     headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
   },
   {
-    key: "yourRank",
-    label: "YOUR RANK",
-    headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
-  },
-  {
-    key: "gapType",
-    label: "GAP TYPE",
-    headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
-  },
-];
-
-const keywordGapRows: TableRow[] = [
-  {
-    rowClassName: "bg-[#F4F7FC]",
-
-    keyword: {
-      value: "bluetooth earphones under 500",
-      className:
-        "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
-    },
-
-    searchFreq: "12,400",
-    competitorRank: "#4",
-    yourRank: "Not ranked",
-
-    gapType: {
-      type: "chip",
-      label: "Hard gap",
-      className: "bg-[#FBE2E2] text-[#C81E1E] px-4 py-1",
-    },
-  },
-
-  {
-    keyword: "earphone with mic for calls",
-    searchFreq: "28,700",
-    competitorRank: "#7",
-    yourRank: "#34",
-
-    gapType: {
-      type: "chip",
-      label: "Weak rank",
-      className: "bg-[#F6E7B7] text-[#A04B00] px-4 py-1",
-    },
-  },
-
-  {
-    rowClassName: "bg-[#F4F7FC]",
-
-    keyword: {
-      value: "ईयरफोन 500 से कम (Hindi)",
-      className:
-        "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
-    },
-
-    searchFreq: "41,200",
-    competitorRank: "#3",
-    yourRank: "Not ranked",
-
-    gapType: {
-      type: "chip",
-      label: "Hard gap",
-      className: "bg-[#FBE2E2] text-[#C81E1E] px-4 py-1",
-    },
-  },
-
-  {
-    keyword: "wired earphone with volume control",
-    searchFreq: "67,800",
-    competitorRank: "#6",
-    yourRank: "#28",
-
-    gapType: {
-      type: "chip",
-      label: "Weak rank",
-      className: "bg-[#F6E7B7] text-[#A04B00] px-4 py-1",
-    },
-  },
-
-  {
-    rowClassName: "bg-[#F4F7FC]",
-
-    keyword: {
-      value: "earphone for study music",
-      className:
-        "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
-    },
-
-    searchFreq: "88,300",
-    competitorRank: "#11",
-    yourRank: "Not ranked",
-
-    gapType: {
-      type: "chip",
-      label: "Hard gap",
-      className: "bg-[#FBE2E2] text-[#C81E1E] px-4 py-1",
-    },
-  },
-
-  {
-    keyword: "tangle free earphone india",
-    searchFreq: "112,400",
-    competitorRank: "#5",
-    yourRank: "#41",
-
-    gapType: {
-      type: "chip",
-      label: "Weak rank",
-      className: "bg-[#F6E7B7] text-[#A04B00] px-4 py-1",
-    },
-  },
-
-  {
-    rowClassName: "bg-[#F4F7FC]",
-
-    keyword: {
-      value: "earphone 6 months warranty",
-      className:
-        "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
-    },
-
-    searchFreq: "134,700",
-    competitorRank: "#9",
-    yourRank: "Not ranked",
-
-    gapType: {
-      type: "chip",
-      label: "Hard gap",
-      className: "bg-[#FBE2E2] text-[#C81E1E] px-4 py-1",
-    },
-  },
-
-  {
-    keyword: "best sound earphone 2026",
-    searchFreq: "8,900",
-    competitorRank: "#12",
-    yourRank: "#9",
-
-    gapType: {
-      type: "chip",
-      label: "You rank",
-      className: "bg-[#D8F0DD] text-[#067647] px-4 py-1",
-    },
-  },
-];
-
-const listingColumns: TableColumn[] = [
-  {
-    key: "location",
-    label: "LISTING LOCATION",
-    headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
-  },
-  {
-    key: "keywordType",
-    label: "KEYWORD TYPE TO ADD",
-    headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
-  },
-  {
-    key: "capacity",
-    label: "MAX CAPACITY",
-    headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
-  },
-  {
-    key: "indexTime",
-    label: "TIME TO INDEX",
+    key: "conversionImpact",
+    label: "CONVERSION IMPACT",
     headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
   },
 ];
 
-const listingRows: TableRow[] = [
+const negativeReviewsKeywordGapRows: TableRow[] = [
   {
     rowClassName: "bg-[#F4F7FC]",
 
-    location: {
-      value: "Title (first 80 chars)",
+    rating: {
+      value: "4.5 and above",
       className:
         "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
     },
 
-    keywordType: "Primary gap keyword only, must read naturally",
+    buyerRead: "Trusted, default choice",
 
-    capacity: "1–2 keywords max",
-
-    indexTime: {
+    searchImpact: {
       type: "chip",
-      label: "Immediate",
-      className: "bg-[#D8F0DD] text-[#067647]",
+      label: "Baseline",
+      className: "bg-[#D8F0DD] text-[#067647] px-4 py-1 font-semibold",
+    },
+
+    conversionImpact: {
+      type: "chip",
+      label: "Baseline",
+      className: "bg-[#D8F0DD] text-[#067647] px-4 py-1 font-semibold",
     },
   },
 
   {
-    location: "Bullet points",
+    rating: "4.2 to 4.4",
 
-    keywordType: "Secondary gap keywords woven into benefit statements",
+    buyerRead: "Still safe",
 
-    capacity: "3–5 additional keywords",
-
-    indexTime: {
+    searchImpact: {
       type: "chip",
-      label: "24 hours",
-      className: "bg-[#D8F0DD] text-[#067647]",
-    },
-  },
-
-  {
-    rowClassName: "bg-[#F4F7FC]",
-
-    location: {
-      value: "Backend search terms",
-      className:
-        "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
+      label: "Slight dip",
+      className: "bg-[#D8F0DD] text-[#067647] px-4 py-1 font-semibold",
     },
 
-    keywordType: "All remaining gap keywords incl. Hindi terms",
-
-    capacity: "250 bytes (~40 keywords)",
-
-    indexTime: {
+    conversionImpact: {
       type: "chip",
-      label: "24–48 hours",
-      className: "bg-[#D8F0DD] text-[#067647]",
-    },
-  },
-
-  {
-    location: "Product description",
-
-    keywordType: "Long-tail gap keywords used in full sentences",
-
-    capacity: "3–5 additional keywords",
-
-    indexTime: {
-      type: "chip",
-      label: "2–5 days",
-      className: "bg-[#F6E7B7] text-[#A04B00]",
+      label: "Slight dip",
+      className: "bg-[#D8F0DD] text-[#067647] px-4 py-1 font-semibold",
     },
   },
 
   {
     rowClassName: "bg-[#F4F7FC]",
 
-    location: {
-      value: "A+ Content headers",
+    rating: "4.0 to 4.1",
+
+    buyerRead: "Acceptable, with hesitation",
+
+    searchImpact: {
+      type: "chip",
+      label: "Noticeable",
+      className: "bg-[#FDF0C7] text-[#A04B00] px-4 py-1 font-semibold",
+    },
+
+    conversionImpact: {
+      type: "chip",
+      label: "Noticeable",
+      className: "bg-[#FDF0C7] text-[#A04B00] px-4 py-1 font-semibold",
+    },
+  },
+
+  {
+    rowClassName: "bg-[#F4F7FC]",
+
+    rating: {
+      value: "3.8 to 3.9",
       className:
         "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
     },
 
-    keywordType: "Top gap keywords used as section titles",
+    buyerRead: "Reads as risky",
 
-    capacity: "2–4 additional keywords",
-
-    indexTime: {
+    searchImpact: {
       type: "chip",
-      label: "2–5 days",
-      className: "bg-[#F6E7B7] text-[#A04B00]",
+      label: "Sharp drop",
+      className: "bg-[#FBE2E2] text-[#C81E1E] px-4 py-1 font-semibold",
+    },
+
+    conversionImpact: {
+      type: "chip",
+      label: "Sharp drop",
+      className: "bg-[#FBE2E2] text-[#C81E1E] px-4 py-1 font-semibold",
+    },
+  },
+
+  {
+    rating: "Below 3.8",
+
+    buyerRead: "Avoided unless cheapest",
+
+    searchImpact: {
+      type: "chip",
+      label: "Severe",
+      className: "bg-[#FBE2E2] text-[#C81E1E] px-4 py-1 font-semibold",
+    },
+
+    conversionImpact: {
+      type: "chip",
+      label: "Severe",
+      className: "bg-[#FBE2E2] text-[#C81E1E] px-4 py-1 font-semibold",
     },
   },
 ];
 
-const keywordDiscoveryCards = [
+const negativeReviewsKeywordGapColumns1: TableColumn[] = [
+  {
+    key: "review",
+    label: "WHAT THE REVIEW SAYS",
+    headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
+  },
+  {
+    key: "meaning",
+    label: "WHAT IT USUALLY MEANS",
+    headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
+  },
+  {
+    key: "fix",
+    label: "WHERE TO FIX",
+    headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
+  },
+  {
+    key: "speed",
+    label: "FIX SPEED",
+    headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
+  },
+];
+
+const chipFast =
+  "bg-[#D8F0DD] text-[#067647] px-4 py-1 rounded-full font-semibold";
+
+const chipMedium =
+  "bg-[#FDF0C7] text-[#A04B00] px-4 py-1 rounded-full font-semibold";
+
+const chipSlow =
+  "bg-[#FBE2E2] text-[#C81E1E] px-4 py-1 rounded-full font-semibold";
+
+const chipVaries =
+  "bg-[#E8EEF8] text-[#334155] px-4 py-1 rounded-full font-semibold";
+
+const negativeReviewsKeywordGapRows1: TableRow[] = [
+  {
+    rowClassName: "bg-[#F4F7FC]",
+
+    review: {
+      value: "Arrived damaged or broken",
+      className:
+        "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
+    },
+
+    meaning: "Packaging or transit handling",
+
+    fix: {
+      value: "Fulfilment /\npackaging",
+      className: "whitespace-pre-line",
+    },
+
+    speed: {
+      type: "chip",
+      label: "Medium",
+      className: chipMedium,
+    },
+  },
+
+  {
+    review: "Smaller or larger than expected",
+
+    meaning: {
+      value: "Size information set wrong\nexpectation",
+      className: "whitespace-pre-line",
+    },
+
+    fix: {
+      value: "Listing (size chart,\nimages)",
+      className: "whitespace-pre-line",
+    },
+
+    speed: {
+      type: "chip",
+      label: "Fast",
+      className: chipFast,
+    },
+  },
+
+  {
+    rowClassName: "bg-[#F4F7FC]",
+
+    review: {
+      value: "Stopped working after a few\nweeks",
+      className:
+        "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3 whitespace-pre-line",
+    },
+
+    meaning: {
+      value: "Genuine quality or durability\nfault",
+      className: "whitespace-pre-line",
+    },
+
+    fix: "Product / supplier",
+
+    speed: {
+      type: "chip",
+      label: "Slow",
+      className: chipSlow,
+    },
+  },
+
+  {
+    review: "Not as shown in the pictures",
+
+    meaning: {
+      value: "Misleading images or\noverclaimed copy",
+      className: "whitespace-pre-line",
+    },
+
+    fix: "Listing",
+
+    speed: {
+      type: "chip",
+      label: "Fast",
+      className: chipFast,
+    },
+  },
+
+  {
+    rowClassName: "bg-[#F4F7FC]",
+
+    review: {
+      value: "Delivered very late",
+      className:
+        "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
+    },
+
+    meaning: {
+      value: "Fulfilment method or stock\nlocation",
+      className: "whitespace-pre-line",
+    },
+
+    fix: {
+      value: "Fulfilment (consider\nFBA)",
+      className: "whitespace-pre-line",
+    },
+
+    speed: {
+      type: "chip",
+      label: "Medium",
+      className: chipMedium,
+    },
+  },
+
+  {
+    review: {
+      value: "Generic 1 star, no text, sudden\ncluster",
+      className: "whitespace-pre-line",
+    },
+
+    meaning: "Possible fake or competitor activity",
+
+    fix: "Report to Amazon",
+
+    speed: {
+      type: "chip",
+      label: "Varies",
+      className: chipVaries,
+    },
+  },
+];
+
+const negativeReviewsDiscoveryCards = [
   {
     icon: <Search size={24} />,
-    iconBg: "#EEF2FF",
-    iconColor: "#2563EB",
+    iconBg: "#FEF2F2",
+    iconColor: "#EF4444",
 
-    title: "Amazon Search Bar Method",
+    title: "Detect the Warning Signs",
 
     description: (
       <>
-        Type the first 1 to 2 words of your competitor's product category into
-        the Amazon India search bar and watch the autocomplete suggestions
-        appear.
-        <br />
-        <br />
-        Each suggestion is a real search term buyers use. Compare these to your
-        current listing keywords. Any term not in your listing is a gap worth
-        considering.
+        Watch for a sudden cluster of one star reviews with no written text or
+        generic wording, reviews that arrive exactly as your rank improves, and
+        accounts with no verified purchase or thin review history. Real
+        complaints describe a specific problem. Planted ones rarely do.
       </>
     ),
 
     chips: [
       {
-        label: "Free · 20 min",
-        bg: "#EEF2FF",
-        color: "#1D4ED8",
+        label: "Spot the cluster",
+        bg: "#FCE7E7",
+        color: "#C81E1E",
       },
     ],
   },
@@ -483,86 +505,82 @@ const keywordDiscoveryCards = [
     iconBg: "#FEF3C7",
     iconColor: "#D97706",
 
-    title: "Seller Central Brand Analytics",
+    title: "Report With Evidence",
 
     description: (
       <>
-        Brand Registry sellers can access the Search Terms report in Brand
-        Analytics. It shows search frequency rank for any term you type.
-        <br />
-        <br />
-        Use this to validate the demand of gap keywords you have identified
-        manually before adding them to your listing.
+        Use the Report Abuse link on the review, or the Report a Violation tool
+        available to Brand Registered sellers. Submit screenshots, dates, and
+        the specific policy you believe is broken. Clear evidence and a calm,
+        factual report get acted on faster than a frustrated complaint.
       </>
     ),
 
     chips: [
       {
-        label: "Free with Brand Registry",
-        bg: "#F7EFD8",
+        label: "Brand Registry helps",
+        bg: "#FEF7E6",
         color: "#9A5412",
       },
     ],
   },
 
   {
-    icon: <ArrowRight size={24} />,
-    iconBg: "#DDF5E8",
-    iconColor: "#059669",
+    icon: <Shield size={24} />,
+    iconBg: "#EEF4FF",
+    iconColor: "#2563EB",
 
-    title: "Insydz Reverse ASIN Lookup",
+    title: "Do Not Over Attribute",
 
     description: (
       <>
-        The complete method. Paste your competitor's ASIN and get their full
-        keyword footprint: 50 to 150 keywords with search frequency rank, their
-        rank position, and your current rank, all in one dashboard.
-        <br />
-        <br />
-        The gap keywords are pre-filtered and sorted by priority.
+        The risk is convincing yourself every bad review is sabotage. Most are
+        not. Work the pattern first and treat fake reviews as the small residual
+        that does not fit a real cause. Genuine fixable complaints are far more
+        common, and far more valuable to act on.
       </>
     ),
 
     chips: [
       {
-        label: "Complete · Free to start",
-        bg: "#DDF5E8",
-        color: "#065F46",
+        label: "Stay honest",
+        bg: "#E8F0FE",
+        color: "#1D4ED8",
       },
     ],
   },
 ];
 
 // ── FAQ ───────────────────────────────────────────────────────────────────────
-const faqs = [
+const negativeReviewsFaqs = [
   {
-    q: "How do I find keywords my Amazon competitor ranks for but I do not?",
-    a: "Paste a competitor's ASIN into Insydz and it shows every search term they rank for alongside your current rank. Filter to keywords where you rank below position 20, sort by search frequency rank, and add the top 5 to 10 to your backend search terms today.",
+    q: "How many negative reviews does it take to hurt my Amazon ranking in India?",
+    a: "There is no fixed number. What matters is the effect on your average rating and your recent review velocity. A few one-star reviews that pull your average below 4.0 do more damage than a larger number that keeps you above 4.3. Amazon weights recent reviews more heavily, so a short cluster of negatives can move both your visible rating and your ranking faster than the same reviews spread across a year.",
   },
   {
-    q: "What is reverse ASIN keyword research?",
-    a: "Reverse ASIN research means looking up which keywords an ASIN currently ranks for in Amazon search results, rather than starting with keywords and checking rankings. You start with your competitor's product and work backward to discover all the search terms driving their organic visibility, including terms you would never have thought to target.",
+    q: "Can I respond to negative reviews on Amazon India?",
+    a: "You cannot publicly comment on a product review anymore. If you are enrolled in Brand Registry, you can use the Customer Reviews tool in Seller Central to privately contact a buyer who left a critical review and offer a courtesy refund or support. For order-related issues you can use Buyer-Seller Messaging. Resolving the problem privately often leads the buyer to update or remove the review themselves.",
   },
   {
-    q: "Which keywords drive the most sales on Amazon India?",
-    a: "Long-tail keywords with buying intent convert at 2 to 3 times the rate of broad head terms. Terms that include specifications, use cases, or words like 'best' or 'buy' signal purchase intent. For Amazon India specifically, Hindi transliterations of product names often have lower competition but strong conversion among tier-2 and tier-3 city buyers.",
+    q: "Does a rating below 4 stars significantly reduce sales?",
+    a: "Yes. The drop below 4.0 is the sharpest part of the curve. Amazon India buyers read the star rating before anything else, and a listing showing 3.9 reads as risky while 4.0 reads as acceptable. The gap between 4.2 and 3.9 looks small but typically costs a meaningful share of clicks from search and a larger share of conversions, because hesitant buyers default to the higher-rated competitor.",
   },
   {
-    q: "How many keywords should I target per product listing?",
-    a: "Your title and bullets support 8 to 15 primary and secondary keywords naturally. The backend search terms field gives 250 bytes for additional keywords that do not appear in visible copy. A well-optimised listing should be indexed for 40 to 80 unique search terms in total, including Hindi transliterations for Amazon India.",
+    q: "How do I identify the pattern in my negative reviews quickly?",
+    a: "Stop reading reviews one by one in date order. Group them by theme instead: packaging and damage, size and fit, quality and durability, listing mismatch, and delivery. One review per theme is noise. Five or more naming the same theme is a signal you can act on. Insydz reads every review and surfaces these clusters automatically, so you see the dominant complaint without reading all of them manually.",
   },
   {
-    q: "Can I find competitor backend keywords legally?",
-    a: "You cannot read backend keywords directly as Amazon keeps those private. Reverse ASIN tools work out which keywords an ASIN ranks for by checking search results across thousands of terms. This gives you a near-complete picture of their keyword footprint without accessing any private data.",
+    q: "Can competitors plant fake negative reviews on my listing?",
+    a: "It happens, though Amazon detects and removes much of it. Warning signs include a sudden cluster of one-star reviews with no text or generic wording, reviews that arrive right as your rank improves, and accounts with no verified purchase or thin history. If you see these signs, report the reviews through the Report Abuse link or the Report a Violation tool for Brand Registered sellers, with screenshots and dates as evidence.",
   },
   {
-    q: "How long does it take to rank for a new keyword on Amazon India?",
-    a: "Amazon indexes backend search terms within 24 to 48 hours of saving them. Organic rank improvement on those terms then depends on generating sales velocity. Running exact match Sponsored Products on the gap keyword for 5 to 7 days typically produces enough sales signals to move from unranked to page 2 or page 1 within 2 to 4 weeks.",
+    q: "How fast can a damaged rating recover on Amazon India?",
+    a: "Faster than it fell, if you fix the cause. Because Amazon weights recent reviews heavily, a steady run of fresh positive reviews lifts your average more quickly than the slow accumulation of old negatives held it down. Sellers who fix their dominant complaint cluster commonly see their rating climb back above 4.0 within four to eight weeks, provided the underlying problem is genuinely resolved.",
   },
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────
-export default function FindCompetitorKeywordsAmazonIndiaContent() {
+export default function NegativeReviewsAmazonIndiaContent() {
   const router = useRouter();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [activeSection, setActiveSection] = useState("what-is-private-label");
@@ -572,14 +590,12 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const id = "insydz-find-competitor-keywords-schema";
+    const id = "insydz-negative-reviews-amazon-india-schema";
     if (document.getElementById(id)) return;
     const script = document.createElement("script");
     script.id = id;
     script.type = "application/ld+json";
-    script.textContent = JSON.stringify(
-      schemaFindCompetitorKeywordsAmazonIndia,
-    );
+    script.textContent = JSON.stringify(schemaNegativeReviewsAmazonIndia);
     document.head.appendChild(script);
     return () => {
       document.getElementById(id)?.remove();
@@ -591,10 +607,10 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
       setScrolled(window.scrollY > 20);
       const total = document.documentElement.scrollHeight - window.innerHeight;
       setScrollPct(Math.min((window.scrollY / total) * 100, 100));
-      for (let i = TOC.length - 1; i >= 0; i--) {
-        const el = document.getElementById(TOC[i].id);
+      for (let i = negativeReviewsTOC.length - 1; i >= 0; i--) {
+        const el = document.getElementById(negativeReviewsTOC[i].id);
         if (el && window.scrollY >= el.offsetTop - 130) {
-          setActiveSection(TOC[i].id);
+          setActiveSection(negativeReviewsTOC[i].id);
           break;
         }
       }
@@ -608,10 +624,10 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
       setScrolled(window.scrollY > 20);
       const total = document.documentElement.scrollHeight - window.innerHeight;
       setScrollPct(Math.min((window.scrollY / total) * 100, 100));
-      for (let i = TOC.length - 1; i >= 0; i--) {
-        const el = document.getElementById(TOC[i].id);
+      for (let i = negativeReviewsTOC.length - 1; i >= 0; i--) {
+        const el = document.getElementById(negativeReviewsTOC[i].id);
         if (el && window.scrollY >= el.offsetTop - 130) {
-          setActiveSection(TOC[i].id);
+          setActiveSection(negativeReviewsTOC[i].id);
           break;
         }
       }
@@ -627,12 +643,16 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
     setTocOpen(false);
   };
 
-  interface ArticleImgProps {
+  interface NegativeReviewsArticleImgProps {
     src: string;
     alt: string;
     caption?: string;
   }
-  function ArticleImg({ src, alt, caption }: ArticleImgProps) {
+  function NegativeReviewsArticleImg({
+    src,
+    alt,
+    caption,
+  }: NegativeReviewsArticleImgProps) {
     const [loaded, setLoaded] = useState(false);
     return (
       <figure className="article-img-wrap">
@@ -910,23 +930,23 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
       {/* HERO SECTION */}
       <HeroSection
         resolvedTheme={resolvedTheme}
-        badgeText="PRICING INTELLIGENCE"
+        badgeText="Review Intelligence"
         title={
           <>
-            How to Find Every Keyword Your{" "}
-            <span style={{ color: "#6366F1" }}>
-              Amazon <br /> India Competitor
-            </span>{" "}
-            Is Ranking For, and <br /> Use It to Outrank Them
+            How Negative Reviews Are Silently <br />
+            Killing Your{" "}
+            <span style={{ color: "#6366F1" }}>Amazon India Sales</span> , and
+            <br />
+            How to Stop It Before It Compounds
           </>
         }
         description={
           <>
-            Your competitor is ranking for 47 keywords you have never targeted.
-            Some of them are your category's highest converting terms.
-            <br />
-            Knowing about it and acting on it are two very different things.
-            This guide gives you the method.
+            You have 23 one star reviews. You have read three of them. The other
+            20 contain the exact reason your sales are <br /> dropping, and you
+            do not know what they say. This guide turns your reviews from an
+            emotional problem into an <br /> analytical one, so you can find the
+            pattern and fix it.
           </>
         }
         authorName="Vikrant Singh"
@@ -937,14 +957,14 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
           light: "#F1F2FF",
           dark: "#0f1120",
         }}
-        tags={["Keyword Intelligence", "SEO Organic"]}
+        tags={["Review Intelligence", "SEO Organic"]}
       />
 
       {/* Blog Image Section */}
       <BlogImageSection
-        imageSrc="/Blog2_find-competitor-keywords-amazon-india_BlogBanner.png"
-        altText="Competitor Keywords Amazon India"
-        caption="Insydz keyword gap analysis. Your ASIN ranks for 63 keywords while the category leader ranks for 110. The 47 keyword gap contains the highest priority ranking opportunities, including 19 high intent and 8 Hindi terms you are missing entirely."
+        imageSrc="/Negative Reviews Impact Amazon India Sales_Blog_Banner.png"
+        altText="Negative Reviews Impact Amazon India Sales"
+        caption="Insydz review sentiment view. The same 23 negative reviews, grouped by theme. Eleven name packaging damage, six name sizing, four name durability. The dominant cluster tells you exactly what to fix first, which no single review ever does."
       />
 
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 16px 0" }}>
@@ -981,14 +1001,16 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
               fontFamily: "'Lora', serif",
             }}
           >
-            To find keywords your Amazon India competitor ranks for that you do
-            not: run a reverse ASIN lookup on your top competitor using Insydz.
-            It shows every keyword their ASIN ranks for alongside your current
-            rank for each term. Filter to keywords where you rank below position
-            20 or do not appear at all. Sort by search frequency rank. Add the
-            top 5 to 10 gap keywords to your backend search terms field today.
-            That alone can move you from invisible to page 1 for those terms
-            within 3 to 4 weeks.
+            Negative reviews hurt your Amazon India sales in two ways: they
+            lower your star rating, which is a conversion signal buyers act on
+            instantly, and they slow your review velocity, which Amazon reads as
+            a ranking signal. The fix is not to read reviews one by one and feel
+            discouraged. Group every review at 3 stars and below by theme, find
+            the single largest complaint cluster, classify it as a listing,
+            product, or fulfilment problem, and fix the listing issues first
+            because they are fastest. Insydz reads every review and surfaces the
+            dominant pattern automatically, so you act on the signal instead of
+            drowning in individual complaints.
           </p>
         </div>
 
@@ -996,7 +1018,7 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
         <div id="key-takeaways">
           <KeyTakeawaysBox
             title="Key Takeaways: Competitor Keyword Research on Amazon India"
-            items={keyTakeaways}
+            items={negativeReviewsKeyTakeaways}
             accentColor="#6366F1"
           />
         </div>
@@ -1029,7 +1051,7 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
             className="space-y-1"
             style={{ listStyle: "none", padding: 0, margin: 0 }}
           >
-            {TOC.map((t) => (
+            {negativeReviewsTOC.map((t) => (
               <li key={t.id}>
                 <button
                   className={`toc-link${activeSection === t.id ? " active" : ""}`}
@@ -1080,7 +1102,7 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
               borderColor: resolvedTheme === "dark" ? "#1f2937" : "#E5E7EB",
             }}
           >
-            {TOC.map((t) => (
+            {negativeReviewsTOC.map((t) => (
               <button
                 key={t.id}
                 className="toc-link"
@@ -1093,11 +1115,11 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
           </div>
 
           <article className="article-body">
-            <div id="keyword-gap-analysis">
+            <div id="ranking-signal">
               <SectionQA
-                title="Why Is Keyword Gap Analysis the Fastest Path to Organic Rank Gains?"
-                paragraph1="Most Amazon India sellers optimise their listings in isolation, looking at their own title, bullets, and backend keywords and trying to improve what they already have. This has a ceiling: the words you have not thought of are not there to improve."
-                paragraph2="Keyword gap analysis flips the approach. Instead of starting with your own listing, you start with your competitor's ranking keywords and ask what you are missing. The gap is a ready made list of proven demand: someone is already searching, your competitor is already capturing it, and you are not."
+                title="Why Does Amazon Treat Your Reviews as a Ranking Signal, Not Just Reputation?"
+                paragraph1="Most sellers think of reviews as reputation, a score that buyers glance at before deciding. That is half the picture. Amazon's search algorithm reads your reviews too, and it reads them as evidence of listing quality. A listing that keeps earning fresh positive reviews is, to the algorithm, a listing that satisfies buyers. A listing whose recent reviews skew negative is a listing the algorithm becomes cautious about ranking."
+                paragraph2="Two properties of your reviews feed this. The first is your average star rating, which influences both how often your listing is shown and how often shoppers click it. The second is review velocity, the rate at which fresh reviews arrive. A sudden run of negative reviews changes both at once, which is why a bad patch compounds faster than the raw number of reviews suggests."
                 resolvedTheme={resolvedTheme}
               />
             </div>
@@ -1105,8 +1127,8 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
             <InfoBanner
               accentColor="#6366F1"
               backgroundColor="#DCE2FF"
-              title="The Opportunity Size"
-              content="In a typical Amazon India product category, the top ranked ASIN ranks for 80 to 150 keywords while a well optimised mid range seller ranks for 40 to 70. The gap of 40 to 80 missing keywords is traffic you are entirely invisible to, even though buyers are already searching and buying on those terms in your category."
+              title="📊 Why It Compounds"
+              content="Negative reviews create a loop. Lower rating reduces clicks from search, fewer clicks reduces sales velocity, lower sales velocity reduces ranking, lower ranking reduces traffic, and a smaller, more frustrated buyer pool tends to leave a higher share of negative reviews. Left alone, the loop tightens. Broken early with a clear fix, it reverses just as steadily as it fell."
             />
 
             <p
@@ -1118,18 +1140,149 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
                 fontFamily: "'Sora', sans-serif",
               }}
             >
-              One gap keyword discovery can move a listing from page 3 to page 1
-              for that specific term. This is not theoretical. It happens within
-              2 to 4 weeks of adding a high demand gap keyword to your backend
-              search terms and generating a few sales on that term through
-              Sponsored Products.
+              This is why treating reviews emotionally is the costly mistake.
+              The seller who reads three angry reviews, feels stung, and closes
+              the tab has learned nothing actionable. The seller who counts the
+              themes across all of them has a repair brief. The rest of this
+              guide is about becoming the second seller.
             </p>
 
-            <div id="reverse-asin">
+            <div id="rating-cliff">
               <SectionQA
-                title="What Is Reverse ASIN Research and How Does It Work?"
-                paragraph1="Reverse ASIN research means working backward from a product to its keywords. You start with your competitor's ASIN (their Amazon product ID) and ask: which search terms does this product currently appear for in Amazon search results?"
-                paragraph2="The process works because Amazon's search index can be observed. When a buyer searches a term and a product appears, that product keyword relationship is recorded. Reverse ASIN tools check thousands of search terms one by one against a given ASIN and return the full list of terms where that ASIN ranks, along with its position for each term."
+                title="What Does Dropping From 4.2 to 3.9 Stars Actually Do to Your Sales?"
+                paragraph1="The number looks trivial. Three tenths of a star. In practice it crosses the most important psychological line on Amazon India: the gap between a listing that reads as four stars and one that reads as under four. Buyers scanning a results page read the rating before the title, before the price, before the image detail. A 4.0 reads as acceptable. A 3.9 reads as risky."
+                resolvedTheme={resolvedTheme}
+              />
+            </div>
+
+            {/* Blog Image Section */}
+            <BlogImageSection
+              imageSrc="/Negative Reviews Impact Amazon India Sales_image1.png"
+              altText="Negative Reviews Impact Amazon India Sales"
+              caption="Conversion index by visible star rating on Amazon India. The decline is gentle from 4.5 to 4.2, then turns sharp as the rating crosses below 4.0, where hesitant buyers move to the higher rated competitor. The figures are illustrative of the pattern, not a single category measurement."
+            />
+
+            <p
+              style={{
+                margin: "0 0 16px",
+                fontSize: 15.5,
+                color: resolvedTheme === "dark" ? "#cbd5e1" : "#4B5563",
+                lineHeight: 1.75,
+                fontFamily: "'Sora', sans-serif",
+              }}
+            >
+              Two effects stack here. The first is click through from search:
+              many buyers filter results mentally by the star badge and skip
+              anything that reads under four. The second is conversion on the
+              product page itself, where a sub four rating gives an already
+              cautious buyer a reason to compare your listing against the next
+              option. The buyer who would have bought at 4.2 hesitates at 3.9,
+              and on Amazon hesitation almost always means they buy from someone
+              else.
+            </p>
+
+            <DataTable
+              columns={negativeReviewsKeywordGapColumns}
+              rows={negativeReviewsKeywordGapRows}
+            />
+
+            <InfoBanner
+              accentColor="#E67E22"
+              title="⚠️ The Recency Trap"
+              content="Amazon weights recent reviews more heavily in both the rating shown and the algorithm's read of your listing. This means a cluster of three or four fresh negatives can move your visible rating faster than dozens of old reviews held it steady. It cuts the other way too: a run of fresh positive reviews recovers your rating faster than the raw total of past reviews implies, which is why fixing the cause quickly matters so much."
+            />
+
+            <div id="pattern-is-intelligence">
+              <SectionQA
+                title="Why Is the Pattern in Your Reviews the Real Intelligence?"
+                paragraph1="Here is the mistake almost every seller makes. They open their reviews, read the most recent few, react to whichever one is angriest, and close the page. They have now learned one buyer's bad day. They have not learned what is actually wrong with their product or listing."
+                paragraph2="One negative review is noise. A buyer received a unit with a genuine defect, or had unrealistic expectations, or simply had a bad week. You cannot run a business off a single data point. But ten negative reviews that all mention the same thing, the box arrived crushed, the size ran small, the cable frayed in a month, are no longer noise. They are a signal with a clear cause, and the cause is something you can fix."
+                resolvedTheme={resolvedTheme}
+              />
+            </div>
+
+            <InfoBanner
+              title="⊘ WHAT READING ONE BY ONE HIDES"
+              content="When you read reviews in date order, the pattern is invisible. A packaging complaint from March, a sizing complaint from April, and a durability complaint from May feel like three unrelated unlucky events. Counted together across all 23 reviews, the truth appears: 11 are packaging, 6 are sizing, 4 are durability. The dominant cluster was always there. Reading sequentially is simply the wrong tool to see it."
+              accentColor="#EF4444"
+              backgroundColor="#FEF2F2"
+            />
+
+            <p
+              style={{
+                margin: "0 0 20px",
+                fontSize: 15.5,
+                color: resolvedTheme === "dark" ? "#cbd5e1" : "#4B5563",
+                lineHeight: 1.75,
+                fontFamily: "'Sora', sans-serif",
+              }}
+            >
+              This is the core shift this guide asks of you. Stop treating
+              reviews as individual verdicts to react to and start treating them
+              as a dataset to count. The moment you group them by theme, the
+              loudest single review stops mattering and the most common
+              complaint takes over. That common complaint is your repair brief.
+            </p>
+
+            <div id="reading-analytically">
+              <SectionQA
+                title="How Do You Read Your Negative Reviews Analytically?"
+                paragraph1="Analytical reading means sorting every review at 3 stars and below into a small set of themes, then counting. You are not trying to address each review. You are trying to find the one or two themes that explain most of your negatives. Almost every category's complaints fall into five buckets."
+                resolvedTheme={resolvedTheme}
+              />
+            </div>
+
+            <BlogImageSection
+              imageSrc="/Negative Reviews Impact Amazon India Sales_image2.png"
+              altText="Negative Reviews Impact Amazon India Sales"
+              caption="Complaint clustering. The same negative reviews sorted into five themes and counted. The packaging cluster is nearly half the total, which makes it the obvious first fix. No single review tells you this. Only the count does."
+            />
+
+            <DataTable
+              columns={negativeReviewsKeywordGapColumns1}
+              rows={negativeReviewsKeywordGapRows1}
+            />
+
+            <InfoBanner
+              accentColor="#16A34A"
+              backgroundColor="#E5FCF7"
+              title="✅ The Listing Mismatch Surprise"
+              content="Sellers brace for the worst, that the product itself is bad. More often the largest cluster is a listing mismatch: a size chart that runs optimistic, a hero image that flatters the colour, a bullet that promises a feature the product does not quite deliver. These create real one star reviews from buyers who feel misled, even when the product is fine. They are also the fastest and cheapest fixes you have, which is good news hiding inside bad reviews."
+            />
+
+            <FeatureCTA
+              title="Insydz reads every review and surfaces the pattern automatically"
+              description="Stop reading reviews one by one. See your complaint clusters, your sentiment trend, and your rating velocity in one view, in under 60 seconds."
+              buttonText="Try the Free Review Checker →"
+              buttonHref="/signup"
+              backgroundColor="#111827"
+              buttonColor="#6366F1"
+            />
+
+            <div id="what-to-fix-first">
+              <SectionQA
+                title="What Should You Fix First: Listing, Product, or Fulfilment?"
+                paragraph1="Once you know your dominant cluster, the next decision is sequencing. Not every fix takes the same time or money, so you fix in order of speed and impact. The rule is simple: fix the listing first because it is fastest, then chase product and fulfilment causes in parallel because they take longer."
+                resolvedTheme={resolvedTheme}
+              />
+            </div>
+            <NumberedCards
+              items={negativeReviewsSteps}
+              numberColor="#2F63F5"
+              backgroundColor="#F8FAFC"
+              borderColor="#D7E3FF"
+            />
+
+            <BlogImageSection
+              imageSrc="/Negative Reviews Impact Amazon India Sales_image3.png"
+              altText="Negative Reviews Impact Amazon India Sales"
+              caption="Insydz rating velocity view. After a Jaipur seller fixed the packaging cluster behind 48% of their negatives, new one star reviews fell, fresh positives lifted the average from 3.9 back to 4.3, and conversion recovered. The figures illustrate a typical recovery pattern."
+            />
+
+            <div id="how-to-respond">
+              <SectionQA
+                title="How Do You Respond to Negative Reviews Properly on Amazon India?"
+                paragraph1="First, an important correction to a common belief. You can no longer reply publicly to a product review. Amazon removed seller comments on reviews, so the old habit of posting a defensive reply underneath a one star review is no longer possible, and was rarely a good idea anyway. What you can still do, used well, often works better."
                 resolvedTheme={resolvedTheme}
               />
             </div>
@@ -1145,13 +1298,13 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
                   lineHeight: 1.3,
                 }}
               >
-                What You Get From a Reverse ASIN Lookup
+                What You Can Actually Do
               </h3>
 
               <ul
                 style={{
                   paddingLeft: "24px",
-                  margin: 0,
+                  marginBottom: "28px",
                   listStyleType: "disc",
                   listStylePosition: "outside",
                   fontSize: "16px",
@@ -1161,20 +1314,16 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
               >
                 {[
                   {
-                    label: "Keyword list:",
-                    text: "every search term the competitor's ASIN ranks for, usually 50 to 150 terms for a well optimised product",
+                    label: "Brand Registry Customer Reviews tool:",
+                    text: "If you are enrolled in Brand Registry, Seller Central lets you privately contact a buyer who left a critical review of your branded product. You can offer a courtesy refund or a support message. A buyer whose problem is genuinely solved will often update or remove the review on their own.",
                   },
                   {
-                    label: "Search frequency rank:",
-                    text: "how often that term is searched on Amazon India. Lower number means higher demand.",
+                    label: "Buyer Seller Messaging:",
+                    text: "For order related issues such as a damaged or late delivery, reach the buyer through the order to resolve the specific problem. This addresses the cause directly rather than arguing about the review.",
                   },
                   {
-                    label: "Competitor's rank position:",
-                    text: "are they at position 3 or position 28? This tells you how hard they are to displace on each term.",
-                  },
-                  {
-                    label: "Your rank position:",
-                    text: "where you currently appear for the same term, or if you do not appear at all.",
+                    label: "Report genuinely abusive or fake reviews:",
+                    text: "Reviews that break Amazon's policies, contain abusive language, or look like competitor planted content can be reported for removal. More on detecting these below.",
                   },
                 ].map(({ label, text }, i, arr) => (
                   <li
@@ -1197,99 +1346,44 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
             </section>
 
             <InfoBanner
-              accentColor="#E67E22"
-              title="⚠️ What You Cannot Get"
-              content="You cannot read a competitor's backend keywords directly. What reverse ASIN tools find instead is the visible result: the search terms the ASIN actually ranks for in Amazon's results. This captures the majority of the keyword picture, including the effect of backend terms, even though those terms themselves stay hidden."
+              accentColor="#6366F1"
+              backgroundColor="#DCE2FF"
+              title="📌 What to Say, and What Not to Say"
+              content="When you do reach a buyer privately, lead with acknowledgement, not defence. A short message that owns the problem, explains the fix you have made, and offers a refund or replacement repairs trust far more effectively than any justification. Do not argue, do not blame the buyer, and never offer anything in exchange for changing a review, which violates Amazon policy. Solve the real problem and let the buyer decide what to do with the review."
             />
-
-            <BlogImageSection
-              imageSrc="/Blog2_find-competitor-keywords-amazon-india_image2.png"
-              altText="Competitor Keywords Amazon India"
-              caption="Insydz reverse ASIN lookup. Competitor keyword footprint revealed with search frequency rank, their position, and your current rank. Gap keywords (not ranked) and weak keywords (ranked below 20) are prioritised automatically."
-            />
-
-            <div id="real-category-gap">
-              <SectionQA
-                title="What Does the Keyword Gap Actually Look Like in a Real Category?"
-                paragraph1="Here is what a keyword gap analysis looks like in the earphones category on Amazon India, comparing a mid range seller to the category leader. The numbers are realistic for this category in 2026."
-                resolvedTheme={resolvedTheme}
-              />
-            </div>
-
-            <DataTable columns={keywordGapColumns} rows={keywordGapRows} />
 
             <p
               style={{
-                color: resolvedTheme === "dark" ? "#94a3b8" : "#4B5563",
-                fontSize: "16px",
-                lineHeight: 1.7,
-                marginBottom: "32px",
-                fontFamily: "'Lora', serif",
+                margin: "0 0 16px",
+                fontSize: 15.5,
+                color: resolvedTheme === "dark" ? "#cbd5e1" : "#4B5563",
+                lineHeight: 1.75,
+                fontFamily: "'Sora', sans-serif",
               }}
             >
-              The hard gap keywords (terms you do not rank for at all) are where
-              the biggest ranking opportunity sits. Adding "bluetooth earphones
-              under 500" and "ईयरफोन 500 से कम" to your backend search terms and
-              running 3 to 5 days of exact match Sponsored Products on each term
-              is typically enough to get Amazon to index your listing for those
-              terms within 2 weeks.
+              The deeper point is that responding to reviews one at a time is
+              damage control, not strategy. The seller who privately resolves
+              ten packaging complaints has spent real effort and still has a
+              packaging problem. The seller who fixes the packaging has removed
+              the source. Responding well matters, but it is downstream of
+              fixing the pattern.
             </p>
 
+            <div id="detecting-fake-reviews">
+              <SectionQA
+                title="Can Competitors Plant Fake Negative Reviews, and How Do You Detect Them?"
+                paragraph1="It does happen, although Amazon's systems detect and remove a large share of it. If you have done the analytical work above and a portion of your negatives simply does not fit any real pattern, fake reviews are worth investigating. Here is how to spot them and what to do."
+                resolvedTheme={resolvedTheme}
+              />
+            </div>
+
+            <InsightCards columns={3} cards={negativeReviewsDiscoveryCards} />
+
             <InfoBanner
-              accentColor="#16A34A"
-              backgroundColor="#E5FCF7"
-              title="✅ The Hindi Keyword Advantage"
-              content="Hindi search terms are systematically under targeted by most sellers because most keyword tools do not surface them. They typically have lower competition, decent search volume from tier-2 and tier-3 city buyers, and high conversion rates because Hindi searching buyers tend to have strong purchase intent. Adding 5 to 8 Hindi gap keywords is usually 30 minutes of work and pays off disproportionately."
+              accentColor="#E67E22"
+              title="⚠️ A Word of Caution"
+              content="Reporting a review only works when it genuinely breaks Amazon's policies. A negative review you simply disagree with is not abuse, and reporting honest criticism wastes the channel you will need when a real fake appears. Reserve reports for clear policy violations and let your product and listing fixes handle the honest negatives."
             />
-
-            <div id="prioritise-gap-keywords">
-              <SectionQA
-                title="How Do You Prioritise Which Gap Keywords to Target First?"
-                paragraph1="Not all gap keywords are equal. A gap keyword with a search frequency rank of 12,000 deserves more immediate attention than one with a rank of 800,000. Here is a simple prioritisation framework."
-                resolvedTheme={resolvedTheme}
-              />
-            </div>
-            <NumberedCards
-              items={steps}
-              numberColor="#2F63F5"
-              backgroundColor="#F8FAFC"
-              borderColor="#D7E3FF"
-            />
-            <FeatureCTA
-              title="Insydz shows every keyword your competitor ranks for that you do not"
-              description="Run a reverse ASIN lookup on your top competitor and see your keyword gap in under 60 seconds."
-              buttonText="Try Free With Your ASIN →"
-              buttonHref="/signup"
-              backgroundColor="#111827"
-              buttonColor="#6366F1"
-            />
-            <div id="add-gap-keywords">
-              <SectionQA
-                title="How Do You Add Gap Keywords to Your Listing Correctly?"
-                paragraph1="Each part of your Amazon listing serves a different role in keyword indexing. Here is exactly where each type of gap keyword belongs."
-                resolvedTheme={resolvedTheme}
-              />
-            </div>
-            <BlogImageSection
-              imageSrc="/Blog2_find-competitor-keywords-amazon-india_image3.png"
-              altText="Competitor Keywords Amazon India"
-              caption="Keyword placement map showing where each type of gap keyword belongs in your Amazon India listing. Backend search terms are the fastest entry point: 250 bytes of invisible keyword real estate indexed within 48 hours."
-            />
-            <DataTable columns={listingColumns} rows={listingRows} />
-            <BlogImageSection
-              imageSrc="/Blog2_find-competitor-keywords-amazon-india_image4.png"
-              altText="Competitor Keywords Amazon India"
-              caption="Insydz rank tracking. A Pune earphones seller added 6 gap keywords to backend search terms and moved from not ranked to top 10 for 3 of them within 3 weeks. Organic revenue up 38% on those terms alone."
-            />
-            <div id="free-methods">
-              <SectionQA
-                title="How Do You Find Competitor Keywords Without a Paid Tool?"
-                paragraph1="If you want to start today before setting up Insydz, here are the two free manual methods. They are slower and incomplete, but they work well enough to find the most obvious gaps."
-                resolvedTheme={resolvedTheme}
-              />
-            </div>
-
-            <InsightCards columns={3} cards={keywordDiscoveryCards} />
 
             <div id="faq">
               <SectionQA
@@ -1298,7 +1392,7 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
               />
             </div>
 
-            <FAQ accentColor="#6366F1" faqs={faqs} />
+            <FAQ accentColor="#6366F1" faqs={negativeReviewsFaqs} />
 
             {/* More Marketplace Playbooks */}
             <div style={{ marginTop: 48 }}>
@@ -1442,9 +1536,9 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
 
       {/* Final CTA */}
       <FinalCTA
-        title="Your Competitor's Keyword Gap Is Your Next Page-1 Opportunity"
-        description="Find every keyword your top competitor ranks for that you do not. Add the top gaps to your backend search terms today. Track rank movement daily with Insydz."
-        primaryButtonText="Find Your Keyword Gap Free →"
+        title="Your Negative Reviews Already Told You What to Fix. You Just Have Not Counted Them Yet."
+        description="Stop reading reviews one by one and feeling discouraged. Let Insydz group every review into a clear pattern, show you the one fix that removes the most one star reviews, and track your rating back above the cliff."
+        primaryButtonText="Check Your Review Sentiment Free →"
         primaryButtonHref="/signup"
         secondaryButtonText="See Plans"
         secondaryButtonHref="/pricing"
@@ -1456,12 +1550,12 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
             label: "Indian sellers",
           },
           {
-            value: "47",
-            label: "Avg. gap keywords found",
+            value: "5",
+            label: "Themes explain most negatives",
           },
           {
-            value: "3 weeks",
-            label: "Typical page-1 time",
+            value: "6 weeks",
+            label: "Typical rating recovery",
           },
           {
             value: "Free",

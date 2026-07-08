@@ -134,7 +134,7 @@ export default function HeroSection({
             >
               👤{" "}
               <strong
-                className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer"
+                className="text-[#0A0F1A] dark:text-gray-100 hover:text-orange-500 dark:hover:text-orange-400 transition-colors cursor-pointer"
                 onClick={() => router.push(authorUrl)}
               >
                 {authorName}
@@ -142,24 +142,26 @@ export default function HeroSection({
             </div>
 
             <div
+              className="text-[#0A0F1A] dark:text-gray-100 transition-colors"
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: 10,
                 fontSize: "clamp(12px,2vw,14px)",
-                color: "#64748B",
+                // color: "#64748B",
               }}
             >
-              🕐 {publishDate}
+              🕐 <strong>{publishDate}</strong>
             </div>
 
             <div
+              className="text-[#0A0F1A] dark:text-gray-100 transition-colors"
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: 10,
                 fontSize: "clamp(12px,2vw,14px)",
-                color: "#64748B",
+                // color: "#64748B",
               }}
             >
               📖 <strong>{readTime}</strong>

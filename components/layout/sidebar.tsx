@@ -75,9 +75,7 @@ const EXPLORER_SECTIONS: NavSection[] = [
   {
     label: "GET STARTED",
     icon: Rocket,
-    items: [
-      { href: "/dashboard", label: "Dashboard", icon: Home },
-    ],
+    items: [{ href: "/dashboard", label: "Dashboard", icon: Home }],
   },
   {
     label: "DISCOVER MARKET",
@@ -91,9 +89,18 @@ const EXPLORER_SECTIONS: NavSection[] = [
     label: "BEAT COMPETITION",
     icon: Sword,
     items: [
-      { href: "/explorer/white-space-finder", label: "Opportunity Finder", icon: ShieldCheck, badge: "NEW" },
+      {
+        href: "/explorer/white-space-finder",
+        label: "Opportunity Finder",
+        icon: ShieldCheck,
+        badge: "NEW",
+      },
       { href: "/share-of-voice", label: "Market Visibility", icon: BarChart3 },
-      { href: "/keyword-intelligence", label: "Keyword Intelligence", icon: Compass },
+      {
+        href: "/keyword-intelligence",
+        label: "Keyword Intelligence",
+        icon: Compass,
+      },
     ],
   },
   {
@@ -101,17 +108,42 @@ const EXPLORER_SECTIONS: NavSection[] = [
     icon: Tag,
     items: [
       { href: "/product-tracker", label: "Product Radar (AI)", icon: Target },
-      { href: "/explorer/profitability-optimizer", label: "Price Optimizer", icon: Calculator, badge: "NEW" },
-      { href: "/explorer/ai-advisor", label: "AI Advisor", icon: Sparkles, badge: "AI" },
+      {
+        href: "/explorer/profitability-optimizer",
+        label: "Price Optimizer",
+        icon: Calculator,
+        badge: "NEW",
+      },
+      {
+        href: "/explorer/ai-advisor",
+        label: "AI Advisor",
+        icon: Sparkles,
+        badge: "AI",
+      },
     ],
   },
   {
     label: "TRACK & GROW",
     icon: Activity,
     items: [
-      { href: "/explorer/whatsapp-alerts", label: "WhatsApp Alerts", icon: MessageSquare, badge: "NEW" },
-      { href: "/explorer/festive-trends", label: "Festive Trends", icon: Star, badge: "NEW",},
-      { href: "/explorer/my-watchlist", label: "My Watchlist", icon: Bookmark, badge: "NEW" },
+      {
+        href: "/explorer/whatsapp-alerts",
+        label: "WhatsApp Alerts",
+        icon: MessageSquare,
+        badge: "NEW",
+      },
+      {
+        href: "/explorer/festive-trends",
+        label: "Festive Trends",
+        icon: Star,
+        badge: "NEW",
+      },
+      {
+        href: "/explorer/my-watchlist",
+        label: "My Watchlist",
+        icon: Bookmark,
+        badge: "NEW",
+      },
     ],
   },
   {
@@ -143,20 +175,54 @@ const SELLER_SECTIONS: NavSection[] = [
     icon: Users,
     items: [
       { href: "/categories", label: "Browse Categories", icon: PieChart },
-      { href: "/seller/price-comparison", label: "Price Comparison", icon: DollarSign, badge: "NEW" },
-      { href: "/seller/review-comparison", label: "Review Comparison", icon: Star, badge: "NEW" },
-      { href: "/seller/keyword-gap", label: "Keyword Gap Analysis", icon: History, badge: "NEW" },
+      {
+        href: "/seller/price-comparison",
+        label: "Price Comparison",
+        icon: DollarSign,
+        badge: "NEW",
+      },
+      {
+        href: "/seller/review-comparison",
+        label: "Review Comparison",
+        icon: Star,
+        badge: "NEW",
+      },
+      {
+        href: "/seller/keyword-gap",
+        label: "Keyword Gap Analysis",
+        icon: History,
+        badge: "NEW",
+      },
       { href: "/sales", label: "Top Selling Products", icon: TrendingUp },
-      { href: "/seller/competitor-analysis", label: "Competitor Analysis", icon: Shield, badge: "NEW" },
+      {
+        href: "/seller/competitor-analysis",
+        label: "Competitor Analysis",
+        icon: Shield,
+        badge: "NEW",
+      },
     ],
   },
   {
     label: "OPTIMIZE",
     icon: Zap,
     items: [
-      { href: "/seller/price-optimizer", label: "Price Optimizer", icon: TrendingUp },
-      { href: "/seller/rank-tracker", label: "Rank Tracker", icon: Target, badge: "NEW" },
-      { href: "/seller/ai-advisor", label: "AI Advisor", icon: Sparkles, badge: "AI" },
+      {
+        href: "/seller/price-optimizer",
+        label: "Price Optimizer",
+        icon: TrendingUp,
+      },
+      {
+        href: "/seller/rank-tracker",
+        label: "Rank Tracker",
+        icon: Target,
+        badge: "NEW",
+      },
+      {
+        href: "/seller/ai-advisor",
+        label: "AI Advisor",
+        icon: Sparkles,
+        badge: "AI",
+      },
     ],
   },
   {
@@ -164,8 +230,19 @@ const SELLER_SECTIONS: NavSection[] = [
     icon: Activity,
     items: [
       { href: "/share-of-voice", label: "Market Visibility", icon: BarChart3 },
-      { href: "/seller/whatsapp-alerts", label: "WhatsApp Alerts", icon: MessageSquare, badge: "NEW" },
-      { href: "/seller/festive-trends", label: "Festive Trends", icon: Star, badge: "NEW", disabled: true },
+      {
+        href: "/seller/whatsapp-alerts",
+        label: "WhatsApp Alerts",
+        icon: MessageSquare,
+        badge: "NEW",
+      },
+      {
+        href: "/seller/festive-trends",
+        label: "Festive Trends",
+        icon: Star,
+        badge: "NEW",
+        disabled: true,
+      },
     ],
   },
   {
@@ -178,8 +255,6 @@ const SELLER_SECTIONS: NavSection[] = [
     ],
   },
 ];
-
-
 
 interface SidebarProps {
   isMobileOpen?: boolean;
@@ -197,13 +272,14 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
   }, []);
 
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [mode, setMode] = useState<'explorer' | 'seller'>('explorer');
+  const [mode, setMode] = useState<"explorer" | "seller">("explorer");
 
   // Sync isCollapsed with isMobileOpen on mobile
   useEffect(() => {
     // Only force collapse state based on mobile prop if on mobile
     const handleResize = () => {
-      if (window.innerWidth < 1024) { // 1024 is 'lg' breakpoint
+      if (window.innerWidth < 1024) {
+        // 1024 is 'lg' breakpoint
         if (isMobileOpen !== undefined) {
           setIsCollapsed(!isMobileOpen);
         }
@@ -214,8 +290,8 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
     };
 
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [isMobileOpen]);
 
   useEffect(() => {
@@ -232,8 +308,8 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
   }, [pathname]);
 
   useEffect(() => {
-    localStorage.setItem('sidebar-mode', mode);
-    window.dispatchEvent(new Event('sidebar-mode-changed'));
+    localStorage.setItem("sidebar-mode", mode);
+    window.dispatchEvent(new Event("sidebar-mode-changed"));
   }, [mode]);
 
   const { user, logout, isLoading } = useAuth();
@@ -244,7 +320,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
       await logout();
       toast({
         title: "Logged out",
-        description: "You have been successfully logged out."
+        description: "You have been successfully logged out.",
       });
       router.push("/login");
     } catch (error) {
@@ -252,7 +328,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
       toast({
         title: "Logout failed",
         description: "There was an error logging out. Please try again.",
-        variant: "destructive"
+        variant: "destructive",
       });
     }
   };
@@ -311,12 +387,19 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
         className={cn(
           "fixed left-0 top-0 h-full z-50 transform transition-transform duration-300 flex flex-col border-r border-white/20 dark:border-slate-800/50 backdrop-blur-2xl shadow-lg",
           "bg-gradient-to-b from-[#E8F9FF]/90 via-[#DFF6FF]/80 to-[#C7EFFF]/90 dark:from-slate-900/95 dark:via-slate-950/90 dark:to-slate-900/95",
-          isCollapsed ? "w-16 -translate-x-full lg:translate-x-0" : "w-64 translate-x-0"
+          isCollapsed
+            ? "w-16 -translate-x-full lg:translate-x-0"
+            : "w-64 translate-x-0",
         )}
       >
         {/* Header */}
         <div className="p-4 border-b border-white/20 dark:border-slate-800/50 flex items-center justify-between">
-          <div className={cn("flex items-center space-x-3", isCollapsed && "justify-center")}>
+          <div
+            className={cn(
+              "flex items-center space-x-3",
+              isCollapsed && "justify-center",
+            )}
+          >
             <Link href="/" className="cursor-pointer">
               <img
                 src="/logo.png"
@@ -324,11 +407,15 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                 className="w-10 h-10 object-contain rounded-xl shadow-md hover:scale-105 transition"
               />
             </Link>
- 
+
             {!isCollapsed && (
               <div>
-                <h1 className="font-bold text-lg text-[#003366] dark:text-[#AAF0FF] tracking-tight">Insydz</h1>
-                <p className="text-xs text-slate-600 dark:text-slate-400">Analytics Dashboard</p>
+                <h1 className="font-bold text-lg text-[#003366] dark:text-[#AAF0FF] tracking-tight">
+                  Insydz
+                </h1>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
+                  Analytics Dashboard
+                </p>
               </div>
             )}
           </div>
@@ -344,7 +431,11 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
             data-track-id="sidebar_mobile_toggle_btn"
             data-filter-value={isCollapsed ? "expand" : "collapse"}
           >
-            {isCollapsed ? <Menu className="h-4 w-4" /> : <X className="h-4 w-4" />}
+            {isCollapsed ? (
+              <Menu className="h-4 w-4" />
+            ) : (
+              <X className="h-4 w-4" />
+            )}
           </Button>
         </div>
 
@@ -355,20 +446,21 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
               id="tour-mode-switcher"
               className="relative p-1 rounded-full flex items-center"
               style={{
-                background: 'linear-gradient(135deg, #00C6FF 0%, #0099FF 50%, #00D4AA 100%)',
-                boxShadow: '0 2px 10px rgba(0, 198, 255, 0.3)',
+                background:
+                  "linear-gradient(135deg, #00C6FF 0%, #0099FF 50%, #00D4AA 100%)",
+                boxShadow: "0 2px 10px rgba(0, 198, 255, 0.3)",
               }}
             >
               <button
                 onClick={() => {
-                  setMode('explorer');
+                  setMode("explorer");
                   router.push("/dashboard");
                 }}
                 className={cn(
                   "flex-1 flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-bold transition-all duration-300 z-10 relative",
-                  mode === 'explorer'
+                  mode === "explorer"
                     ? "bg-white text-[#003366] shadow-lg"
-                    : "bg-transparent text-white hover:text-white/90"
+                    : "bg-transparent text-white hover:text-white/90",
                 )}
                 data-track-id="sidebar_mode_explorer_btn"
                 data-filter-value="explorer"
@@ -378,14 +470,14 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
               </button>
               <button
                 onClick={() => {
-                  setMode('seller');
+                  setMode("seller");
                   router.push("/dashboard");
                 }}
                 className={cn(
                   "flex-1 flex items-center justify-center py-2.5 px-4 rounded-full text-xs font-bold transition-all duration-300 z-10 relative",
-                  mode === 'seller'
+                  mode === "seller"
                     ? "bg-white text-[#003366] shadow-lg"
-                    : "bg-transparent text-white hover:text-white/90"
+                    : "bg-transparent text-white hover:text-white/90",
                 )}
                 data-track-id="sidebar_mode_seller_btn"
                 data-filter-value="seller"
@@ -399,73 +491,99 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
         {/* Navigation */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden p-3 space-y-4 sidebar-scroll">
-          {(mode === 'explorer' ? EXPLORER_SECTIONS : SELLER_SECTIONS).map(section => (
-            <div key={section.label} className="space-y-2">
-              {!isCollapsed && (
-                <div className="flex items-center space-x-2 px-2">
-                  {section.icon && <section.icon className="h-3 w-3 text-slate-400" />}
-                  <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest whitespace-nowrap">
-                    {section.label}
-                  </p>
-                  <div className="h-[1px] flex-1 bg-slate-200/50 dark:bg-slate-800/50" />
-                </div>
-              )}
+          {(mode === "explorer" ? EXPLORER_SECTIONS : SELLER_SECTIONS).map(
+            (section) => (
+              <div key={section.label} className="space-y-2">
+                {!isCollapsed && (
+                  <div className="flex items-center space-x-2 px-2">
+                    {section.icon && (
+                      <section.icon className="h-3 w-3 text-slate-400" />
+                    )}
+                    <p className="text-slate-500 font-bold uppercase text-[10px] tracking-widest whitespace-nowrap">
+                      {section.label}
+                    </p>
+                    <div className="h-[1px] flex-1 bg-slate-200/50 dark:bg-slate-800/50" />
+                  </div>
+                )}
 
-              <div className="space-y-1">
-                {section.items.map(item => {
-                  const Icon = item.icon;
-                  return (
-                    <Link key={item.href} href={item.disabled ? "#" : item.href}
-                      className={cn(item.disabled && "cursor-not-allowed block")}>
-                      <Button
-                        variant={isActive(item.href) ? "default" : "ghost"}
-                        disabled={item.disabled}
+                <div className="space-y-1">
+                  {section.items.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.disabled ? "#" : item.href}
                         className={cn(
-                          "w-full justify-start transition-all duration-200 rounded-xl font-medium relative group",
-                          isCollapsed && "justify-center px-2",
-                          isActive(item.href)
-                            ? "bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-md"
-                            : "text-slate-700 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-800/60",
-                          item.disabled && "opacity-50 grayscale select-none"
+                          item.disabled && "cursor-not-allowed block",
                         )}
-                        data-track-id={`sidebar_nav_${item.label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "")}`}
-                        data-filter-value={item.href}
                       >
-                        <Icon className={cn("h-4 w-4 shrink-0", !isCollapsed && "mr-3")} />
-                        {!isCollapsed && (
-                          <div className="flex items-center justify-between w-full">
-                            <span className="truncate text-sm">{item.label}</span>
-                            {item.badge && (
-                              <Badge
-                                variant="secondary"
-                                className={cn(
-                                  "ml-2 text-[8px] px-1.5 py-0 leading-none h-4 uppercase font-bold tracking-tighter",
-                                  item.badge === "AI" ? "bg-orange-100 text-orange-600 border-orange-200" :
-                                    item.badge === "NEW" ? "bg-blue-100 text-blue-600 border-blue-200" :
-                                      "bg-slate-100 text-slate-500 border-slate-200"
-                                )}
-                              >
-                                {item.badge}
-                              </Badge>
+                        <Button
+                          variant={isActive(item.href) ? "default" : "ghost"}
+                          disabled={item.disabled}
+                          className={cn(
+                            "w-full justify-start transition-all duration-200 rounded-xl font-medium relative group",
+                            isCollapsed && "justify-center px-2",
+                            isActive(item.href)
+                              ? "bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-md"
+                              : "text-slate-700 dark:text-slate-300 hover:bg-white/60 dark:hover:bg-slate-800/60",
+                            item.disabled && "opacity-50 grayscale select-none",
+                          )}
+                          data-track-id={`sidebar_nav_${item.label
+                            .toLowerCase()
+                            .replace(/[^a-z0-9]+/g, "_")
+                            .replace(/^_+|_+$/g, "")}`}
+                          data-filter-value={item.href}
+                        >
+                          <Icon
+                            className={cn(
+                              "h-4 w-4 shrink-0",
+                              !isCollapsed && "mr-3",
                             )}
-                          </div>
-                        )}
-                      </Button>
-                    </Link>
-                  );
-                })}
+                          />
+                          {!isCollapsed && (
+                            <div className="flex items-center justify-between w-full">
+                              <span className="truncate text-sm">
+                                {item.label}
+                              </span>
+                              {item.badge && (
+                                <Badge
+                                  variant="secondary"
+                                  className={cn(
+                                    "ml-2 text-[8px] px-1.5 py-0 leading-none h-4 uppercase font-bold tracking-tighter",
+                                    item.badge === "AI"
+                                      ? "bg-orange-100 text-orange-600 border-orange-200"
+                                      : item.badge === "NEW"
+                                        ? "bg-blue-100 text-blue-600 border-blue-200"
+                                        : "bg-slate-100 text-slate-500 border-slate-200",
+                                  )}
+                                >
+                                  {item.badge}
+                                </Badge>
+                              )}
+                            </div>
+                          )}
+                        </Button>
+                      </Link>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            ),
+          )}
         </div>
 
         {/* Profile */}
         <div className="p-2 px-3 border-t border-white/20 dark:border-slate-800/50 backdrop-blur-lg">
-          <div className={cn(
-            "flex items-center p-2 bg-white/70 dark:bg-slate-900/60 rounded-xl shadow-sm border border-white/10 dark:border-slate-800/50",
-            isCollapsed && "justify-center"
-          )}>
-            <Link href="/settings" className="flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-sm hover:scale-105 transition-transform">
+          <div
+            className={cn(
+              "flex items-center p-2 bg-white/70 dark:bg-slate-900/60 rounded-xl shadow-sm border border-white/10 dark:border-slate-800/50",
+              isCollapsed && "justify-center",
+            )}
+          >
+            <Link
+              href="/settings"
+              className="flex items-center justify-center h-8 w-8 rounded-full bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-sm hover:scale-105 transition-transform"
+            >
               <Settings className="h-4 w-4" />
             </Link>
 
@@ -478,13 +596,12 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                   variant="secondary"
                   className={cn(
                     "text-[10px] mt-0.5 font-medium px-2 py-0 rounded-full leading-relaxed",
-                    getSubscriptionColor(user?.subscriptionTier || "free")
+                    getSubscriptionColor(user?.subscriptionTier || "free"),
                   )}
                 >
                   {user?.subscriptionTier
                     ? `${user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1)} Plan`
-                    : "Free Plan"
-                  }
+                    : "Free Plan"}
                 </Badge>
               </div>
             )}
@@ -494,11 +611,22 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                 variant="ghost"
                 size="sm"
                 className="text-slate-500 hover:text-[#0072FF] h-8 w-8 p-0 mr-1 flex items-center justify-center shrink-0"
-                onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-                title={resolvedTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                onClick={() =>
+                  setTheme(resolvedTheme === "dark" ? "light" : "dark")
+                }
+                title={
+                  resolvedTheme === "dark"
+                    ? "Switch to Light Mode"
+                    : "Switch to Dark Mode"
+                }
                 data-track-id="sidebar_theme_toggle_btn"
               >
-                {mounted && (resolvedTheme === "dark" ? <Sun className="h-4 w-4 text-yellow-500" /> : <Moon className="h-4 w-4" />)}
+                {mounted &&
+                  (resolvedTheme === "dark" ? (
+                    <Sun className="h-4 w-4 text-yellow-500" />
+                  ) : (
+                    <Moon className="h-4 w-4" />
+                  ))}
               </Button>
             )}
 
@@ -507,7 +635,10 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={cn("text-slate-500 hover:text-[#0072FF] h-8 w-8 p-0", isCollapsed && "p-2")}
+                  className={cn(
+                    "text-slate-500 hover:text-[#0072FF] h-8 w-8 p-0",
+                    isCollapsed && "p-2",
+                  )}
                   title="Logout"
                   data-track-id="sidebar_logout_btn"
                 >
@@ -538,7 +669,3 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
     </>
   );
 }
-
-
-
-

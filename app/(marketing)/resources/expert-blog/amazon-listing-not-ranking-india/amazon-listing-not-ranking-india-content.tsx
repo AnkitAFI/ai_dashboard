@@ -14,7 +14,13 @@ import BlogImageSection from "../components/BlogImageSection";
 import SectionQA from "../components/SectionQA";
 import DataTable, { TableColumn, TableRow } from "../components/DataTable";
 import InsightCards from "../components/InsightCard";
-import { ArrowRight, FileText, Search } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  FileText,
+  PlusSquare,
+  Search,
+} from "lucide-react";
 import FeatureCTA from "../components/FeatureCTA";
 import StepsList from "../components/NumberedCards";
 import NumberedCards from "../components/NumberedCards";
@@ -23,7 +29,7 @@ import { title } from "process";
 export const dynamic = "force-static";
 
 // ── Schema ─────────────────────────────────────────────────────────────────────
-const schemaFindCompetitorKeywordsAmazonIndia = {
+const schemaAmazonListingNotRankingIndia = {
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -44,11 +50,11 @@ const schemaFindCompetitorKeywordsAmazonIndia = {
     {
       "@type": "WebPage",
       "@id":
-        "https://insydz.com/resources/expert-blog/find-competitor-keywords-amazon-india",
-      url: "https://insydz.com/resources/expert-blog/find-competitor-keywords-amazon-india",
-      name: "How to Find Competitor Keywords on Amazon India",
+        "https://insydz.com/resources/expert-blog/amazon-listing-not-ranking-india",
+      url: "https://insydz.com/resources/expert-blog/amazon-listing-not-ranking-india",
+      name: "Amazon Listing Not Ranking in India? Fix It in 2026",
       description:
-        "Learn how to find competitor keywords on Amazon India, uncover hidden ranking opportunities, and improve your Amazon SEO using competitor keyword intelligence.",
+        "Your Amazon India listing is live but not ranking? Learn the real reasons products fail to rank and the practical fixes that improve visibility in 2026.",
       isPartOf: {
         "@type": "WebSite",
         name: "Insydz",
@@ -56,13 +62,13 @@ const schemaFindCompetitorKeywordsAmazonIndia = {
       },
       breadcrumb: {
         "@id":
-          "https://insydz.com/resources/expert-blog/find-competitor-keywords-amazon-india#breadcrumb",
+          "https://insydz.com/resources/expert-blog/amazon-listing-not-ranking-india#breadcrumb",
       },
     },
     {
       "@type": "BreadcrumbList",
       "@id":
-        "https://insydz.com/resources/expert-blog/find-competitor-keywords-amazon-india#breadcrumb",
+        "https://insydz.com/resources/expert-blog/amazon-listing-not-ranking-india#breadcrumb",
       itemListElement: [
         {
           "@type": "ListItem",
@@ -85,38 +91,41 @@ const schemaFindCompetitorKeywordsAmazonIndia = {
         {
           "@type": "ListItem",
           position: 4,
-          name: "Find Competitor Keywords on Amazon India",
-          item: "https://insydz.com/resources/expert-blog/find-competitor-keywords-amazon-india",
+          name: "Amazon Listing Not Ranking India",
+          item: "https://insydz.com/resources/expert-blog/amazon-listing-not-ranking-india",
         },
       ],
     },
     {
       "@type": "BlogPosting",
       "@id":
-        "https://insydz.com/resources/expert-blog/find-competitor-keywords-amazon-india#article",
+        "https://insydz.com/resources/expert-blog/amazon-listing-not-ranking-india#article",
       headline:
-        "How to Find Every Keyword Your Amazon India Competitor Is Ranking For (And Use It to Outrank Them)",
+        "Amazon Listing Not Ranking? 11 Reasons Your Product Is Invisible on Amazon India",
       description:
-        "Discover exactly which keywords your Amazon India competitors rank for and use the gap to outrank them in 2026. Reverse ASIN research, keyword gap analysis, and listing optimisation.",
-      image:
-        "https://insydz.com/Banner_find-competitor-keywords-amazon-india.png",
+        "Discover why your Amazon India listing is not ranking despite being live. Learn how indexing, keyword relevance, conversions, pricing, reviews, and competition impact rankings.",
+      image: "https://insydz.com/Banner_amazon-listing-not-ranking-india.png",
       author: {
-        "@type": "Person",
-        name: "Vikrant Singh",
-        url: "https://insydz.com/author/vikrant-singh",
+        "@type": "Organization",
+        name: "Insydz Research Team",
+        url: "https://insydz.com",
       },
       publisher: { "@id": "https://insydz.com/#organization" },
-      datePublished: "2026-05-15",
-      dateModified: "2026-05-15",
+      datePublished: "2026-06-24",
+      dateModified: "2026-06-24",
       keywords: [
-        "amazon competitor keywords",
-        "amazon keyword research india",
-        "find competitor keywords amazon",
+        "amazon listing not ranking india",
+        "amazon india ranking issues",
+        "why my amazon product is not ranking",
+        "amazon keyword ranking problem",
+        "amazon listing visibility india",
         "amazon seo india",
-        "amazon keyword tracking",
-        "amazon keyword intelligence",
+        "amazon product not showing in search",
+        "amazon ranking factors india",
+        "amazon keyword indexing issue",
+        "improve amazon rankings india",
       ],
-      articleSection: "Seller Tools & Strategy",
+      articleSection: "Amazon SEO",
       inLanguage: "en-IN",
       wordCount: 4400,
       timeRequired: "PT12M",
@@ -125,24 +134,90 @@ const schemaFindCompetitorKeywordsAmazonIndia = {
 };
 
 const keyTakeaways = [
-  "The biggest ranking gains come from keywords you are not targeting at all, not from small improvements to keywords you already rank for.",
-  "Reverse ASIN lookup shows every keyword a competitor's product ranks for in Amazon search, including terms you would never have thought to target.",
-  "Backend search terms are the fastest way to add gap keywords without redesigning your listing. You can be indexed for 10 new terms in under 30 minutes.",
-  "Search frequency rank is the best proxy for keyword demand on Amazon India. Focus first on gap keywords with a search frequency rank under 50,000.",
-  "Hindi transliterations of product names are systematically under targeted by most sellers and offer low competition, high conversion opportunities, especially for tier 2 and tier 3 city buyers.",
+  "Most Amazon India listing ranking problems are not caused by competition. They are caused by one of 7 fixable technical or content mistakes.",
+  "Keyword indexing is the first thing to check. If you are not indexed, no amount of bid spend will generate organic rank for that term.",
+  "Click through rate and conversion rate are both active ranking signals on Amazon. A listing that gets clicks but low orders will rank down over time.",
+  "Listing suppression can be invisible in Seller Central unless you know where to look. A suppressed listing ranks for nothing.",
+  "Category mapping is the most overlooked mistake for Indian sellers with products that fit multiple categories. Wrong category means you are invisible in filtered search, which is particularly costly for sellers in tier 2 and tier 3 cities where buyers browse categories more than they search.",
 ];
 
 // ── TOC ───────────────────────────────────────────────────────────────────────
 
-const TOC = [
+const TOC_ITEMS = [
   { id: "key-takeaways", label: "Key Takeaways" },
-  { id: "keyword-gap-analysis", label: "Why Keyword Gap Analysis?" },
-  { id: "reverse-asin", label: "What Is Reverse ASIN Research?" },
-  { id: "real-category-gap", label: "Keyword Gap in a Real Category" },
-  { id: "prioritise-gap-keywords", label: "Prioritise Gap Keywords" },
-  { id: "add-gap-keywords", label: "Add Gap Keywords to Your Listing" },
-  { id: "free-methods", label: "Find Keywords Without a Paid Tool" },
+  { id: "why-advice-fails", label: "Why Most Advice Doesn't Work" },
+  { id: "seven-reasons", label: "7 Reasons Your Listing Isn't Ranking" },
+  { id: "which-reason-first", label: "Which Reason to Check First" },
+  { id: "optimised-listing", label: "What a Properly Optimised Listing Looks Like" },
   { id: "faq", label: "FAQs" },
+];
+
+// ── 7 Reasons Data ────────────────────────────────────────────────────────────
+const sevenReasons = [
+  {
+    number: "01",
+    title: "Your Listing Is Not Indexed for the Target Keyword",
+    body: "If Amazon has not indexed your listing for a keyword, you cannot rank for it. Period. You could have the best title, the best price, and the most reviews in the category. You will still be invisible on that term.",
+    howToCheck:
+      "Type your ASIN followed by the keyword into the Amazon India search bar, for example B09XY7ABC earphone. If your listing appears, you are indexed for that term. If it does not appear, add it to your backend search terms.",
+    howToCheckHighlight: "B09XY7ABC earphone",
+    theFix:
+      "Add the keyword to your backend search terms field in Seller Central (Edit Listing, Keywords tab). Amazon re-indexes listings within 24 to 48 hours of a backend keyword save. If the keyword is a high priority one, also add it naturally to a bullet point or the product description for stronger indexing weight.",
+  },
+  {
+    number: "02",
+    title: "Poor Click Through Rate from Search Results",
+    body: "Amazon measures whether buyers click your listing when they see it in search results. If your click through rate is low compared to competitors on the same keyword, Amazon gradually moves you down and promotes listings that get more clicks. This is one of the most underexplained ranking signals for Indian sellers.",
+    howToCheck:
+      "Search your main keyword on Amazon India and compare your listing against the top 5 results. If your main image is weaker or your price is noticeably higher than the top results, click through rate is likely dragging your rank down.",
+    theFix:
+      "Replace your main image with a white background shot where the product fills at least 85% of the frame. Rewrite your title so the first 60 characters contain the most important keyword and the clearest product description. If your price is significantly higher than the top results, check whether a small reduction pays off in rank improvement.",
+  },
+  {
+    number: "03",
+    title: "Low Conversion Rate Is Signalling Low Relevance",
+    body: "Amazon's A9 algorithm treats conversion rate as evidence that your listing is relevant to a keyword. When buyers search a term, find your listing, and do not buy, Amazon reads this as a signal that your product is not what they were looking for on that term. Over time, your rank falls even if your listing was previously well placed.",
+    howToCheck:
+      "In Seller Central, go to Reports then Business Reports then Detail Page Sales and Traffic by ASIN. If your Order Session Percentage is below 6% for a mid range product, conversion is likely dragging your rank down. Compare to your category benchmark via Brand Analytics if you have access.",
+    theFix:
+      "The fastest conversion rate improvements come from three things: adding more product images (lifestyle and infographic shots, not just white background), increasing your review count through Amazon Vine or follow-up messaging, and ensuring your price is within 10 to 15% of the top competitor. Address whichever of these three is weakest first.",
+  },
+  {
+    number: "04",
+    title: "Your Listing Is Suppressed and You Do Not Know It",
+    body: "A suppressed listing does not appear in search results at all. Amazon suppresses listings for pricing policy violations, missing mandatory attributes, image guideline breaches, and compliance flags. The listing is still visible in Seller Central as active, which is why many sellers do not notice it for days or weeks.",
+    howToCheck:
+      "In Seller Central, go to Inventory then Manage Inventory and look for yellow or red warning icons next to the ASIN. A yellow icon means a listing quality issue; red means the listing may be suppressed. Also search your product title in a private browser window on Amazon India to confirm.",
+    theFix:
+      "Click the warning icon to read the specific suppression reason. The three most common causes for Indian sellers are: price set too high compared to your own price history on Amazon, a missing mandatory attribute in the product detail fields, and a main image that does not meet the white background requirement. Fix the flagged issue and the listing re-indexes within 24 to 72 hours.",
+  },
+  {
+    number: "05",
+    title: "Backend Keywords Are Empty, Duplicated, or Stuffed",
+    body: "The backend search terms field in Seller Central gives you 250 bytes of invisible keyword real estate. Amazon indexes these terms and uses them to determine what searches your listing is relevant for. Most Indian sellers either leave this field nearly empty, repeat keywords that are already in their title, or fill it with irrelevant terms hoping for extra traffic.",
+    howToCheck:
+      "Open Edit Listing in Seller Central and check the Search Terms field under the Keywords tab. Under 150 bytes means you are missing indexing opportunities. Words already in your title waste those bytes.",
+    theFix:
+      "Fill the backend field to near 250 bytes using keywords not already in your title or bullets, including Hindi transliterations, common misspellings, and buying intent terms. No punctuation, no repeated words. Save and wait 24 to 48 hours.",
+  },
+  {
+    number: "06",
+    title: "Insufficient Sales Velocity on the Target Keyword",
+    body: "Amazon's algorithm promotes listings that generate sales on a specific keyword. If you have never made a sale through a particular search term, Amazon has no evidence that your listing is relevant to it, regardless of whether the keyword appears in your copy. This particularly affects new listings and listings that have been relaunched after a long period of inactivity.",
+    howToCheck:
+      "If your listing is less than 8 weeks old, or if you have not made a sale through Sponsored Products on your target keyword, sales velocity is likely the limiting factor. Look at your Sponsored Products search term reports to see which keywords have generated at least one sale. Those are the terms Amazon is starting to index you for organically.",
+    theFix:
+      "Run an exact match Sponsored Products campaign on your 3 to 5 most important keywords for 7 to 10 days with a competitive bid. Even 3 to 5 sales per keyword through Sponsored Products gives Amazon enough signal to begin ranking your listing organically for that term. This is the fastest legitimate path from no rank to page 1 for a new listing.",
+  },
+  {
+    number: "07",
+    title: "Wrong Category Mapping Reducing Visibility in Filtered Search",
+    body: "When buyers use category filters on Amazon India, clicking into a specific department or subcategory, your listing only appears if it is mapped to that category. A product mapped to a parent category instead of the most specific relevant subcategory misses all filtered search traffic, which is often where the highest converting buyers are.",
+    howToCheck:
+      'Go to your listing on Amazon India and find the Best Sellers Rank line in the Product Details section. It should show a specific subcategory like "Wired Headphones", not just "Electronics". If it shows only a broad parent category, your Browse Node is too generic.',
+    theFix:
+      "Go to Edit Listing and select the most specific subcategory that accurately describes your product. If you cannot change the Browse Node yourself, raise a case with Amazon Seller Support providing the correct category path. Correct mapping typically improves filtered search visibility within 48 to 72 hours.",
+  },
 ];
 
 const steps = [
@@ -173,165 +248,104 @@ const steps = [
   },
 ];
 
-const keywordGapColumns: TableColumn[] = [
+const keywordGapRows: TableRow[] = [
   {
-    key: "keyword",
-    label: "KEYWORD",
-    headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
+    rowClassName: "bg-[#F9F6F2]",
+    keyword: {
+      value: "New listing, never ranked",
+      className:
+        "font-semibold text-[#B45309] border-l-4 border-[#F59E0B] pl-3",
+    },
+    searchFreq: "Reason 1\n(indexing)",
+    competitorRank: "Reason 6\n(velocity)",
+    gapType: {
+      type: "chip",
+      label: "No sales history",
+      className: "bg-[#FEF3C7] text-[#B45309] px-4 py-1",
+    },
   },
   {
-    key: "searchFreq",
-    label: "SEARCH FREQ. RANK",
-    headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
+    keyword: "Previously ranked, now dropped",
+    searchFreq: "Reason 4\n(suppression)",
+    competitorRank: "Reason 3\n(conversion)",
+    gapType: {
+      type: "chip",
+      label: "Algo signal change",
+      className: "bg-[#FEE2E2] text-[#DC2626] px-4 py-1",
+    },
   },
   {
-    key: "competitorRank",
-    label: "COMPETITOR RANK",
-    headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
+    rowClassName: "bg-[#F9F6F2]",
+    keyword: {
+      value: "Ranked on some keywords,\nnot others",
+      className:
+        "font-semibold text-[#B45309] border-l-4 border-[#F59E0B] pl-3",
+    },
+    searchFreq: "Reason 1\n(indexing)",
+    competitorRank: "Reason 5\n(backend)",
+    gapType: {
+      type: "chip",
+      label: "Keyword gap",
+      className: "bg-[#FEF3C7] text-[#B45309] px-4 py-1",
+    },
   },
   {
-    key: "yourRank",
-    label: "YOUR RANK",
-    headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
+    keyword: "Good traffic, few sales",
+    searchFreq: "Reason 3\n(conversion)",
+    competitorRank: "Reason 2\n(CTR)",
+    gapType: {
+      type: "chip",
+      label: "Listing quality",
+      className: "bg-[#FEE2E2] text-[#DC2626] px-4 py-1",
+    },
   },
   {
-    key: "gapType",
-    label: "GAP TYPE",
-    headerClassName: "bg-gradient-to-r from-[#07192d] to-[#081426] text-white",
+    rowClassName: "bg-[#F9F6F2]",
+    keyword: {
+      value: "Invisible in category browse",
+      className:
+        "font-semibold text-[#B45309] border-l-4 border-[#F59E0B] pl-3",
+    },
+    searchFreq: "Reason 7\n(category)",
+    competitorRank: "Reason 4\n(suppression)",
+    gapType: {
+      type: "chip",
+      label: "Wrong mapping",
+      className: "bg-[#FEF3C7] text-[#B45309] px-4 py-1",
+    },
+  },
+  {
+    keyword: "Ranking fell after listing edit",
+    searchFreq: "Reason 4\n(suppression)",
+    competitorRank: "Reason 1\n(indexing)",
+    gapType: {
+      type: "chip",
+      label: "Edit triggered issue",
+      className: "bg-[#FEE2E2] text-[#DC2626] px-4 py-1",
+    },
   },
 ];
 
-const keywordGapRows: TableRow[] = [
+const keywordGapColumns = [
   {
-    rowClassName: "bg-[#F4F7FC]",
-
-    keyword: {
-      value: "bluetooth earphones under 500",
-      className:
-        "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
-    },
-
-    searchFreq: "12,400",
-    competitorRank: "#4",
-    yourRank: "Not ranked",
-
-    gapType: {
-      type: "chip",
-      label: "Hard gap",
-      className: "bg-[#FBE2E2] text-[#C81E1E] px-4 py-1",
-    },
+    key: "keyword",
+    label: "LISTING SITUATION",
+    width: "33%",
   },
-
   {
-    keyword: "earphone with mic for calls",
-    searchFreq: "28,700",
-    competitorRank: "#7",
-    yourRank: "#34",
-
-    gapType: {
-      type: "chip",
-      label: "Weak rank",
-      className: "bg-[#F6E7B7] text-[#A04B00] px-4 py-1",
-    },
+    key: "searchFreq",
+    label: "CHECK FIRST",
+    width: "22%",
   },
-
   {
-    rowClassName: "bg-[#F4F7FC]",
-
-    keyword: {
-      value: "ईयरफोन 500 से कम (Hindi)",
-      className:
-        "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
-    },
-
-    searchFreq: "41,200",
-    competitorRank: "#3",
-    yourRank: "Not ranked",
-
-    gapType: {
-      type: "chip",
-      label: "Hard gap",
-      className: "bg-[#FBE2E2] text-[#C81E1E] px-4 py-1",
-    },
+    key: "competitorRank",
+    label: "THEN CHECK",
+    width: "22%",
   },
-
   {
-    keyword: "wired earphone with volume control",
-    searchFreq: "67,800",
-    competitorRank: "#6",
-    yourRank: "#28",
-
-    gapType: {
-      type: "chip",
-      label: "Weak rank",
-      className: "bg-[#F6E7B7] text-[#A04B00] px-4 py-1",
-    },
-  },
-
-  {
-    rowClassName: "bg-[#F4F7FC]",
-
-    keyword: {
-      value: "earphone for study music",
-      className:
-        "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
-    },
-
-    searchFreq: "88,300",
-    competitorRank: "#11",
-    yourRank: "Not ranked",
-
-    gapType: {
-      type: "chip",
-      label: "Hard gap",
-      className: "bg-[#FBE2E2] text-[#C81E1E] px-4 py-1",
-    },
-  },
-
-  {
-    keyword: "tangle free earphone india",
-    searchFreq: "112,400",
-    competitorRank: "#5",
-    yourRank: "#41",
-
-    gapType: {
-      type: "chip",
-      label: "Weak rank",
-      className: "bg-[#F6E7B7] text-[#A04B00] px-4 py-1",
-    },
-  },
-
-  {
-    rowClassName: "bg-[#F4F7FC]",
-
-    keyword: {
-      value: "earphone 6 months warranty",
-      className:
-        "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
-    },
-
-    searchFreq: "134,700",
-    competitorRank: "#9",
-    yourRank: "Not ranked",
-
-    gapType: {
-      type: "chip",
-      label: "Hard gap",
-      className: "bg-[#FBE2E2] text-[#C81E1E] px-4 py-1",
-    },
-  },
-
-  {
-    keyword: "best sound earphone 2026",
-    searchFreq: "8,900",
-    competitorRank: "#12",
-    yourRank: "#9",
-
-    gapType: {
-      type: "chip",
-      label: "You rank",
-      className: "bg-[#D8F0DD] text-[#067647] px-4 py-1",
-    },
+    key: "gapType",
+    label: "LIKELY ROOT CAUSE",
+    width: "23%",
   },
 ];
 
@@ -361,85 +375,63 @@ const listingColumns: TableColumn[] = [
 const listingRows: TableRow[] = [
   {
     rowClassName: "bg-[#F4F7FC]",
-
     location: {
       value: "Title (first 80 chars)",
       className:
         "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
     },
-
     keywordType: "Primary gap keyword only, must read naturally",
-
     capacity: "1–2 keywords max",
-
     indexTime: {
       type: "chip",
       label: "Immediate",
       className: "bg-[#D8F0DD] text-[#067647]",
     },
   },
-
   {
     location: "Bullet points",
-
     keywordType: "Secondary gap keywords woven into benefit statements",
-
     capacity: "3–5 additional keywords",
-
     indexTime: {
       type: "chip",
       label: "24 hours",
       className: "bg-[#D8F0DD] text-[#067647]",
     },
   },
-
   {
     rowClassName: "bg-[#F4F7FC]",
-
     location: {
       value: "Backend search terms",
       className:
         "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
     },
-
     keywordType: "All remaining gap keywords incl. Hindi terms",
-
     capacity: "250 bytes (~40 keywords)",
-
     indexTime: {
       type: "chip",
       label: "24–48 hours",
       className: "bg-[#D8F0DD] text-[#067647]",
     },
   },
-
   {
     location: "Product description",
-
     keywordType: "Long-tail gap keywords used in full sentences",
-
     capacity: "3–5 additional keywords",
-
     indexTime: {
       type: "chip",
       label: "2–5 days",
       className: "bg-[#F6E7B7] text-[#A04B00]",
     },
   },
-
   {
     rowClassName: "bg-[#F4F7FC]",
-
     location: {
       value: "A+ Content headers",
       className:
         "font-semibold text-[#1D4ED8] border-l-4 border-[#2563EB] pl-3",
     },
-
     keywordType: "Top gap keywords used as section titles",
-
     capacity: "2–4 additional keywords",
-
     indexTime: {
       type: "chip",
       label: "2–5 days",
@@ -450,84 +442,62 @@ const listingRows: TableRow[] = [
 
 const keywordDiscoveryCards = [
   {
-    icon: <Search size={24} />,
-    iconBg: "#EEF2FF",
-    iconColor: "#2563EB",
-
-    title: "Amazon Search Bar Method",
-
-    description: (
-      <>
-        Type the first 1 to 2 words of your competitor's product category into
-        the Amazon India search bar and watch the autocomplete suggestions
-        appear.
-        <br />
-        <br />
-        Each suggestion is a real search term buyers use. Compare these to your
-        current listing keywords. Any term not in your listing is a gap worth
-        considering.
-      </>
-    ),
-
-    chips: [
-      {
-        label: "Free · 20 min",
-        bg: "#EEF2FF",
-        color: "#1D4ED8",
-      },
-    ],
-  },
-
-  {
     icon: <FileText size={24} />,
     iconBg: "#FEF3C7",
     iconColor: "#D97706",
-
-    title: "Seller Central Brand Analytics",
-
+    title: "Title and Bullets",
     description: (
       <>
-        Brand Registry sellers can access the Search Terms report in Brand
-        Analytics. It shows search frequency rank for any term you type.
-        <br />
-        <br />
-        Use this to validate the demand of gap keywords you have identified
-        manually before adding them to your listing.
+        Title first 80 characters contain primary keyword and clearest product
+        description. Each bullet starts with a benefit, not a feature. Two to
+        three secondary keywords woven in naturally across the five bullets.
       </>
     ),
-
     chips: [
       {
-        label: "Free with Brand Registry",
-        bg: "#F7EFD8",
-        color: "#9A5412",
+        label: "Visible ranking signal",
+        bg: "#FEF3C7",
+        color: "#C25B00",
       },
     ],
   },
-
   {
-    icon: <ArrowRight size={24} />,
-    iconBg: "#DDF5E8",
-    iconColor: "#059669",
-
-    title: "Insydz Reverse ASIN Lookup",
-
+    icon: <PlusSquare size={24} />,
+    iconBg: "#DCFCE7",
+    iconColor: "#16A34A",
+    title: "Backend Keywords",
     description: (
       <>
-        The complete method. Paste your competitor's ASIN and get their full
-        keyword footprint: 50 to 150 keywords with search frequency rank, their
-        rank position, and your current rank, all in one dashboard.
-        <br />
-        <br />
-        The gap keywords are pre-filtered and sorted by priority.
+        Backend search terms field filled to at least 230 bytes. No word
+        repeated from title. Hindi transliterations included. No punctuation. No
+        competitor brand names. Saved and verified indexed within 48 hours.
       </>
     ),
-
     chips: [
       {
-        label: "Complete · Free to start",
-        bg: "#DDF5E8",
-        color: "#065F46",
+        label: "Invisible, high impact",
+        bg: "#DCFCE7",
+        color: "#16A34A",
+      },
+    ],
+  },
+  {
+    icon: <CheckCircle2 size={24} />,
+    iconBg: "#DBEAFE",
+    iconColor: "#2563EB",
+    title: "Images and Conversion",
+    description: (
+      <>
+        Main image on pure white, product fills 85% of frame. At least 5
+        additional images including one lifestyle shot and one infographic. 4.0
+        stars or above. Price within 15% of top competitor.
+      </>
+    ),
+    chips: [
+      {
+        label: "CTR and conversion",
+        bg: "#DBEAFE",
+        color: "#2563EB",
       },
     ],
   },
@@ -536,50 +506,238 @@ const keywordDiscoveryCards = [
 // ── FAQ ───────────────────────────────────────────────────────────────────────
 const faqs = [
   {
-    q: "How do I find keywords my Amazon competitor ranks for but I do not?",
-    a: "Paste a competitor's ASIN into Insydz and it shows every search term they rank for alongside your current rank. Filter to keywords where you rank below position 20, sort by search frequency rank, and add the top 5 to 10 to your backend search terms today.",
+    q: "Why is my Amazon listing not appearing in search results in India?",
+    a: "The seven most common reasons are: not indexed for the keyword, poor click-through rate, low conversion rate, listing suppression, missing or incorrect backend keywords, insufficient sales velocity, and wrong category mapping. Most sellers fix the wrong problem because they have not diagnosed which one is actually causing their issue.",
   },
   {
-    q: "What is reverse ASIN keyword research?",
-    a: "Reverse ASIN research means looking up which keywords an ASIN currently ranks for in Amazon search results, rather than starting with keywords and checking rankings. You start with your competitor's product and work backward to discover all the search terms driving their organic visibility, including terms you would never have thought to target.",
+    q: "How do I check if my listing is indexed for a keyword?",
+    a: "Type your ASIN followed by the keyword in the Amazon India search bar, for example: B09XY7ABC earphone. If your listing appears, you are indexed. If not, add the keyword to your backend search terms and check again after 24 to 48 hours.",
   },
   {
-    q: "Which keywords drive the most sales on Amazon India?",
-    a: "Long-tail keywords with buying intent convert at 2 to 3 times the rate of broad head terms. Terms that include specifications, use cases, or words like 'best' or 'buy' signal purchase intent. For Amazon India specifically, Hindi transliterations of product names often have lower competition but strong conversion among tier-2 and tier-3 city buyers.",
+    q: "Does low conversion rate cause ranking drop on Amazon?",
+    a: "Yes. Amazon's A9 algorithm treats conversion rate as a direct relevance signal. If buyers find your listing in search results but do not buy, Amazon reads this as evidence your listing is not relevant to that keyword. Over time, low conversion relative to competitors causes your position to fall even if your listing was previously well placed.",
   },
   {
-    q: "How many keywords should I target per product listing?",
-    a: "Your title and bullets support 8 to 15 primary and secondary keywords naturally. The backend search terms field gives 250 bytes for additional keywords that do not appear in visible copy. A well-optimised listing should be indexed for 40 to 80 unique search terms in total, including Hindi transliterations for Amazon India.",
+    q: "How long does it take for a new Amazon listing to rank?",
+    a: "A new listing typically takes 3 to 6 weeks to rank organically for competitive keywords. The fastest route is to generate sales velocity through Sponsored Products exact match campaigns on your target keywords. Once Amazon sees consistent sales on a keyword, it begins to rank your listing organically for that term within 2 to 4 weeks.",
   },
   {
-    q: "Can I find competitor backend keywords legally?",
-    a: "You cannot read backend keywords directly as Amazon keeps those private. Reverse ASIN tools work out which keywords an ASIN ranks for by checking search results across thousands of terms. This gives you a near-complete picture of their keyword footprint without accessing any private data.",
+    q: "Can duplicate listings hurt my ranking in India?",
+    a: "Yes. Duplicate ASINs split your sales velocity and reviews across multiple listings rather than concentrating them on one. Amazon rewards consistent performance on a single ASIN. If you have multiple listings for the same product, merge them via Amazon Seller Support and consolidate all reviews onto the surviving ASIN.",
   },
   {
-    q: "How long does it take to rank for a new keyword on Amazon India?",
-    a: "Amazon indexes backend search terms within 24 to 48 hours of saving them. Organic rank improvement on those terms then depends on generating sales velocity. Running exact match Sponsored Products on the gap keyword for 5 to 7 days typically produces enough sales signals to move from unranked to page 2 or page 1 within 2 to 4 weeks.",
+    q: "Can Insydz help me find why my Amazon India listing is not ranking?",
+    a: "Yes. Insydz checks keyword indexing status, rank position, and listing quality flags for your ASIN, and shows the keyword gap between you and your top competitor. You can see exactly which keywords you are indexed for, which you are missing, and where a competitor is outranking you. Start with the free rank checker.",
   },
 ];
 
+// ── SevenReasonsCards sub-component ──────────────────────────────────────────
+interface ReasonItem {
+  number: string;
+  title: string;
+  body: string;
+  howToCheck: string;
+  howToCheckHighlight?: string;
+  theFix: string;
+}
+
+function SevenReasonsCards({
+  reasons,
+  resolvedTheme,
+}: {
+  reasons: ReasonItem[];
+  resolvedTheme: string | undefined;
+}) {
+  const isDark = resolvedTheme === "dark";
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: 24,
+        margin: "32px 0 40px",
+      }}
+    >
+      {reasons.map((reason) => (
+        <div
+          key={reason.number}
+          style={{
+            border: isDark ? "1px solid #1f2937" : "1px solid #E5E7EB",
+            borderRadius: 14,
+            overflow: "hidden",
+            background: isDark ? "#111827" : "#fff",
+            boxShadow: isDark ? "none" : "0 2px 12px rgba(0,0,0,0.06)",
+          }}
+        >
+          {/* Header */}
+          <div
+            style={{
+              background: isDark ? "#1c1a09" : "#FEF9EC",
+              borderBottom: isDark ? "1px solid #2d2a0f" : "1px solid #F5E9B8",
+              padding: "18px 24px",
+              display: "flex",
+              alignItems: "center",
+              gap: 16,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "'Sora', sans-serif",
+                fontSize: 28,
+                fontWeight: 900,
+                color: "#D97706",
+                letterSpacing: "-1px",
+                lineHeight: 1,
+                minWidth: 44,
+              }}
+            >
+              {reason.number}
+            </span>
+            <h3
+              style={{
+                fontFamily: "'Sora', sans-serif",
+                fontSize: 16,
+                fontWeight: 800,
+                color: isDark ? "#f3f4f6" : "#0A0F1A",
+                margin: 0,
+                lineHeight: 1.35,
+                letterSpacing: "-0.2px",
+              }}
+            >
+              {reason.title}
+            </h3>
+          </div>
+
+          {/* Body */}
+          <div style={{ padding: "20px 24px 0" }}>
+            <p
+              style={{
+                fontFamily: "'Lora', serif",
+                fontSize: 15,
+                lineHeight: 1.78,
+                color: isDark ? "#cbd5e1" : "#334155",
+                margin: "0 0 20px",
+              }}
+            >
+              {reason.body}
+            </p>
+
+            {/* How to Check */}
+            <div
+              style={{
+                background: isDark ? "#0f172a" : "#F8FAFC",
+                border: isDark ? "1px solid #1e293b" : "1px solid #E2E8F0",
+                borderRadius: 8,
+                padding: "14px 18px",
+                marginBottom: 14,
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "'Sora', sans-serif",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.8px",
+                  textTransform: "uppercase",
+                  color: isDark ? "#94a3b8" : "#64748B",
+                  marginBottom: 8,
+                }}
+              >
+                HOW TO CHECK
+              </div>
+              <p
+                style={{
+                  fontFamily: "'Lora', serif",
+                  fontSize: 14,
+                  lineHeight: 1.72,
+                  color: isDark ? "#cbd5e1" : "#334155",
+                  margin: 0,
+                }}
+              >
+                {reason.howToCheckHighlight
+                  ? (() => {
+                      const parts = reason.howToCheck.split(
+                        reason.howToCheckHighlight,
+                      );
+                      return (
+                        <>
+                          {parts[0]}
+                          <strong
+                            style={{
+                              fontFamily: "'Sora', sans-serif",
+                              color: isDark ? "#f9fafb" : "#0A0F1A",
+                            }}
+                          >
+                            {reason.howToCheckHighlight}
+                          </strong>
+                          {parts[1]}
+                        </>
+                      );
+                    })()
+                  : reason.howToCheck}
+              </p>
+            </div>
+
+            {/* The Fix */}
+            <div
+              style={{
+                background: isDark ? "#052e16" : "#F0FDF4",
+                borderLeft: "4px solid #16A34A",
+                borderRadius: "0 8px 8px 0",
+                padding: "14px 18px",
+                marginBottom: 20,
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: "'Sora', sans-serif",
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: "0.8px",
+                  textTransform: "uppercase",
+                  color: "#16A34A",
+                  marginBottom: 8,
+                }}
+              >
+                THE FIX
+              </div>
+              <p
+                style={{
+                  fontFamily: "'Lora', serif",
+                  fontSize: 14,
+                  lineHeight: 1.72,
+                  color: isDark ? "#bbf7d0" : "#166534",
+                  margin: 0,
+                }}
+              >
+                {reason.theFix}
+              </p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ── Component ─────────────────────────────────────────────────────────────────
-export default function FindCompetitorKeywordsAmazonIndiaContent() {
+export default function AmazonListingNotRankingIndiaContent() {
   const router = useRouter();
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const [activeSection, setActiveSection] = useState("what-is-private-label");
+  const [activeSection, setActiveSection] = useState("key-takeaways");
   const [scrollPct, setScrollPct] = useState(0);
   const [tocOpen, setTocOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    const id = "insydz-find-competitor-keywords-schema";
+    const id = "insydz-amazon-listing-not-ranking-india-schema";
     if (document.getElementById(id)) return;
     const script = document.createElement("script");
     script.id = id;
     script.type = "application/ld+json";
-    script.textContent = JSON.stringify(
-      schemaFindCompetitorKeywordsAmazonIndia,
-    );
+    script.textContent = JSON.stringify(schemaAmazonListingNotRankingIndia);
     document.head.appendChild(script);
     return () => {
       document.getElementById(id)?.remove();
@@ -591,27 +749,10 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
       setScrolled(window.scrollY > 20);
       const total = document.documentElement.scrollHeight - window.innerHeight;
       setScrollPct(Math.min((window.scrollY / total) * 100, 100));
-      for (let i = TOC.length - 1; i >= 0; i--) {
-        const el = document.getElementById(TOC[i].id);
+      for (let i = TOC_ITEMS.length - 1; i >= 0; i--) {
+        const el = document.getElementById(TOC_ITEMS[i].id);
         if (el && window.scrollY >= el.offsetTop - 130) {
-          setActiveSection(TOC[i].id);
-          break;
-        }
-      }
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    const onScroll = () => {
-      setScrolled(window.scrollY > 20);
-      const total = document.documentElement.scrollHeight - window.innerHeight;
-      setScrollPct(Math.min((window.scrollY / total) * 100, 100));
-      for (let i = TOC.length - 1; i >= 0; i--) {
-        const el = document.getElementById(TOC[i].id);
-        if (el && window.scrollY >= el.offsetTop - 130) {
-          setActiveSection(TOC[i].id);
+          setActiveSection(TOC_ITEMS[i].id);
           break;
         }
       }
@@ -902,7 +1043,7 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
           <span
             style={{ color: resolvedTheme === "dark" ? "#64748b" : "#94A3B8" }}
           >
-            Competitor Undercutting Your Amazon India Price
+            Amazon Listing Not Ranking India
           </span>
         </div>
       </div>
@@ -910,23 +1051,22 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
       {/* HERO SECTION */}
       <HeroSection
         resolvedTheme={resolvedTheme}
-        badgeText="PRICING INTELLIGENCE"
+        badgeText="Listing SEO"
         title={
           <>
-            How to Find Every Keyword Your{" "}
+            Your Amazon India Listing Is{" "}
             <span style={{ color: "#6366F1" }}>
-              Amazon <br /> India Competitor
+              Not <br /> Ranking?
             </span>{" "}
-            Is Ranking For, and <br /> Use It to Outrank Them
+            Here Are 7 Real Reasons <br /> Sellers Miss and How to Fix Each
           </>
         }
         description={
           <>
-            Your competitor is ranking for 47 keywords you have never targeted.
-            Some of them are your category's highest converting terms.
-            <br />
-            Knowing about it and acting on it are two very different things.
-            This guide gives you the method.
+            You optimised your title. You added keywords. You are still on page
+            4. The problem is <br /> almost never what sellers think it is. Here
+            are the 7 fixable reasons most Indian <br /> sellers never find,
+            each with a diagnosis check and a specific fix.
           </>
         }
         authorName="Vikrant Singh"
@@ -942,9 +1082,9 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
 
       {/* Blog Image Section */}
       <BlogImageSection
-        imageSrc="/Blog2_find-competitor-keywords-amazon-india_BlogBanner.png"
-        altText="Competitor Keywords Amazon India"
-        caption="Insydz keyword gap analysis. Your ASIN ranks for 63 keywords while the category leader ranks for 110. The 47 keyword gap contains the highest priority ranking opportunities, including 19 high intent and 8 Hindi terms you are missing entirely."
+        imageSrc="/Blog1_amazon-listing-not-ranking-india_BlogBanner.png"
+        altText="Amazon Listing Not Ranking India"
+        caption="Insydz rank diagnostic on a real ASIN. Three issues found: keyword not indexed, backend field only 19% used, and wrong category mapping. Any one of these is enough to keep a listing off page 1."
       />
 
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 16px 0" }}>
@@ -981,21 +1121,20 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
               fontFamily: "'Lora', serif",
             }}
           >
-            To find keywords your Amazon India competitor ranks for that you do
-            not: run a reverse ASIN lookup on your top competitor using Insydz.
-            It shows every keyword their ASIN ranks for alongside your current
-            rank for each term. Filter to keywords where you rank below position
-            20 or do not appear at all. Sort by search frequency rank. Add the
-            top 5 to 10 gap keywords to your backend search terms field today.
-            That alone can move you from invisible to page 1 for those terms
-            within 3 to 4 weeks.
+            The most common reason an Amazon India listing is not ranking is one
+            of three things: the listing is not indexed for the target keyword,
+            the backend search terms field is nearly empty, or the category is
+            mapped incorrectly. Start by checking indexing: type your ASIN
+            followed by the keyword in Amazon India's search bar. If your
+            listing does not appear, it is not indexed and adding that keyword
+            to your backend terms will fix it within 24 to 48 hours.
           </p>
         </div>
 
         {/* Key Takeaways Box */}
         <div id="key-takeaways">
           <KeyTakeawaysBox
-            title="Key Takeaways: Competitor Keyword Research on Amazon India"
+            title="Key Takeaways: Why Your Amazon India Listing Is Not Ranking"
             items={keyTakeaways}
             accentColor="#6366F1"
           />
@@ -1029,7 +1168,7 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
             className="space-y-1"
             style={{ listStyle: "none", padding: 0, margin: 0 }}
           >
-            {TOC.map((t) => (
+            {TOC_ITEMS.map((t) => (
               <li key={t.id}>
                 <button
                   className={`toc-link${activeSection === t.id ? " active" : ""}`}
@@ -1080,7 +1219,7 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
               borderColor: resolvedTheme === "dark" ? "#1f2937" : "#E5E7EB",
             }}
           >
-            {TOC.map((t) => (
+            {TOC_ITEMS.map((t) => (
               <button
                 key={t.id}
                 className="toc-link"
@@ -1093,11 +1232,11 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
           </div>
 
           <article className="article-body">
-            <div id="keyword-gap-analysis">
+            <div id="why-advice-fails">
               <SectionQA
-                title="Why Is Keyword Gap Analysis the Fastest Path to Organic Rank Gains?"
-                paragraph1="Most Amazon India sellers optimise their listings in isolation, looking at their own title, bullets, and backend keywords and trying to improve what they already have. This has a ceiling: the words you have not thought of are not there to improve."
-                paragraph2="Keyword gap analysis flips the approach. Instead of starting with your own listing, you start with your competitor's ranking keywords and ask what you are missing. The gap is a ready made list of proven demand: someone is already searching, your competitor is already capturing it, and you are not."
+                title="Why Does Most Amazon India Listing Advice Not Work?"
+                paragraph1="Most SEO advice for Amazon listings is generic: add keywords to your title, write good bullet points, get more reviews. Sellers follow this advice and still end up on page 3 wondering what went wrong."
+                paragraph2="Generic advice does not diagnose the actual problem. The 7 reasons a listing fails to rank are each different, each checkable, and each with a specific fix. Work through each in order and stop when you find yours."
                 resolvedTheme={resolvedTheme}
               />
             </div>
@@ -1105,186 +1244,50 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
             <InfoBanner
               accentColor="#6366F1"
               backgroundColor="#DCE2FF"
-              title="The Opportunity Size"
-              content="In a typical Amazon India product category, the top ranked ASIN ranks for 80 to 150 keywords while a well optimised mid range seller ranks for 40 to 70. The gap of 40 to 80 missing keywords is traffic you are entirely invisible to, even though buyers are already searching and buying on those terms in your category."
+              title="📌 How to Use This Guide"
+              content="Each reason includes what the problem is, how to check for it, and how to fix it. Newer listings should start at Reason 1 and Reason 6. Listings that previously ranked and then dropped should start at Reason 3 and Reason 4."
             />
 
-            <p
-              style={{
-                margin: "0 0 16px",
-                fontSize: 15.5,
-                color: resolvedTheme === "dark" ? "#cbd5e1" : "#4B5563",
-                lineHeight: 1.75,
-                fontFamily: "'Sora', sans-serif",
-              }}
-            >
-              One gap keyword discovery can move a listing from page 3 to page 1
-              for that specific term. This is not theoretical. It happens within
-              2 to 4 weeks of adding a high demand gap keyword to your backend
-              search terms and generating a few sales on that term through
-              Sponsored Products.
-            </p>
-
-            <div id="reverse-asin">
+            {/* ── 7 REASONS SECTION ── */}
+            <div id="seven-reasons">
               <SectionQA
-                title="What Is Reverse ASIN Research and How Does It Work?"
-                paragraph1="Reverse ASIN research means working backward from a product to its keywords. You start with your competitor's ASIN (their Amazon product ID) and ask: which search terms does this product currently appear for in Amazon search results?"
-                paragraph2="The process works because Amazon's search index can be observed. When a buyer searches a term and a product appears, that product keyword relationship is recorded. Reverse ASIN tools check thousands of search terms one by one against a given ASIN and return the full list of terms where that ASIN ranks, along with its position for each term."
+                title="What Are the 7 Reasons Your Amazon India Listing Is Not Ranking?"
                 resolvedTheme={resolvedTheme}
               />
             </div>
 
-            <section aria-labelledby="reverse-asin-heading">
-              <h3
-                id="reverse-asin-heading"
-                style={{
-                  color: "#1D4ED8",
-                  fontSize: "20px",
-                  fontWeight: 600,
-                  marginBottom: "28px",
-                  lineHeight: 1.3,
-                }}
-              >
-                What You Get From a Reverse ASIN Lookup
-              </h3>
-
-              <ul
-                style={{
-                  paddingLeft: "24px",
-                  margin: 0,
-                  listStyleType: "disc",
-                  listStylePosition: "outside",
-                  fontSize: "16px",
-                  lineHeight: 1.8,
-                  fontFamily: "'Lora', serif",
-                }}
-              >
-                {[
-                  {
-                    label: "Keyword list:",
-                    text: "every search term the competitor's ASIN ranks for, usually 50 to 150 terms for a well optimised product",
-                  },
-                  {
-                    label: "Search frequency rank:",
-                    text: "how often that term is searched on Amazon India. Lower number means higher demand.",
-                  },
-                  {
-                    label: "Competitor's rank position:",
-                    text: "are they at position 3 or position 28? This tells you how hard they are to displace on each term.",
-                  },
-                  {
-                    label: "Your rank position:",
-                    text: "where you currently appear for the same term, or if you do not appear at all.",
-                  },
-                ].map(({ label, text }, i, arr) => (
-                  <li
-                    key={label}
-                    style={{
-                      marginBottom: i < arr.length - 1 ? "12px" : 0,
-                      color: "#1D4ED8", // bullet inherits this
-                    }}
-                  >
-                    <span
-                      style={{
-                        color: resolvedTheme === "dark" ? "#CBD5E1" : "#334155",
-                      }}
-                    >
-                      <strong>{label}</strong> {text}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-
-            <InfoBanner
-              accentColor="#E67E22"
-              title="⚠️ What You Cannot Get"
-              content="You cannot read a competitor's backend keywords directly. What reverse ASIN tools find instead is the visible result: the search terms the ASIN actually ranks for in Amazon's results. This captures the majority of the keyword picture, including the effect of backend terms, even though those terms themselves stay hidden."
+            {/* 7 Reasons Cards rendered directly below the section title */}
+            <SevenReasonsCards
+              reasons={sevenReasons}
+              resolvedTheme={resolvedTheme}
             />
 
             <BlogImageSection
-              imageSrc="/Blog2_find-competitor-keywords-amazon-india_image2.png"
-              altText="Competitor Keywords Amazon India"
-              caption="Insydz reverse ASIN lookup. Competitor keyword footprint revealed with search frequency rank, their position, and your current rank. Gap keywords (not ranked) and weak keywords (ranked below 20) are prioritised automatically."
+              imageSrc="/Blog1_amazon-listing-not-ranking-india_image2.png"
+              altText="Keyword Gap Amazon India"
+              caption="Seller Central Business Reports showing 3.1% Order Session Percentage against a category average of 8.4%. This conversion gap is a direct ranking signal Amazon uses to decide how prominently to show this listing."
             />
 
-            <div id="real-category-gap">
+            <div id="which-reason-first">
               <SectionQA
-                title="What Does the Keyword Gap Actually Look Like in a Real Category?"
-                paragraph1="Here is what a keyword gap analysis looks like in the earphones category on Amazon India, comparing a mid range seller to the category leader. The numbers are realistic for this category in 2026."
+                title="Which Reason Should You Check First?"
+                paragraph1="Not all 7 reasons are equally likely depending on your listing's situation. Here is the order to check them based on how old your listing is and what has changed recently."
                 resolvedTheme={resolvedTheme}
               />
             </div>
 
             <DataTable columns={keywordGapColumns} rows={keywordGapRows} />
 
-            <p
-              style={{
-                color: resolvedTheme === "dark" ? "#94a3b8" : "#4B5563",
-                fontSize: "16px",
-                lineHeight: 1.7,
-                marginBottom: "32px",
-                fontFamily: "'Lora', serif",
-              }}
-            >
-              The hard gap keywords (terms you do not rank for at all) are where
-              the biggest ranking opportunity sits. Adding "bluetooth earphones
-              under 500" and "ईयरफोन 500 से कम" to your backend search terms and
-              running 3 to 5 days of exact match Sponsored Products on each term
-              is typically enough to get Amazon to index your listing for those
-              terms within 2 weeks.
-            </p>
-
-            <InfoBanner
-              accentColor="#16A34A"
-              backgroundColor="#E5FCF7"
-              title="✅ The Hindi Keyword Advantage"
-              content="Hindi search terms are systematically under targeted by most sellers because most keyword tools do not surface them. They typically have lower competition, decent search volume from tier-2 and tier-3 city buyers, and high conversion rates because Hindi searching buyers tend to have strong purchase intent. Adding 5 to 8 Hindi gap keywords is usually 30 minutes of work and pays off disproportionately."
+            <BlogImageSection
+              imageSrc="/Blog1_amazon-listing-not-ranking-india_image3.png"
+              altText="Keyword Gap Amazon India"
+              caption="Insydz rank tracking showing movement after fixing 3 of the 7 reasons on a real earphones listing. Three weeks after fixing backend keywords, category mapping, and running exact match Sponsored Products, the listing moved from not ranked to page 1 on two terms."
             />
 
-            <div id="prioritise-gap-keywords">
+            <div id="optimised-listing">
               <SectionQA
-                title="How Do You Prioritise Which Gap Keywords to Target First?"
-                paragraph1="Not all gap keywords are equal. A gap keyword with a search frequency rank of 12,000 deserves more immediate attention than one with a rank of 800,000. Here is a simple prioritisation framework."
-                resolvedTheme={resolvedTheme}
-              />
-            </div>
-            <NumberedCards
-              items={steps}
-              numberColor="#2F63F5"
-              backgroundColor="#F8FAFC"
-              borderColor="#D7E3FF"
-            />
-            <FeatureCTA
-              title="Insydz shows every keyword your competitor ranks for that you do not"
-              description="Run a reverse ASIN lookup on your top competitor and see your keyword gap in under 60 seconds."
-              buttonText="Try Free With Your ASIN →"
-              buttonHref="/signup"
-              backgroundColor="#111827"
-              buttonColor="#6366F1"
-            />
-            <div id="add-gap-keywords">
-              <SectionQA
-                title="How Do You Add Gap Keywords to Your Listing Correctly?"
-                paragraph1="Each part of your Amazon listing serves a different role in keyword indexing. Here is exactly where each type of gap keyword belongs."
-                resolvedTheme={resolvedTheme}
-              />
-            </div>
-            <BlogImageSection
-              imageSrc="/Blog2_find-competitor-keywords-amazon-india_image3.png"
-              altText="Competitor Keywords Amazon India"
-              caption="Keyword placement map showing where each type of gap keyword belongs in your Amazon India listing. Backend search terms are the fastest entry point: 250 bytes of invisible keyword real estate indexed within 48 hours."
-            />
-            <DataTable columns={listingColumns} rows={listingRows} />
-            <BlogImageSection
-              imageSrc="/Blog2_find-competitor-keywords-amazon-india_image4.png"
-              altText="Competitor Keywords Amazon India"
-              caption="Insydz rank tracking. A Pune earphones seller added 6 gap keywords to backend search terms and moved from not ranked to top 10 for 3 of them within 3 weeks. Organic revenue up 38% on those terms alone."
-            />
-            <div id="free-methods">
-              <SectionQA
-                title="How Do You Find Competitor Keywords Without a Paid Tool?"
-                paragraph1="If you want to start today before setting up Insydz, here are the two free manual methods. They are slower and incomplete, but they work well enough to find the most obvious gaps."
+                title="What Does a Properly Optimised Amazon India Listing Look Like?"
+                paragraph1="After fixing the relevant reason from the list above, use this benchmark to check your listing is fully optimised so the same problem does not return."
                 resolvedTheme={resolvedTheme}
               />
             </div>
@@ -1442,26 +1445,26 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
 
       {/* Final CTA */}
       <FinalCTA
-        title="Your Competitor's Keyword Gap Is Your Next Page-1 Opportunity"
-        description="Find every keyword your top competitor ranks for that you do not. Add the top gaps to your backend search terms today. Track rank movement daily with Insydz."
-        primaryButtonText="Find Your Keyword Gap Free →"
+        title="Stop Guessing Why Your Listing Is Not Ranking. Find Out in 60 Seconds."
+        description="Insydz checks keyword indexing, rank position, and the gap between your listing and your top competitor. Free rank checker, no card needed."
+        primaryButtonText="Check Your Listing Free →"
         primaryButtonHref="/signup"
         secondaryButtonText="See Plans"
         secondaryButtonHref="/pricing"
-        primaryColor="#2454E6"
-        secondaryColor="#4F6EF7"
+        primaryColor="#C55A00"
+        secondaryColor="#F59E0B"
         stats={[
+          {
+            value: "7",
+            label: "Fixable reasons",
+          },
+          {
+            value: "48 hrs",
+            label: "Backend fix indexes",
+          },
           {
             value: "5,000+",
             label: "Indian sellers",
-          },
-          {
-            value: "47",
-            label: "Avg. gap keywords found",
-          },
-          {
-            value: "3 weeks",
-            label: "Typical page-1 time",
           },
           {
             value: "Free",
