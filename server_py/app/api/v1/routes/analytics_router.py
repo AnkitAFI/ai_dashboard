@@ -82,6 +82,10 @@ def save_behavior_batch_to_db(db: Session, events_data: List[dict]):
             else:
                 created_at_dt = datetime.utcnow()
 
+            # Only store logs that have a valid user identity (Skip all anonymous/NULL logs)
+            if not ev.get("user_email"):
+                continue
+
             db_logs.append(UserBehaviorLog(
                 user_id=ev.get("user_id"),
                 user_email=ev.get("user_email"),
@@ -98,15 +102,7 @@ def save_behavior_batch_to_db(db: Session, events_data: List[dict]):
             db.add_all(db_logs)
             db.commit()
 
-            # Clean up raw historical analytics data older than 90 days to control PostgreSQL table growth
-            try:
-                from datetime import timedelta
-                cutoff = datetime.utcnow() - timedelta(days=90)
-                db.query(UserBehaviorLog).filter(UserBehaviorLog.created_at < cutoff).delete(synchronize_session=False)
-                db.commit()
-            except Exception as prune_err:
-                db.rollback()
-                print(f"Error pruning historical behavior logs: {prune_err}")
+            # (The automated 90-day pruning logic was completely removed at your request to keep logs permanently)
     except Exception as e:
         db.rollback()
         print(f"Error saving behavior logs to database: {e}")
@@ -148,7 +144,6 @@ def track_behavior_batch(
 
 @router.get("/admin/behavior-logs")
 def get_admin_behavior_logs(
-    limit: int = Query(100, ge=1, le=1000),
     current_user: Any = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -156,7 +151,8 @@ def get_admin_behavior_logs(
     if current_user.email != ADMIN_EMAIL:
         raise HTTPException(status_code=404, detail="Not found")
 
-    logs = db.query(UserBehaviorLog).order_by(UserBehaviorLog.created_at.desc()).limit(limit).all()
+    # Limit removed at your request to load all logs
+    logs = db.query(UserBehaviorLog).order_by(UserBehaviorLog.created_at.desc()).all()
     
     return [
         {

@@ -358,7 +358,7 @@ function OpportunityCard({
           </div>
         ) : (
           <div className="relative mb-3">
-            <div className="space-y-2 opacity-20 blur-sm pointer-events-none select-none">
+            <div className="space-y-2 opacity-60 blur-[3px] pointer-events-none select-none">
               {[["Rating gap", 22], ["Review thinness", 18], ["Demand signal", 15], ["Price gap", 10]].map(([l, v]) => (
                 <div key={l} className="flex items-center gap-3">
                   <span className="text-xs text-slate-400 w-28 shrink-0">{l}</span>
@@ -459,7 +459,7 @@ function LockedCard({ position, onUpgrade }: { position: number; onUpgrade: (f: 
       data-track-id="whitespace_locked_result_card"
       data-filter-value={position.toString()}
     >
-      <div className="p-5 blur-sm opacity-30 pointer-events-none select-none">
+      <div className="p-5 blur-[3px] opacity-60 pointer-events-none select-none">
         <div className="flex items-start gap-3 mb-3">
           <div className="w-13 h-13 rounded-full bg-emerald-100 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 flex items-center justify-center text-sm font-bold text-emerald-600 dark:text-emerald-400">
             {position}
@@ -768,7 +768,7 @@ function WhiteSpaceFinderContent() {
                 Opportunity Finder
               </h1>
               <p className="text-slate-500 text-sm font-medium">
-                Discover untapped product gaps and find whitespace opportunities across Amazon and Flipkart.
+                Discover untapped product gaps and find hidden opportunities across Amazon and Flipkart.
               </p>
             </div>
           </div>
@@ -1074,13 +1074,37 @@ function WhiteSpaceFinderContent() {
             </CardContent>
           </Card>
 
-          {/* Error */}
-          {error && (
-            <div className="flex items-start gap-3 p-4 bg-red-50 border-l-4 border-red-400 rounded-r-2xl">
+          {/* Error / Paywall Nudge */}
+          {error && error === "Monthly scan limit reached. Upgrade for more scans." ? (
+            <Card className="bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-violet-950/20 dark:to-indigo-950/20 border border-violet-200 dark:border-violet-900/30 rounded-2xl shadow-sm text-center overflow-hidden animate-in fade-in slide-in-from-bottom-4">
+              <CardContent className="p-10 flex flex-col items-center justify-center relative">
+                <div className="absolute top-0 right-0 p-32 bg-violet-400/10 dark:bg-violet-600/10 rounded-full blur-3xl -z-10 -translate-y-1/2 translate-x-1/2" />
+                
+                <Crown className="w-12 h-12 text-violet-500 mb-4" />
+                <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mb-2">
+                  You've reached your free scan limit
+                </h3>
+                <p className="text-slate-500 dark:text-slate-400 max-w-lg mx-auto mb-6 leading-relaxed">
+                  Upgrade to unlock unlimited opportunity scans, competitor weakness analysis, and real-time demand trend charts. 
+                  <br className="hidden sm:block" />
+                  <span className="font-semibold text-slate-600 dark:text-slate-300">Don't let your competitors find these opportunities before you do.</span>
+                </p>
+                <a
+                  href="/subscription"
+                  className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all group"
+                >
+                  <Sparkles className="w-4 h-4 text-violet-200 group-hover:scale-110 transition-transform" /> 
+                  Upgrade Now 
+                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                </a>
+              </CardContent>
+            </Card>
+          ) : error ? (
+            <div className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-950/30 border-l-4 border-red-400 rounded-r-2xl animate-in fade-in">
               <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-              <p className="text-sm text-red-700">{error}</p>
+              <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
             </div>
-          )}
+          ) : null}
 
           {/* Loading state */}
           {loading && (
@@ -1214,7 +1238,9 @@ function WhiteSpaceFinderContent() {
                     <CardContent className="p-6 text-center">
                       <Sparkles className="w-7 h-7 text-violet-400 mx-auto mb-3" />
                       <h3 className="text-base font-semibold text-slate-800 dark:text-slate-100 mb-1">
-                        {result.locked_count} more opportunities waiting
+                        {result.locked_count > 0 
+                          ? `${result.locked_count} more opportunities waiting` 
+                          : "Unlock the full opportunity analysis"}
                       </h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 mb-4 max-w-md mx-auto">
                         Basic unlocks all results, score breakdowns, competitor weaknesses, demand signal charts, and the Best Seller gap indicator.
@@ -1335,7 +1361,7 @@ function WhiteSpaceFinderContent() {
                     </CardHeader>
                     <CardContent>
                       <div className="relative">
-                        <div className="space-y-2.5 opacity-20 blur-sm pointer-events-none select-none">
+                        <div className="space-y-2.5 opacity-60 blur-[3px] pointer-events-none select-none">
                           {[70, 85, 55, 90, 60].map((s, i) => (
                             <div key={i} className="flex items-center gap-2.5">
                               <div className="h-3 bg-slate-200 dark:bg-slate-800 rounded w-24 shrink-0" />
