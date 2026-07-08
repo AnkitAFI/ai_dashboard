@@ -1149,18 +1149,32 @@ def scan_white_spaces(
 
     cfg = _get_tier_config(tier)
     
+    if scans_used >= cfg["scans_limit"]:
+        raise HTTPException(status_code=429, detail="Monthly scan limit reached. Upgrade for more scans.")
+
     # ⚡ Redis Cache Check
     cache_key_raw = f"white_space:scan:{req.query}:{req.category}:{req.platform}:{tier}"
     cache_key = f"white_space:scan:{hashlib.md5(cache_key_raw.encode()).hexdigest()}"
     try:
         cached = r.get(cache_key)
         if cached:
-            return json.loads(cached)
+            parsed_cache = json.loads(cached)
+            # ── Record scan even on cache hit ──
+            if user_id:
+                try:
+                    db.execute(
+                        text("""
+                            INSERT INTO white_space_scans (user_id, query, tier, results_count)
+                            VALUES (:uid, :q, :t, :rc)
+                        """),
+                        {"uid": user_id, "q": req.query, "t": tier, "rc": parsed_cache.get("total_found", 0)},
+                    )
+                    db.commit()
+                except Exception:
+                    pass
+            return parsed_cache
     except Exception as e:
         logger.warning(f"Redis error (get): {e}")
-
-    if scans_used >= cfg["scans_limit"]:
-        raise HTTPException(status_code=429, detail="Monthly scan limit reached. Upgrade for more scans.")
 
     params = {
         "query": req.query if req.query else None,

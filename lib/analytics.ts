@@ -82,23 +82,14 @@ class InHouseAnalytics {
     const url = `${API_BASE_URL}/api/behavior-tracking/batch`;
     const payload = JSON.stringify({ events: batch });
 
-    if (typeof navigator !== "undefined" && navigator.sendBeacon) {
-      const blob = new Blob([payload], { type: "application/json" });
-      const success = navigator.sendBeacon(url, blob);
-      if (!success) {
-        this.fallbackFetch(url, payload);
-      }
-    } else {
-      this.fallbackFetch(url, payload);
-    }
-  }
-
-  private fallbackFetch(url: string, payload: string) {
+    // Use fetch with keepalive and credentials to ensure auth cookies are sent
+    // (navigator.sendBeacon often strips cross-origin credentials)
     fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: payload,
       keepalive: true,
+      credentials: "include",
     }).catch((err) => console.error("In-house tracking failed", err));
   }
 }
