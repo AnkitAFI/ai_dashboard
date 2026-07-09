@@ -73,7 +73,8 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "20 AI chat messages/month",
       "15 notifications",
       "AI Chart Summaries",
-      { title: "One-Click Cataloger", detail: "Generate & publish up to 20 SKUs (Top-ups available at ₹75/SKU)" },
+      // Temporarily hidden until API keys are secured
+      // { title: "One-Click Cataloger", detail: "Generate & publish up to 20 SKUs (Top-ups available at ₹75/SKU)" },
       "Daily reports",
       "Basic competitor alerts",
       "Email support",
@@ -94,7 +95,8 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "Unlimited AI chat",
       "Unlimited notifications",
       "Advanced AI chatbot",
-      { title: "One-Click Cataloger", detail: "Generate & publish up to 3,000 SKUs (Top-ups available at ₹50/SKU)" },
+      // Temporarily hidden until API keys are secured
+      // { title: "One-Click Cataloger", detail: "Generate & publish up to 3,000 SKUs (Top-ups available at ₹50/SKU)" },
       "Real-time data & alerts",
       "Priority support",
       "Advanced analytics",
