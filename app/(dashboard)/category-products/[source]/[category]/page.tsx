@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { API_BASE_URL } from "@/lib/config";
 import { useRouter, useParams } from "next/navigation";
 
@@ -12,9 +12,10 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { ChevronLeft, Star, Menu } from "lucide-react";
+import { ChevronLeft, Star, Menu, Search, X } from "lucide-react";
 import { useSidebar } from "@/components/layout/sidebar-context";
-import { getCategoryIconComponent } from "@/lib/utils";
+import { getCategoryIconComponent, cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
 
 interface Product {
   product_name: string;
@@ -31,6 +32,7 @@ export default function CategoryProducts() {
   const source = params?.source;
   const category = params?.category;
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
 
   const CategoryIcon = getCategoryIconComponent(
     decodeURIComponent((category as string) || "")
@@ -42,10 +44,24 @@ export default function CategoryProducts() {
   const [error, setError] = useState("");
   const [page, setPage] = useState(1);
   const [fromDashboard, setFromDashboard] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [totalCount, setTotalCount] = useState(0);
   const limit = 12;
+
+  // Debounce searchQuery by 400ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   // ✅ Check if coming from dashboard
   useEffect(() => {
+    setMounted(true);
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
       const fromParam = urlParams.get("from");
@@ -70,11 +86,13 @@ export default function CategoryProducts() {
     const decodedCategory = decodeURIComponent((category as string).trim());
     setLoading(true);
 
+    const searchParam = debouncedSearch ? `&search=${encodeURIComponent(debouncedSearch)}` : "";
+
     axios
       .get(
         `${API_BASE_URL}/category/products/${encodeURIComponent(
           decodedCategory
-        )}?source=${source}&limit=${limit}&offset=${(page - 1) * limit}`
+        )}?source=${source}&limit=${limit}&offset=${(page - 1) * limit}${searchParam}`
       )
       .then((res) => {
         if (Array.isArray(res.data.products)) {
@@ -82,10 +100,13 @@ export default function CategoryProducts() {
         } else {
           setProducts([]);
         }
+        if (typeof res.data.total_count === "number") {
+          setTotalCount(res.data.total_count);
+        }
       })
       .catch(() => setError("Failed to fetch products"))
       .finally(() => setLoading(false));
-  }, [source, category, page]);
+  }, [source, category, page, debouncedSearch]);
 
   const handleBackClick = () => {
     console.log("=== BACK BUTTON CLICKED ===");
@@ -108,10 +129,19 @@ export default function CategoryProducts() {
     console.log("===========================");
   };
 
+  const isDark = mounted && resolvedTheme === "dark";
+  const totalPages = Math.max(1, Math.ceil(totalCount / limit));
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setDebouncedSearch("");
+    setPage(1);
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Sticky Header */}
-      <header className="bg-background border border-sky-100 shadow-lg rounded-2xl px-6 py-4 sm:py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sticky top-0 z-20">
+      <header className="bg-background border border-sky-100 shadow-lg rounded-2xl px-6 py-3 sm:py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sticky top-0 z-20">
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <button onClick={toggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100 transition-colors">
             <Menu className="w-5 h-5 text-sky-900" />
@@ -134,16 +164,49 @@ export default function CategoryProducts() {
       </header>
 
       {/* Hero Section */}
-      <div className="text-center space-y-4 pt-4">
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-2xl mb-2 shadow-inner">
-          <CategoryIcon className="h-8 w-8 text-blue-500" />
+      <div className="text-center space-y-2">
+        <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-xl shadow-inner">
+          <CategoryIcon className="h-6 w-6 text-blue-500" />
         </div>
-        <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+        <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
           Products in {decodeURIComponent((category as string) || "")}
         </h1>
-        <p className="text-base sm:text-lg text-slate-500 max-w-2xl mx-auto">
+        <p className="text-sm text-slate-500 max-w-2xl mx-auto">
           Browse {source} products with ratings, reviews, and prices.
         </p>
+      </div>
+
+      {/* Search Bar Panel */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+        <div className="relative w-full sm:w-80">
+          <input
+            type="text"
+            placeholder="Search products in this category..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={cn(
+              "w-full pl-10 pr-10 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all font-medium",
+              isDark 
+                ? "border-slate-800 bg-slate-900 text-slate-100 placeholder:text-slate-500" 
+                : "border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 shadow-sm"
+            )}
+          />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={handleClearSearch}
+              className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+        {debouncedSearch && (
+          <div className={cn("text-sm font-medium", isDark ? "text-slate-400" : "text-slate-500")}>
+            Showing results for &ldquo;<span className="font-semibold text-slate-700 dark:text-slate-200">{debouncedSearch}</span>&rdquo;
+          </div>
+        )}
       </div>
 
       {/* Loading & Error */}
@@ -154,23 +217,44 @@ export default function CategoryProducts() {
       ) : error ? (
         <div className="text-center text-red-500 py-20 text-lg">{error}</div>
       ) : products.length === 0 ? (
-        <div className="text-center text-slate-500 py-20 text-lg">
-          No products found in this category.
+        <div className={cn(
+          "text-center py-20 border rounded-2xl border-dashed",
+          isDark ? "border-slate-800 text-slate-500" : "border-slate-200 text-slate-450"
+        )}>
+          <Search className="h-10 w-10 mx-auto mb-3 opacity-30 text-blue-500" />
+          <p className="text-lg font-semibold text-slate-800 dark:text-slate-200">
+            {debouncedSearch ? "No matching products found" : "No products found in this category"}
+          </p>
+          <p className="text-sm opacity-80 mt-1">
+            {debouncedSearch 
+              ? `We couldn't find any products in this category matching "${debouncedSearch}".`
+              : "There are no products listed in this category."
+            }
+          </p>
+          {debouncedSearch && (
+            <button
+              type="button"
+              onClick={handleClearSearch}
+              className="mt-5 px-5 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-sm font-semibold rounded-xl hover:from-blue-600 hover:to-cyan-600 transition shadow-md"
+            >
+              Clear Search Query
+            </button>
+          )}
         </div>
       ) : (
         <>
           {/* Product Table */}
           <Card className="bg-card border border-slate-200 rounded-2xl shadow-md overflow-hidden">
-            <CardHeader>
-              <CardTitle className="text-xl font-semibold text-slate-800">
+            <CardHeader className="py-3 px-4 border-b border-slate-100">
+              <CardTitle className="text-lg font-semibold text-slate-800">
                 Product List
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs">
                 Showing products for {decodeURIComponent((category as string) || "")}
               </CardDescription>
             </CardHeader>
 
-            <CardContent className="overflow-x-auto">
+            <CardContent className="overflow-x-auto p-0">
               <table className="min-w-full text-sm border-collapse">
                 <thead>
                   <tr className="bg-gradient-to-r from-blue-50 to-cyan-50 text-slate-700 border-b">
@@ -238,10 +322,13 @@ export default function CategoryProducts() {
             >
               Previous
             </button>
-            <span className="font-medium text-slate-700">Page {page}</span>
+            <span className="font-medium text-slate-700 dark:text-slate-300">
+              Page {page} of {totalPages}
+            </span>
             <button
               onClick={() => setPage((p) => p + 1)}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+              disabled={page >= totalPages}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               Next
             </button>

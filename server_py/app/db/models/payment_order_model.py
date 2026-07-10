@@ -6,7 +6,7 @@ class PaymentOrder(Base):
     __tablename__ = "payment_orders"
 
     id                  = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id             = Column(Integer, ForeignKey("users_auth.id"), nullable=False, index=True)
+    user_id             = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
 
     plan_id             = Column(String(50),  nullable=False)
     amount              = Column(Integer,     nullable=False)

@@ -3062,12 +3062,24 @@ def get_category_products(
     source: str,  # must be 'amazon' or 'flipkart'
     limit: Optional[int] = None,
     offset: int = 0,
+    search: Optional[str] = Query(None, description="Search products by title"),
     db: Session = Depends(get_db)
 ):
     category_name = category_name.strip().lower()
 
+    search_clause = ""
+    query_params = {
+        "category_name": category_name,
+        "limit": limit,
+        "offset": offset
+    }
+
+    if search:
+        search_clause = "AND LOWER(product_title) LIKE LOWER(:search_query)"
+        query_params["search_query"] = f"%{search.strip().lower()}%"
+
     # ✅ Flipkart Query (using rapidapi_flipkart_products)
-    flipkart_query = """
+    flipkart_query = f"""
         SELECT 
             product_title AS product_name,
             ROUND(AVG(product_price), 2) AS avg_price,
@@ -3078,6 +3090,7 @@ def get_category_products(
             'Flipkart' AS source
         FROM rapidapi_flipkart_products
         WHERE LOWER(category_name) = LOWER(:category_name)
+          {search_clause}
           AND product_title IS NOT NULL
           AND product_star_rating IS NOT NULL
           AND product_review_count IS NOT NULL
@@ -3087,7 +3100,7 @@ def get_category_products(
     """
 
     # ✅ Amazon Query (uses your real min_price and max_price columns)
-    amazon_query = """
+    amazon_query = f"""
         SELECT 
             product_title AS product_name,
             ROUND(AVG(product_price_numeric)::numeric, 2) AS avg_price,
@@ -3098,6 +3111,7 @@ def get_category_products(
             'Amazon' AS source
         FROM rapidapi_amazon_products
         WHERE LOWER(category_name) = LOWER(:category_name)
+          {search_clause}
           AND product_title IS NOT NULL
           AND min_price IS NOT NULL
           AND max_price IS NOT NULL
@@ -3111,8 +3125,34 @@ def get_category_products(
     # ✅ Select Query based on Source
     if source.lower() == "flipkart":
         query = flipkart_query
+        count_query = f"""
+            SELECT COUNT(*) AS total FROM (
+                SELECT product_title
+                FROM rapidapi_flipkart_products
+                WHERE LOWER(category_name) = LOWER(:category_name)
+                  {search_clause}
+                  AND product_title IS NOT NULL
+                  AND product_star_rating IS NOT NULL
+                  AND product_review_count IS NOT NULL
+                GROUP BY product_title
+            ) sub
+        """
     elif source.lower() == "amazon":
         query = amazon_query
+        count_query = f"""
+            SELECT COUNT(*) AS total FROM (
+                SELECT product_title
+                FROM rapidapi_amazon_products
+                WHERE LOWER(category_name) = LOWER(:category_name)
+                  {search_clause}
+                  AND product_title IS NOT NULL
+                  AND min_price IS NOT NULL
+                  AND max_price IS NOT NULL
+                  AND product_star_rating_numeric IS NOT NULL
+                  AND product_num_ratings IS NOT NULL
+                GROUP BY product_title
+            ) sub
+        """
     else:
         raise HTTPException(
             status_code=400,
@@ -3123,8 +3163,15 @@ def get_category_products(
     try:
         rows = db.execute(
             text(query),
-            {"category_name": category_name, "limit": limit, "offset": offset}
+            query_params
         ).fetchall()
+
+        # Count query uses only category_name (and search_query if present), no limit/offset
+        count_params = {"category_name": category_name}
+        if search and "search_query" in query_params:
+            count_params["search_query"] = query_params["search_query"]
+        count_row = db.execute(text(count_query), count_params).fetchone()
+        total_count = count_row._mapping["total"] if count_row else 0
     except Exception as e:
         print(f"❌ SQL Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
@@ -3136,6 +3183,7 @@ def get_category_products(
         "category": category_name,
         "source": source,
         "total_products": len(products),
+        "total_count": total_count,
         "products": products
     }
 
