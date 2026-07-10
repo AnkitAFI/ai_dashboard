@@ -5,7 +5,7 @@ import axios from "axios";
 import { API_BASE_URL } from "@/lib/config";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, IndianRupee, ArrowUpDown, TrendingUp } from "lucide-react";
+import { Star, IndianRupee, ArrowUpDown, TrendingUp, Search, X } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +44,17 @@ export default function Sales() {
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce searchQuery by 400ms
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setCurrentPage(1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   useEffect(() => {
     setMounted(true);
@@ -104,7 +115,13 @@ export default function Sales() {
     }
   };
 
-  const sortedProducts = [...products].sort((a, b) => {
+  const filteredProducts = products.filter((p) => {
+    if (!debouncedSearch) return true;
+    const title = (p.title || p.product_title || "").toLowerCase();
+    return title.includes(debouncedSearch.toLowerCase());
+  });
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
     const factor = sortOrder === "asc" ? 1 : -1;
     return (getFieldValue(a, sortField) - getFieldValue(b, sortField)) * factor;
   });
@@ -162,9 +179,17 @@ export default function Sales() {
     );
 
   return (
-    <div className="space-y-8">
-      {/* Filters/Source Select */}
-      <div className="flex justify-end">
+    <div className="space-y-5">
+      {/* Header & Source Select */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
+        <div className="text-left space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+            Product Performance Overview ({source})
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm">
+            Analyze and sort by sales, reviews, price, or rating for data-driven decisions.
+          </p>
+        </div>
         <select
           value={source}
           onChange={(e) => setSource(e.target.value as "flipkart" | "amazon")}
@@ -182,53 +207,71 @@ export default function Sales() {
         </select>
       </div>
 
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-          Product Performance Overview ({source})
-        </h1>
-        <p className="text-slate-500 dark:text-slate-400 text-lg">
-          Analyze and sort by sales, reviews, price, or rating for data-driven decisions.
-        </p>
-      </div>
-
-      <div className="flex justify-end gap-3 flex-wrap">
-        {["sales", "reviews", "price", "rating"].map((field) => (
-          <Button
-            key={field}
-            variant={sortField === field ? "default" : "outline"}
+      {/* Search Bar & Sort Filters */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+        <div className="relative w-full sm:w-80">
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className={cn(
-              "flex items-center gap-2",
-              sortField === field
-                ? "bg-blue-500 text-white hover:bg-blue-600"
-                : isDark
-                  ? "text-slate-300 border-slate-700 hover:bg-slate-800"
-                  : "text-slate-700 border-slate-300 hover:bg-slate-100"
+              "w-full pl-10 pr-10 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all font-medium",
+              isDark 
+                ? "border-slate-800 bg-slate-900 text-slate-100 placeholder:text-slate-500" 
+                : "border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 shadow-sm"
             )}
-            onClick={() => toggleSort(field as "reviews" | "price" | "rating" | "sales")}
-            data-track-id="sales_sort_btn"
-            data-filter-value={field}
-            disabled={loading}
-          >
-            <ArrowUpDown className="w-4 h-4" />
-            {field.charAt(0).toUpperCase() + field.slice(1)}
-            {sortField === field ? ` (${sortOrder === "asc" ? "↑" : "↓"})` : ""}
-          </Button>
-        ))}
+          />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => { setSearchQuery(""); setDebouncedSearch(""); setCurrentPage(1); }}
+              className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+        <div className="flex justify-end gap-3 flex-wrap">
+          {["sales", "reviews", "price", "rating"].map((field) => (
+            <Button
+              key={field}
+              variant={sortField === field ? "default" : "outline"}
+              className={cn(
+                "flex items-center gap-2",
+                sortField === field
+                  ? "bg-blue-500 text-white hover:bg-blue-600"
+                  : isDark
+                    ? "text-slate-300 border-slate-700 hover:bg-slate-800"
+                    : "text-slate-700 border-slate-300 hover:bg-slate-100"
+              )}
+              onClick={() => toggleSort(field as "reviews" | "price" | "rating" | "sales")}
+              data-track-id="sales_sort_btn"
+              data-filter-value={field}
+              disabled={loading}
+            >
+              <ArrowUpDown className="w-4 h-4" />
+              {field.charAt(0).toUpperCase() + field.slice(1)}
+              {sortField === field ? ` (${sortOrder === "asc" ? "↑" : "↓"})` : ""}
+            </Button>
+          ))}
+        </div>
       </div>
 
       <Card className={cn(
         "shadow-sm rounded-2xl overflow-hidden border",
         isDark ? "bg-slate-900/40 border-slate-800" : "bg-white border-slate-200"
       )}>
-        <CardHeader>
-          <CardTitle className={cn("text-lg font-semibold", isDark ? "text-slate-200" : "text-slate-700")}>
+        <CardHeader className="py-3 px-4 border-b border-slate-100 dark:border-slate-800">
+          <CardTitle className={cn("text-base font-semibold", isDark ? "text-slate-200" : "text-slate-700")}>
             Showing Page {currentPage} of {totalPages} — Sorted by{" "}
             {sortField.charAt(0).toUpperCase() + sortField.slice(1)}{" "}
             ({sortOrder === "asc" ? "Low → High" : "High → Low"})
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="overflow-x-auto">
+        <CardContent className="overflow-x-auto p-0">
           <table className={cn("w-full text-sm", isDark ? "text-slate-300" : "text-slate-700")}>
             <thead className={cn(
               "uppercase text-xs font-semibold",
