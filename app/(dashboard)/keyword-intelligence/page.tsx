@@ -3,7 +3,11 @@
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { API_BASE_URL } from "@/lib/config";
 import {
-  Card, CardContent, CardDescription, CardHeader, CardTitle,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,20 +15,50 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/lib/auth-context";
-import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
+import {
+  useSubscriptionLimits,
+  UNLIMITED,
+} from "@/hooks/use-subscription-limits";
 import { useKIUsage } from "@/hooks/use-ki-usage";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
-  Loader2, X, TrendingUp, TrendingDown, Minus,
-  Plus, Trash2, RefreshCw, BarChart3, Target, Crown,
-  Lock, CheckCircle2, XCircle, ChevronDown, ChevronUp,
-  Lightbulb, ShoppingBag, AlertCircle, Search,
-  ArrowUp, ArrowDown, Activity, Bot, Sparkles, Compass,
-  MapPin, ArrowUpRight, Info,
+  Loader2,
+  X,
+  TrendingUp,
+  TrendingDown,
+  Minus,
+  Plus,
+  Trash2,
+  RefreshCw,
+  BarChart3,
+  Target,
+  Crown,
+  Lock,
+  CheckCircle2,
+  XCircle,
+  ChevronDown,
+  ChevronUp,
+  Lightbulb,
+  ShoppingBag,
+  AlertCircle,
+  Search,
+  ArrowUp,
+  ArrowDown,
+  Activity,
+  Bot,
+  Sparkles,
+  Compass,
+  MapPin,
+  ArrowUpRight,
+  Info,
 } from "lucide-react";
 import {
   ResponsiveContainer,
@@ -148,7 +182,11 @@ interface TrackedProduct {
 }
 
 interface KeywordExplorerProps {
-  showToast: (title: string, description: string, variant?: "success" | "error") => void;
+  showToast: (
+    title: string,
+    description: string,
+    variant?: "success" | "error",
+  ) => void;
   trackedProducts: TrackedProduct[];
   onKeywordAdded: () => void;
   userTier?: string;
@@ -158,24 +196,38 @@ const API = `${API_BASE_URL}/api/keyword-tracker`;
 
 // ── Subscription Tier Gate ────────────────────────────────────────────────────
 
-function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
+function TierGate({
+  tier,
+  feature,
+}: {
+  tier: "basic" | "premium";
+  feature: string;
+}) {
   const router = useRouter();
   return (
     <div className="absolute inset-0 bg-background/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
-      <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? "bg-blue-50 dark:bg-blue-950/40" : "bg-amber-50 dark:bg-amber-950/40"}`}>
-        <Lock className={`w-6 h-6 ${tier === "premium" ? "text-blue-500 dark:text-blue-400" : "text-amber-500 dark:text-amber-400"}`} />
+      <div
+        className={`w-12 h-12 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? "bg-blue-50 dark:bg-blue-950/40" : "bg-amber-50 dark:bg-amber-950/40"}`}
+      >
+        <Lock
+          className={`w-6 h-6 ${tier === "premium" ? "text-blue-500 dark:text-blue-400" : "text-amber-500 dark:text-amber-400"}`}
+        />
       </div>
       <div className="text-center px-6">
-        <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">{feature} is locked</p>
-        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{tier === "premium" ? "Available on Premium · ₹2,999/mo" : "Available on Basic · ₹1,999/mo"}</p>
+        <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">
+          {feature} is locked
+        </p>
+        {/* <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{tier === "premium" ? "Available on Premium · ₹2,999/mo" : "Available on Basic · ₹1,999/mo"}</p> */}
       </div>
       <button
         onClick={() => router.push("/subscription")}
         className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold text-white shadow-md transition-all hover:scale-105 ${
-          tier === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-amber-500 to-orange-500"
+          tier === "premium"
+            ? "bg-gradient-to-r from-blue-500 to-cyan-500"
+            : "bg-gradient-to-r from-amber-500 to-orange-500"
         }`}
       >
-        <Crown className="w-4 h-4" /> Upgrade to {tier === "premium" ? "Premium" : "Basic"}
+        <Crown className="w-4 h-4" /> Unlock Full Access
       </button>
     </div>
   );
@@ -183,7 +235,13 @@ function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: strin
 
 // ── AI Insight Card ───────────────────────────────────────────────────────────
 
-function AIInsightCard({ insight, label = "AI Insight" }: { insight: string; label?: string }) {
+function AIInsightCard({
+  insight,
+  label = "AI Insight",
+}: {
+  insight: string;
+  label?: string;
+}) {
   return (
     <div className="flex gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/20 dark:to-indigo-950/20 border border-purple-200 dark:border-purple-900/40 rounded-xl">
       <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg flex items-center justify-center">
@@ -191,9 +249,12 @@ function AIInsightCard({ insight, label = "AI Insight" }: { insight: string; lab
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider mb-1 flex items-center gap-1">
-          <Sparkles className="h-3 w-3" />{label}
+          <Sparkles className="h-3 w-3" />
+          {label}
         </p>
-        <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{insight}</p>
+        <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+          {insight}
+        </p>
       </div>
     </div>
   );
@@ -201,7 +262,13 @@ function AIInsightCard({ insight, label = "AI Insight" }: { insight: string; lab
 
 // ── Small components ──────────────────────────────────────────────────────────
 
-function RankBadge({ rank, change }: { rank: number | null; change: number | null }) {
+function RankBadge({
+  rank,
+  change,
+}: {
+  rank: number | null;
+  change: number | null;
+}) {
   if (rank === null) {
     return (
       <span className="inline-flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500 bg-slate-100 dark:bg-slate-800/50 px-2 py-1 rounded-full">
@@ -212,11 +279,21 @@ function RankBadge({ rank, change }: { rank: number | null; change: number | nul
   const page = Math.ceil(rank / 10);
   return (
     <div className="flex flex-col items-end gap-0.5">
-      <span className="font-bold text-slate-800 dark:text-slate-200 text-sm">#{rank}</span>
-      <span className="text-[10px] text-slate-400 dark:text-slate-500">Page {page}</span>
+      <span className="font-bold text-slate-800 dark:text-slate-200 text-sm">
+        #{rank}
+      </span>
+      <span className="text-[10px] text-slate-400 dark:text-slate-500">
+        Page {page}
+      </span>
       {change !== null && change !== 0 && (
-        <span className={`flex items-center gap-0.5 text-[10px] font-semibold ${change > 0 ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}`}>
-          {change > 0 ? <ArrowUp className="h-2.5 w-2.5" /> : <ArrowDown className="h-2.5 w-2.5" />}
+        <span
+          className={`flex items-center gap-0.5 text-[10px] font-semibold ${change > 0 ? "text-green-600 dark:text-green-400" : "text-red-500 dark:text-red-400"}`}
+        >
+          {change > 0 ? (
+            <ArrowUp className="h-2.5 w-2.5" />
+          ) : (
+            <ArrowDown className="h-2.5 w-2.5" />
+          )}
           {Math.abs(change)}
         </span>
       )}
@@ -225,26 +302,41 @@ function RankBadge({ rank, change }: { rank: number | null; change: number | nul
 }
 
 function MiniSparkline({ history }: { history: RankPoint[] }) {
-  if (history.length < 2) return <span className="text-xs text-slate-400">No chart yet</span>;
-  const ranks = history.map(h => h.rank ?? 0).filter(r => r > 0);
+  if (history.length < 2)
+    return <span className="text-xs text-slate-400">No chart yet</span>;
+  const ranks = history.map((h) => h.rank ?? 0).filter((r) => r > 0);
   if (!ranks.length) return null;
   const maxR = Math.max(...ranks);
   const range = maxR - Math.min(...ranks) || 1;
-  const W = 120, H = 36;
-  const pts = ranks.map((r, i) => {
-    const x = (i / (ranks.length - 1)) * W;
-    const y = H - ((maxR - r) / range) * (H - 4) - 2;
-    return `${x},${y}`;
-  }).join(" ");
+  const W = 120,
+    H = 36;
+  const pts = ranks
+    .map((r, i) => {
+      const x = (i / (ranks.length - 1)) * W;
+      const y = H - ((maxR - r) / range) * (H - 4) - 2;
+      return `${x},${y}`;
+    })
+    .join(" ");
   return (
-    <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} className="overflow-visible">
-      <polyline points={pts} fill="none" stroke="#3b82f6" strokeWidth="1.5" strokeLinejoin="round" />
+    <svg
+      width={W}
+      height={H}
+      viewBox={`0 0 ${W} ${H}`}
+      className="overflow-visible"
+    >
+      <polyline
+        points={pts}
+        fill="none"
+        stroke="#3b82f6"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
       {ranks.map((r, i) => {
         const x = (i / (ranks.length - 1)) * W;
         const y = H - ((maxR - r) / range) * (H - 4) - 2;
-        return i === ranks.length - 1
-          ? <circle key={i} cx={x} cy={y} r="3" fill="#3b82f6" />
-          : null;
+        return i === ranks.length - 1 ? (
+          <circle key={i} cx={x} cy={y} r="3" fill="#3b82f6" />
+        ) : null;
       })}
     </svg>
   );
@@ -252,15 +344,21 @@ function MiniSparkline({ history }: { history: RankPoint[] }) {
 
 // ── History modal ─────────────────────────────────────────────────────────────
 
-function HistoryModal({ kw, onClose }: { kw: KeywordOut; onClose: () => void }) {
+function HistoryModal({
+  kw,
+  onClose,
+}: {
+  kw: KeywordOut;
+  onClose: () => void;
+}) {
   const [data, setData] = useState<KeywordHistory | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     fetch(`${API}/keywords/${kw.id}/history`, { credentials: "include" })
-      .then(r => r.json())
-      .then(d => {
+      .then((r) => r.json())
+      .then((d) => {
         if (d.detail?.error_code) setError(d.detail.message);
         else setData(d);
       })
@@ -273,10 +371,17 @@ function HistoryModal({ kw, onClose }: { kw: KeywordOut; onClose: () => void }) 
       <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full p-6 shadow-2xl max-h-[85vh] overflow-y-auto border border-slate-200 dark:border-slate-800">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="font-semibold text-slate-800 dark:text-slate-200">{kw.keyword}</p>
-            <p className="text-xs text-slate-400 dark:text-slate-500">{kw.asin_or_pid} · {kw.platform}</p>
+            <p className="font-semibold text-slate-800 dark:text-slate-200">
+              {kw.keyword}
+            </p>
+            <p className="text-xs text-slate-400 dark:text-slate-500">
+              {kw.asin_or_pid} · {kw.platform}
+            </p>
           </div>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-300">
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -290,7 +395,9 @@ function HistoryModal({ kw, onClose }: { kw: KeywordOut; onClose: () => void }) 
         {error && (
           <Alert className="border-orange-200 bg-orange-50 dark:bg-orange-950/20 dark:border-orange-900/40">
             <Lock className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-            <AlertDescription className="text-orange-800 dark:text-orange-300 text-sm">{error}</AlertDescription>
+            <AlertDescription className="text-orange-800 dark:text-orange-300 text-sm">
+              {error}
+            </AlertDescription>
           </Alert>
         )}
 
@@ -302,7 +409,10 @@ function HistoryModal({ kw, onClose }: { kw: KeywordOut; onClose: () => void }) 
 
             {data.ai_trend_analysis && (
               <div className="mb-4">
-                <AIInsightCard insight={data.ai_trend_analysis} label="AI Trend Analysis" />
+                <AIInsightCard
+                  insight={data.ai_trend_analysis}
+                  label="AI Trend Analysis"
+                />
               </div>
             )}
 
@@ -313,10 +423,16 @@ function HistoryModal({ kw, onClose }: { kw: KeywordOut; onClose: () => void }) 
                 </p>
               )}
               {[...data.history].reverse().map((h, i) => (
-                <div key={i} className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800 last:border-0">
+                <div
+                  key={i}
+                  className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800 last:border-0"
+                >
                   <span className="text-xs text-slate-500 dark:text-slate-400">
                     {new Date(h.checked_at).toLocaleString("en-IN", {
-                      day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit",
+                      day: "2-digit",
+                      month: "short",
+                      hour: "2-digit",
+                      minute: "2-digit",
                     })}
                   </span>
                   <RankBadge rank={h.rank} change={null} />
@@ -340,18 +456,21 @@ function DifficultyGauge({ value }: { value: number }) {
   const strokeDashoffset = circumference - (value / 100) * circumference;
 
   let strokeColor = "stroke-green-500 dark:stroke-green-400";
-  let bgClass = "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800/40";
+  let bgClass =
+    "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800/40";
   let label = "Easy";
   let desc = "Low organic barrier. Highly actionable to rank on page 1.";
 
   if (value >= 60) {
     strokeColor = "stroke-rose-500 dark:stroke-rose-400";
-    bgClass = "bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800/40";
+    bgClass =
+      "bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 border-rose-200 dark:border-rose-800/40";
     label = "Hard";
     desc = "High brand concentration. Needs significant reviews to compete.";
   } else if (value >= 30) {
     strokeColor = "stroke-amber-500 dark:stroke-amber-400";
-    bgClass = "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/40";
+    bgClass =
+      "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/40";
     label = "Medium";
     desc = "Moderate listings authority. Possible with solid optimizations.";
   }
@@ -359,7 +478,11 @@ function DifficultyGauge({ value }: { value: number }) {
   return (
     <div className="flex items-center gap-4">
       <div className="relative flex items-center justify-center flex-shrink-0">
-        <svg height={radius * 2} width={radius * 2} className="transform -rotate-90">
+        <svg
+          height={radius * 2}
+          width={radius * 2}
+          className="transform -rotate-90"
+        >
           <circle
             stroke="#f1f5f9"
             fill="transparent"
@@ -372,7 +495,7 @@ function DifficultyGauge({ value }: { value: number }) {
             className={`transition-all duration-700 ease-out ${strokeColor}`}
             fill="transparent"
             strokeWidth={stroke}
-            strokeDasharray={circumference + ' ' + circumference}
+            strokeDasharray={circumference + " " + circumference}
             style={{ strokeDashoffset }}
             r={normalizedRadius}
             cx={radius}
@@ -380,36 +503,47 @@ function DifficultyGauge({ value }: { value: number }) {
             strokeLinecap="round"
           />
         </svg>
-        <span className="absolute text-sm font-extrabold text-slate-800 dark:text-slate-200">{value}%</span>
+        <span className="absolute text-sm font-extrabold text-slate-800 dark:text-slate-200">
+          {value}%
+        </span>
       </div>
       <div>
-        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold border ${bgClass}`}>
+        <span
+          className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold border ${bgClass}`}
+        >
           {label}
         </span>
-        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{desc}</p>
+        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+          {desc}
+        </p>
       </div>
     </div>
   );
 }
 
 function IntentBadge({ intent }: { intent: string }) {
-  let badgeClass = "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800/40";
+  let badgeClass =
+    "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800/40";
   let label = "Researching (Informational)";
   let desc = "Buyer is seeking product details, specs, or guides.";
 
   if (intent === "Transactional") {
-    badgeClass = "bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-800/40";
+    badgeClass =
+      "bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-800/40";
     label = "Ready to Buy (Transactional)";
     desc = "Highest purchase intent. Buyer is looking to buy immediately.";
   } else if (intent === "Commercial") {
-    badgeClass = "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40";
+    badgeClass =
+      "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40";
     label = "Comparing Brands (Commercial)";
     desc = "Buyer is comparing prices, reviews, and features.";
   }
 
   return (
     <div>
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold border ${badgeClass}`}>
+      <span
+        className={`inline-flex items-center px-2.5 py-0.5 rounded text-xs font-bold border ${badgeClass}`}
+      >
         {label}
       </span>
       <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">{desc}</p>
@@ -431,7 +565,11 @@ function QuickTrackModal({
   platform: string;
   trackedProducts: TrackedProduct[];
   onClose: () => void;
-  showToast: (title: string, description: string, variant?: "success" | "error") => void;
+  showToast: (
+    title: string,
+    description: string,
+    variant?: "success" | "error",
+  ) => void;
   onKeywordAdded: () => void;
 }) {
   const [useExisting, setUseExisting] = useState(trackedProducts.length > 0);
@@ -458,7 +596,11 @@ function QuickTrackModal({
   const handleTrack = async () => {
     const finalPid = useExisting ? selectedPid : pidInput.trim();
     if (!finalPid) {
-      showToast("Required Field", "Please enter or select a product ID / ASIN.", "error");
+      showToast(
+        "Required Field",
+        "Please enter or select a product ID / ASIN.",
+        "error",
+      );
       return;
     }
 
@@ -478,11 +620,18 @@ function QuickTrackModal({
 
       const data = await res.json();
       if (res.ok) {
-        showToast("Success", `Now tracking keyword "${keyword}" for ${finalPid}`);
+        showToast(
+          "Success",
+          `Now tracking keyword "${keyword}" for ${finalPid}`,
+        );
         onKeywordAdded();
         onClose();
       } else {
-        showToast("Error", data.detail?.message ?? "Failed to track keyword", "error");
+        showToast(
+          "Error",
+          data.detail?.message ?? "Failed to track keyword",
+          "error",
+        );
       }
     } catch {
       showToast("Network Error", "Unable to connect to service.", "error");
@@ -491,7 +640,9 @@ function QuickTrackModal({
     }
   };
 
-  const platformMatchedProducts = trackedProducts.filter((p) => p.platform === platform);
+  const platformMatchedProducts = trackedProducts.filter(
+    (p) => p.platform === platform,
+  );
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
@@ -509,7 +660,12 @@ function QuickTrackModal({
           Track Keyword
         </h3>
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-          Add <strong className="text-slate-700 dark:text-slate-300">"{keyword}"</strong> on {platform === "amazon" ? "Amazon" : "Flipkart"} to your dashboard rankings.
+          Add{" "}
+          <strong className="text-slate-700 dark:text-slate-300">
+            "{keyword}"
+          </strong>{" "}
+          on {platform === "amazon" ? "Amazon" : "Flipkart"} to your dashboard
+          rankings.
         </p>
 
         <div className="space-y-4">
@@ -542,13 +698,17 @@ function QuickTrackModal({
             <div className="space-y-2">
               <Label>Select Product</Label>
               <Select value={selectedPid} onValueChange={setSelectedPid}>
-                <SelectTrigger data-track-id="track_selected_product_select" data-filter-value={selectedPid}>
+                <SelectTrigger
+                  data-track-id="track_selected_product_select"
+                  data-filter-value={selectedPid}
+                >
                   <SelectValue placeholder="Choose target product" />
                 </SelectTrigger>
                 <SelectContent>
                   {platformMatchedProducts.map((p) => (
                     <SelectItem key={p.asin_or_pid} value={p.asin_or_pid}>
-                      {p.asin_or_pid} ({platform === "amazon" ? "Amazon" : "Flipkart"})
+                      {p.asin_or_pid} (
+                      {platform === "amazon" ? "Amazon" : "Flipkart"})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -560,7 +720,9 @@ function QuickTrackModal({
               <Input
                 value={pidInput}
                 onChange={(e) => setPidInput(e.target.value)}
-                placeholder={platform === "amazon" ? "e.g., B08XYZ" : "e.g., ITMABCDEF"}
+                placeholder={
+                  platform === "amazon" ? "e.g., B08XYZ" : "e.g., ITMABCDEF"
+                }
                 data-track-id="track_pid_input"
               />
             </div>
@@ -569,8 +731,17 @@ function QuickTrackModal({
           <div className="space-y-2">
             <Label>Category (Optional)</Label>
             <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger data-track-id="track_category_select" data-filter-value={category}>
-                <SelectValue placeholder={categories.length === 0 ? "No categories" : "Select category"} />
+              <SelectTrigger
+                data-track-id="track_category_select"
+                data-filter-value={category}
+              >
+                <SelectValue
+                  placeholder={
+                    categories.length === 0
+                      ? "No categories"
+                      : "Select category"
+                  }
+                />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((c) => (
@@ -583,10 +754,21 @@ function QuickTrackModal({
           </div>
 
           <div className="pt-4 flex gap-3">
-            <Button variant="outline" onClick={onClose} className="flex-1 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800" disabled={loading} data-track-id="track_rank_cancel_btn">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="flex-1 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+              disabled={loading}
+              data-track-id="track_rank_cancel_btn"
+            >
               Cancel
             </Button>
-            <Button onClick={handleTrack} className="flex-1 bg-purple-600 hover:bg-purple-700 text-white" disabled={loading} data-track-id="track_rank_submit_btn">
+            <Button
+              onClick={handleTrack}
+              className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+              disabled={loading}
+              data-track-id="track_rank_submit_btn"
+            >
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -614,10 +796,18 @@ function KeywordExplorerPanel({
   const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
   const isDark = mounted && resolvedTheme === "dark";
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // ── Server-side usage tracking ───────────────────────────────────────
-  const { isLocked, isAtLimit, remaining: remainingSearches, limit: searchLimit, incrementUsage } = useKIUsage();
+  const {
+    isLocked,
+    isAtLimit,
+    remaining: remainingSearches,
+    limit: searchLimit,
+    incrementUsage,
+  } = useKIUsage();
   const [keyword, setKeyword] = useState("");
   const [platform, setPlatform] = useState("amazon");
   const [loading, setLoading] = useState(false);
@@ -636,20 +826,60 @@ function KeywordExplorerPanel({
     const zones = [
       {
         name: "South India",
-        states: ["Tamil Nadu", "Karnataka", "Telangana", "Andhra Pradesh", "Kerala", "Puducherry", "Lakshadweep", "Andaman and Nicobar Islands"]
+        states: [
+          "Tamil Nadu",
+          "Karnataka",
+          "Telangana",
+          "Andhra Pradesh",
+          "Kerala",
+          "Puducherry",
+          "Lakshadweep",
+          "Andaman and Nicobar Islands",
+        ],
       },
       {
         name: "North India",
-        states: ["Delhi", "Uttar Pradesh", "Punjab", "Haryana", "Rajasthan", "Uttarakhand", "Himachal Pradesh", "Jammu and Kashmir", "Ladakh", "Chandigarh"]
+        states: [
+          "Delhi",
+          "Uttar Pradesh",
+          "Punjab",
+          "Haryana",
+          "Rajasthan",
+          "Uttarakhand",
+          "Himachal Pradesh",
+          "Jammu and Kashmir",
+          "Ladakh",
+          "Chandigarh",
+        ],
       },
       {
         name: "West India",
-        states: ["Maharashtra", "Gujarat", "Goa", "Madhya Pradesh", "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu"]
+        states: [
+          "Maharashtra",
+          "Gujarat",
+          "Goa",
+          "Madhya Pradesh",
+          "Chhattisgarh",
+          "Dadra and Nagar Haveli and Daman and Diu",
+        ],
       },
       {
         name: "East India",
-        states: ["West Bengal", "Bihar", "Odisha", "Jharkhand", "Assam", "Sikkim", "Arunachal Pradesh", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Tripura"]
-      }
+        states: [
+          "West Bengal",
+          "Bihar",
+          "Odisha",
+          "Jharkhand",
+          "Assam",
+          "Sikkim",
+          "Arunachal Pradesh",
+          "Manipur",
+          "Meghalaya",
+          "Mizoram",
+          "Nagaland",
+          "Tripura",
+        ],
+      },
     ];
 
     const regions = zones.map((zone) => {
@@ -658,7 +888,11 @@ function KeywordExplorerPanel({
         pctSum += data.geo_distribution[state] || 0;
       });
       const volume = Math.round((data.search_volume * pctSum) / 100);
-      return { name: zone.name, percentage: Math.round(pctSum * 10) / 10, volume };
+      return {
+        name: zone.name,
+        percentage: Math.round(pctSum * 10) / 10,
+        volume,
+      };
     });
 
     return regions.sort((a, b) => b.volume - a.volume);
@@ -673,13 +907,15 @@ function KeywordExplorerPanel({
     try {
       const res = await fetch(
         `${API_BASE_URL}/api/keyword-tracker/explorer/strategy?keyword=${encodeURIComponent(searchVal)}&platform=${targetPlatform}`,
-        { credentials: "include" }
+        { credentials: "include" },
       );
       const resJson = await res.json();
       if (res.ok) {
         setStrategyText(resJson.strategy || "");
       } else {
-        setStrategyError(resJson.detail?.message ?? "Error generating strategy");
+        setStrategyError(
+          resJson.detail?.message ?? "Error generating strategy",
+        );
       }
     } catch {
       setStrategyError("Network error. Unable to load strategy.");
@@ -690,15 +926,27 @@ function KeywordExplorerPanel({
 
   const handleSearch = async (overrideKeyword?: string) => {
     if (isLocked) {
-      showToast("Upgrade Required", "Keyword Intelligence requires a Basic or Premium plan.", "error");
+      showToast(
+        "Upgrade Required",
+        "Keyword Intelligence requires a Basic or Premium plan.",
+        "error",
+      );
       return;
     }
     if (isAtLimit) {
-      showToast("Limit Reached", `You've used all ${searchLimit} searches for this month. Upgrade for more.`, "error");
+      showToast(
+        "Limit Reached",
+        `You've used all ${searchLimit} searches for this month. Upgrade for more.`,
+        "error",
+      );
       return;
     }
 
-    const searchVal = (overrideKeyword || keyword || "wireless headphones").trim();
+    const searchVal = (
+      overrideKeyword ||
+      keyword ||
+      "wireless headphones"
+    ).trim();
     if (!searchVal) {
       showToast("Error", "Please enter a search query.", "error");
       return;
@@ -711,7 +959,7 @@ function KeywordExplorerPanel({
     try {
       const res = await fetch(
         `${API_BASE_URL}/api/keyword-tracker/explorer?keyword=${encodeURIComponent(searchVal)}&platform=${platform}`,
-        { credentials: "include" }
+        { credentials: "include" },
       );
       const resJson = await res.json();
       if (res.ok) {
@@ -721,10 +969,18 @@ function KeywordExplorerPanel({
         await incrementUsage();
         fetchStrategy(searchVal, platform);
       } else {
-        showToast("Search failed", resJson.detail?.message ?? "Error exploring keyword", "error");
+        showToast(
+          "Search failed",
+          resJson.detail?.message ?? "Error exploring keyword",
+          "error",
+        );
       }
     } catch {
-      showToast("Network Error", "Could not query details from server.", "error");
+      showToast(
+        "Network Error",
+        "Could not query details from server.",
+        "error",
+      );
     } finally {
       setLoading(false);
     }
@@ -748,13 +1004,15 @@ function KeywordExplorerPanel({
           {/* Usage counter badge */}
           {!isLocked && remainingSearches !== null && (
             <div className="flex justify-end mb-3">
-              <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${
-                remainingSearches === 0
-                  ? "bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/40"
-                  : remainingSearches <= 1
-                  ? "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/40"
-                  : "bg-purple-50 text-purple-600 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800/40"
-              }`}>
+              <span
+                className={`text-xs font-semibold px-3 py-1 rounded-full border ${
+                  remainingSearches === 0
+                    ? "bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/40"
+                    : remainingSearches <= 1
+                      ? "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/40"
+                      : "bg-purple-50 text-purple-600 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800/40"
+                }`}
+              >
                 {remainingSearches === 0
                   ? "No searches left this month"
                   : `${remainingSearches} of ${searchLimit} searches left`}
@@ -763,7 +1021,9 @@ function KeywordExplorerPanel({
           )}
           <div className="flex flex-col md:flex-row gap-4 items-end">
             <div className="flex-1 space-y-2 w-full">
-              <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Search Keyword</Label>
+              <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">
+                Search Keyword
+              </Label>
               <div className="relative">
                 <Search className="absolute left-3 top-3.5 h-4 w-4 text-slate-400 dark:text-slate-500" />
                 <Input
@@ -777,20 +1037,28 @@ function KeywordExplorerPanel({
               </div>
             </div>
             <div className="w-full md:w-44 space-y-2">
-              <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Marketplace</Label>
+              <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">
+                Marketplace
+              </Label>
               <Select value={platform} onValueChange={setPlatform}>
-                <SelectTrigger className="h-11 border-slate-200 dark:border-slate-800 bg-transparent rounded-xl" data-track-id="marketplace-select" data-filter-value={platform}>
+                <SelectTrigger
+                  className="h-11 border-slate-200 dark:border-slate-800 bg-transparent rounded-xl"
+                  data-track-id="marketplace-select"
+                  data-filter-value={platform}
+                >
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="amazon">
                     <div className="flex items-center gap-2">
-                      <ShoppingBag className="h-4 w-4 text-orange-600" /> Amazon India
+                      <ShoppingBag className="h-4 w-4 text-orange-600" /> Amazon
+                      India
                     </div>
                   </SelectItem>
                   <SelectItem value="flipkart">
                     <div className="flex items-center gap-2">
-                      <ShoppingBag className="h-4 w-4 text-yellow-600" /> Flipkart
+                      <ShoppingBag className="h-4 w-4 text-yellow-600" />{" "}
+                      Flipkart
                     </div>
                   </SelectItem>
                 </SelectContent>
@@ -828,7 +1096,9 @@ function KeywordExplorerPanel({
                 Retrieving Marketplace Intel
               </h4>
               <p className="text-xs text-purple-700 dark:text-purple-300 mt-1 max-w-md">
-                We are scanning local search index data, calculating product demand, classifying search intentions, and compiling search recommendations. This process operates 100% free of charge.
+                We are scanning local search index data, calculating product
+                demand, classifying search intentions, and compiling search
+                recommendations. This process operates 100% free of charge.
               </p>
             </div>
           </CardContent>
@@ -843,9 +1113,13 @@ function KeywordExplorerPanel({
               <Compass className="h-6 w-6 animate-pulse" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-lg">Keyword Explorer</h3>
+              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-lg">
+                Keyword Explorer
+              </h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mt-1.5 mx-auto">
-                Type in any search term above (e.g., "face serum", "water bottle") and click Analyze to retrieve search volumes, buyer intent, regional demand, competitor SERPs, and local AI advice.
+                Type in any search term above (e.g., "face serum", "water
+                bottle") and click Analyze to retrieve search volumes, buyer
+                intent, regional demand, competitor SERPs, and local AI advice.
               </p>
             </div>
           </CardContent>
@@ -855,10 +1129,8 @@ function KeywordExplorerPanel({
       {/* Analytics Panels */}
       {data && !loading && (
         <div className="space-y-6 animate-in fade-in-50 duration-300">
-
           {/* Key Metrics Widgets */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-
             {/* Search Volume */}
             <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
               <CardHeader className="pb-2">
@@ -870,17 +1142,22 @@ function KeywordExplorerPanel({
                   {data.search_volume.toLocaleString("en-IN")}
                 </CardTitle>
                 <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
-                  Monthly searches by buyers. Higher means more potential customers.
+                  Monthly searches by buyers. Higher means more potential
+                  customers.
                 </p>
               </CardHeader>
               <CardContent className="pt-2 text-xs text-slate-400 dark:text-slate-500 space-y-1.5 border-t border-slate-100 dark:border-slate-800 mt-2">
                 <div className="flex justify-between">
                   <span>Est. Impressions (Views):</span>
-                  <span className="font-semibold text-slate-600 dark:text-slate-300">{data.estimated_impressions.toLocaleString("en-IN")}</span>
+                  <span className="font-semibold text-slate-600 dark:text-slate-300">
+                    {data.estimated_impressions.toLocaleString("en-IN")}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Est. Clicks (Visits):</span>
-                  <span className="font-semibold text-slate-600 dark:text-slate-300">{data.estimated_clicks.toLocaleString("en-IN")}</span>
+                  <span className="font-semibold text-slate-600 dark:text-slate-300">
+                    {data.estimated_clicks.toLocaleString("en-IN")}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -918,15 +1195,21 @@ function KeywordExplorerPanel({
               <CardContent className="pt-2 border-t border-slate-100 dark:border-slate-800 mt-2 space-y-1 text-xs">
                 {regionalBreakdown.length > 0 ? (
                   regionalBreakdown.map((region) => (
-                    <div key={region.name} className="flex justify-between text-slate-600 dark:text-slate-300">
+                    <div
+                      key={region.name}
+                      className="flex justify-between text-slate-600 dark:text-slate-300"
+                    >
                       <span className="truncate">{region.name}</span>
                       <span className="font-bold text-slate-700 dark:text-slate-200">
-                        {region.volume.toLocaleString("en-IN")} ({region.percentage}%)
+                        {region.volume.toLocaleString("en-IN")} (
+                        {region.percentage}%)
                       </span>
                     </div>
                   ))
                 ) : (
-                  <div className="text-xs text-slate-400 dark:text-slate-500">No regional data.</div>
+                  <div className="text-xs text-slate-400 dark:text-slate-500">
+                    No regional data.
+                  </div>
                 )}
               </CardContent>
             </Card>
@@ -939,7 +1222,9 @@ function KeywordExplorerPanel({
                   <Sparkles className="h-4 w-4 text-indigo-500" />
                 </CardDescription>
                 <CardTitle className="text-3xl font-extrabold text-slate-800 dark:text-slate-200">
-                  {data.competitive_density !== undefined ? data.competitive_density.toFixed(2) : "0.00"}
+                  {data.competitive_density !== undefined
+                    ? data.competitive_density.toFixed(2)
+                    : "0.00"}
                 </CardTitle>
                 <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
                   PPC competition index from 0.00 to 1.00.
@@ -950,14 +1235,25 @@ function KeywordExplorerPanel({
                   <div className="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-300">
                     <span>PPC Competition</span>
                     <span>
-                      {data.competitive_density >= 0.80 ? "High" : data.competitive_density >= 0.50 ? "Medium" : "Low"}
+                      {data.competitive_density >= 0.8
+                        ? "High"
+                        : data.competitive_density >= 0.5
+                          ? "Medium"
+                          : "Low"}
                     </span>
                   </div>
                   <div className="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2">
                     <div
-                      className={`h-2 rounded-full transition-all duration-1000 ${data.competitive_density >= 0.80 ? "bg-rose-500" : data.competitive_density >= 0.50 ? "bg-amber-500" : "bg-green-500"
-                        }`}
-                      style={{ width: `${(data.competitive_density || 0) * 100}%` }}
+                      className={`h-2 rounded-full transition-all duration-1000 ${
+                        data.competitive_density >= 0.8
+                          ? "bg-rose-500"
+                          : data.competitive_density >= 0.5
+                            ? "bg-amber-500"
+                            : "bg-green-500"
+                      }`}
+                      style={{
+                        width: `${(data.competitive_density || 0) * 100}%`,
+                      }}
                     />
                   </div>
                 </div>
@@ -979,9 +1275,17 @@ function KeywordExplorerPanel({
                 <IntentBadge intent={data.intent} />
                 <div className="border-t border-slate-100 dark:border-slate-800 pt-2 flex justify-between items-center">
                   <div>
-                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 block">Est. CPC:</span>
+                    <span className="text-xs font-semibold text-slate-600 dark:text-slate-400 block">
+                      Est. CPC:
+                    </span>
                   </div>
-                  <span className="text-sm font-extrabold text-slate-700 dark:text-slate-300">₹{data.cpc.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                  <span className="text-sm font-extrabold text-slate-700 dark:text-slate-300">
+                    ₹
+                    {data.cpc.toLocaleString("en-IN", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -989,7 +1293,6 @@ function KeywordExplorerPanel({
 
           {/* Trend & Geo Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-
             {/* Search Trend Chart */}
             <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl p-6 bg-white dark:bg-slate-900 lg:col-span-3">
               <CardHeader className="p-0 pb-4">
@@ -1003,27 +1306,65 @@ function KeywordExplorerPanel({
               </CardHeader>
               <CardContent className="p-0 h-64">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={
-                    (data.trend || []).map((vol, idx) => {
-                      const monthNames = ["Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr", "May"];
+                  <BarChart
+                    data={(data.trend || []).map((vol, idx) => {
+                      const monthNames = [
+                        "Jun",
+                        "Jul",
+                        "Aug",
+                        "Sep",
+                        "Oct",
+                        "Nov",
+                        "Dec",
+                        "Jan",
+                        "Feb",
+                        "Mar",
+                        "Apr",
+                        "May",
+                      ];
                       return { month: monthNames[idx % 12], Volume: vol };
-                    })
-                  } margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? "#334155" : "#f1f5f9"} />
-                    <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={10} stroke="#94a3b8" />
+                    })}
+                    margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke={isDark ? "#334155" : "#f1f5f9"}
+                    />
+                    <XAxis
+                      dataKey="month"
+                      tickLine={false}
+                      axisLine={false}
+                      fontSize={10}
+                      stroke="#94a3b8"
+                    />
                     <YAxis
                       tickLine={false}
                       axisLine={false}
                       fontSize={10}
                       stroke="#94a3b8"
                       width={45}
-                      tickFormatter={(val) => val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}
+                      tickFormatter={(val) =>
+                        val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val
+                      }
                     />
                     <Tooltip
-                      contentStyle={{ background: isDark ? "#0f172a" : "#ffffff", border: isDark ? "1px solid #1e293b" : "1px solid #e2e8f0", borderRadius: "8px", fontSize: "12px", color: isDark ? "#f8fafc" : "#334155" }}
+                      contentStyle={{
+                        background: isDark ? "#0f172a" : "#ffffff",
+                        border: isDark
+                          ? "1px solid #1e293b"
+                          : "1px solid #e2e8f0",
+                        borderRadius: "8px",
+                        fontSize: "12px",
+                        color: isDark ? "#f8fafc" : "#334155",
+                      }}
                       labelClassName="font-bold"
                     />
-                    <Bar dataKey="Volume" fill="#6366f1" radius={[4, 4, 0, 0]} />
+                    <Bar
+                      dataKey="Volume"
+                      fill="#6366f1"
+                      radius={[4, 4, 0, 0]}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -1037,11 +1378,18 @@ function KeywordExplorerPanel({
                   State-wise Interest Distribution
                 </CardTitle>
                 <CardDescription className="text-xs">
-                  Estimated percentage demand distribution across top Indian commerce hubs.
+                  Estimated percentage demand distribution across top Indian
+                  commerce hubs.
                 </CardDescription>
               </CardHeader>
               <CardContent className="relative min-h-[220px]">
-                <div className={showAllStates ? "max-h-[280px] overflow-y-auto pr-2 space-y-3" : "space-y-3"}>
+                <div
+                  className={
+                    showAllStates
+                      ? "max-h-[280px] overflow-y-auto pr-2 space-y-3"
+                      : "space-y-3"
+                  }
+                >
                   {Object.entries(data.geo_distribution || {})
                     .sort((a, b) => b[1] - a[1])
                     .slice(0, showAllStates ? undefined : 8)
@@ -1065,7 +1413,9 @@ function KeywordExplorerPanel({
                     onClick={() => setShowAllStates(!showAllStates)}
                     className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors focus:outline-none inline-flex items-center gap-1.5"
                   >
-                    {showAllStates ? "Show Top 8 States" : "Show All 36 States & UTs"}
+                    {showAllStates
+                      ? "Show Top 8 States"
+                      : "Show All 36 States & UTs"}
                   </button>
                 </div>
               </CardContent>
@@ -1073,7 +1423,6 @@ function KeywordExplorerPanel({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-
             {/* Keyword variations table */}
             <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl lg:col-span-5 bg-white dark:bg-slate-900">
               <CardHeader>
@@ -1100,7 +1449,10 @@ function KeywordExplorerPanel({
                     </thead>
                     <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                       {data.variations.map((v, i) => (
-                        <tr key={i} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
+                        <tr
+                          key={i}
+                          className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
+                        >
                           <td className="p-3 font-medium text-slate-800 dark:text-slate-200">
                             <button
                               onClick={() => handleSearch(v.keyword)}
@@ -1111,32 +1463,38 @@ function KeywordExplorerPanel({
                               {v.keyword}
                             </button>
                           </td>
-                          <td className="p-3 text-right font-semibold">{v.search_volume.toLocaleString("en-IN")}</td>
+                          <td className="p-3 text-right font-semibold">
+                            {v.search_volume.toLocaleString("en-IN")}
+                          </td>
                           <td className="p-3 text-center font-medium">
                             <span
-                              className={`px-1.5 py-0.5 rounded text-[10px] ${v.difficulty >= 60
+                              className={`px-1.5 py-0.5 rounded text-[10px] ${
+                                v.difficulty >= 60
                                   ? "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-800/40"
                                   : v.difficulty >= 30
                                     ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/40"
                                     : "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-100 dark:border-green-800/40"
-                                }`}
+                              }`}
                             >
                               {v.difficulty}%
                             </span>
                           </td>
                           <td className="p-3 text-center">
                             <span
-                              className={`px-1.5 py-0.5 rounded-[4px] text-[10px] font-semibold ${v.intent === "Transactional"
+                              className={`px-1.5 py-0.5 rounded-[4px] text-[10px] font-semibold ${
+                                v.intent === "Transactional"
                                   ? "bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400"
                                   : v.intent === "Commercial"
                                     ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400"
                                     : "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400"
-                                }`}
+                              }`}
                             >
                               {v.intent.charAt(0)}
                             </span>
                           </td>
-                          <td className="p-3 text-right font-medium">₹{v.cpc.toFixed(2)}</td>
+                          <td className="p-3 text-right font-medium">
+                            ₹{v.cpc.toFixed(2)}
+                          </td>
                           <td className="p-3 text-center">
                             <button
                               onClick={() => handleQuickTrack(v.keyword)}
@@ -1161,9 +1519,15 @@ function KeywordExplorerPanel({
           {/* SERP Features Badges */}
           {data.serp_features && data.serp_features.length > 0 && (
             <div className="flex flex-wrap gap-2 items-center bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 p-3 rounded-xl">
-              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">SERP Features:</span>
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                SERP Features:
+              </span>
               {data.serp_features.map((feature, idx) => (
-                <Badge key={idx} variant="secondary" className="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 border border-indigo-150 dark:border-indigo-800/40 text-[10px] font-semibold">
+                <Badge
+                  key={idx}
+                  variant="secondary"
+                  className="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 border border-indigo-150 dark:border-indigo-800/40 text-[10px] font-semibold"
+                >
                   {feature}
                 </Badge>
               ))}
@@ -1178,7 +1542,8 @@ function KeywordExplorerPanel({
                 SERP Analysis (Top 10 Results)
               </CardTitle>
               <CardDescription className="text-xs">
-                Real-time snapshot of the highest performing database listings for this search term.
+                Real-time snapshot of the highest performing database listings
+                for this search term.
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
@@ -1199,27 +1564,46 @@ function KeywordExplorerPanel({
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                     {data.serp.length === 0 ? (
                       <tr>
-                        <td colSpan={8} className="p-8 text-center text-slate-400 dark:text-slate-500">
+                        <td
+                          colSpan={8}
+                          className="p-8 text-center text-slate-400 dark:text-slate-500"
+                        >
                           No matching items cataloged in the database.
                         </td>
                       </tr>
                     ) : (
                       data.serp.map((item) => (
-                        <tr key={item.position} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                          <td className="p-3 text-center font-bold text-slate-500 dark:text-slate-400">{item.position}</td>
-                          <td className="p-3 max-w-sm font-medium text-slate-800 dark:text-slate-200 truncate" title={item.title}>
+                        <tr
+                          key={item.position}
+                          className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors"
+                        >
+                          <td className="p-3 text-center font-bold text-slate-500 dark:text-slate-400">
+                            {item.position}
+                          </td>
+                          <td
+                            className="p-3 max-w-sm font-medium text-slate-800 dark:text-slate-200 truncate"
+                            title={item.title}
+                          >
                             {item.title}
                           </td>
                           <td className="p-3 text-slate-500 dark:text-slate-400 font-medium">
                             {(() => {
                               const brandVal = item.brand;
-                              if (brandVal && brandVal !== "None" && brandVal !== "—" && brandVal.trim() !== "") {
+                              if (
+                                brandVal &&
+                                brandVal !== "None" &&
+                                brandVal !== "—" &&
+                                brandVal.trim() !== ""
+                              ) {
                                 return brandVal;
                               }
                               if (item.title) {
                                 const words = item.title.trim().split(/\s+/);
                                 if (words.length > 0) {
-                                  const firstWord = words[0].replace(/^\W+|\W+$/g, "");
+                                  const firstWord = words[0].replace(
+                                    /^\W+|\W+$/g,
+                                    "",
+                                  );
                                   if (firstWord) return firstWord;
                                 }
                               }
@@ -1227,16 +1611,22 @@ function KeywordExplorerPanel({
                             })()}
                           </td>
                           <td className="p-3 text-right font-semibold">
-                            {item.price ? `₹${item.price.toLocaleString("en-IN")}` : "—"}
+                            {item.price
+                              ? `₹${item.price.toLocaleString("en-IN")}`
+                              : "—"}
                           </td>
                           <td className="p-3 text-center font-bold text-amber-600 dark:text-amber-400">
                             {item.rating ? `${item.rating}★` : "—"}
                           </td>
                           <td className="p-3 text-right font-medium text-slate-600 dark:text-slate-300">
-                            {item.reviews ? item.reviews.toLocaleString("en-IN") : "—"}
+                            {item.reviews
+                              ? item.reviews.toLocaleString("en-IN")
+                              : "—"}
                           </td>
                           <td className="p-3 text-right font-bold text-indigo-600 dark:text-indigo-400">
-                            {item.sales_volume ? item.sales_volume.toLocaleString("en-IN") : "—"}
+                            {item.sales_volume
+                              ? item.sales_volume.toLocaleString("en-IN")
+                              : "—"}
                           </td>
                           <td className="p-3 font-mono text-slate-400 dark:text-slate-500 text-[10px] select-all">
                             {item.asin_or_pid}
@@ -1258,14 +1648,17 @@ function KeywordExplorerPanel({
                 AI Copywriting & PPC Bidding Strategy
               </CardTitle>
               <CardDescription className="text-xs">
-                Local AI-generated strategy recommendations based on keyword intent, volume, and difficulty.
+                Local AI-generated strategy recommendations based on keyword
+                intent, volume, and difficulty.
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6 min-h-[200px] relative">
               {strategyLoading ? (
                 <div className="flex flex-col items-center justify-center py-12 space-y-3">
                   <Loader2 className="h-8 w-8 animate-spin text-purple-600 dark:text-purple-400" />
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Generating copywriting & PPC strategy via Llama 3.2...</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                    Generating copywriting & PPC strategy via Llama 3.2...
+                  </p>
                 </div>
               ) : strategyError ? (
                 <div className="text-xs text-rose-600 dark:text-rose-400 p-4 border border-rose-100 dark:border-rose-900/40 rounded-lg bg-rose-50/50 dark:bg-rose-900/20">
@@ -1278,7 +1671,8 @@ function KeywordExplorerPanel({
                 />
               ) : (
                 <div className="text-xs text-slate-400 dark:text-slate-500 py-8 text-center">
-                  Analyze a keyword to generate copywriting & advertising strategy advice from your local LLM.
+                  Analyze a keyword to generate copywriting & advertising
+                  strategy advice from your local LLM.
                 </div>
               )}
             </CardContent>
@@ -1286,7 +1680,8 @@ function KeywordExplorerPanel({
 
           {/* Cache footer indicator */}
           <div className="text-right text-[10px] text-slate-400 font-mono">
-            Analysis Cache Created: {new Date(data.cached_at).toLocaleString("en-IN")}
+            Analysis Cache Created:{" "}
+            {new Date(data.cached_at).toLocaleString("en-IN")}
           </div>
         </div>
       )}
@@ -1326,10 +1721,14 @@ function KeywordTrackerIntelligenceContent() {
 
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const showToast = (title: string, description: string, variant: "success" | "error" = "success") => {
+  const showToast = (
+    title: string,
+    description: string,
+    variant: "success" | "error" = "success",
+  ) => {
     const id = Date.now();
-    setToasts(p => [...p, { id, title, description, variant }]);
-    setTimeout(() => setToasts(p => p.filter(t => t.id !== id)), 5000);
+    setToasts((p) => [...p, { id, title, description, variant }]);
+    setTimeout(() => setToasts((p) => p.filter((t) => t.id !== id)), 5000);
   };
 
   const fetchDashboard = useCallback(async () => {
@@ -1339,33 +1738,63 @@ function KeywordTrackerIntelligenceContent() {
       const res = await fetch(`${API}/dashboard`, { credentials: "include" });
       const data = await res.json();
       if (res.ok) setDashboard(data);
-      else showToast("Error", data.detail?.message ?? "Failed to load dashboard", "error");
+      else
+        showToast(
+          "Error",
+          data.detail?.message ?? "Failed to load dashboard",
+          "error",
+        );
     } catch {
-      showToast("Network Error", "Connection issue. Please retry shortly.", "error");
+      showToast(
+        "Network Error",
+        "Connection issue. Please retry shortly.",
+        "error",
+      );
     } finally {
       setLoadingDash(false);
     }
   }, [userId]);
 
-  useEffect(() => { fetchDashboard(); }, [fetchDashboard]);
+  useEffect(() => {
+    fetchDashboard();
+  }, [fetchDashboard]);
 
   return (
     <div className="space-y-6">
-
       {/* Toasts */}
       <div className="fixed bottom-4 right-4 z-50 space-y-2 max-w-md">
-        {toasts.map(t => (
-          <div key={t.id} className={`flex items-start gap-3 p-4 rounded-lg shadow-lg border-2 backdrop-blur-none animate-in slide-in-from-right ${t.variant === "success" ? "bg-green-50 border-green-300" : "bg-red-50 border-red-300"
-            }`}>
-            {t.variant === "success"
-              ? <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
-              : <XCircle className="h-5 w-5 text-red-600 mt-0.5" />}
+        {toasts.map((t) => (
+          <div
+            key={t.id}
+            className={`flex items-start gap-3 p-4 rounded-lg shadow-lg border-2 backdrop-blur-none animate-in slide-in-from-right ${
+              t.variant === "success"
+                ? "bg-green-50 border-green-300"
+                : "bg-red-50 border-red-300"
+            }`}
+          >
+            {t.variant === "success" ? (
+              <CheckCircle2 className="h-5 w-5 text-green-600 mt-0.5" />
+            ) : (
+              <XCircle className="h-5 w-5 text-red-600 mt-0.5" />
+            )}
             <div className="flex-1">
-              <p className={`font-semibold text-sm ${t.variant === "success" ? "text-green-900" : "text-red-900"}`}>{t.title}</p>
-              <p className={`text-sm mt-0.5 ${t.variant === "success" ? "text-green-700" : "text-red-700"}`}>{t.description}</p>
+              <p
+                className={`font-semibold text-sm ${t.variant === "success" ? "text-green-900" : "text-red-900"}`}
+              >
+                {t.title}
+              </p>
+              <p
+                className={`text-sm mt-0.5 ${t.variant === "success" ? "text-green-700" : "text-red-700"}`}
+              >
+                {t.description}
+              </p>
             </div>
-            <button onClick={() => setToasts(p => p.filter(x => x.id !== t.id))}>
-              <X className={`h-4 w-4 ${t.variant === "success" ? "text-green-600" : "text-red-600"}`} />
+            <button
+              onClick={() => setToasts((p) => p.filter((x) => x.id !== t.id))}
+            >
+              <X
+                className={`h-4 w-4 ${t.variant === "success" ? "text-green-600" : "text-red-600"}`}
+              />
             </button>
           </div>
         ))}
@@ -1373,7 +1802,6 @@ function KeywordTrackerIntelligenceContent() {
 
       <div className="space-y-6">
         <div className="max-w-7xl mx-auto space-y-6">
-
           {/* Page Header */}
           <div className="text-center space-y-4 pt-4">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 rounded-2xl mb-2 shadow-inner">
@@ -1383,7 +1811,8 @@ function KeywordTrackerIntelligenceContent() {
               Keyword Intelligence
             </h1>
             <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-              Explore high-opportunity buyer search terms, analyze search volumes, and track buyer keywords.
+              Explore high-opportunity buyer search terms, analyze search
+              volumes, and track buyer keywords.
             </p>
           </div>
 
@@ -1392,33 +1821,45 @@ function KeywordTrackerIntelligenceContent() {
             {(user?.subscriptionTier?.toLowerCase() || "free") === "free" && (
               <TierGate tier="basic" feature="Keyword Intelligence" />
             )}
-            <div className={(user?.subscriptionTier?.toLowerCase() || "free") === "free" ? "blur-sm pointer-events-none" : ""}>
+            <div
+              className={
+                (user?.subscriptionTier?.toLowerCase() || "free") === "free"
+                  ? "blur-sm pointer-events-none"
+                  : ""
+              }
+            >
               <KeywordExplorerPanel
                 showToast={showToast}
-                trackedProducts={dashboard?.keywords.map(kw => ({ asin_or_pid: kw.asin_or_pid, platform: kw.platform })) || []}
+                trackedProducts={
+                  dashboard?.keywords.map((kw) => ({
+                    asin_or_pid: kw.asin_or_pid,
+                    platform: kw.platform,
+                  })) || []
+                }
                 onKeywordAdded={fetchDashboard}
                 userTier={dashboard?.tier}
               />
             </div>
           </div>
-
         </div>
       </div>
 
       {historyKw && (
-        <HistoryModal
-          kw={historyKw}
-          onClose={() => setHistoryKw(null)}
-        />
+        <HistoryModal kw={historyKw} onClose={() => setHistoryKw(null)} />
       )}
-
     </div>
   );
 }
 
 export default function KeywordTrackerIntelligence() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" />
+        </div>
+      }
+    >
       <KeywordTrackerIntelligenceContent />
     </Suspense>
   );

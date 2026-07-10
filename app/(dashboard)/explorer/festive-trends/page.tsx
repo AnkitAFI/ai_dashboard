@@ -200,7 +200,7 @@
 //       <div className="relative rounded-2xl border border-slate-200 bg-slate-50 p-6 overflow-hidden">
 //         <div className="absolute inset-0 backdrop-blur-[2px] bg-white/60 flex flex-col items-center justify-center gap-2 z-10">
 //           <Lock className="w-5 h-5 text-slate-400" />
-//           <p className="text-xs font-bold text-slate-500">Upgrade to Basic</p>
+//           <p className="text-xs font-bold text-slate-500">Unlock Full Access</p>
 //         </div>
 //         <div className="flex items-start justify-between gap-2 opacity-30">
 //           <p className="text-sm font-black text-slate-800 leading-tight">{cat.category_name}</p>
@@ -303,11 +303,11 @@
 //     <div className="absolute inset-0 rounded-[2rem] bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
 //       <Lock className="w-8 h-8 text-slate-400" />
 //       <p className="text-sm font-black text-slate-700">
-//         {tier === "basic" ? "Upgrade to Basic — ₹1,999/mo" : "Upgrade to Premium — ₹2,999/mo"}
+//         {tier === "basic" ? "Unlock Full Access — ₹1,999/mo" : "Upgrade to Premium — ₹2,999/mo"}
 //       </p>
-//       <Button 
+//       <Button
 //         onClick={() => router.push("/subscription")}
-//         size="sm" 
+//         size="sm"
 //         className="rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black"
 //       >
 //         Upgrade Now
@@ -652,7 +652,7 @@
 //   // ── Categories (Basic+) ───────────────────────────────────────────────────
 //   useEffect(() => {
 //     if (!hasTier(userTier, "basic")) return;
-//     fetch(`${API_BASE}/api/festive/categories?source=${source}`, { 
+//     fetch(`${API_BASE}/api/festive/categories?source=${source}`, {
 //       headers: authHeaders(userId),
 //       credentials: "include"
 //     })
@@ -674,7 +674,7 @@
 
 //     setTrendData(null); setMarginData(null); setLaunchData(null);
 //     const params  = new URLSearchParams({ category_name: category, source });
-//     const opts    = { 
+//     const opts    = {
 //       headers: authHeaders(userId),
 //       credentials: "include" as RequestCredentials
 //     };
@@ -874,9 +874,9 @@
 //                 <p className="text-sm font-black text-sky-800">Unlock all categories + 90-day trend charts</p>
 //                 <p className="text-xs text-sky-600 font-medium mt-0.5">Basic plan — ₹1,999/month</p>
 //               </div>
-//               <Button 
+//               <Button
 //                 onClick={() => router.push("/subscription")}
-//                 size="sm" 
+//                 size="sm"
 //                 className="rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-black shrink-0"
 //               >
 //                 Upgrade <ChevronRight className="w-4 h-4 ml-1" />
@@ -954,9 +954,9 @@
 //                 <p className="text-sm font-black text-indigo-800">Unlock Launch Window, Margin Simulation &amp; AI Forecast</p>
 //                 <p className="text-xs text-indigo-600 font-medium mt-0.5">Premium plan — ₹2,999/month</p>
 //               </div>
-//               <Button 
+//               <Button
 //                 onClick={() => router.push("/subscription")}
-//                 size="sm" 
+//                 size="sm"
 //                 className="rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black shrink-0"
 //               >
 //                 Upgrade <ChevronRight className="w-4 h-4 ml-1" />
@@ -992,11 +992,6 @@
 //   );
 // }
 
-
-
-
-
-
 "use client";
 import { API_BASE_URL } from "@/lib/config";
 
@@ -1004,12 +999,35 @@ import { useState, useEffect, useRef, Suspense, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
-  Loader2, Sparkles, TrendingUp, AlertTriangle, Clock,
-  Lock, ChevronRight, Star, Zap, BarChart3, ArrowUpRight,
-  ArrowDownRight, Minus, Target, RefreshCw, Wifi, WifiOff,
-  ShoppingBag, Package, IndianRupee, Activity,
+  Loader2,
+  Sparkles,
+  TrendingUp,
+  AlertTriangle,
+  Clock,
+  Lock,
+  ChevronRight,
+  Star,
+  Zap,
+  BarChart3,
+  ArrowUpRight,
+  ArrowDownRight,
+  Minus,
+  Target,
+  RefreshCw,
+  Wifi,
+  WifiOff,
+  ShoppingBag,
+  Package,
+  IndianRupee,
+  Activity,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -1039,10 +1057,18 @@ const JSON_FETCH_OPTS: RequestInit = {
 // Tier order matches backend: free=0, basic=1, premium=2, enterprise=3
 // ─────────────────────────────────────────────────────────────────────────────
 
-const TIER_ORDER: Record<string, number> = { free: 0, basic: 1, premium: 2, enterprise: 3 };
+const TIER_ORDER: Record<string, number> = {
+  free: 0,
+  basic: 1,
+  premium: 2,
+  enterprise: 3,
+};
 
 function hasTier(userTier: string, required: string): boolean {
-  return (TIER_ORDER[userTier?.toLowerCase().trim()] ?? 0) >= (TIER_ORDER[required] ?? 99);
+  return (
+    (TIER_ORDER[userTier?.toLowerCase().trim()] ?? 0) >=
+    (TIER_ORDER[required] ?? 99)
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1081,7 +1107,7 @@ interface OverviewData {
   source: string;
   top_categories: CategoryOverview[];
   next_festival: FestiveEvent | null;
-  user_tier: string;           // ← backend always returns this in /overview
+  user_tier: string; // ← backend always returns this in /overview
   upgrade_message: string;
 }
 
@@ -1116,7 +1142,12 @@ interface TrendData {
   source: string;
   price_trend: TrendPoint[];
   stock_risk: StockRisk;
-  velocity_all: { category_name: string; velocity: number; avg_price: number; products: number }[];
+  velocity_all: {
+    category_name: string;
+    velocity: number;
+    avg_price: number;
+    products: number;
+  }[];
   velocity_rank: number | null;
   price_delta_pct: number | null;
   next_festival: FestiveEvent | null;
@@ -1206,25 +1237,32 @@ const fmtPrice = (n: number | null | undefined): string =>
 // ─────────────────────────────────────────────────────────────────────────────
 
 const INTENSITY_COLORS: Record<string, string> = {
-  peak:   "bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900/50",
-  high:   "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/50",
-  medium: "bg-sky-100 text-sky-800 border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-900/50",
-  low:    "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800/60",
+  peak: "bg-rose-100 text-rose-800 border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900/50",
+  high: "bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/50",
+  medium:
+    "bg-sky-100 text-sky-800 border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-900/50",
+  low: "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800/60",
 };
 
 const RISK_COLORS: Record<string, string> = {
-  critical: "text-rose-600 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-950/30 dark:border-rose-900/50",
-  high:     "text-orange-600 bg-orange-50 border-orange-200 dark:text-orange-400 dark:bg-orange-950/30 dark:border-orange-900/50",
-  medium:   "text-amber-600 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-950/30 dark:border-amber-900/50",
-  low:      "text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-950/30 dark:border-emerald-900/50",
-  unknown:  "text-slate-500 bg-slate-50 border-slate-200 dark:text-slate-400 dark:bg-slate-900 dark:border-slate-800/60",
+  critical:
+    "text-rose-600 bg-rose-50 border-rose-200 dark:text-rose-400 dark:bg-rose-950/30 dark:border-rose-900/50",
+  high: "text-orange-600 bg-orange-50 border-orange-200 dark:text-orange-400 dark:bg-orange-950/30 dark:border-orange-900/50",
+  medium:
+    "text-amber-600 bg-amber-50 border-amber-200 dark:text-amber-400 dark:bg-amber-950/30 dark:border-amber-900/50",
+  low: "text-emerald-600 bg-emerald-50 border-emerald-200 dark:text-emerald-400 dark:bg-emerald-950/30 dark:border-emerald-900/50",
+  unknown:
+    "text-slate-500 bg-slate-50 border-slate-200 dark:text-slate-400 dark:bg-slate-900 dark:border-slate-800/60",
 };
 
 const TIER_BADGE: Record<string, string> = {
-  premium:    "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/30 dark:text-violet-400 dark:border-violet-900/40",
-  basic:      "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/30 dark:text-sky-400 dark:border-sky-900/40",
-  enterprise: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-450 dark:border-amber-900/40",
-  free:       "bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800/60",
+  premium:
+    "bg-violet-50 text-violet-700 border-violet-200 dark:bg-violet-950/30 dark:text-violet-400 dark:border-violet-900/40",
+  basic:
+    "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/30 dark:text-sky-400 dark:border-sky-900/40",
+  enterprise:
+    "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-450 dark:border-amber-900/40",
+  free: "bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-900 dark:text-slate-400 dark:border-slate-800/60",
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1238,8 +1276,8 @@ function FestiveCalendarStrip({
   events: FestiveEvent[];
   upcoming: FestiveEvent[];
 }) {
-  const active  = events?.filter(e => e.is_active) ?? [];
-  const soon    = upcoming?.filter(u => !u.is_active) ?? [];
+  const active = events?.filter((e) => e.is_active) ?? [];
+  const soon = upcoming?.filter((u) => !u.is_active) ?? [];
   const display = [...active, ...soon].slice(0, 7);
   if (!display.length) return null;
 
@@ -1252,22 +1290,28 @@ function FestiveCalendarStrip({
             "flex-shrink-0 flex flex-col items-center gap-1.5 px-5 py-3 rounded-2xl border text-center min-w-[116px] transition-all",
             ev.is_active
               ? "bg-sky-600 text-white border-sky-500 shadow-lg shadow-sky-200/60 scale-105"
-              : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-sky-200 hover:shadow-sm text-slate-800 dark:text-slate-100"
+              : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-sky-200 hover:shadow-sm text-slate-800 dark:text-slate-100",
           )}
         >
           <span className="text-2xl leading-none">{ev.emoji}</span>
-          <p className={cn(
-            "text-[11px] font-extrabold truncate max-w-[96px] leading-tight",
-            ev.is_active ? "text-white" : "text-slate-800 dark:text-slate-200"
-          )}>
+          <p
+            className={cn(
+              "text-[11px] font-extrabold truncate max-w-[96px] leading-tight",
+              ev.is_active
+                ? "text-white"
+                : "text-slate-800 dark:text-slate-200",
+            )}
+          >
             {ev.name}
           </p>
-          <span className={cn(
-            "text-[9px] font-black px-2 py-0.5 rounded-full border uppercase tracking-wider",
-            ev.is_active
-              ? "bg-white/25 text-white border-white/30"
-              : INTENSITY_COLORS[ev.intensity]
-          )}>
+          <span
+            className={cn(
+              "text-[9px] font-black px-2 py-0.5 rounded-full border uppercase tracking-wider",
+              ev.is_active
+                ? "bg-white/25 text-white border-white/30"
+                : INTENSITY_COLORS[ev.intensity],
+            )}
+          >
             {ev.is_active ? "LIVE" : `${ev.days_away}d`}
           </span>
         </div>
@@ -1296,12 +1340,18 @@ function CategoryCard({
       <div className="relative rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 p-6 overflow-hidden select-none">
         <div className="absolute inset-0 backdrop-blur-[2px] bg-white/70 dark:bg-slate-950/70 flex flex-col items-center justify-center gap-1.5 z-10 rounded-2xl">
           <Lock className="w-5 h-5 text-slate-400" />
-          <p className="text-[11px] font-extrabold text-slate-500">Upgrade to Basic</p>
+          <p className="text-[11px] font-extrabold text-slate-500">
+            Unlock Full Access
+          </p>
         </div>
         <div className="opacity-20 pointer-events-none">
           <div className="flex items-start justify-between gap-2 mb-3">
-            <p className="text-sm font-extrabold text-slate-800 dark:text-slate-350 leading-tight">{cat.category_name}</p>
-            <Badge variant="outline" className="text-[9px] font-bold shrink-0">#{index + 1}</Badge>
+            <p className="text-sm font-extrabold text-slate-800 dark:text-slate-350 leading-tight">
+              {cat.category_name}
+            </p>
+            <Badge variant="outline" className="text-[9px] font-bold shrink-0">
+              #{index + 1}
+            </Badge>
           </div>
           <p className="text-3xl font-black text-sky-600">₹ ——</p>
         </div>
@@ -1316,16 +1366,27 @@ function CategoryCard({
         "text-left w-full rounded-2xl border p-6 space-y-2.5 transition-all cursor-pointer shadow-sm",
         selected
           ? "border-sky-500 bg-sky-50 dark:bg-sky-950/20 shadow-sky-100 dark:shadow-none"
-          : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-sky-300 hover:shadow-md"
+          : "border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-sky-300 hover:shadow-md",
       )}
     >
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200 leading-tight">{cat.category_name}</p>
-        <Badge variant="outline" className={cn("text-[9px] font-bold shrink-0", selected && "border-sky-400 text-sky-700 dark:text-sky-400 dark:border-sky-850")}>
+        <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200 leading-tight">
+          {cat.category_name}
+        </p>
+        <Badge
+          variant="outline"
+          className={cn(
+            "text-[9px] font-bold shrink-0",
+            selected &&
+              "border-sky-400 text-sky-700 dark:text-sky-400 dark:border-sky-850",
+          )}
+        >
           #{index + 1}
         </Badge>
       </div>
-      <p className="text-3xl font-black text-sky-600 tracking-tighter">{fmtPrice(cat.avg_price)}</p>
+      <p className="text-3xl font-black text-sky-600 tracking-tighter">
+        {fmtPrice(cat.avg_price)}
+      </p>
       <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wider">
         <span className="flex items-center gap-1">
           <Activity className="w-3 h-3" /> {fmt(cat.avg_sales_volume)} avg/mo
@@ -1337,7 +1398,9 @@ function CategoryCard({
       {cat.avg_rating != null && (
         <div className="flex items-center gap-1 text-amber-500">
           <Star className="w-3.5 h-3.5 fill-amber-400" />
-          <span className="text-xs font-extrabold">{Number(cat.avg_rating).toFixed(1)}</span>
+          <span className="text-xs font-extrabold">
+            {Number(cat.avg_rating).toFixed(1)}
+          </span>
         </div>
       )}
     </button>
@@ -1364,9 +1427,11 @@ function MiniSparkline({
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const W = canvas.width, H = canvas.height;
-    const vals = data.map(d => (d[valueKey] as number) || 0);
-    const mn = Math.min(...vals), mx = Math.max(...vals);
+    const W = canvas.width,
+      H = canvas.height;
+    const vals = data.map((d) => (d[valueKey] as number) || 0);
+    const mn = Math.min(...vals),
+      mx = Math.max(...vals);
     const range = mx - mn || 1;
 
     ctx.clearRect(0, 0, W, H);
@@ -1405,8 +1470,14 @@ function MiniSparkline({
   }, [data, valueKey, color]);
 
   if (!data?.length)
-    return <div className="h-14 flex items-center justify-center text-xs text-slate-300">No data</div>;
-  return <canvas ref={canvasRef} width={320} height={56} className="w-full h-14" />;
+    return (
+      <div className="h-14 flex items-center justify-center text-xs text-slate-300">
+        No data
+      </div>
+    );
+  return (
+    <canvas ref={canvasRef} width={320} height={56} className="w-full h-14" />
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1417,10 +1488,12 @@ function StockRiskBadge({ risk }: { risk: StockRisk }) {
   if (!risk) return null;
   const level = risk.risk_level ?? "unknown";
   return (
-    <span className={cn(
-      "inline-flex items-center gap-1.5 text-[10px] font-extrabold px-3 py-1 rounded-full border uppercase tracking-wider",
-      RISK_COLORS[level] ?? RISK_COLORS.unknown
-    )}>
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 text-[10px] font-extrabold px-3 py-1 rounded-full border uppercase tracking-wider",
+        RISK_COLORS[level] ?? RISK_COLORS.unknown,
+      )}
+    >
       <AlertTriangle className="w-3 h-3" />
       {level} risk
     </span>
@@ -1429,19 +1502,23 @@ function StockRiskBadge({ risk }: { risk: StockRisk }) {
 
 function PriceDeltaBadge({ pct }: { pct: number | null }) {
   if (pct == null) return null;
-  if (pct > 0) return (
-    <span className="flex items-center gap-1 text-emerald-600 text-lg font-extrabold">
-      <ArrowUpRight className="w-5 h-5" />+{pct}%
-    </span>
-  );
-  if (pct < 0) return (
-    <span className="flex items-center gap-1 text-rose-600 text-lg font-extrabold">
-      <ArrowDownRight className="w-5 h-5" />{pct}%
-    </span>
-  );
+  if (pct > 0)
+    return (
+      <span className="flex items-center gap-1 text-emerald-600 text-lg font-extrabold">
+        <ArrowUpRight className="w-5 h-5" />+{pct}%
+      </span>
+    );
+  if (pct < 0)
+    return (
+      <span className="flex items-center gap-1 text-rose-600 text-lg font-extrabold">
+        <ArrowDownRight className="w-5 h-5" />
+        {pct}%
+      </span>
+    );
   return (
     <span className="flex items-center gap-1 text-slate-400 text-lg font-extrabold">
-      <Minus className="w-5 h-5" />0%
+      <Minus className="w-5 h-5" />
+      0%
     </span>
   );
 }
@@ -1452,13 +1529,16 @@ function PriceDeltaBadge({ pct }: { pct: number | null }) {
 
 function LockedOverlay({ tier = "basic" }: { tier?: "basic" | "premium" }) {
   const router = useRouter();
-  const label  = tier === "premium" ? "Premium — ₹2,999/mo" : "Basic — ₹1,999/mo";
+  const label =
+    tier === "premium" ? "Premium — ₹2,999/mo" : "Basic — ₹1,999/mo";
   return (
     <div className="absolute inset-0 rounded-[2rem] bg-white/85 dark:bg-slate-950/85 backdrop-blur-sm flex flex-col items-center justify-center gap-3 z-20">
       <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
         <Lock className="w-6 h-6 text-slate-400 dark:text-slate-500" />
       </div>
-      <p className="text-sm font-extrabold text-slate-700 dark:text-slate-200">Upgrade to {label}</p>
+      <p className="text-sm font-extrabold text-slate-700 dark:text-slate-200">
+        Upgrade to {label}
+      </p>
       <Button
         onClick={() => router.push("/subscription")}
         size="sm"
@@ -1494,10 +1574,20 @@ function UpgradeBanner({
       : "bg-sky-600 hover:bg-sky-700";
 
   return (
-    <div className={cn("rounded-2xl border p-5 flex items-center justify-between gap-4", colors)}>
+    <div
+      className={cn(
+        "rounded-2xl border p-5 flex items-center justify-between gap-4",
+        colors,
+      )}
+    >
       <div>
         <p className="text-sm font-extrabold">{message}</p>
-        <p className={cn("text-xs font-medium mt-0.5", tier === "premium" ? "text-violet-600" : "text-sky-600")}>
+        <p
+          className={cn(
+            "text-xs font-medium mt-0.5",
+            tier === "premium" ? "text-violet-600" : "text-sky-600",
+          )}
+        >
           {price}
         </p>
       </div>
@@ -1523,17 +1613,25 @@ interface AIForecastPanelProps {
   userTier: string;
 }
 
-function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPanelProps) {
-  const { toast }  = useToast();
-  const [streaming, setStreaming]     = useState(false);
-  const [text,      setText]          = useState("");
-  const [error,     setError]         = useState<string | null>(null);
+function AIForecastPanel({
+  category,
+  source,
+  baseCost,
+  userTier,
+}: AIForecastPanelProps) {
+  const { toast } = useToast();
+  const [streaming, setStreaming] = useState(false);
+  const [text, setText] = useState("");
+  const [error, setError] = useState<string | null>(null);
   // null=unchecked, true=ready, false=offline
   const [ollamaReady, setOllamaReady] = useState<boolean | null>(null);
   const locked = !hasTier(userTier, "premium");
 
   // Reset output when inputs change
-  useEffect(() => { setText(""); setError(null); }, [category, source]);
+  useEffect(() => {
+    setText("");
+    setError(null);
+  }, [category, source]);
 
   // Poll Ollama status when panel is visible to a premium user
   useEffect(() => {
@@ -1541,31 +1639,51 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
     let cancelled = false;
     const check = () => {
       fetch(`${API_BASE}/api/festive/ai/status`, FETCH_OPTS)
-        .then(r => r.ok ? r.json() : Promise.reject())
+        .then((r) => (r.ok ? r.json() : Promise.reject()))
         .then((d: OllamaStatus) => {
           if (!cancelled) setOllamaReady(d.ollama_running === true);
         })
-        .catch(() => { if (!cancelled) setOllamaReady(false); });
+        .catch(() => {
+          if (!cancelled) setOllamaReady(false);
+        });
     };
     check();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [locked]);
 
   const runForecast = async () => {
     if (locked) {
-      toast({ title: "Premium Feature", description: "Upgrade to Premium to use AI Forecasts.", variant: "destructive" });
+      toast({
+        title: "Premium Feature",
+        description: "Upgrade to Premium to use AI Forecasts.",
+        variant: "destructive",
+      });
       return;
     }
     if (!category) {
-      toast({ title: "Missing Category", description: "Select a category first.", variant: "destructive" });
+      toast({
+        title: "Missing Category",
+        description: "Select a category first.",
+        variant: "destructive",
+      });
       return;
     }
     if (!baseCost || Number(baseCost) <= 0) {
-      toast({ title: "Missing Landing Cost", description: "Enter your landing cost (₹) to run a forecast.", variant: "destructive" });
+      toast({
+        title: "Missing Landing Cost",
+        description: "Enter your landing cost (₹) to run a forecast.",
+        variant: "destructive",
+      });
       return;
     }
     if (ollamaReady === false) {
-      toast({ title: "AI Engine Offline", description: "Insydz is offline.", variant: "destructive" });
+      toast({
+        title: "AI Engine Offline",
+        description: "Insydz is offline.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -1589,14 +1707,16 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
         if (res.status === 503) {
           setOllamaReady(false);
           const body = await res.json().catch(() => ({}));
-          throw new Error(body?.detail?.fix ?? "AI engine offline. Run: ollama serve");
+          throw new Error(
+            body?.detail?.fix ?? "AI engine offline. Run: ollama serve",
+          );
         }
         throw new Error(await parseApiError(res));
       }
 
-      const reader  = res.body?.getReader();
+      const reader = res.body?.getReader();
       const decoder = new TextDecoder();
-      let buffer    = "";
+      let buffer = "";
 
       while (reader) {
         const { done, value } = await reader.read();
@@ -1608,18 +1728,31 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
           if (!line.startsWith("data: ")) continue;
           const payload = line.slice(6).trim();
           if (payload === "[DONE]") break;
-          try { setText(prev => prev + JSON.parse(payload)); } catch { /* skip malformed */ }
+          try {
+            setText((prev) => prev + JSON.parse(payload));
+          } catch {
+            /* skip malformed */
+          }
         }
       }
     } catch (e: any) {
       setError(e.message);
-      toast({ title: "Forecast Error", description: e.message, variant: "destructive" });
+      toast({
+        title: "Forecast Error",
+        description: e.message,
+        variant: "destructive",
+      });
     } finally {
       setStreaming(false);
     }
   };
 
-  const canRun = !locked && !!category && !!baseCost && Number(baseCost) > 0 && ollamaReady !== false;
+  const canRun =
+    !locked &&
+    !!category &&
+    !!baseCost &&
+    Number(baseCost) > 0 &&
+    ollamaReady !== false;
 
   return (
     <div className="relative">
@@ -1632,7 +1765,9 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
                 <Zap className="w-6 h-6 text-sky-400" />
               </div>
               <div>
-                <CardTitle className="text-2xl font-extrabold text-white">AI Festive Forecast</CardTitle>
+                <CardTitle className="text-2xl font-extrabold text-white">
+                  AI Festive Forecast
+                </CardTitle>
                 <CardDescription className="text-sky-400/60 text-[10px] font-extrabold uppercase tracking-widest mt-1">
                   Premium
                 </CardDescription>
@@ -1659,12 +1794,18 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
             <div className="flex items-start gap-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl px-5 py-4">
               <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
               <div>
-                <p className="text-amber-300 text-sm font-extrabold">AI engine offline</p>
+                <p className="text-amber-300 text-sm font-extrabold">
+                  AI engine offline
+                </p>
                 <p className="text-amber-200/60 text-xs font-medium mt-1 leading-relaxed">
                   Start Insydz:{" "}
-                  <code className="bg-white/10 px-1.5 py-0.5 rounded text-amber-200">Insydz serve</code>
-                  {" "}then pull the model:{" "}
-                  <code className="bg-white/10 px-1.5 py-0.5 rounded text-amber-200">Insydz pull Insydz</code>
+                  <code className="bg-white/10 px-1.5 py-0.5 rounded text-amber-200">
+                    Insydz serve
+                  </code>{" "}
+                  then pull the model:{" "}
+                  <code className="bg-white/10 px-1.5 py-0.5 rounded text-amber-200">
+                    Insydz pull Insydz
+                  </code>
                 </p>
               </div>
             </div>
@@ -1673,8 +1814,9 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
           {/* Empty state */}
           {!text && !streaming && ollamaReady !== false && (
             <p className="text-sky-100/50 text-sm leading-relaxed">
-              Get a personalised festive surge forecast covering demand prediction, optimal pricing,
-              stock preparation, and exact listing timing — all computed from your category's live market data.
+              Get a personalised festive surge forecast covering demand
+              prediction, optimal pricing, stock preparation, and exact listing
+              timing — all computed from your category's live market data.
             </p>
           )}
 
@@ -1715,14 +1857,21 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
               className="flex-1 h-14 rounded-2xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-sm disabled:opacity-40 transition-all"
             >
               {streaming ? (
-                <><Loader2 className="w-5 h-5 animate-spin mr-2" /> Generating…</>
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" /> Generating…
+                </>
               ) : (
-                <><Sparkles className="w-5 h-5 mr-2" /> Run AI Forecast</>
+                <>
+                  <Sparkles className="w-5 h-5 mr-2" /> Run AI Forecast
+                </>
               )}
             </Button>
             {text && !streaming && (
               <Button
-                onClick={() => { setText(""); setError(null); }}
+                onClick={() => {
+                  setText("");
+                  setError(null);
+                }}
                 variant="ghost"
                 className="h-14 px-5 rounded-2xl text-slate-400 hover:text-white hover:bg-white/10"
               >
@@ -1752,7 +1901,13 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
 // platform_fee_pct: Amazon=15%, Flipkart=12% — computed by backend
 // ─────────────────────────────────────────────────────────────────────────────
 
-function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier: string }) {
+function MarginSimTable({
+  data,
+  userTier,
+}: {
+  data: MarginData | null;
+  userTier: string;
+}) {
   const locked = !hasTier(userTier, "premium");
   if (!data) return null;
 
@@ -1766,10 +1921,17 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
               <Target className="w-5 h-5 text-sky-600 animate-pulse" />
             </div>
             <div>
-              <CardTitle className="text-base font-extrabold text-slate-800 dark:text-slate-200">Margin Simulation</CardTitle>
+              <CardTitle className="text-base font-extrabold text-slate-800 dark:text-slate-200">
+                Margin Simulation
+              </CardTitle>
               <CardDescription className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
-                Base cost: {fmtPrice(data.base_cost)} · {data.platform_fee_pct}% platform fee
-                {data.source === "amazon" ? " (Amazon)" : data.source === "flipkart" ? " (Flipkart)" : ""}
+                Base cost: {fmtPrice(data.base_cost)} · {data.platform_fee_pct}%
+                platform fee
+                {data.source === "amazon"
+                  ? " (Amazon)"
+                  : data.source === "flipkart"
+                    ? " (Flipkart)"
+                    : ""}
               </CardDescription>
             </div>
           </div>
@@ -1784,7 +1946,7 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
                       key={i}
                       className={cn(
                         "p-4 text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest",
-                        i > 0 ? "text-right" : "text-left"
+                        i > 0 ? "text-right" : "text-left",
                       )}
                     >
                       {h}
@@ -1800,16 +1962,26 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
                       key={i}
                       className={cn(
                         "border-b border-slate-50 dark:border-slate-800/60 last:border-0 transition-colors",
-                        isRec ? "bg-sky-50/70 dark:bg-sky-950/20" : "bg-white dark:bg-slate-900 hover:bg-slate-50/50 dark:hover:bg-slate-800/40"
+                        isRec
+                          ? "bg-sky-50/70 dark:bg-sky-950/20"
+                          : "bg-white dark:bg-slate-900 hover:bg-slate-50/50 dark:hover:bg-slate-800/40",
                       )}
                     >
-                      <td className="p-4 font-extrabold text-slate-800 dark:text-slate-200 text-[13px]">{sc.label}</td>
-                      <td className="p-4 text-right font-bold text-slate-700 dark:text-slate-350">{fmtPrice(sc.price)}</td>
-                      <td className="p-4 text-right font-bold text-slate-500 dark:text-slate-400">{sc.gross_pct}%</td>
-                      <td className={cn(
-                        "p-4 text-right font-extrabold",
-                        sc.net_pct > 0 ? "text-emerald-600" : "text-rose-500"
-                      )}>
+                      <td className="p-4 font-extrabold text-slate-800 dark:text-slate-200 text-[13px]">
+                        {sc.label}
+                      </td>
+                      <td className="p-4 text-right font-bold text-slate-700 dark:text-slate-350">
+                        {fmtPrice(sc.price)}
+                      </td>
+                      <td className="p-4 text-right font-bold text-slate-500 dark:text-slate-400">
+                        {sc.gross_pct}%
+                      </td>
+                      <td
+                        className={cn(
+                          "p-4 text-right font-extrabold",
+                          sc.net_pct > 0 ? "text-emerald-600" : "text-rose-500",
+                        )}
+                      >
                         {sc.net_pct}%
                       </td>
                       <td className="p-4 text-right">
@@ -1819,7 +1991,10 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
                           </Badge>
                         )}
                         {!sc.viable && (
-                          <Badge variant="outline" className="text-rose-500 border-rose-200 text-[9px]">
+                          <Badge
+                            variant="outline"
+                            className="text-rose-500 border-rose-200 text-[9px]"
+                          >
                             Loss
                           </Badge>
                         )}
@@ -1832,7 +2007,8 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
           </div>
           <p className="text-[11px] text-slate-400 dark:text-slate-500 font-bold">
             Market range: {fmtPrice(data.market_range?.min)} –{" "}
-            {fmtPrice(data.market_range?.max)} · avg {fmtPrice(data.market_range?.avg)}
+            {fmtPrice(data.market_range?.max)} · avg{" "}
+            {fmtPrice(data.market_range?.avg)}
           </p>
         </CardContent>
       </Card>
@@ -1845,7 +2021,13 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
 // Smoothed 3-week rolling average on backend; best_score returned for debug.
 // ─────────────────────────────────────────────────────────────────────────────
 
-function LaunchWindowCard({ data, userTier }: { data: LaunchData | null; userTier: string }) {
+function LaunchWindowCard({
+  data,
+  userTier,
+}: {
+  data: LaunchData | null;
+  userTier: string;
+}) {
   const locked = !hasTier(userTier, "premium");
   if (!data) return null;
 
@@ -1858,7 +2040,9 @@ function LaunchWindowCard({ data, userTier }: { data: LaunchData | null; userTie
             <Clock className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           </div>
           <div>
-            <p className="text-base font-extrabold text-slate-800 dark:text-slate-200">Optimal Launch Window</p>
+            <p className="text-base font-extrabold text-slate-800 dark:text-slate-200">
+              Optimal Launch Window
+            </p>
             <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
               Premium · Price inflection analysis
             </p>
@@ -1866,23 +2050,33 @@ function LaunchWindowCard({ data, userTier }: { data: LaunchData | null; userTie
         </div>
 
         {data.optimal_week ? (
-          <p className="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 tracking-tight">{data.optimal_week}</p>
+          <p className="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 tracking-tight">
+            {data.optimal_week}
+          </p>
         ) : (
-          <p className="text-sm text-slate-400 dark:text-slate-500 font-medium italic">No clear window detected</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 font-medium italic">
+            No clear window detected
+          </p>
         )}
 
-        <p className="text-sm text-slate-600 dark:text-slate-350 font-medium leading-relaxed">{data.recommendation}</p>
+        <p className="text-sm text-slate-600 dark:text-slate-350 font-medium leading-relaxed">
+          {data.recommendation}
+        </p>
 
         <div className="space-y-1.5">
-          <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Price trend</p>
-          <MiniSparkline data={data.price_trend} valueKey="avg_price" color="#6366f1" />
+          <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+            Price trend
+          </p>
+          <MiniSparkline
+            data={data.price_trend}
+            valueKey="avg_price"
+            color="#6366f1"
+          />
         </div>
 
         <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-bold">
           <span>{data.weeks_available} weeks analysed</span>
-          {data.best_score != null && (
-            <span>score: {data.best_score}</span>
-          )}
+          {data.best_score != null && <span>score: {data.best_score}</span>}
         </div>
       </Card>
     </div>
@@ -1901,31 +2095,41 @@ function VelocityChart({
   highlighted?: string;
 }) {
   if (!data?.length) return null;
-  const max = Math.max(...data.map(d => d.velocity || 0)) || 1;
+  const max = Math.max(...data.map((d) => d.velocity || 0)) || 1;
 
   return (
     <div className="space-y-2.5">
       {data.slice(0, 8).map((cat, i) => (
         <div key={i} className="flex items-center gap-3">
-          <p className={cn(
-            "text-xs font-bold w-36 truncate shrink-0",
-            cat.category_name === highlighted ? "text-sky-700 dark:text-sky-400 font-extrabold" : "text-slate-500 dark:text-slate-400"
-          )}>
+          <p
+            className={cn(
+              "text-xs font-bold w-36 truncate shrink-0",
+              cat.category_name === highlighted
+                ? "text-sky-700 dark:text-sky-400 font-extrabold"
+                : "text-slate-500 dark:text-slate-400",
+            )}
+          >
             {cat.category_name}
           </p>
           <div className="flex-1 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
             <div
               className={cn(
                 "h-full rounded-full transition-all",
-                cat.category_name === highlighted ? "bg-sky-600" : "bg-sky-400/60"
+                cat.category_name === highlighted
+                  ? "bg-sky-600"
+                  : "bg-sky-400/60",
               )}
               style={{ width: `${(cat.velocity / max) * 100}%` }}
             />
           </div>
-          <p className={cn(
-            "text-xs w-16 text-right shrink-0",
-            cat.category_name === highlighted ? "text-sky-700 dark:text-sky-400 font-extrabold" : "text-slate-600 dark:text-slate-350 font-bold"
-          )}>
+          <p
+            className={cn(
+              "text-xs w-16 text-right shrink-0",
+              cat.category_name === highlighted
+                ? "text-sky-700 dark:text-sky-400 font-extrabold"
+                : "text-slate-600 dark:text-slate-350 font-bold",
+            )}
+          >
             {fmt(cat.velocity)}
           </p>
         </div>
@@ -1939,7 +2143,7 @@ function VelocityChart({
 // ─────────────────────────────────────────────────────────────────────────────
 
 function FestiveTrendContent() {
-  const router   = useRouter();
+  const router = useRouter();
   const { user } = useAuth();
   const { toast } = useToast();
   const { resolvedTheme } = useTheme();
@@ -1953,40 +2157,40 @@ function FestiveTrendContent() {
   // Seeded from /festive/tier-info on mount, then kept fresh from every
   // /festive/overview response (which returns user_tier from DB directly).
   // This means the UI reflects subscription changes without a page reload.
-  const [userTier,    setUserTier]    = useState<string>("free");
+  const [userTier, setUserTier] = useState<string>("free");
   const [tierLoading, setTierLoading] = useState(true);
 
   useEffect(() => {
     fetch(`${API_BASE}/api/festive/tier-info`, FETCH_OPTS)
-      .then(r => r.ok ? r.json() : Promise.reject())
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d: TierInfo) => setUserTier(d.tier ?? "free"))
       .catch(() => setUserTier("free"))
       .finally(() => setTierLoading(false));
   }, [user?.id]);
 
   // ── Form state ─────────────────────────────────────────────────────────────
-  const [source,     setSource]     = useState<"amazon" | "flipkart">("amazon");
-  const [category,   setCategory]   = useState("");
-  const [baseCost,   setBaseCost]   = useState("");
+  const [source, setSource] = useState<"amazon" | "flipkart">("amazon");
+  const [category, setCategory] = useState("");
+  const [baseCost, setBaseCost] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
 
   // ── Data state ─────────────────────────────────────────────────────────────
   const [calendarData, setCalendarData] = useState<CalendarData | null>(null);
   const [overviewData, setOverviewData] = useState<OverviewData | null>(null);
-  const [trendData,    setTrendData]    = useState<TrendData | null>(null);
-  const [launchData,   setLaunchData]   = useState<LaunchData | null>(null);
-  const [marginData,   setMarginData]   = useState<MarginData | null>(null);
+  const [trendData, setTrendData] = useState<TrendData | null>(null);
+  const [launchData, setLaunchData] = useState<LaunchData | null>(null);
+  const [marginData, setMarginData] = useState<MarginData | null>(null);
 
   // ── Loading flags ──────────────────────────────────────────────────────────
   const [loadingOverview, setLoadingOverview] = useState(false);
-  const [loadingTrend,    setLoadingTrend]    = useState(false);
-  const [loadingLaunch,   setLoadingLaunch]   = useState(false);
-  const [loadingMargin,   setLoadingMargin]   = useState(false);
+  const [loadingTrend, setLoadingTrend] = useState(false);
+  const [loadingLaunch, setLoadingLaunch] = useState(false);
+  const [loadingMargin, setLoadingMargin] = useState(false);
 
   // ── Calendar — FREE, no auth needed ──────────────────────────────────────
   useEffect(() => {
     fetch(`${API_BASE}/api/festive/calendar`)
-      .then(r => r.ok ? r.json() : Promise.reject())
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then(setCalendarData)
       .catch(() => {});
   }, []);
@@ -1996,7 +2200,7 @@ function FestiveTrendContent() {
   useEffect(() => {
     setLoadingOverview(true);
     fetch(`${API_BASE}/api/festive/overview?source=${source}`, FETCH_OPTS)
-      .then(r => r.ok ? r.json() : Promise.reject())
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
       .then((d: OverviewData) => {
         setOverviewData(d);
         if (d.user_tier) setUserTier(d.user_tier);
@@ -2007,21 +2211,34 @@ function FestiveTrendContent() {
 
   // ── Categories — BASIC+ only ──────────────────────────────────────────────
   useEffect(() => {
-    if (!hasTier(userTier, "basic")) { setCategories([]); return; }
+    if (!hasTier(userTier, "basic")) {
+      setCategories([]);
+      return;
+    }
     fetch(`${API_BASE}/api/festive/categories?source=${source}`, FETCH_OPTS)
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then((d: { category: string }[]) => setCategories(d.map(c => c.category)))
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((d: { category: string }[]) =>
+        setCategories(d.map((c) => c.category)),
+      )
       .catch(() => setCategories([]));
   }, [source, userTier, user?.id]);
 
   // ── Run full trend analysis ───────────────────────────────────────────────
   const runAnalysis = useCallback(async () => {
     if (!category) {
-      toast({ title: "Select a category", description: "Choose a target category to analyse.", variant: "destructive" });
+      toast({
+        title: "Select a category",
+        description: "Choose a target category to analyse.",
+        variant: "destructive",
+      });
       return;
     }
     if (!hasTier(userTier, "basic")) {
-      toast({ title: "Basic plan required", description: "Upgrade to Basic to run trend analysis.", variant: "destructive" });
+      toast({
+        title: "Basic plan required",
+        description: "Unlock Full Access to run trend analysis.",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -2035,11 +2252,18 @@ function FestiveTrendContent() {
     // ── Trend + Stock Risk (BASIC+) ─────────────────────────────────────────
     setLoadingTrend(true);
     try {
-      const res = await fetch(`${API_BASE}/api/festive/trend-analysis?${params}`, FETCH_OPTS);
+      const res = await fetch(
+        `${API_BASE}/api/festive/trend-analysis?${params}`,
+        FETCH_OPTS,
+      );
       if (!res.ok) throw new Error(await parseApiError(res));
       setTrendData(await res.json());
     } catch (e: any) {
-      toast({ title: "Analysis Error", description: e.message, variant: "destructive" });
+      toast({
+        title: "Analysis Error",
+        description: e.message,
+        variant: "destructive",
+      });
     } finally {
       setLoadingTrend(false);
     }
@@ -2050,11 +2274,16 @@ function FestiveTrendContent() {
     // Launch Window (no base_cost needed)
     setLoadingLaunch(true);
     fetch(`${API_BASE}/api/festive/launch-window?${params}`, FETCH_OPTS)
-      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then((r) => (r.ok ? r.json() : Promise.reject(r)))
       .then(setLaunchData)
       .catch(async (err) => {
-        const msg = err instanceof Response ? await parseApiError(err) : String(err);
-        toast({ title: "Launch Window Error", description: msg, variant: "destructive" });
+        const msg =
+          err instanceof Response ? await parseApiError(err) : String(err);
+        toast({
+          title: "Launch Window Error",
+          description: msg,
+          variant: "destructive",
+        });
       })
       .finally(() => setLoadingLaunch(false));
 
@@ -2064,11 +2293,16 @@ function FestiveTrendContent() {
       const mp = new URLSearchParams(params);
       mp.set("base_cost", baseCost);
       fetch(`${API_BASE}/api/festive/margin-sim?${mp}`, FETCH_OPTS)
-        .then(r => r.ok ? r.json() : Promise.reject(r))
+        .then((r) => (r.ok ? r.json() : Promise.reject(r)))
         .then(setMarginData)
         .catch(async (err) => {
-          const msg = err instanceof Response ? await parseApiError(err) : String(err);
-          toast({ title: "Margin Sim Error", description: msg, variant: "destructive" });
+          const msg =
+            err instanceof Response ? await parseApiError(err) : String(err);
+          toast({
+            title: "Margin Sim Error",
+            description: msg,
+            variant: "destructive",
+          });
         })
         .finally(() => setLoadingMargin(false));
     }
@@ -2091,11 +2325,10 @@ function FestiveTrendContent() {
   }
 
   const isPremium = hasTier(userTier, "premium");
-  const isBasic   = hasTier(userTier, "basic");
+  const isBasic = hasTier(userTier, "basic");
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 animate-in fade-in duration-700">
-
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
@@ -2103,13 +2336,16 @@ function FestiveTrendContent() {
             Festive <span className="text-sky-600">Trends</span>
           </h1>
           <p className="text-slate-500 dark:text-slate-400 font-medium mt-2 text-base">
-            Ride India's festive demand cycles — price smarter, stock right, list on time
+            Ride India's festive demand cycles — price smarter, stock right,
+            list on time
           </p>
         </div>
-        <div className={cn(
-          "self-start sm:self-auto px-4 py-2 rounded-2xl text-xs font-extrabold uppercase tracking-widest border",
-          TIER_BADGE[userTier.toLowerCase()] ?? TIER_BADGE.free
-        )}>
+        <div
+          className={cn(
+            "self-start sm:self-auto px-4 py-2 rounded-2xl text-xs font-extrabold uppercase tracking-widest border",
+            TIER_BADGE[userTier.toLowerCase()] ?? TIER_BADGE.free,
+          )}
+        >
           {userTier} plan
         </div>
       </div>
@@ -2120,7 +2356,10 @@ function FestiveTrendContent() {
           <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-550 uppercase tracking-widest">
             Upcoming Festive Events · {calendarData.year}
           </p>
-          <FestiveCalendarStrip events={calendarData.events} upcoming={calendarData.upcoming} />
+          <FestiveCalendarStrip
+            events={calendarData.events}
+            upcoming={calendarData.upcoming}
+          />
         </div>
       )}
 
@@ -2136,7 +2375,6 @@ function FestiveTrendContent() {
         </CardHeader>
         <CardContent className="p-10 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-
             {/* Marketplace */}
             <div className="space-y-3">
               <Label className="text-[10px] font-extrabold text-slate-400 dark:text-slate-550 uppercase tracking-widest ml-1 flex items-center gap-1.5">
@@ -2144,7 +2382,7 @@ function FestiveTrendContent() {
               </Label>
               <select
                 value={source}
-                onChange={e => {
+                onChange={(e) => {
                   setSource(e.target.value as "amazon" | "flipkart");
                   setCategory("");
                   setTrendData(null);
@@ -2155,8 +2393,18 @@ function FestiveTrendContent() {
                 data-track-id="marketplace_select"
                 data-filter-value={source}
               >
-                <option value="amazon" className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150">Amazon India</option>
-                <option value="flipkart" className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150">Flipkart India</option>
+                <option
+                  value="amazon"
+                  className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150"
+                >
+                  Amazon India
+                </option>
+                <option
+                  value="flipkart"
+                  className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150"
+                >
+                  Flipkart India
+                </option>
               </select>
             </div>
 
@@ -2168,19 +2416,32 @@ function FestiveTrendContent() {
               </Label>
               <select
                 value={category}
-                onChange={e => setCategory(e.target.value)}
+                onChange={(e) => setCategory(e.target.value)}
                 disabled={!isBasic}
                 className={cn(
                   "w-full h-14 px-5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-transparent dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-500 outline-none appearance-none transition-all",
-                  !isBasic ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer"
+                  !isBasic
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer",
                 )}
                 data-track-id="category_select"
                 data-filter-value={category}
               >
-                <option value="" className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150">
+                <option
+                  value=""
+                  className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150"
+                >
                   {isBasic ? "Select category…" : "Basic plan required"}
                 </option>
-                {categories.map(c => <option key={c} value={c} className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150">{c}</option>)}
+                {categories.map((c) => (
+                  <option
+                    key={c}
+                    value={c}
+                    className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150"
+                  >
+                    {c}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -2188,18 +2449,20 @@ function FestiveTrendContent() {
             <div className="space-y-3">
               <Label className="text-[10px] font-extrabold text-slate-400 dark:text-slate-555 uppercase tracking-widest ml-1 flex items-center gap-1.5">
                 <IndianRupee className="w-3 h-3" /> Landing Cost (₹)
-                {!isPremium && <Lock className="w-3 h-3 text-slate-300 dark:text-slate-600" />}
+                {!isPremium && (
+                  <Lock className="w-3 h-3 text-slate-300 dark:text-slate-600" />
+                )}
               </Label>
               <Input
                 value={baseCost}
-                onChange={e => setBaseCost(e.target.value)}
+                onChange={(e) => setBaseCost(e.target.value)}
                 type="number"
                 placeholder={isPremium ? "e.g. 500" : "Premium only"}
                 min={1}
                 disabled={!isPremium}
                 className={cn(
                   "h-14 px-6 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-transparent dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-sky-500 outline-none transition-all",
-                  !isPremium && "opacity-50 cursor-not-allowed"
+                  !isPremium && "opacity-50 cursor-not-allowed",
                 )}
                 data-track-id="landing_cost_input"
               />
@@ -2223,9 +2486,13 @@ function FestiveTrendContent() {
             data-track-id="analyze-btn"
           >
             {isLoading ? (
-              <><Loader2 className="h-6 w-6 animate-spin mr-3" /> Analysing…</>
+              <>
+                <Loader2 className="h-6 w-6 animate-spin mr-3" /> Analysing…
+              </>
             ) : (
-              <><TrendingUp className="h-5 w-5 mr-3" /> Analyse Festive Trends</>
+              <>
+                <TrendingUp className="h-5 w-5 mr-3" /> Analyse Festive Trends
+              </>
             )}
           </Button>
 
@@ -2242,15 +2509,22 @@ function FestiveTrendContent() {
         <div className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
-              Top Trending Categories · {overviewData.source === "flipkart" ? "Flipkart" : "Amazon"}
+              Top Trending Categories ·{" "}
+              {overviewData.source === "flipkart" ? "Flipkart" : "Amazon"}
             </p>
             {overviewData.next_festival && (
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-xl">{overviewData.next_festival.emoji}</span>
-                <span className="font-bold text-slate-700">{overviewData.next_festival.name}</span>
+                <span className="text-xl">
+                  {overviewData.next_festival.emoji}
+                </span>
+                <span className="font-bold text-slate-700">
+                  {overviewData.next_festival.name}
+                </span>
                 <Badge
                   variant="outline"
-                  className={INTENSITY_COLORS[overviewData.next_festival.intensity]}
+                  className={
+                    INTENSITY_COLORS[overviewData.next_festival.intensity]
+                  }
                 >
                   {overviewData.next_festival.days_away}d away
                 </Badge>
@@ -2289,124 +2563,192 @@ function FestiveTrendContent() {
       {/* ── Trend results (BASIC+) ────────────────────────────────────────────── */}
       {(loadingTrend || trendData) && (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-
           {loadingTrend ? (
             <div className="flex items-center justify-center h-40">
               <Loader2 className="w-7 h-7 animate-spin text-sky-500" />
             </div>
-          ) : trendData && (
-            <>
-              {/* KPI row */}
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
-                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Price Trend</p>
-                  <PriceDeltaBadge pct={trendData.price_delta_pct} />
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">vs previous week</p>
-                </Card>
-                <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
-                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Velocity Rank</p>
-                  <p className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">
-                    #{trendData.velocity_rank ?? "—"}
-                  </p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">by avg sales volume</p>
-                </Card>
-                <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
-                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Stock Risk</p>
-                  <div className="pt-1">
-                    <StockRiskBadge risk={trendData.stock_risk} />
-                  </div>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
-                    peak/avg ratio: {trendData.stock_risk?.ratio ?? "—"}×
-                  </p>
-                </Card>
-                <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
-                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Data Points</p>
-                  <p className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">{trendData.data_points}</p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">weekly snapshots</p>
-                </Card>
-              </div>
-
-              {/* Charts */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none shadow-slate-200/30 rounded-[2rem] bg-white dark:bg-slate-900 p-8 space-y-4">
-                  <div>
-                    <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200">
-                      Price Trend — {trendData.category_name}
+          ) : (
+            trendData && (
+              <>
+                {/* KPI row */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
+                    <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                      Price Trend
                     </p>
-                    <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
-                      90-day weekly average
+                    <PriceDeltaBadge pct={trendData.price_delta_pct} />
+                    <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
+                      vs previous week
                     </p>
-                  </div>
-                  <MiniSparkline data={trendData.price_trend} valueKey="avg_price" />
-                  {trendData.price_trend?.length > 0 && (
-                    <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 font-bold">
-                      <span>Min {fmtPrice(Math.min(...trendData.price_trend.map(d => d.avg_price)))}</span>
-                      <span>Max {fmtPrice(Math.max(...trendData.price_trend.map(d => d.avg_price)))}</span>
+                  </Card>
+                  <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
+                    <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                      Velocity Rank
+                    </p>
+                    <p className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">
+                      #{trendData.velocity_rank ?? "—"}
+                    </p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
+                      by avg sales volume
+                    </p>
+                  </Card>
+                  <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
+                    <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                      Stock Risk
+                    </p>
+                    <div className="pt-1">
+                      <StockRiskBadge risk={trendData.stock_risk} />
                     </div>
-                  )}
-                </Card>
-
-                <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none shadow-slate-200/30 rounded-[2rem] bg-white dark:bg-slate-900 p-8 space-y-4">
-                  <div>
-                    <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200">Category Velocity Leaderboard</p>
-                    <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
-                      Avg monthly sales volume
+                    <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
+                      peak/avg ratio: {trendData.stock_risk?.ratio ?? "—"}×
                     </p>
+                  </Card>
+                  <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
+                    <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                      Data Points
+                    </p>
+                    <p className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">
+                      {trendData.data_points}
+                    </p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
+                      weekly snapshots
+                    </p>
+                  </Card>
+                </div>
+
+                {/* Charts */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none shadow-slate-200/30 rounded-[2rem] bg-white dark:bg-slate-900 p-8 space-y-4">
+                    <div>
+                      <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200">
+                        Price Trend — {trendData.category_name}
+                      </p>
+                      <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
+                        90-day weekly average
+                      </p>
+                    </div>
+                    <MiniSparkline
+                      data={trendData.price_trend}
+                      valueKey="avg_price"
+                    />
+                    {trendData.price_trend?.length > 0 && (
+                      <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 font-bold">
+                        <span>
+                          Min{" "}
+                          {fmtPrice(
+                            Math.min(
+                              ...trendData.price_trend.map((d) => d.avg_price),
+                            ),
+                          )}
+                        </span>
+                        <span>
+                          Max{" "}
+                          {fmtPrice(
+                            Math.max(
+                              ...trendData.price_trend.map((d) => d.avg_price),
+                            ),
+                          )}
+                        </span>
+                      </div>
+                    )}
+                  </Card>
+
+                  <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none shadow-slate-200/30 rounded-[2rem] bg-white dark:bg-slate-900 p-8 space-y-4">
+                    <div>
+                      <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200">
+                        Category Velocity Leaderboard
+                      </p>
+                      <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
+                        Avg monthly sales volume
+                      </p>
+                    </div>
+                    <VelocityChart
+                      data={trendData.velocity_all}
+                      highlighted={trendData.category_name}
+                    />
+                  </Card>
+                </div>
+
+                {/* Premium cards — launch window + margin sim */}
+                {(loadingLaunch ||
+                  loadingMargin ||
+                  launchData ||
+                  marginData) && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {loadingLaunch ? (
+                      <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none rounded-[2rem] bg-white dark:bg-slate-900 p-8 flex items-center justify-center h-52">
+                        <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
+                      </Card>
+                    ) : (
+                      <LaunchWindowCard data={launchData} userTier={userTier} />
+                    )}
+
+                    {loadingMargin ? (
+                      <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none rounded-[2rem] bg-white dark:bg-slate-900 p-8 flex items-center justify-center h-52">
+                        <Loader2 className="w-6 h-6 animate-spin text-sky-400" />
+                      </Card>
+                    ) : (
+                      <MarginSimTable data={marginData} userTier={userTier} />
+                    )}
                   </div>
-                  <VelocityChart data={trendData.velocity_all} highlighted={trendData.category_name} />
-                </Card>
-              </div>
+                )}
 
-              {/* Premium cards — launch window + margin sim */}
-              {(loadingLaunch || loadingMargin || launchData || marginData) && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {loadingLaunch ? (
-                    <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none rounded-[2rem] bg-white dark:bg-slate-900 p-8 flex items-center justify-center h-52">
-                      <Loader2 className="w-6 h-6 animate-spin text-indigo-400" />
-                    </Card>
-                  ) : (
-                    <LaunchWindowCard data={launchData} userTier={userTier} />
-                  )}
+                {/* Show locked premium cards if user is not premium */}
+                {!isPremium && (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <LaunchWindowCard
+                      data={{
+                        optimal_week: null,
+                        recommendation: "",
+                        price_trend: [],
+                        weeks_available: 0,
+                      }}
+                      userTier={userTier}
+                    />
+                    <MarginSimTable
+                      data={{
+                        base_cost: 0,
+                        market_range: { min: 0, avg: 0, max: 0 },
+                        scenarios: [
+                          {
+                            label: "Floor",
+                            price: 0,
+                            gross_margin: 0,
+                            gross_pct: 0,
+                            platform_fee: 0,
+                            net_margin: 0,
+                            net_pct: 0,
+                            viable: false,
+                          },
+                          {
+                            label: "Market avg",
+                            price: 0,
+                            gross_margin: 0,
+                            gross_pct: 0,
+                            platform_fee: 0,
+                            net_margin: 0,
+                            net_pct: 0,
+                            viable: false,
+                          },
+                        ],
+                        recommended_price: 0,
+                        recommended_label: "Market avg",
+                        platform_fee_pct: 15,
+                      }}
+                      userTier={userTier}
+                    />
+                  </div>
+                )}
 
-                  {loadingMargin ? (
-                    <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none rounded-[2rem] bg-white dark:bg-slate-900 p-8 flex items-center justify-center h-52">
-                      <Loader2 className="w-6 h-6 animate-spin text-sky-400" />
-                    </Card>
-                  ) : (
-                    <MarginSimTable data={marginData} userTier={userTier} />
-                  )}
-                </div>
-              )}
-
-              {/* Show locked premium cards if user is not premium */}
-              {!isPremium && (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <LaunchWindowCard data={{ optimal_week: null, recommendation: "", price_trend: [], weeks_available: 0 }} userTier={userTier} />
-                  <MarginSimTable
-                    data={{
-                      base_cost: 0,
-                      market_range: { min: 0, avg: 0, max: 0 },
-                      scenarios: [
-                        { label: "Floor", price: 0, gross_margin: 0, gross_pct: 0, platform_fee: 0, net_margin: 0, net_pct: 0, viable: false },
-                        { label: "Market avg", price: 0, gross_margin: 0, gross_pct: 0, platform_fee: 0, net_margin: 0, net_pct: 0, viable: false },
-                      ],
-                      recommended_price: 0,
-                      recommended_label: "Market avg",
-                      platform_fee_pct: 15,
-                    }}
-                    userTier={userTier}
+                {!isPremium && (
+                  <UpgradeBanner
+                    tier="premium"
+                    message="Unlock Launch Window, Margin Simulation & AI Forecast"
+                    price="Premium plan — ₹2,999/month"
                   />
-                </div>
-              )}
-
-              {!isPremium && (
-                <UpgradeBanner
-                  tier="premium"
-                  message="Unlock Launch Window, Margin Simulation & AI Forecast"
-                  price="Premium plan — ₹2,999/month"
-                />
-              )}
-            </>
+                )}
+              </>
+            )
           )}
         </div>
       )}

@@ -1103,7 +1103,7 @@ def seller_snapshot(
         "market_summary":     market if is_basic else None,
         "upcoming_festivals": festivals,
         "upgrade_message":    None if is_basic else (
-            f"Upgrade to Basic (₹1,999/mo) to see all {len(products)} SKUs with "
+            f"Unlock Full Access (₹1,999/mo) to see all {len(products)} SKUs with "
             "price benchmarking, 90-day trend charts, and review health."
         ),
     }

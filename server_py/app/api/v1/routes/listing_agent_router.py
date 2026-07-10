@@ -66,7 +66,7 @@ async def api_generate_listing(
         sub = db.query(UserSubscription).filter(UserSubscription.user_id == user_id).first()
         
         if not sub or sub.subscription_tier == "free":
-            raise HTTPException(status_code=403, detail="Free Tier locked. Please upgrade to Basic or Premium to access AI Listing Studio.")
+            raise HTTPException(status_code=403, detail="Free Tier locked. Please Unlock Full Access or Premium to access AI Listing Studio.")
             
         if sub.subscription_tier == "basic":
             if sub.ai_listings_generated >= 20:

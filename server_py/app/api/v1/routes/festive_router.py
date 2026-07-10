@@ -1013,7 +1013,7 @@ def festive_overview(
         "top_categories":  top3,
         "next_festival":   upcoming[0] if upcoming else None,
         "user_tier":       user_tier,
-        "upgrade_message": "Upgrade to Basic (₹1,999/mo) to unlock all categories and 90-day trend charts.",
+        "upgrade_message": "Unlock Full Access (₹1,999/mo) to unlock all categories and 90-day trend charts.",
     }
 
 

@@ -7,7 +7,10 @@ import { cn } from "@/lib/utils";
 import { API_BASE_URL } from "@/lib/config";
 import { useFilters } from "@/components/dashboard/filters-context";
 import { useAISummary } from "@/hooks/use-ai-summary";
-import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
+import {
+  useSubscriptionLimits,
+  UNLIMITED,
+} from "@/hooks/use-subscription-limits";
 import { useTheme } from "next-themes";
 
 interface TrendingProduct {
@@ -40,22 +43,31 @@ function ProductCard({
   const isDark = mounted && resolvedTheme === "dark";
 
   const colors = ["bg-emerald-500", "bg-blue-500", "bg-purple-500"];
-  const gradients = isDark ? [
-    "from-emerald-950/40 to-emerald-900/30 border-emerald-900/30",
-    "from-blue-950/40 to-blue-900/30 border-blue-900/30",
-    "from-purple-950/40 to-purple-900/30 border-purple-900/30",
-  ] : [
-    "from-green-50 to-green-100/70 border-slate-200/50",
-    "from-blue-50 to-blue-100/70 border-slate-200/50",
-    "from-purple-50 to-purple-100/70 border-slate-200/50",
-  ];
+  const gradients = isDark
+    ? [
+        "from-emerald-950/40 to-emerald-900/30 border-emerald-900/30",
+        "from-blue-950/40 to-blue-900/30 border-blue-900/30",
+        "from-purple-950/40 to-purple-900/30 border-purple-900/30",
+      ]
+    : [
+        "from-green-50 to-green-100/70 border-slate-200/50",
+        "from-blue-50 to-blue-100/70 border-slate-200/50",
+        "from-purple-50 to-purple-100/70 border-slate-200/50",
+      ];
 
-  const productName = product.product_title || product.title || "Unknown Product";
+  const productName =
+    product.product_title || product.title || "Unknown Product";
 
-  const salesVolumeRaw = product.daily_sales || product.total_daily_sales || product.sales_volume || product.estimated_sales || 0;
-  const salesVolume = typeof salesVolumeRaw === 'string'
-    ? parseFloat(salesVolumeRaw.replace(/[^0-9.]/g, '')) || 0
-    : salesVolumeRaw;
+  const salesVolumeRaw =
+    product.daily_sales ||
+    product.total_daily_sales ||
+    product.sales_volume ||
+    product.estimated_sales ||
+    0;
+  const salesVolume =
+    typeof salesVolumeRaw === "string"
+      ? parseFloat(salesVolumeRaw.replace(/[^0-9.]/g, "")) || 0
+      : salesVolumeRaw;
 
   const price = product.avg_price || product.product_price || 0;
 
@@ -63,48 +75,62 @@ function ProductCard({
     <div
       className={cn(
         "flex items-center justify-between p-3 rounded-lg bg-gradient-to-r gap-3 border",
-        gradients[index % gradients.length]
+        gradients[index % gradients.length],
       )}
     >
       <div className="flex items-center space-x-3 flex-1 min-w-0">
         <div
           className={cn(
             "w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold flex-shrink-0",
-            colors[index % colors.length]
+            colors[index % colors.length],
           )}
         >
           {index + 1}
         </div>
         <div className="flex-1 min-w-0">
-          <p 
+          <p
             className={cn(
               "font-semibold text-sm truncate",
-              isDark ? "text-slate-200" : "text-slate-800"
+              isDark ? "text-slate-200" : "text-slate-800",
             )}
             title={productName.replace(/"/g, "")}
           >
             {productName.replace(/"/g, "")}
           </p>
-          <p className={cn("text-xs truncate", isDark ? "text-slate-400" : "text-slate-500")}>
-            {Math.round(salesVolume).toLocaleString()} sales • ₹{price.toFixed(0)}
+          <p
+            className={cn(
+              "text-xs truncate",
+              isDark ? "text-slate-400" : "text-slate-500",
+            )}
+          >
+            {Math.round(salesVolume).toLocaleString()} sales • ₹
+            {price.toFixed(0)}
           </p>
         </div>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
-        <Badge 
-          variant="outline" 
+        <Badge
+          variant="outline"
           className={cn(
             "text-xs whitespace-nowrap bg-transparent",
-            isDark ? "border-slate-700 text-slate-300" : "border-slate-250 text-slate-600"
+            isDark
+              ? "border-slate-700 text-slate-300"
+              : "border-slate-250 text-slate-600",
           )}
         >
           {source === "flipkart" ? "Flipkart" : "Amazon"}
         </Badge>
-        <TrendingUp className={cn("h-5 w-5", isDark ? "text-emerald-500" : "text-green-600")} />
+        <TrendingUp
+          className={cn(
+            "h-5 w-5",
+            isDark ? "text-emerald-500" : "text-green-600",
+          )}
+        />
       </div>
     </div>
   );
-}export default function ProductRankings({
+}
+export default function ProductRankings({
   selectedSource,
 }: {
   selectedSource: string;
@@ -120,7 +146,9 @@ function ProductCard({
   }, []);
 
   const isDark = mounted && resolvedTheme === "dark";
-  const [flipkartProducts, setFlipkartProducts] = useState<TrendingProduct[]>([]);
+  const [flipkartProducts, setFlipkartProducts] = useState<TrendingProduct[]>(
+    [],
+  );
   const [amazonProducts, setAmazonProducts] = useState<TrendingProduct[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -168,8 +196,12 @@ function ProductCard({
         if (table === "both") {
           const halfN = Math.ceil(topN / 2);
           const [flipkartRes, amazonRes] = await Promise.all([
-            fetch(`${BASE_URL}/rapidapi/flipkart/top-sales?limit=${halfN}&${queryParams}`),
-            fetch(`${BASE_URL}/rapidapi/top-sales?limit=${halfN}&${queryParams}`),
+            fetch(
+              `${BASE_URL}/rapidapi/flipkart/top-sales?limit=${halfN}&${queryParams}`,
+            ),
+            fetch(
+              `${BASE_URL}/rapidapi/top-sales?limit=${halfN}&${queryParams}`,
+            ),
           ]);
 
           const [flipkartJson, amazonJson] = await Promise.all([
@@ -180,12 +212,16 @@ function ProductCard({
           setFlipkartProducts(flipkartJson.data || []);
           setAmazonProducts(amazonJson.data || []);
         } else if (table === "amazon" || table === "rapidapi_amazon_products") {
-          const res = await fetch(`${BASE_URL}/rapidapi/top-sales?limit=${topN}&${queryParams}`);
+          const res = await fetch(
+            `${BASE_URL}/rapidapi/top-sales?limit=${topN}&${queryParams}`,
+          );
           const json = await res.json();
           setFlipkartProducts([]);
           setAmazonProducts(json.data || []);
         } else {
-          const res = await fetch(`${BASE_URL}/rapidapi/flipkart/top-sales?limit=${topN}&${queryParams}`);
+          const res = await fetch(
+            `${BASE_URL}/rapidapi/flipkart/top-sales?limit=${topN}&${queryParams}`,
+          );
           const json = await res.json();
           setFlipkartProducts(json.data || []);
           setAmazonProducts([]);
@@ -212,7 +248,7 @@ function ProductCard({
       ? amazonProducts
       : flipkartProducts;
 
-  const hasAISummaries = canAccessFeature('hasChartAISummaries');
+  const hasAISummaries = canAccessFeature("hasChartAISummaries");
 
   const question = showBoth
     ? "Compare top selling Flipkart and Amazon products by sales volume."
@@ -231,7 +267,7 @@ function ProductCard({
     sourceTable,
     allProducts,
     allProducts.length,
-    filters
+    filters,
   );
 
   return (
@@ -259,14 +295,23 @@ function ProductCard({
                 Generating Smart summary...
               </div>
             ) : summary ? (
-              <div className={cn(
-                "mb-3 text-sm font-medium p-3 rounded-lg border flex items-start gap-2 bg-gradient-to-r",
-                isDark 
-                  ? "from-purple-950/30 to-blue-950/30 border-purple-900/40"
-                  : "from-purple-50 to-blue-50 border-purple-200"
-              )}>
-                <Sparkles className={cn("w-4 h-4 flex-shrink-0 mt-0.5", isDark ? "text-purple-400" : "text-purple-600")} />
-                <span className={isDark ? "text-slate-200" : "text-slate-700"}>{summary}</span>
+              <div
+                className={cn(
+                  "mb-3 text-sm font-medium p-3 rounded-lg border flex items-start gap-2 bg-gradient-to-r",
+                  isDark
+                    ? "from-purple-950/30 to-blue-950/30 border-purple-900/40"
+                    : "from-purple-50 to-blue-50 border-purple-200",
+                )}
+              >
+                <Sparkles
+                  className={cn(
+                    "w-4 h-4 flex-shrink-0 mt-0.5",
+                    isDark ? "text-purple-400" : "text-purple-600",
+                  )}
+                />
+                <span className={isDark ? "text-slate-200" : "text-slate-700"}>
+                  {summary}
+                </span>
               </div>
             ) : null
           ) : (
@@ -278,9 +323,9 @@ function ProductCard({
                     🎯 AI Market Insights Locked
                   </p>
                   <p className="text-xs text-amber-750 dark:text-amber-400 mt-1">
-                    {currentTier === 'free'
-                      ? 'Upgrade to Basic to get AI-powered analysis of market trends and product performance'
-                      : 'Get instant insights on top-performing products'}
+                    {currentTier === "free"
+                      ? "Unlock Full Access to get AI-powered analysis of market trends and product performance"
+                      : "Get instant insights on top-performing products"}
                   </p>
                 </div>
               </div>
