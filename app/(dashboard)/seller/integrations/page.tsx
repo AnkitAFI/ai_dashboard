@@ -11,6 +11,7 @@ export default function IntegrationsPage() {
   const { toast } = useToast();
   
   const [loading, setLoading] = useState(true);
+  const [testingAmazon, setTestingAmazon] = useState(false);
   
   const [amazonConnected, setAmazonConnected] = useState(false);
   const [flipkartConnected, setFlipkartConnected] = useState(false);
@@ -50,6 +51,39 @@ export default function IntegrationsPage() {
   const handleConnectFlipkart = () => {
     // Similarly redirects to Flipkart's OAuth authorization portal
     window.location.href = `${API_BASE_URL}/api/integrations/flipkart/authorize`;
+  };
+
+  const handleTestAmazonSandbox = async () => {
+    setTestingAmazon(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/integrations/test-amazon`, {
+        method: 'POST',
+        credentials: "include"
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.status === "success") {
+        toast({
+          title: "✅ Connection Successful",
+          description: "Amazon recognized your Developer Sandbox Keys!",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "❌ Connection Failed",
+          description: data.detail || "Invalid Sandbox Keys",
+          variant: "destructive",
+        });
+      }
+    } catch (e) {
+      toast({
+        title: "❌ Connection Error",
+        description: "Could not reach backend.",
+        variant: "destructive",
+      });
+    } finally {
+      setTestingAmazon(false);
+    }
   };
 
   if (loading) {
@@ -115,6 +149,10 @@ export default function IntegrationsPage() {
               <Button onClick={handleConnectAmazon} className="w-full h-12 text-base font-bold bg-[#FF9900] hover:bg-[#E68A00] text-black shadow-lg shadow-[#FF9900]/20 transition-all active:scale-[0.98]">
                 <LinkIcon className="h-5 w-5 mr-2" />
                 Connect Amazon
+              </Button>
+              <Button onClick={handleTestAmazonSandbox} disabled={testingAmazon} variant="outline" className="w-full h-12 text-base font-bold mt-3 border-[#FF9900]/30 text-[#FF9900] hover:bg-[#FF9900]/10">
+                {testingAmazon ? <Loader2 className="h-5 w-5 mr-2 animate-spin" /> : <Sparkles className="h-5 w-5 mr-2" />}
+                Test Sandbox Keys
               </Button>
             </CardFooter>
           )}

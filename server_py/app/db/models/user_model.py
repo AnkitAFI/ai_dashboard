@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Integer, ARRAY, DateTime, Boolean
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship, validates
+from app.db.models.payment_order_model import PaymentOrder
 from app.db.base import Base
 from app.core.cryptography import EncryptedString, HashedString
 
@@ -42,6 +43,10 @@ class User(Base):
    
     keyword_tracker_used = Column(Integer, default=0)
     keyword_tracker_month = Column(String)
+
+    # Keyword Intelligence Explorer usage
+    ki_searches_used = Column(Integer, default=0)
+    ki_cycle_start = Column(DateTime, nullable=True)
 
     subscription_expires_at = Column(DateTime, nullable=True)
     payment_orders = relationship("app.db.models.payment_order_model.PaymentOrder", back_populates="user", primaryjoin="User.id == foreign(PaymentOrder.user_id)")

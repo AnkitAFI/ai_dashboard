@@ -81,7 +81,10 @@ export default function ListingStudioPage() {
       return;
     }
     
-    if ((user.aiCreditsBalance || 0) <= 0) {
+    // === SANDBOX TESTING === 
+    // Bypassing credit check for testing
+    // if ((user.aiCreditsBalance || 0) <= 0) {
+    if (false) {
       setIsTopUpOpen(true);
       return;
     }
@@ -111,7 +114,7 @@ export default function ListingStudioPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Failed to generate");
       
-      setGeneratedListing(data.data);
+      setGeneratedListing({ ...data.data, id: data.listing_id });
       toast({
         title: "Success!",
         description: "Your optimized listings have been generated.",
@@ -261,7 +264,9 @@ export default function ListingStudioPage() {
   if (authLoading) return <div className="p-8 text-center text-slate-500 flex justify-center items-center h-[50vh]"><Clock className="animate-spin w-8 h-8 text-blue-500" /></div>;
 
   const isFreeTier = user?.subscriptionTier === "free" || !user?.subscriptionTier;
-  const credits = user?.aiCreditsBalance || 0;
+  // === SANDBOX TESTING ===
+  // Forcing 999 credits for testing UI
+  const credits = 999; // user?.aiCreditsBalance || 0;
   
   if (isFreeTier) {
     return (
@@ -273,7 +278,7 @@ export default function ListingStudioPage() {
           Unlock Automated Cataloging
         </h1>
         <p className="text-slate-500 text-lg max-w-xl mb-8">
-          Stop struggling with manual cataloging. Instantly generate and publish high-ranking Amazon and Flipkart listings that actually get you more sales. Upgrade your plan to access our automated One-Click Cataloger.
+          Stop struggling with manual cataloging. Instantly generate and publish optimized Amazon and Flipkart listings that maximize your search visibility. Upgrade your plan to access our automated One-Click Cataloger.
         </p>
         <Button size="lg" className="h-12 px-8 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg" onClick={() => window.location.href = '/subscription'}>
           View Upgrade Plans <ArrowRight className="w-5 h-5 ml-2" />
@@ -414,7 +419,7 @@ export default function ListingStudioPage() {
                 <h2 className="text-3xl font-extrabold text-slate-800 flex items-center justify-center gap-2">
                   Let our Smart Engine build your Amazon & Flipkart catalog <Sparkles className="w-7 h-7 text-blue-600 drop-shadow-sm" />
                 </h2>
-                <p className="text-slate-500 font-medium mt-3">Just 3 simple steps to outrank your competitors</p>
+                <p className="text-slate-500 font-medium mt-3">Just 3 simple steps to fully optimize your catalog</p>
               </div>
 
               {/* 3 Steps */}
@@ -496,7 +501,7 @@ export default function ListingStudioPage() {
                         "Save ₹450+ per SKU vs. traditional cataloging agencies",
                         "Go live in 20 seconds instead of waiting 3-5 days",
                         "Zero back-and-forth emails or manual data entry",
-                        "Rank on Page 1 instantly with perfectly tuned SEO"
+                        "Maximize organic visibility with perfectly tuned SEO"
                       ].map((text, i) => (
                         <li key={i} className="flex items-center gap-3 text-sm font-medium text-slate-600">
                           <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">

@@ -114,6 +114,10 @@ async def generate_listings_for_product(
     
     extracted_attributes = extract_json_from_llm(attr_response_str)
 
+    logger.info(f"FINAL AMAZON DATA: {amazon_data}")
+    logger.info(f"FINAL FLIPKART DATA: {flipkart_data}")
+    logger.info(f"FINAL APLUS DATA: {aplus_data}")
+
     # 5. Save to Database
     new_listing = ProductListing(
         user_id=user_id,

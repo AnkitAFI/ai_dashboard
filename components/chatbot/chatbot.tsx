@@ -522,75 +522,148 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
 
           {/* Messages */}
           <CardContent className="flex-1 flex flex-col overflow-hidden p-0 bg-white dark:bg-slate-950">
-            <ScrollArea className="flex-1 p-3 px-4" ref={scrollContainerRef}>
-              <div className="space-y-4 max-w-4xl mx-auto">
+            <ScrollArea className="flex-1 p-3 sm:p-6" ref={scrollContainerRef}>
+              <div className={cn(
+                "mx-auto w-full px-2",
+                isFullScreen ? "max-w-6xl space-y-8 pb-8" : "max-w-full space-y-4 pb-4"
+              )}>
                 {messages.map((msg) => (
-                  <div key={msg.id} className={cn("flex", msg.isUser ? "justify-end" : "justify-start animate-in fade-in slide-in-from-bottom-2")}>
+                  <div key={msg.id} className={cn(
+                    "flex animate-in fade-in slide-in-from-bottom-2",
+                    isFullScreen ? "gap-4 sm:gap-6 w-full" : (msg.isUser ? "justify-end" : "justify-start gap-2")
+                  )}>
+                    {/* Avatar for AI (and User if fullscreen) */}
+                    {(isFullScreen || !msg.isUser) && (
+                      <Avatar className={cn(
+                        "shrink-0 shadow-sm border border-slate-100 dark:border-slate-800",
+                        isFullScreen ? "h-10 w-10 mt-1" : "h-8 w-8 mt-auto hidden sm:flex",
+                        msg.isUser && !isFullScreen && "hidden"
+                      )}>
+                        {msg.isUser ? (
+                          <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                            {user?.name?.charAt(0) || "U"}
+                          </AvatarFallback>
+                        ) : (
+                          <AvatarFallback className="bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900 dark:to-cyan-900 text-blue-600 dark:text-cyan-400">
+                            <Bot className="h-5 w-5" />
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                    )}
+
                     <div className={cn(
-                      "max-w-[85%] rounded-2xl p-3 text-sm break-words shadow-sm",
-                      msg.isUser 
-                        ? "bg-primary text-white rounded-tr-none" 
-                        : "bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-slate-800 rounded-tl-none"
+                      "flex flex-col gap-2",
+                      isFullScreen 
+                        ? "flex-1 min-w-0" 
+                        : cn("max-w-[85%]", msg.isUser ? "items-end" : "items-start")
                     )}>
-                      <div className="whitespace-pre-wrap leading-relaxed">
-                        {msg.message}
-                        {msg.isStreaming && (
-                          <span className="inline-block w-1.5 h-4 bg-primary ml-1 align-middle animate-pulse" />
+                      <div className={cn(
+                        "break-words",
+                        isFullScreen
+                          ? "text-[15px] leading-relaxed text-slate-800 dark:text-slate-200"
+                          : cn(
+                              "rounded-2xl p-3 text-sm shadow-sm",
+                              msg.isUser 
+                                ? "bg-primary text-white rounded-tr-sm" 
+                                : "bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 border border-slate-100 dark:border-slate-800 rounded-tl-sm"
+                            )
+                      )}>
+                        <div className="whitespace-pre-wrap">
+                          {msg.message}
+                          {msg.isStreaming && (
+                            <span className={cn(
+                              "inline-block align-middle animate-pulse",
+                              isFullScreen ? "w-2 h-5 bg-primary/60 ml-1 rounded-sm" : "w-1.5 h-4 bg-white/80 ml-1"
+                            )} />
+                          )}
+                        </div>
+
+                        {/* Proactive insight badge */}
+                        {msg.hasProactiveInsight && !msg.isStreaming && (
+                          <div className={cn(
+                            "mt-3 flex items-center gap-1.5 font-semibold transition-all",
+                            isFullScreen 
+                              ? "text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 rounded-lg p-2 border border-amber-100 dark:border-amber-900/30 w-fit" 
+                              : "text-[11px] text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 rounded-md p-1.5 border border-amber-100 dark:border-amber-900/30"
+                          )}>
+                            <Lightbulb className={isFullScreen ? "h-4 w-4" : "h-3.5 w-3.5"} />
+                            <span>AI Proactive Insight Included</span>
+                          </div>
+                        )}
+
+                        {/* Mode badge */}
+                        {!msg.isUser && msg.mode && !msg.isStreaming && MODE_LABELS[msg.mode] && (
+                          <div className={cn("mt-2", isFullScreen && "mt-3")}>
+                            <span className={cn(
+                              "font-bold uppercase tracking-wider rounded-full",
+                              MODE_LABELS[msg.mode].color,
+                              isFullScreen ? "text-xs px-3 py-1" : "text-[10px] px-2 py-0.5"
+                            )}>
+                              {MODE_LABELS[msg.mode].label}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Follow-up question chips */}
+                        {!msg.isUser && msg.followupQuestions && msg.followupQuestions.length > 0 && !msg.isStreaming && (
+                          <div className={cn("mt-3 space-y-2", isFullScreen && "mt-5 space-y-3")}>
+                            <p className={cn(
+                              "font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500",
+                              isFullScreen ? "text-xs" : "text-[10px]"
+                            )}>Suggested Actions:</p>
+                            <div className="flex flex-wrap gap-2">
+                              {msg.followupQuestions.map((q) => (
+                                <button
+                                  key={q}
+                                  onClick={() => sendMessage(q)}
+                                  disabled={isTyping || isStreaming || isChatLocked}
+                                  className={cn(
+                                    "text-left bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-primary dark:hover:bg-primary hover:text-white border border-slate-200 dark:border-slate-800 transition-all duration-200 shadow-sm disabled:opacity-40",
+                                    isFullScreen ? "text-sm px-4 py-2 rounded-full" : "text-[11px] px-3 py-1.5 rounded-full"
+                                  )}
+                                >
+                                  {q}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
                         )}
                       </div>
-
-
-
-                      {/* Proactive insight badge */}
-                      {msg.hasProactiveInsight && !msg.isStreaming && (
-                        <div className="mt-2 flex items-center gap-1.5 text-[11px] text-amber-600 dark:text-amber-400 font-semibold bg-amber-50 dark:bg-amber-950/20 rounded-md p-1.5 border border-amber-100 dark:border-amber-900/30 transition-all hover:bg-amber-100 dark:hover:bg-amber-950/40">
-                          <Lightbulb className="h-3.5 w-3.5" />
-                          <span>AI Proactive Insight Included</span>
-                        </div>
+                      
+                      {!isFullScreen && (
+                        <p className={cn(
+                          "text-[10px] mt-1 opacity-50 font-medium",
+                          msg.isUser ? "text-right" : "text-left"
+                        )}>
+                          {formatTime(msg.timestamp)}
+                        </p>
                       )}
-
-                      {/* Mode badge */}
-                      {!msg.isUser && msg.mode && !msg.isStreaming && MODE_LABELS[msg.mode] && (
-                        <div className="mt-2">
-                          <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider", MODE_LABELS[msg.mode].color)}>
-                            {MODE_LABELS[msg.mode].label}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Follow-up question chips */}
-                      {!msg.isUser && msg.followupQuestions && msg.followupQuestions.length > 0 && !msg.isStreaming && (
-                        <div className="mt-3 space-y-2">
-                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-wider">Suggested Actions:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {msg.followupQuestions.map((q) => (
-                              <button
-                                key={q}
-                                onClick={() => sendMessage(q)}
-                                disabled={isTyping || isStreaming || isChatLocked}
-                                className="text-left text-[11px] px-3 py-1.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:bg-primary dark:hover:bg-primary hover:text-white border border-slate-200 dark:border-slate-800 rounded-full transition-all duration-200 shadow-sm disabled:opacity-40"
-                              >
-                                {q}
-                              </button>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      <p className={cn(
-                        "text-[10px] mt-2 opacity-50 font-medium",
-                        msg.isUser ? "text-right" : "text-left"
-                      )}>
-                        {formatTime(msg.timestamp)}
-                      </p>
                     </div>
                   </div>
                 ))}
 
                 {/* Typing dots */}
                 {isTyping && (
-                  <div className="flex justify-start animate-in fade-in">
-                    <div className="bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl rounded-tl-none p-3 flex items-center space-x-3">
+                  <div className={cn(
+                    "flex animate-in fade-in",
+                    isFullScreen ? "gap-4 sm:gap-6 w-full" : "justify-start gap-2"
+                  )}>
+                    {(isFullScreen || true) && (
+                      <Avatar className={cn(
+                        "shrink-0 shadow-sm border border-slate-100 dark:border-slate-800",
+                        isFullScreen ? "h-10 w-10 mt-1" : "h-8 w-8 mt-auto hidden sm:flex"
+                      )}>
+                        <AvatarFallback className="bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900 dark:to-cyan-900 text-blue-600 dark:text-cyan-400">
+                          <Bot className="h-5 w-5" />
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                    <div className={cn(
+                      "flex items-center space-x-3",
+                      isFullScreen 
+                        ? "p-2" 
+                        : "bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl rounded-tl-sm p-3"
+                    )}>
                       <div className="flex space-x-1.5">
                         <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" />
                         <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }} />
@@ -601,16 +674,35 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                   </div>
                 )}
 
-                <div ref={messagesEndRef} />
+                <div ref={messagesEndRef} className="h-4" />
               </div>
             </ScrollArea>
 
             {/* Input Section */}
-            <div className="border-t dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 p-2 sm:p-3 shrink-0">
-              <div className="max-w-4xl mx-auto space-y-2">
-                <div className="flex items-center gap-2">
+            <div className="border-t dark:border-slate-800 bg-white dark:bg-slate-900 p-3 sm:p-6 shrink-0">
+              <div className={cn(
+                "mx-auto flex flex-col gap-3 w-full px-2",
+                isFullScreen ? "max-w-6xl" : "max-w-full"
+              )}>
+                {/* Quick actions for fullscreen */}
+                {messages.length === 1 && isAuthenticated && !isChatLocked && (
+                  <div className="flex flex-wrap gap-2 justify-center pb-2">
+                    {QUICK_QUESTIONS.map((q) => (
+                      <button
+                        key={q}
+                        onClick={() => sendMessage(q)}
+                        className="flex items-center gap-1.5 text-xs px-4 py-2 bg-slate-50 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-slate-700 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 transition-all rounded-full shadow-sm font-medium"
+                      >
+                        {getSuggestionIcon(q)}
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 p-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-full shadow-sm focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
                   <Select value={selectedSource} onValueChange={setSelectedSource} disabled={isChatLocked}>
-                    <SelectTrigger className="w-32 sm:w-36 text-xs bg-white dark:bg-slate-900 text-slate-850 dark:text-slate-100 h-10 rounded-xl border-slate-200 dark:border-slate-800 shadow-sm shrink-0 hover:bg-slate-50 dark:hover:bg-slate-850">
+                    <SelectTrigger className="w-36 sm:w-40 text-xs bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 h-11 rounded-full border-0 shadow-none hover:bg-slate-100 dark:hover:bg-slate-700 focus:ring-0 focus:ring-offset-0">
                       <SelectValue placeholder="Data Source" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-850 dark:text-slate-150 shadow-xl">
@@ -629,16 +721,22 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                         : isChatLocked ? (currentTier === 'free' ? "Unlock with Basic or Premium plan..." : "Usage limit reached...")
                           : "Type your query here..."
                     }
-                    className="flex-1 text-sm bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-850 dark:text-slate-100 focus:ring-primary h-10 rounded-xl shadow-sm min-w-0"
+                    className="flex-1 text-sm bg-transparent border-0 text-slate-800 dark:text-slate-100 focus-visible:ring-0 shadow-none min-w-0 px-2 h-11"
                     disabled={isTyping || isStreaming || isChatLocked}
                   />
+
+                  {isFullScreen && messages.length > 1 && (
+                    <Button variant="ghost" size="icon" onClick={resetConversation} title="Reset Chat" className="h-11 w-11 rounded-full shrink-0 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">
+                      <RefreshCw className="h-5 w-5" />
+                    </Button>
+                  )}
 
                   <Button
                     onClick={() => isStreaming ? abort() : sendMessage()}
                     disabled={isChatLocked || isTyping || (!inputMessage.trim() && !isStreaming)}
                     size="icon"
                     className={cn(
-                      "h-10 w-10 rounded-xl shadow-md transition-all shrink-0",
+                      "h-11 w-11 rounded-full shadow-md transition-all shrink-0",
                       isStreaming ? "bg-red-500 hover:bg-red-600" : "bg-primary hover:bg-primary/90"
                     )}
                   >
@@ -648,29 +746,7 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                           : isStreaming ? <X className="h-4 w-4" />
                             : <Send className="h-4 w-4" />}
                   </Button>
-
-                  {isFullScreen && messages.length > 1 && (
-                    <Button variant="outline" size="icon" onClick={resetConversation} title="Reset Chat" className="h-10 w-10 rounded-xl border-slate-200 dark:border-slate-800 shadow-sm shrink-0 text-slate-500 dark:text-slate-400 hover:text-slate-850 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-850">
-                      <RefreshCw className="h-4 w-4" />
-                    </Button>
-                  )}
                 </div>
-
-                {/* Quick actions for fullscreen */}
-                {messages.length === 1 && isAuthenticated && !isChatLocked && (
-                  <div className="flex flex-wrap gap-2 justify-center py-1">
-                    {QUICK_QUESTIONS.map((q) => (
-                      <button
-                        key={q}
-                        onClick={() => sendMessage(q)}
-                        className="flex items-center gap-1.5 text-[11px] px-3 py-1.5 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-350 transition-all shadow-sm font-medium"
-                      >
-                        {getSuggestionIcon(q)}
-                        {q}
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
 
               {!isAuthenticated && (

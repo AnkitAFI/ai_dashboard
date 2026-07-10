@@ -13,6 +13,11 @@ class Settings(BaseSettings):
     DATAFORSEO_LOGIN: str = ""
     DATAFORSEO_PASSWORD: str = ""
     
+    # Amazon SP-API (Sandbox & Production)
+    AMAZON_LWA_CLIENT_ID: str = ""
+    AMAZON_LWA_CLIENT_SECRET: str = ""
+    AMAZON_SP_API_ROLE_ARN: str = ""
+    
     # Ollama Settings
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     
