@@ -48,7 +48,7 @@ _brevo_config.api_key["api-key"] = BREVO_API_KEY
 
 # Plans ordered lowest → highest. Index = rank.
 PLAN_HIERARCHY: list[str] = ["free", "basic", "premium"]
-PLAN_PRICES:    dict[str, int] = {"basic": 1999, "premium": 2999}
+PLAN_PRICES:    dict[str, int] = {"basic": 1999, "premium": 1}
 PLAN_LABELS:    dict[str, str] = {"basic": "Basic", "premium": "Premium", "free": "Free"}
 
 GST_RATE          = 18   # percent
@@ -302,8 +302,8 @@ def _build_invoice_pdf(order: "PaymentOrder") -> bytes:
         + (f"<br/><b>GSTIN:</b> {order.gst_number}" if order.gst_number else "")
     )
     story.append(Table([
-        [P(f"<b>{APP_NAME}</b><br/>123, Tech Park<br/>Bengaluru, KA – 560066<br/>"
-           f"GSTIN: 29AAAAA0000A1Z5<br/>billing@insydz.com"),
+        [P(f"<b>{APP_NAME}</b><br/>Aavapti Technologies Pvt Ltd</br>A-506, 5th Floor, Tower A,</br>Ithum Tower, Sector-62,</br> Noida, UP – 201301<br/>"
+           f"billing@insydz.com"),
          P(bill_to)],
     ], colWidths=[85*mm, 85*mm]))
     story.append(Spacer(1, 6*mm))

@@ -615,45 +615,6 @@ function PaymentModalInner({
 
                   </div>
 
-                  {/* GST */}
-                  <div className={`rounded-2xl border-2 p-4 transition-all duration-300
-                    ${form.hasGst ? "border-sky-300 bg-sky-50" : "border-slate-200 bg-slate-50"}`}>
-                    <div className="flex items-start gap-3">
-                      <Checkbox id="gst" checked={form.hasGst}
-                        onCheckedChange={(c) => set("hasGst", !!c)}
-                        className="mt-0.5 border-slate-300 data-[state=checked]:bg-sky-600
-                                           data-[state=checked]:border-sky-600" />
-                      <label htmlFor="gst" className="cursor-pointer select-none">
-                        <p className="text-sm font-semibold text-slate-700">I have a GST Number</p>
-                        <p className="text-xs text-slate-400 mt-0.5">Add your GSTIN to claim Input Tax Credit (ITC)</p>
-                      </label>
-                    </div>
-                    {form.hasGst && (
-                      <div className="mt-4 space-y-1.5">
-                        <Label className="text-xs font-bold text-slate-600 uppercase tracking-wider">
-                          GSTIN <span className="text-rose-400">*</span>
-                        </Label>
-                        <Input value={form.gstNumber}
-                          onChange={(e) => set("gstNumber", e.target.value.toUpperCase())}
-                          placeholder="29ABCDE1234F1Z5" maxLength={15}
-                          className={`rounded-xl font-mono tracking-widest uppercase h-11 bg-white
-                                 transition-colors ${errs.gstNumber ? "border-rose-400"
-                              : form.gstNumber.length === 15 && isValidGST(form.gstNumber)
-                                ? "border-green-400 bg-green-50" : "border-slate-200"}`} />
-                        {errs.gstNumber ? (
-                          <p className="text-xs text-rose-500 flex items-center gap-1">
-                            <AlertCircle className="h-3 w-3" />{errs.gstNumber}
-                          </p>
-                        ) : form.gstNumber.length === 15 && isValidGST(form.gstNumber) ? (
-                          <p className="text-xs text-green-600 flex items-center gap-1 font-semibold">
-                            <CheckCircle2 className="h-3 w-3" /> Valid GSTIN · GST @ 18% will be added
-                          </p>
-                        ) : (
-                          <p className="text-xs text-slate-400">Format: 22AAAAA0000A1Z5 · 15 characters</p>
-                        )}
-                      </div>
-                    )}
-                  </div>
 
                   {/* PROMO CODE */}
                   <div className="rounded-2xl border border-slate-200 p-4 bg-white">
