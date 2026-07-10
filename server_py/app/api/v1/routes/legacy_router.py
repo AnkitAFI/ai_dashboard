@@ -10808,6 +10808,9 @@ def track_ki_usage(
 
         now = datetime.now()
         cycle_start = current_user.ki_cycle_start
+        if cycle_start and cycle_start.tzinfo:
+            cycle_start = cycle_start.replace(tzinfo=None)
+            
         current_used = current_user.ki_searches_used or 0
 
         # Determine if we are past the 30-day billing cycle
@@ -10860,6 +10863,9 @@ def get_ki_usage(
 
         now = datetime.now()
         cycle_start = current_user.ki_cycle_start
+        if cycle_start and cycle_start.tzinfo:
+            cycle_start = cycle_start.replace(tzinfo=None)
+            
         current_used = current_user.ki_searches_used or 0
 
         # Auto-reset if billing cycle has rolled over (read-only: just return 0, don't write)

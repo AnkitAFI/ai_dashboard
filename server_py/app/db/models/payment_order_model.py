@@ -35,4 +35,4 @@ class PaymentOrder(Base):
     expires_at          = Column(DateTime, nullable=True)
     refunded_at         = Column(DateTime, nullable=True)
 
-    user = relationship("User", back_populates="payment_orders", primaryjoin="User.id == foreign(PaymentOrder.user_id)")
+    user = relationship("app.db.models.user_model.User", back_populates="payment_orders")

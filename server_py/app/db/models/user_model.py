@@ -43,8 +43,11 @@ class User(Base):
     keyword_tracker_used = Column(Integer, default=0)
     keyword_tracker_month = Column(String)
 
+    ki_cycle_start = Column(DateTime, nullable=True)
+    ki_searches_used = Column(Integer, default=0)
+
     subscription_expires_at = Column(DateTime, nullable=True)
-    payment_orders = relationship("app.db.models.payment_order_model.PaymentOrder", back_populates="user", primaryjoin="User.id == foreign(PaymentOrder.user_id)")
+    payment_orders = relationship("app.db.models.payment_order_model.PaymentOrder", back_populates="user")
     scheduled_downgrade_to = Column(String(50), nullable=True)
 
     is_verified = Column(Boolean, default=False)
