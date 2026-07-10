@@ -302,8 +302,8 @@ def _build_invoice_pdf(order: "PaymentOrder") -> bytes:
         + (f"<br/><b>GSTIN:</b> {order.gst_number}" if order.gst_number else "")
     )
     story.append(Table([
-        [P(f"<b>{APP_NAME}</b><br/>123, Tech Park<br/>Bengaluru, KA – 560066<br/>"
-           f"GSTIN: 29AAAAA0000A1Z5<br/>billing@insydz.com"),
+        [P(f"Aavapti Technologies Pvt Ltd<br/>A-506, 5th Floor, Tower A, ITHUM Tower<br/>Noida, Uttar Pradesh – 201301<br/>"
+           f"billing@insydz.com"),
          P(bill_to)],
     ], colWidths=[85*mm, 85*mm]))
     story.append(Spacer(1, 6*mm))
@@ -792,19 +792,50 @@ def download_invoice(
     current_user: User = Depends(get_current_user),
     db:           Session     = Depends(get_db),
 ):
-    order = (
-        db.query(PaymentOrder)
-        .filter(PaymentOrder.id      == order_id,
-                PaymentOrder.user_id == current_user.id,
-                PaymentOrder.status  == "paid")
-        .first()
+    query = db.query(PaymentOrder).filter(
+        PaymentOrder.id == order_id,
+        PaymentOrder.status == "paid"
     )
+    
+    # If the user is not an admin, restrict the download to their own orders only
+    if getattr(current_user, "role", "user") != "admin":
+        query = query.filter(PaymentOrder.user_id == current_user.id)
+        
+    order = query.first()
     if not order:
         raise HTTPException(404, "Paid order not found")
     pdf = _build_invoice_pdf(order)
     return StreamingResponse(io.BytesIO(pdf), media_type="application/pdf",
         headers={"Content-Disposition":
                  f'attachment; filename="invoice_{order.invoice_number or order_id}.pdf"'})
+
+
+@router.get("/invoice/latest/{target_user_id}")
+def download_latest_invoice(
+    target_user_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Allows admins to download the latest paid invoice for any user"""
+    admin_email = os.getenv("ADMIN_EMAIL", "syatharthdelhi@gmail.com")
+    is_admin = getattr(current_user, "role", "user") == "admin" or current_user.email == admin_email
+    
+    if not is_admin and current_user.id != target_user_id:
+        raise HTTPException(403, "Not authorized to view this invoice")
+        
+    order = (
+        db.query(PaymentOrder)
+        .filter(PaymentOrder.user_id == target_user_id, PaymentOrder.status == "paid")
+        .order_by(PaymentOrder.created_at.desc())
+        .first()
+    )
+    
+    if not order:
+        raise HTTPException(404, "No paid orders found for this user")
+        
+    pdf = _build_invoice_pdf(order)
+    return StreamingResponse(io.BytesIO(pdf), media_type="application/pdf",
+        headers={"Content-Disposition": f'attachment; filename="invoice_{order.invoice_number or order.id}.pdf"'})
 
 
 # ═════════════════════════════════════════════════════════════════════════════

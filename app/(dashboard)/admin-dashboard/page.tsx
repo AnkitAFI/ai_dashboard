@@ -774,7 +774,7 @@ import {
   Users, ShieldCheck, ShieldOff, TrendingUp,
   Wallet, IndianRupee, ChevronDown, ChevronUp,
   MessageSquare, BarChart2, Globe, Tag,
-  Activity, MousePointerClick, AlertOctagon, Clock,
+  Activity, MousePointerClick, AlertOctagon, Clock, Download,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -864,6 +864,29 @@ export default function AdminDashboard() {
   const router = useRouter();
   const { user } = useAuth();
   const { toast } = useToast();
+
+  const downloadLatestInvoice = async (userId: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/payments/invoice/latest/${userId}`, {
+        method: "GET",
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("No paid invoices found for this user");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `invoice_user_${userId}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error: any) {
+      console.error(error);
+      toast({ title: "Invoice Error", description: error.message, variant: "destructive" });
+    }
+  };
   const [stats, setStats] = useState<Stats | null>(null);
   const [users, setUsers] = useState<UserRow[]>([]);
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
@@ -1413,9 +1436,20 @@ export default function AdminDashboard() {
 
                           {/* Tier */}
                           <td style={{ padding: "11px 14px" }}>
-                            <span style={{ padding: "3px 9px", fontSize: 10, fontWeight: 600, borderRadius: 5, textTransform: "capitalize", background: tierMeta.bg, color: tierMeta.color, border: `1px solid ${tierMeta.border}` }}>
-                              {u.subscription_tier}
-                            </span>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                              <span style={{ padding: "3px 9px", fontSize: 10, fontWeight: 600, borderRadius: 5, textTransform: "capitalize", background: tierMeta.bg, color: tierMeta.color, border: `1px solid ${tierMeta.border}` }}>
+                                {u.subscription_tier}
+                              </span>
+                              {u.subscription_tier !== "free" && (
+                                <button
+                                  onClick={(e) => downloadLatestInvoice(u.id, e)}
+                                  style={{ background: "#f0f9ff", border: "1px solid #bae6fd", color: "#0284c7", borderRadius: 4, padding: "2px 6px", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 10, fontWeight: 600 }}
+                                  title="Download Latest Invoice"
+                                >
+                                  <Download size={10} /> Invoice
+                                </button>
+                              )}
+                            </div>
                           </td>
 
                           {/* Status */}
