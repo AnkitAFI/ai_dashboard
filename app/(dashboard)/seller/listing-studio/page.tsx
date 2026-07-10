@@ -423,9 +423,9 @@ export default function ListingStudioPage() {
               </div>
 
               {/* 3 Steps */}
-              <div className="flex items-center justify-between gap-2 mb-4">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-2 mb-4">
                 {/* Step 1 */}
-                <Card className="flex-1 rounded-2xl shadow-sm border-slate-100 bg-white relative overflow-hidden">
+                <Card className="flex-1 w-full md:w-auto rounded-2xl shadow-sm border-slate-100 bg-white relative overflow-hidden">
                   <div className="w-7 h-7 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-xs absolute top-4 left-4">1</div>
                   <CardContent className="p-8 flex flex-col items-center text-center">
                     <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center mb-5 mt-2">
@@ -436,10 +436,10 @@ export default function ListingStudioPage() {
                   </CardContent>
                 </Card>
 
-                <ArrowRight className="w-6 h-6 text-indigo-300 mx-2 flex-shrink-0" />
+                <ArrowRight className="w-6 h-6 text-indigo-300 mx-2 flex-shrink-0 rotate-90 md:rotate-0" />
 
                 {/* Step 2 */}
-                <Card className="flex-1 rounded-2xl shadow-sm border-slate-100 bg-white relative overflow-hidden">
+                <Card className="flex-1 w-full md:w-auto rounded-2xl shadow-sm border-slate-100 bg-white relative overflow-hidden">
                   <div className="w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-xs absolute top-4 left-4">2</div>
                   <CardContent className="p-8 flex flex-col items-center text-center">
                     <div className="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mb-5 mt-2">
@@ -450,10 +450,10 @@ export default function ListingStudioPage() {
                   </CardContent>
                 </Card>
 
-                <ArrowRight className="w-6 h-6 text-emerald-300 mx-2 flex-shrink-0" />
+                <ArrowRight className="w-6 h-6 text-emerald-300 mx-2 flex-shrink-0 rotate-90 md:rotate-0" />
 
                 {/* Step 3 */}
-                <Card className="flex-1 rounded-2xl shadow-sm border-slate-100 bg-white relative overflow-hidden">
+                <Card className="flex-1 w-full md:w-auto rounded-2xl shadow-sm border-slate-100 bg-white relative overflow-hidden">
                   <div className="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center font-bold text-xs absolute top-4 left-4">3</div>
                   <CardContent className="p-8 flex flex-col items-center text-center">
                     <div className="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center mb-5 mt-2">
@@ -471,7 +471,7 @@ export default function ListingStudioPage() {
                   <h4 className="font-bold text-sm text-slate-800">What our Smart Engine generates for you</h4>
                 </div>
                 <CardContent className="p-8">
-                  <div className="flex justify-between items-center max-w-3xl mx-auto px-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:justify-between items-center max-w-3xl mx-auto px-4 gap-6 lg:gap-2">
                     {[
                       { icon: Type, label: "SEO Optimized\nTitle" },
                       { icon: List, label: "Key Feature\nBullets" },
@@ -492,7 +492,7 @@ export default function ListingStudioPage() {
               </Card>
 
               {/* Footer Cards */}
-              <div className="flex gap-6 mt-2">
+              <div className="flex flex-col md:flex-row gap-6 mt-2">
                 <Card className="flex-1 border-slate-100 shadow-sm bg-white rounded-2xl">
                   <CardContent className="p-7">
                     <h4 className="font-bold text-sm text-slate-800 mb-5">Why sellers love it</h4>
@@ -530,16 +530,16 @@ export default function ListingStudioPage() {
             </div>
           ) : (
             <Tabs defaultValue="amazon" className="w-full">
-              <div className="flex justify-between items-center mb-6">
-                <TabsList className="grid w-[600px] grid-cols-3">
-                  <TabsTrigger value="amazon">Amazon Preview</TabsTrigger>
-                  <TabsTrigger value="flipkart">Flipkart Preview</TabsTrigger>
-                  <TabsTrigger value="aplus" className="bg-gradient-to-r from-amber-200 to-orange-300 text-amber-900 font-semibold data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-white">✨ A+ Content</TabsTrigger>
+              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
+                <TabsList className="grid w-full lg:w-[600px] grid-cols-1 sm:grid-cols-3 h-auto sm:h-10 gap-2 sm:gap-0 p-1">
+                  <TabsTrigger className="w-full" value="amazon">Amazon Preview</TabsTrigger>
+                  <TabsTrigger className="w-full" value="flipkart">Flipkart Preview</TabsTrigger>
+                  <TabsTrigger value="aplus" className="bg-gradient-to-r from-amber-200 to-orange-300 text-amber-900 font-semibold data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-white w-full">✨ A+ Content</TabsTrigger>
                 </TabsList>
                 <Button 
                   onClick={() => handlePublishClick('both')} 
                   disabled={isPublishing}
-                  className="bg-gradient-to-r from-orange-500 to-blue-600 text-white font-bold hover:shadow-lg transition-all"
+                  className="bg-gradient-to-r from-orange-500 to-blue-600 text-white font-bold hover:shadow-lg transition-all w-full lg:w-auto"
                 >
                   🚀 Publish to Both Platforms
                 </Button>
