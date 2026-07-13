@@ -31,15 +31,15 @@ export default function ListingStudioPage() {
   const [imageBase64, setImageBase64] = useState<string>("");
   const [imagePreview, setImagePreview] = useState<string>("");
   const [useHinglish, setUseHinglish] = useState(false);
-  
+
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [isRemovingBg, setIsRemovingBg] = useState(false);
-  
+
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [selectedCreditPack, setSelectedCreditPack] = useState<PaymentPlan | null>(null);
-  
+
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [targetPlatform, setTargetPlatform] = useState("");
@@ -59,13 +59,13 @@ export default function ListingStudioPage() {
     product_id: "",
     product_id_type: "UPC"
   });
-  
+
   const [generatedListing, setGeneratedListing] = useState<any>(null);
   const { toast } = useToast();
 
   const handleGenerate = async () => {
     if (!user) return;
-    
+
     if (user.subscriptionTier !== "enterprise") {
       toast({
         title: "Enterprise Exclusive",
@@ -74,7 +74,7 @@ export default function ListingStudioPage() {
       });
       return;
     }
-    
+
     // === SANDBOX TESTING === 
     // Bypassing credit check for testing
     // if ((user.aiCreditsBalance || 0) <= 0) {
@@ -82,7 +82,7 @@ export default function ListingStudioPage() {
       setIsTopUpOpen(true);
       return;
     }
-    
+
     if (!imageBase64) {
       toast({
         title: "Image Required",
@@ -98,22 +98,22 @@ export default function ListingStudioPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           raw_description: description,
           image_base64: imageBase64 || undefined,
           use_hinglish: useHinglish
         })
       });
-      
+
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Failed to generate");
-      
+
       setGeneratedListing({ ...data.data, id: data.listing_id });
       toast({
         title: "Success!",
         description: "Your optimized listings have been generated.",
       });
-      
+
       // Silently refresh user to update credit balance locally
       refreshUser();
     } catch (err: any) {
@@ -166,7 +166,7 @@ export default function ListingStudioPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Failed to remove background");
-      
+
       setImageBase64(data.image_base64);
       setImagePreview(data.image_base64);
       toast({ title: "Success", description: "Background removed for Amazon compliance." });
@@ -191,7 +191,7 @@ export default function ListingStudioPage() {
   const confirmCommerceData = () => {
     // Basic validation depending on platform
     const validate = (data: any) => data.sku && data.selling_price && data.quantity;
-    
+
     if (targetPlatform === 'both' && (!validate(amazonCommerceData) || !validate(flipkartCommerceData))) {
       toast({ title: "Validation Error", description: "SKU, Price, and Quantity are required for both platforms.", variant: "destructive" });
       return;
@@ -202,7 +202,7 @@ export default function ListingStudioPage() {
       toast({ title: "Validation Error", description: "SKU, Price, and Quantity are required.", variant: "destructive" });
       return;
     }
-    
+
     setIsPublishModalOpen(false);
     setIsReviewModalOpen(true);
   };
@@ -210,14 +210,14 @@ export default function ListingStudioPage() {
   const submitPublish = async () => {
     setIsReviewModalOpen(false);
     setIsPublishing(true);
-    
+
     const publishToPlatform = async (platform: string, data: any) => {
       const res = await fetch(`${API_BASE_URL}/api/listing-agent/publish`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ 
-          listing_id: generatedListing.id, 
+        body: JSON.stringify({
+          listing_id: generatedListing.id,
           platform: platform,
           sku: data.sku,
           mrp: parseFloat(data.mrp) || parseFloat(data.selling_price),
@@ -231,7 +231,7 @@ export default function ListingStudioPage() {
       if (!res.ok) throw new Error(`${platform.toUpperCase()}: ${responseData.detail || "Failed"}`);
       return responseData;
     };
-    
+
     try {
       if (targetPlatform === 'both') {
         await Promise.all([
@@ -261,7 +261,7 @@ export default function ListingStudioPage() {
   // === SANDBOX TESTING ===
   // Forcing 999 credits for testing UI
   const credits = 999; // user?.aiCreditsBalance || 0;
-  
+
   if (isNonEnterprise) {
     return (
       <div className="p-8 max-w-[1000px] mx-auto h-[80vh] flex flex-col items-center justify-center text-center">
@@ -286,12 +286,12 @@ export default function ListingStudioPage() {
       <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-4xl font-extrabold tracking-tight mb-2 text-slate-900 flex items-center gap-3">
-            <Sparkles className="text-blue-600 w-10 h-10 drop-shadow-sm" /> 
+            <Sparkles className="text-blue-600 w-10 h-10 drop-shadow-sm" />
             One-Click Cataloger
           </h1>
           <p className="text-slate-500 text-lg max-w-2xl">Upload a single product photo and instantly auto-generate your complete Amazon & Flipkart catalog.</p>
         </div>
-        
+
         {/* Wallet Banner */}
         <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm flex items-center gap-4">
           <div className="bg-indigo-50 p-2 rounded-lg">
@@ -318,16 +318,16 @@ export default function ListingStudioPage() {
             <CardContent className="space-y-6">
               <div className="space-y-3">
                 <Label className="font-semibold text-slate-700">Product Image (Required for Verification)</Label>
-                <div 
+                <div
                   className="border-2 border-dashed border-indigo-100 rounded-xl p-8 flex flex-col items-center justify-center bg-white hover:bg-indigo-50/30 transition-colors cursor-pointer relative overflow-hidden group"
                   onClick={() => document.getElementById("imageUpload")?.click()}
                 >
-                  <input 
-                    id="imageUpload" 
-                    type="file" 
-                    accept="image/*" 
-                    className="hidden" 
-                    onChange={handleImageUpload} 
+                  <input
+                    id="imageUpload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
                   />
                   {imagePreview ? (
                     <img src={imagePreview} alt="Preview" className="absolute inset-0 w-full h-full object-contain bg-slate-50" />
@@ -344,19 +344,19 @@ export default function ListingStudioPage() {
                 {imagePreview && (
                   <div className="flex flex-col gap-1 w-full mt-2">
                     <div className="flex gap-2 w-full">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={handleRemoveBackground} 
-                        disabled={isRemovingBg} 
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleRemoveBackground}
+                        disabled={isRemovingBg}
                         className="flex-1 text-slate-700 hover:text-slate-900 border-slate-300"
                       >
                         {isRemovingBg ? "Cleaning Image..." : "✨ Auto-Remove Background"}
                       </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => { setImagePreview(""); setImageBase64(""); }} 
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => { setImagePreview(""); setImageBase64(""); }}
                         className="text-red-500 hover:text-red-600 px-3"
                       >
                         Remove
@@ -368,9 +368,9 @@ export default function ListingStudioPage() {
                   </div>
                 )}
               </div>
-                           <div className="space-y-3">
+              <div className="space-y-3">
                 <Label className="font-semibold text-slate-700">What is the product?</Label>
-                <Textarea 
+                <Textarea
                   placeholder="e.g. A blue stainless steel water bottle, 1 liter, keeps water cold for 24 hours, has a bamboo lid."
                   className="min-h-[140px] resize-none bg-slate-50/50 border-slate-200 focus-visible:ring-blue-500"
                   value={description}
@@ -380,10 +380,10 @@ export default function ListingStudioPage() {
 
               <div className="flex items-center justify-between bg-slate-50 p-3.5 rounded-xl border border-slate-100">
                 <Label htmlFor="hinglish-mode" className="text-sm font-medium text-slate-700 leading-tight">
-                  Optimize for Tier-2/3 Indian<br/>Cities (Hinglish Keywords)
+                  Optimize for Tier-2/3 Indian<br />Cities (Hinglish Keywords)
                 </Label>
-                <Switch 
-                  id="hinglish-mode" 
+                <Switch
+                  id="hinglish-mode"
                   checked={useHinglish}
                   onCheckedChange={setUseHinglish}
                   className="data-[state=checked]:bg-blue-600"
@@ -392,8 +392,8 @@ export default function ListingStudioPage() {
 
             </CardContent>
             <CardFooter className="pt-2 pb-6 px-6">
-              <Button 
-                onClick={handleGenerate} 
+              <Button
+                onClick={handleGenerate}
                 disabled={isGenerating || (!description && !imageBase64)}
                 className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium text-base rounded-xl shadow-sm transition-all"
               >
@@ -530,15 +530,15 @@ export default function ListingStudioPage() {
                   <TabsTrigger className="w-full" value="flipkart">Flipkart Preview</TabsTrigger>
                   <TabsTrigger value="aplus" className="bg-gradient-to-r from-amber-200 to-orange-300 text-amber-900 font-semibold data-[state=active]:from-amber-400 data-[state=active]:to-orange-500 data-[state=active]:text-white w-full">✨ A+ Content</TabsTrigger>
                 </TabsList>
-                <Button 
-                  onClick={() => handlePublishClick('both')} 
+                <Button
+                  onClick={() => handlePublishClick('both')}
                   disabled={isPublishing}
                   className="bg-gradient-to-r from-orange-500 to-blue-600 text-white font-bold hover:shadow-lg transition-all w-full lg:w-auto"
                 >
                   🚀 Publish to Both Platforms
                 </Button>
               </div>
-              
+
               {/* Amazon Tab */}
               <TabsContent value="amazon">
                 <Card className="border-orange-200 shadow-sm">
@@ -548,39 +548,39 @@ export default function ListingStudioPage() {
                         <CardTitle className="text-orange-900">Amazon Listing</CardTitle>
                         <CardDescription>Optimized for A9 Search Algorithm</CardDescription>
                       </div>
-                      <Button 
-                          className="bg-orange-500 hover:bg-orange-600"
-                          onClick={() => handlePublishClick('amazon')}
-                          disabled={isPublishing}
-                        >
-                          <ShoppingCart className="w-4 h-4 mr-2" />
-                          Publish to Amazon
-                        </Button>
+                      <Button
+                        className="bg-orange-500 hover:bg-orange-600"
+                        onClick={() => handlePublishClick('amazon')}
+                        disabled={isPublishing}
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Publish to Amazon
+                      </Button>
                     </div>
                   </CardHeader>
                   <CardContent className="pt-6 space-y-6">
                     <div className="space-y-1">
                       <Label className="text-xs font-bold text-slate-400 uppercase">Title</Label>
-                      <Textarea 
-                        className="text-lg font-medium text-slate-900 resize-none min-h-[60px]" 
-                        value={generatedListing.amazon_title} 
-                        onChange={(e) => setGeneratedListing({...generatedListing, amazon_title: e.target.value})} 
+                      <Textarea
+                        className="text-lg font-medium text-slate-900 resize-none min-h-[60px]"
+                        value={generatedListing.amazon_title}
+                        onChange={(e) => setGeneratedListing({ ...generatedListing, amazon_title: e.target.value })}
                       />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <Label className="text-xs font-bold text-slate-400 uppercase">About this item</Label>
                       <div className="space-y-2">
                         {(generatedListing.amazon_bullets || []).map((bullet: string, i: number) => (
                           <div key={i} className="flex gap-2 items-start">
                             <span className="mt-2 text-slate-400">•</span>
-                            <Textarea 
-                              className="text-slate-700 text-sm resize-none min-h-[60px]" 
+                            <Textarea
+                              className="text-slate-700 text-sm resize-none min-h-[60px]"
                               value={bullet}
                               onChange={(e) => {
                                 const newBullets = [...generatedListing.amazon_bullets];
                                 newBullets[i] = e.target.value;
-                                setGeneratedListing({...generatedListing, amazon_bullets: newBullets});
+                                setGeneratedListing({ ...generatedListing, amazon_bullets: newBullets });
                               }}
                             />
                           </div>
@@ -590,27 +590,27 @@ export default function ListingStudioPage() {
 
                     <div className="space-y-2 border-t pt-4">
                       <Label className="text-xs font-bold text-slate-400 uppercase">Product Description (HTML)</Label>
-                      <Textarea 
+                      <Textarea
                         className="font-mono text-xs text-slate-600 min-h-[150px]"
                         value={generatedListing.amazon_description || ""}
-                        onChange={(e) => setGeneratedListing({...generatedListing, amazon_description: e.target.value})} 
+                        onChange={(e) => setGeneratedListing({ ...generatedListing, amazon_description: e.target.value })}
                       />
                     </div>
-                    
+
                     <div className="space-y-2 bg-slate-50 p-4 rounded-md border border-slate-100">
                       <Label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-1">
                         <AlertCircle className="w-3 h-3" /> Backend Search Terms (Hidden)
                       </Label>
-                      <Textarea 
+                      <Textarea
                         className="text-sm font-mono text-slate-600 min-h-[60px]"
                         value={generatedListing.amazon_search_terms}
-                        onChange={(e) => setGeneratedListing({...generatedListing, amazon_search_terms: e.target.value})} 
+                        onChange={(e) => setGeneratedListing({ ...generatedListing, amazon_search_terms: e.target.value })}
                       />
                     </div>
                   </CardContent>
                 </Card>
               </TabsContent>
-              
+
               {/* Flipkart Tab */}
               <TabsContent value="flipkart">
                 <Card className="border-blue-200 shadow-sm">
@@ -620,38 +620,38 @@ export default function ListingStudioPage() {
                         <CardTitle className="text-blue-900">Flipkart Listing</CardTitle>
                         <CardDescription>Optimized for Flipkart Catalog</CardDescription>
                       </div>
-                      <Button 
-                          className="bg-blue-600 hover:bg-blue-700"
-                          onClick={() => handlePublishClick('flipkart')}
-                          disabled={isPublishing}
-                        >
-                          <ShoppingCart className="w-4 h-4 mr-2" />
-                          Publish to Flipkart
-                        </Button>
+                      <Button
+                        className="bg-blue-600 hover:bg-blue-700"
+                        onClick={() => handlePublishClick('flipkart')}
+                        disabled={isPublishing}
+                      >
+                        <ShoppingCart className="w-4 h-4 mr-2" />
+                        Publish to Flipkart
+                      </Button>
                     </div>
                   </CardHeader>
                   <CardContent className="pt-6 space-y-6">
                     <div className="space-y-1">
                       <Label className="text-xs font-bold text-slate-400 uppercase">Title</Label>
-                      <Textarea 
+                      <Textarea
                         className="text-xl font-medium text-slate-900 resize-none min-h-[60px]"
                         value={generatedListing.flipkart_title}
-                        onChange={(e) => setGeneratedListing({...generatedListing, flipkart_title: e.target.value})}
+                        onChange={(e) => setGeneratedListing({ ...generatedListing, flipkart_title: e.target.value })}
                       />
                     </div>
-                    
+
                     <div className="space-y-2 border-t pt-4">
                       <Label className="text-xs font-bold text-slate-400 uppercase">Product Details</Label>
-                      <Textarea 
+                      <Textarea
                         className="text-slate-600 text-sm min-h-[100px]"
                         value={generatedListing.flipkart_description}
-                        onChange={(e) => setGeneratedListing({...generatedListing, flipkart_description: e.target.value})}
+                        onChange={(e) => setGeneratedListing({ ...generatedListing, flipkart_description: e.target.value })}
                       />
                     </div>
                   </CardContent>
                 </Card>
               </TabsContent>
-              
+
               {/* A+ Content Tab */}
               <TabsContent value="aplus">
                 <Card className="border-amber-200 shadow-sm">
@@ -674,20 +674,20 @@ export default function ListingStudioPage() {
                         <p>A+ Content (Amazon) and Rich Catalog (Flipkart) are visual upgrades added AFTER your standard product is published. Once you hit <b>Publish to Both</b> above, wait for the listing to go live. Then, copy and paste this text into the respective A+ Builders alongside your lifestyle photos.</p>
                       </div>
                     </div>
-                    
+
                     {generatedListing?.a_plus_content ? (
                       <div className="space-y-6">
                         {/* Brand Story */}
                         <div className="space-y-2 border-b pb-4">
                           <Label className="text-xs font-bold text-slate-400 uppercase">Brand Story Hook</Label>
                           <div className="flex gap-2">
-                            <Textarea 
+                            <Textarea
                               readOnly
                               className="text-slate-700 min-h-[60px]"
                               value={generatedListing.a_plus_content.brand_story_hook}
                             />
-                            <Button 
-                              variant="outline" 
+                            <Button
+                              variant="outline"
                               onClick={() => {
                                 navigator.clipboard.writeText(generatedListing.a_plus_content.brand_story_hook);
                                 toast({ title: "Copied!", description: "Brand Story copied to clipboard." });
@@ -704,16 +704,16 @@ export default function ListingStudioPage() {
                           <div className="flex gap-2">
                             <Input readOnly value={generatedListing.a_plus_content.feature_1_headline} className="font-semibold text-slate-900" />
                             <Button variant="outline" onClick={() => {
-                                navigator.clipboard.writeText(generatedListing.a_plus_content.feature_1_headline);
-                                toast({ title: "Copied!", description: "Headline copied." });
-                              }}>Copy</Button>
+                              navigator.clipboard.writeText(generatedListing.a_plus_content.feature_1_headline);
+                              toast({ title: "Copied!", description: "Headline copied." });
+                            }}>Copy</Button>
                           </div>
                           <div className="flex gap-2 mt-2">
                             <Textarea readOnly value={generatedListing.a_plus_content.feature_1_body} className="text-slate-600 min-h-[80px]" />
                             <Button variant="outline" onClick={() => {
-                                navigator.clipboard.writeText(generatedListing.a_plus_content.feature_1_body);
-                                toast({ title: "Copied!", description: "Body text copied." });
-                              }}>Copy</Button>
+                              navigator.clipboard.writeText(generatedListing.a_plus_content.feature_1_body);
+                              toast({ title: "Copied!", description: "Body text copied." });
+                            }}>Copy</Button>
                           </div>
                         </div>
 
@@ -725,19 +725,19 @@ export default function ListingStudioPage() {
                           <div className="flex gap-2">
                             <Input readOnly value={generatedListing.a_plus_content.feature_2_headline} className="font-semibold text-slate-900" />
                             <Button variant="outline" onClick={() => {
-                                navigator.clipboard.writeText(generatedListing.a_plus_content.feature_2_headline);
-                                toast({ title: "Copied!", description: "Headline copied." });
-                              }}>Copy</Button>
+                              navigator.clipboard.writeText(generatedListing.a_plus_content.feature_2_headline);
+                              toast({ title: "Copied!", description: "Headline copied." });
+                            }}>Copy</Button>
                           </div>
                           <div className="flex gap-2 mt-2">
                             <Textarea readOnly value={generatedListing.a_plus_content.feature_2_body} className="text-slate-600 min-h-[80px]" />
                             <Button variant="outline" onClick={() => {
-                                navigator.clipboard.writeText(generatedListing.a_plus_content.feature_2_body);
-                                toast({ title: "Copied!", description: "Body text copied." });
-                              }}>Copy</Button>
+                              navigator.clipboard.writeText(generatedListing.a_plus_content.feature_2_body);
+                              toast({ title: "Copied!", description: "Body text copied." });
+                            }}>Copy</Button>
                           </div>
                         </div>
-                        
+
                         {/* Feature 3 */}
                         <div className="space-y-2 pb-2">
                           <Label className="text-xs font-bold text-slate-400 uppercase flex justify-between">
@@ -746,16 +746,16 @@ export default function ListingStudioPage() {
                           <div className="flex gap-2">
                             <Input readOnly value={generatedListing.a_plus_content.feature_3_headline} className="font-semibold text-slate-900" />
                             <Button variant="outline" onClick={() => {
-                                navigator.clipboard.writeText(generatedListing.a_plus_content.feature_3_headline);
-                                toast({ title: "Copied!", description: "Headline copied." });
-                              }}>Copy</Button>
+                              navigator.clipboard.writeText(generatedListing.a_plus_content.feature_3_headline);
+                              toast({ title: "Copied!", description: "Headline copied." });
+                            }}>Copy</Button>
                           </div>
                           <div className="flex gap-2 mt-2">
                             <Textarea readOnly value={generatedListing.a_plus_content.feature_3_body} className="text-slate-600 min-h-[80px]" />
                             <Button variant="outline" onClick={() => {
-                                navigator.clipboard.writeText(generatedListing.a_plus_content.feature_3_body);
-                                toast({ title: "Copied!", description: "Body text copied." });
-                              }}>Copy</Button>
+                              navigator.clipboard.writeText(generatedListing.a_plus_content.feature_3_body);
+                              toast({ title: "Copied!", description: "Body text copied." });
+                            }}>Copy</Button>
                           </div>
                         </div>
 
@@ -795,27 +795,27 @@ export default function ListingStudioPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>SKU</Label>
-                    <Input value={amazonCommerceData.sku} onChange={(e) => setAmazonCommerceData({...amazonCommerceData, sku: e.target.value})} placeholder="e.g. BOTTLE-01" />
+                    <Input value={amazonCommerceData.sku} onChange={(e) => setAmazonCommerceData({ ...amazonCommerceData, sku: e.target.value })} placeholder="e.g. BOTTLE-01" />
                   </div>
                   <div className="space-y-2">
                     <Label>Quantity</Label>
-                    <Input type="number" value={amazonCommerceData.quantity} onChange={(e) => setAmazonCommerceData({...amazonCommerceData, quantity: e.target.value})} placeholder="100" />
+                    <Input type="number" value={amazonCommerceData.quantity} onChange={(e) => setAmazonCommerceData({ ...amazonCommerceData, quantity: e.target.value })} placeholder="100" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Selling Price (₹)</Label>
-                    <Input type="number" value={amazonCommerceData.selling_price} onChange={(e) => setAmazonCommerceData({...amazonCommerceData, selling_price: e.target.value})} placeholder="999" />
+                    <Input type="number" value={amazonCommerceData.selling_price} onChange={(e) => setAmazonCommerceData({ ...amazonCommerceData, selling_price: e.target.value })} placeholder="999" />
                   </div>
                   <div className="space-y-2">
                     <Label>MRP (₹)</Label>
-                    <Input type="number" value={amazonCommerceData.mrp} onChange={(e) => setAmazonCommerceData({...amazonCommerceData, mrp: e.target.value})} placeholder="1499" />
+                    <Input type="number" value={amazonCommerceData.mrp} onChange={(e) => setAmazonCommerceData({ ...amazonCommerceData, mrp: e.target.value })} placeholder="1499" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Barcode Type</Label>
-                    <Select value={amazonCommerceData.product_id_type} onValueChange={(val) => setAmazonCommerceData({...amazonCommerceData, product_id_type: val})}>
+                    <Select value={amazonCommerceData.product_id_type} onValueChange={(val) => setAmazonCommerceData({ ...amazonCommerceData, product_id_type: val })}>
                       <SelectTrigger><SelectValue placeholder="Type" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="UPC">UPC</SelectItem>
@@ -827,7 +827,7 @@ export default function ListingStudioPage() {
                   </div>
                   <div className="space-y-2">
                     <Label>Barcode ID</Label>
-                    <Input value={amazonCommerceData.product_id} onChange={(e) => setAmazonCommerceData({...amazonCommerceData, product_id: e.target.value})} placeholder={amazonCommerceData.product_id_type === 'GCID' ? 'Optional' : '890123...'} />
+                    <Input value={amazonCommerceData.product_id} onChange={(e) => setAmazonCommerceData({ ...amazonCommerceData, product_id: e.target.value })} placeholder={amazonCommerceData.product_id_type === 'GCID' ? 'Optional' : '890123...'} />
                   </div>
                 </div>
               </div>
@@ -839,27 +839,27 @@ export default function ListingStudioPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>SKU</Label>
-                    <Input value={flipkartCommerceData.sku} onChange={(e) => setFlipkartCommerceData({...flipkartCommerceData, sku: e.target.value})} placeholder="e.g. BOTTLE-01" />
+                    <Input value={flipkartCommerceData.sku} onChange={(e) => setFlipkartCommerceData({ ...flipkartCommerceData, sku: e.target.value })} placeholder="e.g. BOTTLE-01" />
                   </div>
                   <div className="space-y-2">
                     <Label>Quantity</Label>
-                    <Input type="number" value={flipkartCommerceData.quantity} onChange={(e) => setFlipkartCommerceData({...flipkartCommerceData, quantity: e.target.value})} placeholder="100" />
+                    <Input type="number" value={flipkartCommerceData.quantity} onChange={(e) => setFlipkartCommerceData({ ...flipkartCommerceData, quantity: e.target.value })} placeholder="100" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Selling Price (₹)</Label>
-                    <Input type="number" value={flipkartCommerceData.selling_price} onChange={(e) => setFlipkartCommerceData({...flipkartCommerceData, selling_price: e.target.value})} placeholder="999" />
+                    <Input type="number" value={flipkartCommerceData.selling_price} onChange={(e) => setFlipkartCommerceData({ ...flipkartCommerceData, selling_price: e.target.value })} placeholder="999" />
                   </div>
                   <div className="space-y-2">
                     <Label>MRP (₹)</Label>
-                    <Input type="number" value={flipkartCommerceData.mrp} onChange={(e) => setFlipkartCommerceData({...flipkartCommerceData, mrp: e.target.value})} placeholder="1499" />
+                    <Input type="number" value={flipkartCommerceData.mrp} onChange={(e) => setFlipkartCommerceData({ ...flipkartCommerceData, mrp: e.target.value })} placeholder="1499" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Barcode Type</Label>
-                    <Select value={flipkartCommerceData.product_id_type} onValueChange={(val) => setFlipkartCommerceData({...flipkartCommerceData, product_id_type: val})}>
+                    <Select value={flipkartCommerceData.product_id_type} onValueChange={(val) => setFlipkartCommerceData({ ...flipkartCommerceData, product_id_type: val })}>
                       <SelectTrigger><SelectValue placeholder="Type" /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="UPC">UPC</SelectItem>
@@ -871,7 +871,7 @@ export default function ListingStudioPage() {
                   </div>
                   <div className="space-y-2">
                     <Label>Barcode ID</Label>
-                    <Input value={flipkartCommerceData.product_id} onChange={(e) => setFlipkartCommerceData({...flipkartCommerceData, product_id: e.target.value})} placeholder={flipkartCommerceData.product_id_type === 'GCID' ? 'Optional' : '890123...'} />
+                    <Input value={flipkartCommerceData.product_id} onChange={(e) => setFlipkartCommerceData({ ...flipkartCommerceData, product_id: e.target.value })} placeholder={flipkartCommerceData.product_id_type === 'GCID' ? 'Optional' : '890123...'} />
                   </div>
                 </div>
               </div>
@@ -880,12 +880,12 @@ export default function ListingStudioPage() {
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsPublishModalOpen(false)}>Cancel</Button>
-            <Button 
-              onClick={confirmCommerceData} 
+            <Button
+              onClick={confirmCommerceData}
               className={
-                targetPlatform === 'amazon' ? 'bg-amazon text-black hover:bg-amazon/90' : 
-                targetPlatform === 'flipkart' ? 'bg-flipkart text-white hover:bg-flipkart/90' :
-                'bg-gradient-to-r from-orange-500 to-blue-600 text-white font-bold'
+                targetPlatform === 'amazon' ? 'bg-amazon text-black hover:bg-amazon/90' :
+                  targetPlatform === 'flipkart' ? 'bg-flipkart text-white hover:bg-flipkart/90' :
+                    'bg-gradient-to-r from-orange-500 to-blue-600 text-white font-bold'
               }
             >
               Review Final Listing
@@ -898,7 +898,7 @@ export default function ListingStudioPage() {
         <DialogContent className="sm:max-w-[900px] max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold flex items-center gap-2">
-              <Sparkles className="text-blue-500 w-6 h-6" /> 
+              <Sparkles className="text-blue-500 w-6 h-6" />
               Final Review
             </DialogTitle>
             <DialogDescription>
@@ -914,7 +914,7 @@ export default function ListingStudioPage() {
                   <p className="text-xs font-bold text-slate-400 uppercase">Target Platform</p>
                   <p className="font-bold uppercase text-blue-600">{targetPlatform}</p>
                 </div>
-                
+
                 {(targetPlatform === 'amazon' || targetPlatform === 'both') && (
                   <div className="space-y-2">
                     <p className="text-xs font-bold text-orange-500 uppercase border-b pb-1">Amazon Listing Data</p>
@@ -922,11 +922,11 @@ export default function ListingStudioPage() {
                     <ul className="list-disc pl-4 text-xs text-slate-600 space-y-1">
                       {(generatedListing?.amazon_bullets || []).map((b: string, i: number) => <li key={i}>{b}</li>)}
                     </ul>
-                    <div className="text-xs text-slate-500 bg-slate-100 p-2 rounded prose prose-sm max-w-none" dangerouslySetInnerHTML={{__html: generatedListing?.amazon_description || ""}} />
+                    <div className="text-xs text-slate-500 bg-slate-100 p-2 rounded prose prose-sm max-w-none" dangerouslySetInnerHTML={{ __html: generatedListing?.amazon_description || "" }} />
                     <p className="text-xs font-mono text-slate-400">Search Terms: {generatedListing?.amazon_search_terms}</p>
                   </div>
                 )}
-                
+
                 {(targetPlatform === 'flipkart' || targetPlatform === 'both') && (
                   <div className="space-y-2 pt-2">
                     <p className="text-xs font-bold text-blue-500 uppercase border-b pb-1">Flipkart Listing Data</p>
@@ -949,7 +949,7 @@ export default function ListingStudioPage() {
                   </ul>
                 </div>
               )}
-              
+
               {(targetPlatform === 'flipkart' || targetPlatform === 'both') && (
                 <div className="border rounded-md p-4 bg-blue-50/30">
                   <h4 className="font-bold text-blue-700 mb-2 border-b border-blue-100 pb-2">Flipkart Pricing</h4>
@@ -972,13 +972,13 @@ export default function ListingStudioPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      
+
       {/* Top-up Dialog */}
       <Dialog open={isTopUpOpen} onOpenChange={setIsTopUpOpen}>
         <DialogContent className="sm:max-w-[550px] p-6 max-h-[90vh] overflow-y-auto overflow-x-hidden">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold flex items-center gap-2">
-              <Wallet className="text-indigo-600 w-6 h-6" /> 
+              <Wallet className="text-indigo-600 w-6 h-6" />
               Top-up SKU Credits
             </DialogTitle>
             <DialogDescription>
@@ -988,11 +988,10 @@ export default function ListingStudioPage() {
 
           <div className="grid grid-cols-2 gap-3 py-2">
             {(CREDIT_PACKS[user?.subscriptionTier || "basic"] || CREDIT_PACKS["basic"]).map((pack) => (
-              <div 
-                key={pack.id} 
-                className={`border-2 rounded-xl p-3 cursor-pointer transition-all flex flex-col justify-center ${
-                  selectedCreditPack?.id === pack.id ? 'border-indigo-600 bg-indigo-50 shadow-sm' : 'border-slate-200 hover:border-indigo-300 hover:bg-slate-50'
-                }`}
+              <div
+                key={pack.id}
+                className={`border-2 rounded-xl p-3 cursor-pointer transition-all flex flex-col justify-center ${selectedCreditPack?.id === pack.id ? 'border-indigo-600 bg-indigo-50 shadow-sm' : 'border-slate-200 hover:border-indigo-300 hover:bg-slate-50'
+                  }`}
                 onClick={() => setSelectedCreditPack(pack)}
               >
                 <div className="flex justify-between items-start mb-1">
@@ -1006,7 +1005,7 @@ export default function ListingStudioPage() {
 
           <DialogFooter>
             <Button variant="ghost" onClick={() => setIsTopUpOpen(false)}>Cancel</Button>
-            <Button 
+            <Button
               disabled={!selectedCreditPack}
               className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8"
               onClick={() => {
