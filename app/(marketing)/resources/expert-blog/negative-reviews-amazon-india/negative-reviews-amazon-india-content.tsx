@@ -19,6 +19,7 @@ import FeatureCTA from "../components/FeatureCTA";
 import StepsList from "../components/NumberedCards";
 import NumberedCards from "../components/NumberedCards";
 import { title } from "process";
+import Breadcrumb from "../components/Breadcrumb";
 
 export const dynamic = "force-static";
 
@@ -872,60 +873,21 @@ export default function NegativeReviewsAmazonIndiaContent() {
       {/* ═══ NAV ══════════════════════════════════════════════════════════════ */}
       <MarketingHeader />
 
-      {/* BREADCRUMB */}
-      <div
-        className="breadcrumb"
-        style={{
-          marginTop: 80,
-          background: resolvedTheme === "dark" ? "#0f172a" : "#F5F8FF",
-          borderBottom:
-            resolvedTheme === "dark"
-              ? "1px solid #1e293b"
-              : "1px solid #E5E7EB",
-          padding: "8px 0",
-        }}
-      >
-        <div
-          className="breadcrumb-inner"
-          style={{ color: resolvedTheme === "dark" ? "#94a3b8" : "#94A3B8" }}
-        >
-          <Link
-            href="/"
-            style={{
-              color: resolvedTheme === "dark" ? "#cbd5e1" : "#64748B",
-              fontWeight: 500,
-              textDecoration: "none",
-            }}
-          >
-            Home
-          </Link>
-          <span
-            style={{ color: resolvedTheme === "dark" ? "#475569" : "#cbd5e1" }}
-          >
-            ›
-          </span>
-          <Link
-            href="/resources/expert-blog"
-            style={{
-              color: resolvedTheme === "dark" ? "#cbd5e1" : "#64748B",
-              fontWeight: 500,
-              textDecoration: "none",
-            }}
-          >
-            Blog
-          </Link>
-          <span
-            style={{ color: resolvedTheme === "dark" ? "#475569" : "#cbd5e1" }}
-          >
-            ›
-          </span>
-          <span
-            style={{ color: resolvedTheme === "dark" ? "#64748b" : "#94A3B8" }}
-          >
-            Competitor Undercutting Your Amazon India Price
-          </span>
-        </div>
-      </div>
+      <Breadcrumb
+        items={[
+          {
+            label: "Home",
+            href: "/",
+          },
+          {
+            label: "Blog",
+            href: "/resources/expert-blog",
+          },
+          {
+            label: "Negative Reviews Impact Amazon India Sales",
+          },
+        ]}
+      />
 
       {/* HERO SECTION */}
       <HeroSection
