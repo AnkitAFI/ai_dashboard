@@ -351,48 +351,6 @@ export default function Subscription() {
           Unlock the full potential of AI-powered analytics. Pick the plan that fits your growth.
         </p>
 
-        {/* AI usage bar */}
-        {aiUsage.limit > 0 && aiUsage.limit !== Infinity && (
-          <div className={cn(
-            "mt-4 rounded-2xl p-5 max-w-sm mx-auto border shadow-sm",
-            isDark ? "bg-slate-900 border-slate-850" : "bg-white border-slate-200"
-          )}>
-            <div className="flex items-center justify-between mb-2.5">
-              <p className={cn("text-xs font-bold uppercase tracking-wider", isDark ? "text-slate-400" : "text-slate-500")}>
-                AI Chat Usage This Month
-              </p>
-              <span className={cn(
-                "text-xs font-extrabold",
-                limitReached 
-                  ? "text-rose-600" 
-                  : isDark 
-                    ? "text-[#AAF0FF]" 
-                    : "text-sky-700"
-              )}>
-                {aiUsage.used} / {aiUsage.limit}
-              </span>
-            </div>
-            <div className={cn("h-2.5 rounded-full overflow-hidden", isDark ? "bg-slate-800" : "bg-slate-100")}>
-              <div
-                className={cn(
-                  "h-full rounded-full transition-all duration-700",
-                  limitReached
-                    ? "bg-gradient-to-r from-rose-400 to-rose-600"
-                    : usagePct > 75
-                      ? "bg-gradient-to-r from-amber-400 to-orange-500"
-                      : "bg-gradient-to-r from-sky-500 to-blue-600"
-                )}
-                style={{ width: `${usagePct}%` }}
-              />
-            </div>
-            {limitReached && (
-              <p className="text-xs text-rose-600 mt-2 font-semibold flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" />
-                Limit reached! Upgrade for more AI chats.
-              </p>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Plans Grid */}

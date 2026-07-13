@@ -1005,7 +1005,7 @@ def _get_db_vocabulary(db: Session) -> set:
                     vocab.add(word.lower())
                     
         # 2. Top 500 words from Amazon product titles
-        res_am_words = db.execute(text("""
+        res_am_words = db.execute(text(r"""
             SELECT word FROM (
                 SELECT regexp_split_to_table(LOWER(product_title), '\s+') AS word 
                 FROM rapidapi_amazon_products
@@ -1021,7 +1021,7 @@ def _get_db_vocabulary(db: Session) -> set:
                 vocab.add(row[0])
                 
         # 3. Top 500 words from Flipkart product titles
-        res_fk_words = db.execute(text("""
+        res_fk_words = db.execute(text(r"""
             SELECT word FROM (
                 SELECT regexp_split_to_table(LOWER(product_title), '\s+') AS word 
                 FROM rapidapi_flipkart_products

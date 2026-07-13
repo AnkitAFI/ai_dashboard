@@ -895,6 +895,7 @@ export default function AdminDashboard() {
   const [filterTier, setFilterTier] = useState("all");
   const [filterVerified, setFilterVerified] = useState("all");
   const [filterActive, setFilterActive] = useState("all");
+  const [filterMonth, setFilterMonth] = useState("all");
   const [lastUpd, setLastUpd] = useState(new Date());
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [expandedPromoId, setExpandedPromoId] = useState<number | null>(null);
@@ -1050,6 +1051,17 @@ export default function AdminDashboard() {
     return data;
   }, [users]);
 
+  const uniqueMonths = useMemo(() => {
+    const months = new Set<string>();
+    users.forEach(u => {
+      if (u.created_at) {
+        const d = new Date(u.created_at);
+        months.add(d.toLocaleDateString("en-IN", { month: "short", year: "numeric" }));
+      }
+    });
+    return Array.from(months).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+  }, [users]);
+
   const filtered = users
     .filter(u => {
       const q = search.toLowerCase();
@@ -1067,7 +1079,10 @@ export default function AdminDashboard() {
         filterActive === "all" ||
         (filterActive === "active" && u.is_active !== false) ||
         (filterActive === "deleted" && u.is_active === false);
-      return matchesSearch && matchesTier && matchesVerified && matchesActive;
+      const matchesMonth = filterMonth === "all" || (
+        u.created_at && new Date(u.created_at).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) === filterMonth
+      );
+      return matchesSearch && matchesTier && matchesVerified && matchesActive && matchesMonth;
     })
     .sort((a, b) => {
       const av = a[sortField] ?? "";
@@ -1367,6 +1382,10 @@ export default function AdminDashboard() {
                   <option value="all">All Accounts</option>
                   <option value="active">Active</option>
                   <option value="deleted">Deleted</option>
+                </select>
+                <select value={filterMonth} onChange={e => setFilterMonth(e.target.value)} className="tbl-select">
+                  <option value="all">All Months</option>
+                  {uniqueMonths.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
               </div>
             </div>
