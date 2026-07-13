@@ -425,7 +425,7 @@ function CompetitorAnalysisContent() {
 
   // ── Load persisted pins from Postgres on mount ────────────────────────────
   useEffect(() => {
-    if (!user?.email && !sellerId) return;
+    if (!user?.email || !sellerId) return;
     const params = new URLSearchParams();
     if (user?.email) params.append("user_email", user.email);
     if (sellerId)    params.append("seller_id", sellerId);

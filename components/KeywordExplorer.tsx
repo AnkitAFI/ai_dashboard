@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import { API_BASE_URL } from "@/lib/config";
 
 import {
@@ -233,7 +234,7 @@ function QuickTrackModal({
         onKeywordAdded();
         onClose();
       } else {
-        showToast("Error", data.detail?.message ?? "Failed to track keyword", "error");
+        showToast("Error", sanitizeApiError(data.detail?.message ?? data.detail, "Failed to track keyword. Please try again."), "error");
       }
     } catch {
       showToast("Network Error", "Unable to connect to service.", "error");
@@ -473,7 +474,7 @@ export default function KeywordExplorer({
       if (res.ok) {
         setStrategyText(resJson.strategy || "");
       } else {
-        setStrategyError(resJson.detail?.message ?? "Error generating strategy");
+        setStrategyError(sanitizeApiError(resJson.detail?.message ?? resJson.detail, "Error generating strategy. Please try again."));
       }
     } catch (err) {
       setStrategyError("Network error. Unable to load strategy.");
@@ -506,7 +507,7 @@ export default function KeywordExplorer({
         if (overrideKeyword) setKeyword(overrideKeyword);
         fetchStrategy(searchVal, platform);
       } else {
-        showToast("Search failed", resJson.detail?.message ?? "Error exploring keyword", "error");
+        showToast("Search failed", sanitizeApiError(resJson.detail?.message ?? resJson.detail, "Error exploring keyword. Please try again."), "error");
       }
     } catch (err) {
       showToast("Network Error", "Could not query details from server.", "error");

@@ -9,7 +9,7 @@ import { useTheme } from "next-themes";
 import {
   Pin, PinOff, Package, RefreshCw, Menu,
   Star, Flame, ArrowUpRight, ArrowDownRight,
-  Minus, Crown, Swords, AlertTriangle,
+  Minus, Crown, Swords, AlertTriangle, Store,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -190,7 +190,7 @@ function ListingAuditContent() {
 
   // ── Load watchlist from Postgres ──────────────────────────────────────────
   const loadWatchlist = () => {
-    if (!user?.email && !sellerId) { setLoading(false); return; }
+    if (!user?.email || !sellerId) { setLoading(false); return; }
     setLoading(true);
     setError(null);
     const params = new URLSearchParams();
@@ -311,7 +311,7 @@ function ListingAuditContent() {
         )}
 
         {/* Error */}
-        {isPremium && !loading && error && (
+        {isPremium && !loading && sellerId && error && (
           <div className={`border rounded-2xl p-4 flex items-start gap-3 ${isDark ? 'bg-red-900/20 border-red-900/50' : 'bg-red-50 border-red-200'}`}>
             <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
             <div>
@@ -324,8 +324,29 @@ function ListingAuditContent() {
           </div>
         )}
 
+        {/* Missing Seller ID State */}
+        {isPremium && !loading && !sellerId && (
+          <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center ${isDark ? 'bg-orange-900/30' : 'bg-orange-100'}`}>
+              <Store className={`w-8 h-8 ${isDark ? 'text-orange-400' : 'text-orange-500'}`} />
+            </div>
+            <div>
+              <p className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>Connect your store</p>
+              <p className={`text-sm mt-1 max-w-xs mx-auto ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                A seller ID is required to use the Listing Audit. Please link your store on the Dashboard.
+              </p>
+            </div>
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-full font-bold text-sm shadow hover:shadow-md hover:scale-105 transition-all"
+            >
+              Go to Dashboard
+            </button>
+          </div>
+        )}
+
         {/* Empty state */}
-        {isPremium && !loading && !error && items.length === 0 && (
+        {isPremium && !loading && sellerId && !error && items.length === 0 && (
           <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
             <div className={`w-16 h-16 rounded-full flex items-center justify-center ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
               <PinOff className={`w-8 h-8 ${isDark ? 'text-slate-500' : 'text-slate-300'}`} />

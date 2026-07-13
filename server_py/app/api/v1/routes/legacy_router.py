@@ -10806,7 +10806,7 @@ def track_ki_usage(
         if current_user.id != user_id:
             raise HTTPException(status_code=403, detail="Not authorized")
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         cycle_start = current_user.ki_cycle_start
         if cycle_start and cycle_start.tzinfo:
             cycle_start = cycle_start.replace(tzinfo=None)
@@ -10861,7 +10861,7 @@ def get_ki_usage(
         if current_user.id != user_id:
             raise HTTPException(status_code=403, detail="Not authorized")
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(timezone.utc).replace(tzinfo=None)
         cycle_start = current_user.ki_cycle_start
         if cycle_start and cycle_start.tzinfo:
             cycle_start = cycle_start.replace(tzinfo=None)

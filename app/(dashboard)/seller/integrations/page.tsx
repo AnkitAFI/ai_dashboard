@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { API_BASE_URL } from "@/lib/config";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import { CheckCircle2, Link as LinkIcon, Loader2, Sparkles } from "lucide-react";
 
 export default function IntegrationsPage() {
@@ -71,7 +72,7 @@ export default function IntegrationsPage() {
       } else {
         toast({
           title: "❌ Connection Failed",
-          description: data.detail || "Invalid Sandbox Keys",
+          description: sanitizeApiError(data.detail, "Invalid Sandbox Keys. Please check your credentials."),
           variant: "destructive",
         });
       }
@@ -93,8 +94,8 @@ export default function IntegrationsPage() {
   return (
     <div className="p-8 max-w-5xl mx-auto">
       <div className="mb-10 text-center">
-        <h1 className="text-4xl font-extrabold tracking-tight mb-3 text-slate-900">API Integrations</h1>
-        <p className="text-slate-500 max-w-2xl mx-auto text-lg">Connect your marketplace accounts to enable one-click publishing and syncing. All tokens are secured with military-grade AES encryption.</p>
+        <h1 className="text-4xl font-extrabold tracking-tight mb-3 text-slate-900 dark:text-slate-50">API Integrations</h1>
+        <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-lg">Connect your marketplace accounts to enable one-click publishing and syncing. All tokens are secured with military-grade AES encryption.</p>
       </div>
 
      
@@ -106,9 +107,9 @@ export default function IntegrationsPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="flex items-center gap-2 text-2xl font-bold text-slate-800">
+                <CardTitle className="flex items-center gap-2 text-2xl font-bold text-slate-800 dark:text-slate-200">
                   Amazon SP-API
-                  {amazonConnected && <CheckCircle2 className="h-6 w-6 text-emerald-500" />}
+                  {amazonConnected && <CheckCircle2 className="h-6 w-6 text-emerald-500 dark:text-emerald-400" />}
                 </CardTitle>
                 <CardDescription className="mt-2 text-sm font-medium">Connect to your Amazon Seller Central account.</CardDescription>
               </div>
@@ -119,18 +120,18 @@ export default function IntegrationsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {amazonConnected ? (
-              <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-lg flex flex-col gap-2">
-                <p className="text-emerald-800 font-medium text-sm flex items-center gap-2">
+              <div className="p-4 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-100 dark:border-emerald-900 rounded-lg flex flex-col gap-2">
+                <p className="text-emerald-800 dark:text-emerald-200 font-medium text-sm flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4" /> Connected & Secured
                 </p>
-                <p className="text-xs text-emerald-600">Your connection is active. You can now publish generated listings directly to Amazon.</p>
-                <Button variant="outline" size="sm" className="w-fit mt-2 border-emerald-200 hover:bg-emerald-100 text-emerald-700" onClick={handleConnectAmazon}>
+                <p className="text-xs text-emerald-600 dark:text-emerald-400">Your connection is active. You can now publish generated listings directly to Amazon.</p>
+                <Button variant="outline" size="sm" className="w-fit mt-2 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300" onClick={handleConnectAmazon}>
                   Reconnect
                 </Button>
               </div>
             ) : (
-              <div className="py-8 text-center bg-slate-50/50 rounded-xl border border-slate-100 mt-4">
-                <p className="text-sm text-slate-600 px-6 font-medium">Click below to securely authenticate with your Amazon seller account.</p>
+              <div className="py-8 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 mt-4">
+                <p className="text-sm text-slate-600 dark:text-slate-400 px-6 font-medium">Click below to securely authenticate with your Amazon seller account.</p>
               </div>
             )}
           </CardContent>
@@ -154,9 +155,9 @@ export default function IntegrationsPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="flex items-center gap-2 text-2xl font-bold text-slate-800">
+                <CardTitle className="flex items-center gap-2 text-2xl font-bold text-slate-800 dark:text-slate-200">
                   Flipkart Seller API
-                  {flipkartConnected && <CheckCircle2 className="h-6 w-6 text-emerald-500" />}
+                  {flipkartConnected && <CheckCircle2 className="h-6 w-6 text-emerald-500 dark:text-emerald-400" />}
                 </CardTitle>
                 <CardDescription className="mt-2 text-sm font-medium">Connect to your Flipkart Seller Hub.</CardDescription>
               </div>
@@ -167,18 +168,18 @@ export default function IntegrationsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {flipkartConnected ? (
-              <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-lg flex flex-col gap-2">
-                <p className="text-emerald-800 font-medium text-sm flex items-center gap-2">
+              <div className="p-4 bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-100 dark:border-emerald-900 rounded-lg flex flex-col gap-2">
+                <p className="text-emerald-800 dark:text-emerald-200 font-medium text-sm flex items-center gap-2">
                   <CheckCircle2 className="h-4 w-4" /> Connected & Secured
                 </p>
-                <p className="text-xs text-emerald-600">Your connection is active. You can now publish generated listings directly to Flipkart.</p>
-                <Button variant="outline" size="sm" className="w-fit mt-2 border-emerald-200 hover:bg-emerald-100 text-emerald-700" onClick={handleConnectFlipkart}>
+                <p className="text-xs text-emerald-600 dark:text-emerald-400">Your connection is active. You can now publish generated listings directly to Flipkart.</p>
+                <Button variant="outline" size="sm" className="w-fit mt-2 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300" onClick={handleConnectFlipkart}>
                   Reconnect
                 </Button>
               </div>
             ) : (
-              <div className="py-8 text-center bg-slate-50/50 rounded-xl border border-slate-100 mt-4">
-                <p className="text-sm text-slate-600 px-6 font-medium">Click below to securely authenticate with your Flipkart seller account.</p>
+              <div className="py-8 text-center bg-slate-50/50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800 mt-4">
+                <p className="text-sm text-slate-600 dark:text-slate-400 px-6 font-medium">Click below to securely authenticate with your Flipkart seller account.</p>
               </div>
             )}
           </CardContent>

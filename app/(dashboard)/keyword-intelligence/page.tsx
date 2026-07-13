@@ -745,23 +745,7 @@ function KeywordExplorerPanel({
       {/* Search Bar Section */}
       <Card className="shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-background opacity-100 relative">
         <CardContent className="p-5">
-          {/* Usage counter badge */}
-          {!isLocked && remainingSearches !== null && (
-            <div className="flex justify-end mb-3">
-              <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${
-                remainingSearches === 0
-                  ? "bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/40"
-                  : remainingSearches <= 1
-                  ? "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/40"
-                  : "bg-purple-50 text-purple-600 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800/40"
-              }`}>
-                {remainingSearches === 0
-                  ? "No searches left this month"
-                  : `${remainingSearches} of ${searchLimit} searches left`}
-              </span>
-            </div>
-          )}
-          <div className="flex flex-col md:flex-row gap-4 items-end">
+          <div className="flex flex-col md:flex-row gap-4 items-end pt-4">
             <div className="flex-1 space-y-2 w-full">
               <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Search Keyword</Label>
               <div className="relative">
@@ -1316,6 +1300,8 @@ function KeywordTrackerIntelligenceContent() {
   const { resolvedTheme } = useTheme();
   const isDark = mounted && resolvedTheme === "dark";
 
+  const { isLocked, isAtLimit, remaining: remainingSearches, limit: searchLimit, used, loading: usageLoading } = useKIUsage();
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -1374,8 +1360,36 @@ function KeywordTrackerIntelligenceContent() {
       <div className="space-y-6">
         <div className="max-w-7xl mx-auto space-y-6">
 
+          {/* Visual Usage Meter (Top Right Header) */}
+          <div className="flex justify-end pt-4 pr-4 sm:pr-0">
+            {!usageLoading && user && (
+              <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
+                <div className="flex items-center justify-between gap-3 mb-1">
+                  <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Searches used</p>
+                  <Badge className={`h-4 text-[10px] border-none px-1.5 ${user.subscriptionTier?.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : user.subscriptionTier?.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : user.subscriptionTier?.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+                    {(user.subscriptionTier || "free").toUpperCase()}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ 
+                        width: `${remainingSearches === null ? 0 : Math.min((used / searchLimit) * 100, 100)}%`, 
+                        background: (remainingSearches === null ? 0 : Math.min((used / searchLimit) * 100, 100)) >= 80 ? "#ef4444" : "#7F77DD" 
+                      }}
+                    />
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-600">
+                    {used}/{remainingSearches === null ? "∞" : searchLimit}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Page Header */}
-          <div className="text-center space-y-4 pt-4">
+          <div className="text-center space-y-4">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 rounded-2xl mb-2 shadow-inner">
               <Compass className="h-8 w-8 text-purple-600 dark:text-purple-400" />
             </div>

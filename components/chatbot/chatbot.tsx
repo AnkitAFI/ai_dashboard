@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import { useTheme } from "next-themes";
 import { API_BASE_URL } from "@/lib/config";
 import { useAuth } from "@/lib/auth-context";
@@ -207,7 +208,7 @@ function useStreamingChat() {
         }
       }
     } catch (err: any) {
-      if (err.name !== "AbortError") onError(err.message || "Stream failed");
+      if (err.name !== "AbortError") onError(sanitizeApiError(err.message, "Stream failed. Please try again."));
     }
   }, []);
 

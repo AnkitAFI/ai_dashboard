@@ -383,6 +383,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { LOCATIONS } from "@/lib/locations";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -448,7 +449,7 @@ export default function Settings() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || "Failed to delete account");
+        throw new Error(sanitizeApiError(errorData.detail, "Failed to delete account"));
       }
 
       toast({
@@ -462,7 +463,7 @@ export default function Settings() {
       console.error("Error deleting account:", error);
       toast({
         title: "Deletion failed",
-        description: error.message || "Could not delete your account. Please try again.",
+        description: sanitizeApiError(error.message, "Could not delete your account. Please try again."),
         variant: "destructive",
       });
     } finally {
@@ -603,7 +604,7 @@ export default function Settings() {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || "Failed to revoke session");
+        throw new Error(sanitizeApiError(errorData.detail, "Failed to revoke session"));
       }
       toast({
         title: "Session revoked",
@@ -614,7 +615,7 @@ export default function Settings() {
       console.error("Error revoking session:", error);
       toast({
         title: "Revocation failed",
-        description: error.message || "Could not log out the device.",
+        description: sanitizeApiError(error.message, "Could not log out the device."),
         variant: "destructive",
       });
     }
@@ -664,7 +665,7 @@ export default function Settings() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || "Failed to update profile");
+        throw new Error(sanitizeApiError(errorData.detail, "Failed to update profile"));
       }
 
       await refreshUser();

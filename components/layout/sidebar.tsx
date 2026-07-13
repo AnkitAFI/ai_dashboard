@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -307,7 +307,12 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
     }
   }, [pathname]);
 
+  const initialMount = useRef(true);
   useEffect(() => {
+    if (initialMount.current) {
+      initialMount.current = false;
+      return;
+    }
     localStorage.setItem("sidebar-mode", mode);
     window.dispatchEvent(new Event("sidebar-mode-changed"));
   }, [mode]);

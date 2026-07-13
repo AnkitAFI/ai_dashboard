@@ -781,7 +781,6 @@ function RankTrackerContent() {
           <Badge className={`text-xs font-bold ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-900" : tier === "basic" ? "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"}`}>
             {tier.toUpperCase()}
           </Badge>
-          {profile && (
             <button
               onClick={handleRefresh}
               disabled={refreshing}

@@ -484,6 +484,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { LOCATIONS } from "@/lib/locations";
 import { CheckCircle2, Moon, Sun, Eye, EyeOff } from "lucide-react";
 import { useTheme } from "next-themes";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import ExpertButton from "../components/Expertbutton";
 import VideoButton from "../components/Videobutton";
 
@@ -739,13 +740,13 @@ export default function Signup() {
         ) {
           toast({
             title: "Account Deleted",
-            description: errorData.detail,
+            description: sanitizeApiError(errorData.detail, "Something went wrong. Please try again."),
             variant: "destructive",
           });
         } else {
           toast({
             title: "Signup failed",
-            description: errorData.detail || "An error occurred.",
+            description: sanitizeApiError(errorData.detail, "An error occurred. Please try again."),
             variant: "destructive",
           });
         }
@@ -780,7 +781,7 @@ export default function Signup() {
       console.error(err);
       toast({
         title: "Signup failed",
-        description: err.message || "An error occurred during signup.",
+        description: sanitizeApiError(err.message, "An error occurred during signup. Please try again."),
         variant: "destructive",
       });
     } finally {

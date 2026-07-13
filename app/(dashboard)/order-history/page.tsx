@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import { API_BASE_URL } from "@/lib/config";
 import { useAuth } from "@/lib/auth-context";
 import {
@@ -292,12 +293,12 @@ export default function OrderHistory() {
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        throw new Error(d.detail || "Billing details unavailable. Please refresh.");
+        throw new Error(sanitizeApiError(d.detail, "Billing details unavailable. Please refresh."));
       }
       const data: PaymentOrder[] = await res.json();
       setOrders(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Couldn't load order history. Please refresh.");
+      setError(err instanceof Error ? sanitizeApiError(err.message, "Couldn't load order history. Please refresh.") : "Couldn't load order history. Please refresh.");
     } finally {
       setLoading(false);
     }

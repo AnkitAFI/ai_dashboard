@@ -1356,6 +1356,7 @@ export default function AdminDashboard() {
                   <option value="free">Free</option>
                   <option value="basic">Basic</option>
                   <option value="premium">Premium</option>
+                  <option value="enterprise">Enterprise</option>
                 </select>
                 <select value={filterVerified} onChange={e => setFilterVerified(e.target.value)} className="tbl-select">
                   <option value="all">All Status</option>
@@ -1404,7 +1405,8 @@ export default function AdminDashboard() {
                       free: { color: "#64748b", bg: "#f1f5f9", border: "#e2e8f0" },
                       basic: { color: "#6366f1", bg: "#ede9fe", border: "#c4b5fd" },
                       premium: { color: "#f59e0b", bg: "#fef3c7", border: "#fde68a" },
-                    }[u.subscription_tier];
+                      enterprise: { color: "#c026d3", bg: "#fdf4ff", border: "#f5d0fe" },
+                    }[u.subscription_tier] || { color: "#64748b", bg: "#f1f5f9", border: "#e2e8f0" };
                     const isOpen = expandedId === u.id;
                     const syncColor = {
                       COMPLETED: "#10b981", IDLE: "#94a3b8", PENDING: "#f59e0b", FAILED: "#ef4444",

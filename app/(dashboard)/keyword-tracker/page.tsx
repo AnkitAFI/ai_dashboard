@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import { API_BASE_URL } from "@/lib/config";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -349,8 +350,8 @@ export default function KeywordTracker() {
       });
       if (!res.ok) {
         const err = await res.json();
-        if (res.status === 403) { setShowUpgradeModal(true); showToast("Tracking Limit Reached", err.detail, "error"); return; }
-        throw new Error(err.detail || "Couldn't fetch products. Please try again.");
+        if (res.status === 403) { setShowUpgradeModal(true); showToast("Tracking Limit Reached", sanitizeApiError(err.detail, "Tracking limit reached. Please upgrade your plan."), "error"); return; }
+        throw new Error(sanitizeApiError(err.detail, "Couldn't fetch products. Please try again."));
       }
       const data = await res.json();
       setProducts(data);
@@ -397,7 +398,7 @@ export default function KeywordTracker() {
         cache: 'no-store',
         body: JSON.stringify({ user_email: userEmail }),
       });
-      if (res.status === 429) { const err = await res.json(); showToast("Rate Limited", err.detail, "error"); return; }
+      if (res.status === 429) { const err = await res.json(); showToast("Rate Limited", sanitizeApiError(err.detail, "Too many requests. Please wait before trying again."), "error"); return; }
       if (!res.ok) throw new Error("Couldn't update ranks. Please try again.");
       const result = await res.json();
       showToast("Ranks Updated!", "All keyword ranks have been refreshed", "success");
@@ -415,10 +416,10 @@ export default function KeywordTracker() {
         credentials: "include",
         cache: 'no-store'
       });
-      if (!res.ok) throw new Error((await res.json()).detail || "Analysis failed");
+      if (!res.ok) throw new Error(sanitizeApiError((await res.json()).detail, "Analysis failed. Please try again."));
       setAiAnalysis(await res.json());
       showToast("AI Analysis Complete!", "Your keyword insights are ready", "success");
-    } catch (e: any) { showToast("Analysis Failed", e.message, "error"); }
+    } catch (e: any) { showToast("Analysis Failed", sanitizeApiError(e.message, "Analysis failed. Please try again."), "error"); }
     finally { setLoadingAI(false); }
   };
 
@@ -588,11 +589,33 @@ export default function KeywordTracker() {
 
           {/* Step 1: Fetch Products */}
           <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 backdrop-blur-none">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-slate-700 flex items-center gap-2">
-                <Package className="h-5 w-5 text-blue-600" />Step 1: Fetch Your Products
-              </CardTitle>
-              <CardDescription className="text-slate-500">Enter your Amazon Seller ID to load your products with reviews</CardDescription>
+            <CardHeader className="flex flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <CardTitle className="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                  <Package className="h-5 w-5 text-blue-600" />Step 1: Fetch Your Products
+                </CardTitle>
+                <CardDescription className="text-slate-500">Enter your Amazon Seller ID to load your products with reviews</CardDescription>
+              </div>
+              {userId && usageLimits && (
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${
+                    usageLimits.remaining === 0
+                      ? "bg-red-50 text-red-600 border-red-200"
+                      : usageLimits.remaining <= 1
+                      ? "bg-amber-50 text-amber-600 border-amber-200"
+                      : "bg-purple-50 text-purple-600 border-purple-200"
+                  }`}>
+                    {usageLimits.remaining === 0
+                      ? "Limit reached"
+                      : usageLimits.limit === -1
+                      ? "Unlimited trackings"
+                      : `${usageLimits.remaining} of ${usageLimits.limit} trackings left`}
+                  </span>
+                  <Badge className={`text-[10px] px-2 py-1 border-none ${usageLimits.subscription_tier?.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800" : usageLimits.subscription_tier?.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : usageLimits.subscription_tier?.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+                    {usageLimits.subscription_tier?.toUpperCase() || "FREE"}
+                  </Badge>
+                </div>
+              )}
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

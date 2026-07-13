@@ -1713,7 +1713,7 @@ def _ask_llama(prompt: str, ck: str) -> str:
 
 # ── Tier configuration ────────────────────────────────────────────────────────
 
-TIER_ORDER = {"free": 0, "basic": 1, "premium": 2}
+TIER_ORDER = {"free": 0, "basic": 1, "premium": 2, "enterprise": 3}
 
 TIER_LIMITS: dict[str, TierLimits] = {
     "free": TierLimits(
@@ -1734,8 +1734,13 @@ TIER_LIMITS: dict[str, TierLimits] = {
         alerts_email=True, alerts_whatsapp=True,
         keyword_suggestions=True, opportunity_score=True,
     ),
+    "enterprise": TierLimits(
+        keyword_limit=-1, product_limit=-1, history_days=9999,
+        competitor_limit=99, checks_per_day=24,
+        alerts_email=True, alerts_whatsapp=True,
+        keyword_suggestions=True, opportunity_score=True,
+    ),
 }
-
 
 # ── Internal helpers ──────────────────────────────────────────────────────────
 

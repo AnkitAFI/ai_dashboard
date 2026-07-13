@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import { API_BASE_URL } from "@/lib/config";
 import { usePathname, useRouter, useParams } from "next/navigation";
 
@@ -116,7 +117,7 @@ export default function SentimentProductsPage() {
         }
       } catch (error) {
         console.error("Error fetching sentiment products:", error);
-        setError(error instanceof Error ? error.message : "Product list failed to load. Please refresh.");
+        setError(error instanceof Error ? sanitizeApiError(error.message, "Product list failed to load. Please refresh.") : "Product list failed to load. Please refresh.");
       } finally {
         setIsLoading(false);
       }

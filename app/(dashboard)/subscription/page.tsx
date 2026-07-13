@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import { API_BASE_URL } from "@/lib/config";
 import { useAuth } from "@/lib/auth-context";
 import { useSubscriptionLimits } from "@/hooks/use-subscription-limits";
@@ -242,11 +243,11 @@ export default function Subscription() {
       );
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        throw new Error(d.detail || "Failed to load billing info.");
+        throw new Error(sanitizeApiError(d.detail, "Failed to load billing info."));
       }
       preview = await res.json();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Billing details unavailable. Please refresh.");
+      setError(err instanceof Error ? sanitizeApiError(err.message, "Billing details unavailable. Please refresh.") : "Billing details unavailable. Please refresh.");
       setPreviewLoadingPlan(null);
       return;
     } finally {

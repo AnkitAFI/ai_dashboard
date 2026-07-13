@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import { API_BASE_URL } from "@/lib/config";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -119,7 +120,7 @@ export default function Login() {
           }
         } else {
           setErrorMessage(
-            errorData.detail || "Login failed. Please try again.",
+            sanitizeApiError(errorData.detail, "Login failed. Please try again."),
           );
         }
         return;
@@ -166,7 +167,7 @@ export default function Login() {
         body: JSON.stringify({ email: forgotEmail }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || "Failed to send OTP");
+      if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Failed to send OTP. Please try again."));
       toast({
         title: "OTP Sent! 📧",
         description: "Please check your email for the 6-digit OTP code",
@@ -176,7 +177,7 @@ export default function Login() {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: sanitizeApiError(error.message, "Failed to send OTP. Please try again."),
         variant: "destructive",
       });
     } finally {
@@ -201,7 +202,7 @@ export default function Login() {
         body: JSON.stringify({ email: forgotEmail, otp }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || "Invalid OTP");
+      if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Invalid OTP. Please try again."));
       toast({
         title: "OTP Verified! ✅",
         description: "Now set your new password",
@@ -210,7 +211,7 @@ export default function Login() {
     } catch (error: any) {
       toast({
         title: "Verification Failed",
-        description: error.message,
+        description: sanitizeApiError(error.message, "Invalid OTP. Please try again."),
         variant: "destructive",
       });
     } finally {
@@ -258,7 +259,7 @@ export default function Login() {
         },
       );
       const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || "Password reset failed");
+      if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Password reset failed. Please try again."));
       toast({
         title: "Password Reset Successful! 🎉",
         description: "You can now login with your new password",
@@ -272,7 +273,7 @@ export default function Login() {
     } catch (error: any) {
       toast({
         title: "Reset Failed",
-        description: error.message,
+        description: sanitizeApiError(error.message, "Password reset failed. Please try again."),
         variant: "destructive",
       });
     } finally {
@@ -289,7 +290,7 @@ export default function Login() {
         body: JSON.stringify({ email: forgotEmail }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || "Failed to resend OTP");
+      if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Failed to resend OTP. Please try again."));
       toast({
         title: "OTP Resent! 📧",
         description: "A new OTP has been sent to your email",
@@ -299,7 +300,7 @@ export default function Login() {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: sanitizeApiError(error.message, "Failed to resend OTP. Please try again."),
         variant: "destructive",
       });
     } finally {

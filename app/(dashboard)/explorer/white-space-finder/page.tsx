@@ -534,6 +534,7 @@ function WhiteSpaceFinderContent() {
   const [watchlistItems,   setWatchlistItems]   = useState<WatchlistItem[]>([]);
   const [watchlistLoading, setWatchlistLoading] = useState(false);
   const [exporting,        setExporting]        = useState(false);
+  const [usageLimits,      setUsageLimits]      = useState<{count: number; limit: number; remaining: number; subscription_tier: string} | null>(null);
   const [ollamaStatus, setOllamaStatus] = useState<{
     status: "ready" | "no_model" | "offline" | "error" | "checking";
     model?: string;
@@ -565,9 +566,20 @@ function WhiteSpaceFinderContent() {
     }
   }, [userId]);
 
+  const fetchUsageLimits = useCallback(async () => {
+    if (!userId) return;
+    try {
+      const res = await axios.get(`${API}/white-space/usage/${userId}`);
+      setUsageLimits(res.data);
+    } catch {
+      // silent
+    }
+  }, [userId]);
+
   useEffect(() => {
     fetchWatchlist();
-  }, [fetchWatchlist]);
+    fetchUsageLimits();
+  }, [fetchWatchlist, fetchUsageLimits]);
 
   useEffect(() => {
     const q = searchParams.get("q");
@@ -801,8 +813,8 @@ function WhiteSpaceFinderContent() {
               </div>
             )} */}
 
-            {/* Scan counter — shown once a scan has been run */}
-            {result && (
+            {/* Scan counter — shown always if usageLimits or result is available */}
+            {(result || usageLimits) && (
               <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
                 <div className="flex items-center justify-between gap-3 mb-1">
                   <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Scans used</p>
@@ -814,29 +826,21 @@ function WhiteSpaceFinderContent() {
                   <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all duration-500"
-                      style={{ width: `${scanPct}%`, background: scanPct >= 80 ? "#ef4444" : "#7F77DD" }}
+                      style={{ 
+                        width: `${result ? scanPct : usageLimits?.limit !== -1 && usageLimits?.limit !== undefined ? Math.min(((usageLimits?.count || 0) / usageLimits.limit) * 100, 100) : 0}%`, 
+                        background: (result ? scanPct : usageLimits?.limit !== -1 && usageLimits?.limit !== undefined ? Math.min(((usageLimits?.count || 0) / usageLimits.limit) * 100, 100) : 0) >= 80 ? "#ef4444" : "#7F77DD" 
+                      }}
                     />
                   </div>
                   <span className="text-[11px] font-bold text-slate-600">
-                    {scansUsed}/{isPremium ? "∞" : scansLimit}
+                    {result ? scansUsed : (usageLimits?.count || 0)}/{isPremium ? "∞" : (result ? scansLimit : (usageLimits?.limit || 3))}
                   </span>
                 </div>
               </div>
             )}
-
-            {/* Tier badge — before first scan */}
-            {!result && (
-              authLoading ? (
-                <div className="h-5 w-16 bg-slate-200 rounded-full animate-pulse" />
-              ) : (
-                <Badge className={`text-[10px] border-none px-2 py-1 ${
-                  tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-violet-100 text-violet-800"
-                  : tier === "basic" ? "bg-amber-100 text-amber-800"
-                  : "bg-slate-100 text-slate-500"
-                }`}>
-                  {tier.toUpperCase()}
-                </Badge>
-              )
+            
+            {!result && !usageLimits && authLoading && (
+              <div className="h-5 w-16 bg-slate-200 rounded-full animate-pulse" />
             )}
 
             {/* Action buttons */}

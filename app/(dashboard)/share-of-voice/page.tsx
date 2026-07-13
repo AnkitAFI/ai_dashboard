@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import { useTheme } from "next-themes";
 import { API_BASE_URL as CONFIG_API_BASE_URL } from "@/lib/config";
 import axios from "axios";
@@ -464,7 +465,7 @@ export default function ShareOfVoice() {
         setTimeout(() => window.scrollTo({ top: 500, behavior: "smooth" }), 100);
       }
     } catch (err: any) {
-      const msg = err.response?.data?.detail || "Market data unavailable. Please retry shortly.";
+      const msg = sanitizeApiError(err.response?.data?.detail || err.message, "Market data unavailable. Please retry shortly.");
       if (err.response?.status === 403) setShowUpgradeModal(true);
       setError(msg);
       showToast("Analysis Failed", msg, "error");

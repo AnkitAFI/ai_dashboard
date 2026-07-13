@@ -375,6 +375,20 @@ def _get_tier_config(tier: str) -> Dict[str, Any]:
             "badges": True,
             "ai_market_summary": True,
         },
+        "enterprise": {
+            "scans_limit": 9_999_999,
+            "results_visible": 999,
+            "competitors": True,
+            "breakdown": True,
+            "trend": True,
+            "watchlist": True,
+            "export": True,
+            "ai_insights": True,
+            "entry_price": True,
+            "demand": True,
+            "badges": True,
+            "ai_market_summary": True,
+        },
     }.get(tier, {
         "scans_limit": 3, "results_visible": 3,
         "competitors": False, "breakdown": False, "trend": False,
@@ -778,12 +792,52 @@ Be specific — mention niche names and numbers."""
     return _static_market_summary(query, opportunities)
 
 
-def _inr(n: int) -> str:
     if n >= 100000:
         return f"₹{n/100000:.1f}L"
     if n >= 1000:
         return f"₹{n//1000}K"
     return f"₹{n}"
+
+
+# ── Endpoints ─────────────────────────────────────────────────────────────────
+
+def _count_scans_this_month(user_id: int, db: Session) -> int:
+    try:
+        row = db.execute(
+            text("""
+                SELECT COUNT(*) FROM white_space_scans 
+                WHERE user_id=:uid AND created_at > NOW() - INTERVAL '30 days'
+            """),
+            {"uid": user_id}
+        ).scalar()
+        return int(row or 0)
+    except Exception as e:
+        logger.error(f"Error counting scans: {e}")
+        return 0
+
+@router.get("/usage/{user_id}")
+def get_usage(
+    user_id: int,
+    current_user_id: str = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    """Get current usage and limits for white space finder"""
+    if str(current_user_id) != str(user_id):
+        raise HTTPException(403, "Not authorised")
+    
+    tier = get_user_tier(user_id, db)
+    config = _get_tier_config(tier)
+    used = _count_scans_this_month(user_id, db)
+    
+    limit = config["scans_limit"]
+    remaining = (limit - used) if limit != 9_999_999 else float("inf")
+    
+    return {
+        "count": used,
+        "limit": limit if limit != 9_999_999 else -1,
+        "remaining": remaining if remaining != float("inf") else -1,
+        "subscription_tier": tier
+    }
 
 
 # ── SQL queries ───────────────────────────────────────────────────────────────
