@@ -82,6 +82,17 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "24",
+    title: "Top Amazon India Sellers Habits",
+    excerpt:
+      "Discover the habits, strategies, and daily practices followed by top Amazon India sellers to increase rankings, improve conversions, and build sustainable ecommerce businesses.",
+    category: "Seller Tools & Strategy",
+    readTime: "11 min read",
+    image: "/top-amazon-india-sellers-habits_blogbanner.png",
+    route: "/resources/expert-blog/top-amazon-india-sellers-habits",
+    popular: true,
+  },
+  {
     id: "23",
     title: "Negative Reviews Impact Amazon India Sales",
     excerpt:
