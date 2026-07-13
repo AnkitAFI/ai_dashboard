@@ -365,12 +365,6 @@ def _build_invoice_pdf(order: "PaymentOrder") -> bytes:
          f"INR {order.base_amount:,}.00"],
     ]
     
-    if getattr(order, "gst_amount", 0):
-        gst_desc = f"GST @ {GST_RATE}% (CGST {GST_RATE//2}% + SGST {GST_RATE//2}%)"
-        if getattr(order, "gst_number", None):
-            gst_desc += f"\nGSTIN: {order.gst_number}"
-        rows.append(["2", gst_desc, f"+ ₹{order.gst_amount:,}"])
-
     # GST row
     if order.gst_amount:
         gst_desc = f"GST @ {GST_RATE}% (CGST {GST_RATE//2}% + SGST {GST_RATE//2}%)"
