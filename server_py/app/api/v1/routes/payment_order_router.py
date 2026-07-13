@@ -333,6 +333,12 @@ def _build_invoice_pdf(order: "PaymentOrder") -> bytes:
         ["1", f"{plan_label} Plan — Monthly\nPeriod: {get_ist_now().strftime('%B %Y')}",
          f"₹{order.base_amount:,}"],
     ]
+    
+    if getattr(order, "gst_amount", 0):
+        gst_desc = f"GST @ {GST_RATE}% (CGST {GST_RATE//2}% + SGST {GST_RATE//2}%)"
+        if getattr(order, "gst_number", None):
+            gst_desc += f"\nGSTIN: {order.gst_number}"
+        rows.append(["2", gst_desc, f"+ ₹{order.gst_amount:,}"])
 
     rows += [["", "", ""],
              ["", P("<b>Total Paid</b>", size=11, bold=True),
