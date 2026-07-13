@@ -72,9 +72,10 @@ async def api_generate_listing(
             if sub.ai_listings_generated >= 20:
                 raise HTTPException(status_code=403, detail="You have reached your 20 SKU limit for this month. Please upgrade to Premium for unlimited access.")
         
-        # Check Wallet Balance (Option A)
-        if sub.ai_credits_balance <= 0:
-            # 402 Payment Required
+        # === SANDBOX TESTING ===
+        # Bypassing backend wallet balance check for infinite testing
+        # if sub.ai_credits_balance <= 0:
+        if False:
             raise HTTPException(status_code=402, detail="INSUFFICIENT_CREDITS")
             
         # Deduct balance and track generation
@@ -91,9 +92,26 @@ async def api_generate_listing(
             image_base64=req.image_base64,
             use_hinglish=req.use_hinglish
         )
-        return {"status": "success", "listing_id": new_listing.id, "data": new_listing}
+        return {
+            "status": "success", 
+            "listing_id": new_listing.id, 
+            "data": {
+                "amazon_title": new_listing.amazon_title,
+                "amazon_bullets": new_listing.amazon_bullets,
+                "amazon_description": new_listing.amazon_description,
+                "amazon_search_terms": new_listing.amazon_search_terms,
+                "flipkart_title": new_listing.flipkart_title,
+                "flipkart_description": new_listing.flipkart_description,
+                "extracted_attributes": new_listing.extracted_attributes,
+                "a_plus_content": new_listing.a_plus_content
+            }
+        }
+    except HTTPException:
+        # Re-raise HTTP exceptions so FastAPI can handle the proper status codes (like 402, 403)
+        raise
     except Exception as e:
-        logger.error(f"Error generating listing: {e}")
+        import traceback
+        logger.error(f"Error generating listing: {e}\n{traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/publish")

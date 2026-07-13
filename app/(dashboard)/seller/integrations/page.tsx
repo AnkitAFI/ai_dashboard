@@ -11,6 +11,7 @@ export default function IntegrationsPage() {
   const { toast } = useToast();
   
   const [loading, setLoading] = useState(true);
+  const [testingAmazon, setTestingAmazon] = useState(false);
   
   const [amazonConnected, setAmazonConnected] = useState(false);
   const [flipkartConnected, setFlipkartConnected] = useState(false);
@@ -52,6 +53,39 @@ export default function IntegrationsPage() {
     window.location.href = `${API_BASE_URL}/api/integrations/flipkart/authorize`;
   };
 
+  const handleTestAmazonSandbox = async () => {
+    setTestingAmazon(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/integrations/test-amazon`, {
+        method: 'POST',
+        credentials: "include"
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.status === "success") {
+        toast({
+          title: "✅ Connection Successful",
+          description: "Amazon recognized your Developer Sandbox Keys!",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "❌ Connection Failed",
+          description: data.detail || "Invalid Sandbox Keys",
+          variant: "destructive",
+        });
+      }
+    } catch (e) {
+      toast({
+        title: "❌ Connection Error",
+        description: "Could not reach backend.",
+        variant: "destructive",
+      });
+    } finally {
+      setTestingAmazon(false);
+    }
+  };
+
   if (loading) {
     return <div className="p-8 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
@@ -63,17 +97,7 @@ export default function IntegrationsPage() {
         <p className="text-slate-500 max-w-2xl mx-auto text-lg">Connect your marketplace accounts to enable one-click publishing and syncing. All tokens are secured with military-grade AES encryption.</p>
       </div>
 
-      <div className="max-w-4xl mx-auto mb-8 bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
-        <div className="bg-blue-100 p-2 rounded-lg text-blue-600 mt-0.5">
-          <Sparkles className="w-5 h-5" />
-        </div>
-        <div>
-          <h3 className="font-semibold text-blue-900">Next Steps</h3>
-          <p className="text-blue-800/80 text-sm mt-1">
-            Once your accounts are connected, head over to the <a href="/seller/listing-studio" className="font-bold underline decoration-blue-300 underline-offset-2 hover:text-blue-600 transition-colors">AI Listing Studio</a> to generate and publish your products directly in one click!
-          </p>
-        </div>
-      </div>
+     
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         {/* Amazon Card */}
@@ -115,6 +139,10 @@ export default function IntegrationsPage() {
               <Button onClick={handleConnectAmazon} className="w-full h-12 text-base font-bold bg-[#FF9900] hover:bg-[#E68A00] text-black shadow-lg shadow-[#FF9900]/20 transition-all active:scale-[0.98]">
                 <LinkIcon className="h-5 w-5 mr-2" />
                 Connect Amazon
+              </Button>
+              <Button onClick={handleTestAmazonSandbox} disabled={testingAmazon} variant="outline" className="w-full h-12 text-base font-bold mt-3 border-[#FF9900]/30 text-[#FF9900] hover:bg-[#FF9900]/10">
+                {testingAmazon ? <Loader2 className="h-5 w-5 mr-2 animate-spin" /> : <Sparkles className="h-5 w-5 mr-2" />}
+                Test Sandbox Keys
               </Button>
             </CardFooter>
           )}

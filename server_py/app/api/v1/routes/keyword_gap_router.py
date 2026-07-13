@@ -674,8 +674,8 @@
 #                 AI listing rewrite, prioritised action plan
 #     """
 #     tier       = _get_user_tier(db, user_email) if user_email else "free"
-#     is_basic   = tier in ("basic", "premium")
-#     is_premium = tier == "premium"
+#     is_basic = tier in ("basic", "premium", "enterprise")
+#     is_premium = tier in ("premium", "enterprise")
 
 #     # ── Load tracked product ──────────────────────────────────────────────
 #     tracked = (
@@ -1952,8 +1952,8 @@ def keyword_gap_analyse(
         logger.warning("Redis error (get): %s", e)
 
     tier       = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
-    is_basic   = tier in ("basic", "premium")
-    is_premium = tier == "premium"
+    is_basic = tier in ("basic", "premium", "enterprise")
+    is_premium = tier in ("premium", "enterprise")
 
     tracked = (
         db.query(TrackedProduct)

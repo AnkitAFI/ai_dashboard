@@ -603,7 +603,7 @@
 #     db: Session,
 # ) -> SuggestionsOut:
 #     tier       = _require_tier(user_id, "basic", db)
-#     is_premium = (tier == "premium")
+#     is_premium = tier in ("premium", "enterprise")
 
 #     # ── Step 1: DB-driven base suggestions ────────────────────────────────────
 #     try:
@@ -1375,7 +1375,7 @@
 #     import math
 
 #     tier       = _require_tier(user_id, "basic", db)
-#     is_premium = (tier == "premium")
+#     is_premium = tier in ("premium", "enterprise")
 
 #     STOPWORDS = {
 #         "and","for","with","the","a","an","in","of","to","is","by","on",
@@ -2222,7 +2222,7 @@ def get_keyword_suggestions(
     import math
 
     tier       = _require_tier(user_id, "basic", db)
-    is_premium = (tier == "premium")
+    is_premium = tier in ("premium", "enterprise")
 
     STOPWORDS = {
         "and","for","with","the","a","an","in","of","to","is","by","on",
@@ -3327,4 +3327,4 @@ def get_keyword_strategy(user_id: int, keyword: str, platform: str, db: Session)
     )
     
     ck = _cache_key("strategy_advisor_v1", str(user_id), keyword, platform)
-    return _ask_llama(prompt, ck)
+    return _ask_llama(prompt, ck)

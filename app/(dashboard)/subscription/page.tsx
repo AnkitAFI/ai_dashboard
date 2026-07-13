@@ -517,20 +517,19 @@ export default function Subscription() {
 
                 {/* CTA button */}
                 <div className="pt-2">
-                  {plan.id === "enterprise" ? (
-                    <Button variant="outline"
-                      className="w-full h-11 rounded-xl border-2 border-indigo-200
-                                       text-indigo-700 hover:bg-indigo-50 font-bold text-sm"
-                      onClick={() => window.location.href = "mailto:support@insydz.com"}>
-                      Contact Sales
-                    </Button>
-
-                  ) : isCurrentPlan ? (
+                  {isCurrentPlan ? (
                     <Button disabled
                       className="w-full h-11 rounded-xl bg-green-50 border-2
                                        border-green-200 text-green-700 font-bold
                                        text-sm cursor-not-allowed opacity-100">
                       <Check className="h-4 w-4 mr-2" /> Current Plan
+                    </Button>
+                  ) : plan.id === "enterprise" ? (
+                    <Button variant="outline"
+                      className="w-full h-11 rounded-xl border-2 border-indigo-200
+                                       text-indigo-700 hover:bg-indigo-50 font-bold text-sm"
+                      onClick={() => window.location.href = "mailto:support@insydz.com"}>
+                      Contact Sales
                     </Button>
 
                   ) : canUpgrade ? (

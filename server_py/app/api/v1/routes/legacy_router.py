@@ -1679,7 +1679,7 @@ Think about {analysis_focus} and respond conversationally:"""
                 "prompt": prompt,
                 "stream": False
             },
-            timeout=30
+            timeout=120
         )
         raw_output = response.json().get("response", "").strip()
         
@@ -10806,7 +10806,7 @@ def track_ki_usage(
         if current_user.id != user_id:
             raise HTTPException(status_code=403, detail="Not authorized")
 
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         cycle_start = current_user.ki_cycle_start
         if cycle_start and cycle_start.tzinfo:
             cycle_start = cycle_start.replace(tzinfo=None)
@@ -10861,7 +10861,7 @@ def get_ki_usage(
         if current_user.id != user_id:
             raise HTTPException(status_code=403, detail="Not authorized")
 
-        now = datetime.now()
+        now = datetime.now(timezone.utc)
         cycle_start = current_user.ki_cycle_start
         if cycle_start and cycle_start.tzinfo:
             cycle_start = cycle_start.replace(tzinfo=None)
@@ -19335,3 +19335,18 @@ def get_intelligence(query: IntelligenceQuery, db: Session = Depends(get_db)):
     r.setex(cache_key, 1200, json.dumps(result))
  
     return result
+
+@router.post("/api/integrations/test-amazon")
+async def test_amazon_sp_api(
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Tests the Amazon SP-API Sandbox connection by grabbing a token using LWA credentials.
+    """
+    from app.services.listing_api_integrations import test_amazon_connection
+    try:
+        result = await test_amazon_connection()
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

@@ -42,8 +42,8 @@ OLLAMA_TIMEOUT = 45.0
 RAPIDAPI_HOST = "real-time-amazon-data.p.rapidapi.com"
  
 # ── Tier limits ───────────────────────────────────────────────────────────────
-KEYWORD_LIMITS = {"free": 1, "basic": 10, "premium": 50}
-HISTORY_DAYS   = {"free": 0, "basic": 7,  "premium": 30}
+KEYWORD_LIMITS = {"free": 1, "basic": 10, "premium": 50, "enterprise": 100}
+HISTORY_DAYS   = {"free": 0, "basic": 7,  "premium": 30, "enterprise": 90}
  
 # ── Rate limit ────────────────────────────────────────────────────────────────
 REFRESH_COOLDOWN_MINUTES = 30
@@ -362,7 +362,7 @@ def _run_rank_checks_in_thread(
     db: Session = SessionLocal()
     try:
         tier       = _get_user_tier(db, user_email)
-        is_premium = tier == "premium"
+        is_premium = tier in ("premium", "enterprise")
  
         for keyword in keywords:
             try:
@@ -508,8 +508,8 @@ def _build_profile_response(
     tier:       str,
 ) -> dict:
     """Assemble the full RankProfile response dict."""
-    is_basic   = tier in ("basic", "premium")
-    is_premium = tier == "premium"
+    is_basic = tier in ("basic", "premium", "enterprise")
+    is_premium = tier in ("premium", "enterprise")
  
     rows = (
         db.query(RankTrackedKeyword)

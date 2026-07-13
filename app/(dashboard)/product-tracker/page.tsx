@@ -560,6 +560,24 @@ export default function ProductTracker() {
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Usage counter badge */}
+              {userId && usageLimits && (
+                <div className="flex justify-end mb-1">
+                  <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${
+                    usageLimits.remaining === 0
+                      ? "bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/40"
+                      : usageLimits.remaining <= 1
+                      ? "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/40"
+                      : "bg-purple-50 text-purple-600 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800/40"
+                  }`}>
+                    {usageLimits.remaining === 0
+                      ? "No analyses left this month"
+                      : usageLimits.remaining >= UNLIMITED
+                      ? "Unlimited analyses"
+                      : `${usageLimits.remaining} of ${usageLimits.limit} analyses left`}
+                  </span>
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="product-name">Product Name</Label>

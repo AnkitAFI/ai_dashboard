@@ -625,8 +625,8 @@
 //   const [nicheKeyword, setNicheKeyword] = useState("");
 //   const [fetchingNiche, setFetchingNiche] = useState(false);
 
-//   const isBasicPlus = tier === "basic" || tier === "premium";
-//   const isPremium   = tier === "premium";
+//   const isBasicPlus = tier === "basic" || tier === "premium" || tier === "enterprise";
+//   const isPremium   = tier === "premium" || tier === "enterprise";
 //   const saveLimit   = tier === "free" ? 0 : tier === "basic" ? 5 : 9999;
 
 //   const toast = (title: string, description: string, variant: "success" | "error" = "success") => {
@@ -890,7 +890,7 @@
 //           <p className="text-slate-500 text-xs sm:text-sm mt-0.5">Real margins · Live market data</p>
 //         </div>
 //         <div className="flex items-center gap-3">
-//           <Badge className={`text-xs font-semibold ${tier === "premium" ? "bg-blue-100 text-blue-800" : tier === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+//           <Badge className={`text-xs font-semibold ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-100 text-blue-800" : tier === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
 //             {tier.toUpperCase()}
 //           </Badge>
 //           {calcResult && (
@@ -2081,8 +2081,8 @@ export default function ProfitabilityOptimizer() {
   const [nicheProductCount, setNicheProductCount] = useState<number>(0);
   const [nicheConfidence, setNicheConfidence] = useState<string>("");
 
-  const isBasicPlus = tier === "basic" || tier === "premium";
-  const isPremium   = tier === "premium";
+  const isBasicPlus = tier === "basic" || tier === "premium" || tier === "enterprise";
+  const isPremium   = tier === "premium" || tier === "enterprise";
   const saveLimit   = tier === "free" ? 0 : tier === "basic" ? 5 : 9999;
 
   const toast = (title: string, description: string, variant: "success" | "error" = "success") => {
@@ -2368,7 +2368,7 @@ export default function ProfitabilityOptimizer() {
           <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-0.5">Real margins · Live market data</p>
         </div>
         <div className="flex items-center gap-3">
-          <Badge className={`text-xs font-semibold ${tier === "premium" ? "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300" : tier === "basic" ? "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>
+          <Badge className={`text-xs font-semibold ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300" : tier === "basic" ? "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>
             {tier.toUpperCase()}
           </Badge>
           {calcResult && (

@@ -184,3 +184,30 @@ async def callback_flipkart(
         
     db.commit()
     return RedirectResponse(url="/seller/integrations?success=flipkart")
+
+@router.post("/test-amazon")
+async def test_amazon_sandbox(user_id: str = Depends(get_current_user_id)):
+    """
+    Tests the Amazon Sandbox connection by attempting to generate an LWA Access Token
+    and sign an AWS request.
+    """
+    try:
+        from app.services.amazon_auth_service import amazon_auth_service
+        import os
+        
+        # Try to get the LWA Access Token (Validates Refresh Token)
+        access_token = await amazon_auth_service.get_lwa_access_token()
+        
+        # Try to assume the AWS Role (Validates AWS IAM Keys)
+        auth = amazon_auth_service.get_signed_auth()
+        
+        # Check Seller ID
+        seller_id = os.getenv("AMAZON_SELLER_ID")
+        if not seller_id:
+            raise ValueError("AMAZON_SELLER_ID is missing from your .env file.")
+            
+        return {"status": "success", "message": "Amazon Sandbox connection successful!"}
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Sandbox connection failed: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Sandbox Connection Failed: {str(e)}")

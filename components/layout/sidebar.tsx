@@ -164,8 +164,8 @@ const SELLER_SECTIONS: NavSection[] = [
     items: [
       { href: "/dashboard", label: "Dashboard", icon: Home },
       // Temporarily hidden until API keys are secured
-      // { href: "/seller/listing-studio", label: "One-Click Cataloger", icon: Sparkles, badge: "NEW" },
-      // { href: "/seller/integrations", label: "Integrations", icon: LinkIcon, badge: "NEW" },
+      { href: "/seller/listing-studio", label: "One-Click Cataloger", icon: Sparkles, badge: "NEW" },
+      { href: "/seller/integrations", label: "Integrations", icon: LinkIcon, badge: "NEW" },
       { href: "/seller/my-products", label: "My Products", icon: Tag, badge: "NEW" },
       { href: "/seller/listing-audit", label: "Listing Audit", icon: Search, badge: "NEW" },
     ],
@@ -335,6 +335,8 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
   const getSubscriptionColor = (tier: string) => {
     switch (tier?.toLowerCase()) {
+      case "enterprise":
+        return "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-md border-0";
       case "premium":
         return "bg-gradient-to-r from-[#00D4FF] to-[#0099FF] text-white";
       case "basic":
@@ -508,6 +510,9 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
                 <div className="space-y-1">
                   {section.items.map((item) => {
+                    if (item.href === "/seller/listing-studio" && user?.subscriptionTier !== "enterprise") {
+                      return null;
+                    }
                     const Icon = item.icon;
                     return (
                       <Link

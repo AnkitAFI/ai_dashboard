@@ -160,7 +160,7 @@ function useStream() {
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
+function TierGate({ tier, feature }: { tier: "basic" | "premium" | "enterprise"; feature: string }) {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -675,8 +675,8 @@ function RankTrackerContent() {
   const aiStream = useStream();
 
   const tier = profile?.tier || user?.subscriptionTier || "free";
-  const isBasic = tier === "basic" || tier === "premium";
-  const isPremium = tier === "premium";
+  const isBasic = tier === "basic" || tier === "premium" || tier === "enterprise";
+  const isPremium = tier === "premium" || tier === "enterprise";
 
   const qs = (extra: Record<string, string> = {}) =>
     new URLSearchParams({ asin, seller_id: sellerId, ...extra }).toString();
@@ -778,7 +778,7 @@ function RankTrackerContent() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Badge className={`text-xs font-bold ${tier === "premium" ? "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-900" : tier === "basic" ? "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"}`}>
+          <Badge className={`text-xs font-bold ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 dark:border-blue-900" : tier === "basic" ? "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 dark:border-amber-900" : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400"}`}>
             {tier.toUpperCase()}
           </Badge>
           {profile && (
