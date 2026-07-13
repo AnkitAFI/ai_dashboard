@@ -97,17 +97,7 @@ export default function IntegrationsPage() {
         <p className="text-slate-500 max-w-2xl mx-auto text-lg">Connect your marketplace accounts to enable one-click publishing and syncing. All tokens are secured with military-grade AES encryption.</p>
       </div>
 
-      <div className="max-w-4xl mx-auto mb-8 bg-blue-50 border border-blue-100 rounded-xl p-4 flex items-start gap-3">
-        <div className="bg-blue-100 p-2 rounded-lg text-blue-600 mt-0.5">
-          <Sparkles className="w-5 h-5" />
-        </div>
-        <div>
-          <h3 className="font-semibold text-blue-900">Next Steps</h3>
-          <p className="text-blue-800/80 text-sm mt-1">
-            Once your accounts are connected, head over to the <a href="/seller/listing-studio" className="font-bold underline decoration-blue-300 underline-offset-2 hover:text-blue-600 transition-colors">AI Listing Studio</a> to generate and publish your products directly in one click!
-          </p>
-        </div>
-      </div>
+     
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         {/* Amazon Card */}

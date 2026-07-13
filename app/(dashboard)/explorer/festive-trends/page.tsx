@@ -1479,7 +1479,7 @@ function UpgradeBanner({
   message,
   price,
 }: {
-  tier: "basic" | "premium";
+  tier: "basic" | "premium" | "enterprise";
   message: string;
   price: string;
 }) {

@@ -17,17 +17,11 @@ import { useAuth } from "@/lib/auth-context";
 import PaymentModal, { type PaymentPlan } from "@/components/payment/payment-modal";
 
 const CREDIT_PACKS: Record<string, PaymentPlan[]> = {
-  basic: [
-    { id: "ai_credits_10", name: "10 SKU Credits", price: 750, description: "Generate & Publish 10 SKUs (₹75/SKU)" },
-    { id: "ai_credits_20", name: "20 SKU Credits", price: 1500, description: "Generate & Publish 20 SKUs (₹75/SKU)" },
-  ],
-  premium: [
-    { id: "ai_credits_50", name: "50 SKU Credits", price: 2500, description: "Generate & Publish 50 SKUs (₹50/SKU)" },
-    { id: "ai_credits_100", name: "100 SKU Credits", price: 5000, description: "Generate & Publish 100 SKUs (₹50/SKU)" },
-    { id: "ai_credits_500", name: "500 SKU Credits", price: 25000, description: "Generate & Publish 500 SKUs (₹50/SKU)" },
-    { id: "ai_credits_1000", name: "1,000 SKU Credits", price: 50000, description: "High-volume cataloging (₹50/SKU)" },
-    { id: "ai_credits_2000", name: "2,000 SKU Credits", price: 100000, description: "Enterprise volume (₹50/SKU)" },
-    { id: "ai_credits_3000", name: "3,000 SKU Credits", price: 150000, description: "Maximum volume (₹50/SKU)" },
+  enterprise: [
+    { id: "ai_credits_100", name: "100 SKU Credits", price: 4000, description: "Generate & Publish 100 SKUs (₹40/SKU)" },
+    { id: "ai_credits_500", name: "500 SKU Credits", price: 20000, description: "Generate & Publish 500 SKUs (₹40/SKU)" },
+    { id: "ai_credits_1000", name: "1,000 SKU Credits", price: 40000, description: "High-volume cataloging (₹40/SKU)" },
+    { id: "ai_credits_5000", name: "5,000 SKU Credits", price: 200000, description: "Maximum enterprise volume (₹40/SKU)" },
   ]
 };
 
@@ -72,10 +66,10 @@ export default function ListingStudioPage() {
   const handleGenerate = async () => {
     if (!user) return;
     
-    if (user.subscriptionTier === "free") {
+    if (user.subscriptionTier !== "enterprise") {
       toast({
-        title: "Upgrade Required",
-        description: "AI Listing Studio is a premium feature. Please upgrade to Basic or Premium.",
+        title: "Enterprise Exclusive",
+        description: "AI Listing Studio is an exclusive feature for Enterprise users. Please upgrade your plan.",
         variant: "destructive"
       });
       return;
@@ -263,22 +257,22 @@ export default function ListingStudioPage() {
 
   if (authLoading) return <div className="p-8 text-center text-slate-500 flex justify-center items-center h-[50vh]"><Clock className="animate-spin w-8 h-8 text-blue-500" /></div>;
 
-  const isFreeTier = user?.subscriptionTier === "free" || !user?.subscriptionTier;
+  const isNonEnterprise = user?.subscriptionTier !== "enterprise";
   // === SANDBOX TESTING ===
   // Forcing 999 credits for testing UI
   const credits = 999; // user?.aiCreditsBalance || 0;
   
-  if (isFreeTier) {
+  if (isNonEnterprise) {
     return (
       <div className="p-8 max-w-[1000px] mx-auto h-[80vh] flex flex-col items-center justify-center text-center">
         <div className="w-24 h-24 bg-slate-100 rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-200">
           <Lock className="w-12 h-12 text-slate-400" />
         </div>
         <h1 className="text-4xl font-extrabold tracking-tight mb-4 text-slate-900">
-          Unlock Automated Cataloging
+          Enterprise Exclusive Feature
         </h1>
         <p className="text-slate-500 text-lg max-w-xl mb-8">
-          Stop struggling with manual cataloging. Instantly generate and publish optimized Amazon and Flipkart listings that maximize your search visibility. Upgrade your plan to access our automated One-Click Cataloger.
+          Stop struggling with manual cataloging. Instantly generate and publish optimized Amazon and Flipkart listings that maximize your search visibility. Upgrade to the Enterprise plan to access our automated One-Click Cataloger.
         </p>
         <Button size="lg" className="h-12 px-8 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg" onClick={() => window.location.href = '/subscription'}>
           View Upgrade Plans <ArrowRight className="w-5 h-5 ml-2" />

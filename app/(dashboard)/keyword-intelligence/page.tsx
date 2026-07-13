@@ -158,12 +158,12 @@ const API = `${API_BASE_URL}/api/keyword-tracker`;
 
 // ── Subscription Tier Gate ────────────────────────────────────────────────────
 
-function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
+function TierGate({ tier, feature }: { tier: "basic" | "premium" | "enterprise"; feature: string }) {
   const router = useRouter();
   return (
     <div className="absolute inset-0 bg-background/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
-      <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? "bg-blue-50 dark:bg-blue-950/40" : "bg-amber-50 dark:bg-amber-950/40"}`}>
-        <Lock className={`w-6 h-6 ${tier === "premium" ? "text-blue-500 dark:text-blue-400" : "text-amber-500 dark:text-amber-400"}`} />
+      <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-sm ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-50 dark:bg-blue-950/40" : "bg-amber-50 dark:bg-amber-950/40"}`}>
+        <Lock className={`w-6 h-6 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "text-blue-500 dark:text-blue-400" : "text-amber-500 dark:text-amber-400"}`} />
       </div>
       <div className="text-center px-6">
         <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">{feature} is locked</p>
@@ -172,7 +172,7 @@ function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: strin
       <button
         onClick={() => router.push("/subscription")}
         className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold text-white shadow-md transition-all hover:scale-105 ${
-          tier === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-amber-500 to-orange-500"
+          tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-amber-500 to-orange-500"
         }`}
       >
         <Crown className="w-4 h-4" /> Upgrade to {tier === "premium" ? "Premium" : "Basic"}

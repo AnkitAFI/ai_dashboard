@@ -182,7 +182,7 @@ function ListingAuditContent() {
   const [error, setError]             = useState<string | null>(null);
 
   const tier      = user?.subscriptionTier || "free";
-  const isPremium = tier === "premium";
+  const isPremium = tier === "premium" || tier === "enterprise";
 
   useEffect(() => {
     setMounted(true);
@@ -264,7 +264,7 @@ function ListingAuditContent() {
         </div>
         <div className="flex items-center gap-2">
           <Badge className={`text-xs font-bold ${
-            tier === "premium" ? isDark ? "bg-blue-900/30 text-blue-400" : "bg-blue-100 text-blue-700" :
+            tier === "enterprise" ? isDark ? "bg-fuchsia-900/40 text-fuchsia-400 border border-fuchsia-500/50" : "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300" : tier === "premium" ? isDark ? "bg-blue-900/30 text-blue-400" : "bg-blue-100 text-blue-700" :
             tier === "basic"   ? isDark ? "bg-amber-900/30 text-amber-400" : "bg-amber-100 text-amber-700" :
                                  isDark ? "bg-slate-800 text-slate-400" : "bg-slate-100 text-slate-600"
           }`}>

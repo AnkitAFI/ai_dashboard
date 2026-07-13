@@ -144,8 +144,8 @@ def _load_seller_context(
     Load full seller context for the AI prompt.
     Returns structured dict with products, prices, reviews, ranks.
     """
-    is_basic   = tier in ("basic", "premium")
-    is_premium = tier == "premium"
+    is_basic = tier in ("basic", "premium", "enterprise")
+    is_premium = tier in ("premium", "enterprise")
 
     # ── All tracked products ──────────────────────────────────────────────
     products_q = (
@@ -284,7 +284,7 @@ def _build_prompt(
     focus_title:Optional[str],
     tier:       str,
 ) -> str:
-    is_premium = tier == "premium"
+    is_premium = tier in ("premium", "enterprise")
     currency   = context.get("currency", "USD")
     sym        = "₹" if currency == "INR" else "$"
     country    = context.get("country", "US")

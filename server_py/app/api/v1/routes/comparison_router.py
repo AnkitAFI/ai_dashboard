@@ -423,8 +423,8 @@
 #     premium → + ai_pricing_tip, ai_velocity_insight, seller_other_products
 #     """
 #     tier       = _get_user_tier(db, user_email) if user_email else "free"
-#     is_basic   = tier in ("basic", "premium")
-#     is_premium = tier == "premium"
+#     is_basic = tier in ("basic", "premium", "enterprise")
+#     is_premium = tier in ("premium", "enterprise")
 
 #     # ── Fetch tracked product ─────────────────────────────────────────────
 #     tracked = (
@@ -678,8 +678,8 @@
 #                 avg_seller_portfolio_rating
 #     """
 #     tier       = _get_user_tier(db, user_email) if user_email else "free"
-#     is_basic   = tier in ("basic", "premium")
-#     is_premium = tier == "premium"
+#     is_basic = tier in ("basic", "premium", "enterprise")
+#     is_premium = tier in ("premium", "enterprise")
 
 #     # ── Fetch tracked product ─────────────────────────────────────────────
 #     tracked = (
@@ -1609,8 +1609,8 @@ def get_price_comparison(
     Returns tiered price comparison data for a tracked product.
     """
     tier       = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
-    is_basic   = tier in ("basic", "premium")
-    is_premium = tier == "premium"
+    is_basic = tier in ("basic", "premium", "enterprise")
+    is_premium = tier in ("premium", "enterprise")
 
     # ── Fetch tracked product ─────────────────────────────────────────────
     tracked = (
@@ -1860,8 +1860,8 @@ def get_review_comparison(
     Returns tiered review / sentiment comparison data for a tracked product.
     """
     tier       = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
-    is_basic   = tier in ("basic", "premium")
-    is_premium = tier == "premium"
+    is_basic = tier in ("basic", "premium", "enterprise")
+    is_premium = tier in ("premium", "enterprise")
 
     # ── Fetch tracked product ─────────────────────────────────────────────
     tracked = (
@@ -2132,8 +2132,8 @@ def get_competitor_analysis(
     Tiered competitor analysis — identity, threat score, and Buy Box intelligence.
     """
     tier       = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
-    is_basic   = tier in ("basic", "premium")
-    is_premium = tier == "premium"
+    is_basic = tier in ("basic", "premium", "enterprise")
+    is_premium = tier in ("premium", "enterprise")
 
     # ── Fetch tracked product ─────────────────────────────────────────────
     tracked = (

@@ -47,9 +47,9 @@ _brevo_config = sib_api_v3_sdk.Configuration()
 _brevo_config.api_key["api-key"] = BREVO_API_KEY
 
 # Plans ordered lowest → highest. Index = rank.
-PLAN_HIERARCHY: list[str] = ["free", "basic", "premium"]
-PLAN_PRICES:    dict[str, int] = {"basic": 1999, "premium": 1}
-PLAN_LABELS:    dict[str, str] = {"basic": "Basic", "premium": "Premium", "free": "Free"}
+PLAN_HIERARCHY: list[str] = ["free", "basic", "premium", "enterprise"]
+PLAN_PRICES:    dict[str, int] = {"basic": 1999, "premium": 2999, "enterprise": 0}
+PLAN_LABELS:    dict[str, str] = {"basic": "Basic", "premium": "Premium", "free": "Free", "enterprise": "Enterprise"}
 
 GST_RATE          = 18   # percent
 SUBSCRIPTION_DAYS = 30   # one billing cycle

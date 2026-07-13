@@ -276,8 +276,8 @@ function OpportunityCard({
   watchlistLoading: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const isBasicPlus  = tier === "basic" || tier === "premium";
-  const isPremium    = tier === "premium";
+  const isBasicPlus  = tier === "basic" || tier === "premium" || tier === "enterprise";
+  const isPremium    = tier === "premium" || tier === "enterprise";
   const sl           = getScoreLabel(opp.score);
   const alreadyWatched = watchlistItems.some((i) => i.niche === opp.product_niche);
 
@@ -543,8 +543,8 @@ function WhiteSpaceFinderContent() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const tier = result?.tier ?? user?.subscriptionTier ?? "free";
-  const isBasicPlus = tier === "basic" || tier === "premium";
-  const isPremium   = tier === "premium";
+  const isBasicPlus = tier === "basic" || tier === "premium" || tier === "enterprise";
+  const isPremium   = tier === "premium" || tier === "enterprise";
   const scansUsed   = result?.scans_used  ?? 0;
   const scansLimit  = result?.scans_limit ?? 3;
   const scanPct     = Math.min((scansUsed / scansLimit) * 100, 100);
@@ -806,7 +806,7 @@ function WhiteSpaceFinderContent() {
               <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
                 <div className="flex items-center justify-between gap-3 mb-1">
                   <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Scans used</p>
-                  <Badge className={`h-4 text-[10px] border-none px-1.5 ${tier === "premium" ? "bg-violet-100 text-violet-800" : tier === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+                  <Badge className={`h-4 text-[10px] border-none px-1.5 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-violet-100 text-violet-800" : tier === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
                     {tier.toUpperCase()}
                   </Badge>
                 </div>
@@ -830,7 +830,7 @@ function WhiteSpaceFinderContent() {
                 <div className="h-5 w-16 bg-slate-200 rounded-full animate-pulse" />
               ) : (
                 <Badge className={`text-[10px] border-none px-2 py-1 ${
-                  tier === "premium" ? "bg-violet-100 text-violet-800"
+                  tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-violet-100 text-violet-800"
                   : tier === "basic" ? "bg-amber-100 text-amber-800"
                   : "bg-slate-100 text-slate-500"
                 }`}>
