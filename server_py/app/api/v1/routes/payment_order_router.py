@@ -261,7 +261,7 @@ def _email_payment_confirmed(
 
 def _build_invoice_pdf(order: "PaymentOrder") -> bytes:
     from reportlab.lib import colors
-    from reportlab.lib.enums import TA_CENTER, TA_RIGHT
+    from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.units import mm
@@ -272,11 +272,27 @@ def _build_invoice_pdf(order: "PaymentOrder") -> bytes:
     sky    = colors.HexColor("#0284c7")
     gray   = colors.HexColor("#64748b")
     light  = colors.HexColor("#f0f9ff")
-    doc    = SimpleDocTemplate(buf, pagesize=A4,
-                               leftMargin=20*mm, rightMargin=20*mm,
-                               topMargin=20*mm,  bottomMargin=20*mm)
 
-    def P(text, size=9, bold=False, color=None, align=0):
+    # Footer callback — draws at the bottom of every page
+    def _draw_footer(canvas, doc):
+        canvas.saveState()
+        page_w, page_h = A4
+        footer_y = 15 * mm
+        canvas.setStrokeColor(colors.HexColor("#e2e8f0"))
+        canvas.setLineWidth(0.5)
+        canvas.line(doc.leftMargin, footer_y + 4*mm,
+                    page_w - doc.rightMargin, footer_y + 4*mm)
+        canvas.setFont("Helvetica", 8)
+        canvas.setFillColor(colors.HexColor("#64748b"))
+        footer_text = "Computer-generated invoice - no signature required.  |  Queries: billing@insydz.com"
+        canvas.drawCentredString(page_w / 2, footer_y, footer_text)
+        canvas.restoreState()
+
+    doc = SimpleDocTemplate(buf, pagesize=A4,
+                            leftMargin=20*mm, rightMargin=20*mm,
+                            topMargin=20*mm,  bottomMargin=25*mm)
+
+    def P(text, size=9, bold=False, color=None, align=TA_LEFT):
         return Paragraph(text, ParagraphStyle("_", parent=styles["Normal"],
             fontSize=size, leading=size*1.5,
             textColor=color or colors.HexColor("#0f172a"),
@@ -285,7 +301,7 @@ def _build_invoice_pdf(order: "PaymentOrder") -> bytes:
     story = []
     story.append(Table([
         [P(f"<b><font size=22 color='#0284c7'>{APP_NAME}</font></b>"),
-         P(f"<b>TAX INVOICE</b><br/><font size=9 color='#64748b'>{order.invoice_number or '—'}</font>",
+         P(f"<b>TAX INVOICE</b><br/><font size=9 color='#64748b'>{order.invoice_number or '---'}</font>",
            align=TA_RIGHT)],
     ], colWidths=[90*mm, 80*mm]))
     story.append(Spacer(1, 3*mm))
@@ -294,25 +310,40 @@ def _build_invoice_pdf(order: "PaymentOrder") -> bytes:
     story.append(rule)
     story.append(Spacer(1, 6*mm))
 
+    # Address blocks — top-aligned with From / Bill To labels
+    from_addr = (
+        "<b>From</b><br/>"
+        "Aavapti Technologies Pvt Ltd<br/>"
+        "A-506, 5th Floor, Tower A,<br/>"
+        "ITHUM Tower, Noida,<br/>"
+        "Uttar Pradesh - 201301<br/>"
+        "billing@insydz.com"
+    )
     bill_to = (
-        f"<b>Bill To</b><br/>{order.billing_full_name or '—'}<br/>"
+        f"<b>Bill To</b><br/>{order.billing_full_name or '---'}<br/>"
         + (f"{order.billing_company}<br/>" if order.billing_company else "")
-        + f"{order.billing_address or '—'}<br/>"
-        + f"{order.billing_email or '—'}<br/>+91 {order.billing_mobile or '—'}"
+        + f"{order.billing_address or '---'}<br/>"
+        + f"{order.billing_email or '---'}<br/>+91 {order.billing_mobile or '---'}"
         + (f"<br/><b>GSTIN:</b> {order.gst_number}" if order.gst_number else "")
     )
-    story.append(Table([
-        [P(f"Aavapti Technologies Pvt Ltd<br/>A-506, 5th Floor, Tower A, ITHUM Tower<br/>Noida, Uttar Pradesh – 201301<br/>"
-           f"billing@insydz.com"),
-         P(bill_to)],
-    ], colWidths=[85*mm, 85*mm]))
+    addr_table = Table([
+        [P(from_addr), P(bill_to)],
+    ], colWidths=[85*mm, 85*mm])
+    addr_table.setStyle(TableStyle([
+        ("VALIGN",       (0,0), (-1,-1), "TOP"),
+        ("LEFTPADDING",  (0,0), (-1,-1), 0),
+        ("RIGHTPADDING", (0,0), (-1,-1), 6),
+        ("TOPPADDING",   (0,0), (-1,-1), 0),
+        ("BOTTOMPADDING",(0,0), (-1,-1), 0),
+    ]))
+    story.append(addr_table)
     story.append(Spacer(1, 6*mm))
 
-    paid_str = order.paid_at.strftime("%d %B %Y")    if order.paid_at    else "—"
-    exp_str  = order.expires_at.strftime("%d %B %Y") if order.expires_at else "—"
+    paid_str = order.paid_at.strftime("%d %B %Y")    if order.paid_at    else "---"
+    exp_str  = order.expires_at.strftime("%d %B %Y") if order.expires_at else "---"
     meta = Table([
-        ["Invoice Date:", paid_str,  "Invoice No.:", order.invoice_number or "—"],
-        ["Valid Until:",  exp_str,   "Txn ID:",      order.razorpay_payment_id or "—"],
+        ["Invoice Date:", paid_str,  "Invoice No.:", order.invoice_number or "---"],
+        ["Valid Until:",  exp_str,   "Txn ID:",      order.razorpay_payment_id or "---"],
         ["Plan:", (order.plan_id or "").capitalize(), "Status:", "PAID"],
     ], colWidths=[35*mm, 50*mm, 35*mm, 50*mm])
     meta.setStyle(TableStyle([
@@ -329,14 +360,21 @@ def _build_invoice_pdf(order: "PaymentOrder") -> bytes:
 
     plan_label = PLAN_LABELS.get(order.plan_id or "", (order.plan_id or "").capitalize())
     rows = [
-        ["#", "Description", "Amount"],
-        ["1", f"{plan_label} Plan — Monthly\nPeriod: {get_ist_now().strftime('%B %Y')}",
-         f"₹{order.base_amount:,}"],
+        ["#", "Description", "Amount (INR)"],
+        ["1", f"{plan_label} Plan - Monthly\nPeriod: {get_ist_now().strftime('%B %Y')}",
+         f"INR {order.base_amount:,}.00"],
     ]
+
+    # GST row
+    if order.gst_amount:
+        gst_desc = f"GST @ {GST_RATE}% (CGST {GST_RATE//2}% + SGST {GST_RATE//2}%)"
+        if order.gst_number:
+            gst_desc += f"\nGSTIN: {order.gst_number}"
+        rows.append(["2", gst_desc, f"+ INR {order.gst_amount:,}.00"])
 
     rows += [["", "", ""],
              ["", P("<b>Total Paid</b>", size=11, bold=True),
-                  P(f"<b>₹{order.amount:,}</b>", size=11, bold=True, align=TA_RIGHT)]]
+                  P(f"<b>INR {order.amount:,}.00</b>", size=11, bold=True, align=TA_RIGHT)]]
 
     items = Table(rows, colWidths=[12*mm, 118*mm, 40*mm])
     items.setStyle(TableStyle([
@@ -355,20 +393,36 @@ def _build_invoice_pdf(order: "PaymentOrder") -> bytes:
     story.append(items)
     story.append(Spacer(1, 8*mm))
 
-    try:
-        from num2words import num2words
-        words = num2words(order.amount, lang="en_IN").title()
-    except ImportError:
-        words = str(order.amount)
-    story.append(P(f"<i>Amount in words: <b>{words} Rupees Only</b></i>", color=gray))
-    story.append(Spacer(1, 8*mm))
-    fr = Table([[""]], colWidths=[170*mm], rowHeights=[1])
-    fr.setStyle(TableStyle([("BACKGROUND",(0,0),(0,0),colors.HexColor("#e2e8f0"))]))
-    story.append(fr)
-    story.append(Spacer(1, 3*mm))
-    story.append(P("Computer-generated invoice — no signature required. Queries: billing@insydz.com",
-                   color=gray, align=TA_CENTER))
-    doc.build(story)
+    def _number_to_words(n: int) -> str:
+        if n == 0:
+            return "Zero"
+        units = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", 
+                 "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"]
+        tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"]
+        
+        def helper(num):
+            if num < 20:
+                return units[num]
+            elif num < 100:
+                return tens[num // 10] + ("-" + units[num % 10] if num % 10 != 0 else "")
+            elif num < 1000:
+                return units[num // 100] + " Hundred" + (" " + helper(num % 100) if num % 100 != 0 else "")
+            elif num < 100000: # Thousands
+                return helper(num // 1000) + " Thousand" + (" " + helper(num % 1000) if num % 1000 != 0 else "")
+            elif num < 10000000: # Lakhs
+                return helper(num // 100000) + " Lakh" + (" " + helper(num % 100000) if num % 100000 != 0 else "")
+            else: # Crores
+                return helper(num // 10000000) + " Crore" + (" " + helper(num % 10000000) if num % 10000000 != 0 else "")
+        return helper(n).strip()
+
+    words = _number_to_words(order.amount)
+    story.append(P(
+        f"<i>Amount in words: <b>Rupees {words} Only (INR {order.amount:,.2f})</b></i>",
+        color=gray
+    ))
+
+    # Footer is drawn via _draw_footer callback at page bottom
+    doc.build(story, onFirstPage=_draw_footer, onLaterPages=_draw_footer)
     return buf.getvalue()
 
 
