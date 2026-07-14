@@ -845,6 +845,7 @@ interface UserRow {
   seller_id: string | null;
   seller_sync_status: string | null;
   mobile_number: string | null;
+  total_amount_paid: number;
 }
 
 interface BehaviorLog {
@@ -1410,7 +1411,7 @@ export default function AdminDashboard() {
                     <Th label="SOV" field="sov_used" />
                     <Th label="KW Tracker" field="keyword_tracker_used" />
                     <Th label="KI Searches" field="ki_searches_used" />
-                    <Th label="MRR" />
+                    <Th label="Total Paid" field="total_amount_paid" />
                     <Th label="Expires" field="subscription_expires_at" />
                     <Th label="Joined" field="created_at" />
                   </tr>
@@ -1544,10 +1545,10 @@ export default function AdminDashboard() {
                             <UsagePill used={u.ki_searches_used} color="#ec4899" />
                           </td>
 
-                          {/* MRR */}
+                          {/* Total Paid */}
                           <td style={{ padding: "11px 14px" }}>
-                            {TIER_PRICE[u.subscription_tier] > 0
-                              ? <span style={{ fontSize: 12, fontWeight: 700, color: "#6366f1" }}>{inr(TIER_PRICE[u.subscription_tier])}<span style={{ fontSize: 10, color: "#94a3b8", fontWeight: 400 }}>/mo</span></span>
+                            {u.total_amount_paid > 0
+                              ? <span style={{ fontSize: 12, fontWeight: 700, color: "#6366f1" }}>{inr(u.total_amount_paid)}</span>
                               : <span style={{ color: "#cbd5e1", fontSize: 12 }}>—</span>
                             }
                           </td>
@@ -1610,7 +1611,7 @@ export default function AdminDashboard() {
                                     <DetailRow label="Tier" value={u.subscription_tier} />
                                     <DetailRow label="Expires" value={u.subscription_expires_at ? new Date(u.subscription_expires_at).toLocaleDateString("en-IN") : null} />
                                     <DetailRow label="Downgrade To" value={u.scheduled_downgrade_to} />
-                                    <DetailRow label="MRR" value={TIER_PRICE[u.subscription_tier] > 0 ? inr(TIER_PRICE[u.subscription_tier]) : "Free"} />
+                                    <DetailRow label="Total Paid" value={u.total_amount_paid > 0 ? inr(u.total_amount_paid) : "₹0"} />
                                   </DetailCard>
 
                                   {/* Timestamps */}

@@ -1357,11 +1357,11 @@ function KeywordTrackerIntelligenceContent() {
         ))}
       </div>
 
-      <div className="space-y-6">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <div className="space-y-4">
+        <div className="max-w-7xl mx-auto space-y-4 relative">
 
           {/* Visual Usage Meter (Top Right Header) */}
-          <div className="flex justify-end pt-4 pr-4 sm:pr-0">
+          <div className="absolute top-0 right-4 sm:right-0 z-10">
             {!usageLoading && user && (
               <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
                 <div className="flex items-center justify-between gap-3 mb-1">
@@ -1389,14 +1389,14 @@ function KeywordTrackerIntelligenceContent() {
           </div>
 
           {/* Page Header */}
-          <div className="text-center space-y-4">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 rounded-2xl mb-2 shadow-inner">
+          <div className="text-center space-y-3 pt-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 rounded-2xl mb-2 shadow-inner">
               <Compass className="h-8 w-8 text-purple-600 dark:text-purple-400" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 dark:from-purple-400 dark:via-indigo-400 dark:to-blue-400 text-transparent bg-clip-text">
               Keyword Intelligence
             </h1>
-            <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
               Explore high-opportunity buyer search terms, analyze search volumes, and track buyer keywords.
             </p>
           </div>

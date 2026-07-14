@@ -7389,6 +7389,17 @@ def get_admin_stats(
         models.User.created_at >= seven_days_ago
     ).count()
 
+    # Calculate total amount paid per user
+    from sqlalchemy import func
+    payment_sums = db.query(
+        models.PaymentOrder.user_id,
+        func.sum(models.PaymentOrder.amount).label("total_amount")
+    ).filter(
+        models.PaymentOrder.status.in_(["paid", "captured", "success"])
+    ).group_by(models.PaymentOrder.user_id).all()
+    
+    amount_map = {row.user_id: (row.total_amount or 0) for row in payment_sums}
+
     # all users with details
     users = db.query(models.User).order_by(models.User.created_at.desc()).all()
     user_list = [
@@ -7436,6 +7447,7 @@ def get_admin_stats(
 
         "created_at": str(u.created_at),
         "updated_at": str(u.updated_at) if u.updated_at else None,
+        "total_amount_paid": amount_map.get(u.id, 0),
     }
     for u in users
 ]

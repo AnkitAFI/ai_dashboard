@@ -13,6 +13,7 @@ export default function IntegrationsPage() {
   
   const [loading, setLoading] = useState(true);
   const [testingAmazon, setTestingAmazon] = useState(false);
+  const [testingFlipkart, setTestingFlipkart] = useState(false);
   
   const [amazonConnected, setAmazonConnected] = useState(false);
   const [flipkartConnected, setFlipkartConnected] = useState(false);
@@ -84,6 +85,39 @@ export default function IntegrationsPage() {
       });
     } finally {
       setTestingAmazon(false);
+    }
+  };
+
+  const handleTestFlipkartSandbox = async () => {
+    setTestingFlipkart(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/integrations/test-flipkart`, {
+        method: 'POST',
+        credentials: "include"
+      });
+      const data = await res.json();
+      
+      if (res.ok && data.status === "success") {
+        toast({
+          title: "✅ Connection Successful",
+          description: "Flipkart recognized your Developer Sandbox Keys!",
+          variant: "default",
+        });
+      } else {
+        toast({
+          title: "❌ Connection Failed",
+          description: sanitizeApiError(data.detail, "Invalid Sandbox Keys. Please check your credentials."),
+          variant: "destructive",
+        });
+      }
+    } catch (e) {
+      toast({
+        title: "❌ Connection Error",
+        description: "Could not reach backend.",
+        variant: "destructive",
+      });
+    } finally {
+      setTestingFlipkart(false);
     }
   };
 
@@ -184,10 +218,14 @@ export default function IntegrationsPage() {
             )}
           </CardContent>
           {!flipkartConnected && (
-            <CardFooter className="pt-2 pb-6 px-6">
+            <CardFooter className="pt-2 pb-6 px-6 flex flex-col gap-3">
               <Button onClick={handleConnectFlipkart} className="w-full h-12 text-base font-bold bg-[#2874F0] hover:bg-[#1E5BBE] text-white shadow-lg shadow-[#2874F0]/20 transition-all active:scale-[0.98]">
                 <LinkIcon className="h-5 w-5 mr-2" />
                 Connect Flipkart
+              </Button>
+              <Button onClick={handleTestFlipkartSandbox} disabled={testingFlipkart} variant="outline" className="w-full h-12 text-base font-bold border-[#2874F0]/30 text-[#2874F0] hover:bg-[#2874F0]/10">
+                {testingFlipkart ? <Loader2 className="h-5 w-5 mr-2 animate-spin" /> : <Sparkles className="h-5 w-5 mr-2" />}
+                Test Sandbox Keys
               </Button>
             </CardFooter>
           )}

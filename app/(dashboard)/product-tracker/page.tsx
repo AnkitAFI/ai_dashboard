@@ -523,18 +523,46 @@ export default function ProductTracker() {
         ))}
       </div>
 
-      <div className="space-y-6">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <div className="space-y-4">
+        <div className="max-w-7xl mx-auto space-y-4 relative">
+
+          {/* Visual Usage Meter (Top Right Header) */}
+          <div className="absolute top-0 right-4 sm:right-0 z-10">
+            {!loadingUsage && userId && usageLimits && (
+              <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
+                <div className="flex items-center justify-between gap-3 mb-1">
+                  <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Analyses used</p>
+                  <Badge className={`h-4 text-[10px] border-none px-1.5 ${usageLimits.subscription_tier.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : usageLimits.subscription_tier.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : usageLimits.subscription_tier.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+                    {(usageLimits.subscription_tier || "free").toUpperCase()}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ 
+                        width: `${usageLimits.limit >= UNLIMITED ? 0 : Math.min((usageLimits.count / usageLimits.limit) * 100, 100)}%`, 
+                        background: (usageLimits.limit >= UNLIMITED ? 0 : Math.min((usageLimits.count / usageLimits.limit) * 100, 100)) >= 80 ? "#ef4444" : "#7F77DD" 
+                      }}
+                    />
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-600">
+                    {usageLimits.count}/{usageLimits.limit >= UNLIMITED ? "∞" : usageLimits.limit}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Page Header */}
-          <div className="text-center space-y-4 pt-4">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl mb-2 shadow-inner">
+          <div className="text-center space-y-3 pt-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl mb-2 shadow-inner">
               <Target className="h-8 w-8 text-blue-500" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-500 via-indigo-400 to-purple-400 text-transparent bg-clip-text">
               Product Radar (AI)
             </h1>
-            <p className="text-base sm:text-lg text-slate-500 max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto">
               Scan specific products to analyze market competition, pricing metrics, and project AI viability reports.
             </p>
           </div>
@@ -559,25 +587,7 @@ export default function ProductTracker() {
                 </a>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Usage counter badge */}
-              {userId && usageLimits && (
-                <div className="flex justify-end mb-1">
-                  <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${
-                    usageLimits.remaining === 0
-                      ? "bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/40"
-                      : usageLimits.remaining <= 1
-                      ? "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/40"
-                      : "bg-purple-50 text-purple-600 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800/40"
-                  }`}>
-                    {usageLimits.remaining === 0
-                      ? "No analyses left this month"
-                      : usageLimits.remaining >= UNLIMITED
-                      ? "Unlimited analyses"
-                      : `${usageLimits.remaining} of ${usageLimits.limit} analyses left`}
-                  </span>
-                </div>
-              )}
+            <CardContent className="space-y-4 pt-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="product-name">Product Name</Label>

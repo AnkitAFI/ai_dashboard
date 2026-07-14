@@ -211,3 +211,21 @@ async def test_amazon_sandbox(user_id: str = Depends(get_current_user_id)):
         import logging
         logging.getLogger(__name__).error(f"Sandbox connection failed: {str(e)}")
         raise HTTPException(status_code=400, detail=f"Sandbox Connection Failed: {str(e)}")
+
+@router.post("/test-flipkart")
+async def test_flipkart_sandbox(user_id: str = Depends(get_current_user_id)):
+    """
+    Tests the Flipkart Sandbox connection by attempting to generate an Access Token
+    using the Developer API Keys.
+    """
+    try:
+        from app.services.flipkart_auth_service import flipkart_auth_service
+        
+        # Try to get the Sandbox Access Token
+        access_token = await flipkart_auth_service.get_sandbox_access_token()
+            
+        return {"status": "success", "message": "Flipkart Sandbox connection successful!"}
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Flipkart Sandbox connection failed: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Sandbox Connection Failed: {str(e)}")
