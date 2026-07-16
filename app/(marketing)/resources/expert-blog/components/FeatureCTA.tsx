@@ -27,10 +27,10 @@ export default function FeatureCTA({
       style={{
         background: backgroundColor,
         borderRadius: 12,
-        paddingTop: "clamp(4px,1vw,4px)",
-        paddingBottom: "clamp(12px,1vw,20px)",
-        paddingLeft: "clamp(10px,1vw,20px)",
-        paddingRight: "clamp(10px,1vw,20px)",
+        paddingTop: "clamp(16px,4vw,20px)",
+        paddingBottom: "clamp(16px,4vw,20px)",
+        paddingLeft: "clamp(16px,4vw,20px)",
+        paddingRight: "clamp(16px,4vw,20px)",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
@@ -46,7 +46,7 @@ export default function FeatureCTA({
             fontSize: "clamp(12px,3vw,20px)",
             fontWeight: 400,
             lineHeight: 1.4,
-            marginBottom: "clamp(10px,1vw,15px)",
+            marginBottom: "clamp(12px,2vw,16px)",
             fontFamily: "'Sora',sans-serif",
             border: "none",
             padding: 0,
@@ -58,9 +58,9 @@ export default function FeatureCTA({
         <p
           style={{
             color: "#94A3B8",
-            fontSize: "clamp(10px,2vw,14px)",
+            fontSize: "clamp(12px,3vw,16px)",
             margin: 0,
-            lineHeight: 1.2,
+            lineHeight: 1.4,
           }}
         >
           {description}

@@ -82,6 +82,28 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "26",
+    title: "Prime Day India 2026: Seller Questions Answered",
+    excerpt:
+      "Prime Day 2026 lasts 48 hours. The sellers who win it spend 6 to 8 weeks preparing. The sellers who lose it start the week before. This guide covers everything you need to do right now.",
+    category: "Festive Trends",
+    readTime: "13 min read",
+    image: "/amazon-prime-day-india-2026-seller-questions-blogbanner.png",
+    route: "/resources/expert-blog/prime-day-india-2026-seller-questions",
+    popular: true,
+  },
+  {
+    id: "25",
+    title: "Switch From Excel to SellerApp",
+    excerpt:
+      "Use this step-by-step template to migrate from Excel to SellerApp in under 30 minutes. Automate keyword tracking, competitor monitoring, and listing analytics.",
+    category: "Seller Tools & Strategy",
+    readTime: "10 min read",
+    image: "/switch-excel-BlogBanner.png",
+    route: "/resources/expert-blog/switch-excel-ai-amazon-india",
+    popular: true,
+  },
+  {
     id: "24",
     title: "Top Amazon India Sellers Habits",
     excerpt:
