@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { sanitizeApiError } from "@/lib/sanitize-error";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,10 +12,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Sparkles, Image as ImageIcon, Send, AlertCircle, ShoppingCart, ArrowRight, FileText, Type, List, FileSearch, Hash, LineChart, Clock, Check, Lock, Wallet } from "lucide-react";
+import { Sparkles, Image as ImageIcon, Send, AlertCircle, ShoppingCart, ArrowRight, FileText, Type, List, FileSearch, Hash, LineChart, Clock, Check, Lock, Wallet, X } from "lucide-react";
 import { API_BASE_URL } from "@/lib/config";
 import { useAuth } from "@/lib/auth-context";
 import PaymentModal, { type PaymentPlan } from "@/components/payment/payment-modal";
+import ReactDiffViewer from 'react-diff-viewer-continued';
 
 const CREDIT_PACKS: Record<string, PaymentPlan[]> = {
   enterprise: [
@@ -29,20 +30,32 @@ const CREDIT_PACKS: Record<string, PaymentPlan[]> = {
 export default function ListingStudioPage() {
   const { user, refreshUser, isLoading: authLoading } = useAuth();
   const [description, setDescription] = useState("");
-  const [imageBase64, setImageBase64] = useState<string>("");
-  const [imagePreview, setImagePreview] = useState<string>("");
+  const [imageBase64List, setImageBase64List] = useState<string[]>([]);
+  const [imagePreviewList, setImagePreviewList] = useState<string[]>([]);
   const [useHinglish, setUseHinglish] = useState(false);
+  const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [missingAttributes, setMissingAttributes] = useState<string[]>([]);
+  const [attributeFormValues, setAttributeFormValues] = useState<Record<string, string>>({});
+  const [isVerificationModalOpen, setIsVerificationModalOpen] = useState(false);
+  const [extractedImageDetails, setExtractedImageDetails] = useState<any>(null);
+
   const [isPublishing, setIsPublishing] = useState(false);
   const [isRemovingBg, setIsRemovingBg] = useState(false);
 
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [topUpCredits, setTopUpCredits] = useState(50);
   const [selectedCreditPack, setSelectedCreditPack] = useState<PaymentPlan | null>(null);
 
   const [isPublishModalOpen, setIsPublishModalOpen] = useState(false);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+  const [agreedToAccuracy, setAgreedToAccuracy] = useState(false);
+  const [agreedToLegalResponsibility, setAgreedToLegalResponsibility] = useState(false);
+
   const [targetPlatform, setTargetPlatform] = useState("");
   const [amazonCommerceData, setAmazonCommerceData] = useState({
     sku: "",
@@ -62,7 +75,49 @@ export default function ListingStudioPage() {
   });
 
   const [generatedListing, setGeneratedListing] = useState<any>(null);
+  const [originalListing, setOriginalListing] = useState<any>(null);
+  const [editableListing, setEditableListing] = useState<any>(null); // To store current user edits
   const { toast } = useToast();
+
+  // Auto-Save Debounce
+  useEffect(() => {
+    if (!generatedListing || !generatedListing.id) return;
+
+    // Check if it's identical to original to prevent unnecessary saves
+    if (JSON.stringify(generatedListing) === JSON.stringify(originalListing)) return;
+
+    const timeoutId = setTimeout(async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/listing-agent/save-edit`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            listing_id: generatedListing.id,
+            edited_amazon_title: generatedListing.amazon_title,
+            edited_amazon_bullets: generatedListing.amazon_bullets,
+            edited_amazon_description: generatedListing.amazon_description,
+            edited_amazon_search_terms: generatedListing.amazon_search_terms,
+            edited_flipkart_title: generatedListing.flipkart_title,
+            edited_flipkart_description: generatedListing.flipkart_description
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok && data.detail === "ABUSE_DETECTED") {
+          toast({
+            title: "Policy Violation ⚠️",
+            description: "Your recent edit contained abusive language. The save was rejected.",
+            variant: "destructive"
+          });
+        }
+      } catch (e) {
+        console.error("Auto-save failed", e);
+      }
+    }, 1500); // Debounce 1.5s
+
+    return () => clearTimeout(timeoutId);
+  }, [generatedListing, originalListing]);
 
   const handleGenerate = async () => {
     if (!user) return;
@@ -84,16 +139,60 @@ export default function ListingStudioPage() {
       return;
     }
 
-    if (!imageBase64) {
+    if (imageBase64List.length === 0) {
       toast({
         title: "Image Required",
-        description: "Please upload a product image. Our AI requires visual verification.",
+        description: "Please upload at least one product image. Our AI requires visual verification.",
         variant: "destructive"
       });
       return;
     }
 
+    // STEP 1: Vision AI Analysis
+    setIsAnalyzing(true);
+    try {
+      const analyzeRes = await fetch(`${API_BASE_URL}/api/listing-agent/analyze-image`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ image_base64_list: imageBase64List })
+      });
+      const analyzeData = await analyzeRes.json();
+      if (!analyzeRes.ok) throw new Error(sanitizeApiError(analyzeData.detail, "Vision AI failed. Please try again."));
+
+      const details = analyzeData.data;
+      setExtractedImageDetails(details);
+
+      let rawMissing = details.missing_critical_attributes;
+      let missing: string[] = [];
+      if (Array.isArray(rawMissing)) {
+        missing = rawMissing.filter(m => typeof m === 'string' && m.trim() !== "");
+      }
+
+      if (missing.length > 0) {
+        setMissingAttributes(missing);
+        const initialForm: Record<string, string> = {};
+        missing.forEach(m => initialForm[m] = "");
+        setAttributeFormValues(initialForm);
+        setIsVerificationModalOpen(true);
+        setIsAnalyzing(false);
+        return; // Pause generation to wait for human verification
+      }
+
+      // If nothing is missing, proceed immediately to text generation
+      await executeGeneration(details);
+
+    } catch (err: any) {
+      toast({ title: "Analysis Failed", description: err.message, variant: "destructive" });
+      setIsAnalyzing(false);
+    }
+  };
+
+  const executeGeneration = async (verifiedDetails: any) => {
     setIsGenerating(true);
+    setIsAnalyzing(false);
+    setIsVerificationModalOpen(false);
+
     try {
       const res = await fetch(`${API_BASE_URL}/api/listing-agent/generate`, {
         method: "POST",
@@ -101,8 +200,9 @@ export default function ListingStudioPage() {
         credentials: "include",
         body: JSON.stringify({
           raw_description: description,
-          image_base64: imageBase64 || undefined,
-          use_hinglish: useHinglish
+          image_base64_list: imageBase64List,
+          use_hinglish: useHinglish,
+          verified_image_details: verifiedDetails
         })
       });
 
@@ -110,6 +210,7 @@ export default function ListingStudioPage() {
       if (!res.ok) throw new Error(sanitizeApiError(data.detail, "Failed to generate listing. Please try again."));
 
       setGeneratedListing({ ...data.data, id: data.listing_id });
+      setOriginalListing({ ...data.data, id: data.listing_id });
       toast({
         title: "Success!",
         description: "Your optimized listings have been generated.",
@@ -139,38 +240,60 @@ export default function ListingStudioPage() {
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
 
-    // Create preview URL
-    setImagePreview(URL.createObjectURL(file));
+    // Limit to 9 files
+    const validFiles = files.slice(0, 9);
 
-    // Convert to Base64
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      // Result is something like "data:image/jpeg;base64,/9j/4AAQSkZJR..."
-      // We will send the full string so the backend can extract the base64 part
-      setImageBase64(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    validFiles.forEach(file => {
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreviewList(prev => [...prev, previewUrl]);
+
+      // Convert to Base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageBase64List(prev => [...prev, reader.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Reset file input
+    e.target.value = '';
+
+    // CRITICAL FIX: Reset previously extracted details so the AI actually analyzes the NEW images!
+    setExtractedImageDetails(null);
+    setMissingAttributes([]);
+    setAttributeFormValues({});
+
+    // CRITICAL FIX: Prevent image-swapping exploits by wiping any generated listings when new images are uploaded
+    setGeneratedListing(null);
+    setEditableListing(null);
   };
 
   const handleRemoveBackground = async () => {
-    if (!imageBase64) return;
+    if (imageBase64List.length === 0) return;
     setIsRemovingBg(true);
     try {
       const res = await fetch(`${API_BASE_URL}/api/listing-agent/remove-background`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ image_base64: imageBase64 })
+        body: JSON.stringify({ image_base64_list: imageBase64List })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(sanitizeApiError(data.detail, "Failed to remove background. Please try again."));
 
-      setImageBase64(data.image_base64);
-      setImagePreview(data.image_base64);
-      toast({ title: "Success", description: "Background removed for Amazon compliance." });
+      // Update all images with their cleaned versions
+      setImageBase64List(data.image_base64_list);
+      setImagePreviewList(data.image_base64_list);
+
+      const stats = data.stats || { ai_processed: 0, skipped_already_white: 0 };
+      toast({ 
+        title: "Success", 
+        description: `Processed ${stats.total || data.image_base64_list.length} images. (Cleaned: ${stats.ai_processed}, Skipped/Already White: ${stats.skipped_already_white})` 
+      });
     } catch (err: any) {
       toast({ title: "Error", description: sanitizeApiError(err.message, "Failed to remove background. Please try again."), variant: "destructive" });
     } finally {
@@ -209,6 +332,15 @@ export default function ListingStudioPage() {
   };
 
   const submitPublish = async () => {
+    if (!agreedToAccuracy || !agreedToLegalResponsibility) {
+      toast({
+        title: "Compliance Required",
+        description: "You must check the legal accuracy and responsibility boxes before publishing.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsReviewModalOpen(false);
     setIsPublishing(true);
 
@@ -225,7 +357,11 @@ export default function ListingStudioPage() {
           selling_price: parseFloat(data.selling_price),
           quantity: parseInt(data.quantity),
           product_id: data.product_id,
-          product_id_type: data.product_id_type
+          product_id_type: data.product_id_type,
+          agreed_to_accuracy: agreedToAccuracy,
+          agreed_to_legal_responsibility: agreedToLegalResponsibility,
+          images: imageBase64List,
+          data_snapshot: generatedListing
         })
       });
       const responseData = await res.json();
@@ -320,29 +456,84 @@ export default function ListingStudioPage() {
               <div className="space-y-3">
                 <Label className="font-semibold text-slate-700 dark:text-slate-300">Product Image (Required for Verification)</Label>
                 <div
-                  className="border-2 border-dashed border-indigo-100 dark:border-indigo-900 rounded-xl p-8 flex flex-col items-center justify-center bg-white dark:bg-slate-950 hover:bg-indigo-50/30 transition-colors cursor-pointer relative overflow-hidden group"
-                  onClick={() => document.getElementById("imageUpload")?.click()}
+                  className={imagePreviewList.length > 0 
+                    ? "relative group w-full" 
+                    : "border-2 border-dashed border-indigo-100 dark:border-indigo-900 rounded-xl p-8 flex flex-col items-center justify-center bg-white dark:bg-slate-950 hover:bg-indigo-50/30 transition-colors cursor-pointer relative overflow-hidden group"
+                  }
+                  onClick={() => {
+                    if (imagePreviewList.length === 0) {
+                      document.getElementById("imageUpload")?.click();
+                    }
+                  }}
                 >
                   <input
                     id="imageUpload"
                     type="file"
                     accept="image/*"
+                    multiple
+                    max="9"
                     className="hidden"
                     onChange={handleImageUpload}
                   />
-                  {imagePreview ? (
-                    <img src={imagePreview} alt="Preview" className="absolute inset-0 w-full h-full object-contain bg-slate-50 dark:bg-slate-900" />
+                  {imagePreviewList.length > 0 ? (
+                    <div className="w-full bg-slate-900 rounded-xl p-4 flex gap-4 overflow-x-auto custom-scrollbar items-center border border-slate-800" onClick={(e) => e.stopPropagation()}>
+                      {imagePreviewList.map((previewUrl, i) => (
+                        <div key={i} className="relative w-28 h-28 shrink-0 rounded-xl overflow-hidden border border-slate-700 shadow-md group">
+                          <img 
+                            src={previewUrl} 
+                            alt={`Preview ${i}`} 
+                            className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setLightboxImage(previewUrl);
+                            }}
+                          />
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const newPreviews = [...imagePreviewList];
+                              newPreviews.splice(i, 1);
+                              setImagePreviewList(newPreviews);
+                              const newBase64 = [...imageBase64List];
+                              newBase64.splice(i, 1);
+                              setImageBase64List(newBase64);
+                            }}
+                            className="absolute top-2 right-2 bg-white/90 hover:bg-white text-slate-900 rounded-full w-6 h-6 flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                          </button>
+                          <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white text-[11px] font-bold px-2 py-1 text-center truncate pointer-events-none">
+                            {i === 0 ? "Main Image" : `Image ${i + 1}`}
+                          </div>
+                        </div>
+                      ))}
+                      {imagePreviewList.length < 9 && (
+                        <div 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            document.getElementById("imageUpload")?.click();
+                          }}
+                          className="w-28 h-28 shrink-0 rounded-xl border-2 border-dashed border-slate-600 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-800 transition-colors text-slate-400 hover:text-slate-200"
+                        >
+                          <span className="text-3xl mb-1">+</span>
+                          <span className="text-[11px] font-semibold">Add More</span>
+                        </div>
+                      )}
+                    </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center text-center">
                       <div className="w-12 h-12 bg-indigo-50 dark:bg-indigo-950/50 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                         <ImageIcon className="w-6 h-6 text-indigo-400" />
                       </div>
-                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Click to upload image</span>
-                      <span className="text-xs text-slate-400 dark:text-slate-500 mt-1">(AI will automatically analyze it)</span>
+                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">Click to upload images (Max 9)</span>
+                      <span className="text-xs text-slate-400 dark:text-slate-500 mt-1 mb-2">(AI will analyze all angles)</span>
+                      <span className="text-[10px] text-amber-600 dark:text-amber-500 font-medium bg-amber-50 dark:bg-amber-950/30 px-2.5 py-1 rounded-md border border-amber-200 dark:border-amber-900/50 text-center mx-4">
+                        ⚠️ Please upload clear, high-resolution images so the Vision AI can read all text, specs, and details accurately.
+                      </span>
                     </div>
                   )}
                 </div>
-                {imagePreview && (
+                {imagePreviewList.length > 0 && (
                   <div className="flex flex-col gap-1 w-full mt-2">
                     <div className="flex gap-2 w-full">
                       <Button
@@ -352,19 +543,27 @@ export default function ListingStudioPage() {
                         disabled={isRemovingBg}
                         className="flex-1 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:text-slate-50 border-slate-300 dark:border-slate-600"
                       >
-                        {isRemovingBg ? "Cleaning Image..." : "✨ Auto-Remove Background"}
+                        {isRemovingBg ? "Cleaning All Images..." : "✨ Auto-Remove Background (All)"}
                       </Button>
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => { setImagePreview(""); setImageBase64(""); }}
+                        onClick={() => {
+                          setImagePreviewList([]);
+                          setImageBase64List([]);
+                          setExtractedImageDetails(null);
+                          setMissingAttributes([]);
+                          setAttributeFormValues({});
+                          setGeneratedListing(null);
+                          setEditableListing(null);
+                        }}
                         className="text-red-500 hover:text-red-600 px-3"
                       >
-                        Remove
+                        Clear All
                       </Button>
                     </div>
                     <p className="text-[10px] text-slate-500 dark:text-slate-400 text-center px-2 leading-tight">
-                      *Note: If your product photo already has a pure white background, do not click this button.
+                      *Note: We will intelligently skip any images that already have a white background.
                     </p>
                   </div>
                 )}
@@ -395,19 +594,97 @@ export default function ListingStudioPage() {
             <CardFooter className="pt-2 pb-6 px-6">
               <Button
                 onClick={handleGenerate}
-                disabled={isGenerating || (!description && !imageBase64)}
+                disabled={isGenerating || isAnalyzing || (!description && imageBase64List.length === 0)}
                 className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium text-base rounded-xl shadow-sm transition-all"
               >
-                {isGenerating ? "Generating..." : "Generate Listings"}
-                {!isGenerating && <Sparkles className="w-4 h-4 ml-2" />}
+                {isAnalyzing ? "Vision AI Scanning..." : isGenerating ? "Generating..." : "Generate Listings"}
+                {!isGenerating && !isAnalyzing && <Sparkles className="w-4 h-4 ml-2" />}
               </Button>
             </CardFooter>
           </Card>
+
+          {/* Verification Modal */}
+          <Dialog open={isVerificationModalOpen} onOpenChange={setIsVerificationModalOpen}>
+            <DialogContent className="sm:max-w-[450px]" onInteractOutside={(e) => e.preventDefault()}>
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <span className="text-amber-500">⚠️</span> Missing Information
+                </DialogTitle>
+                <DialogDescription>
+                  Our Vision AI could not detect some details from the images. Please fill them in manually so we can accurately generate your listing.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                {missingAttributes.map((attr) => (
+                  <div key={attr} className="flex flex-col gap-2">
+                    <Label htmlFor={attr} className="capitalize font-bold text-slate-700 dark:text-slate-300">
+                      {String(attr).replace(/_/g, " ")}
+                    </Label>
+                    <Input
+                      id={attr}
+                      value={attributeFormValues[attr] || ""}
+                      onChange={(e) => setAttributeFormValues({ ...attributeFormValues, [attr]: e.target.value })}
+                      placeholder={`Enter ${String(attr).replace(/_/g, " ")}...`}
+                      className="w-full"
+                    />
+                  </div>
+                ))}
+              </div>
+              <DialogFooter>
+                <Button
+                  onClick={() => {
+                    const mergedDetails = {
+                      ...extractedImageDetails,
+                      human_verified_attributes: attributeFormValues
+                    };
+                    executeGeneration(mergedDetails);
+                  }}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  Save & Generate
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+
+          {/* Lightbox Modal */}
+          <Dialog open={!!lightboxImage} onOpenChange={(open) => !open && setLightboxImage(null)}>
+            <DialogContent className="max-w-4xl p-1 bg-transparent border-none shadow-none flex justify-center items-center overflow-visible">
+              <DialogTitle className="sr-only">Image Preview</DialogTitle>
+              <button 
+                onClick={() => setLightboxImage(null)} 
+                className="absolute -top-12 right-0 bg-black/60 text-white rounded-full p-2 hover:bg-black/90 transition-colors z-50"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              {lightboxImage && (
+                <img src={lightboxImage} alt="Expanded Preview" className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl" />
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Output Column */}
         <div className="lg:col-span-8">
-          {!generatedListing ? (
+          {isGenerating ? (
+            <div className="flex flex-col items-center justify-center py-32 text-center h-[90%] bg-white dark:bg-slate-950 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
+              <div className="w-24 h-24 mb-8 relative">
+                <div className="absolute inset-0 rounded-full border-4 border-indigo-100 dark:border-indigo-900"></div>
+                <div className="absolute inset-0 rounded-full border-4 border-indigo-500 border-t-transparent animate-spin"></div>
+                <Sparkles className="w-10 h-10 text-indigo-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
+              </div>
+              <h3 className="text-3xl font-black text-slate-800 dark:text-slate-200 mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-blue-500">
+                Crafting Your Listing...
+              </h3>
+              <p className="text-slate-500 dark:text-slate-400 max-w-md leading-relaxed mb-8">
+                Our Smart Engine is deeply analyzing your inputs to write high-converting, SEO-optimized copy for both Amazon and Flipkart.
+              </p>
+              <div className="flex items-center gap-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50 px-5 py-2.5 rounded-full shadow-sm">
+                <Clock className="w-4 h-4 animate-pulse" />
+                Please wait... this usually takes 10-20 seconds.
+              </div>
+            </div>
+          ) : !generatedListing ? (
             <div className="flex flex-col gap-6 bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl border border-slate-100 dark:border-slate-800 p-8 h-full">
               {/* Header */}
               <div className="text-center mb-6 mt-4">
@@ -772,6 +1049,12 @@ export default function ListingStudioPage() {
 
             </Tabs>
           )}
+
+          {generatedListing && (
+            <div className="mt-6 text-center text-sm font-medium text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-950/30 py-3 rounded-lg border border-amber-200 dark:border-amber-900/50">
+              ⚠️ Note: Please verify the generated content by yourself before publishing to ensure strict compliance.
+            </div>
+          )}
         </div>
       </div>
 
@@ -909,7 +1192,13 @@ export default function ListingStudioPage() {
 
           <div className="flex-1 overflow-y-auto pr-2 grid gap-6 py-4">
             <div className="flex gap-4 items-start bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border">
-              {imageBase64 && <img src={imageBase64} className="w-32 h-32 object-contain rounded-md bg-white dark:bg-slate-950 border shrink-0" />}
+              {imageBase64List.length > 0 && (
+                <div className="flex flex-col gap-2 shrink-0 w-32 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
+                  {imageBase64List.map((img, i) => (
+                    <img key={i} src={img} className="w-32 h-32 object-contain rounded-md bg-white dark:bg-slate-950 border shrink-0" alt={`Review image ${i+1}`} />
+                  ))}
+                </div>
+              )}
               <div className="space-y-4 w-full">
                 <div>
                   <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase">Target Platform</p>
@@ -965,11 +1254,101 @@ export default function ListingStudioPage() {
             </div>
           </div>
 
+          <div className="px-6 py-4 bg-slate-100 dark:bg-slate-900 border-t space-y-3">
+            <div className="flex items-center space-x-2">
+              <input type="checkbox" id="accuracyCheck" checked={agreedToAccuracy} onChange={(e) => setAgreedToAccuracy(e.target.checked)} className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500" />
+              <label htmlFor="accuracyCheck" className="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer">I confirm that this listing is accurate and faithfully reflects the actual product.</label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <input type="checkbox" id="legalCheck" checked={agreedToLegalResponsibility} onChange={(e) => setAgreedToLegalResponsibility(e.target.checked)} className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500" />
+              <label htmlFor="legalCheck" className="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer">I take full legal responsibility for the contents of this listing and any claims made.</label>
+            </div>
+          </div>
+
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setIsReviewModalOpen(false)}>Back to Edit</Button>
-            <Button onClick={submitPublish} disabled={isPublishing} className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold hover:shadow-lg transition-all">
-              {isPublishing ? "Publishing..." : "🚀 Confirm & Push Live"}
-            </Button>
+            <div className="flex justify-between w-full">
+              <Button variant="outline" onClick={() => setIsCompareModalOpen(true)}>Compare Revisions</Button>
+              <div className="flex gap-2">
+                <Button variant="ghost" onClick={() => setIsReviewModalOpen(false)}>Back to Edit</Button>
+                <Button onClick={submitPublish} disabled={isPublishing || !agreedToAccuracy || !agreedToLegalResponsibility} className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-bold hover:shadow-lg transition-all disabled:opacity-50">
+                  {isPublishing ? "Publishing..." : "🚀 Confirm & Push Live"}
+                </Button>
+              </div>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Compare Revisions Dialog */}
+      <Dialog open={isCompareModalOpen} onOpenChange={setIsCompareModalOpen}>
+        <DialogContent className="sm:max-w-[1000px] max-h-[90vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+              <FileSearch className="text-blue-500 w-6 h-6" />
+              Revision Comparison
+            </DialogTitle>
+            <DialogDescription>
+              Side-by-side comparison of the original AI generation vs. your edited draft.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex-1 overflow-y-auto p-4 border rounded-md m-4 bg-white dark:bg-slate-900">
+            <ReactDiffViewer
+              oldValue={`--- AMAZON TITLE ---
+${originalListing?.amazon_title || ""}
+
+--- AMAZON BULLETS ---
+${(originalListing?.amazon_bullets || []).join('\n')}
+
+--- AMAZON DESCRIPTION ---
+${originalListing?.amazon_description || ""}
+
+--- FLIPKART TITLE ---
+${originalListing?.flipkart_title || ""}
+
+--- FLIPKART DESCRIPTION ---
+${originalListing?.flipkart_description || ""}
+`}
+              newValue={`--- AMAZON TITLE ---
+${generatedListing?.amazon_title || ""}
+
+--- AMAZON BULLETS ---
+${(generatedListing?.amazon_bullets || []).join('\n')}
+
+--- AMAZON DESCRIPTION ---
+${generatedListing?.amazon_description || ""}
+
+--- FLIPKART TITLE ---
+${generatedListing?.flipkart_title || ""}
+
+--- FLIPKART DESCRIPTION ---
+${generatedListing?.flipkart_description || ""}
+`}
+              splitView={true}
+              useDarkTheme={false}
+              leftTitle="Original AI Output"
+              rightTitle="Your Edited Draft"
+              hideLineNumbers={true}
+              showDiffOnly={false}
+              renderFoldMessage={() => <div />}
+              styles={{
+                contentText: {
+                  wordBreak: 'break-word',
+                  whiteSpace: 'pre-wrap',
+                  fontFamily: 'inherit',
+                  fontSize: '14px',
+                  lineHeight: '1.5'
+                },
+                titleBlock: {
+                  fontWeight: 'bold',
+                  textAlign: 'center'
+                }
+              }}
+            />
+          </div>
+
+          <DialogFooter>
+            <Button onClick={() => setIsCompareModalOpen(false)}>Close Comparison</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -983,33 +1362,120 @@ export default function ListingStudioPage() {
               Top-up SKU Credits
             </DialogTitle>
             <DialogDescription>
-              Purchase SKU credits to instantly generate and publish SEO-optimized product listings. 1 Credit = 1 SKU generated & published.
+              Purchase SKU credits to instantly generate and publish SEO-optimized product listings. Slide to adjust volume.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid grid-cols-2 gap-3 py-2">
-            {(CREDIT_PACKS[user?.subscriptionTier || "basic"] || CREDIT_PACKS["basic"]).map((pack) => (
-              <div
-                key={pack.id}
-                className={`border-2 rounded-xl p-3 cursor-pointer transition-all flex flex-col justify-center ${selectedCreditPack?.id === pack.id ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/50 shadow-sm' : 'border-slate-200 dark:border-slate-700 hover:border-indigo-300 hover:bg-slate-50 dark:bg-slate-900'
-                  }`}
-                onClick={() => setSelectedCreditPack(pack)}
-              >
-                <div className="flex justify-between items-start mb-1">
-                  <h4 className="font-bold text-base text-slate-800 dark:text-slate-200 leading-tight">{pack.name}</h4>
-                  <span className="font-bold text-indigo-700 dark:text-indigo-400 text-base ml-2 shrink-0">₹{pack.price.toLocaleString('en-IN')}</span>
-                </div>
-                <p className="text-slate-500 dark:text-slate-400 text-xs leading-tight mt-1">{pack.description}</p>
-              </div>
-            ))}
-          </div>
+          {(() => {
+            const basePricePerSku = 40;
+            const getDiscountInfo = (credits: number) => {
+              if (credits >= 500) return { percent: 25, label: "25% OFF", theme: "from-green-500 to-emerald-600", border: "border-emerald-500", text: "text-emerald-600", nextTier: null };
+              if (credits >= 200) return { percent: 15, label: "15% OFF", theme: "from-teal-400 to-green-500", border: "border-green-400", text: "text-green-600", nextTier: 500 };
+              if (credits >= 50) return { percent: 10, label: "10% OFF", theme: "from-cyan-500 to-teal-500", border: "border-teal-400", text: "text-teal-600", nextTier: 200 };
+              return { percent: 0, label: "Base Price", theme: "from-indigo-400 to-cyan-500", border: "border-indigo-300", text: "text-indigo-600", nextTier: 50 };
+            };
 
-          <DialogFooter>
+            const discountInfo = getDiscountInfo(topUpCredits);
+            const discountMultiplier = (100 - discountInfo.percent) / 100;
+            const finalPrice = Math.round(topUpCredits * basePricePerSku * discountMultiplier);
+            const originalPrice = topUpCredits * basePricePerSku;
+            const savings = originalPrice - finalPrice;
+            const fillPercentage = (topUpCredits / 10000) * 100;
+
+            return (
+              <div className="py-4 flex flex-col gap-6">
+
+                {/* Display and Slider */}
+                <div className="flex flex-col items-center">
+                  <div className="flex items-end justify-center mb-6">
+                    <span className={`text-6xl font-extrabold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r ${discountInfo.theme}`}>{topUpCredits.toLocaleString()}</span>
+                    <span className="text-xl text-slate-500 font-semibold mb-2 ml-2 uppercase">Credits</span>
+                  </div>
+
+                  <div className="w-full relative px-2 mt-4 group">
+                    {/* Custom slider track background */}
+                    <div className="absolute top-1/2 left-2 right-2 h-3 -translate-y-1/2 bg-slate-200 rounded-full overflow-hidden pointer-events-none">
+                      <div
+                        className={`h-full bg-gradient-to-r transition-all duration-300 ${discountInfo.theme}`}
+                        style={{ width: `${fillPercentage}%` }}
+                      />
+                    </div>
+                    {/* The actual slider */}
+                    <input
+                      type="range"
+                      min="10"
+                      max="10000"
+                      step="10"
+                      value={topUpCredits}
+                      onChange={(e) => setTopUpCredits(parseInt(e.target.value))}
+                      className="w-full relative z-10 appearance-none bg-transparent cursor-pointer h-8 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-slate-300 hover:[&::-webkit-slider-thumb]:border-indigo-500 transition-all"
+                    />
+                  </div>
+
+                  <div className="w-full flex justify-between mt-2 px-2">
+                    <span className="text-xs text-slate-400 font-medium">50</span>
+                    <span className="text-xs text-slate-400 font-medium">10,000 max</span>
+                  </div>
+                </div>
+
+                {/* Metrics */}
+                <div className={`p-5 border-2 rounded-2xl transition-all duration-300 shadow-sm ${discountInfo.border} bg-slate-50 dark:bg-slate-900/50 relative overflow-hidden`}>
+                  {discountInfo.percent > 0 && (
+                    <div className={`absolute top-0 right-0 px-3 py-1 rounded-bl-xl text-xs font-bold text-white bg-gradient-to-r ${discountInfo.theme}`}>
+                      {discountInfo.label} Applied
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-center mt-2">
+                    <span className="text-slate-600 dark:text-slate-300 font-semibold text-lg">Total Cost:</span>
+                    <div className="text-right flex items-center gap-3">
+                      {discountInfo.percent > 0 && (
+                        <span className="line-through text-slate-400 font-medium text-lg">₹{originalPrice.toLocaleString('en-IN')}</span>
+                      )}
+                      <span className={`text-3xl font-extrabold ${discountInfo.text}`}>₹{finalPrice.toLocaleString('en-IN')}</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700/50 flex justify-between items-center">
+                    {discountInfo.nextTier ? (
+                      <span className="text-sm text-slate-500 font-medium">
+                        Add <strong className="text-slate-700 dark:text-slate-300">{discountInfo.nextTier - topUpCredits}</strong> more for the next discount!
+                      </span>
+                    ) : (
+                      <span className="text-sm text-emerald-600 font-bold flex items-center gap-1"><Sparkles className="w-4 h-4" /> Maximum Discount Unlocked!</span>
+                    )}
+
+                    {savings > 0 && (
+                      <span className="text-sm font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 px-2 py-1 rounded-md">
+                        You save ₹{savings.toLocaleString('en-IN')}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+              </div>
+            );
+          })()}
+
+          <DialogFooter className="mt-2 border-t pt-4">
             <Button variant="ghost" onClick={() => setIsTopUpOpen(false)}>Cancel</Button>
             <Button
-              disabled={!selectedCreditPack}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 shadow-md"
               onClick={() => {
+                const discountInfo = (() => {
+                  if (topUpCredits >= 500) return 25;
+                  if (topUpCredits >= 200) return 15;
+                  if (topUpCredits >= 50) return 10;
+                  return 0;
+                })();
+                const finalPrice = Math.round(topUpCredits * 40 * ((100 - discountInfo) / 100));
+
+                setSelectedCreditPack({
+                  id: `custom_${topUpCredits}`,
+                  name: `${topUpCredits.toLocaleString()} SKU Credits`,
+                  price: finalPrice,
+                  description: `Custom package (${discountInfo}% discount applied)`
+                });
                 setIsPaymentModalOpen(true);
               }}
             >

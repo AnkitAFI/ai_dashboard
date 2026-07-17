@@ -7,7 +7,7 @@ from app.services.ollama_service import (
     complete_ollama,
     build_amazon_listing_prompt,
     build_flipkart_listing_prompt,
-    analyze_product_image_with_moondream,
+    analyze_product_image_with_minicpm,
     build_attribute_extraction_prompt,
     build_aplus_content_prompt
 )
@@ -24,7 +24,7 @@ def extract_json_from_llm(response_str: str) -> dict:
     
     try:
         # First attempt: parse directly
-        return json.loads(processed_str)
+        return json.loads(processed_str, strict=False)
     except json.JSONDecodeError:
         pass
         
@@ -33,7 +33,7 @@ def extract_json_from_llm(response_str: str) -> dict:
         match = re.search(r'\{.*\}', processed_str, re.DOTALL)
         if match:
             try:
-                return json.loads(match.group(0))
+                return json.loads(match.group(0), strict=False)
             except json.JSONDecodeError:
                 pass
                 
@@ -41,7 +41,7 @@ def extract_json_from_llm(response_str: str) -> dict:
         match = re.search(r'```(?:json)?\s*(\{.*?\})\s*```', processed_str, re.DOTALL)
         if match:
             try:
-                return json.loads(match.group(1))
+                return json.loads(match.group(1), strict=False)
             except json.JSONDecodeError:
                 pass
                 
@@ -52,12 +52,12 @@ def extract_json_from_llm(response_str: str) -> dict:
             if not s.endswith('}'):
                 # Try appending just }
                 try:
-                    return json.loads(s + '}')
+                    return json.loads(s + '}', strict=False)
                 except json.JSONDecodeError:
                     pass
                 # Try appending "}
                 try:
-                    return json.loads(s + '"}')
+                    return json.loads(s + '"}', strict=False)
                 except json.JSONDecodeError:
                     pass
             
@@ -72,18 +72,29 @@ async def generate_listings_for_product(
     raw_description: str,
     category: str = "General",
     image_url: str = None,
-    image_base64: str = None,
-    use_hinglish: bool = False
+    image_base64_list: list[str] = None,
+    use_hinglish: bool = False,
+    verified_image_details: dict = None
 ) -> ProductListing:
     """
     Takes a raw product description (and optionally an image) and uses AI to generate 
     both Amazon and Flipkart listings, saving them to the database.
     """
+    import json
     
-    # 0. Vision AI Analysis (if image provided)
-    if image_base64:
-        logger.info("Image provided, running Vision AI analysis with Moondream...")
-        image_details = await analyze_product_image_with_moondream(image_base64)
+    # 0. Vision AI Analysis (if image provided and not already verified)
+    if verified_image_details:
+        logger.info("Using human-verified image details, skipping MiniCPM-V analysis...")
+        visual_desc = verified_image_details.get('visual_description', '')
+        detected = verified_image_details.get('detected_attributes', {})
+        human = verified_image_details.get('human_verified_attributes', {})
+        
+        formatted_verified = f"Visual Description: {visual_desc}\nDetected Attributes: {json.dumps(detected)}\nHuman-Verified Missing Attributes: {json.dumps(human)}"
+        
+        raw_description = f"=== ABSOLUTE SOURCE OF TRUTH (Human-Verified Image Analysis) ===\n{formatted_verified}\n\n=== UNVERIFIED USER INPUT (Merge ONLY if it does NOT contradict the image) ===\n{raw_description}"
+    elif image_base64_list and len(image_base64_list) > 0:
+        logger.info(f"Images provided ({len(image_base64_list)}), running Vision AI analysis with MiniCPM-V...")
+        image_details = await analyze_product_image_with_minicpm(image_base64_list)
         if image_details:
             # Augment the user's raw description, strictly labeling the Image as the absolute truth
             # and the user's text as unverified input to prevent the LLM from merging contradictory terms.
@@ -92,25 +103,25 @@ async def generate_listings_for_product(
             
     # 1. Generate Amazon Listing
     amazon_prompt = build_amazon_listing_prompt(raw_description, category, use_hinglish)
-    amazon_response_str = await complete_ollama(amazon_prompt)
+    amazon_response_str = await complete_ollama(amazon_prompt, temperature=0.0, top_p=0.1)
     
     amazon_data = extract_json_from_llm(amazon_response_str)
         
     # 2. Generate Flipkart Listing
     flipkart_prompt = build_flipkart_listing_prompt(raw_description, category, use_hinglish)
-    flipkart_response_str = await complete_ollama(flipkart_prompt)
+    flipkart_response_str = await complete_ollama(flipkart_prompt, temperature=0.0, top_p=0.1)
     
     flipkart_data = extract_json_from_llm(flipkart_response_str)
     
     # 3. Generate A+ Content (Premium)
     aplus_prompt = build_aplus_content_prompt(raw_description, category)
-    aplus_response_str = await complete_ollama(aplus_prompt)
+    aplus_response_str = await complete_ollama(aplus_prompt, temperature=0.0, top_p=0.1)
     
     aplus_data = extract_json_from_llm(aplus_response_str)
 
     # 4. Extract Attributes
     attr_prompt = build_attribute_extraction_prompt(raw_description)
-    attr_response_str = await complete_ollama(attr_prompt)
+    attr_response_str = await complete_ollama(attr_prompt, temperature=0.0, top_p=0.1)
     
     extracted_attributes = extract_json_from_llm(attr_response_str)
 

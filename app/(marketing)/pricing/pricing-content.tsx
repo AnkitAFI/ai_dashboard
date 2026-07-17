@@ -121,7 +121,7 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     features: [
       "All Premium features",
       "White-label options",
-      "24/7 premium support",
+      "Premium support",
       "Dedicated account manager",
       "Custom integrations",
     ],

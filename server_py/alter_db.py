@@ -12,9 +12,19 @@ def main():
             conn.execute(text("ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS ai_listings_generated INTEGER DEFAULT 0;"))
             conn.execute(text("ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS ai_listings_month VARCHAR(7);"))
             conn.execute(text("ALTER TABLE user_subscriptions ADD COLUMN IF NOT EXISTS ai_credits_balance INTEGER DEFAULT 0;"))
-            print("Successfully added AI Listing columns to user_subscriptions table")
+            
+            # Add draft edit columns to product_listings table
+            conn.execute(text("ALTER TABLE product_listings ADD COLUMN IF NOT EXISTS user_edited_amazon_title VARCHAR(500);"))
+            conn.execute(text("ALTER TABLE product_listings ADD COLUMN IF NOT EXISTS user_edited_amazon_bullets JSON;"))
+            conn.execute(text("ALTER TABLE product_listings ADD COLUMN IF NOT EXISTS user_edited_amazon_description TEXT;"))
+            conn.execute(text("ALTER TABLE product_listings ADD COLUMN IF NOT EXISTS user_edited_amazon_search_terms VARCHAR(1000);"))
+            conn.execute(text("ALTER TABLE product_listings ADD COLUMN IF NOT EXISTS user_edited_flipkart_title VARCHAR(500);"))
+            conn.execute(text("ALTER TABLE product_listings ADD COLUMN IF NOT EXISTS user_edited_flipkart_description TEXT;"))
+            conn.execute(text("ALTER TABLE product_listings ADD COLUMN IF NOT EXISTS user_edited_a_plus_content JSON;"))
+            
+            print("Successfully added AI Listing columns")
         except Exception as e:
-            print(f"Error on user_subscriptions table: {e}")
+            print(f"Error altering tables: {e}")
 
     # Now rebuild the view
     build_facade()

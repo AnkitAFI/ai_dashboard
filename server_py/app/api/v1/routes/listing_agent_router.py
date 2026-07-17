@@ -16,11 +16,15 @@ class GenerateListingRequest(BaseModel):
     raw_description: str = ""
     category: str = "General"
     image_url: str = None
-    image_base64: str = None
+    image_base64_list: list[str] = []
     use_hinglish: bool = False
+    verified_image_details: dict = None
+
+class AnalyzeImageRequest(BaseModel):
+    image_base64_list: list[str]
 
 class RemoveBackgroundRequest(BaseModel):
-    image_base64: str
+    image_base64_list: list[str]
 
 class PublishListingRequest(BaseModel):
     listing_id: int
@@ -33,21 +37,91 @@ class PublishListingRequest(BaseModel):
     quantity: int
     product_id: str
     product_id_type: str # 'UPC', 'EAN', 'ASIN', 'GCID'
+    
+    agreed_to_accuracy: bool = False
+    agreed_to_legal_responsibility: bool = False
+    
+    # Liability snapshot data
+    images: list[str] = []
+    data_snapshot: dict = None
+
+class SaveEditRequest(BaseModel):
+    listing_id: int
+    edited_amazon_title: str = None
+    edited_amazon_bullets: list[str] = None
+    edited_amazon_description: str = None
+    edited_amazon_search_terms: str = None
+    edited_flipkart_title: str = None
+    edited_flipkart_description: str = None
 
 @router.post("/remove-background")
 async def api_remove_background(req: RemoveBackgroundRequest, user_id: str = Depends(get_current_user_id)):
     """
-    Takes a base64 image, removes the background locally using rembg, 
-    and returns a clean white background image for Amazon compliance.
+    Takes a list of base64 images, checks if they need background removal,
+    removes the background locally using rembg if necessary, places them on a pure white canvas
+    and returns the new images.
     """
     try:
-        if not req.image_base64:
-            raise HTTPException(status_code=400, detail="Image base64 is required.")
+        if not req.image_base64_list:
+            raise HTTPException(status_code=400, detail="Image base64 list is required.")
         
-        cleaned_base64 = make_amazon_compliant_image(req.image_base64)
-        return {"status": "success", "image_base64": cleaned_base64}
+        cleaned_images = []
+        ai_used_count = 0
+        
+        for img_b64 in req.image_base64_list:
+            cleaned_base64, was_ai_used = make_amazon_compliant_image(img_b64)
+            cleaned_images.append(cleaned_base64)
+            if was_ai_used:
+                ai_used_count += 1
+                
+        return {
+            "status": "success", 
+            "image_base64_list": cleaned_images,
+            "stats": {
+                "total": len(req.image_base64_list),
+                "ai_processed": ai_used_count,
+                "skipped_already_white": len(req.image_base64_list) - ai_used_count
+            }
+        }
     except Exception as e:
         logger.error(f"Error in remove_background: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/analyze-image")
+async def api_analyze_image(req: AnalyzeImageRequest, user_id: str = Depends(get_current_user_id)):
+    """
+    Takes a list of base64 images, runs them through the local Vision AI (MiniCPM), 
+    and returns the extracted raw JSON details for the frontend to verify.
+    """
+    try:
+        from app.services.ollama_service import analyze_product_image_with_minicpm
+        import json
+        
+        if not req.image_base64_list:
+            raise HTTPException(status_code=400, detail="Images are required.")
+            
+        json_str = await analyze_product_image_with_minicpm(req.image_base64_list)
+        if not json_str:
+            raise HTTPException(status_code=500, detail="Vision AI failed to analyze the image.")
+            
+        from app.services.listing_agent_service import extract_json_from_llm
+        details = extract_json_from_llm(json_str)
+        
+        # Hard filter out logistical fields that the user provides during publishing
+        if "missing_critical_attributes" in details and isinstance(details["missing_critical_attributes"], list):
+            forbidden = ["price", "mrp", "sku", "barcode", "quantity", "inventory"]
+            filtered = []
+            for attr in details["missing_critical_attributes"]:
+                # The AI might occasionally return a dict like {"name": "Brand"} instead of just "Brand"
+                attr_str = str(list(attr.values())[0]) if isinstance(attr, dict) and attr else str(attr)
+                if not any(f in attr_str.lower() for f in forbidden):
+                    filtered.append(attr_str)
+            # Hard cap at 3 to prevent overwhelming the user
+            details["missing_critical_attributes"] = filtered[:3]
+        
+        return {"status": "success", "data": details}
+    except Exception as e:
+        logger.error(f"Error in analyze_image: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/generate")
@@ -89,8 +163,9 @@ async def api_generate_listing(
             raw_description=req.raw_description,
             category=req.category,
             image_url=req.image_url,
-            image_base64=req.image_base64,
-            use_hinglish=req.use_hinglish
+            image_base64_list=req.image_base64_list,
+            use_hinglish=req.use_hinglish,
+            verified_image_details=req.verified_image_details
         )
         return {
             "status": "success", 
@@ -135,6 +210,23 @@ async def api_publish_listing(
     if str(listing.user_id) != str(user_id):
         raise HTTPException(status_code=403, detail="You do not have permission to publish this listing.")
         
+    # COMPLIANCE: Require legal checkboxes
+    if not req.agreed_to_accuracy or not req.agreed_to_legal_responsibility:
+        raise HTTPException(status_code=400, detail="You must agree to the compliance checklist before publishing.")
+        
+    # Log the compliance agreement
+    from app.models.listing_models import PublishComplianceLog
+    compliance_log = PublishComplianceLog(
+        listing_id=req.listing_id,
+        user_id=int(user_id),
+        agreed_to_accuracy=req.agreed_to_accuracy,
+        agreed_to_legal_responsibility=req.agreed_to_legal_responsibility,
+        published_images=req.images,
+        published_data_snapshot=req.data_snapshot
+    )
+    db.add(compliance_log)
+    db.commit()
+        
     try:
         if req.platform.lower() == "amazon":
             await publish_to_amazon(listing, req, db, user_id)
@@ -151,3 +243,68 @@ async def api_publish_listing(
     except Exception as e:
         logger.error(f"Error publishing listing: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+async def check_abuse(text: str) -> bool:
+    """Returns True if abuse is detected, False otherwise."""
+    if not text: return False
+    
+    # 1. Static Dictionary Check (Fast)
+    bad_words = ["fuck", "shit", "bitch", "asshole", "cunt", "nigger", "faggot", "chutiya", "madarchod", "bhenchod"]
+    text_lower = text.lower()
+    for word in bad_words:
+        if word in text_lower:
+            return True
+            
+    # 2. LLM Check (Robust multi-language)
+    from app.services.ollama_service import complete_ollama
+    prompt = f"Analyze the following text for severe profanity, hate speech, or explicit abuse in ANY language. Respond ONLY with YES if it contains abuse, or NO if it is clean.\n\nText: {text}"
+    try:
+        result = await complete_ollama(prompt, system="You are a strict content moderator.")
+        if "YES" in result.upper():
+            return True
+    except:
+        pass
+    return False
+
+@router.post("/save-edit")
+async def api_save_edit(
+    req: SaveEditRequest,
+    db: Session = Depends(get_db),
+    user_id: str = Depends(get_current_user_id)
+):
+    from app.models.listing_models import ProductListing, ListingRevision
+    listing = db.query(ProductListing).filter(ProductListing.id == req.listing_id).first()
+    
+    if not listing or str(listing.user_id) != str(user_id):
+        raise HTTPException(status_code=403, detail="Unauthorized")
+        
+    # Combine text for abuse check
+    all_text = " ".join(filter(None, [
+        req.edited_amazon_title,
+        " ".join(req.edited_amazon_bullets) if req.edited_amazon_bullets else "",
+        req.edited_amazon_description,
+        req.edited_amazon_search_terms,
+        req.edited_flipkart_title,
+        req.edited_flipkart_description
+    ]))
+    
+    if await check_abuse(all_text):
+        raise HTTPException(status_code=400, detail="ABUSE_DETECTED")
+        
+    # Update Draft Columns
+    listing.user_edited_amazon_title = req.edited_amazon_title
+    listing.user_edited_amazon_bullets = req.edited_amazon_bullets
+    listing.user_edited_amazon_description = req.edited_amazon_description
+    listing.user_edited_amazon_search_terms = req.edited_amazon_search_terms
+    listing.user_edited_flipkart_title = req.edited_flipkart_title
+    listing.user_edited_flipkart_description = req.edited_flipkart_description
+    
+    # Save Audit Trail Revision
+    rev = ListingRevision(
+        listing_id=req.listing_id,
+        user_id=int(user_id),
+        edited_fields=req.model_dump(exclude={"listing_id"})
+    )
+    db.add(rev)
+    db.commit()
+    return {"status": "success"}

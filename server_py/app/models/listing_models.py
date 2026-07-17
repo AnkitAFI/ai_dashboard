@@ -27,6 +27,15 @@ class ProductListing(Base):
     # Premium A+ / Rich Description
     a_plus_content = Column(JSON, nullable=True)
     
+    # User Edits (Saved Drafts)
+    user_edited_amazon_title = Column(String(500), nullable=True)
+    user_edited_amazon_bullets = Column(JSON, nullable=True)
+    user_edited_amazon_description = Column(Text, nullable=True)
+    user_edited_amazon_search_terms = Column(String(1000), nullable=True)
+    user_edited_flipkart_title = Column(String(500), nullable=True)
+    user_edited_flipkart_description = Column(Text, nullable=True)
+    user_edited_a_plus_content = Column(JSON, nullable=True)
+    
     # Status
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
@@ -80,3 +89,30 @@ class ABTestExperiment(Base):
     variant_a_clicks = Column(Integer, default=0)
     variant_b_clicks = Column(Integer, default=0)
     winner = Column(String(10), nullable=True)
+
+class ListingRevision(Base):
+    __tablename__ = "listing_revisions"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    listing_id = Column(Integer, ForeignKey("product_listings.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False)
+    
+    edited_fields = Column(JSON, nullable=False) # Stores the exact state of what they saved
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class PublishComplianceLog(Base):
+    __tablename__ = "publish_compliance_logs"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    listing_id = Column(Integer, ForeignKey("product_listings.id", ondelete="CASCADE"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False)
+    
+    agreed_to_accuracy = Column(Boolean, nullable=False)
+    agreed_to_legal_responsibility = Column(Boolean, nullable=False)
+    
+    # Immutable Snapshot for Liability Protection
+    published_images = Column(JSON, nullable=True) # Array of image base64 strings or URLs
+    published_data_snapshot = Column(JSON, nullable=True) # Full text snapshot of what was published
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

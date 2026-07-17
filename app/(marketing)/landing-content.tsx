@@ -984,7 +984,7 @@ export default function LandingContent() {
                 {[
                   "All Premium plan features",
                   "White-label options",
-                  "24/7 premium support"
+                  "Premium support"
                 ].map((item, i) => (
                   <li key={i} className="flex items-start text-gray-600 dark:text-gray-300 text-sm font-medium">
                     <Check className="w-4 h-4 text-green-500 mr-3 mt-0.5 flex-shrink-0" />

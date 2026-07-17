@@ -7500,6 +7500,62 @@ def get_admin_stats(
         "promo_codes": promo_codes_list
     }
 
+@router.get("/api/admin/compliance-logs")
+def get_compliance_logs(
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+    page: int = Query(1, ge=1),
+    limit: int = Query(20, ge=1, le=100)
+):
+    if current_user.email != ADMIN_EMAIL:
+        raise HTTPException(status_code=404, detail="Not found")
+
+    from app.models.listing_models import PublishComplianceLog
+    from app.models.schema_v2 import UserProfile
+    import math as _math
+
+    offset = (page - 1) * limit
+
+    query = db.query(
+        PublishComplianceLog,
+        UserProfile.email,
+        UserProfile.first_name,
+        UserProfile.last_name
+    ).join(
+        UserProfile, PublishComplianceLog.user_id == UserProfile.user_id
+    ).order_by(PublishComplianceLog.created_at.desc())
+
+    total_records = query.count()
+    total_pages = _math.ceil(total_records / limit) if total_records else 1
+
+    results = query.offset(offset).limit(limit).all()
+
+    logs = []
+    for log, email, first_name, last_name in results:
+        logs.append({
+            "id": log.id,
+            "listing_id": log.listing_id,
+            "user_id": log.user_id,
+            "user_email": email,
+            "user_name": f"{first_name or ''} {last_name or ''}".strip(),
+            "agreed_to_accuracy": log.agreed_to_accuracy,
+            "agreed_to_legal_responsibility": log.agreed_to_legal_responsibility,
+            "published_images": log.published_images,
+            "published_data_snapshot": log.published_data_snapshot,
+            "created_at": str(log.created_at),
+        })
+
+    return {
+        "status": "success",
+        "data": logs,
+        "pagination": {
+            "page": page,
+            "limit": limit,
+            "total_records": total_records,
+            "total_pages": total_pages,
+        }
+    }
+
 @router.patch("/api/admin/promo/{promo_id}/toggle")
 def toggle_promo_code(
     promo_id: int,
