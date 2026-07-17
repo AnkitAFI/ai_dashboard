@@ -1,92 +1,77 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { useTheme } from 'next-themes';
+import React, { useState, useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
 
 const VIDEOS = [
   {
     id: 0,
     title: "Insydz Introduction",
-    description: "Insydz helps Amazon and Flipkart sellers understand their data and grow their business. No more guessing what works. Get clear insights and take action with confidence.",
+    description:
+      "Insydz helps Amazon and Flipkart sellers understand their data and grow their business. No more guessing what works. Get clear insights and take action with confidence.",
     category: "Getting Started",
     gradient: "g-blue",
     videoUrl: "/videos/Insydz%20Introduction.mp4",
-    thumbnail: "/Insydz-Intro-Cover-Image.png"
+    thumbnail: "/insydz-introduction-thumbnail.png",
   },
   {
     id: 1,
     title: "Insydz - Complete Navigation Guide",
-    description: "This step-by-step guide helps you set up your account and explore powerful seller tools, all in one place. Built for Amazon and Flipkart sellers who want smarter growth with data.",
+    description:
+      "This step-by-step guide helps you set up your account and explore powerful seller tools, all in one place. Built for Amazon and Flipkart sellers who want smarter growth with data.",
     category: "Getting Started",
     gradient: "g-pink",
     videoUrl: "/videos/Insydz%20-%20%20Complete%20Navigation%20Guide.mp4",
-    thumbnail: "/Insydz%20-%20Navigation%20Guide%20Cover%20Image.png"
+    thumbnail: "/insydz-complete-navigation-guide-thumbnail.png",
   },
   {
     id: 2,
-    title: "Find Winning Product Opportunities with Insydz's Opportunity Finder",
-    description: "Discover hidden market gaps on Amazon and Flipkart using Insydz Opportunity Finder. See competitor counts, revenue potential, pricing gaps, demand signals, and AI-powered insights all in seconds.",
+    title:
+      "Find Winning Product Opportunities with Insydz's Opportunity Finder",
+    description:
+      "Discover hidden market gaps on Amazon and Flipkart using Insydz Opportunity Finder. See competitor counts, revenue potential, pricing gaps, demand signals, and AI-powered insights all in seconds.",
     category: "Product Research",
     gradient: "g-teal",
     videoUrl: "/videos/Insydz%20Feature%20-%20Opportunity%20Finder.mp4",
-    thumbnail: "/Insydz%20Feature%20-%20Opportunity%20Finder%20Cover%20Image.png"
+    thumbnail: "/insydz-opportunity-finder-thumbnail.png",
   },
   {
     id: 3,
     title: "Insydz’s Market Visibility",
-    description: "Insydz's Market Visibility tool gives you a complete X-ray of your category, who's dominating, where the gaps are, and exactly how you can break in.",
+    description:
+      "Insydz's Market Visibility tool gives you a complete X-ray of your category, who's dominating, where the gaps are, and exactly how you can break in.",
     category: "Competitor Analysis",
     gradient: "g-purple",
     videoUrl: "/videos/Insydz%E2%80%99s%20Market%20Visibility.mp4",
-    thumbnail: "/Insydz%E2%80%99s%20Market%20Visibility%20-%20Cover%20Image.png"
+    thumbnail: "/insydz-market-visibility-thumbnail.png",
   },
   {
     id: 4,
     title: "Insydz - Seller Price Comparison",
-    description: "It monitors every competing listing on Amazon India in real time and sends alert. With AI suggested reprice that protects your margins. Stop guessing your next product idea. Start validating with real marketplace data.",
+    description:
+      "It monitors every competing listing on Amazon India in real time and sends alert. With AI suggested reprice that protects your margins. Stop guessing your next product idea. Start validating with real marketplace data.",
     category: "Price Tracking",
     gradient: "g-teal",
     videoUrl: "/videos/Seller-Price-Comparison.mp4",
-    thumbnail: "/Seller-Price-Comparison-Cover-Image.png"
+    thumbnail: "/insydz-seller-price-comparison-thumbnail.png",
   },
   {
     id: 5,
     title: "Insydz - Review Comparison",
-    description: "It shows exactly how your ratings and customer sentiment stack up against similar competitors. It also auto-drafts review responses and gives AI-powered insights to help you close the gap and build buyer trust faster.",
+    description:
+      "It shows exactly how your ratings and customer sentiment stack up against similar competitors. It also auto-drafts review responses and gives AI-powered insights to help you close the gap and build buyer trust faster.",
     category: "Review Intelligence",
     gradient: "g-orange",
     videoUrl: "/videos/Insydz%20Review%20Comp.mp4",
-    thumbnail: "/Insydz%20Review%20Comp%20Cover%20Image.png"
+    thumbnail: "/insydz-review-comparison-thumbnail.png",
   },
-  // {
-  //   id: 6,
-  //   title: "Setting Up Price Alerts and Notifications",
-  //   description: "Never miss a competitor price drop. Configure SMS and email alerts tailored to your specific margin thresholds.",
-  //   category: "Price Tracking",
-  //   gradient: "g-teal"
-  // },
-  // {
-  //   id: 7,
-  //   title: "Advanced Sales Analytics Deep Dive",
-  //   description: "Analyze velocity, identify seasonal trends, and predict stock-outs before they happen using historical data.",
-  //   category: "Sales Analytics",
-  //   gradient: "g-blue",
-  //   hasRepiltBadge: true
-  // },
-  // {
-  //   id: 8,
-  //   title: "Keyword Research for Amazon India",
-  //   description: "Find high-volume, low-competition search terms specifically tailored for the Indian marketplace.",
-  //   category: "Keyword Research",
-  //   gradient: "g-purple"
-  // },
 ];
 
 export default function VideoGuidesContent() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [activeFilter, setActiveFilter] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
   const guidesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -94,16 +79,18 @@ export default function VideoGuidesContent() {
   }, []);
 
   // Filter and Search logic
-  const filteredVideos = VIDEOS.filter(video => {
-    const matchesFilter = activeFilter === 'All' || video.category === activeFilter;
-    const matchesSearch = video.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          video.description.toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredVideos = VIDEOS.filter((video) => {
+    const matchesFilter =
+      activeFilter === "All" || video.category === activeFilter;
+    const matchesSearch =
+      video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      video.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
   const handleFilterClick = (filter: string) => {
     setActiveFilter(filter);
-    if (filter !== 'All') {
+    if (filter !== "All") {
       scrollToGuides();
     }
   };
@@ -113,19 +100,26 @@ export default function VideoGuidesContent() {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       scrollToGuides();
     }
   };
 
   const scrollToGuides = () => {
-    guidesRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    guidesRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
-    <div className={`video-guides-container ${mounted && resolvedTheme === 'dark' ? 'dark' : ''}`}>
-      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-      <style dangerouslySetInnerHTML={{ __html: `
+    <div
+      className={`video-guides-container ${mounted && resolvedTheme === "dark" ? "dark" : ""}`}
+    >
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet"
+      />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `
         .video-guides-container {
           /* Light Mode Variables (Default) */
           --bg: #F3F4F6;
@@ -221,15 +215,17 @@ export default function VideoGuidesContent() {
         .video-guides-container .featured-thumb {
           position: relative; background: linear-gradient(135deg, #1e1b4b, #312e81, #1e40af);
           background-size: cover; background-position: center; background-repeat: no-repeat;
-          min-height: 280px; display: flex; align-items: center; justify-content: center;
+          aspect-ratio: 16 / 9; display: flex; align-items: center; justify-content: center;
+          cursor: pointer;
         }
         .video-guides-container .play-btn {
           width: 64px; height: 64px; border-radius: 50%;
-          background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3);
+          background: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255, 255, 255, 0.8);
           display: flex; align-items: center; justify-content: center;
           backdrop-filter: blur(8px); transition: transform 0.2s, background 0.2s;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-        .video-guides-container .play-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.25); }
+        .video-guides-container .play-btn:hover { transform: scale(1.1); background: rgba(0, 0, 0, 0.8); }
         .video-guides-container .play-btn svg { width: 24px; height: 24px; fill: white; margin-left: 3px; }
         .video-guides-container .featured-info { padding: 36px; display: flex; flex-direction: column; gap: 14px; }
         .video-guides-container .featured-tags { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -289,17 +285,19 @@ export default function VideoGuidesContent() {
         }
         .video-guides-container .video-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.15); }
         .video-guides-container .video-thumb {
-          position: relative; height: 140px;
+          position: relative; aspect-ratio: 16 / 9;
           background-size: cover; background-position: center; background-repeat: no-repeat;
           display: flex; align-items: center; justify-content: center;
+          cursor: pointer;
         }
         .video-guides-container .video-thumb .play-sm {
           width: 44px; height: 44px; border-radius: 50%;
-          background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3);
+          background: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255, 255, 255, 0.8);
           display: flex; align-items: center; justify-content: center;
-          backdrop-filter: blur(6px); transition: transform 0.2s;
+          backdrop-filter: blur(6px); transition: transform 0.2s, background 0.2s;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
-        .video-guides-container .video-card:hover .play-sm { transform: scale(1.08); }
+        .video-guides-container .video-card:hover .play-sm { transform: scale(1.1); background: rgba(0, 0, 0, 0.8); }
         .video-guides-container .play-sm svg { width: 16px; height: 16px; fill: white; margin-left: 2px; }
         .video-guides-container .repilt-corner {
           position: absolute; top: 8px; right: 8px;
@@ -403,39 +401,78 @@ export default function VideoGuidesContent() {
         @media (max-width: 500px) {
           .video-guides-container .guides-grid { grid-template-columns: 1fr; }
         }
-      `}} />
+      `,
+        }}
+      />
 
       {/* ─── HERO ─── */}
       <section className="hero">
         <div className="hero-badge">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+          </svg>
           Seller Resource Hub
         </div>
-        <h1>Master Insydz With Our<br/><span>Video Guides</span></h1>
-        <p className="hero-sub">Learn how to turn marketplace data into profitable decisions.<br />Step-by-step tutorials from account setup to advanced competitor analysis.</p>
+        <h1>
+          Master Insydz With Our
+          <br />
+          <span>Video Guides</span>
+        </h1>
+        <p className="hero-sub">
+          Learn how to turn marketplace data into profitable decisions.
+          <br />
+          Step-by-step tutorials from account setup to advanced competitor
+          analysis.
+        </p>
         <div className="hero-search">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input 
-            type="text" 
-            placeholder="Search for guides (e.g. 'Price Tracking')" 
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search for guides (e.g. 'Price Tracking')"
             value={searchQuery}
             onChange={handleSearchChange}
             onKeyDown={handleKeyDown}
           />
         </div>
         <div className="hero-stats">
-          <div className="hero-stat">✦ <span>10+</span> High-Quality Videos</div>
-          <div className="hero-stat">✦ <span>10</span> Actionable Categories</div>
-          <div className="hero-stat">✦ <span>100%</span> Free Access</div>
+          <div className="hero-stat">
+            ✦ <span>10+</span> High-Quality Videos
+          </div>
+          <div className="hero-stat">
+            ✦ <span>10</span> Actionable Categories
+          </div>
+          <div className="hero-stat">
+            ✦ <span>100%</span> Free Access
+          </div>
         </div>
       </section>
 
       {/* ─── FEATURED ─── */}
       <div className="featured-section">
         <div className="featured-card">
-          <div className="featured-thumb" style={{ backgroundImage: `url('/Insydz-Intro-Cover-Image.png')` }}>
+          <div
+            className="featured-thumb"
+            style={{
+              backgroundImage: `url('/insydz-introduction-thumbnail.png')`,
+            }}
+            onClick={() =>
+              window.open("/videos/Insydz%20Introduction.mp4", "_blank")
+            }
+          >
             <div className="play-btn">
-              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              <svg viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
             </div>
           </div>
           <div className="featured-info">
@@ -444,9 +481,20 @@ export default function VideoGuidesContent() {
               <span className="tag tag-review">Introduction</span>
             </div>
             <h2>Insydz Introduction</h2>
-            <p>Insydz helps Amazon and Flipkart sellers understand their data and grow their business. No more guessing what works. Get clear insights and take action with confidence.</p>
-            <button className="btn-watch" onClick={() => window.open('/videos/Insydz%20Introduction.mp4', '_blank')}>
-              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            <p>
+              Insydz helps Amazon and Flipkart sellers understand their data and
+              grow their business. No more guessing what works. Get clear
+              insights and take action with confidence.
+            </p>
+            <button
+              className="btn-watch"
+              onClick={() =>
+                window.open("/videos/Insydz%20Introduction.mp4", "_blank")
+              }
+            >
+              <svg viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
               Watch Now
             </button>
           </div>
@@ -456,10 +504,20 @@ export default function VideoGuidesContent() {
       {/* ─── FILTER TABS ─── */}
       <div className="filter-section">
         <div className="filter-row">
-          {['All', 'Getting Started', 'Price Tracking', 'Product Research', 'Competitor Analysis', 'Review Intelligence', 'Sales Analytics', 'Inventory', 'Keyword Research'].map((filter) => (
-            <button 
-              key={filter} 
-              className={`filter-btn ${activeFilter === filter ? 'active' : ''}`}
+          {[
+            "All",
+            "Getting Started",
+            "Price Tracking",
+            "Product Research",
+            "Competitor Analysis",
+            "Review Intelligence",
+            "Sales Analytics",
+            "Inventory",
+            "Keyword Research",
+          ].map((filter) => (
+            <button
+              key={filter}
+              className={`filter-btn ${activeFilter === filter ? "active" : ""}`}
               onClick={() => handleFilterClick(filter)}
             >
               {filter}
@@ -472,24 +530,55 @@ export default function VideoGuidesContent() {
       <div className="guides-section" ref={guidesRef}>
         <div className="section-header">
           <div className="section-title">
-            {searchQuery ? `Results for "${searchQuery}"` : activeFilter === 'All' ? 'Latest Guides' : `${activeFilter} Guides`}
+            {searchQuery
+              ? `Results for "${searchQuery}"`
+              : activeFilter === "All"
+                ? "Latest Guides"
+                : `${activeFilter} Guides`}
           </div>
-          <p style={{ fontSize: '0.9rem', color: '#6b7280' }}>{filteredVideos.length} videos found</p>
+          <p style={{ fontSize: "0.9rem", color: "#6b7280" }}>
+            {filteredVideos.length} videos found
+          </p>
         </div>
         <div className="guides-grid">
           {filteredVideos.length > 0 ? (
             filteredVideos.map((video) => (
               <div className="video-card" key={video.id}>
-                <div 
-                  className={`video-thumb ${video.thumbnail ? '' : video.gradient}`}
-                  style={video.thumbnail ? { backgroundImage: `url('${video.thumbnail}')` } : {}}
+                <div
+                  className={`video-thumb ${video.thumbnail ? "" : video.gradient}`}
+                  style={
+                    video.thumbnail
+                      ? { backgroundImage: `url('${video.thumbnail}')` }
+                      : {}
+                  }
+                  onClick={() =>
+                    video.videoUrl ? window.open(video.videoUrl, "_blank") : null
+                  }
                 >
-                  <div className="play-sm"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
+                  <div className="play-sm">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
                 </div>
                 <div className="video-body">
                   <h3>{video.title}</h3>
                   <p>{video.description}</p>
-                  <a href={video.videoUrl || "#"} target={video.videoUrl ? "_blank" : undefined} className="watch-link">Watch Now <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                  <a
+                    href={video.videoUrl || "#"}
+                    target={video.videoUrl ? "_blank" : undefined}
+                    className="watch-link"
+                  >
+                    Watch Now{" "}
+                    <svg
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                    >
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </a>
                 </div>
               </div>
             ))
@@ -505,10 +594,23 @@ export default function VideoGuidesContent() {
       <section className="newsletter">
         <div className="newsletter-inner">
           <div className="icon-wrap">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ec4899" strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#ec4899"
+              strokeWidth="2"
+            >
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
           </div>
           <h2>Stay Updated with New Guides</h2>
-          <p>We release new tutorials and strategy deep-dives every week. Join 10,000+ sellers who are mastering their market.</p>
+          <p>
+            We release new tutorials and strategy deep-dives every week. Join
+            10,000+ sellers who are mastering their market.
+          </p>
           <div className="email-row">
             <input type="email" placeholder="Enter your email address" />
             <button className="btn-subscribe">Subscribe</button>
