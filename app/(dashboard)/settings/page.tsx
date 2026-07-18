@@ -383,6 +383,10 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { LOCATIONS } from "@/lib/locations";
+import { Shield, ShieldAlert, CheckCircle2, Key } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { QRCodeSVG } from "qrcode.react";
 import { sanitizeApiError } from "@/lib/sanitize-error";
 import {
   AlertDialog,
@@ -435,6 +439,112 @@ export default function Settings() {
   const [consents, setConsents] = useState<any[]>([]);
   const [consentsLoading, setConsentsLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  // --- MFA State ---
+  const [mfaEnabled, setMfaEnabled] = useState(false);
+  const [mfaSetupStep, setMfaSetupStep] = useState<"idle" | "scan_qr" | "enter_code" | "backup_codes">("idle");
+  const [qrUri, setQrUri] = useState("");
+  const [mfaSecret, setMfaSecret] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [backupCodes, setBackupCodes] = useState<string[]>([]);
+  const [isDisablingMfa, setIsDisablingMfa] = useState(false);
+  const [disablePassword, setDisablePassword] = useState("");
+  const [disableCode, setDisableCode] = useState("");
+  const [mfaLoading, setMfaLoading] = useState(true);
+
+  const checkMfaStatus = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/mfa/status`, { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        setMfaEnabled(data.mfa_enabled);
+      }
+    } catch (e) {
+      console.error("Failed to check MFA status", e);
+    } finally {
+      setMfaLoading(false);
+    }
+  };
+
+  const handleStartMfaSetup = async () => {
+    setMfaLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/mfa/setup`, { method: "POST", credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        setQrUri(data.provisioning_uri);
+        setMfaSecret(data.secret);
+        setMfaSetupStep("scan_qr");
+      } else {
+        toast({ title: "Error", description: "Failed to initialize MFA setup", variant: "destructive" });
+      }
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to initialize MFA setup", variant: "destructive" });
+    } finally {
+      setMfaLoading(false);
+    }
+  };
+
+  const handleVerifyMfaSetup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (verificationCode.length !== 6) return;
+    setMfaLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/mfa/verify-setup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ secret: mfaSecret, code: verificationCode })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setBackupCodes(data.backup_codes);
+        setMfaEnabled(true);
+        setMfaSetupStep("backup_codes");
+        toast({ title: "Success", description: "Two-Factor Authentication is now enabled." });
+      } else {
+        const err = await res.json();
+        toast({ title: "Invalid Code", description: err.detail || "The code was incorrect.", variant: "destructive" });
+      }
+    } catch (e) {
+      toast({ title: "Error", description: "An error occurred.", variant: "destructive" });
+    } finally {
+      setMfaLoading(false);
+    }
+  };
+
+  const handleDisableMfa = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMfaLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/mfa/disable`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ password: disablePassword, code: disableCode })
+      });
+      if (res.ok) {
+        setMfaEnabled(false);
+        setIsDisablingMfa(false);
+        setDisablePassword("");
+        setDisableCode("");
+        toast({ title: "MFA Disabled", description: "Two-Factor Authentication has been removed." });
+      } else {
+        const err = await res.json();
+        toast({ title: "Error", description: err.detail || "Failed to disable MFA.", variant: "destructive" });
+      }
+    } catch (e) {
+      toast({ title: "Error", description: "An error occurred.", variant: "destructive" });
+    } finally {
+      setMfaLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user && !authLoading) {
+      checkMfaStatus();
+    }
+  }, [user, authLoading]);
 
   const handleDeleteAccount = async () => {
     if (deleteConfirmText !== "DELETE") return;
@@ -1016,6 +1126,122 @@ export default function Settings() {
                 {isDownloading ? "Downloading..." : "Export Data"}
               </Button>
             </div>
+          </div>
+
+          {/* Two-Factor Authentication (MFA) */}
+          <div className="border-t pt-4 mt-6">
+            <div className="mb-4">
+              <h4 className="text-sm font-semibold flex items-center gap-2">
+                {mfaEnabled ? <Shield className="h-4 w-4 text-green-500" /> : <ShieldAlert className="h-4 w-4 text-yellow-500" />}
+                Two-Factor Authentication (2FA)
+              </h4>
+              <p className="text-xs text-muted-foreground mt-0.5">Add an extra layer of security requiring a code from your authenticator app.</p>
+            </div>
+
+            {mfaEnabled && !isDisablingMfa && (
+              <div className="space-y-4">
+                <Alert className="bg-green-500/10 text-green-600 border-green-500/20 py-2">
+                  <CheckCircle2 className="h-4 w-4 mt-0" />
+                  <AlertTitle className="text-sm">2FA is Enabled</AlertTitle>
+                </Alert>
+                <Button variant="destructive" size="sm" onClick={() => setIsDisablingMfa(true)}>
+                  Disable 2FA
+                </Button>
+              </div>
+            )}
+
+            {mfaEnabled && isDisablingMfa && (
+              <form onSubmit={handleDisableMfa} className="space-y-4 border p-4 rounded-lg bg-muted/30">
+                <h3 className="text-sm font-medium">Disable Two-Factor Authentication</h3>
+                <div className="space-y-2 max-w-sm">
+                  <Input type="password" placeholder="Current Password" value={disablePassword} onChange={e => setDisablePassword(e.target.value)} required />
+                  <Input type="text" placeholder="6-Digit Authenticator Code" value={disableCode} onChange={e => setDisableCode(e.target.value)} required maxLength={6} />
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <Button variant="destructive" size="sm" type="submit" disabled={mfaLoading}>
+                    {mfaLoading ? "Disabling..." : "Confirm Disable"}
+                  </Button>
+                  <Button variant="outline" size="sm" type="button" onClick={() => setIsDisablingMfa(false)}>
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            )}
+
+            {!mfaEnabled && mfaSetupStep === "idle" && (
+              <Button size="sm" onClick={handleStartMfaSetup} disabled={mfaLoading}>
+                {mfaLoading ? "Setting up..." : "Set up Two-Factor Authentication"}
+              </Button>
+            )}
+
+            {!mfaEnabled && mfaSetupStep === "scan_qr" && (
+              <div className="space-y-6">
+                <div className="flex flex-col md:flex-row gap-6 items-start">
+                  <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
+                    {qrUri && <QRCodeSVG value={qrUri} size={150} />}
+                  </div>
+                  <div className="space-y-3 max-w-sm mt-2">
+                    <h3 className="text-base font-semibold">1. Scan the QR Code</h3>
+                    <p className="text-sm text-muted-foreground">Open your authenticator app (like Google Authenticator) and scan this QR code.</p>
+                    <div className="flex gap-2 pt-4">
+                      <Button size="sm" onClick={() => setMfaSetupStep("enter_code")}>
+                        Next: I have scanned the code
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => setMfaSetupStep("idle")}>
+                        Cancel
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!mfaEnabled && mfaSetupStep === "enter_code" && (
+              <div className="space-y-4 max-w-sm border p-5 rounded-xl bg-gray-50/50">
+                <h3 className="text-base font-semibold">2. Enter the Code</h3>
+                <p className="text-sm text-muted-foreground">Enter the 6-digit code from your authenticator app to verify setup.</p>
+                <form onSubmit={handleVerifyMfaSetup} className="space-y-5 pt-2">
+                  <InputOTP maxLength={6} value={verificationCode} onChange={setVerificationCode} autoFocus>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                  <div className="flex gap-3">
+                    <Button type="submit" size="sm" disabled={mfaLoading || verificationCode.length !== 6}>
+                      {mfaLoading ? "Verifying..." : "Verify & Enable"}
+                    </Button>
+                    <Button variant="outline" size="sm" type="button" onClick={() => setMfaSetupStep("scan_qr")}>
+                      Back
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {mfaSetupStep === "backup_codes" && (
+              <div className="space-y-4">
+                <Alert className="border-yellow-500/50 bg-yellow-500/10 py-2">
+                  <Key className="h-4 w-4 text-yellow-600 mt-0" />
+                  <AlertTitle className="text-yellow-700 text-sm">Save Your Backup Codes</AlertTitle>
+                  <AlertDescription className="text-yellow-600/90 text-xs">
+                    They will only be shown once. Keep them safe!
+                  </AlertDescription>
+                </Alert>
+                <div className="grid grid-cols-2 gap-2 p-4 bg-muted/50 rounded-lg border font-mono text-sm tracking-wider">
+                  {backupCodes.map((code, i) => (
+                    <div key={i} className="bg-background p-1.5 text-center rounded border shadow-sm">
+                      {code}
+                    </div>
+                  ))}
+                </div>
+                <Button size="sm" onClick={() => setMfaSetupStep("idle")}>I have saved my backup codes</Button>
+              </div>
+            )}
           </div>
 
           {/* Clean and Simple Danger Zone Row */}

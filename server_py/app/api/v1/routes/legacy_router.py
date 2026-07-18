@@ -6803,6 +6803,21 @@ def login_user(login_data: UserLogin, response: Response, request: Request, db: 
                 status_code=403,
                 detail="Please verify your email before logging in."
             )
+            
+        if getattr(user, "mfa_enabled", False):
+            # Create a temporary token for MFA verification
+            from jose import jwt
+            from datetime import timedelta, datetime
+            from app.core.config import settings
+            
+            temp_expires = datetime.utcnow() + timedelta(minutes=5)
+            temp_payload = {"sub": user.email, "scope": "mfa_pending", "exp": temp_expires}
+            temp_token = jwt.encode(temp_payload, settings.SECRET_KEY, algorithm="HS256")
+            
+            return JSONResponse(
+                status_code=200,
+                content={"status": "mfa_required", "temp_token": temp_token, "message": "MFA required"}
+            )
         
         current_month = datetime.now().strftime("%Y-%m")
         if user.ai_chat_month != current_month:

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
 import {
   AlertCircle,
   RefreshCw,
@@ -42,6 +43,9 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [mfaStep, setMfaStep] = useState(false);
+  const [tempToken, setTempToken] = useState("");
+  const [mfaCode, setMfaCode] = useState("");
 
   const [showForgotDialog, setShowForgotDialog] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
@@ -129,6 +133,13 @@ export default function Login() {
       // ==================== SUCCESS ====================
       const data = await response.json();
 
+      if (data.status === "mfa_required") {
+        setMfaStep(true);
+        setTempToken(data.temp_token);
+        setIsLoading(false);
+        return;
+      }
+
       toast({
         title: "Welcome back!",
         description: "Successfully logged in.",
@@ -150,6 +161,47 @@ export default function Login() {
       setIsLoading(false); // ← Always reset loading
     }
   };
+
+  const handleMfaSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage("");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/mfa/verify-login`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          temp_token: tempToken,
+          code: mfaCode,
+          remember_me: rememberMe,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        setErrorMessage(errorData.detail || "Invalid MFA code.");
+        setIsLoading(false);
+        return;
+      }
+
+      toast({
+        title: "Welcome back!",
+        description: "MFA verified successfully.",
+      });
+
+      refreshUser().catch(() => {});
+      router.push("/dashboard");
+    } catch (err: any) {
+      setErrorMessage("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleRequestOTP = async () => {
     if (!forgotEmail) {
       toast({
@@ -503,82 +555,130 @@ export default function Login() {
                   />
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  {/* Email */}
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
-                      Email Address
-                    </Label>
-                    <Input
-                      type="email"
-                      placeholder="your@email.com"
-                      value={formData.email}
-                      onChange={handleInputChange("email")}
-                      disabled={isLoading}
-                      required
-                      className="h-11 text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500/20 focus-visible:border-blue-500 rounded-xl"
-                    />
-                  </div>
-
-                  {/* Password */}
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
-                      Password
-                    </Label>
-                    <Input
-                      type="password"
-                      placeholder="••••••••"
-                      value={formData.password}
-                      onChange={handleInputChange("password")}
-                      disabled={isLoading}
-                      required
-                      className="h-11 text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500/20 focus-visible:border-blue-500 rounded-xl"
-                    />
-                  </div>
-
-                  {/* Remember + Forgot */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Checkbox
-                        id="remember"
-                        checked={rememberMe}
-                        onCheckedChange={(c) => setRememberMe(c === true)}
-                        disabled={isLoading}
-                        className="border-gray-300 dark:border-slate-700 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                      />
-                      <Label
-                        htmlFor="remember"
-                        className="text-xs text-gray-600 dark:text-slate-400 font-medium cursor-pointer"
-                      >
-                        Remember me
-                      </Label>
+                {mfaStep ? (
+                  <form onSubmit={handleMfaSubmit} className="space-y-6">
+                    <div className="text-center mb-6">
+                      <p className="text-sm text-gray-500 dark:text-slate-400">
+                        Enter the 6-digit code from your authenticator app
+                      </p>
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleForgotPasswordClick}
-                      disabled={isLoading}
-                      className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors bg-transparent border-none cursor-pointer"
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
+                    
+                    <div className="flex justify-center">
+                      <InputOTP maxLength={6} value={mfaCode} onChange={setMfaCode}>
+                        <InputOTPGroup>
+                          <InputOTPSlot index={0} />
+                          <InputOTPSlot index={1} />
+                          <InputOTPSlot index={2} />
+                          <InputOTPSlot index={3} />
+                          <InputOTPSlot index={4} />
+                          <InputOTPSlot index={5} />
+                        </InputOTPGroup>
+                      </InputOTP>
+                    </div>
 
-                  {/* Submit */}
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="w-full h-12 rounded-xl font-bold text-white text-sm transition-all duration-200 disabled:opacity-60 bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20"
-                  >
-                    {isLoading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Signing in...
-                      </span>
-                    ) : (
-                      "Sign In"
-                    )}
-                  </button>
-                </form>
+                    <button
+                      type="submit"
+                      disabled={isLoading || mfaCode.length !== 6}
+                      className="w-full h-12 mt-4 rounded-xl font-bold text-white text-sm transition-all duration-200 disabled:opacity-60 bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20"
+                    >
+                      {isLoading ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Verifying...
+                        </span>
+                      ) : (
+                        "Verify Code"
+                      )}
+                    </button>
+                    
+                    <div className="text-center mt-4">
+                      <button 
+                        type="button" 
+                        onClick={() => setMfaStep(false)}
+                        className="text-xs text-gray-500 hover:text-blue-600"
+                      >
+                        Cancel and return to login
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Email */}
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
+                        Email Address
+                      </Label>
+                      <Input
+                        type="email"
+                        placeholder="your@email.com"
+                        value={formData.email}
+                        onChange={handleInputChange("email")}
+                        disabled={isLoading}
+                        required
+                        className="h-11 text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500/20 focus-visible:border-blue-500 rounded-xl"
+                      />
+                    </div>
+
+                    {/* Password */}
+                    <div className="space-y-1.5">
+                      <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
+                        Password
+                      </Label>
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        value={formData.password}
+                        onChange={handleInputChange("password")}
+                        disabled={isLoading}
+                        required
+                        className="h-11 text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500/20 focus-visible:border-blue-500 rounded-xl"
+                      />
+                    </div>
+
+                    {/* Remember + Forgot */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Checkbox
+                          id="remember"
+                          checked={rememberMe}
+                          onCheckedChange={(c) => setRememberMe(c === true)}
+                          disabled={isLoading}
+                          className="border-gray-300 dark:border-slate-700 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
+                        />
+                        <Label
+                          htmlFor="remember"
+                          className="text-xs text-gray-600 dark:text-slate-400 font-medium cursor-pointer"
+                        >
+                          Remember me
+                        </Label>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleForgotPasswordClick}
+                        disabled={isLoading}
+                        className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors bg-transparent border-none cursor-pointer"
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
+
+                    {/* Submit */}
+                    <button
+                      type="submit"
+                      disabled={isLoading}
+                      className="w-full h-12 rounded-xl font-bold text-white text-sm transition-all duration-200 disabled:opacity-60 bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20"
+                    >
+                      {isLoading ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Signing in...
+                        </span>
+                      ) : (
+                        "Sign In"
+                      )}
+                    </button>
+                  </form>
+                )}
 
                 {/* Signup link */}
                 <div className="mt-5 pt-5 border-t border-gray-100 dark:border-slate-800 text-center space-y-3">
