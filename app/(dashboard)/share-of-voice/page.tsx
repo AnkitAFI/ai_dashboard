@@ -5,6 +5,7 @@ import { sanitizeApiError } from "@/lib/sanitize-error";
 import { useTheme } from "next-themes";
 import { API_BASE_URL as CONFIG_API_BASE_URL } from "@/lib/config";
 import axios from "axios";
+import ReactMarkdown from "react-markdown";
 import { useAuth } from "@/lib/auth-context";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -1202,16 +1203,16 @@ export default function ShareOfVoice() {
               </Card>
             )}
 
-            {marketHealth && marketHealth.top_price_gaps.length > 0 && (
+            {marketHealth && marketHealth.all_price_gaps.length > 0 && (
               <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <Map className="w-5 h-5 text-green-600" /> Top Price-Gap Opportunities
+                    <Map className="w-5 h-5 text-green-600" /> Full Price-Gap Analysis
                   </CardTitle>
-                  <CardDescription>High/medium opportunity bands with low competition</CardDescription>
+                  <CardDescription>Complete breakdown of all price bands and competition levels</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">
@@ -1223,7 +1224,7 @@ export default function ShareOfVoice() {
                         </tr>
                       </thead>
                       <tbody>
-                        {marketHealth.top_price_gaps.map((g, i) => (
+                        {marketHealth.all_price_gaps.map((g, i) => (
                           <tr key={i} className="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                             <td className="p-3 font-semibold text-slate-800 dark:text-slate-100">{g.price_band}</td>
                             <td className="p-3 text-right text-slate-600 dark:text-slate-300">{g.brand_count}</td>
@@ -1424,8 +1425,17 @@ export default function ShareOfVoice() {
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6">
-                          <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-                            <pre className="whitespace-pre-wrap text-slate-700 font-sans text-sm leading-relaxed">{aiInsights.ai_generated_insights}</pre>
+                          <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm prose prose-sm prose-slate max-w-none prose-headings:text-slate-800 prose-a:text-blue-600">
+                            <ReactMarkdown>
+                              {(() => {
+                                let txt = aiInsights.ai_generated_insights;
+                                // Clean up annoying AI preambles
+                                txt = txt.replace(/^(Here is the analysis.*?:\s*)/i, "");
+                                txt = txt.replace(/^(Here's the analysis.*?:\s*)/i, "");
+                                txt = txt.replace(/^(Based on the data.*?:\s*)/i, "");
+                                return txt.trim();
+                              })()}
+                            </ReactMarkdown>
                           </div>
                         </CardContent>
                       </Card>
@@ -1618,54 +1628,7 @@ export default function ShareOfVoice() {
               </>
             )}
 
-            {competitors?.length > 0 && (
-              <div id="competitor-section">
-                <div className="flex items-center gap-3 mt-2 mb-4">
-                  <Users className="w-6 h-6 text-blue-500" />
-                  <h2 className="text-2xl font-bold text-sky-900">Competitor Analysis</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {paginatedCompetitors.map((c, idx) => {
-                    const rank = (competitorPage - 1) * competitorsPerPage + idx + 1;
-                    return (
-                      <Card key={idx} className="bg-background border border-slate-200 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all overflow-hidden">
-                        <CardContent className="p-5">
-                          <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-center gap-3">
-                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow ${rank === 1 ? "bg-yellow-400" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-orange-400" : "bg-blue-500"
-                                }`}>{rank}</div>
-                              <div>
-                                <h4 className="font-bold text-slate-800">{c.competitor_name}</h4>
-                                <p className="text-xs text-slate-500">{c.total_products} products</p>
-                              </div>
-                            </div>
-                            <div className="text-right bg-gradient-to-br from-blue-500 to-cyan-500 text-white px-3 py-2 rounded-xl shadow">
-                              <p className="text-2xl font-black">{c.market_share}%</p>
-                              <p className="text-xs opacity-80">Share</p>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-3 gap-2">
-                            {[
-                              { l: "Reviews", v: c.total_reviews.toLocaleString(), c: "text-green-700" },
-                              { l: "Rating", v: c.avg_rating ? `⭐ ${c.avg_rating}` : "—", c: "text-yellow-700" },
-                              { l: "Avg Price", v: `₹${c.avg_price.toLocaleString()}`, c: "text-purple-700" },
-                            ].map((x) => (
-                              <div key={x.l} className="bg-slate-50 rounded-lg p-2 text-center border border-slate-100">
-                                <p className="text-xs text-slate-400 mb-0.5">{x.l}</p>
-                                <p className={`font-bold text-sm ${x.c}`}>{x.v}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-                {totalCompetitorPages > 1 && (
-                  <Pagination currentPage={competitorPage} totalPages={totalCompetitorPages} onPageChange={handleCompetitorPageChange} />
-                )}
-              </div>
-            )}
+            {/* Competitor Analysis section removed to avoid redundancy with Detailed Brand Analysis table */}
           </>
         )}
 

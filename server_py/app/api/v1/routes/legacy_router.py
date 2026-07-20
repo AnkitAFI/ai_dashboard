@@ -6804,10 +6804,11 @@ def login_user(login_data: UserLogin, response: Response, request: Request, db: 
                 detail="Please verify your email before logging in."
             )
             
+        from datetime import timedelta, datetime
+        
         if getattr(user, "mfa_enabled", False):
             # Create a temporary token for MFA verification
             from jose import jwt
-            from datetime import timedelta, datetime
             from app.core.config import settings
             
             temp_expires = datetime.utcnow() + timedelta(minutes=5)
@@ -11456,11 +11457,30 @@ def _compute_review_velocity(brands: List[Dict]) -> List[ReviewVelocityItem]:
 # [NEW-3]  PRICE-GAP / WHITESPACE FINDER
 # ─────────────────────────────────────────────────────────────────────────────
  
-def _compute_price_gaps(brands: List[Dict], bucket_size: float = 500.0) -> List[PriceGapItem]:
+def _compute_price_gaps(brands: List[Dict], bucket_size: float = None) -> List[PriceGapItem]:
     prices = [b["avg_price"] for b in brands if b["avg_price"] > 0]
     if not prices:
         return []
- 
+        
+    # Dynamically determine the optimal bucket size based on the highest price in the category
+    # to avoid creating hundreds of tiny 500-rupee bands for premium products like Apple.
+    if bucket_size is None or bucket_size == 500.0:
+        max_val = max(prices)
+        if max_val > 100000:
+            bucket_size = 20000.0
+        elif max_val > 50000:
+            bucket_size = 10000.0
+        elif max_val > 20000:
+            bucket_size = 5000.0
+        elif max_val > 10000:
+            bucket_size = 2000.0
+        elif max_val > 5000:
+            bucket_size = 1000.0
+        elif max_val > 2000:
+            bucket_size = 500.0
+        else:
+            bucket_size = 200.0
+
     min_p  = (min(prices) // bucket_size) * bucket_size
     max_p  = (max(prices) // bucket_size + 1) * bucket_size
     gaps:   List[PriceGapItem] = []
@@ -11966,206 +11986,312 @@ def _generate_action_plan(
     your_brand: Optional[str] = None,
 ) -> ActionPlan:
     """
-    Concrete step-by-step entry plan covering:
-      1. Pricing entry point   (based on price gaps)
-      2. Review ramp strategy  (based on review density vs median)
-      3. Positioning           (based on value map quadrant)
-      4. Listing optimisation  (title + image + keyword)
-      5. Launch phases         (30 / 60 / 90 day milestones)
+    Dynamic step-by-step action plan based on the brand's market position.
     """
     steps:  List[ActionStep] = []
     step_n  = 1
- 
-    # ── STEP 1: Pricing Entry ──────────────────────────────────────────────
-    high_gaps  = [g for g in price_gaps if g.opportunity == "High"]
-    med_gaps   = [g for g in price_gaps if g.opportunity == "Medium"]
-    best_gap   = (high_gaps + med_gaps + price_gaps or [None])[0]
+    
+    # ── Determine Brand Status ─────────────────────────────────────────────
+    your_brand_data = next((b for b in brands if your_brand and b["brand"].lower() == your_brand.lower()), None)
+    your_avg_price = your_brand_data.get("avg_price", 0) if your_brand_data else 0
+    
+    status = "Small Entrant"
+    if your_brand_data:
+        sorted_brands = sorted(brands, key=lambda x: x.get("share_percentage", 0), reverse=True)
+        rank = next((i + 1 for i, b in enumerate(sorted_brands) if b["brand"].lower() == your_brand.lower()), len(brands) + 1)
+        share = your_brand_data.get("share_percentage", 0)
+        
+        if rank <= 3 or share >= 15.0:
+            status = "Leader"
+        elif rank <= 10 or share >= 2.0:
+            status = "Mid-Tier"
+
+    # Find relevant gaps based on current brand price
+    relevant_gaps = price_gaps
+    if your_avg_price > 0:
+        if status == "Leader":
+            # Leaders should expand into premium or slightly adjacent bands
+            relevant_gaps = [g for g in price_gaps if g.band_lo >= your_avg_price * 0.8]
+        elif status == "Mid-Tier":
+            # Mid-tier should target gaps near their current price
+            relevant_gaps = [g for g in price_gaps if your_avg_price * 0.5 <= g.band_hi and g.band_lo <= your_avg_price * 1.5]
+            
+    if not relevant_gaps:
+        relevant_gaps = price_gaps # fallback
+
+    high_gaps  = [g for g in relevant_gaps if g.opportunity == "High"]
+    med_gaps   = [g for g in relevant_gaps if g.opportunity == "Medium"]
+    best_gap   = (high_gaps + med_gaps + relevant_gaps or [None])[0]
+    
     entry_price_rec: Optional[str] = None
- 
-    if best_gap:
-        mid_price      = (best_gap.band_lo + best_gap.band_hi) / 2
+    pos_quadrant = "Mid-Market"
+
+    if status == "Small Entrant" and best_gap:
+        mid_price = (best_gap.band_lo + best_gap.band_hi) / 2
         entry_price_rec = f"₹{int(best_gap.band_lo):,}–₹{int(best_gap.band_hi):,} (ideal ₹{int(mid_price):,})"
+        
+    if status == "Leader":
         steps.append(ActionStep(
             step     = step_n,
-            area     = "Pricing",
-            action   = f"Launch first SKU at {entry_price_rec}",
-            detail   = (
-                f"The {best_gap.price_band} band has only {best_gap.brand_count} competitor(s) "
-                f"with avg rating {best_gap.avg_rating}★ — classified as '{best_gap.opportunity}' opportunity. "
-                f"Price at ₹{int(mid_price):,} to anchor in the middle of the gap. "
-                "Avoid the most crowded band until you have 50+ reviews."
-            ),
-            timeline = "Before launch (Day 0)",
+            area     = "Defense",
+            action   = "Defend Market Share & Brand Positioning",
+            detail   = "Maintain defensive ad campaigns on branded keywords. Ensure Top-of-Search SOV remains >80% to block challengers from stealing high-converting traffic.",
+            timeline = "Ongoing",
             priority = "Critical",
-            impact   = "Avoids direct price war; captures underserved demand from Day 1.",
+            impact   = "Prevents aggressive challengers from eroding your core revenue stream."
         ))
-    else:
+        step_n += 1
+        
         steps.append(ActionStep(
             step     = step_n,
-            area     = "Pricing",
-            action   = "Price 10–15% below category average",
+            area     = "Expansion",
+            action   = "Expand into Premium or Adjacent Niches",
+            detail   = f"Leverage your brand equity to launch premium SKUs. If the {best_gap.price_band if best_gap else 'higher price'} band shows opportunity, introduce a 'Pro' or 'Premium' variant to capture higher margins.",
+            timeline = "Next 3-6 Months",
+            priority = "High",
+            impact   = "Increases overall category revenue and brand perception without cannibalizing base SKUs."
+        ))
+        step_n += 1
+        
+        steps.append(ActionStep(
+            step     = step_n,
+            area     = "Listing Quality",
+            action   = "Continuous Conversion Rate Optimization",
+            detail   = "A/B test hero images, bullet points, and A+ content. Even a 0.5% increase in conversion rate at your scale yields massive revenue returns.",
+            timeline = "Ongoing",
+            priority = "High",
+            impact   = "Maximizes ROAS and maintains organic ranking dominance."
+        ))
+        step_n += 1
+        
+        steps.append(ActionStep(
+            step     = step_n,
+            area     = "Moat",
+            action   = "Deepen the Review Moat",
+            detail   = "Accelerate review velocity through post-purchase support and warranty registrations. A massive review lead deters new entrants from competing directly.",
+            timeline = "Ongoing",
+            priority = "Medium",
+            impact   = "Creates an insurmountable barrier to entry for smaller competitors."
+        ))
+        
+    elif status == "Mid-Tier":
+        steps.append(ActionStep(
+            step     = step_n,
+            area     = "Targeted Pricing",
+            action   = "Attack Specific Price Whitespaces",
+            detail   = f"Avoid direct price wars with Leaders. Target the {best_gap.price_band if best_gap else 'adjacent mid-market'} band where competition is weaker. Offer bundled value or superior features at a slightly lower price point than premium leaders.",
+            timeline = "Days 1-30",
+            priority = "Critical",
+            impact   = "Captures underserved demand and steals share from over-indexed leaders."
+        ))
+        step_n += 1
+        
+        steps.append(ActionStep(
+            step     = step_n,
+            area     = "Review Generation",
+            action   = "Aggressive Review Closing Strategy",
+            detail   = "Identify the review gap between you and the Top 3. Run targeted post-purchase email sequences and use platform reviewer programs to close this gap by 20% over the next quarter.",
+            timeline = "Days 1-60",
+            priority = "High",
+            impact   = "Improves organic click-through rates and builds trust against legacy brands."
+        ))
+        step_n += 1
+        
+        pos_quadrant = "Value Challenger"
+        steps.append(ActionStep(
+            step     = step_n,
+            area     = "Positioning",
+            action   = "Position as the Smart Alternative",
+            detail   = "Highlight specific flaws or missing features in the market leader's product. Use your listing images and A+ content to clearly compare your value proposition.",
+            timeline = "Days 30-60",
+            priority = "High",
+            impact   = "Converts comparison-shoppers who are dissatisfied with the leader's pricing or quality."
+        ))
+        step_n += 1
+        
+        steps.append(ActionStep(
+            step     = step_n,
+            area     = "Listing Quality",
+            action   = "Target Long-Tail Keyword Gaps",
+            detail   = "Optimize your title and backend search terms for high-intent, long-tail keywords that the market leaders are ignoring. Dominate these niches before moving to head terms.",
+            timeline = "Days 60-90",
+            priority = "Medium",
+            impact   = "Drives cheaper organic traffic and lowers overall blended ACOS."
+        ))
+        
+    else:
+        # Original logic for Small/New Entrant
+        if best_gap:
+            steps.append(ActionStep(
+                step     = step_n,
+                area     = "Pricing",
+                action   = f"Launch first SKU at {entry_price_rec}",
+                detail   = (
+                    f"The {best_gap.price_band} band has only {best_gap.brand_count} competitor(s) "
+                    f"with avg rating {best_gap.avg_rating}★ — classified as '{best_gap.opportunity}' opportunity. "
+                    f"Price at ₹{int((best_gap.band_lo + best_gap.band_hi) / 2):,} to anchor in the middle of the gap. "
+                    "Avoid the most crowded band until you have 50+ reviews."
+                ),
+                timeline = "Before launch (Day 0)",
+                priority = "Critical",
+                impact   = "Avoids direct price war; captures underserved demand from Day 1.",
+            ))
+        else:
+            steps.append(ActionStep(
+                step     = step_n,
+                area     = "Pricing",
+                action   = "Price 10–15% below category average",
+                detail   = (
+                    "No clear whitespace band found. Compete on price initially "
+                    "to win first reviews quickly, then raise price once social proof is established."
+                ),
+                timeline = "Before launch (Day 0)",
+                priority = "High",
+                impact   = "Captures price-sensitive early buyers to seed reviews.",
+            ))
+        step_n += 1
+        
+        densities   = [b["total_reviews"] / max(b["product_count"], 1) for b in brands]
+        med_density = sorted(densities)[len(densities) // 2] if densities else 100
+        target_rev  = max(10, int(med_density * 0.5))
+        
+        steps.append(ActionStep(
+            step     = step_n,
+            area     = "Reviews",
+            action   = f"Hit {target_rev} reviews per SKU within 60 days",
             detail   = (
-                "No clear whitespace band found. Compete on price initially "
-                "to win first reviews quickly, then raise price once social proof is established."
+                f"Category median review density is {med_density:.0f} reviews/product. "
+                f"Reaching {target_rev} reviews (50% of median) makes you visible in organic search. "
+                "Execute: automated post-purchase email sequence (Days 3, 7, 14 after delivery), "
+                "insert card in packaging with QR code, and apply for platform early-reviewer programme. "
+                "Target verified buyers only — never incentivise directly."
+            ),
+            timeline = "Month 1–2",
+            priority = "Critical",
+            impact   = "Each 10-review milestone lifts click-through rate ~8% and improves organic rank.",
+        ))
+        step_n += 1
+        
+        overpriced   = [v for v in value_map if v.quadrant == "Overpriced"]
+        budget_stars = [v for v in value_map if v.quadrant == "Budget Star"]
+        
+        if budget_stars:
+            pos_quadrant = "Budget Star"
+            target_b     = budget_stars[0]
+            pos_detail   = (
+                f"Target the 'Budget Star' quadrant: price below the category median "
+                f"but deliver above-median quality. Benchmark: {target_b.brand} "
+                f"(₹{target_b.avg_price:,.0f}, {target_b.avg_rating}★, {target_b.total_reviews} reviews). "
+                "Win on unboxing experience, warranty, and responsive seller support."
+            )
+        elif overpriced:
+            pos_quadrant = "Value Challenger"
+            target_b     = overpriced[0]
+            pos_detail   = (
+                f"Attack the 'Overpriced' incumbent: {target_b.brand} is priced at "
+                f"₹{target_b.avg_price:,.0f} with only {target_b.avg_rating}★ — "
+                "their customers are dissatisfied. Launch at a lower price point with "
+                "better quality signals: superior product images, more detailed listing, "
+                "1-year warranty, and proactive customer support."
+            )
+        else:
+            pos_detail = (
+                "No clearly overpriced or budget-star brand found. Compete on listing quality: "
+                "professional photography, keyword-rich title (target 80–120 characters), "
+                "6 bullet points covering key use-cases, and A+ content if available."
+            )
+            
+        steps.append(ActionStep(
+            step     = step_n,
+            area     = "Positioning",
+            action   = f"Position as '{pos_quadrant}' in the value map",
+            detail   = pos_detail,
+            timeline = "Pre-launch to Month 1",
+            priority = "High",
+            impact   = "Clear positioning reduces ad spend needed and improves organic conversion rate.",
+        ))
+        step_n += 1
+        
+        steps.append(ActionStep(
+            step     = step_n,
+            area     = "Listing Quality",
+            action   = "Launch with a fully optimised listing from Day 1",
+            detail   = (
+                "Title: 80–120 characters, lead with primary keyword, include size/colour/use-case. "
+                "Images: minimum 6 images — white background hero, lifestyle shots, infographic with key specs. "
+                "Bullets: 5–6 bullets, each starting with a capitalised benefit keyword. "
+                "Backend keywords: fill all fields, use regional language variants. "
+                "Price: set a high MRP and meaningful discount to show savings badge."
             ),
             timeline = "Before launch (Day 0)",
             priority = "High",
-            impact   = "Captures price-sensitive early buyers to seed reviews.",
+            impact   = "Optimised listings convert 20–35% better than unoptimised ones at identical price.",
         ))
-    step_n += 1
- 
-    # ── STEP 2: Review Ramp ────────────────────────────────────────────────
-    densities   = [b["total_reviews"] / max(b["product_count"], 1) for b in brands]
-    med_density = sorted(densities)[len(densities) // 2] if densities else 100
-    target_rev  = max(10, int(med_density * 0.5))  # reach 50% of median = visibility threshold
- 
-    steps.append(ActionStep(
-        step     = step_n,
-        area     = "Reviews",
-        action   = f"Hit {target_rev} reviews per SKU within 60 days",
-        detail   = (
-            f"Category median review density is {med_density:.0f} reviews/product. "
-            f"Reaching {target_rev} reviews (50% of median) makes you visible in organic search. "
-            "Execute: automated post-purchase email sequence (Days 3, 7, 14 after delivery), "
-            "insert card in packaging with QR code, and apply for platform early-reviewer programme "
-            "(Amazon Vine / Flipkart Early Reviewer if eligible). "
-            "Target verified buyers only — never incentivise directly."
-        ),
-        timeline = "Month 1–2",
-        priority = "Critical",
-        impact   = "Each 10-review milestone lifts click-through rate ~8% and improves organic rank.",
-    ))
-    step_n += 1
- 
-    # ── STEP 3: Positioning ───────────────────────────────────────────────
-    overpriced   = [v for v in value_map if v.quadrant == "Overpriced"]
-    budget_stars = [v for v in value_map if v.quadrant == "Budget Star"]
-    pos_quadrant = "Mid-Market"
- 
-    if budget_stars:
-        pos_quadrant = "Budget Star"
-        target_b     = budget_stars[0]
-        pos_detail   = (
-            f"Target the 'Budget Star' quadrant: price below the category median "
-            f"but deliver above-median quality. Benchmark: {target_b.brand} "
-            f"(₹{target_b.avg_price:,.0f}, {target_b.avg_rating}★, {target_b.total_reviews} reviews). "
-            "Win on unboxing experience, warranty, and responsive seller support."
-        )
-    elif overpriced:
-        pos_quadrant = "Value Challenger"
-        target_b     = overpriced[0]
-        pos_detail   = (
-            f"Attack the 'Overpriced' incumbent: {target_b.brand} is priced at "
-            f"₹{target_b.avg_price:,.0f} with only {target_b.avg_rating}★ — "
-            "their customers are dissatisfied. Launch at a lower price point with "
-            "better quality signals: superior product images, more detailed listing, "
-            "1-year warranty, and proactive customer support."
-        )
-    else:
-        pos_detail = (
-            "No clearly overpriced or budget-star brand found. Compete on listing quality: "
-            "professional photography, keyword-rich title (target 80–120 characters), "
-            "6 bullet points covering key use-cases, and A+ content if available."
-        )
- 
-    steps.append(ActionStep(
-        step     = step_n,
-        area     = "Positioning",
-        action   = f"Position as '{pos_quadrant}' in the value map",
-        detail   = pos_detail,
-        timeline = "Pre-launch to Month 1",
-        priority = "High",
-        impact   = "Clear positioning reduces ad spend needed and improves organic conversion rate.",
-    ))
-    step_n += 1
- 
-    # ── STEP 4: Listing Optimisation ──────────────────────────────────────
-    steps.append(ActionStep(
-        step     = step_n,
-        area     = "Listing Quality",
-        action   = "Launch with a fully optimised listing from Day 1",
-        detail   = (
-            "Title: 80–120 characters, lead with primary keyword, include size/colour/use-case. "
-            "Images: minimum 6 images — white background hero, lifestyle shots, infographic with key specs, "
-            "scale reference image, packaging shot. "
-            "Bullets: 5–6 bullets, each starting with a capitalised benefit keyword. "
-            "Backend keywords: fill all fields, use regional language variants (Hindi transliterations for IN market). "
-            "Price: set a high MRP and meaningful discount to show savings badge."
-        ),
-        timeline = "Before launch (Day 0)",
-        priority = "High",
-        impact   = "Optimised listings convert 20–35% better than unoptimised ones at identical price.",
-    ))
-    step_n += 1
- 
-    # ── STEP 5: 30/60/90 Day Launch Phases ────────────────────────────────
-    # Phase timelines depend on market difficulty
-    if hhi.entry_difficulty == "Hard":
-        phase_label = "slow-burn"
-        p1_end, p2_end, p3_end = 45, 90, 180
-    elif hhi.entry_difficulty == "Moderate":
-        phase_label = "steady"
-        p1_end, p2_end, p3_end = 30, 60, 90
-    else:
-        phase_label = "aggressive"
-        p1_end, p2_end, p3_end = 21, 45, 90
- 
-    steps.append(ActionStep(
-        step     = step_n,
-        area     = "Launch Phase 1",
-        action   = f"Days 1–{p1_end}: Seed reviews and establish baseline rank",
-        detail   = (
-            f"Run auto-targeting sponsored ads at 1.5× category average CPC for first {p1_end} days. "
-            "Goal: 50–100 daily impressions, collect search term report data. "
-            f"Target: {min(target_rev, 25)} reviews and a 4.0★+ rating before moving to Phase 2. "
-            "Offer a 10–15% launch discount via coupon (not direct price cut) to boost conversion."
-        ),
-        timeline = f"Days 1–{p1_end}",
-        priority = "Critical",
-        impact   = f"Builds the review floor needed for organic visibility — {'fast' if phase_label == 'aggressive' else 'steady'} ramp.",
-    ))
-    step_n += 1
- 
-    steps.append(ActionStep(
-        step     = step_n,
-        area     = "Launch Phase 2",
-        action   = f"Days {p1_end + 1}–{p2_end}: Scale what works, kill what doesn't",
-        detail   = (
-            "Switch from auto to manual campaigns using top search terms from Phase 1. "
-            "Increase budget on top-3 performing keywords by 50%. "
-            "A/B test two title variants and two hero images using platform split-test tools. "
-            "Expand to 2–3 additional SKUs (variants: colour, size, bundle) using Phase 1 learnings. "
-            "Respond to every review — positive and negative — within 24 hours."
-        ),
-        timeline = f"Days {p1_end + 1}–{p2_end}",
-        priority = "High",
-        impact   = "Multiplies revenue without proportional ad spend increase.",
-    ))
-    step_n += 1
- 
-    steps.append(ActionStep(
-        step     = step_n,
-        area     = "Launch Phase 3",
-        action   = f"Days {p2_end + 1}–{p3_end}: Dominate the price-gap band and defend",
-        detail   = (
-            "By this phase you should have 50%+ of median review density. "
-            "Raise price to the mid-point of your target price band if you used launch discounts. "
-            "Launch a premium SKU targeting the next price band up. "
-            "Set up brand store page and run brand awareness campaigns. "
-            "Monitor and respond to any new entrants copying your strategy."
-        ),
-        timeline = f"Days {p2_end + 1}–{p3_end}",
-        priority = "Medium",
-        impact   = "Locks in market share and begins margin recovery after launch-phase discounting.",
-    ))
- 
+        step_n += 1
+        
+        if hhi.entry_difficulty == "Hard":
+            phase_label = "slow-burn"
+            p1_end, p2_end, p3_end = 45, 90, 180
+        elif hhi.entry_difficulty == "Moderate":
+            phase_label = "steady"
+            p1_end, p2_end, p3_end = 30, 60, 90
+        else:
+            phase_label = "aggressive"
+            p1_end, p2_end, p3_end = 21, 45, 90
+            
+        steps.append(ActionStep(
+            step     = step_n,
+            area     = "Launch Phase 1",
+            action   = f"Days 1–{p1_end}: Seed reviews and establish baseline rank",
+            detail   = (
+                f"Run auto-targeting sponsored ads at 1.5× category average CPC for first {p1_end} days. "
+                "Goal: 50–100 daily impressions, collect search term report data. "
+                f"Target: {min(target_rev, 25)} reviews and a 4.0★+ rating before moving to Phase 2. "
+                "Offer a 10–15% launch discount via coupon to boost conversion."
+            ),
+            timeline = f"Days 1–{p1_end}",
+            priority = "Critical",
+            impact   = f"Builds the review floor needed for organic visibility — {'fast' if phase_label == 'aggressive' else 'steady'} ramp.",
+        ))
+        step_n += 1
+        
+        steps.append(ActionStep(
+            step     = step_n,
+            area     = "Launch Phase 2",
+            action   = f"Days {p1_end + 1}–{p2_end}: Scale what works, kill what doesn't",
+            detail   = (
+                "Switch from auto to manual campaigns using top search terms from Phase 1. "
+                "Increase budget on top-3 performing keywords by 50%. "
+                "A/B test two title variants and two hero images using platform split-test tools. "
+                "Expand to 2–3 additional SKUs using Phase 1 learnings."
+            ),
+            timeline = f"Days {p1_end + 1}–{p2_end}",
+            priority = "High",
+            impact   = "Multiplies revenue without proportional ad spend increase.",
+        ))
+        step_n += 1
+        
+        steps.append(ActionStep(
+            step     = step_n,
+            area     = "Launch Phase 3",
+            action   = f"Days {p2_end + 1}–{p3_end}: Dominate the price-gap band and defend",
+            detail   = (
+                "By this phase you should have 50%+ of median review density. "
+                "Raise price to the mid-point of your target price band if you used launch discounts. "
+                "Launch a premium SKU targeting the next price band up. "
+                "Set up brand store page and run brand awareness campaigns."
+            ),
+            timeline = f"Days {p2_end + 1}–{p3_end}",
+            priority = "Medium",
+            impact   = "Locks in market share and begins margin recovery after launch-phase discounting.",
+        ))
+
     return ActionPlan(
         entry_price_recommendation = entry_price_rec,
         positioning_quadrant       = pos_quadrant,
         steps                      = steps,
     )
- 
- 
+
 # ─────────────────────────────────────────────────────────────────────────────
 # FALLBACK GROWTH STRATEGY
 # ─────────────────────────────────────────────────────────────────────────────
@@ -12892,10 +13018,32 @@ def get_ai_insights(
             'Output ONLY: {"phases":[{"phase":"Phase 1 (Days 1-X)","focus":"…","actions":["…"],"target":"X.X% market share"}]}'
         )
  
-        ai_output, growth_output = _run_ollama_parallel([
-            (ai_prompt,     30),
-            (growth_prompt, 90),
-        ])
+        action_plan_prompt = (
+            f"You are an expert e-commerce strategist. Create a Step-by-Step Action Plan for the brand {your_brand} "
+            f"in the {category_name} category on {marketplace.upper()}.\n\n"
+            f"Brand Rank: #{rank} | Current Share: {current_share}% | Avg Price: ₹{your_avg_price} | Reviews: {your_reviews}\n"
+            f"Market Leader: {market_leader} ({leader_share:.1f}% share)\n"
+            f"High Opportunity Price Whitespaces: {[g.price_band for g in high_gaps[:3]]}\n\n"
+            "Return ONLY valid JSON exactly matching this format:\n"
+            '{"entry_price_recommendation": "₹X-₹Y (or null if established)", "positioning_quadrant": "Leader / Challenger / Budget", '
+            '"steps": [{"step": 1, "area": "Pricing", "action": "Short title", "detail": "Detailed explanation", "timeline": "Days 1-30", "priority": "Critical/High/Medium", "impact": "Why this matters"}]}\n'
+            "Rules: Generate 4-6 highly specific steps tailored to their market position. Output ONLY JSON."
+        )
+
+        try:
+            ai_output, growth_output, action_plan_output = _run_ollama_parallel([
+                (ai_prompt,             30),
+                (growth_prompt,         90),
+                (action_plan_prompt,    60),
+            ])
+            
+            # Try to parse the AI action plan and overwrite the rule-based one if successful
+            import json
+            ap_dict = json.loads(action_plan_output)
+            if "steps" in ap_dict and isinstance(ap_dict["steps"], list) and len(ap_dict["steps"]) > 0:
+                action_plan = ActionPlan(**ap_dict)
+        except Exception as e:
+            print(f"[action_plan_ai] Fallback to rule-based due to error: {e}")
  
         # ── rule-based recommendations ──
         avg_products = sum(b.get("product_count", 0) for b in top_5) / max(len(top_5), 1)
