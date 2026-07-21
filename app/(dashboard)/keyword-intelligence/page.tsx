@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/tooltip";
 import { useAuth } from "@/lib/auth-context";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
+import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useKIUsage } from "@/hooks/use-ki-usage";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -748,20 +749,19 @@ function KeywordExplorerPanel({
   return (
     <div className="space-y-6">
       {/* Search Bar Section */}
-      <Card className="shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-background opacity-100 relative">
+      <Card className="shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl overflow-visible bg-background opacity-100 relative">
         <CardContent className="p-5">
           <div className="flex flex-col md:flex-row gap-4 items-end pt-4">
             <div className="flex-1 space-y-2 w-full">
               <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Search by Product Name</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-3.5 h-4 w-4 text-slate-400 dark:text-slate-500" />
-                <Input
-                  className="pl-10 h-11 border-slate-200 dark:border-slate-800 focus-visible:ring-purple-600 dark:focus-visible:ring-purple-500 rounded-xl bg-transparent"
-                  placeholder="e.g. boAt Rockerz 450, iPhone 14 Pro, Vitamin C Face Serum"
+                <SmartSearchInput
                   value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  data-track-id="keyword-search-input"
+                  onChange={setKeyword}
+                  placeholder="e.g. boAt Rockerz 450, iPhone 14 Pro, Vitamin C Face Serum"
+                  inputClassName="h-11 border-slate-200 dark:border-slate-800 focus-visible:ring-purple-600 dark:focus-visible:ring-purple-500 rounded-xl bg-transparent"
+                  onEnter={handleSearch}
+                  id="keyword-search-input"
                 />
               </div>
             </div>

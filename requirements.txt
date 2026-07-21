@@ -60,3 +60,6 @@ faster-whisper
 # Festival libraries
 ephem==4.2
 hijridate==2.4.0
+
+# Spell checking
+symspellpy==6.10.0

@@ -14,6 +14,7 @@ import { TrendingUp, Target, BarChart3, Search, RefreshCw, AlertCircle, CheckCir
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, ZAxis,
 } from "recharts";
+import SmartSearchInput from "@/components/ui/smart-search-input";
 
 interface BrandShareData {
   brand: string;
@@ -700,13 +701,14 @@ export default function ShareOfVoice() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Your Brand <span className="text-gray-400 dark:text-slate-500 text-xs">(Optional)</span></label>
-                <input
-                  type="text" value={yourBrand}
-                  onChange={(e) => setYourBrand(e.target.value)}
+                <SmartSearchInput
+                  value={yourBrand}
+                  onChange={setYourBrand}
                   placeholder="Enter your brand name"
                   disabled={loading}
-                  className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
-                  data-track-id="your_brand_input"
+                  inputClassName="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
+                  id="your_brand_input"
+                  onEnter={analyzeCategorySov}
                 />
               </div>
               <div className="flex items-end">

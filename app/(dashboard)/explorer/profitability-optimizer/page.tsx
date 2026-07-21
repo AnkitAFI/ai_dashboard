@@ -1451,6 +1451,7 @@ import { useTheme } from "next-themes";
 import { API_BASE_URL } from "@/lib/config";
 import axios from "axios";
 import { useAuth } from "@/lib/auth-context";
+import SmartSearchInput from "@/components/ui/smart-search-input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -2509,19 +2510,17 @@ export default function ProfitabilityOptimizer() {
                   Specific Product Research
                 </label>
                 <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                    <input
-                      type="text"
-                      placeholder="e.g. Bamboo Desk Organizer"
-                      className="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-slate-600 rounded-xl text-xs bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                  <div className="relative flex-1 overflow-visible">
+                    <SmartSearchInput
                       value={nicheKeyword}
-                      onChange={(e) => {
-                        setNicheKeyword(e.target.value);
+                      onChange={(val) => {
+                        setNicheKeyword(val);
                         // Clear badge when user types a new keyword
                         if (nicheDataSource) setNicheDataSource(null);
                       }}
-                      onKeyDown={(e) => e.key === "Enter" && handleNicheAutofill()}
+                      placeholder="e.g. Bamboo Desk Organizer"
+                      inputClassName="w-full py-2 border border-slate-200 dark:border-slate-600 rounded-xl text-xs bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                      onEnter={handleNicheAutofill}
                     />
                   </div>
                   <Button

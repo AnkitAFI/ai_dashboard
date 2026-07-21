@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useAuth } from "@/lib/auth-context";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -568,7 +569,7 @@ export default function ProductTracker() {
           </div>
 
           {/* Input Form */}
-          <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 backdrop-blur-none">
+          <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-visible bg-background opacity-100 backdrop-blur-none">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
@@ -591,13 +592,13 @@ export default function ProductTracker() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="product-name">Product Name</Label>
-                  <Input
+                  <SmartSearchInput
                     id="product-name"
-                    data-track-id="product-name-input"
                     value={productName}
-                    onChange={e => setProductName(e.target.value)}
+                    onChange={setProductName}
                     placeholder="e.g., Wireless Headphones"
                     disabled={!!userId && !canAnalyze}
+                    inputClassName="h-10 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900"
                   />
                 </div>
                 <div className="space-y-2">

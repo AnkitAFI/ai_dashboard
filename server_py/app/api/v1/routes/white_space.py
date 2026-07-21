@@ -955,139 +955,63 @@ def get_categories(platform: str = "both", db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+import pkg_resources
+from symspellpy import SymSpell, Verbosity
 
-def _levenshtein(s1: str, s2: str) -> int:
-    if len(s1) < len(s2):
-        return _levenshtein(s2, s1)
-    if len(s2) == 0:
-        return len(s1)
-    previous_row = range(len(s2) + 1)
-    for i, c1 in enumerate(s1):
-        current_row = [i + 1]
-        for j, c2 in enumerate(s2):
-            insertions = previous_row[j + 1] + 1
-            deletions = current_row[j] + 1
-            substitutions = previous_row[j] + (c1 != c2)
-            current_row.append(min(insertions, deletions, substitutions))
-        previous_row = current_row
-    return previous_row[-1]
+_sym_spell = None
+
+def _get_symspell():
+    global _sym_spell
+    if _sym_spell is None:
+        _sym_spell = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
+        try:
+            dictionary_path = pkg_resources.resource_filename("symspellpy", "frequency_dictionary_en_82_765.txt")
+            _sym_spell.load_dictionary(dictionary_path, term_index=0, count_index=1)
+            print("[autocomplete] Loaded SymSpell dictionary.")
+        except Exception as e:
+            print(f"[autocomplete] Error loading SymSpell dictionary: {e}")
+    return _sym_spell
 
 
-def _clean_title_suggestion(title: str) -> str:
+def _clean_title_suggestion(title: str, target_q: str = "") -> str:
     import re
     cleaned = re.sub(r'[^\w\s-]', '', title)
     words = cleaned.split()
-    return " ".join(words[:4]).strip()
-
-
-_db_vocabulary = None
-
-
-def _get_db_vocabulary(db: Session) -> set:
-    global _db_vocabulary
-    if _db_vocabulary is not None:
-        return _db_vocabulary
-        
-    vocab = set()
-    try:
-        import re
-        # 1. Words from categories
-        res_cats = db.execute(text("""
-            SELECT DISTINCT category_name FROM (
-                SELECT category_name FROM rapidapi_amazon_products WHERE category_name IS NOT NULL
-                UNION
-                SELECT category_name FROM rapidapi_flipkart_products WHERE category_name IS NOT NULL
-            ) AS cats
-        """)).fetchall()
-        for row in res_cats:
-            if row[0]:
-                for word in re.findall(r'[a-zA-Z]{3,}', row[0]):
-                    vocab.add(word.lower())
-                    
-        # 2. Top 500 words from Amazon product titles
-        res_am_words = db.execute(text(r"""
-            SELECT word FROM (
-                SELECT regexp_split_to_table(LOWER(product_title), '\s+') AS word 
-                FROM rapidapi_amazon_products
-                WHERE product_title IS NOT NULL
-            ) AS w
-            WHERE length(word) >= 3 AND word ~ '^[a-z]+$'
-            GROUP BY word
-            ORDER BY count(*) DESC
-            LIMIT 500
-        """)).fetchall()
-        for row in res_am_words:
-            if row[0]:
-                vocab.add(row[0])
-                
-        # 3. Top 500 words from Flipkart product titles
-        res_fk_words = db.execute(text(r"""
-            SELECT word FROM (
-                SELECT regexp_split_to_table(LOWER(product_title), '\s+') AS word 
-                FROM rapidapi_flipkart_products
-                WHERE product_title IS NOT NULL
-            ) AS w
-            WHERE length(word) >= 3 AND word ~ '^[a-z]+$'
-            GROUP BY word
-            ORDER BY count(*) DESC
-            LIMIT 500
-        """)).fetchall()
-        for row in res_fk_words:
-            if row[0]:
-                vocab.add(row[0])
-                
-        _db_vocabulary = vocab
-        logger.info(f"[autocomplete] Built database vocabulary of {len(vocab)} words.")
-    except Exception as e:
-        print(f"[autocomplete] Error building vocabulary: {e}")
-        # Fallback basic list
-        _db_vocabulary = {
-            "shirt", "tshirt", "organizer", "bottle", "grooming",
-            "charger", "wireless", "holder", "shoes", "cable", "case", "glass",
-            "kitchen", "baby", "feeding", "grooming", "sleep", "aid", "skincare",
-            "tools", "scent", "accessories", "fitness", "gear", "care", "desk",
-            "water", "yoga", "mat", "air", "purifier", "led", "lights", "speaker",
-            "headphones", "earbuds"
-        }
-    return _db_vocabulary
-
-
-def _correct_query(query: str, vocab: set) -> Optional[str]:
-    import re
-    words = query.strip().split()
-    if not words:
-        return None
-        
-    corrected_words = []
-    has_correction = False
     
-    for word in words:
-        word_clean = re.sub(r'[^a-zA-Z]', '', word).lower()
-        if len(word_clean) < 3:
-            corrected_words.append(word)
-            continue
-            
-        if word_clean in vocab:
-            corrected_words.append(word)
-            continue
-            
-        best_match = None
-        best_dist = float('inf')
-        max_allowed = 1 if len(word_clean) <= 4 else (2 if len(word_clean) <= 7 else 3)
+    if not target_q:
+        return " ".join(words[:4]).strip()
         
-        for vocab_word in vocab:
-            dist = _levenshtein(word_clean, vocab_word)
-            if dist < best_dist and dist <= max_allowed:
-                best_dist = dist
-                best_match = vocab_word
-                
-        if best_match:
-            corrected_words.append(best_match)
-            has_correction = True
-        else:
-            corrected_words.append(word)
+    target_words = target_q.lower().split()
+    target_first = target_words[0] if target_words else ""
+    
+    start_idx = 0
+    for i, w in enumerate(words):
+        if target_first in w.lower():
+            start_idx = i
+            break
             
-    return " ".join(corrected_words) if has_correction else None
+    extracted = words[start_idx:start_idx+4]
+    if not extracted:
+        extracted = words[:4]
+        
+    return " ".join(extracted).strip()
+
+
+def _correct_query(query: str) -> Optional[str]:
+    spell = _get_symspell()
+    if not spell:
+        return None
+    
+    try:
+        suggestions = spell.lookup_compound(query, max_edit_distance=2, ignore_non_words=True)
+        if suggestions:
+            corrected = suggestions[0].term
+            if corrected.lower() != query.lower():
+                return corrected
+    except Exception as e:
+        print(f"[autocomplete] Error in spelling correction: {e}")
+        
+    return None
 
 
 @router.get("/autocomplete")
@@ -1098,9 +1022,8 @@ def autocomplete_suggestions(q: str = "", db: Session = Depends(get_db)):
     q_clean = q.strip().lower()
     
     try:
-        # Check spelling first using database vocabulary
-        vocab = _get_db_vocabulary(db)
-        corrected_q = _correct_query(q_clean, vocab)
+        # Check spelling using global SymSpell dictionary
+        corrected_q = _correct_query(q_clean)
         
         correction = None
         target_q = q_clean
@@ -1152,7 +1075,7 @@ def autocomplete_suggestions(q: str = "", db: Session = Depends(get_db)):
         # Add matching cleaned product titles
         for row in res_am_titles + res_fk_titles:
             if row[0]:
-                cleaned = _clean_title_suggestion(row[0])
+                cleaned = _clean_title_suggestion(row[0], target_q)
                 if cleaned and cleaned.lower() != q_clean:
                     suggestions_set.add(cleaned)
                     

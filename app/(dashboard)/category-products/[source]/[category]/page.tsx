@@ -16,6 +16,7 @@ import { ChevronLeft, Star, Menu, Search, X } from "lucide-react";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { getCategoryIconComponent, cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import SmartSearchInput from "@/components/ui/smart-search-input";
 
 interface Product {
   product_name: string;
@@ -179,28 +180,18 @@ export default function CategoryProducts() {
       {/* Search Bar Panel */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
         <div className="relative w-full sm:w-80">
-          <input
-            type="text"
-            placeholder="Search products in this category..."
+          <SmartSearchInput
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className={cn(
-              "w-full pl-10 pr-10 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all font-medium",
+            onChange={setSearchQuery}
+            placeholder="Search products in this category..."
+            className="w-full"
+            inputClassName={cn(
+              "w-full text-sm font-medium",
               isDark 
                 ? "border-slate-800 bg-slate-900 text-slate-100 placeholder:text-slate-500" 
                 : "border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 shadow-sm"
             )}
           />
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={handleClearSearch}
-              className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
         </div>
         {debouncedSearch && (
           <div className={cn("text-sm font-medium", isDark ? "text-slate-400" : "text-slate-500")}>
