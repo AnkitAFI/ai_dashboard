@@ -792,6 +792,7 @@ Be specific — mention niche names and numbers."""
     return _static_market_summary(query, opportunities)
 
 
+def _inr(n: int) -> str:
     if n >= 100000:
         return f"₹{n/100000:.1f}L"
     if n >= 1000:

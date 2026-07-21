@@ -2314,7 +2314,10 @@ def get_top_items(
             "product_title IS NOT NULL",
             "product_title != ''",
             "product_star_rating IS NOT NULL",
-            "product_price IS NOT NULL"
+            "product_price IS NOT NULL",
+            "sales_volume IS NOT NULL",
+            "sales_volume != '0'",
+            "estimated_sales > 0"
         ]
         params = {"n": n}
         
@@ -4031,8 +4034,9 @@ def get_amazon_top_sales(
             ROUND(CAST(SUM(daily_sales) AS NUMERIC), 0) as total_daily_sales,
             COUNT(*) as variant_count
         FROM sales_data
-        WHERE daily_sales IS NOT NULL
+        WHERE daily_sales IS NOT NULL AND daily_sales > 0
         GROUP BY product_title
+        HAVING ROUND(CAST(SUM(daily_sales) AS NUMERIC), 0) > 0
         ORDER BY total_daily_sales DESC NULLS LAST
         LIMIT :limit
         """)
@@ -4130,8 +4134,9 @@ def get_flipkart_top_sales_products(
             ROUND(CAST(SUM(daily_sales) AS NUMERIC), 0) as total_daily_sales,
             COUNT(*) as variant_count
         FROM sales_data
-        WHERE daily_sales IS NOT NULL
+        WHERE daily_sales IS NOT NULL AND daily_sales > 0
         GROUP BY product_title
+        HAVING ROUND(CAST(SUM(daily_sales) AS NUMERIC), 0) > 0
         ORDER BY total_daily_sales DESC NULLS LAST
         LIMIT :limit
         """)
