@@ -843,6 +843,44 @@ def get_usage(
 
 # ── SQL queries ───────────────────────────────────────────────────────────────
 
+# Phase 1: find categories that are genuinely about the searched product.
+# We count total products in each category vs how many match the query term.
+# This prevents unrelated categories (e.g. "Chargers" that mention "iPhone compatible")
+# from appearing when the user searches a specific product like "iphone".
+
+AMAZON_CATEGORY_RELEVANCE_SQL = """
+SELECT
+    category_name,
+    COUNT(*) AS total_in_cat,
+    SUM(CASE WHEN product_title ~* :regex_query THEN 1 ELSE 0 END) AS matching_in_cat
+FROM rapidapi_amazon_products
+WHERE
+    category_name IS NOT NULL
+    AND (:category IS NULL OR category_name = :category)
+    AND product_price_numeric > 0
+    AND product_star_rating_numeric IS NOT NULL
+GROUP BY category_name
+HAVING SUM(CASE WHEN product_title ~* :regex_query THEN 1 ELSE 0 END) > 0
+"""
+
+FLIPKART_CATEGORY_RELEVANCE_SQL = """
+SELECT
+    category_name,
+    COUNT(*) AS total_in_cat,
+    SUM(CASE WHEN product_title ~* :regex_query THEN 1 ELSE 0 END) AS matching_in_cat
+FROM rapidapi_flipkart_products
+WHERE
+    category_name IS NOT NULL
+    AND (:category IS NULL OR category_name = :category)
+    AND product_price > 0
+GROUP BY category_name
+HAVING SUM(CASE WHEN product_title ~* :regex_query THEN 1 ELSE 0 END) > 0
+"""
+
+# Phase 2: once we know which categories are relevant, fetch ALL products from
+# those categories so we can compute an accurate market-wide gap score.
+# The :categories param is filled in at runtime with the relevant category names.
+
 AMAZON_SQL = """
 SELECT
     category_name,
@@ -863,12 +901,12 @@ SELECT
     asin
 FROM rapidapi_amazon_products
 WHERE
-    (:query IS NULL OR LOWER(product_title) LIKE :like_query OR LOWER(category_name) LIKE :like_query)
-    AND (:category IS NULL OR category_name = :category)
+    category_name = ANY(:categories)
+    AND (:query IS NULL OR product_title ~* :regex_query)
     AND product_price_numeric > 0
     AND product_star_rating_numeric IS NOT NULL
 ORDER BY avg_sales_volume DESC NULLS LAST
-LIMIT 300
+LIMIT 500
 """
 
 FLIPKART_SQL = """
@@ -889,11 +927,77 @@ SELECT
     max_price
 FROM rapidapi_flipkart_products
 WHERE
-    (:query IS NULL OR LOWER(product_title) LIKE :like_query OR LOWER(category_name) LIKE :like_query)
-    AND (:category IS NULL OR category_name = :category)
+    category_name = ANY(:categories)
+    AND (:query IS NULL OR product_title ~* :regex_query)
     AND product_price > 0
-LIMIT 300
+LIMIT 500
 """
+
+# Minimum relevance threshold: a category must have at least this fraction of
+# its products matching the query term to be considered relevant.
+# E.g. 0.20 = at least 20% of products in the category must contain the query word.
+# For very specific queries (like a brand name) we lower this to 0.05 (5%).
+DEFAULT_RELEVANCE_THRESHOLD = 0.20
+MIN_RELEVANCE_THRESHOLD = 0.05  # floor for niche/brand queries with few results
+MIN_MATCHING_PRODUCTS = 1       # absolute minimum: at least 1 matching product
+
+
+def _find_relevant_categories(
+    db,
+    regex_query: str,
+    category_filter: Optional[str],
+    platform: str,
+) -> Dict[str, List[str]]:
+    """
+    Phase 1: Identify categories that are genuinely about the searched product.
+
+    Returns a dict with keys 'amazon' and 'flipkart', each containing a list of
+    relevant category names. A category is relevant if at least
+    DEFAULT_RELEVANCE_THRESHOLD of its products match the query term.
+    If that yields no categories at all, we fall back to MIN_RELEVANCE_THRESHOLD
+    so very specific brand/model queries still return results.
+    """
+    params = {"regex_query": regex_query, "category": category_filter}
+
+    amazon_cats: List[str] = []
+    flipkart_cats: List[str] = []
+
+    if platform in ("amazon", "both"):
+        try:
+            res = db.execute(text(AMAZON_CATEGORY_RELEVANCE_SQL), params)
+            rows = res.fetchall()
+            # Try strict threshold first, fall back to loose if nothing found
+            for threshold in [DEFAULT_RELEVANCE_THRESHOLD, MIN_RELEVANCE_THRESHOLD]:
+                cats = [
+                    row[0] for row in rows
+                    if row[1] > 0
+                    and (row[2] / row[1]) >= threshold
+                    and row[2] >= MIN_MATCHING_PRODUCTS
+                ]
+                if cats:
+                    amazon_cats = cats
+                    break
+        except Exception as e:
+            print(f"[white_space] amazon category relevance error: {e}")
+
+    if platform in ("flipkart", "both"):
+        try:
+            res = db.execute(text(FLIPKART_CATEGORY_RELEVANCE_SQL), params)
+            rows = res.fetchall()
+            for threshold in [DEFAULT_RELEVANCE_THRESHOLD, MIN_RELEVANCE_THRESHOLD]:
+                cats = [
+                    row[0] for row in rows
+                    if row[1] > 0
+                    and (row[2] / row[1]) >= threshold
+                    and row[2] >= MIN_MATCHING_PRODUCTS
+                ]
+                if cats:
+                    flipkart_cats = cats
+                    break
+        except Exception as e:
+            print(f"[white_space] flipkart category relevance error: {e}")
+
+    return {"amazon": amazon_cats, "flipkart": flipkart_cats}
 
 
 # ── Ollama status endpoint ────────────────────────────────────────────────────
@@ -1154,26 +1258,47 @@ def scan_white_spaces(
     except Exception as e:
         logger.warning(f"Redis error (get): {e}")
 
-    params = {
-        "query": req.query if req.query else None,
-        "like_query": f"%{req.query.lower()}%",
-        "category": req.category,
-    }
+    import re
+    safe_query = re.escape(req.query.lower().strip()).replace("\\ ", " ")
+    regex_query = rf"\y{safe_query}\y"
 
-    # ── Fetch rows ────────────────────────────────────────────────────────
+    # ── Phase 1: Find only categories relevant to the searched product ────
+    # This prevents unrelated categories from appearing (e.g. searching "iphone"
+    # should not show "Headphones" just because some headphone titles say
+    # "compatible with iPhone").
+    relevant_cats = _find_relevant_categories(
+        db,
+        regex_query=regex_query,
+        category_filter=req.category,
+        platform=req.platform,
+    )
+
+    amazon_relevant = relevant_cats["amazon"]
+    flipkart_relevant = relevant_cats["flipkart"]
+
+    print(f"[white_space] Phase1 relevant categories — amazon: {amazon_relevant}, flipkart: {flipkart_relevant}")
+
+    # ── Phase 2: Fetch matching products from only the relevant categories ─────
+    # We pull the actual competitor products matching the query from the relevant categories
+    # to accurately score the market gap for this specific product niche.
     amazon_rows: List[Dict] = []
     flipkart_rows: List[Dict] = []
+    
+    phase2_params = {
+        "query": req.query if req.query else None,
+        "regex_query": regex_query
+    }
 
-    if req.platform in ("amazon", "both"):
+    if req.platform in ("amazon", "both") and amazon_relevant:
         try:
-            res = db.execute(text(AMAZON_SQL), params)
+            res = db.execute(text(AMAZON_SQL), {**phase2_params, "categories": amazon_relevant})
             amazon_rows = [dict(r._mapping) for r in res.fetchall()]
         except Exception as e:
             print(f"[white_space] amazon error: {e}")
 
-    if req.platform in ("flipkart", "both"):
+    if req.platform in ("flipkart", "both") and flipkart_relevant:
         try:
-            res = db.execute(text(FLIPKART_SQL), params)
+            res = db.execute(text(FLIPKART_SQL), {**phase2_params, "categories": flipkart_relevant})
             flipkart_rows = [dict(r._mapping) for r in res.fetchall()]
         except Exception as e:
             print(f"[white_space] flipkart error: {e}")

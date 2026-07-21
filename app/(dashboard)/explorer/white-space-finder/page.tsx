@@ -1719,14 +1719,17 @@ function WhiteSpaceFinderContent() {
                     <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">
                       We couldn't find any products matching{" "}
                       <strong>&quot;{result.query}&quot;</strong>
-                      {category !== "all" && (
+                      {category !== "all" ? (
                         <span>
                           {" "}
-                          in the <strong>{category}</strong> category
+                          in the <strong>{category}</strong> category. Try searching for different product or switch the
+                          category to &quot;All categories&quot;.
+                        </span>
+                      ) : (
+                        <span>
+                          . This usually means the niche is too small, or there might be a typo. Try searching for a different product.
                         </span>
                       )}
-                      . Try searching for different product or switch the
-                      category to &quot;All categories&quot;.
                     </p>
                     <div className="flex items-center justify-center gap-3">
                       <button
