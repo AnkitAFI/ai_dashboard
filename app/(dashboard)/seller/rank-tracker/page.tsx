@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { useSelectedProduct } from "@/lib/selected-product-context";
+import { useTranslation } from "react-i18next";
 import {
   Lock, Crown, RefreshCw, Menu, Package,
   TrendingUp, TrendingDown, Minus, CheckCircle,
@@ -648,6 +649,7 @@ function StreamBox({ stream }: { stream: ReturnType<typeof useStream> }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 function RankTrackerContent() {
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
   const { resolvedTheme } = useTheme();
@@ -772,9 +774,9 @@ function RankTrackerContent() {
           <div className="w-px h-5 bg-slate-200 dark:bg-slate-800" />
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-sky-900 dark:text-sky-100 flex items-center gap-2">
-              <Hash className="w-5 h-5 text-sky-600 dark:text-sky-400" /> Rank Tracker
+              <Hash className="w-5 h-5 text-sky-600 dark:text-sky-400" /> {t('sellerPages.rankTrackerTitle', 'Rank Tracker')}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Track your Amazon search position for any keyword</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">{t('sellerPages.rankTrackerSubtitle', 'Track your Amazon search position for any keyword')}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -809,14 +811,14 @@ function RankTrackerContent() {
               <Hash className="w-8 h-8 text-sky-400 dark:text-sky-550" />
             </div>
             <div>
-              <p className="text-lg font-bold text-slate-700 dark:text-slate-200">No product selected</p>
-              <p className="text-sm text-slate-400 dark:text-slate-550 mt-1">Select a product from My Products to start tracking its rank.</p>
+              <p className="text-lg font-bold text-slate-700 dark:text-slate-200">{t('sellerPages.noProductSelected', 'No product selected')}</p>
+              <p className="text-sm text-slate-400 dark:text-slate-550 mt-1">{t('sellerPages.rankTrackerSub', 'Select a product from My Products to start tracking its rank.')}</p>
             </div>
             <button
               onClick={() => router.push("/seller/my-products")}
               className="px-5 py-2 bg-sky-600 text-white rounded-full text-sm font-semibold hover:bg-sky-700 transition-colors"
             >
-              Go to My Products
+              {t('sellerPages.goToMyProducts', 'Go to My Products')}
             </button>
           </div>
         )}

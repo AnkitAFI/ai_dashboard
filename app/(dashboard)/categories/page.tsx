@@ -15,6 +15,7 @@ import {
 import { Tag, Star, ChevronRight, Search, X } from "lucide-react";
 import { getCategoryIconComponent, cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 
 interface Category {
   category: string;
@@ -26,6 +27,7 @@ interface Category {
 }
 
 export default function Categories() {
+  const { t } = useTranslation();
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -53,7 +55,7 @@ export default function Categories() {
       <div className="flex items-center justify-center min-h-[400px] text-slate-400">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
-          <p>Loading categories...</p>
+          <p>{t('categories.loading', 'Loading categories...')}</p>
         </div>
       </div>
     );
@@ -79,18 +81,17 @@ export default function Categories() {
           <Tag className="h-6 w-6 text-blue-500 dark:text-blue-400" />
         </div>
         <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-          Product Categories
+          {t('categories.title', 'Product Categories')}
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-          Explore top-performing categories and jump directly to their
-          product lists.
+          {t('categories.subtitle', 'Explore top-performing categories and jump directly to their product lists.')}
         </p>
       </div>
 
       {/* Search and Filters Panel */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
         <div className="flex items-center gap-3">
-          <label className={cn("font-semibold text-sm tracking-wide", isDark ? "text-slate-300" : "text-slate-700")}>Marketplace:</label>
+          <label className={cn("font-semibold text-sm tracking-wide", isDark ? "text-slate-300" : "text-slate-700")}>{t('categories.marketplace', 'Marketplace:')}</label>
           <select
             value={tableFilter}
             onChange={(e) => setTableFilter(e.target.value as any)}
@@ -103,7 +104,7 @@ export default function Categories() {
             data-track-id="table_filter_select"
             data-filter-value={tableFilter}
           >
-            <option value="all" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>All Marketplaces</option>
+            <option value="all" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>{t('categories.allMarketplaces', 'All Marketplaces')}</option>
             <option value="flipkart" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Flipkart</option>
             <option value="amazon" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Amazon</option>
           </select>
@@ -113,7 +114,7 @@ export default function Categories() {
         <div className="relative w-full sm:w-72">
           <input
             type="text"
-            placeholder="Search categories..."
+            placeholder={t('categories.searchPlaceholder', 'Search categories...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className={cn(
@@ -142,8 +143,8 @@ export default function Categories() {
           isDark ? "border-slate-800 text-slate-500" : "border-slate-200 text-slate-400"
         )}>
           <Tag className="h-10 w-10 mx-auto mb-3 opacity-30 text-blue-500" />
-          <p className="text-lg font-medium text-slate-800 dark:text-slate-200">No categories found</p>
-          <p className="text-sm opacity-80 mt-1">Try resetting your search query or marketplace filter.</p>
+          <p className="text-lg font-medium text-slate-800 dark:text-slate-200">{t('categories.notFound', 'No categories found')}</p>
+          <p className="text-sm opacity-80 mt-1">{t('categories.resetQuery', 'Try resetting your search query or marketplace filter.')}</p>
           {searchQuery && (
             <button
               onClick={() => setSearchQuery("")}

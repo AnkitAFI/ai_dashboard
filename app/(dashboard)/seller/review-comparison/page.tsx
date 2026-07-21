@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 import {
   Lock, Crown, Star, MessageSquare, RefreshCw,
   Menu, X, TrendingUp, CheckCircle, Zap,
@@ -149,6 +150,7 @@ const ChartTooltip = ({ active, payload, label, isDark }: any) => {
 };
 
 function ReviewComparisonContent() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -204,10 +206,10 @@ function ReviewComparisonContent() {
             </div>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-                Review Comparison
+                {t('sellerPages.reviewCompTitle', 'Review Comparison')}
               </h1>
               <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                Analyse your reviews and benchmark customer feedback against similar products.
+                {t('sellerPages.reviewCompSubtitle', 'Analyse your reviews and benchmark customer feedback against similar products.')}
               </p>
             </div>
           </div>
@@ -230,11 +232,11 @@ function ReviewComparisonContent() {
                 <MessageSquare className="w-8 h-8 text-sky-400" />
               </div>
               <div>
-                <p className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>No product selected</p>
-                <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Click any product from My Products to compare reviews.</p>
+                <p className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{t('sellerPages.noProductSelected', 'No product selected')}</p>
+                <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{t('sellerPages.reviewCompSub', 'Click any product from My Products to compare reviews.')}</p>
               </div>
               <button onClick={() => router.push("/seller/my-products")} className="px-5 py-2 bg-sky-600 text-white rounded-full text-sm font-semibold hover:bg-sky-700 transition-colors">
-                Go to My Products
+                {t('sellerPages.goToMyProducts', 'Go to My Products')}
               </button>
             </div>
           )}

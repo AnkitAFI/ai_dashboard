@@ -19,6 +19,7 @@ import {
   ChevronDown, ChevronUp, Zap, BarChart3,
   AlertCircle, Star, TrendingDown, Truck, Trophy, Package,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface GapItem {
   gap_type: string;
@@ -292,6 +293,7 @@ const getGapIcon = (iconText: string) => {
 };
 
 export default function ProductTracker() {
+  const { t } = useTranslation();
   const { user, isLoading } = useAuth();
   const userEmail = user?.email || "";
   const userId = user?.id;
@@ -532,7 +534,7 @@ export default function ProductTracker() {
             {!loadingUsage && userId && usageLimits && (
               <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
                 <div className="flex items-center justify-between gap-3 mb-1">
-                  <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Analyses used</p>
+                  <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{t('pr.analysesUsed', 'Analyses used')}</p>
                   <Badge className={`h-4 text-[10px] border-none px-1.5 ${usageLimits.subscription_tier.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : usageLimits.subscription_tier.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : usageLimits.subscription_tier.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
                     {(usageLimits.subscription_tier || "free").toUpperCase()}
                   </Badge>
@@ -561,10 +563,10 @@ export default function ProductTracker() {
               <Target className="h-8 w-8 text-blue-500" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-500 via-indigo-400 to-purple-400 text-transparent bg-clip-text">
-              Product Radar (AI)
+              {t('pr.title', 'Product Radar (AI)')}
             </h1>
             <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto">
-              Scan specific products to analyze market competition, pricing metrics, and project AI viability reports.
+              {t('pr.subtitle', 'Scan specific products to analyze market competition, pricing metrics, and project AI viability reports.')}
             </p>
           </div>
 
@@ -573,9 +575,9 @@ export default function ProductTracker() {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-lg font-semibold text-slate-700 dark:text-slate-200">Product Information</CardTitle>
+                  <CardTitle className="text-lg font-semibold text-slate-700 dark:text-slate-200">{t('pr.productInfo', 'Product Information')}</CardTitle>
                   <CardDescription className="text-slate-500 dark:text-slate-400">
-                    Enter your product details to get AI-powered market insights from {source === "amazon" ? "Amazon" : "Flipkart"}
+                    {t('pr.enterDetails', 'Enter your product details to get AI-powered market insights from')} {source === "amazon" ? "Amazon" : "Flipkart"}
                   </CardDescription>
                 </div>
                 <a
@@ -584,14 +586,14 @@ export default function ProductTracker() {
                   data-track-id="analytics_history_btn"
                 >
                   <History className="h-4 w-4" />
-                  <span className="hidden sm:inline font-medium">Analytics History</span>
+                  <span className="hidden sm:inline font-medium">{t('pr.analyticsHistory', 'Analytics History')}</span>
                 </a>
               </div>
             </CardHeader>
             <CardContent className="space-y-4 pt-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="product-name">Product Name</Label>
+                  <Label htmlFor="product-name">{t('pr.productName', 'Product Name')}</Label>
                   <SmartSearchInput
                     id="product-name"
                     value={productName}
@@ -602,7 +604,7 @@ export default function ProductTracker() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="category">Category</Label>
+                  <Label htmlFor="category">{t('pr.category', 'Category')}</Label>
                   <Select value={category} onValueChange={setCategory} disabled={!!userId && !canAnalyze}>
                     <SelectTrigger id="category" data-track-id="category_select" data-filter-value={category}>
                       <SelectValue placeholder={categories.length === 0 ? "No categories available" : "Select category"} />
@@ -615,7 +617,7 @@ export default function ProductTracker() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="source">Marketplace</Label>
+                  <Label htmlFor="source">{t('pr.marketplace', 'Marketplace')}</Label>
                   <Select value={source} onValueChange={setSource} disabled={!!userId && !canAnalyze}>
                     <SelectTrigger id="source" data-track-id="marketplace_select" data-filter-value={source}><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -629,7 +631,7 @@ export default function ProductTracker() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="base-cost">Your Cost Price (₹)</Label>
+                  <Label htmlFor="base-cost">{t('pr.yourCostPrice', 'Your Cost Price (₹)')}</Label>
                   <Input
                     id="base-cost"
                     data-track-id="base-cost-input"
@@ -648,16 +650,16 @@ export default function ProductTracker() {
                 data-track-id="analyze-btn"
               >
                 {loading ? (
-                  <><Loader2 className="h-4 w-4 animate-spin mr-2" />Analysing {source} Market…</>
-                ) : userId && !canAnalyze ? (
-                  <><Lock className="h-4 w-4 mr-2" />Limit Reached — Upgrade to Continue</>
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('pr.analyzingMarket', 'Analyzing Market...')}</>
+                ) : (userId && !canAnalyze) ? (
+                  <><Lock className="mr-2 h-4 w-4" /> {t('pr.limitReached', 'Limit Reached')}</>
                 ) : (
-                  <><Target className="h-4 w-4 mr-2" />Analyse on {source}</>
+                  <><Target className="mr-2 h-4 w-4" /> {t('pr.analyzeMarket', 'Analyze Market')}</>
                 )}
               </Button>
               {loading && (
                 <p className="text-xs text-slate-500 text-center mt-2 animate-pulse">
-                  We are analyzing the data. This may take 1–2 minutes.
+                  {t('pr.analysisNote', 'We are analyzing the data. This may take 1–2 minutes.')}
                 </p>
               )}
             </CardContent>

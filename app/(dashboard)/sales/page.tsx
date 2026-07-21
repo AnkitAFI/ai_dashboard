@@ -9,6 +9,7 @@ import { Star, IndianRupee, ArrowUpDown, TrendingUp, Search, X } from "lucide-re
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import SmartSearchInput from "@/components/ui/smart-search-input";
+import { useTranslation } from "react-i18next";
 
 // Unified interface for both Flipkart & Amazon
 interface TrendingProduct {
@@ -35,6 +36,7 @@ interface TrendingProduct {
 }
 
 export default function Sales() {
+  const { t } = useTranslation();
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [products, setProducts] = useState<TrendingProduct[]>([]);
@@ -167,7 +169,7 @@ export default function Sales() {
       <div className="flex h-[400px] items-center justify-center text-slate-400">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
-          <p>Loading {source} top product data...</p>
+          <p>{t('sales.loading', 'Loading {{source}} top product data...', { source })}</p>
         </div>
       </div>
     );
@@ -185,10 +187,10 @@ export default function Sales() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
         <div className="text-left space-y-1">
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-            Product Performance Overview ({source})
+            {t('sales.title', 'Product Performance Overview ({{source}})', { source })}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm">
-            Analyze and sort by sales, reviews, price, or rating for data-driven decisions.
+            {t('sales.subtitle', 'Analyze and sort by sales, reviews, price, or rating for data-driven decisions.')}
           </p>
         </div>
         <select
@@ -214,7 +216,7 @@ export default function Sales() {
           <SmartSearchInput
             value={searchQuery}
             onChange={setSearchQuery}
-            placeholder="Search products..."
+            placeholder={t('sales.searchPlaceholder', 'Search products...')}
             className="w-full"
             inputClassName={cn(
               "w-full text-sm font-medium",
@@ -243,7 +245,7 @@ export default function Sales() {
               disabled={loading}
             >
               <ArrowUpDown className="w-4 h-4" />
-              {field.charAt(0).toUpperCase() + field.slice(1)}
+              {t(`sales.sort_${field}`, field.charAt(0).toUpperCase() + field.slice(1))}
               {sortField === field ? ` (${sortOrder === "asc" ? "↑" : "↓"})` : ""}
             </Button>
           ))}
@@ -256,9 +258,9 @@ export default function Sales() {
       )}>
         <CardHeader className="py-3 px-4 border-b border-slate-100 dark:border-slate-800">
           <CardTitle className={cn("text-base font-semibold", isDark ? "text-slate-200" : "text-slate-700")}>
-            Showing Page {currentPage} of {totalPages} — Sorted by{" "}
-            {sortField.charAt(0).toUpperCase() + sortField.slice(1)}{" "}
-            ({sortOrder === "asc" ? "Low → High" : "High → Low"})
+            {t('sales.showingPage', 'Showing Page')} {currentPage} {t('sales.of', 'of')} {totalPages} — {t('sales.sortedBy', 'Sorted by')}{" "}
+            {t(`sales.sort_${sortField}`, sortField.charAt(0).toUpperCase() + sortField.slice(1))}{" "}
+            ({sortOrder === "asc" ? t('sales.lowToHigh', 'Low → High') : t('sales.highToLow', 'High → Low')})
           </CardTitle>
         </CardHeader>
 
@@ -270,12 +272,12 @@ export default function Sales() {
             )}>
               <tr>
                 <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>#</th>
-                <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>Product</th>
-                <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>Category</th>
-                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>Price (₹)</th>
-                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>Rating</th>
-                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>Reviews</th>
-                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>Sales</th>
+                <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.product', 'Product')}</th>
+                <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.category', 'Category')}</th>
+                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.price', 'Price (₹)')}</th>
+                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.rating', 'Rating')}</th>
+                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.reviews', 'Reviews')}</th>
+                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.sales', 'Sales')}</th>
               </tr>
             </thead>
 
@@ -341,11 +343,11 @@ export default function Sales() {
           )}
           data-track-id="sales_prev_page_btn"
         >
-          Previous
+          {t('sales.previous', 'Previous')}
         </Button>
 
         <span className={cn("font-medium", isDark ? "text-slate-400" : "text-slate-600")}>
-          Page {currentPage} of {totalPages}
+          {t('sales.page', 'Page')} {currentPage} {t('sales.of', 'of')} {totalPages}
         </span>
 
         <Button
@@ -359,7 +361,7 @@ export default function Sales() {
           )}
           data-track-id="sales_next_page_btn"
         >
-          Next
+          {t('sales.next', 'Next')}
         </Button>
       </div>
     </div>

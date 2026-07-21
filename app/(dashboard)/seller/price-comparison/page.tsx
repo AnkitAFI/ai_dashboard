@@ -7,6 +7,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 import {
   Lock, Crown, Star, TrendingUp, TrendingDown,
   Minus, BarChart2, RefreshCw, Menu, X,
@@ -120,6 +121,7 @@ const ChartTooltip = ({ active, payload, label, currency, isDark }: any) => {
 };
 
 function PriceComparisonContent() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -182,10 +184,10 @@ function PriceComparisonContent() {
             </div>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-                Price Comparison
+                {t('sellerPages.priceCompTitle', 'Price Comparison')}
               </h1>
               <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                Benchmark your pricing against real similar products.
+                {t('sellerPages.priceCompSubtitle', 'Benchmark your pricing against real similar products.')}
               </p>
             </div>
           </div>
@@ -208,11 +210,11 @@ function PriceComparisonContent() {
                 <BarChart2 className="w-8 h-8 text-sky-400" />
               </div>
               <div>
-                <p className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>No product selected</p>
-                <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Click any product from My Products to compare pricing.</p>
+                <p className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{t('sellerPages.noProductSelected', 'No product selected')}</p>
+                <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{t('sellerPages.priceCompSub', 'Click any product from My Products to compare pricing.')}</p>
               </div>
               <button onClick={() => router.push("/seller/my-products")} className="px-5 py-2 bg-sky-600 text-white rounded-full text-sm font-semibold hover:bg-sky-700 transition-colors">
-                Go to My Products
+                {t('sellerPages.goToMyProducts', 'Go to My Products')}
               </button>
             </div>
           )}

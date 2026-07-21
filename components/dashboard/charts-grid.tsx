@@ -21,6 +21,7 @@ import { Bar, Doughnut } from "react-chartjs-2";
 import { useFilters } from "@/components/dashboard/filters-context";
 import { useAISummary } from "@/hooks/use-ai-summary";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
+import { useTranslation } from "react-i18next";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
 
@@ -35,13 +36,14 @@ interface ChartCardProps {
 function ChartCard({ title, children, isLoading, summary, summaryLoading }: ChartCardProps) {
   const { canAccessFeature, currentTier } = useSubscriptionLimits();
   const hasAISummaries = canAccessFeature('hasChartAISummaries');
+  const { t } = useTranslation();
 
   return (
     <Card className="bg-card rounded-xl p-6 border hover:shadow-md transition-shadow">
       <CardHeader className="flex flex-row items-center justify-between pb-4">
         <CardTitle className="text-lg font-semibold">{title}</CardTitle>
         <Badge variant="secondary" className="text-xs">
-          Live Data
+          {t('charts.liveData', 'Live Data')}
         </Badge>
       </CardHeader>
       <CardContent className="p-0">
@@ -54,7 +56,7 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
           summaryLoading ? (
             <div className="mt-3 text-sm text-muted-foreground italic flex items-center gap-2">
               <Sparkles className="w-4 h-4 animate-pulse text-purple-500" />
-              Generating Smart summary...
+              {t('charts.generating', 'Generating Smart summary...')}
             </div>
           ) : summary ? (
             <div className="mt-3 text-sm font-medium p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200 flex items-start gap-2">
@@ -68,12 +70,12 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
               <Lock className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="text-xs font-medium text-amber-900">
-                  🎯 AI Chart Insights Locked
+                  {t('charts.insightsLockedTitle', '🎯 AI Chart Insights Locked')}
                 </p>
                 <p className="text-xs text-amber-700 mt-1">
                   {currentTier === 'free'
-                    ? 'Upgrade to Basic for AI-powered chart summaries and deeper insights'
-                    : 'Get instant AI analysis of your data patterns'}
+                    ? t('charts.upgradeFree', 'Upgrade to Basic for AI-powered chart summaries and deeper insights')
+                    : t('charts.upgradePremium', 'Get instant AI analysis of your data patterns')}
                 </p>
                 <Button
                   size="sm"
@@ -83,7 +85,7 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
                   data-track-id="dashboard_charts_upgrade_btn"
                 >
                   <Crown className="w-3 h-3 mr-1" />
-                  Upgrade to {currentTier === 'free' ? 'Basic' : 'Premium'}
+                  {t('charts.upgradeBtn', 'Upgrade to')} {currentTier === 'free' ? 'Basic' : 'Premium'}
                 </Button>
               </div>
             </div>
@@ -95,6 +97,7 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
 }
 
 export default function ChartsGrid({ selectedSource }: { selectedSource: string }) {
+  const { t } = useTranslation();
   const BASE_URL = API_BASE_URL;
   const { filters, setFilters } = useFilters();
   const { canAccessFeature } = useSubscriptionLimits();
@@ -632,7 +635,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
       {/* Flipkart Charts */}
       {flipkartCategories.length > 0 && (
         <ChartCard
-          title="Product Category Landscape (Flipkart)"
+          title={`${t('charts.categoryLandscape', 'Product Category Landscape')} (Flipkart)`}
           isLoading={isLoading}
           summary={flipkartCategoriesSummary}
           summaryLoading={flipkartCategoriesLoading}
@@ -643,7 +646,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
 
       {flipkartRatings.length > 0 && (
         <ChartCard
-          title="Customer Rating Profile (Flipkart)"
+          title={`${t('charts.ratingProfile', 'Customer Rating Profile')} (Flipkart)`}
           isLoading={isLoading}
           summary={flipkartRatingsSummary}
           summaryLoading={flipkartRatingsLoading}
@@ -654,7 +657,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
 
       {flipkartSentiments.length > 0 && (
         <ChartCard
-          title="Voice of the Customer (Flipkart)"
+          title={`${t('charts.voiceOfCustomer', 'Voice of the Customer')} (Flipkart)`}
           isLoading={isLoading}
           summary={flipkartSentimentsSummary}
           summaryLoading={flipkartSentimentsLoading}
@@ -668,7 +671,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
 
       {flipkartSalesProducts.length > 0 && (
         <ChartCard
-          title="High-Velocity Products (Flipkart)"
+          title={`${t('charts.highVelocity', 'High-Velocity Products')} (Flipkart)`}
           isLoading={isLoading}
           summary={flipkartSalesSummary}
           summaryLoading={flipkartSalesLoading}
@@ -680,7 +683,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
       {/* Amazon Charts */}
       {amazonCategories.length > 0 && (
         <ChartCard
-          title="Product Category Landscape (Amazon)"
+          title={`${t('charts.categoryLandscape', 'Product Category Landscape')} (Amazon)`}
           isLoading={isLoading}
           summary={amazonCategoriesSummary}
           summaryLoading={amazonCategoriesLoading}
@@ -691,7 +694,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
 
       {amazonRatings.length > 0 && (
         <ChartCard
-          title="Customer Rating Profile (Amazon)"
+          title={`${t('charts.ratingProfile', 'Customer Rating Profile')} (Amazon)`}
           isLoading={isLoading}
           summary={amazonRatingsSummary}
           summaryLoading={amazonRatingsLoading}
@@ -702,7 +705,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
 
       {amazonSentiments.length > 0 && (
         <ChartCard
-          title="Voice of the Customer (Amazon)"
+          title={`${t('charts.voiceOfCustomer', 'Voice of the Customer')} (Amazon)`}
           isLoading={isLoading}
           summary={amazonSentimentsSummary}
           summaryLoading={amazonSentimentsLoading}
@@ -716,7 +719,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
 
       {amazonSalesProducts.length > 0 && (
         <ChartCard
-          title="High-Velocity Products (Amazon)"
+          title={`${t('charts.highVelocity', 'High-Velocity Products')} (Amazon)`}
           isLoading={isLoading}
           summary={amazonSalesSummary}
           summaryLoading={amazonSalesLoading}

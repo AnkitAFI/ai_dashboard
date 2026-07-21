@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { useSelectedProduct } from "@/lib/selected-product-context";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 import {
   Lock, Crown, RefreshCw, Menu, Package,
   AlertTriangle, Shield, ShieldAlert, ShieldOff,
@@ -384,6 +385,7 @@ function MarketGapRow({ gap, currency, isDark }: { gap: any; currency: string; i
 
 // ── Main Component ────────────────────────────────────────────────────────────
 function CompetitorAnalysisContent() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -531,10 +533,10 @@ function CompetitorAnalysisContent() {
           </div>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-              Competitor Analysis
+              {t('sellerPages.compAnalysisTitle', 'Competitor Analysis')}
             </h1>
             <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-              Identity, threat score, and Buy Box intelligence for every rival.
+              {t('sellerPages.compAnalysisSubtitle', 'Identity, threat score, and Buy Box intelligence for every rival.')}
             </p>
           </div>
         </div>
@@ -567,12 +569,12 @@ function CompetitorAnalysisContent() {
               <Swords className="w-8 h-8 text-sky-400" />
             </div>
             <div>
-              <p className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>No product selected</p>
-              <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Select a product from My Products to analyse its competitors.</p>
+              <p className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{t('sellerPages.noProductSelected', 'No product selected')}</p>
+              <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{t('sellerPages.compAnalysisSub', 'Select a product from My Products to analyse its competitors.')}</p>
             </div>
             <button onClick={() => router.push("/seller/my-products")}
               className="px-5 py-2 bg-sky-600 text-white rounded-full text-sm font-semibold hover:bg-sky-700 transition-colors">
-              Go to My Products
+              {t('sellerPages.goToMyProducts', 'Go to My Products')}
             </button>
           </div>
         )}

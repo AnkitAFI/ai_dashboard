@@ -17,6 +17,7 @@ import { useSidebar } from "@/components/layout/sidebar-context";
 import { getCategoryIconComponent, cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import SmartSearchInput from "@/components/ui/smart-search-input";
+import { useTranslation } from "react-i18next";
 
 interface Product {
   product_name: string;
@@ -29,6 +30,7 @@ interface Product {
 }
 
 export default function CategoryProducts() {
+  const { t } = useTranslation();
   const params = useParams();
   const source = params?.source;
   const category = params?.category;
@@ -152,7 +154,7 @@ export default function CategoryProducts() {
             className="flex items-center text-blue-600 hover:text-blue-800 transition text-sm font-medium"
           >
             <ChevronLeft className="h-5 w-5 mr-1" />
-            Back
+            {t('catProd.back', 'Back')}
           </button>
           <h2 className="text-xl sm:text-2xl font-semibold text-slate-800 capitalize">
             {decodeURIComponent((category as string) || "")} —{" "}
@@ -160,7 +162,7 @@ export default function CategoryProducts() {
           </h2>
         </div>
         <p className="text-xs sm:text-sm text-slate-500">
-          Explore top products in this category
+          {t('catProd.exploreTop', 'Explore top products in this category')}
         </p>
       </header>
 
@@ -170,10 +172,10 @@ export default function CategoryProducts() {
           <CategoryIcon className="h-6 w-6 text-blue-500" />
         </div>
         <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-          Products in {decodeURIComponent((category as string) || "")}
+          {t('catProd.productsIn', 'Products in')} {decodeURIComponent((category as string) || "")}
         </h1>
         <p className="text-sm text-slate-500 max-w-2xl mx-auto">
-          Browse {source} products with ratings, reviews, and prices.
+          {t('catProd.browseProducts', 'Browse {{source}} products with ratings, reviews, and prices.', { source })}
         </p>
       </div>
 
@@ -183,7 +185,7 @@ export default function CategoryProducts() {
           <SmartSearchInput
             value={searchQuery}
             onChange={setSearchQuery}
-            placeholder="Search products in this category..."
+            placeholder={t('catProd.searchPlaceholder', 'Search products in this category...')}
             className="w-full"
             inputClassName={cn(
               "w-full text-sm font-medium",
@@ -203,7 +205,7 @@ export default function CategoryProducts() {
       {/* Loading & Error */}
       {loading ? (
         <div className="text-center text-slate-400 py-20 text-lg">
-          Loading products...
+          {t('catProd.loading', 'Loading products...')}
         </div>
       ) : error ? (
         <div className="text-center text-red-500 py-20 text-lg">{error}</div>
@@ -238,10 +240,10 @@ export default function CategoryProducts() {
           <Card className="bg-card border border-slate-200 rounded-2xl shadow-md overflow-hidden">
             <CardHeader className="py-3 px-4 border-b border-slate-100">
               <CardTitle className="text-lg font-semibold text-slate-800">
-                Product List
+                {t('catProd.productList', 'Product List')}
               </CardTitle>
               <CardDescription className="text-xs">
-                Showing products for {decodeURIComponent((category as string) || "")}
+                {t('catProd.showingProductsFor', 'Showing products for')} {decodeURIComponent((category as string) || "")}
               </CardDescription>
             </CardHeader>
 
@@ -251,14 +253,14 @@ export default function CategoryProducts() {
                   <tr className="bg-gradient-to-r from-blue-50 to-cyan-50 text-slate-700 border-b">
                     <th className="py-3 px-4 text-left font-semibold">#</th>
                     <th className="py-3 px-4 text-left font-semibold">
-                      Product Name
+                      {t('catProd.productName', 'Product Name')}
                     </th>
-                    <th className="py-3 px-4 text-left font-semibold">Avg. Price</th>
-                    <th className="py-3 px-4 text-left font-semibold">Min Price</th>
-                    <th className="py-3 px-4 text-left font-semibold">Max Price</th>
-                    <th className="py-3 px-4 text-left font-semibold">Rating</th>
-                    <th className="py-3 px-4 text-left font-semibold">Reviews</th>
-                    <th className="py-3 px-4 text-left font-semibold">Source</th>
+                    <th className="py-3 px-4 text-left font-semibold">{t('catProd.avgPrice', 'Avg. Price')}</th>
+                    <th className="py-3 px-4 text-left font-semibold">{t('catProd.minPrice', 'Min Price')}</th>
+                    <th className="py-3 px-4 text-left font-semibold">{t('catProd.maxPrice', 'Max Price')}</th>
+                    <th className="py-3 px-4 text-left font-semibold">{t('catProd.rating', 'Rating')}</th>
+                    <th className="py-3 px-4 text-left font-semibold">{t('catProd.reviews', 'Reviews')}</th>
+                    <th className="py-3 px-4 text-left font-semibold">{t('catProd.source', 'Source')}</th>
                   </tr>
                 </thead>
                 <tbody>

@@ -10,11 +10,13 @@ import { useAuth } from "@/lib/auth-context";
 import {
   Loader2, Search, Star, ChevronRight, ChevronLeft,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useSelectedProduct } from "@/lib/selected-product-context";
 
 function SellerProductsContent() {
+  const { t } = useTranslation();
   const { user, refreshUser } = useAuth();
   const router = useRouter();
   const { theme, resolvedTheme } = useTheme();
@@ -105,10 +107,10 @@ function SellerProductsContent() {
           <Star className={`h-8 w-8 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
         </div>
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-          Seller Product Catalog
+          {t('sellerPages.catalogTitle', 'Seller Product Catalog')}
         </h1>
         <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-          Manage your tracked seller inventory and launch competitive benchmarks.
+          {t('sellerPages.catalogSubtitle', 'Manage your tracked seller inventory and launch competitive benchmarks.')}
         </p>
       </div>
 
@@ -124,14 +126,14 @@ function SellerProductsContent() {
           {/* Controls */}
           <div className={`p-4 sm:p-6 border-b flex flex-col md:flex-row md:items-center justify-between gap-4 ${isDark ? 'border-slate-800' : 'border-slate-100'}`}>
             <div>
-              <h3 className={`font-bold text-lg ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>Product Catalog</h3>
-              <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{filteredProducts.length} products found</p>
+              <h3 className={`font-bold text-lg ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>{t('sellerPages.productCatalog', 'Product Catalog')}</h3>
+              <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{filteredProducts.length} {t('sellerPages.catalogProductsFound', 'products found')}</p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
               <SmartSearchInput
                 value={searchQuery}
                 onChange={setSearchQuery}
-                placeholder="Search products..."
+                placeholder={t('sellerPages.searchProducts', 'Search products...')}
                 className="w-full sm:w-64"
                 inputClassName={`${isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-50 border-slate-200'} h-10`}
                 dictionary={products.flatMap((p: any) => [p.title, p.asin].filter(Boolean))}
@@ -150,7 +152,9 @@ function SellerProductsContent() {
                           : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
-                    {f === "all" ? "All" : f === "prime" ? "Prime" : "Best Seller"}
+                    <span className="capitalize">
+                      {f === 'all' ? t('sellerPages.all', 'All') : f === 'prime' ? t('sellerPages.prime', 'Prime') : t('sellerPages.bestSeller', 'Best Seller')}
+                    </span>
                     <span className="opacity-80 text-xs ml-1">
                       {f === "all"
                         ? products.length
@@ -186,11 +190,11 @@ function SellerProductsContent() {
               <table className="w-full text-sm text-left">
                 <thead className={`text-xs font-semibold sticky top-0 z-10 uppercase tracking-wider border-b ${isDark ? 'bg-slate-900 text-slate-400 border-slate-800' : 'bg-white text-slate-500 border-slate-100'}`}>
                   <tr>
-                    <th className="px-6 py-4 w-[40%]">Product</th>
-                    <th className="px-6 py-4">Price</th>
-                    <th className="px-6 py-4">Rating</th>
-                    <th className="px-6 py-4">Reviews</th>
-                    <th className="px-6 py-4">Sales</th>
+                    <th className="px-6 py-4 w-[40%]">{t('sales.product', 'Product')}</th>
+                    <th className="px-6 py-4">{t('sales.price', 'Price')}</th>
+                    <th className="px-6 py-4">{t('sales.rating', 'Rating')}</th>
+                    <th className="px-6 py-4">{t('sales.reviews', 'Reviews')}</th>
+                    <th className="px-6 py-4">{t('sales.sales', 'Sales')}</th>
                     <th className="px-6 py-4">BSR</th>
                     <th className="px-6 py-4">Type</th>
                     <th className="px-6 py-4"></th>

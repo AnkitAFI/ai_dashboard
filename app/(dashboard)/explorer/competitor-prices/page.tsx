@@ -17,6 +17,7 @@ import {
   BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, ReferenceLine,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 const BASE_URL = (API_BASE_URL);
 
@@ -37,6 +38,7 @@ function fmtShort(val: number | null | undefined, currency = "USD"): string {
 // ── Tier Gate ─────────────────────────────────────────────────────────────────
 function TierGate({ tier, feature }: { tier: "basic" | "premium" | "enterprise"; feature: string }) {
   const router = useRouter();
+  const { t } = useTranslation();
   return (
     <div className="absolute inset-0 bg-background backdrop-blur-none rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
       <div className={`w-11 h-11 rounded-full flex items-center justify-center shadow-sm ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-50" : "bg-amber-50"}`}>
@@ -45,14 +47,14 @@ function TierGate({ tier, feature }: { tier: "basic" | "premium" | "enterprise";
       <div className="text-center px-4">
         <p className="font-bold text-slate-800 text-sm">{feature}</p>
         <p className="text-xs text-slate-400 mt-0.5">
-          {tier === "premium" ? "Premium · ₹2,999/mo" : "Basic · ₹1,999/mo"}
+          {tier === "premium" ? t("competitorPrices.premiumTierDesc", "Premium · ₹2,999/mo") : t("competitorPrices.basicTierDesc", "Basic · ₹1,999/mo")}
         </p>
       </div>
       <button
         onClick={() => router.push("/subscription")}
         className={`flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold text-white shadow-md transition-all hover:scale-105 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-amber-500 to-orange-500"}`}
       >
-        <Crown className="w-3 h-3" /> Upgrade
+        <Crown className="w-3 h-3" /> {t("competitorPrices.upgrade", "Upgrade")}
       </button>
     </div>
   );
@@ -60,6 +62,7 @@ function TierGate({ tier, feature }: { tier: "basic" | "premium" | "enterprise";
 
 // ── Data Quality Badge ────────────────────────────────────────────────────────
 function DataQualityBadge({ quality, count }: { quality: string; count?: number }) {
+  const { t } = useTranslation();
   if (quality === "live") return (
     <span className="flex items-center gap-1 text-[10px] font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -80,29 +83,31 @@ function DataQualityBadge({ quality, count }: { quality: string; count?: number 
 
 // ── Position badge ────────────────────────────────────────────────────────────
 function PositionBadge({ position }: { position: string }) {
-  const map: Record<string, { icon: any; cls: string }> = {
-    "Above Market": { icon: TrendingUp, cls: "bg-red-50 text-red-600 border-red-200" },
-    "Below Market": { icon: TrendingDown, cls: "bg-emerald-50 text-emerald-600 border-emerald-200" },
-    "Competitive":  { icon: Minus, cls: "bg-blue-50 text-blue-600 border-blue-200" },
+  const { t } = useTranslation();
+  const map: Record<string, { icon: any; cls: string; tKey: string }> = {
+    "Above Market": { icon: TrendingUp, cls: "bg-red-50 text-red-600 border-red-200", tKey: t("competitorPrices.aboveMarket", "Above Market") },
+    "Below Market": { icon: TrendingDown, cls: "bg-emerald-50 text-emerald-600 border-emerald-200", tKey: t("competitorPrices.belowMarket", "Below Market") },
+    "Competitive":  { icon: Minus, cls: "bg-blue-50 text-blue-600 border-blue-200", tKey: t("competitorPrices.competitive", "Competitive") },
   };
   const cfg = map[position] || map["Competitive"];
   const Icon = cfg.icon;
   return (
     <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-xs font-bold ${cfg.cls}`}>
-      <Icon className="w-3.5 h-3.5" /> {position}
+      <Icon className="w-3.5 h-3.5" /> {cfg.tKey}
     </span>
   );
 }
 
 // ── Similarity pill ───────────────────────────────────────────────────────────
 function SimilarityPill({ score }: { score: number }) {
+  const { t } = useTranslation();
   const pct = Math.round(score * 100);
   const cls = pct >= 50 ? "bg-emerald-50 text-emerald-700 border-emerald-200"
     : pct >= 25 ? "bg-amber-50 text-amber-700 border-amber-200"
     : "bg-slate-50 text-slate-500 border-slate-200";
   return (
     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${cls}`}>
-      {pct}% match
+      {pct}% {t("competitorPrices.match", "match")}
     </span>
   );
 }
@@ -118,6 +123,7 @@ const ChartTooltip = ({ active, payload, label, currency }: any) => {
 };
 
 function PriceComparisonContent() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const router = useRouter();
   const { user } = useAuth();
@@ -164,8 +170,8 @@ function PriceComparisonContent() {
         <div className="flex items-center gap-3">
           <BarChart2 className="w-5 h-5 text-sky-600" />
           <div>
-            <h2 className="text-lg sm:text-xl font-bold text-sky-900">Price Comparison</h2>
-            <p className="text-xs text-slate-500 hidden sm:block">Benchmark your pricing against real similar products</p>
+            <h2 className="text-lg sm:text-xl font-bold text-sky-900">{t("competitorPrices.title", "Price Comparison")}</h2>
+            <p className="text-xs text-slate-500 hidden sm:block">{t("competitorPrices.subtitle", "Benchmark your pricing against real similar products")}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -174,7 +180,7 @@ function PriceComparisonContent() {
           </Badge>
           {!isPremium && (
             <button onClick={() => router.push("/subscription")} className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs font-bold shadow hover:shadow-md transition-all">
-              <Crown className="w-3 h-3" /> Upgrade
+              <Crown className="w-3 h-3" /> {t("competitorPrices.upgrade", "Upgrade")}
             </button>
           )}
         </div>
@@ -186,11 +192,11 @@ function PriceComparisonContent() {
             <BarChart2 className="w-8 h-8 text-sky-400" />
           </div>
           <div>
-            <p className="text-lg font-bold text-slate-700">No product selected</p>
-            <p className="text-sm text-slate-400 mt-1">Click any product from My Products to compare pricing.</p>
+            <p className="text-lg font-bold text-slate-700">{t("competitorPrices.noProductSelected", "No product selected")}</p>
+            <p className="text-sm text-slate-400 mt-1">{t("competitorPrices.selectProductPrompt", "Click any product from My Products to compare pricing.")}</p>
           </div>
           <button onClick={() => router.push("/seller/my-products")} className="px-5 py-2 bg-sky-600 text-white rounded-full text-sm font-semibold hover:bg-sky-700 transition-colors">
-            Go to My Products
+            {t("competitorPrices.goToMyProducts", "Go to My Products")}
           </button>
         </div>
       )}
@@ -198,7 +204,7 @@ function PriceComparisonContent() {
       {asin && loading && (
         <div className="flex flex-col items-center justify-center h-64 gap-3">
           <RefreshCw className="w-8 h-8 animate-spin text-sky-500" />
-          <p className="text-slate-500 font-medium">Finding similar products & analysing prices…</p>
+          <p className="text-slate-500 font-medium">{t("competitorPrices.loading", "Finding similar products & analysing prices…")}</p>
         </div>
       )}
 
@@ -216,8 +222,8 @@ function PriceComparisonContent() {
               <p className="font-bold text-slate-800 text-base line-clamp-2">{data.product_title}</p>
               <div className="flex flex-wrap items-center gap-2 mt-1.5">
                 <span className="text-xs text-slate-400 font-mono">{data.asin}</span>
-                {data.is_prime && <Badge className="text-[10px] bg-blue-50 text-blue-600 border-blue-200 px-1.5 py-0">PRIME</Badge>}
-                {data.is_best_seller && <Badge className="text-[10px] bg-orange-50 text-orange-600 border-orange-200 px-1.5 py-0">BEST SELLER</Badge>}
+                {data.is_prime && <Badge className="text-[10px] bg-blue-50 text-blue-600 border-blue-200 px-1.5 py-0">{t("competitorPrices.prime", "PRIME")}</Badge>}
+                {data.is_best_seller && <Badge className="text-[10px] bg-orange-50 text-orange-600 border-orange-200 px-1.5 py-0">{t("competitorPrices.bestSeller", "BEST SELLER")}</Badge>}
                 {data.sales_volume && <span className="text-xs text-slate-500">{data.sales_volume}</span>}
                 {isBasic && <DataQualityBadge quality={data.data_quality} count={data.competitor_count} />}
               </div>
@@ -228,7 +234,7 @@ function PriceComparisonContent() {
                 <p className="text-xs text-slate-400 line-through">{fmt(data.original_price, currency)}</p>
               )}
               {data.discount_pct != null && (
-                <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{data.discount_pct}% off</span>
+                <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">{data.discount_pct}% {t("competitorPrices.off", "off")}</span>
               )}
             </div>
           </div>
@@ -236,10 +242,10 @@ function PriceComparisonContent() {
           {/* ── Free Tier Stats ──────────────────────────────────────────── */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Current Price", value: fmt(data.current_price, currency), sub: currency, accent: true },
-              { label: "Original / MRP", value: fmt(data.original_price, currency) },
-              { label: "Discount", value: data.discount_pct != null ? `${data.discount_pct}%` : "—", sub: "off MRP" },
-              { label: "No. of Offers", value: data.num_offers != null ? String(data.num_offers) : "—", sub: "competing sellers" },
+              { label: t("competitorPrices.currentPrice", "Current Price"), value: fmt(data.current_price, currency), sub: currency, accent: true },
+              { label: t("competitorPrices.originalMrp", "Original / MRP"), value: fmt(data.original_price, currency) },
+              { label: t("competitorPrices.discount", "Discount"), value: data.discount_pct != null ? `${data.discount_pct}%` : "—", sub: t("competitorPrices.offMrp", "off MRP") },
+              { label: t("competitorPrices.noOfOffers", "No. of Offers"), value: data.num_offers != null ? String(data.num_offers) : "—", sub: t("competitorPrices.competingSellers", "competing sellers") },
             ].map((s) => (
               <div key={s.label} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm">
                 <p className="text-xs text-slate-400 font-medium mb-1">{s.label}</p>
@@ -252,10 +258,10 @@ function PriceComparisonContent() {
           {/* ── Basic+: Market Stats ─────────────────────────────────────── */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Min Offer Price", value: fmt(data.min_offer_price, currency), sub: "lowest competing seller" },
-              { label: "Market Average", value: fmt(data.market_avg, currency), sub: `${data.competitor_count ?? "—"} similar products` },
-              { label: "Market Range", value: `${fmtShort(data.market_min, currency)} – ${fmtShort(data.market_max, currency)}`, sub: "min – max", wide: false },
-              { label: "Your Position", value: null, position: data.price_position, sub: data.price_percentile != null ? `top ${data.price_percentile}% of market` : null },
+              { label: t("competitorPrices.minOfferPrice", "Min Offer Price"), value: fmt(data.min_offer_price, currency), sub: t("competitorPrices.lowestCompetingSeller", "lowest competing seller") },
+              { label: t("competitorPrices.marketAverage", "Market Average"), value: fmt(data.market_avg, currency), sub: `${data.competitor_count ?? "—"} ${t("competitorPrices.similarProducts", "similar products")}` },
+              { label: t("competitorPrices.marketRange", "Market Range"), value: `${fmtShort(data.market_min, currency)} – ${fmtShort(data.market_max, currency)}`, sub: t("competitorPrices.minMax", "min – max"), wide: false },
+              { label: t("competitorPrices.yourPosition", "Your Position"), value: null, position: data.price_position, sub: data.price_percentile != null ? `${t("competitorPrices.top", "top")} ${data.price_percentile}% ${t("competitorPrices.ofMarket", "of market")}` : null },
             ].map((s: any) => (
               <div key={s.label} className="relative bg-white rounded-2xl p-4 border border-slate-100 shadow-sm overflow-hidden">
                 {!isBasic && <TierGate tier="basic" feature={s.label} />}
@@ -275,9 +281,9 @@ function PriceComparisonContent() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <h3 className="font-bold text-slate-800 text-sm flex items-center gap-2">
-                    <Target className="w-4 h-4 text-sky-500" /> Most Similar Competitors
+                    <Target className="w-4 h-4 text-sky-500" /> {t("competitorPrices.mostSimilarCompetitors", "Most Similar Competitors")}
                   </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Ranked by product title & category match</p>
+                  <p className="text-xs text-slate-400 mt-0.5">{t("competitorPrices.rankedBy", "Ranked by product title & category match")}</p>
                 </div>
               </div>
               <div className="space-y-2">
@@ -291,7 +297,7 @@ function PriceComparisonContent() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-bold text-sky-700 line-clamp-1">{(data.product_title || "").substring(0, 55)}</p>
-                    <p className="text-[10px] text-slate-400 font-mono">{data.asin} · YOU</p>
+                    <p className="text-[10px] text-slate-400 font-mono">{data.asin} · {t("competitorPrices.you", "YOU")}</p>
                   </div>
                   <div className="text-right flex-shrink-0">
                     <p className="text-sm font-black text-sky-700">{fmt(data.current_price, currency)}</p>
@@ -316,7 +322,7 @@ function PriceComparisonContent() {
                       <div className="flex items-center gap-1.5 mt-0.5">
                         <span className="text-[10px] text-slate-400 font-mono">{c.asin}</span>
                         <SimilarityPill score={c.similarity_score} />
-                        {c.is_prime && <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1 rounded">PRIME</span>}
+                        {c.is_prime && <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-1 rounded">{t("competitorPrices.prime", "PRIME")}</span>}
                       </div>
                     </div>
                     <div className="text-right flex-shrink-0">
@@ -332,7 +338,7 @@ function PriceComparisonContent() {
                 ))}
                 {data.top_competitors.length === 0 && (
                   <div className="p-4 text-center rounded-xl border border-dashed border-slate-200 text-slate-400">
-                    <p className="text-xs">No direct competitors found matching your specific product keywords.</p>
+                    <p className="text-xs">{t("competitorPrices.noDirectCompetitors", "No direct competitors found matching your specific product keywords.")}</p>
                   </div>
                 )}
               </div>
@@ -341,11 +347,11 @@ function PriceComparisonContent() {
 
           {/* ── Market Bar Chart (Basic+) ─────────────────────────────────── */}
           <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm p-5 overflow-hidden">
-            {!isBasic && <TierGate tier="basic" feature="Market Price Chart" />}
+            {!isBasic && <TierGate tier="basic" feature={t("competitorPrices.marketPriceChart", "Market Price Chart")} />}
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="font-bold text-slate-800 text-sm">Your Price vs. Market</h3>
-                <p className="text-xs text-slate-400 mt-0.5">Based on {data.competitor_count ?? "—"} similar products</p>
+                <h3 className="font-bold text-slate-800 text-sm">{t("competitorPrices.yourPriceVsMarket", "Your Price vs. Market")}</h3>
+                <p className="text-xs text-slate-400 mt-0.5">{t("competitorPrices.basedOn", "Based on")} {data.competitor_count ?? "—"} {t("competitorPrices.similarProducts", "similar products")}</p>
               </div>
               {data.price_position && <PositionBadge position={data.price_position} />}
             </div>
@@ -372,9 +378,9 @@ function PriceComparisonContent() {
 
           {/* ── Price Band Density (Basic+) ───────────────────────────────── */}
           <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm p-5 overflow-hidden">
-            {!isBasic && <TierGate tier="basic" feature="Price Band Density" />}
-            <h3 className="font-bold text-slate-800 text-sm mb-1">Price Band Density</h3>
-            <p className="text-xs text-slate-400 mb-4">Green = less competition · Red = crowded · Blue = your price band</p>
+            {!isBasic && <TierGate tier="basic" feature={t("competitorPrices.priceBandDensity", "Price Band Density")} />}
+            <h3 className="font-bold text-slate-800 text-sm mb-1">{t("competitorPrices.priceBandDensity", "Price Band Density")}</h3>
+            <p className="text-xs text-slate-400 mb-4">{t("competitorPrices.priceBandSubtitle", "Green = less competition · Red = crowded · Blue = your price band")}</p>
             <div className={`space-y-3 ${!isBasic ? "blur-sm pointer-events-none" : ""}`}>
               {(data.price_bands || Array(5).fill({ label: "—", count: 0, density: "Low", your_price_in_band: false })).map((b: any, i: number) => {
                 const maxCount = Math.max(...(data.price_bands || [{ count: 1 }]).map((x: any) => x.count), 1);
@@ -387,9 +393,9 @@ function PriceComparisonContent() {
                         background: b.your_price_in_band ? "#0ea5e9" : densityColor[b.density] || "#94a3b8",
                       }} />
                     </div>
-                    <span className="text-xs text-slate-500 w-20 text-right">{b.count} products</span>
+                    <span className="text-xs text-slate-500 w-20 text-right">{b.count} {t("competitorPrices.products", "products")}</span>
                     <span className="text-xs font-bold w-16 text-right" style={{ color: b.your_price_in_band ? "#0ea5e9" : densityColor[b.density] }}>
-                      {b.your_price_in_band ? "← You" : b.density}
+                      {b.your_price_in_band ? t("competitorPrices.youArrow", "← You") : b.density}
                     </span>
                   </div>
                 );
@@ -402,9 +408,9 @@ function PriceComparisonContent() {
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3">
               <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-bold text-amber-800">No comparable products found</p>
+                <p className="text-sm font-bold text-amber-800">{t("competitorPrices.noComparableFound", "No comparable products found")}</p>
                 <p className="text-xs text-amber-700 mt-0.5">
-                  This product may be in a niche category not yet covered in our database. Market stats will populate as more similar products are tracked.
+                  {t("competitorPrices.noComparableDesc", "This product may be in a niche category not yet covered in our database. Market stats will populate as more similar products are tracked.")}
                 </p>
               </div>
             </div>
@@ -412,20 +418,20 @@ function PriceComparisonContent() {
 
           {/* ── AI Pricing Tip (Premium) ──────────────────────────────────── */}
           <div className="relative bg-white rounded-2xl border border-slate-100 shadow-sm p-5 overflow-hidden">
-            {!isPremium && <TierGate tier="premium" feature="AI Pricing Recommendation" />}
+            {!isPremium && <TierGate tier="premium" feature={t("competitorPrices.aiPricingRecommendation", "AI Pricing Recommendation")} />}
             <div className={`flex gap-3 ${!isPremium ? "blur-sm pointer-events-none" : ""}`}>
               <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center flex-shrink-0 shadow">
                 <Zap className="w-4 h-4 text-white" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <p className="font-bold text-slate-800 text-sm">AI Pricing Recommendation</p>
+                  <p className="font-bold text-slate-800 text-sm">{t("competitorPrices.aiPricingRecommendation", "AI Pricing Recommendation")}</p>
                   {isPremium && data.competitor_count && (
-                    <span className="text-[10px] text-slate-400">based on {data.competitor_count} products</span>
+                    <span className="text-[10px] text-slate-400">{t("competitorPrices.basedOn", "based on")} {data.competitor_count} {t("competitorPrices.products", "products")}</span>
                   )}
                 </div>
                 <p className="text-sm text-slate-600 leading-relaxed">
-                  {data.ai_pricing_tip || "Analysing your price vs market trends…"}
+                  {data.ai_pricing_tip || t("competitorPrices.analysingTrends", "Analysing your price vs market trends…")}
                 </p>
                 {isPremium && data.ai_velocity_insight && (
                   <div className="mt-3 flex items-start gap-2 bg-sky-50 rounded-xl p-3">
@@ -441,7 +447,7 @@ function PriceComparisonContent() {
           {isPremium && data.seller_other_products?.length > 0 && (
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
               <h3 className="font-bold text-slate-800 text-sm mb-3 flex items-center gap-2">
-                <Package className="w-4 h-4 text-sky-500" /> Your Other Products
+                <Package className="w-4 h-4 text-sky-500" /> {t("competitorPrices.yourOtherProducts", "Your Other Products")}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {data.seller_other_products.map((p: any, i: number) => (
@@ -466,16 +472,16 @@ function PriceComparisonContent() {
           {!isPremium && (
             <div className="bg-gradient-to-r from-blue-600 to-cyan-500 rounded-2xl p-5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <p className="font-bold text-base">Unlock Full Price Intelligence</p>
+                <p className="font-bold text-base">{t("competitorPrices.unlockIntelligence", "Unlock Full Price Intelligence")}</p>
                 <p className="text-blue-100 text-sm mt-0.5">
                   {!isBasic
-                    ? "Get smart competitor matching, market benchmarks & AI pricing tips — Basic · ₹1,999/mo"
-                    : "Get AI pricing recommendations and cross-product comparisons — Premium · ₹2,999/mo"}
+                    ? t("competitorPrices.unlockBasic", "Get smart competitor matching, market benchmarks & AI pricing tips — Basic · ₹1,999/mo")
+                    : t("competitorPrices.unlockPremium", "Get AI pricing recommendations and cross-product comparisons — Premium · ₹2,999/mo")}
                 </p>
                 <div className="flex flex-wrap gap-3 mt-2">
                   {(!isBasic
-                    ? ["Smart competitor matching", "Price band density", "Percentile ranking", "AI pricing tip"]
-                    : ["AI pricing tip", "Velocity insight", "Portfolio comparison"]
+                    ? [t("competitorPrices.featSmartMatch", "Smart competitor matching"), t("competitorPrices.featPriceBand", "Price band density"), t("competitorPrices.featPercentile", "Percentile ranking"), t("competitorPrices.featAiTip", "AI pricing tip")]
+                    : [t("competitorPrices.featAiTip", "AI pricing tip"), t("competitorPrices.featVelocity", "Velocity insight"), t("competitorPrices.featPortfolio", "Portfolio comparison")]
                   ).map((f) => (
                     <span key={f} className="flex items-center gap-1 text-xs text-blue-100">
                       <CheckCircle className="w-3 h-3 text-blue-200" /> {f}
@@ -484,7 +490,7 @@ function PriceComparisonContent() {
                 </div>
               </div>
               <button onClick={() => router.push("/subscription")} className="flex items-center gap-2 px-5 py-2.5 bg-white text-blue-600 rounded-full font-bold text-sm shadow hover:shadow-md hover:scale-105 transition-all flex-shrink-0">
-                <Crown className="w-4 h-4" /> Upgrade Now
+                <Crown className="w-4 h-4" /> {t("competitorPrices.upgradeNow", "Upgrade Now")}
               </button>
             </div>
           )}

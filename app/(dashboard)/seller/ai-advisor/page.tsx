@@ -56,6 +56,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { useSelectedProduct } from "@/lib/selected-product-context";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import {
   Menu, Crown, RefreshCw, Package, Send,
@@ -223,10 +224,11 @@ function MessageBubble({
 }
 
 // ── Context Panel ─────────────────────────────────────────────────────────────
-function ContextPanel({ context, selectedAsin, onSelectProduct }: {
+function ContextPanel({ context, selectedAsin, onSelectProduct, t }: {
   context:         SellerContext | null;
   selectedAsin:    string;
   onSelectProduct: (asin: string, title: string) => void;
+  t:               any;
 }) {
   if (!context) return null;
 
@@ -234,11 +236,11 @@ function ContextPanel({ context, selectedAsin, onSelectProduct }: {
     <div className="w-64 shrink-0 space-y-3 hidden lg:block">
       {/* Store summary */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4">
-        <p className="text-xs font-bold text-slate-505 dark:text-slate-400 uppercase tracking-wide mb-3">Your Store</p>
+        <p className="text-xs font-bold text-slate-505 dark:text-slate-400 uppercase tracking-wide mb-3">{t('sellerPages.yourStore', 'YOUR STORE')}</p>
         <div className="space-y-2">
           {[
-            { label: "Products", value: String(context.total_products), icon: Package, color: "text-sky-600 dark:text-sky-400" },
-            { label: "Avg Rating", value: `${context.avg_rating?.toFixed(1) || "—"}★`, icon: Star, color: "text-amber-500 dark:text-amber-400" },
+            { label: t('sellerPages.products', "Products"), value: String(context.total_products), icon: Package, color: "text-sky-600 dark:text-sky-400" },
+            { label: t('sellerPages.avgRating', "Avg Rating"), value: `${context.avg_rating?.toFixed(1) || "—"}★`, icon: Star, color: "text-amber-500 dark:text-amber-400" },
           ].map((s) => (
             <div key={s.label} className="flex items-center justify-between">
               <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
@@ -282,15 +284,15 @@ function ContextPanel({ context, selectedAsin, onSelectProduct }: {
         </div>
       </div>
 
-      {/* Quick tips */}
-      <div className="bg-gradient-to-br from-sky-50 to-blue-50 dark:from-slate-950 dark:to-slate-900/50 rounded-2xl border border-sky-100 dark:border-slate-800/80 p-4">
-        <p className="text-xs font-bold text-sky-700 dark:text-sky-450 mb-2 flex items-center gap-1.5">
-          <Lightbulb className="w-3.5 h-3.5" /> Tips
+      {/* Tips */}
+      <div className="bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900/50 rounded-2xl p-4">
+        <p className="text-xs font-bold text-sky-800 dark:text-sky-400 flex items-center gap-1.5 mb-2">
+          <Lightbulb className="w-3.5 h-3.5" /> {t('sellerPages.tips', 'Tips')}
         </p>
         <div className="space-y-1.5 text-[11px] text-sky-700 dark:text-sky-450">
-          <p>• Select a product to ask specific questions</p>
-          <p>• Ask about pricing, reviews, or keywords</p>
-          <p>• Compare your performance vs competitors</p>
+          <p>• {t('sellerPages.tip1', 'Select a product to ask specific questions')}</p>
+          <p>• {t('sellerPages.tip2', 'Ask about pricing, reviews, or keywords')}</p>
+          <p>• {t('sellerPages.tip3', 'Compare your performance vs competitors')}</p>
         </div>
       </div>
     </div>
@@ -298,16 +300,16 @@ function ContextPanel({ context, selectedAsin, onSelectProduct }: {
 }
 
 // ── Starter Suggestions ───────────────────────────────────────────────────────
-const STARTER_SUGGESTIONS = [
-  "How is my store performing overall?",
-  "Which of my products has the worst reviews and what should I do?",
-  "Am I priced competitively against the market?",
-  "Which product should I focus on improving first?",
+const getStarterSuggestions = (t: any) => [
+  t('sellerPages.ask1', "How is my store performing overall?"),
+  t('sellerPages.ask2', "Which of my products has the worst reviews and what should I do?"),
+  t('sellerPages.ask3', "Am I priced competitively against the market?"),
+  t('sellerPages.ask4', "Which product should I focus on improving first?"),
   "What keywords am I missing from my top product?",
   "How do my review ratings compare to competitors?",
 ];
 
-const PRODUCT_SUGGESTIONS = (title: string) => [
+const getProductSuggestions = (title: string, t: any) => [
   `Why isn't ${title} selling better?`,
   `How should I price ${title} vs competitors?`,
   `What keywords is ${title} missing?`,
@@ -317,6 +319,7 @@ const PRODUCT_SUGGESTIONS = (title: string) => [
 
 // ── Main Component ────────────────────────────────────────────────────────────
 function AIAdvisorContent() {
+  const { t } = useTranslation();
   const router     = useRouter();
   const { user }   = useAuth();
   const { toggle } = useSidebar();
@@ -373,7 +376,7 @@ function AIAdvisorContent() {
     const greeting: Message = {
       id:        genId(),
       role:      "assistant",
-      content:   "Hey! I'm your AI store advisor. I have full access to your product data, pricing, reviews, and rank history.\n\nAsk me anything about your store — I'll give you straight answers backed by your actual data.",
+      content:   `${t('sellerPages.aiGreeting1', "Hey! I'm your AI store advisor. I have full access to your product data, pricing, reviews, and rank history.")}\n\n${t('sellerPages.aiGreeting2', "Ask me anything about your store — I'll give you straight answers backed by your actual data.")}`,
       timestamp: new Date(),
     };
     setMessages([greeting]);
@@ -523,8 +526,8 @@ function AIAdvisorContent() {
   };
 
   const suggestions = selectedAsin && selectedTitle
-    ? PRODUCT_SUGGESTIONS(selectedTitle.substring(0, 30))
-    : STARTER_SUGGESTIONS;
+    ? getProductSuggestions(selectedTitle.substring(0, 30), t)
+    : getStarterSuggestions(t);
 
   const showSuggestions = messages.length <= 1;
 
@@ -543,9 +546,9 @@ function AIAdvisorContent() {
               <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
                 <Bot className="w-3.5 h-3.5 text-white" />
               </div>
-              AI Advisor
+              {t('sellerPages.aiAdvisorTitle', 'AI Advisor')}
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Your personal store intelligence, powered by your data</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">{t('sellerPages.aiAdvisorSubtitle', 'Your personal store intelligence, powered by your data')}</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -602,6 +605,7 @@ function AIAdvisorContent() {
             context={context}
             selectedAsin={selectedAsin}
             onSelectProduct={handleSelectProduct}
+            t={t}
           />
 
           {/* Chat area */}
@@ -654,7 +658,7 @@ function AIAdvisorContent() {
                     {showSuggestions && (
                       <div className="pt-2">
                         <p className="text-xs text-slate-400 dark:text-slate-500 font-semibold mb-2 flex items-center gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5" /> Try asking
+                          <Sparkles className="w-3.5 h-3.5" /> {t('sellerPages.tryAsking', 'Try asking')}
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {suggestions.slice(0, 4).map((s, i) => (
@@ -694,7 +698,7 @@ function AIAdvisorContent() {
                         placeholder={
                           selectedAsin
                             ? `Ask about ${selectedTitle ? selectedTitle.substring(0, 25) + "…" : selectedAsin}…`
-                            : "Ask anything about your store…"
+                            : t('sellerPages.askPlaceholder', "Ask anything about your store…")
                         }
                         rows={1}
                         disabled={streaming}

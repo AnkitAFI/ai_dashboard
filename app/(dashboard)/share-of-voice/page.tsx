@@ -15,6 +15,7 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, ZAxis,
 } from "recharts";
 import SmartSearchInput from "@/components/ui/smart-search-input";
+import { useTranslation } from "react-i18next";
 
 interface BrandShareData {
   brand: string;
@@ -353,6 +354,7 @@ function OppBadge({ opp }: { opp: string }) {
 }
 
 export default function ShareOfVoice() {
+  const { t } = useTranslation();
   const { user, isLoading } = useAuth();
   const userEmail = user?.email || "";
   const userId = user?.id;
@@ -568,7 +570,7 @@ export default function ShareOfVoice() {
           {!loadingUsage && userId && usageLimits && (
             <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
               <div className="flex items-center justify-between gap-3 mb-1">
-                <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Analyses used</p>
+                <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{t('sov.analysesUsed', 'Analyses used')}</p>
                 <Badge className={`h-4 text-[10px] border-none px-1.5 ${usageLimits.subscription_tier.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : usageLimits.subscription_tier.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : usageLimits.subscription_tier.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
                   {(usageLimits.subscription_tier || "free").toUpperCase()}
                 </Badge>
@@ -597,10 +599,10 @@ export default function ShareOfVoice() {
           <BarChart3 className="h-8 w-8 text-blue-500" />
         </div>
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-          Share of Voice (SOV) & Market Intelligence
+          {t('sov.title', 'Share of Voice (SOV) & Market Intelligence')}
         </h1>
-        <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-          Analyze brand visibility, measure search market share, track competitors, and uncover category opportunities.
+        <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
+          {t('sov.subtitle', 'Analyze brand visibility, measure search market share, track competitors, and uncover category opportunities.')}
         </p>
       </div>
 
@@ -665,13 +667,13 @@ export default function ShareOfVoice() {
         <Card className="bg-background border border-slate-200 rounded-2xl shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Filter className="w-4 h-4 text-blue-600" /> Search Parameters
+              <Filter className="w-4 h-4 text-blue-600" /> {t('sov.searchParams', 'Search Parameters')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pt-2">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Marketplace</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('sov.marketplace', 'Marketplace')}</label>
                 <select
                   value={marketplace}
                   onChange={(e) => setMarketplace(e.target.value as any)}
@@ -686,7 +688,7 @@ export default function ShareOfVoice() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Category</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('sov.category', 'Category')}</label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
@@ -695,16 +697,16 @@ export default function ShareOfVoice() {
                   data-track-id="category_select"
                   data-filter-value={selectedCategory}
                 >
-                  <option value="" className="bg-white dark:bg-slate-800">Select Category</option>
+                  <option value="" className="bg-white dark:bg-slate-800">{t('sov.selectCategory', 'Select Category')}</option>
                   {categories.map((c, i) => <option key={i} value={c} className="bg-white dark:bg-slate-800">{c}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Your Brand <span className="text-gray-400 dark:text-slate-500 text-xs">(Optional)</span></label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('sov.yourBrand', 'Your Brand')} <span className="text-gray-400 dark:text-slate-500 text-xs">({t('sov.optional', 'Optional')})</span></label>
                 <SmartSearchInput
                   value={yourBrand}
                   onChange={setYourBrand}
-                  placeholder="Enter your brand name"
+                  placeholder={t('sov.enterBrandName', 'Enter your brand name')}
                   disabled={loading}
                   inputClassName="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
                   id="your_brand_input"
@@ -720,9 +722,9 @@ export default function ShareOfVoice() {
                   }`}
                   data-track-id="analyze_category_sov_btn"
                 >
-                  {loading ? <><RefreshCw className="w-4 h-4 animate-spin" /> Analyzing…</>
-                    : userId && !canAnalyze ? <><Lock className="w-4 h-4" /> Limit Reached</>
-                      : <><Search className="w-4 h-4" /> Analyze</>}
+                  {loading ? <><RefreshCw className="w-4 h-4 animate-spin" /> {t('sov.analyzing', 'Analyzing…')}</>
+                    : userId && !canAnalyze ? <><Lock className="w-4 h-4" /> {t('sov.limitReached', 'Limit Reached')}</>
+                      : <><Search className="w-4 h-4" /> {t('sov.analyze', 'Analyze')}</>}
                 </Button>
               </div>
             </div>

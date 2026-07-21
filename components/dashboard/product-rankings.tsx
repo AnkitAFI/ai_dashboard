@@ -9,6 +9,7 @@ import { useFilters } from "@/components/dashboard/filters-context";
 import { useAISummary } from "@/hooks/use-ai-summary";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 
 interface TrendingProduct {
   product_title?: string;
@@ -30,6 +31,7 @@ function ProductCard({
   index: number;
   source: string;
 }) {
+  const { t } = useTranslation();
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -86,7 +88,7 @@ function ProductCard({
             {productName.replace(/"/g, "")}
           </p>
           <p className={cn("text-xs truncate", isDark ? "text-slate-400" : "text-slate-500")}>
-            {Math.round(salesVolume).toLocaleString()} sales • ₹{price.toFixed(0)}
+            {Math.round(salesVolume).toLocaleString()} {t('sales.sales', 'Sales').toLowerCase()} • ₹{price.toFixed(0)}
           </p>
         </div>
       </div>
@@ -109,6 +111,7 @@ function ProductCard({
 }: {
   selectedSource: string;
 }) {
+  const { t } = useTranslation();
   const BASE_URL = API_BASE_URL;
   const { filters } = useFilters();
   const { canAccessFeature, currentTier } = useSubscriptionLimits();
@@ -240,13 +243,13 @@ function ProductCard({
         <CardHeader className="flex flex-row items-center justify-between mb-4 p-0">
           <CardTitle className="text-lg font-semibold">
             {showBoth
-              ? "Market Movers (Both Sources)"
+              ? t('charts.marketMoversBoth', "Market Movers (Both Sources)")
               : isAmazon
-                ? "Market Movers (Amazon)"
-                : "Market Movers (Flipkart)"}
+                ? t('charts.marketMoversAmazon', "Market Movers (Amazon)")
+                : t('charts.marketMoversFlipkart', "Market Movers (Flipkart)")}
           </CardTitle>
           <Badge variant="secondary" className="text-xs">
-            Live Data
+            {t('charts.liveData', 'Live Data')}
           </Badge>
         </CardHeader>
 
@@ -256,7 +259,7 @@ function ProductCard({
             summaryLoading ? (
               <div className="mb-3 text-sm text-muted-foreground italic flex items-center gap-2">
                 <Sparkles className="w-4 h-4 animate-pulse text-purple-500" />
-                Generating Smart summary...
+                {t('charts.generating', 'Generating Smart summary...')}
               </div>
             ) : summary ? (
               <div className={cn(
@@ -308,7 +311,7 @@ function ProductCard({
                 {flipkartProducts.length > 0 && (
                   <>
                     <h3 className="text-sm font-semibold text-muted-foreground mt-4 mb-2">
-                      Flipkart Top {flipkartProducts.length}
+                      {t('charts.flipkartTop', 'Flipkart Top')} {flipkartProducts.length}
                     </h3>
                     {flipkartProducts.map((product, index) => (
                       <ProductCard
@@ -324,7 +327,7 @@ function ProductCard({
                 {amazonProducts.length > 0 && (
                   <>
                     <h3 className="text-sm font-semibold text-muted-foreground mt-4 mb-2">
-                      Amazon Top {amazonProducts.length}
+                      {t('charts.amazonTop', 'Amazon Top')} {amazonProducts.length}
                     </h3>
                     {amazonProducts.map((product, index) => (
                       <ProductCard
@@ -348,7 +351,7 @@ function ProductCard({
               ))
             ) : (
               <div className="text-center py-8 text-muted-foreground">
-                <p>No trending products available</p>
+                <p>{t('charts.noTrendingProducts', 'No trending products available')}</p>
               </div>
             )}
           </div>

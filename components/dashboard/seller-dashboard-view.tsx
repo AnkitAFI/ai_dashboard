@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useAuth } from '@/lib/auth-context';
 import { API_BASE_URL } from "@/lib/config";
+import { useTranslation } from "react-i18next";
 
 const COLORS = ["#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981"];
 
@@ -59,6 +60,7 @@ function MetricCard({ title, value, icon, description, trend }: MetricCardProps)
 }
 
 export default function SellerDashboardView() {
+  const { t } = useTranslation();
   const { user, refreshUser } = useAuth();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -152,7 +154,7 @@ export default function SellerDashboardView() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Loader2 className="w-12 h-12 text-blue-500 animate-spin" />
-        <p className="text-slate-500 font-medium animate-pulse">Analyzing your marketplace data...</p>
+        <p className="text-slate-500 font-medium animate-pulse">{t('seller.analyzing', 'Analyzing your marketplace data...')}</p>
       </div>
     );
   }
@@ -170,18 +172,17 @@ export default function SellerDashboardView() {
           <RefreshCcw className="w-6 h-6 text-blue-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-pulse" />
         </div>
         <div className="space-y-2">
-          <h2 className="text-2xl font-bold text-slate-900">Synchronizing Your Store</h2>
+          <h2 className="text-2xl font-bold text-slate-900">{t('seller.syncingStore', 'Synchronizing Your Store')}</h2>
           <p className="text-slate-500 max-w-md mx-auto">
-            We're currently fetching your Amazon products and metrics.
-            This initial sync usually takes about 30–60 seconds.
+            {t('seller.syncingDesc', 'We\'re currently fetching your Amazon products and metrics. This initial sync usually takes about 30–60 seconds.')}
           </p>
         </div>
         <div className="flex gap-2">
           <Badge variant="secondary" className="bg-blue-50 text-blue-600 border-blue-100 animate-pulse">
-            Fetching Catalog
+            {t('seller.fetchingCatalog', 'Fetching Catalog')}
           </Badge>
           <Badge variant="secondary" className="bg-purple-50 text-purple-600 border-purple-100 animate-pulse delay-700">
-            Analyzing Sentiment
+            {t('seller.analyzingSentiment', 'Analyzing Sentiment')}
           </Badge>
         </div>
       </div>
@@ -195,14 +196,14 @@ export default function SellerDashboardView() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">Seller Intelligence</h1>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">{t('seller.title', 'Seller Intelligence')}</h1>
           <div className="text-slate-500 mt-1 flex items-center flex-wrap gap-2 text-sm">
-            <span>Real-time performance metrics for Merchant ID:</span>
+            <span>{t('seller.subtitle', 'Real-time performance metrics for Merchant ID:')}</span>
             <span className="font-mono text-blue-600 dark:text-sky-400 bg-blue-50 dark:bg-blue-950/40 px-2 py-0.5 rounded">{user?.seller_id}</span>
             {isSyncing && (
               <Badge variant="outline" className="animate-pulse bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-sky-400 border-blue-200 dark:border-blue-800 text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
                 <Loader2 className="w-3 h-3 animate-spin text-blue-500" />
-                <span>Syncing store...</span>
+                <span>{t('seller.syncing', 'Syncing store...')}</span>
               </Badge>
             )}
           </div>
@@ -214,7 +215,7 @@ export default function SellerDashboardView() {
             className="flex items-center gap-2 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-900/30 px-4 py-2 rounded-xl text-sm font-bold text-red-600 dark:text-red-400 transition-all border border-red-100 dark:border-red-900/50 disabled:opacity-50"
             data-track-id="seller_disconnect_store_btn"
           >
-            Disconnect Store
+            {t('seller.disconnectStore', 'Disconnect Store')}
           </button>
           <button
             onClick={handleRefresh}
@@ -223,7 +224,7 @@ export default function SellerDashboardView() {
             data-track-id="seller_sync_now_btn"
           >
             <RefreshCcw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
-            {refreshing ? "Refreshing..." : "Sync Now"}
+            {refreshing ? t('seller.refreshing', 'Refreshing...') : t('seller.syncNow', 'Sync Now')}
           </button>
         </div>
       </div>
@@ -231,55 +232,55 @@ export default function SellerDashboardView() {
       {/* 8 Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <MetricCard
-          title="Total Products"
+          title={t('seller.totalProducts', 'Total Products')}
           value={metrics.total_products}
           icon={<Package className="w-6 h-6 text-blue-600" />}
-          description="Active listings in your catalog"
+          description={t('seller.totalProductsDesc', 'Active listings in your catalog')}
           trend={{ value: "+2 new", positive: true }}
         />
         <MetricCard
-          title="Avg Rating"
+          title={t('seller.avgRating', 'Avg Rating')}
           value={`${metrics.avg_rating} / 5`}
           icon={<Star className="w-6 h-6 text-amber-500 fill-amber-500" />}
-          description="Across all tracked products"
+          description={t('seller.avgRatingDesc', 'Across all tracked products')}
           trend={{ value: "+0.2", positive: true }}
         />
         <MetricCard
-          title="Avg Price"
+          title={t('seller.avgPrice', 'Avg Price')}
           value={`₹${metrics.avg_price}`}
           icon={<IndianRupee className="w-6 h-6 text-emerald-600" />}
           description="Mean listing price"
         />
         <MetricCard
-          title="Prime Presence"
+          title={t('seller.primePresence', 'Prime Presence')}
           value={`${metrics.prime_products_pct}%`}
           icon={<Zap className="w-6 h-6 text-purple-600 fill-purple-600" />}
-          description="Percentage of Prime-eligible products"
+          description={t('seller.primePresenceDesc', 'Percentage of Prime-eligible products')}
         />
         <MetricCard
-          title="Total Reviews"
+          title={t('seller.totalReviews', 'Total Reviews')}
           value={metrics.total_reviews.toLocaleString()}
           icon={<Users className="w-6 h-6 text-sky-600" />}
-          description="Total customer feedback count"
+          description={t('seller.totalReviewsDesc', 'Total customer feedback count')}
           trend={{ value: "+342", positive: true }}
         />
         <MetricCard
-          title="Seller Rating"
+          title={t('seller.sellerRating', 'Seller Rating')}
           value={`${metrics.avg_seller_rating} / 5`}
           icon={<BarChart3 className="w-6 h-6 text-indigo-600" />}
-          description="Your store's average seller score"
+          description={t('seller.sellerRatingDesc', "Your store's average seller score")}
         />
         <MetricCard
-          title="Best Sellers"
+          title={t('seller.bestSellers', 'Best Sellers')}
           value={metrics.best_sellers_count}
           icon={<Award className="w-6 h-6 text-orange-500" />}
-          description="Products with Best Seller badge"
+          description={t('seller.bestSellersDesc', 'Products with Best Seller badge')}
         />
         <MetricCard
-          title="Amazon's Choice"
+          title={t('seller.amazonChoice', "Amazon's Choice")}
           value={`${metrics.amazon_choice_pct}%`}
           icon={<ShieldCheck className="w-6 h-6 text-teal-600" />}
-          description="Products with Amazon's Choice badge"
+          description={t('seller.amazonChoiceDesc', "Products with Amazon's Choice badge")}
         />
       </div>
 
@@ -290,9 +291,9 @@ export default function SellerDashboardView() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="w-5 h-5 text-blue-600" />
-              Estimated Sales Trend
+              {t('seller.salesTrend', 'Estimated Sales Trend')}
             </CardTitle>
-            <CardDescription>Estimated unit sales based on review velocity (6 months)</CardDescription>
+            <CardDescription>{t('seller.salesTrendDesc', 'Estimated unit sales based on review velocity (6 months)')}</CardDescription>
           </CardHeader>
           <CardContent className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -312,9 +313,9 @@ export default function SellerDashboardView() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShoppingCart className="w-5 h-5 text-purple-600" />
-              Marketplace Portfolio
+              {t('seller.portfolio', 'Marketplace Portfolio')}
             </CardTitle>
-            <CardDescription>Product distribution across marketplaces</CardDescription>
+            <CardDescription>{t('seller.portfolioDesc', 'Product distribution across marketplaces')}</CardDescription>
           </CardHeader>
           <CardContent className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -336,9 +337,9 @@ export default function SellerDashboardView() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Star className="w-5 h-5 text-amber-500" />
-              Feedback Sentiment
+              {t('seller.sentiment', 'Feedback Sentiment')}
             </CardTitle>
-            <CardDescription>Derived from customer review comments &amp; ratings</CardDescription>
+            <CardDescription>{t('seller.sentimentDesc', 'Derived from customer review comments & ratings')}</CardDescription>
           </CardHeader>
           <CardContent className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -361,9 +362,9 @@ export default function SellerDashboardView() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Percent className="w-5 h-5 text-indigo-600" />
-              Product Rating Distribution
+              {t('seller.ratingDist', 'Product Rating Distribution')}
             </CardTitle>
-            <CardDescription>Number of products by star rating</CardDescription>
+            <CardDescription>{t('seller.ratingDistDesc', 'Number of products by star rating')}</CardDescription>
           </CardHeader>
           <CardContent className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -390,10 +391,10 @@ export default function SellerDashboardView() {
         <AlertDialogContent className="max-w-md bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 shadow-2xl rounded-2xl p-6 text-slate-900 dark:text-slate-100">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-xl font-bold text-slate-900 dark:text-slate-100">
-              Disconnect Store
+              {t('seller.disconnectDialogTitle', 'Disconnect Store')}
             </AlertDialogTitle>
             <AlertDialogDescription className="text-slate-500 dark:text-slate-400 mt-2">
-              Are you sure you want to disconnect this store? This will clear your Seller ID and return you to the store connection page.
+              {t('seller.disconnectDialogDesc', 'Are you sure you want to disconnect this store? This will clear your Seller ID and return you to the store connection page.')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="mt-6 flex flex-col sm:flex-row gap-3">
