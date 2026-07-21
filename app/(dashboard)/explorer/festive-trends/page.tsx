@@ -1017,6 +1017,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 
 const API_BASE = API_BASE_URL;
 
@@ -1238,6 +1239,7 @@ function FestiveCalendarStrip({
   events: FestiveEvent[];
   upcoming: FestiveEvent[];
 }) {
+  const { t } = useTranslation();
   const active  = events?.filter(e => e.is_active) ?? [];
   const soon    = upcoming?.filter(u => !u.is_active) ?? [];
   const display = [...active, ...soon].slice(0, 7);
@@ -1268,7 +1270,7 @@ function FestiveCalendarStrip({
               ? "bg-white/25 text-white border-white/30"
               : INTENSITY_COLORS[ev.intensity]
           )}>
-            {ev.is_active ? "LIVE" : `${ev.days_away}d`}
+            {ev.is_active ? t("festiveTrends.live", "LIVE") : `${ev.days_away}${t("festiveTrends.daysAway", "d")}`}
           </span>
         </div>
       ))}
@@ -1291,12 +1293,13 @@ function CategoryCard({
   onSelect?: (name: string) => void;
   selected?: boolean;
 }) {
+  const { t } = useTranslation();
   if (cat.locked) {
     return (
       <div className="relative rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 p-6 overflow-hidden select-none">
         <div className="absolute inset-0 backdrop-blur-[2px] bg-white/70 dark:bg-slate-950/70 flex flex-col items-center justify-center gap-1.5 z-10 rounded-2xl">
           <Lock className="w-5 h-5 text-slate-400" />
-          <p className="text-[11px] font-extrabold text-slate-500">Upgrade to Basic</p>
+          <p className="text-[11px] font-extrabold text-slate-500">{t("festiveTrends.upgradeToBasic", "Upgrade to Basic")}</p>
         </div>
         <div className="opacity-20 pointer-events-none">
           <div className="flex items-start justify-between gap-2 mb-3">
@@ -1328,7 +1331,7 @@ function CategoryCard({
       <p className="text-3xl font-black text-sky-600 tracking-tighter">{fmtPrice(cat.avg_price)}</p>
       <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-extrabold uppercase tracking-wider">
         <span className="flex items-center gap-1">
-          <Activity className="w-3 h-3" /> {fmt(cat.avg_sales_volume)} avg/mo
+          <Activity className="w-3 h-3" /> {fmt(cat.avg_sales_volume)} {t("festiveTrends.avgMo", "avg/mo")}
         </span>
         <span className="flex items-center gap-1">
           <Package className="w-3 h-3" /> {fmt(cat.product_count)}
@@ -1404,8 +1407,10 @@ function MiniSparkline({
     }
   }, [data, valueKey, color]);
 
+  const { t } = useTranslation();
+
   if (!data?.length)
-    return <div className="h-14 flex items-center justify-center text-xs text-slate-300">No data</div>;
+    return <div className="h-14 flex items-center justify-center text-xs text-slate-300">{t("festiveTrends.noData", "No data")}</div>;
   return <canvas ref={canvasRef} width={320} height={56} className="w-full h-14" />;
 }
 
@@ -1414,6 +1419,7 @@ function MiniSparkline({
 // ─────────────────────────────────────────────────────────────────────────────
 
 function StockRiskBadge({ risk }: { risk: StockRisk }) {
+  const { t } = useTranslation();
   if (!risk) return null;
   const level = risk.risk_level ?? "unknown";
   return (
@@ -1422,7 +1428,7 @@ function StockRiskBadge({ risk }: { risk: StockRisk }) {
       RISK_COLORS[level] ?? RISK_COLORS.unknown
     )}>
       <AlertTriangle className="w-3 h-3" />
-      {level} risk
+      {level} {t("festiveTrends.risk", "risk")}
     </span>
   );
 }
@@ -1451,6 +1457,7 @@ function PriceDeltaBadge({ pct }: { pct: number | null }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function LockedOverlay({ tier = "basic" }: { tier?: "basic" | "premium" }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const label  = tier === "premium" ? "Premium — ₹2,999/mo" : "Basic — ₹1,999/mo";
   return (
@@ -1458,13 +1465,13 @@ function LockedOverlay({ tier = "basic" }: { tier?: "basic" | "premium" }) {
       <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
         <Lock className="w-6 h-6 text-slate-400 dark:text-slate-500" />
       </div>
-      <p className="text-sm font-extrabold text-slate-700 dark:text-slate-200">Upgrade to {label}</p>
+      <p className="text-sm font-extrabold text-slate-700 dark:text-slate-200">{t("festiveTrends.upgradeToBasic", "Upgrade to")} {label}</p>
       <Button
         onClick={() => router.push("/subscription")}
         size="sm"
         className="rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-extrabold px-5"
       >
-        Upgrade Now
+        {t("festiveTrends.upgradeNow", "Upgrade Now")}
       </Button>
     </div>
   );
@@ -1483,6 +1490,7 @@ function UpgradeBanner({
   message: string;
   price: string;
 }) {
+  const { t } = useTranslation();
   const router = useRouter();
   const colors =
     tier === "premium"
@@ -1506,7 +1514,7 @@ function UpgradeBanner({
         size="sm"
         className={cn("rounded-xl text-white font-extrabold shrink-0", btn)}
       >
-        Upgrade <ChevronRight className="w-4 h-4 ml-1" />
+        {t("festiveTrends.upgradeNow", "Upgrade Now").split(" ")[0]} <ChevronRight className="w-4 h-4 ml-1" />
       </Button>
     </div>
   );
@@ -1524,6 +1532,7 @@ interface AIForecastPanelProps {
 }
 
 function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPanelProps) {
+  const { t } = useTranslation();
   const { toast }  = useToast();
   const [streaming, setStreaming]     = useState(false);
   const [text,      setText]          = useState("");
@@ -1632,9 +1641,9 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
                 <Zap className="w-6 h-6 text-sky-400" />
               </div>
               <div>
-                <CardTitle className="text-2xl font-extrabold text-white">AI Festive Forecast</CardTitle>
+                <CardTitle className="text-2xl font-extrabold text-white">{t("festiveTrends.aiForecast", "AI Festive Forecast")}</CardTitle>
                 <CardDescription className="text-sky-400/60 text-[10px] font-extrabold uppercase tracking-widest mt-1">
-                  Premium
+                  {t("festiveTrends.premiumLabel", "Premium")}
                 </CardDescription>
               </div>
             </div>
@@ -1659,12 +1668,9 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
             <div className="flex items-start gap-3 bg-amber-500/10 border border-amber-500/20 rounded-2xl px-5 py-4">
               <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
               <div>
-                <p className="text-amber-300 text-sm font-extrabold">AI engine offline</p>
+                <p className="text-amber-300 text-sm font-extrabold">{t("festiveTrends.aiOffline", "AI engine offline")}</p>
                 <p className="text-amber-200/60 text-xs font-medium mt-1 leading-relaxed">
-                  Start Insydz:{" "}
-                  <code className="bg-white/10 px-1.5 py-0.5 rounded text-amber-200">Insydz serve</code>
-                  {" "}then pull the model:{" "}
-                  <code className="bg-white/10 px-1.5 py-0.5 rounded text-amber-200">Insydz pull Insydz</code>
+                  {t("festiveTrends.aiOfflineDesc", "Start Insydz: Insydz serve then pull the model: Insydz pull Insydz")}
                 </p>
               </div>
             </div>
@@ -1673,8 +1679,7 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
           {/* Empty state */}
           {!text && !streaming && ollamaReady !== false && (
             <p className="text-sky-100/50 text-sm leading-relaxed">
-              Get a personalised festive surge forecast covering demand prediction, optimal pricing,
-              stock preparation, and exact listing timing — all computed from your category's live market data.
+              {t("festiveTrends.forecastDesc", "Get a personalised festive surge forecast covering demand prediction, optimal pricing, stock preparation, and exact listing timing — all computed from your category's live market data.")}
             </p>
           )}
 
@@ -1682,7 +1687,7 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
           {streaming && !text && (
             <div className="flex items-center gap-3 text-sky-300/80">
               <Loader2 className="w-5 h-5 animate-spin" />
-              <span className="text-sm font-bold">Analysing market data…</span>
+              <span className="text-sm font-bold">{t("festiveTrends.analysingMarket", "Analysing market data…")}</span>
             </div>
           )}
 
@@ -1690,7 +1695,7 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
           {text && (
             <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-2">
               <p className="text-[10px] font-extrabold text-sky-400/60 uppercase tracking-widest mb-3">
-                AI Analysis Output
+                {t("festiveTrends.aiOutput", "AI Analysis Output")}
               </p>
               <div className="text-sky-50/85 text-sm leading-relaxed whitespace-pre-wrap font-mono">
                 {text}
@@ -1715,9 +1720,9 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
               className="flex-1 h-14 rounded-2xl bg-sky-600 hover:bg-sky-500 text-white font-extrabold text-sm disabled:opacity-40 transition-all"
             >
               {streaming ? (
-                <><Loader2 className="w-5 h-5 animate-spin mr-2" /> Generating…</>
+                <><Loader2 className="w-5 h-5 animate-spin mr-2" /> {t("festiveTrends.generating", "Generating…")}</>
               ) : (
-                <><Sparkles className="w-5 h-5 mr-2" /> Run AI Forecast</>
+                <><Sparkles className="w-5 h-5 mr-2" /> {t("festiveTrends.runForecast", "Run AI Forecast")}</>
               )}
             </Button>
             {text && !streaming && (
@@ -1733,12 +1738,12 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
 
           {!category && (
             <p className="text-slate-600 text-xs text-center">
-              Select a category above to enable the forecast
+              {t("festiveTrends.selectCategoryPrompt", "Select a category above to enable the forecast")}
             </p>
           )}
           {category && (!baseCost || Number(baseCost) <= 0) && (
             <p className="text-slate-600 text-xs text-center">
-              Enter your landing cost (₹) above to enable the forecast
+              {t("festiveTrends.enterCostPrompt", "Enter your landing cost (₹) above to enable the forecast")}
             </p>
           )}
         </CardContent>
@@ -1753,6 +1758,7 @@ function AIForecastPanel({ category, source, baseCost, userTier }: AIForecastPan
 // ─────────────────────────────────────────────────────────────────────────────
 
 function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier: string }) {
+  const { t } = useTranslation();
   const locked = !hasTier(userTier, "premium");
   if (!data) return null;
 
@@ -1766,9 +1772,9 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
               <Target className="w-5 h-5 text-sky-600 animate-pulse" />
             </div>
             <div>
-              <CardTitle className="text-base font-extrabold text-slate-800 dark:text-slate-200">Margin Simulation</CardTitle>
+              <CardTitle className="text-base font-extrabold text-slate-800 dark:text-slate-200">{t("festiveTrends.marginSim", "Margin Simulation")}</CardTitle>
               <CardDescription className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
-                Base cost: {fmtPrice(data.base_cost)} · {data.platform_fee_pct}% platform fee
+                {t("festiveTrends.baseCost", "Base cost")}: {fmtPrice(data.base_cost)} · {data.platform_fee_pct}% {t("festiveTrends.platformFee", "platform fee")}
                 {data.source === "amazon" ? " (Amazon)" : data.source === "flipkart" ? " (Flipkart)" : ""}
               </CardDescription>
             </div>
@@ -1779,7 +1785,7 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-950/40 border-b border-slate-100 dark:border-slate-800">
-                  {["Scenario", "Price", "Gross", "Net", ""].map((h, i) => (
+                  {[t("festiveTrends.scenario", "Scenario"), t("festiveTrends.price", "Price"), t("festiveTrends.gross", "Gross"), t("festiveTrends.net", "Net"), ""].map((h, i) => (
                     <th
                       key={i}
                       className={cn(
@@ -1815,12 +1821,12 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
                       <td className="p-4 text-right">
                         {isRec && (
                           <Badge className="bg-sky-600 text-white text-[9px] font-extrabold px-2 py-0.5">
-                            Best
+                            {t("festiveTrends.best", "Best")}
                           </Badge>
                         )}
                         {!sc.viable && (
                           <Badge variant="outline" className="text-rose-500 border-rose-200 text-[9px]">
-                            Loss
+                            {t("festiveTrends.loss", "Loss")}
                           </Badge>
                         )}
                       </td>
@@ -1831,8 +1837,8 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
             </table>
           </div>
           <p className="text-[11px] text-slate-400 dark:text-slate-500 font-bold">
-            Market range: {fmtPrice(data.market_range?.min)} –{" "}
-            {fmtPrice(data.market_range?.max)} · avg {fmtPrice(data.market_range?.avg)}
+            {t("festiveTrends.marketRange", "Market range")}: {fmtPrice(data.market_range?.min)} –{" "}
+            {fmtPrice(data.market_range?.max)} · {t("festiveTrends.avg", "avg")} {fmtPrice(data.market_range?.avg)}
           </p>
         </CardContent>
       </Card>
@@ -1846,6 +1852,7 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
 // ─────────────────────────────────────────────────────────────────────────────
 
 function LaunchWindowCard({ data, userTier }: { data: LaunchData | null; userTier: string }) {
+  const { t } = useTranslation();
   const locked = !hasTier(userTier, "premium");
   if (!data) return null;
 
@@ -1858,9 +1865,9 @@ function LaunchWindowCard({ data, userTier }: { data: LaunchData | null; userTie
             <Clock className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           </div>
           <div>
-            <p className="text-base font-extrabold text-slate-800 dark:text-slate-200">Optimal Launch Window</p>
+            <p className="text-base font-extrabold text-slate-800 dark:text-slate-200">{t("festiveTrends.optimalLaunch", "Optimal Launch Window")}</p>
             <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
-              Premium · Price inflection analysis
+              {t("festiveTrends.premiumInflection", "Premium · Price inflection analysis")}
             </p>
           </div>
         </div>
@@ -1868,20 +1875,20 @@ function LaunchWindowCard({ data, userTier }: { data: LaunchData | null; userTie
         {data.optimal_week ? (
           <p className="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 tracking-tight">{data.optimal_week}</p>
         ) : (
-          <p className="text-sm text-slate-400 dark:text-slate-500 font-medium italic">No clear window detected</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 font-medium italic">{t("festiveTrends.noClearWindow", "No clear window detected")}</p>
         )}
 
         <p className="text-sm text-slate-600 dark:text-slate-350 font-medium leading-relaxed">{data.recommendation}</p>
 
         <div className="space-y-1.5">
-          <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Price trend</p>
+          <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{t("festiveTrends.priceTrendLabel", "Price trend")}</p>
           <MiniSparkline data={data.price_trend} valueKey="avg_price" color="#6366f1" />
         </div>
 
         <div className="flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500 font-bold">
-          <span>{data.weeks_available} weeks analysed</span>
+          <span>{data.weeks_available} {t("festiveTrends.weeksAnalysed", "weeks analysed")}</span>
           {data.best_score != null && (
-            <span>score: {data.best_score}</span>
+            <span>{t("festiveTrends.score", "score")}: {data.best_score}</span>
           )}
         </div>
       </Card>
@@ -1939,6 +1946,7 @@ function VelocityChart({
 // ─────────────────────────────────────────────────────────────────────────────
 
 function FestiveTrendContent() {
+  const { t } = useTranslation();
   const router   = useRouter();
   const { user } = useAuth();
   const { toast } = useToast();
@@ -2100,17 +2108,17 @@ function FestiveTrendContent() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
           <h1 className="text-4xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
-            Festive <span className="text-sky-600">Trends</span>
+            {t("festiveTrends.title", "Festive Trends").split(" ")[0]} <span className="text-sky-600">{t("festiveTrends.title", "Festive Trends").split(" ")[1]}</span>
           </h1>
           <p className="text-slate-500 dark:text-slate-400 font-medium mt-2 text-base">
-            Ride India's festive demand cycles — price smarter, stock right, list on time
+            {t("festiveTrends.subtitle", "Ride India's festive demand cycles — price smarter, stock right, list on time")}
           </p>
         </div>
         <div className={cn(
           "self-start sm:self-auto px-4 py-2 rounded-2xl text-xs font-extrabold uppercase tracking-widest border",
           TIER_BADGE[userTier.toLowerCase()] ?? TIER_BADGE.free
         )}>
-          {userTier} plan
+          {userTier} {t("festiveTrends.plan", "plan")}
         </div>
       </div>
 
@@ -2118,7 +2126,7 @@ function FestiveTrendContent() {
       {calendarData && (
         <div className="space-y-3">
           <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-550 uppercase tracking-widest">
-            Upcoming Festive Events · {calendarData.year}
+            {t("festiveTrends.upcomingEvents", "Upcoming Festive Events")} · {calendarData.year}
           </p>
           <FestiveCalendarStrip events={calendarData.events} upcoming={calendarData.upcoming} />
         </div>
@@ -2128,10 +2136,10 @@ function FestiveTrendContent() {
       <Card className="border-none dark:border dark:border-slate-800 shadow-2xl dark:shadow-none shadow-slate-200/50 rounded-[2.5rem] bg-white dark:bg-slate-900 overflow-hidden">
         <CardHeader className="p-10 pb-0">
           <CardTitle className="text-xl font-extrabold flex items-center gap-3 text-slate-800 dark:text-slate-100">
-            <BarChart3 className="h-6 w-6 text-sky-600" /> Trend Analysis Setup
+            <BarChart3 className="h-6 w-6 text-sky-600" /> {t("festiveTrends.setupTitle", "Trend Analysis Setup")}
           </CardTitle>
           <CardDescription className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1">
-            Configure your market parameters
+            {t("festiveTrends.setupSubtitle", "Configure your market parameters")}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-10 space-y-8">
@@ -2140,7 +2148,7 @@ function FestiveTrendContent() {
             {/* Marketplace */}
             <div className="space-y-3">
               <Label className="text-[10px] font-extrabold text-slate-400 dark:text-slate-550 uppercase tracking-widest ml-1 flex items-center gap-1.5">
-                <ShoppingBag className="w-3 h-3" /> Marketplace
+                <ShoppingBag className="w-3 h-3" /> {t("festiveTrends.marketplace", "Marketplace")}
               </Label>
               <select
                 value={source}
@@ -2155,15 +2163,15 @@ function FestiveTrendContent() {
                 data-track-id="marketplace_select"
                 data-filter-value={source}
               >
-                <option value="amazon" className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150">Amazon India</option>
-                <option value="flipkart" className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150">Flipkart India</option>
+                <option value="amazon" className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150">{t("festiveTrends.amazon", "Amazon India")}</option>
+                <option value="flipkart" className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150">{t("festiveTrends.flipkart", "Flipkart India")}</option>
               </select>
             </div>
 
             {/* Category — requires Basic+ */}
             <div className="space-y-3">
               <Label className="text-[10px] font-extrabold text-slate-400 dark:text-slate-550 uppercase tracking-widest ml-1 flex items-center gap-1.5">
-                <Package className="w-3 h-3" /> Target Category
+                <Package className="w-3 h-3" /> {t("festiveTrends.targetCategory", "Target Category")}
                 {!isBasic && <Lock className="w-3 h-3" />}
               </Label>
               <select
@@ -2178,7 +2186,7 @@ function FestiveTrendContent() {
                 data-filter-value={category}
               >
                 <option value="" className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150">
-                  {isBasic ? "Select category…" : "Basic plan required"}
+                  {isBasic ? t("festiveTrends.selectCategory", "Select category…") : t("festiveTrends.basicRequired", "Basic plan required")}
                 </option>
                 {categories.map(c => <option key={c} value={c} className="bg-white dark:bg-slate-800 text-slate-850 dark:text-slate-150">{c}</option>)}
               </select>
@@ -2187,14 +2195,14 @@ function FestiveTrendContent() {
             {/* Base / landing cost — requires Premium (used by margin-sim + AI) */}
             <div className="space-y-3">
               <Label className="text-[10px] font-extrabold text-slate-400 dark:text-slate-555 uppercase tracking-widest ml-1 flex items-center gap-1.5">
-                <IndianRupee className="w-3 h-3" /> Landing Cost (₹)
+                <IndianRupee className="w-3 h-3" /> {t("festiveTrends.landingCost", "Landing Cost (₹)")}
                 {!isPremium && <Lock className="w-3 h-3 text-slate-300 dark:text-slate-600" />}
               </Label>
               <Input
                 value={baseCost}
                 onChange={e => setBaseCost(e.target.value)}
                 type="number"
-                placeholder={isPremium ? "e.g. 500" : "Premium only"}
+                placeholder={isPremium ? "e.g. 500" : t("festiveTrends.premiumOnly", "Premium only")}
                 min={1}
                 disabled={!isPremium}
                 className={cn(
@@ -2208,10 +2216,10 @@ function FestiveTrendContent() {
             {/* Analysis window — fixed at 90 days */}
             <div className="space-y-3">
               <Label className="text-[10px] font-extrabold text-slate-400 dark:text-slate-555 uppercase tracking-widest ml-1">
-                Analysis Window
+                {t("festiveTrends.analysisWindow", "Analysis Window")}
               </Label>
               <div className="h-14 flex items-center px-6 rounded-2xl bg-slate-50 dark:bg-slate-800 text-sm font-bold text-slate-400 dark:text-slate-500 select-none">
-                90 days (fixed)
+                {t("festiveTrends.ninetyDaysFixed", "90 days (fixed)")}
               </div>
             </div>
           </div>
@@ -2223,9 +2231,9 @@ function FestiveTrendContent() {
             data-track-id="analyze-btn"
           >
             {isLoading ? (
-              <><Loader2 className="h-6 w-6 animate-spin mr-3" /> Analysing…</>
+              <><Loader2 className="h-6 w-6 animate-spin mr-3" /> {t("festiveTrends.analysing", "Analysing…")}</>
             ) : (
-              <><TrendingUp className="h-5 w-5 mr-3" /> Analyse Festive Trends</>
+              <><TrendingUp className="h-5 w-5 mr-3" /> {t("festiveTrends.analyseTrends", "Analyse Festive Trends")}</>
             )}
           </Button>
 
@@ -2242,7 +2250,7 @@ function FestiveTrendContent() {
         <div className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
-              Top Trending Categories · {overviewData.source === "flipkart" ? "Flipkart" : "Amazon"}
+              {t("festiveTrends.topCategories", "Top Trending Categories")} · {overviewData.source === "flipkart" ? t("festiveTrends.flipkart", "Flipkart India").split(" ")[0] : t("festiveTrends.amazon", "Amazon India").split(" ")[0]}
             </p>
             {overviewData.next_festival && (
               <div className="flex items-center gap-2 text-sm">
@@ -2252,7 +2260,7 @@ function FestiveTrendContent() {
                   variant="outline"
                   className={INTENSITY_COLORS[overviewData.next_festival.intensity]}
                 >
-                  {overviewData.next_festival.days_away}d away
+                  {overviewData.next_festival.days_away}{t("festiveTrends.daysAway", "d")} away
                 </Badge>
               </div>
             )}
@@ -2279,8 +2287,8 @@ function FestiveTrendContent() {
           {!isBasic && (
             <UpgradeBanner
               tier="basic"
-              message="Unlock all categories + 90-day trend charts"
-              price="Basic plan — ₹1,999/month"
+              message={t("festiveTrends.unlockCategories", "Unlock all categories + 90-day trend charts")}
+              price={t("festiveTrends.basicPlanPrice", "Basic plan — ₹1,999/month")}
             />
           )}
         </div>
@@ -2299,30 +2307,30 @@ function FestiveTrendContent() {
               {/* KPI row */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
-                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Price Trend</p>
+                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{t("festiveTrends.priceTrend", "Price Trend")}</p>
                   <PriceDeltaBadge pct={trendData.price_delta_pct} />
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">vs previous week</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">{t("festiveTrends.vsPrevWeek", "vs previous week")}</p>
                 </Card>
                 <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
-                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Velocity Rank</p>
+                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{t("festiveTrends.velocityRank", "Velocity Rank")}</p>
                   <p className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">
                     #{trendData.velocity_rank ?? "—"}
                   </p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">by avg sales volume</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">{t("festiveTrends.byAvgSales", "by avg sales volume")}</p>
                 </Card>
                 <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
-                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Stock Risk</p>
+                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{t("festiveTrends.stockRisk", "Stock Risk")}</p>
                   <div className="pt-1">
                     <StockRiskBadge risk={trendData.stock_risk} />
                   </div>
                   <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">
-                    peak/avg ratio: {trendData.stock_risk?.ratio ?? "—"}×
+                    {t("festiveTrends.peakAvgRatio", "peak/avg ratio")}: {trendData.stock_risk?.ratio ?? "—"}×
                   </p>
                 </Card>
                 <Card className="border-none dark:border dark:border-slate-800 shadow-md dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-6 space-y-1.5">
-                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Data Points</p>
+                  <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{t("festiveTrends.dataPoints", "Data Points")}</p>
                   <p className="text-3xl font-extrabold text-slate-900 dark:text-slate-100">{trendData.data_points}</p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">weekly snapshots</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 font-medium">{t("festiveTrends.weeklySnapshots", "weekly snapshots")}</p>
                 </Card>
               </div>
 
@@ -2331,10 +2339,10 @@ function FestiveTrendContent() {
                 <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none shadow-slate-200/30 rounded-[2rem] bg-white dark:bg-slate-900 p-8 space-y-4">
                   <div>
                     <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200">
-                      Price Trend — {trendData.category_name}
+                      {t("festiveTrends.priceTrend", "Price Trend")} — {trendData.category_name}
                     </p>
                     <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
-                      90-day weekly average
+                      {t("festiveTrends.ninetyDayAvg", "90-day weekly average")}
                     </p>
                   </div>
                   <MiniSparkline data={trendData.price_trend} valueKey="avg_price" />
@@ -2348,9 +2356,9 @@ function FestiveTrendContent() {
 
                 <Card className="border-none dark:border dark:border-slate-800 shadow-xl dark:shadow-none shadow-slate-200/30 rounded-[2rem] bg-white dark:bg-slate-900 p-8 space-y-4">
                   <div>
-                    <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200">Category Velocity Leaderboard</p>
+                    <p className="text-sm font-extrabold text-slate-800 dark:text-slate-200">{t("festiveTrends.velocityLeaderboard", "Category Velocity Leaderboard")}</p>
                     <p className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">
-                      Avg monthly sales volume
+                      {t("festiveTrends.avgMonthlySales", "Avg monthly sales volume")}
                     </p>
                   </div>
                   <VelocityChart data={trendData.velocity_all} highlighted={trendData.category_name} />

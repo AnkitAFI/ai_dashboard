@@ -2,8 +2,10 @@
 
 import Chatbot from "@/components/chatbot/chatbot";
 import { Sparkles, Bot } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function AiAdvisor() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col h-[calc(100vh-100px)]">
       {/* Header Info */}
@@ -14,17 +16,17 @@ export default function AiAdvisor() {
           </div>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-              Insydz Advisor
+              {t("aiAdvisor.title", "Insydz Advisor")}
             </h1>
             <p className="text-slate-500 dark:text-slate-400 text-sm font-medium line-clamp-1">
-              Get intelligent insights, strategic advice, and market analysis for your products.
+              {t("aiAdvisor.subtitle", "Get intelligent insights, strategic advice, and market analysis for your products.")}
             </p>
           </div>
         </div>
 
         <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-sky-50 dark:bg-sky-950/20 border border-sky-100 dark:border-slate-800 rounded-full shrink-0">
           <Bot className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-          <span className="text-xs font-semibold text-sky-800 dark:text-sky-400 uppercase tracking-wider">AI Powered Assistant</span>
+          <span className="text-xs font-semibold text-sky-800 dark:text-sky-400 uppercase tracking-wider">{t("aiAdvisor.aiAssistant", "AI Powered Assistant")}</span>
         </div>
       </div>
 

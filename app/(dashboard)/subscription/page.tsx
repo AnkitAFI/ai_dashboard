@@ -14,6 +14,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import PaymentModal, { type PaymentPlan } from "@/components/payment/payment-modal";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 
 const API_BASE = API_BASE_URL;
 
@@ -193,6 +194,7 @@ const PLAN_STYLES: Record<
 const PLAN_ORDER = ["free", "basic", "premium", "enterprise"];
 
 export default function Subscription() {
+  const { t } = useTranslation();
   const { user, refreshUser, isLoading: authLoading } = useAuth();
   const { currentTier } = useSubscriptionLimits();
   const { getAIUsage } = useSubscriptionSync();
@@ -291,7 +293,7 @@ export default function Subscription() {
         <div className="text-center space-y-3">
           <div className="w-12 h-12 rounded-full border-4 border-sky-100 border-t-sky-600
                           animate-spin mx-auto" />
-          <p className="text-slate-600 font-medium">Loading subscription plans...</p>
+          <p className="text-slate-600 font-medium">{t('subscription.loadingPlans', 'Loading subscription plans...')}</p>
         </div>
       </div>
     );
@@ -302,13 +304,13 @@ export default function Subscription() {
       <div className="flex items-center justify-center min-h-[400px]">
         <Card className="w-full max-w-md shadow-xl rounded-3xl">
           <CardHeader>
-            <CardTitle>Authentication Required</CardTitle>
-            <CardDescription>Please login to view subscription plans</CardDescription>
+            <CardTitle>{t('subscription.authRequired', 'Authentication Required')}</CardTitle>
+            <CardDescription>{t('subscription.loginToView', 'Please login to view subscription plans')}</CardDescription>
           </CardHeader>
           <CardContent>
             <Button onClick={() => (window.location.href = "/login")}
               className="w-full bg-sky-600 hover:bg-sky-700 text-white rounded-xl h-11 font-bold">
-              Go to Login
+              {t('subscription.goToLogin', 'Go to Login')}
             </Button>
           </CardContent>
         </Card>
@@ -345,10 +347,10 @@ export default function Subscription() {
           <Crown className="h-8 w-8 text-blue-500" />
         </div>
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-          Subscription & Licensing
+          {t('subscription.title', 'Subscription & Licensing')}
         </h1>
         <p className={cn("text-lg max-w-2xl mx-auto", isDark ? "text-slate-400" : "text-slate-500")}>
-          Unlock the full potential of AI-powered analytics. Pick the plan that fits your growth.
+          {t('subscription.subtitle', 'Unlock the full potential of AI-powered analytics. Pick the plan that fits your growth.')}
         </p>
 
       </div>
@@ -376,7 +378,7 @@ export default function Subscription() {
                   <Badge className="bg-gradient-to-r from-sky-500 to-blue-600
                                     text-white px-4 py-1.5 shadow-lg rounded-full
                                     flex items-center gap-1 text-xs font-bold">
-                    <Sparkles className="h-3 w-3" /> Most Popular
+                    <Sparkles className="h-3 w-3" /> {t('subscription.mostPopular', 'Most Popular')}
                   </Badge>
                 </div>
               )}
@@ -385,7 +387,7 @@ export default function Subscription() {
                 <div className="absolute -top-3.5 right-4 z-10">
                   <Badge className="bg-green-500 text-white px-3 py-1.5 shadow-lg
                                     rounded-full flex items-center gap-1 text-xs font-bold">
-                    <Check className="h-3 w-3" /> Current
+                    <Check className="h-3 w-3" /> {t('subscription.current', 'Current')}
                   </Badge>
                 </div>
               )}
@@ -410,17 +412,17 @@ export default function Subscription() {
                       </span>
                     )}
                     <span className={cn("text-3xl font-extrabold", isDark ? "text-[#AAF0FF]" : "text-sky-900")}>
-                      {plan.price === 0 ? "Free" : `₹${plan.price!.toLocaleString("en-IN")}`}
+                      {plan.price === 0 ? t('subscription.free', 'Free') : `₹${plan.price!.toLocaleString("en-IN")}`}
                     </span>
                     {plan.price !== 0 && (
                       <span className={cn("text-sm font-normal self-end pb-0.5", isDark ? "text-slate-500" : "text-slate-400")}>
-                        /month
+                        {t('subscription.month', '/month')}
                       </span>
                     )}
                   </div>
                 ) : (
                   <div className={cn("text-xl font-extrabold mt-2 mb-1", isDark ? "text-indigo-400" : "text-indigo-700")}>
-                    Custom Pricing
+                    {t('subscription.customPricing', 'Custom Pricing')}
                   </div>
                 )}
 
@@ -481,18 +483,17 @@ export default function Subscription() {
                       className="w-full h-11 rounded-xl bg-green-50 border-2
                                        border-green-200 text-green-700 font-bold
                                        text-sm cursor-not-allowed opacity-100">
-                      <Check className="h-4 w-4 mr-2" /> Current Plan
+                      <Check className="h-4 w-4 mr-2" /> {t('subscription.currentPlan', 'Current Plan')}
                     </Button>
                   ) : plan.id === "enterprise" ? (
                     <Button variant="outline"
                       className="w-full h-11 rounded-xl border-2 border-indigo-200
                                        text-indigo-700 hover:bg-indigo-50 font-bold text-sm"
                       onClick={() => window.location.href = "mailto:support@insydz.com"}>
-                      Contact Sales
+                      {t('subscription.contactSales', 'Contact Sales')}
                     </Button>
 
                   ) : canUpgrade ? (
-                    // Upgrade button — only shown for higher-tier plans
                     <Button
                       className={`w-full h-11 rounded-xl font-bold text-sm shadow-lg
                                   transition-all duration-200 ${styles.upgradeBtn}`}
@@ -502,16 +503,15 @@ export default function Subscription() {
                       {isThisLoading ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <><Sparkles className="h-3.5 w-3.5 mr-1.5" />Upgrade to {plan.name}</>
+                        <><Sparkles className="h-3.5 w-3.5 mr-1.5" />{t('subscription.upgradeTo', 'Upgrade to')} {plan.name}</>
                       )}
                     </Button>
 
                   ) : (
-                    // Lower than current plan — no button (downgrade not supported)
                     <div className="w-full h-11 rounded-xl bg-slate-50 border border-slate-200
                                     flex items-center justify-center">
                       <span className="text-xs text-slate-400 font-medium">
-                        Lower than current plan
+                        {t('subscription.lowerThanCurrent', 'Lower than current plan')}
                       </span>
                     </div>
                   )}
@@ -541,7 +541,7 @@ export default function Subscription() {
       {/* FAQ */}
       <div className="mt-4 max-w-4xl mx-auto">
         <h3 className={cn("text-xl font-extrabold mb-6 text-center", isDark ? "text-slate-100" : "text-slate-900")}>
-          Frequently Asked Questions
+          {t('subscription.faq', 'Frequently Asked Questions')}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {FAQ.map((item, i) => (

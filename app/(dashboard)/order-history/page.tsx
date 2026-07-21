@@ -29,6 +29,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "react-i18next";
 
 const API_BASE = API_BASE_URL;
 
@@ -120,20 +121,21 @@ function SkeletonRow() {
 // ─── Empty State ──────────────────────────────────────────────────────────────
 
 function EmptyState() {
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col items-center justify-center py-20 space-y-4 text-center">
       <div className="w-20 h-20 rounded-3xl bg-sky-50 border border-sky-100 flex items-center justify-center">
         <Receipt className="h-9 w-9 text-sky-300" />
       </div>
       <div>
-        <p className="text-slate-700 font-bold text-lg">No orders yet</p>
-        <p className="text-slate-400 text-sm mt-1">Your payment history will appear here once you subscribe to a plan.</p>
+        <p className="text-slate-700 font-bold text-lg">{t('orderHistory.noOrders', 'No orders yet')}</p>
+        <p className="text-slate-400 text-sm mt-1">{t('orderHistory.noOrdersDesc', 'Your payment history will appear here once you subscribe to a plan.')}</p>
       </div>
       <Button
         onClick={() => (window.location.href = "/subscription")}
         className="bg-sky-600 hover:bg-sky-700 text-white rounded-xl px-6 font-bold"
       >
-        View Plans
+        {t('orderHistory.viewPlans', 'View Plans')}
       </Button>
     </div>
   );
@@ -161,7 +163,7 @@ function OrderDetailModal({
         {/* Header */}
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Invoice</p>
+            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">{t('orderHistory.invoice', 'Invoice')}</p>
             <p className="text-xl font-extrabold text-slate-900 dark:text-slate-150">
               {order.invoice_number ?? `#ORD-${order.id}`}
             </p>
@@ -187,7 +189,7 @@ function OrderDetailModal({
         {/* Plan */}
         <div className="bg-slate-50 dark:bg-slate-950/45 rounded-2xl p-4 space-y-3 border border-slate-100 dark:border-slate-850">
           <div className="flex justify-between text-sm">
-            <span className="text-slate-500 dark:text-slate-400">Plan</span>
+            <span className="text-slate-500 dark:text-slate-400">{t('orderHistory.plan', 'Plan')}</span>
             <span className={cn(
               "font-bold capitalize px-2 py-0.5 rounded-full text-xs",
               order.plan_id === "premium" ? "bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400" :
@@ -198,7 +200,7 @@ function OrderDetailModal({
             </span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-slate-500 dark:text-slate-400">Base Amount</span>
+            <span className="text-slate-500 dark:text-slate-400">{t('orderHistory.baseAmount', 'Base Amount')}</span>
             <span className="font-semibold text-slate-800 dark:text-slate-200">{formatAmount(order.base_amount)}</span>
           </div>
           <div className="flex justify-between text-sm">
@@ -206,7 +208,7 @@ function OrderDetailModal({
             <span className="font-semibold text-slate-800 dark:text-slate-200">{formatAmount(order.gst_amount)}</span>
           </div>
           <div className="border-t border-slate-200 dark:border-slate-850 pt-3 flex justify-between">
-            <span className="font-bold text-slate-700 dark:text-slate-350">Total Paid</span>
+            <span className="font-bold text-slate-700 dark:text-slate-350">{t('orderHistory.totalPaid', 'Total Paid')}</span>
             <span className="font-extrabold text-sky-750 dark:text-sky-400 text-lg">{formatAmount(order.amount)}</span>
           </div>
         </div>
@@ -215,7 +217,7 @@ function OrderDetailModal({
         <div className="space-y-2.5 text-sm">
           {order.razorpay_payment_id && (
             <div className="flex justify-between">
-              <span className="text-slate-450 dark:text-slate-400 flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5" /> Payment ID</span>
+              <span className="text-slate-450 dark:text-slate-400 flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5" /> {t('orderHistory.paymentId', 'Payment ID')}</span>
               <span className="font-mono text-xs text-slate-650 dark:text-slate-350 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg">{order.razorpay_payment_id}</span>
             </div>
           )}
@@ -226,18 +228,18 @@ function OrderDetailModal({
             </div>
           )}
           <div className="flex justify-between">
-            <span className="text-slate-450 dark:text-slate-400 flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> Order Date</span>
+              <span className="text-slate-450 dark:text-slate-400 flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {t('orderHistory.orderDate', 'Order Date')}</span>
             <span className="text-slate-700 dark:text-slate-300 font-medium">{formatDate(order.created_at)}</span>
           </div>
           {order.paid_at && (
             <div className="flex justify-between">
-              <span className="text-slate-450 dark:text-slate-400 flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5" /> Paid On</span>
+              <span className="text-slate-450 dark:text-slate-400 flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5" /> {t('orderHistory.paidOn', 'Paid On')}</span>
               <span className="text-slate-700 dark:text-slate-300 font-medium">{formatDate(order.paid_at)}</span>
             </div>
           )}
           {order.expires_at && (
             <div className="flex justify-between">
-              <span className="text-slate-450 dark:text-slate-400 flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> Expires</span>
+              <span className="text-slate-450 dark:text-slate-400 flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" /> {t('orderHistory.expires', 'Expires')}</span>
               <span className="text-slate-700 dark:text-slate-300 font-medium">{formatDate(order.expires_at)}</span>
             </div>
           )}
@@ -251,7 +253,7 @@ function OrderDetailModal({
             }
           >
             <Download className="h-4 w-4" />
-            Download Invoice
+            {t('orderHistory.downloadInvoice', 'Download Invoice')}
           </Button>
         ) : (
           <Button
@@ -259,7 +261,7 @@ function OrderDetailModal({
             variant="outline"
             onClick={onClose}
           >
-            Close
+            {t('orderHistory.close', 'Close')}
           </Button>
         )}
       </div>
@@ -270,6 +272,7 @@ function OrderDetailModal({
 // MAIN PAGE
 
 export default function OrderHistory() {
+  const { t } = useTranslation();
   const { user, isLoading: authLoading } = useAuth();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -315,7 +318,7 @@ export default function OrderHistory() {
       <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-3">
           <div className="w-12 h-12 rounded-full border-4 border-sky-100 border-t-sky-600 animate-spin mx-auto" />
-          <p className="text-slate-600 font-medium">Loading order history...</p>
+          <p className="text-slate-600 font-medium">{t('orderHistory.loadingHistory', 'Loading order history...')}</p>
         </div>
       </div>
     );
@@ -326,13 +329,13 @@ export default function OrderHistory() {
       <div className="flex items-center justify-center min-h-[400px]">
         <Card className="w-full max-w-md shadow-xl rounded-3xl">
           <CardHeader>
-            <CardTitle>Authentication Required</CardTitle>
-            <CardDescription>Please login to view your order history</CardDescription>
+            <CardTitle>{t('orderHistory.authRequired', 'Authentication Required')}</CardTitle>
+            <CardDescription>{t('orderHistory.loginToView', 'Please login to view your order history')}</CardDescription>
           </CardHeader>
           <CardContent>
             <Button onClick={() => (window.location.href = "/login")}
               className="w-full bg-sky-600 hover:bg-sky-700 text-white rounded-xl h-11 font-bold">
-              Go to Login
+              {t('orderHistory.goToLogin', 'Go to Login')}
             </Button>
           </CardContent>
         </Card>
@@ -363,10 +366,10 @@ export default function OrderHistory() {
           </div>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-              Order History
+              {t('orderHistory.title', 'Order History')}
             </h1>
             <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
-              View your invoices, transaction receipts, and active subscriptions ({user.email}).
+              {t('orderHistory.subtitle', 'View your invoices, transaction receipts, and active subscriptions')} ({user.email}).
             </p>
           </div>
         </div>
@@ -378,7 +381,7 @@ export default function OrderHistory() {
           className="items-center gap-2 rounded-xl border-sky-200 dark:border-slate-800 text-sky-700 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-slate-900"
         >
           <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-          Refresh
+          {t('orderHistory.refresh', 'Refresh')}
         </Button>
       </div>
 
@@ -434,10 +437,10 @@ export default function OrderHistory() {
         <CardHeader className="border-b border-slate-100 dark:border-slate-800 px-6 py-5">
           <CardTitle className="text-lg font-extrabold text-slate-800 dark:text-slate-100 flex items-center gap-2">
             <Receipt className="h-5 w-5 text-sky-500 dark:text-sky-400" />
-            Payment Records
+            {t('orderHistory.paymentRecords', 'Payment Records')}
           </CardTitle>
           <CardDescription className="text-slate-550 dark:text-slate-400">
-            {loading ? "Fetching your orders..." : `${orders.length} order${orders.length !== 1 ? "s" : ""} found`}
+            {loading ? t('orderHistory.fetchingOrders', 'Fetching your orders...') : `${orders.length} order${orders.length !== 1 ? "s" : ""} found`}
           </CardDescription>
         </CardHeader>
 
@@ -454,11 +457,11 @@ export default function OrderHistory() {
               <div className="hidden sm:grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4
                               px-6 py-3 bg-slate-50 dark:bg-slate-950/30 border-b border-slate-100 dark:border-slate-800
                               text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                <span>Order</span>
-                <span>Plan</span>
-                <span>Amount</span>
-                <span>Date</span>
-                <span>Status</span>
+                <span>{t('orderHistory.order', 'Order')}</span>
+                <span>{t('orderHistory.plan', 'Plan')}</span>
+                <span>{t('orderHistory.amount', 'Amount')}</span>
+                <span>{t('orderHistory.date', 'Date')}</span>
+                <span>{t('orderHistory.status', 'Status')}</span>
               </div>
 
               {orders.map((order) => {
@@ -547,7 +550,7 @@ export default function OrderHistory() {
       {/* Footer note */}
       {!loading && orders.length > 0 && (
         <p className="text-center text-xs text-slate-400 dark:text-slate-550 pb-2">
-          Showing last {orders.length} orders • Click any row to view full invoice details
+          {t('orderHistory.showingOrders', 'Showing last {{count}} orders • Click any row to view full invoice details', { count: orders.length })}
         </p>
       )}
     </div>

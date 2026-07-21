@@ -63,6 +63,7 @@ import {
   Bookmark,
 } from "lucide-react";
 import SmartSearchInput from "@/components/ui/smart-search-input";
+import { useTranslation } from "react-i18next";
 
 const API = API_BASE_URL + "/api";
 
@@ -198,30 +199,11 @@ function getScoreColor(score: number): string {
   return "text-red-600";
 }
 
-function getScoreLabel(score: number): { label: string; color: string } {
-  if (score >= 80)
-    return {
-      label: "Hot pick",
-      color:
-        "bg-emerald-100 dark:bg-emerald-950/35 text-emerald-800 dark:text-emerald-400 border border-emerald-200/40 dark:border-emerald-900/45",
-    };
-  if (score >= 65)
-    return {
-      label: "Good gap",
-      color:
-        "bg-blue-100 dark:bg-blue-950/35 text-blue-800 dark:text-blue-400 border border-blue-200/40 dark:border-blue-900/45",
-    };
-  if (score >= 50)
-    return {
-      label: "Moderate",
-      color:
-        "bg-amber-100 dark:bg-amber-950/35 text-amber-850 dark:text-amber-400 border border-amber-200/40 dark:border-amber-900/45",
-    };
-  return {
-    label: "Skip",
-    color:
-      "bg-red-100 dark:bg-red-950/35 text-red-800 dark:text-red-400 border border-red-200/40 dark:border-red-900/45",
-  };
+function getScoreLabel(score: number, t: any): { label: string; color: string } {
+  if (score >= 80) return { label: t("whiteSpaceFinder.hotPick", "Hot pick"), color: "bg-emerald-100 dark:bg-emerald-950/35 text-emerald-800 dark:text-emerald-400 border border-emerald-200/40 dark:border-emerald-900/45" };
+  if (score >= 65) return { label: t("whiteSpaceFinder.goodGap", "Good gap"), color: "bg-blue-100 dark:bg-blue-950/35 text-blue-800 dark:text-blue-400 border border-blue-200/40 dark:border-blue-900/45" };
+  if (score >= 50) return { label: t("whiteSpaceFinder.moderate", "Moderate"), color: "bg-amber-100 dark:bg-amber-950/35 text-amber-850 dark:text-amber-400 border border-amber-200/40 dark:border-amber-900/45" };
+  return { label: t("whiteSpaceFinder.skip", "Skip"), color: "bg-red-100 dark:bg-red-950/35 text-red-800 dark:text-red-400 border border-red-200/40 dark:border-red-900/45" };
 }
 
 // ── Score Ring ────────────────────────────────────────────────────────────────
@@ -281,31 +263,12 @@ function ScoreRing({ score, size = 52 }: { score: number; size?: number }) {
 // ── Score Breakdown Bars ──────────────────────────────────────────────────────
 
 function ScoreBreakdownBars({ breakdown }: { breakdown: ScoreBreakdown }) {
+  const { t } = useTranslation();
   const items = [
-    {
-      label: "Rating gap",
-      value: breakdown.rating_gap,
-      max: 32,
-      color: "#3b82f6",
-    },
-    {
-      label: "Review thinness",
-      value: breakdown.review_thinness,
-      max: 32,
-      color: "#8b5cf6",
-    },
-    {
-      label: "Demand signal",
-      value: breakdown.demand_signal,
-      max: 24,
-      color: "#10b981",
-    },
-    {
-      label: "Price gap",
-      value: breakdown.price_gap,
-      max: 12,
-      color: "#f59e0b",
-    },
+    { label: t("whiteSpaceFinder.ratingGap", "Rating gap"),      value: breakdown.rating_gap,      max: 32, color: "#3b82f6" },
+    { label: t("whiteSpaceFinder.reviewThinness", "Review thinness"), value: breakdown.review_thinness, max: 32, color: "#8b5cf6" },
+    { label: t("whiteSpaceFinder.demandSignal", "Demand signal"),   value: breakdown.demand_signal,   max: 24, color: "#10b981" },
+    { label: t("whiteSpaceFinder.priceGap", "Price gap"),       value: breakdown.price_gap,       max: 12, color: "#f59e0b" },
   ];
   return (
     <div className="space-y-2">
@@ -335,6 +298,7 @@ function ScoreBreakdownBars({ breakdown }: { breakdown: ScoreBreakdown }) {
 // ── Competitor Row ────────────────────────────────────────────────────────────
 
 function CompetitorRow({ comp, index }: { comp: Competitor; index: number }) {
+  const { t } = useTranslation();
   return (
     <div className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800/80">
       <div className="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-[10px] font-bold text-slate-650 dark:text-slate-400 shrink-0 mt-0.5">
@@ -345,29 +309,17 @@ function CompetitorRow({ comp, index }: { comp: Competitor; index: number }) {
           {comp.title}
         </p>
         <div className="flex items-center gap-3 flex-wrap mb-1">
-          <span className="text-[10px] text-slate-500 dark:text-slate-400">
-            ★ {comp.rating.toFixed(1)}
-          </span>
-          <span className="text-[10px] text-slate-500 dark:text-slate-400">
-            {comp.review_count.toLocaleString()} reviews
-          </span>
-          <span className="text-[10px] text-slate-500 dark:text-slate-400">
-            ₹{comp.price.toLocaleString("en-IN")}
-          </span>
-          <span
-            className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${comp.platform === "amazon" ? "bg-amber-100 dark:bg-amber-950/35 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40" : "bg-blue-100 dark:bg-blue-950/35 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40"}`}
-          >
-            {comp.platform}
+          <span className="text-[10px] text-slate-500 dark:text-slate-400">★ {comp.rating.toFixed(1)}</span>
+          <span className="text-[10px] text-slate-500 dark:text-slate-400">{comp.review_count.toLocaleString()} {t("whiteSpaceFinder.reviews", "reviews")}</span>
+          <span className="text-[10px] text-slate-500 dark:text-slate-400">₹{comp.price.toLocaleString("en-IN")}</span>
+          <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${comp.platform === "amazon" ? "bg-amber-100 dark:bg-amber-950/35 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40" : "bg-blue-100 dark:bg-blue-950/35 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40"}`}>
+            {comp.platform === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon.in") : t("whiteSpaceFinder.flipkart", "Flipkart")}
           </span>
           {comp.is_best_seller && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-950/35 text-yellow-750 dark:text-yellow-400 border border-yellow-250 dark:border-yellow-900/40">
-              Best Seller
-            </span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-950/35 text-yellow-750 dark:text-yellow-400 border border-yellow-250 dark:border-yellow-900/40">{t("whiteSpaceFinder.bestSeller", "Best Seller")}</span>
           )}
           {comp.is_amazon_choice && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-teal-100 dark:bg-teal-950/35 text-teal-705 dark:text-teal-400 border border-teal-250 dark:border-teal-900/40">
-              A's Choice
-            </span>
+            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-teal-100 dark:bg-teal-950/35 text-teal-705 dark:text-teal-400 border border-teal-250 dark:border-teal-900/40">{t("whiteSpaceFinder.asChoice", "A's Choice")}</span>
           )}
         </div>
         <p className="text-[10px] text-red-650 dark:text-red-400 font-medium">
@@ -434,14 +386,12 @@ function OpportunityCard({
   watchlistItems: WatchlistItem[];
   watchlistLoading: boolean;
 }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
-  const isBasicPlus =
-    tier === "basic" || tier === "premium" || tier === "enterprise";
-  const isPremium = tier === "premium" || tier === "enterprise";
-  const sl = getScoreLabel(opp.score);
-  const alreadyWatched = watchlistItems.some(
-    (i) => i.niche === opp.product_niche,
-  );
+  const isBasicPlus  = tier === "basic" || tier === "premium" || tier === "enterprise";
+  const isPremium    = tier === "premium" || tier === "enterprise";
+  const sl           = getScoreLabel(opp.score, t);
+  const alreadyWatched = watchlistItems.some((i) => i.niche === opp.product_niche);
 
   const trendEl = isPremium ? (
     opp.trend_direction === "up" ? (
@@ -454,8 +404,7 @@ function OpportunityCard({
       </span>
     ) : (
       <span className="flex items-center gap-1 text-[10px] text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full border border-slate-200/50 dark:border-slate-700/30">
-        <Minus className="w-2.5 h-2.5" />
-        steady
+        <Minus className="w-2.5 h-2.5" />{t("whiteSpaceFinder.steady", "steady")}
       </span>
     )
   ) : null;
@@ -482,27 +431,15 @@ function OpportunityCard({
               </span>
             </div>
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-[10px] text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">
-                {opp.category}
-              </span>
-              <span
-                className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${opp.platform === "both" ? "bg-purple-100 dark:bg-purple-950/35 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800/40" : opp.platform === "amazon" ? "bg-amber-100 dark:bg-amber-950/35 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40" : "bg-blue-100 dark:bg-blue-950/35 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40"}`}
-              >
-                {opp.platform === "both"
-                  ? "Amazon + Flipkart"
-                  : opp.platform === "amazon"
-                    ? "Amazon.in"
-                    : "Flipkart"}
+              <span className="text-[10px] text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{opp.category}</span>
+              <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${opp.platform === "both" ? "bg-purple-100 dark:bg-purple-950/35 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800/40" : opp.platform === "amazon" ? "bg-amber-100 dark:bg-amber-950/35 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40" : "bg-blue-100 dark:bg-blue-950/35 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40"}`}>
+                {opp.platform === "both" ? t("whiteSpaceFinder.amazonFlipkart", "Amazon + Flipkart") : opp.platform === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon.in") : t("whiteSpaceFinder.flipkart", "Flipkart")}
               </span>
               {opp.has_best_seller_gap && (
-                <span className="text-[10px] bg-yellow-100 dark:bg-yellow-950/35 text-yellow-750 dark:text-yellow-400 px-2 py-0.5 rounded-full font-medium border border-yellow-200/50 dark:border-yellow-900/30">
-                  No Best Seller yet
-                </span>
+                <span className="text-[10px] bg-yellow-100 dark:bg-yellow-950/35 text-yellow-750 dark:text-yellow-400 px-2 py-0.5 rounded-full font-medium border border-yellow-200/50 dark:border-yellow-900/30">{t("whiteSpaceFinder.noBestSellerYet", "No Best Seller yet")}</span>
               )}
               {opp.has_amazon_choice_gap && (
-                <span className="text-[10px] bg-teal-100 dark:bg-teal-950/35 text-teal-705 dark:text-teal-400 px-2 py-0.5 rounded-full font-medium border border-teal-200/50 dark:border-teal-900/30">
-                  No A's Choice
-                </span>
+                <span className="text-[10px] bg-teal-100 dark:bg-teal-950/35 text-teal-705 dark:text-teal-400 px-2 py-0.5 rounded-full font-medium border border-teal-200/50 dark:border-teal-900/30">{t("whiteSpaceFinder.noAsChoice", "No A's Choice")}</span>
               )}
               {trendEl}
             </div>
@@ -520,16 +457,10 @@ function OpportunityCard({
         {/* Stats grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
           {[
-            {
-              label: "Est. revenue / mo",
-              value: `${inr(opp.est_revenue_min)}–${inr(opp.est_revenue_max)}`,
-            },
-            {
-              label: "Avg price",
-              value: `₹${opp.avg_price.toLocaleString("en-IN")}`,
-            },
-            { label: "Avg rating", value: `★ ${opp.avg_rating.toFixed(1)}` },
-            { label: "Competitors", value: String(opp.competitor_count) },
+            { label: t("whiteSpaceFinder.estRevenueMo", "Est. revenue / mo"), value: `${inr(opp.est_revenue_min)}–${inr(opp.est_revenue_max)}` },
+            { label: t("whiteSpaceFinder.avgPrice", "Avg price"),         value: `₹${opp.avg_price.toLocaleString("en-IN")}` },
+            { label: t("whiteSpaceFinder.avgRating", "Avg rating"),        value: `★ ${opp.avg_rating.toFixed(1)}` },
+            { label: t("whiteSpaceFinder.competitors", "Competitors"),       value: String(opp.competitor_count) },
           ].map((s) => (
             <div
               key={s.label}
@@ -548,24 +479,15 @@ function OpportunityCard({
         {/* Score breakdown */}
         {isBasicPlus ? (
           <div className="mb-3">
-            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              Score breakdown
-            </p>
+            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">{t("whiteSpaceFinder.scoreBreakdown", "Score breakdown")}</p>
             <ScoreBreakdownBars breakdown={opp.score_breakdown} />
           </div>
         ) : (
           <div className="relative mb-3">
             <div className="space-y-2 opacity-60 blur-[3px] pointer-events-none select-none">
-              {[
-                ["Rating gap", 22],
-                ["Review thinness", 18],
-                ["Demand signal", 15],
-                ["Price gap", 10],
-              ].map(([l, v]) => (
-                <div key={l} className="flex items-center gap-3">
-                  <span className="text-xs text-slate-400 w-28 shrink-0">
-                    {l}
-                  </span>
+              {[[t("whiteSpaceFinder.ratingGap", "Rating gap"), 22], [t("whiteSpaceFinder.reviewThinness", "Review thinness"), 18], [t("whiteSpaceFinder.demandSignal", "Demand signal"), 15], [t("whiteSpaceFinder.priceGap", "Price gap"), 10]].map(([l, v]) => (
+                <div key={String(l)} className="flex items-center gap-3">
+                  <span className="text-xs text-slate-400 w-28 shrink-0">{l}</span>
                   <div className="flex-1 bg-slate-200 dark:bg-slate-800 rounded-full h-1.5">
                     <div
                       className="h-full rounded-full bg-slate-400 dark:bg-slate-600"
@@ -583,8 +505,7 @@ function OpportunityCard({
                 onClick={() => onUpgrade("Score breakdown")}
                 className="flex items-center gap-1.5 text-xs px-4 py-1.5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-750 rounded-full shadow-sm font-medium text-slate-700 dark:text-slate-300 hover:border-blue-300 dark:hover:border-slate-600 transition-colors"
               >
-                <Lock className="w-3 h-3 text-amber-500" /> Unlock breakdown —
-                Basic
+                <Lock className="w-3 h-3 text-amber-500" /> {t("whiteSpaceFinder.unlockBreakdown", "Unlock breakdown — Basic")}
               </button>
             </div>
           </div>
@@ -595,9 +516,8 @@ function OpportunityCard({
           <div className="flex items-center gap-2 p-2.5 bg-purple-50 dark:bg-purple-950/15 border border-purple-200 dark:border-purple-900/35 rounded-lg mb-3">
             <Target className="w-3.5 h-3.5 text-purple-650 dark:text-purple-400 shrink-0" />
             <p className="text-xs text-purple-750 dark:text-purple-300">
-              <span className="font-semibold">Suggested entry price:</span> ₹
-              {opp.entry_price_suggestion.toLocaleString("en-IN")} — 12% below
-              market avg for "Lowest New Price" badge
+              <span className="font-semibold">{t("whiteSpaceFinder.suggestedEntryPrice", "Suggested entry price:")}</span>{" "}
+              ₹{opp.entry_price_suggestion.toLocaleString("en-IN")} — 12% {t("whiteSpaceFinder.belowMarketAvg", "below market avg for \"Lowest New Price\" badge")}
             </p>
           </div>
         )}
@@ -606,12 +526,8 @@ function OpportunityCard({
         {isPremium && opp.ai_insights && opp.ai_insights.length > 0 && (
           <div className="space-y-2 mb-3">
             <div className="flex items-center gap-2">
-              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
-                AI insights
-              </p>
-              <span className="text-[9px] font-mono text-slate-405 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">
-                Insydz
-              </span>
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{t("whiteSpaceFinder.aiInsights", "AI insights")}</p>
+              <span className="text-[9px] font-mono text-slate-405 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">Insydz</span>
             </div>
             {opp.ai_insights.map((ins, i) => (
               <AIInsightBadge key={i} insight={ins} />
@@ -626,13 +542,8 @@ function OpportunityCard({
               onClick={() => setExpanded((p) => !p)}
               className="flex items-center gap-1.5 text-xs text-slate-505 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors font-medium mb-2"
             >
-              {expanded ? (
-                <ChevronUp className="w-3.5 h-3.5" />
-              ) : (
-                <ChevronDown className="w-3.5 h-3.5" />
-              )}
-              {expanded ? "Hide" : "Show"} top {opp.competitors.length}{" "}
-              competitors & weaknesses
+              {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              {expanded ? t("whiteSpaceFinder.hide", "Hide") : t("whiteSpaceFinder.show", "Show")} {t("whiteSpaceFinder.top", "top")} {opp.competitors.length} {t("whiteSpaceFinder.competitorsAndWeaknesses", "competitors & weaknesses")}
             </button>
             {expanded && (
               <div className="space-y-2">
@@ -655,14 +566,10 @@ function OpportunityCard({
                 : "border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:bg-violet-50 dark:hover:bg-violet-950/20 hover:border-violet-300 dark:hover:border-violet-850 hover:text-violet-600 dark:hover:text-violet-300"
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            {watchlistLoading ? (
-              <RefreshCw className="w-2.5 h-2.5 animate-spin" />
-            ) : (
-              <Bookmark
-                className={`w-2.5 h-2.5 ${alreadyWatched ? "fill-white" : ""}`}
-              />
-            )}
-            {alreadyWatched ? "Watching" : "Watch"}
+            {watchlistLoading
+              ? <RefreshCw className="w-2.5 h-2.5 animate-spin" />
+              : <Bookmark className={`w-2.5 h-2.5 ${alreadyWatched ? "fill-white" : ""}`} />}
+            {alreadyWatched ? t("whiteSpaceFinder.watching", "Watching") : t("whiteSpaceFinder.watch", "Watch")}
           </button>
         </div>
       </CardContent>
@@ -672,13 +579,8 @@ function OpportunityCard({
 
 // ── Locked Card ───────────────────────────────────────────────────────────────
 
-function LockedCard({
-  position,
-  onUpgrade,
-}: {
-  position: number;
-  onUpgrade: (f: string) => void;
-}) {
+function LockedCard({ position, onUpgrade }: { position: number; onUpgrade: (f: string) => void }) {
+  const { t } = useTranslation();
   return (
     <div
       className="relative rounded-2xl border border-slate-200 dark:border-slate-800 bg-background opacity-100 overflow-hidden cursor-pointer group"
@@ -707,14 +609,10 @@ function LockedCard({
       </div>
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background/95 dark:bg-background/95 backdrop-blur-none">
         <Lock className="w-4 h-4 text-amber-500" />
-        <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-          Result #{position} locked
-        </p>
-        <p className="text-xs text-slate-550 dark:text-slate-400">
-          Upgrade to Basic to unlock all results
-        </p>
+        <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{t("whiteSpaceFinder.resultLocked", "Result #{{position}} locked", { position })}</p>
+        <p className="text-xs text-slate-550 dark:text-slate-400">{t("whiteSpaceFinder.upgradeToUnlock", "Upgrade to Basic to unlock all results")}</p>
         <span className="mt-1 text-xs px-5 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full font-medium shadow group-hover:shadow-md transition-all">
-          Unlock — ₹1,999/mo
+          {t("whiteSpaceFinder.unlockFor", "Unlock — ₹1,999/mo")}
         </span>
       </div>
     </div>
@@ -723,84 +621,18 @@ function LockedCard({
 
 // ── Tier Feature Table ────────────────────────────────────────────────────────
 
-const TIER_FEATURES = [
-  {
-    key: "scans",
-    label: "Scans / month",
-    free: "3",
-    basic: "20",
-    premium: "Unlimited",
-  },
-  {
-    key: "results",
-    label: "Results per scan",
-    free: "3",
-    basic: "All",
-    premium: "All",
-  },
-  {
-    key: "breakdown",
-    label: "Score breakdown",
-    free: false,
-    basic: true,
-    premium: true,
-  },
-  {
-    key: "competitors",
-    label: "Competitor weaknesses",
-    free: false,
-    basic: true,
-    premium: true,
-  },
-  {
-    key: "demand",
-    label: "Demand signals chart",
-    free: false,
-    basic: true,
-    premium: true,
-  },
-  {
-    key: "trend",
-    label: "Trend data (90-day)",
-    free: false,
-    basic: false,
-    premium: true,
-  },
-  {
-    key: "entry_price",
-    label: "Entry price suggestion",
-    free: false,
-    basic: false,
-    premium: true,
-  },
-  {
-    key: "ai_insights",
-    label: "AI strategic insights",
-    free: false,
-    basic: false,
-    premium: true,
-  },
-  {
-    key: "watchlist",
-    label: "Watchlist",
-    free: true,
-    basic: true,
-    premium: true,
-  },
-  {
-    key: "export",
-    label: "CSV export",
-    free: false,
-    basic: false,
-    premium: true,
-  },
-  {
-    key: "badges",
-    label: "Best Seller gap signal",
-    free: false,
-    basic: true,
-    premium: true,
-  },
+const getTierFeatures = (t: any) => [
+  { key: "scans",       label: t("whiteSpaceFinder.scansMonth", "Scans / month"),         free: "3",   basic: "20",  premium: t("whiteSpaceFinder.unlimited", "Unlimited") },
+  { key: "results",     label: t("whiteSpaceFinder.resultsPerScan", "Results per scan"),       free: "3",   basic: t("whiteSpaceFinder.all", "All"), premium: t("whiteSpaceFinder.all", "All")       },
+  { key: "breakdown",   label: t("whiteSpaceFinder.scoreBreakdown", "Score breakdown"),        free: false, basic: true,  premium: true        },
+  { key: "competitors", label: t("whiteSpaceFinder.competitorWeaknesses", "Competitor weaknesses"),  free: false, basic: true,  premium: true        },
+  { key: "demand",      label: t("whiteSpaceFinder.demandSignalsChart", "Demand signals chart"),   free: false, basic: true,  premium: true        },
+  { key: "trend",       label: t("whiteSpaceFinder.trendData", "Trend data (90-day)"),    free: false, basic: false, premium: true        },
+  { key: "entry_price", label: t("whiteSpaceFinder.entryPriceSuggestion", "Entry price suggestion"), free: false, basic: false, premium: true        },
+  { key: "ai_insights", label: t("whiteSpaceFinder.aiStrategicInsights", "AI strategic insights"),  free: false, basic: false, premium: true        },
+  { key: "watchlist",   label: t("whiteSpaceFinder.watchlist", "Watchlist"),              free: true,  basic: true,  premium: true        },
+  { key: "export",      label: t("whiteSpaceFinder.csvExport", "CSV export"),             free: false, basic: false, premium: true        },
+  { key: "badges",      label: t("whiteSpaceFinder.bestSellerGapSignal", "Best Seller gap signal"), free: false, basic: true,  premium: true        },
 ];
 
 function TierCell({ val }: { val: boolean | string }) {
@@ -815,6 +647,7 @@ function TierCell({ val }: { val: boolean | string }) {
 // ══════════════════════════════════════════════════════════════════════════════
 
 function WhiteSpaceFinderContent() {
+  const { t } = useTranslation();
   const { user, isLoading: authLoading } = useAuth();
   const { resolvedTheme } = useTheme();
   const userEmail = user?.email || "";
@@ -1099,30 +932,10 @@ function WhiteSpaceFinderContent() {
     ])[0] ?? [];
 
   const distData = [
-    {
-      name: "Hot 80+",
-      count: (result?.opportunities ?? []).filter((o) => o.score >= 80).length,
-      fill: "#639922",
-    },
-    {
-      name: "Good 65–79",
-      count: (result?.opportunities ?? []).filter(
-        (o) => o.score >= 65 && o.score < 80,
-      ).length,
-      fill: "#378ADD",
-    },
-    {
-      name: "Mod 50–64",
-      count: (result?.opportunities ?? []).filter(
-        (o) => o.score >= 50 && o.score < 65,
-      ).length,
-      fill: "#BA7517",
-    },
-    {
-      name: "Skip <50",
-      count: (result?.opportunities ?? []).filter((o) => o.score < 50).length,
-      fill: "#E24B4A",
-    },
+    { name: `Hot 80+`,    count: (result?.opportunities ?? []).filter((o) => o.score >= 80).length,                 fill: "#639922" },
+    { name: `Good 65–79`, count: (result?.opportunities ?? []).filter((o) => o.score >= 65 && o.score < 80).length, fill: "#378ADD" },
+    { name: `Mod 50–64`,  count: (result?.opportunities ?? []).filter((o) => o.score >= 50 && o.score < 65).length, fill: "#BA7517" },
+    { name: `Skip <50`,   count: (result?.opportunities ?? []).filter((o) => o.score < 50).length,                  fill: "#E24B4A" },
   ];
 
   const chartStyle =
@@ -1181,11 +994,10 @@ function WhiteSpaceFinderContent() {
             </div>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-                Opportunity Finder
+                {t("whiteSpaceFinder.opportunityFinder", "Opportunity Finder")}
               </h1>
               <p className="text-slate-500 text-sm font-medium">
-                Discover untapped product gaps and find hidden opportunities
-                across Amazon and Flipkart.
+                {t("whiteSpaceFinder.discoverUntapped", "Discover untapped product gaps and find hidden opportunities across Amazon and Flipkart.")}
               </p>
             </div>
           </div>
@@ -1195,12 +1007,8 @@ function WhiteSpaceFinderContent() {
             {(result || usageLimits) && (
               <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
                 <div className="flex items-center justify-between gap-3 mb-1">
-                  <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">
-                    Scans used
-                  </p>
-                  <Badge
-                    className={`h-4 text-[10px] border-none px-1.5 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-violet-100 text-violet-800" : tier === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}
-                  >
+                  <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{t("whiteSpaceFinder.scansUsed", "Scans used")}</p>
+                  <Badge className={`h-4 text-[10px] border-none px-1.5 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-violet-100 text-violet-800" : tier === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
                     {tier.toUpperCase()}
                   </Badge>
                 </div>
@@ -1253,12 +1061,8 @@ function WhiteSpaceFinderContent() {
                     data-track-id="export-btn"
                     className="flex items-center gap-1.5 text-xs px-3 py-2 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 text-slate-600 transition-colors"
                   >
-                    {exporting ? (
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                    ) : (
-                      <Download className="w-3.5 h-3.5" />
-                    )}
-                    Export CSV
+                    {exporting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+                    {t("whiteSpaceFinder.exportCsv", "Export CSV")}
                   </button>
                 )}
                 <button
@@ -1267,7 +1071,7 @@ function WhiteSpaceFinderContent() {
                   data-filter-value={showTierTable ? "hide" : "show"}
                   className="flex items-center gap-1.5 text-xs px-3 py-2 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 text-slate-600 transition-colors"
                 >
-                  <Crown className="w-3.5 h-3.5 text-amber-500" /> Plans
+                  <Crown className="w-3.5 h-3.5 text-amber-500" /> {t("whiteSpaceFinder.plans", "Plans")}
                 </button>
               </div>
             )}
@@ -1280,20 +1084,15 @@ function WhiteSpaceFinderContent() {
                 data-filter-value={showTierTable ? "hide" : "show"}
                 className="flex items-center gap-1.5 text-xs px-3 py-2 border border-slate-300 rounded-xl bg-white hover:bg-slate-50 text-slate-600 transition-colors"
               >
-                <Crown className="w-3.5 h-3.5 text-amber-500" /> Plans
+                <Crown className="w-3.5 h-3.5 text-amber-500" /> {t("whiteSpaceFinder.plans", "Plans")}
               </button>
             )}
 
             {authLoading ? (
-              <p className="text-xs text-slate-400 animate-pulse">
-                Checking session…
-              </p>
+              <p className="text-xs text-slate-400 animate-pulse">{t("whiteSpaceFinder.checkingSession", "Checking session…")}</p>
             ) : !userEmail ? (
-              <Badge
-                variant="outline"
-                className="text-orange-600 border-orange-200 bg-orange-50 gap-1 text-[10px]"
-              >
-                <AlertCircle className="h-3 w-3" /> Guest Mode
+              <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50 gap-1 text-[10px]">
+                <AlertCircle className="h-3 w-3" /> {t("whiteSpaceFinder.guestMode", "Guest Mode")}
               </Badge>
             ) : null}
           </div>
@@ -1306,7 +1105,7 @@ function WhiteSpaceFinderContent() {
               <CardHeader className="pb-2">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-base font-semibold text-slate-700 dark:text-slate-250 flex items-center gap-2">
-                    <Crown className="h-4 w-4 text-amber-500" /> Plan comparison
+                    <Crown className="h-4 w-4 text-amber-500" /> {t("whiteSpaceFinder.planComparison", "Plan comparison")}
                   </CardTitle>
                   <button
                     onClick={() => setShowTierTable(false)}
@@ -1321,46 +1120,23 @@ function WhiteSpaceFinderContent() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-slate-200 dark:border-slate-800">
-                        <th className="text-left p-2.5 text-xs text-slate-500 dark:text-slate-405 font-medium w-48 bg-transparent">
-                          Feature
-                        </th>
-                        <th className="text-center p-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 bg-transparent">
-                          Free
-                        </th>
+                        <th className="text-left p-2.5 text-xs text-slate-500 dark:text-slate-405 font-medium w-48 bg-transparent">{t("whiteSpaceFinder.feature", "Feature")}</th>
+                        <th className="text-center p-2.5 text-xs font-semibold text-slate-600 dark:text-slate-350 bg-transparent">{t("whiteSpaceFinder.free", "Free")}</th>
                         <th className="text-center p-2.5 text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/25 rounded-t">
-                          Basic
-                          <br />
-                          <span className="text-[10px] font-normal">
-                            ₹1,999/mo
-                          </span>
+                          {t("whiteSpaceFinder.basic", "Basic")}<br /><span className="text-[10px] font-normal">₹1,999{t("whiteSpaceFinder.monthText", "/mo")}</span>
                         </th>
                         <th className="text-center p-2.5 text-xs font-semibold text-violet-700 dark:text-violet-400 bg-violet-50 dark:bg-violet-950/25 rounded-t">
-                          Premium
-                          <br />
-                          <span className="text-[10px] font-normal">
-                            ₹2,999/mo
-                          </span>
+                          {t("whiteSpaceFinder.premium", "Premium")}<br /><span className="text-[10px] font-normal">₹2,999{t("whiteSpaceFinder.monthText", "/mo")}</span>
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {TIER_FEATURES.map((f) => (
-                        <tr
-                          key={f.key}
-                          className="border-b border-slate-100 dark:border-slate-800/60"
-                        >
-                          <td className="p-2.5 text-xs text-slate-600 dark:text-slate-300 bg-transparent">
-                            {f.label}
-                          </td>
-                          <td className="p-2.5 text-center bg-transparent">
-                            <TierCell val={f.free} />
-                          </td>
-                          <td className="p-2.5 text-center bg-amber-50/40 dark:bg-amber-950/10">
-                            <TierCell val={f.basic} />
-                          </td>
-                          <td className="p-2.5 text-center bg-violet-50/40 dark:bg-violet-950/10">
-                            <TierCell val={f.premium} />
-                          </td>
+                      {getTierFeatures(t).map((f) => (
+                        <tr key={f.key} className="border-b border-slate-100 dark:border-slate-800/60">
+                          <td className="p-2.5 text-xs text-slate-600 dark:text-slate-300 bg-transparent">{f.label}</td>
+                          <td className="p-2.5 text-center bg-transparent"><TierCell val={f.free} /></td>
+                          <td className="p-2.5 text-center bg-amber-50/40 dark:bg-amber-950/10"><TierCell val={f.basic} /></td>
+                          <td className="p-2.5 text-center bg-violet-50/40 dark:bg-violet-950/10"><TierCell val={f.premium} /></td>
                         </tr>
                       ))}
                     </tbody>
@@ -1374,7 +1150,7 @@ function WhiteSpaceFinderContent() {
                           >
                             {tier === t ? (
                               <span className="inline-flex items-center gap-1 text-xs font-semibold text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-950/30 px-3 py-1 rounded-full border border-violet-200/55 dark:border-violet-900/35">
-                                <CheckCircle className="w-3 h-3" /> Your plan
+                                <CheckCircle className="w-3 h-3" /> {t("whiteSpaceFinder.yourPlan", "Your plan")}
                               </span>
                             ) : t !== "free" ? (
                               <a
@@ -1385,7 +1161,7 @@ function WhiteSpaceFinderContent() {
                                     : "bg-violet-600 text-white hover:bg-violet-700"
                                 }`}
                               >
-                                Upgrade
+                                {t("whiteSpaceFinder.upgrade", "Upgrade")}
                               </a>
                             ) : null}
                           </td>
@@ -1407,7 +1183,7 @@ function WhiteSpaceFinderContent() {
                     value={query}
                     onChange={setQuery}
                     onEnter={runScan}
-                    placeholder='Search a product, e.g. "kitchen organizer", "baby feeding", "pet care"'
+                    placeholder={t("whiteSpaceFinder.searchPlaceholder", "Search a category or product, e.g. \"kitchen organizer\", \"baby feeding\", \"pet care\"")}
                     inputClassName="py-3 border-slate-300 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/20 focus:border-violet-400 dark:focus:border-violet-500/40"
                     dictionary={[
                       "kitchen organizer",
@@ -1436,17 +1212,9 @@ function WhiteSpaceFinderContent() {
                   disabled={loading || !query.trim()}
                   className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold text-sm rounded-xl shadow hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all min-w-[130px] justify-center"
                 >
-                  {loading ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      Scanning…
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4" />
-                      Find gaps
-                    </>
-                  )}
+                  {loading
+                    ? <><RefreshCw className="w-4 h-4 animate-spin" />{t("whiteSpaceFinder.scanning", "Scanning…")}</>
+                    : <><Sparkles className="w-4 h-4" />{t("whiteSpaceFinder.findGaps", "Find gaps")}</>}
                 </button>
               </div>
 
@@ -1461,11 +1229,7 @@ function WhiteSpaceFinderContent() {
                       data-track-id="platform_filter_btn"
                       data-filter-value={p}
                     >
-                      {p === "both"
-                        ? "Both"
-                        : p === "amazon"
-                          ? "Amazon.in"
-                          : "Flipkart"}
+                      {p === "both" ? t("whiteSpaceFinder.both", "Both") : p === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon.in") : t("whiteSpaceFinder.flipkart", "Flipkart")}
                     </button>
                   ))}
                 </div>
@@ -1479,11 +1243,39 @@ function WhiteSpaceFinderContent() {
                   data-filter-value={category}
                 >
                   {categories.map((c) => (
-                    <option key={c} value={c}>
-                      {c === "all" ? "All categories" : c}
-                    </option>
+                    <option key={c} value={c}>{c === "all" ? t("whiteSpaceFinder.allCategories", "All categories") : c}</option>
                   ))}
                 </select>
+
+                {/* Min score */}
+                <select
+                  value={minScore}
+                  onChange={(e) => setMinScore(Number(e.target.value))}
+                  className="h-9 px-3 text-xs border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-650 dark:text-slate-200 focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/20 outline-none"
+                  data-track-id="min_score_filter_select"
+                  data-filter-value={String(minScore)}
+                >
+                  <option value={0}>{t("whiteSpaceFinder.anyScore", "Any score")}</option>
+                  <option value={80}>{t("whiteSpaceFinder.hotOnly", "Hot only (80+)")}</option>
+                  <option value={65}>{t("whiteSpaceFinder.goodPlus", "Good+ (65+)")}</option>
+                  <option value={50}>{t("whiteSpaceFinder.moderatePlus", "Moderate+ (50+)")}</option>
+                </select>
+
+                {/* Sort */}
+                <div className="flex items-center gap-1.5 ml-auto">
+                  <SortAsc className="w-3.5 h-3.5 text-slate-400" />
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                    className="h-9 px-3 text-xs border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-650 dark:text-slate-200 focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/20 outline-none"
+                    data-track-id="sort_by_filter_select"
+                    data-filter-value={sortBy}
+                  >
+                    <option value="score">Sort: Score</option>
+                    <option value="revenue">Sort: Revenue</option>
+                    <option value="competition">Sort: Fewest competitors</option>
+                  </select>
+                </div>
               </div>
 
               {/* Quick pills */}
@@ -1587,37 +1379,16 @@ function WhiteSpaceFinderContent() {
                       </span>
                     </h3>
                     <p className="text-xs text-slate-400 mt-0.5">
-                      {
-                        (result?.opportunities ?? []).filter(
-                          (o) => o.score >= 80,
-                        ).length
-                      }{" "}
-                      hot picks ·{" "}
-                      {
-                        (result?.opportunities ?? []).filter(
-                          (o) => o.score >= 65 && o.score < 80,
-                        ).length
-                      }{" "}
-                      good gaps ·{" "}
-                      {
-                        (result?.opportunities ?? []).filter(
-                          (o) => o.score < 50,
-                        ).length
-                      }{" "}
-                      to skip
+                      {(result?.opportunities ?? []).filter((o) => o.score >= 80).length} {t("whiteSpaceFinder.hotPicks", "hot picks")} ·{" "}
+                      {(result?.opportunities ?? []).filter((o) => o.score >= 65 && o.score < 80).length} {t("whiteSpaceFinder.goodGaps", "good gaps")} ·{" "}
+                      {(result?.opportunities ?? []).filter((o) => o.score < 50).length} {t("whiteSpaceFinder.toSkip", "to skip")}
                     </p>
                   </div>
                   {result.total_found > 0 && (
                     <div className="text-right">
-                      <p className="text-xs text-slate-400">Top score</p>
-                      <p
-                        className={`text-xl font-bold ${getScoreColor((result?.opportunities ?? []).length > 0 ? Math.max(...result.opportunities.map((o) => o.score)) : 0)}`}
-                      >
-                        {(result?.opportunities ?? []).length > 0
-                          ? Math.max(
-                              ...result.opportunities.map((o) => o.score),
-                            )
-                          : 0}
+                      <p className="text-xs text-slate-400">{t("whiteSpaceFinder.topScore", "Top score")}</p>
+                      <p className={`text-xl font-bold ${getScoreColor((result?.opportunities ?? []).length > 0 ? Math.max(...result.opportunities.map((o) => o.score)) : 0)}`}>
+                        {(result?.opportunities ?? []).length > 0 ? Math.max(...result.opportunities.map((o) => o.score)) : 0}
                       </p>
                     </div>
                   )}
@@ -1629,15 +1400,9 @@ function WhiteSpaceFinderContent() {
                     <Bot className="w-4 h-4 text-violet-600 dark:text-violet-450 shrink-0 mt-0.5" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <p className="text-xs font-semibold text-violet-700 dark:text-violet-400">
-                          AI market summary
-                        </p>
-                        <span
-                          className={`text-[9px] px-1.5 py-0.5 rounded-full font-mono border ${ollamaStatus.status === "ready" ? "bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-400 border-green-200/50 dark:border-green-900/30" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700"}`}
-                        >
-                          {ollamaStatus.status === "ready"
-                            ? "Insydz"
-                            : "static fallback"}
+                        <p className="text-xs font-semibold text-violet-700 dark:text-violet-400">{t("whiteSpaceFinder.aiMarketSummary", "AI market summary")}</p>
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-mono border ${ollamaStatus.status === "ready" ? "bg-green-100 dark:bg-green-950/30 text-green-700 dark:text-green-400 border-green-200/50 dark:border-green-900/30" : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700"}`}>
+                          {ollamaStatus.status === "ready" ? "Insydz" : "static fallback"}
                         </span>
                       </div>
                       <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
@@ -1650,9 +1415,7 @@ function WhiteSpaceFinderContent() {
                   <div className="flex items-start gap-3 p-4 bg-slate-50 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-800 rounded-2xl">
                     <Bot className="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-                        AI market summary unavailable
-                      </p>
+                      <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">{t("whiteSpaceFinder.aiMarketSummaryUnavailable", "AI market summary unavailable")}</p>
                       <p className="text-xs text-slate-400 dark:text-slate-500">
                         AI summary could not be generated at this time. Please try again later.
                       </p>

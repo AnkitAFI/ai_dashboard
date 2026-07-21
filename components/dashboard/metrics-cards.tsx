@@ -6,6 +6,7 @@ import { TrendingUp, ShoppingCart, Star, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { API_BASE_URL } from "@/lib/config";
 import { useFilters } from "@/components/dashboard/filters-context";
+import { useTranslation } from "react-i18next";
 
 interface MetricCardProps {
   title: string;
@@ -16,6 +17,7 @@ interface MetricCardProps {
 }
 
 function MetricCard({ title, value, icon, color, isLoading }: MetricCardProps) {
+  const { t } = useTranslation();
   if (isLoading) {
     return (
       <Card className="metric-card bg-card rounded-xl p-6 border shadow-sm">
@@ -35,7 +37,7 @@ function MetricCard({ title, value, icon, color, isLoading }: MetricCardProps) {
       <div className="flex items-center justify-between mb-4">
         <div className={cn("p-3 rounded-lg", color)}>{icon}</div>
         <Badge variant="secondary" className="ai-badge text-xs">
-          Live
+          {t('metrics.live', 'Live')}
         </Badge>
       </div>
       <h3 className="text-2xl font-bold text-foreground mb-1">{value}</h3>
@@ -45,6 +47,7 @@ function MetricCard({ title, value, icon, color, isLoading }: MetricCardProps) {
 }
 
 export default function MetricsCards({ selectedSource }: { selectedSource: string }) {
+  const { t } = useTranslation();
   const BASE_URL = API_BASE_URL;
   const { filters } = useFilters(); // ✅ Get filters from context
 
@@ -199,25 +202,25 @@ export default function MetricsCards({ selectedSource }: { selectedSource: strin
 
   const cards = [
     {
-      title: showBoth ? "Total Reviews (Both)" : isAmazon ? "Total Reviews (Amazon)" : "Total Reviews (Flipkart)",
+      title: showBoth ? `${t('metrics.totalReviews', 'Total Reviews')} (${t('metrics.both', 'Both')})` : isAmazon ? `${t('metrics.totalReviews', 'Total Reviews')} (Amazon)` : `${t('metrics.totalReviews', 'Total Reviews')} (Flipkart)`,
       value: formatNumber(totalReviews),
       icon: <MessageSquare className="text-blue-600 h-6 w-6" />,
       color: "bg-blue-100",
     },
     {
-      title: showBoth ? "Average Rating (Both)" : isAmazon ? "Average Rating (Amazon)" : "Average Rating (Flipkart)",
+      title: showBoth ? `${t('metrics.avgRating', 'Average Rating')} (${t('metrics.both', 'Both')})` : isAmazon ? `${t('metrics.avgRating', 'Average Rating')} (Amazon)` : `${t('metrics.avgRating', 'Average Rating')} (Flipkart)`,
       value: avgRating ? avgRating.toFixed(2) : "0.0",
       icon: <Star className="text-yellow-600 h-6 w-6" />,
       color: "bg-yellow-100",
     },
     {
-      title: showBoth ? "Products (Both)" : isAmazon ? "Products (Amazon)" : "Products (Flipkart)",
+      title: showBoth ? `${t('metrics.products', 'Products')} (${t('metrics.both', 'Both')})` : isAmazon ? `${t('metrics.products', 'Products')} (Amazon)` : `${t('metrics.products', 'Products')} (Flipkart)`,
       value: totalProducts.toString(),
       icon: <ShoppingCart className="text-green-600 h-6 w-6" />,
       color: "bg-green-100",
     },
     {
-      title: showBoth ? "Categories (Both)" : isAmazon ? "Categories (Amazon)" : "Categories (Flipkart)",
+      title: showBoth ? `${t('metrics.categories', 'Categories')} (${t('metrics.both', 'Both')})` : isAmazon ? `${t('metrics.categories', 'Categories')} (Amazon)` : `${t('metrics.categories', 'Categories')} (Flipkart)`,
       value: totalCategories.toString(),
       icon: <TrendingUp className="text-purple-600 h-6 w-6" />,
       color: "bg-purple-100",

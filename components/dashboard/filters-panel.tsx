@@ -11,8 +11,9 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Filter, X, RotateCcw, Lock, Crown, Info, AlertCircle } from "lucide-react";
-import { useFilters } from "./filters-context";
+import { useFilters, FilterState } from "./filters-context";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogContent,
@@ -60,6 +61,7 @@ const TOP_N_OPTIONS = [
 ];
 
 export default function FiltersPanel() {
+  const { t } = useTranslation();
   const { filters: appliedFiltersContext, setFilters: setAppliedFiltersContext, maxTopN } = useFilters();
   const { currentTier, limits, canAccessFeature } = useSubscriptionLimits();
 
@@ -188,13 +190,13 @@ export default function FiltersPanel() {
         <CardHeader className="flex flex-row items-center justify-between pb-4">
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5" />
-            Filters & Settings
+            {t('filters.title', 'Filters & Settings')}
             <Badge variant="outline" className="text-xs ml-2 bg-gradient-to-r from-purple-50 to-blue-50 border-purple-300 text-purple-700">
               {currentTier.toUpperCase()}
             </Badge>
           </CardTitle>
           <Button variant="outline" size="sm" onClick={resetFilters} data-track-id="filters_reset_btn">
-            <RotateCcw className="h-4 w-4 mr-2" /> Reset
+            <RotateCcw className="h-4 w-4 mr-2" /> {t('filters.reset', 'Reset')}
           </Button>
         </CardHeader>
 
@@ -202,7 +204,7 @@ export default function FiltersPanel() {
           {/* Applied Filters */}
           {appliedFilters.length > 0 && (
             <div>
-              <Label className="text-sm font-medium mb-2 block">Applied Filters</Label>
+              <Label className="text-sm font-medium mb-2 block">{t('filters.appliedFilters', 'Applied Filters')}</Label>
               <div className="flex flex-wrap gap-2">
                 {appliedFilters.map((filter, index) => (
                   <Badge
@@ -222,10 +224,10 @@ export default function FiltersPanel() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Table Selector */}
             <div className="space-y-2">
-              <Label>Data Source</Label>
+              <Label>{t('filters.dataSource', 'Data Source')}</Label>
               <Select value={localFilters.table} onValueChange={(v) => updateLocalFilter("table", v)}>
                 <SelectTrigger className="w-full" data-track-id="filters_datasource_select" data-filter-value={localFilters.table}>
-                  <SelectValue placeholder="Select table" />
+                  <SelectValue placeholder={t('filters.selectData', 'Select data source')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="flipkart" data-track-id="filters_datasource_option" data-filter-value="flipkart">Flipkart</SelectItem>
@@ -236,10 +238,10 @@ export default function FiltersPanel() {
 
             {/* Category Selector */}
             <div className="space-y-2">
-              <Label>Category</Label>
+              <Label>{t('filters.category', 'Category')}</Label>
               <Select value={localFilters.category} onValueChange={(v) => updateLocalFilter("category", v)}>
                 <SelectTrigger className="w-full" data-track-id="filters_category_select" data-filter-value={localFilters.category}>
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder={t('filters.selectCategory', 'Select category')} />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((cat) => (
@@ -253,7 +255,7 @@ export default function FiltersPanel() {
 
             {/* Price Range */}
             <div className="space-y-2">
-              <Label>Price Range</Label>
+              <Label>{t('filters.priceRange', 'Price Range')}</Label>
               <div className="px-2">
                 <Slider
                   value={localFilters.priceRange}
@@ -274,10 +276,10 @@ export default function FiltersPanel() {
 
             {/* Rating */}
             <div className="space-y-2">
-              <Label>Minimum Rating</Label>
+              <Label>{t('filters.minRating', 'Minimum Rating')}</Label>
               <Select value={localFilters.rating.toString()} onValueChange={(v) => updateLocalFilter("rating", parseFloat(v))}>
                 <SelectTrigger className="w-full" data-track-id="filters_rating_select" data-filter-value={localFilters.rating.toString()}>
-                  <SelectValue placeholder="All Ratings" />
+                  <SelectValue placeholder={t('filters.allRatings', 'All Ratings')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="0" data-track-id="filters_rating_option" data-filter-value="0">All Ratings</SelectItem>
@@ -292,10 +294,10 @@ export default function FiltersPanel() {
 
             {/* Date Range */}
             <div className="space-y-2">
-              <Label>Date Range</Label>
+              <Label>{t('filters.dateRange', 'Date Range')}</Label>
               <Select value={localFilters.dateRange} onValueChange={(v) => updateLocalFilter("dateRange", v)}>
                 <SelectTrigger className="w-full" data-track-id="filters_daterange_select" data-filter-value={localFilters.dateRange}>
-                  <SelectValue placeholder="Select date range" />
+                  <SelectValue placeholder={t('filters.selectDate', 'Select date range')} />
                 </SelectTrigger>
                 <SelectContent>
                   {DATE_RANGES.map((range) => (
@@ -309,10 +311,10 @@ export default function FiltersPanel() {
 
             {/* Sort By */}
             <div className="space-y-2">
-              <Label>Sort By</Label>
+              <Label>{t('filters.sortBy', 'Sort By')}</Label>
               <Select value={localFilters.sortBy} onValueChange={(v) => updateLocalFilter("sortBy", v)}>
                 <SelectTrigger className="w-full" data-track-id="filters_sortby_select" data-filter-value={localFilters.sortBy}>
-                  <SelectValue placeholder="Sort by" />
+                  <SelectValue placeholder={t('filters.sortByOption', 'Sort by')} />
                 </SelectTrigger>
                 <SelectContent>
                   {SORT_OPTIONS.map((option) => (
@@ -328,7 +330,7 @@ export default function FiltersPanel() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label className="flex items-center gap-2">
-                  Top N Products
+                  {t('filters.topN', 'Top N Products')}
                   <div className="group relative">
                     <Info className="h-3 w-3 text-muted-foreground cursor-help" />
                     <div className="hidden group-hover:block absolute z-50 w-48 p-2 bg-gray-900 text-white text-xs rounded shadow-lg -top-2 left-6">

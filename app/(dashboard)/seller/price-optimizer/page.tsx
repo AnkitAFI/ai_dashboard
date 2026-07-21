@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { useSelectedProduct } from "@/lib/selected-product-context";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 import {
   Lock, Crown, RefreshCw, Menu, Package,
   TrendingUp, TrendingDown, Minus, CheckCircle,
@@ -188,6 +189,7 @@ function useStream() {
 
 function TierGate({ tier, feature, isDark }: { tier: "basic" | "premium" | "enterprise"; feature: string; isDark: boolean }) {
   const router = useRouter();
+  const { t } = useTranslation();
   return (
     <div className={`absolute inset-0 backdrop-blur-[3px] rounded-2xl flex flex-col items-center justify-center z-10 gap-3 ${isDark ? 'bg-slate-900/85' : 'bg-white/88'}`}>
       <div className={`w-11 h-11 rounded-full flex items-center justify-center shadow-sm ${tier === "enterprise" ? isDark ? "bg-fuchsia-900/40 text-fuchsia-400 border border-fuchsia-500/50" : "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300" : tier === "premium" ? isDark ? "bg-blue-900/50" : "bg-blue-50" : isDark ? "bg-amber-900/50" : "bg-amber-50"}`}>
@@ -196,14 +198,14 @@ function TierGate({ tier, feature, isDark }: { tier: "basic" | "premium" | "ente
       <div className="text-center px-4">
         <p className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{feature}</p>
         <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
-          {tier === "premium" ? "Premium · ₹2,999/mo" : "Basic · ₹1,999/mo"}
+          {tier === "premium" ? t('sellerPages.premiumPlan', 'Premium · ₹2,999/mo') : t('sellerPages.basicPlan', 'Basic · ₹1,999/mo')}
         </p>
       </div>
       <button
         onClick={() => router.push("/subscription")}
         className={`flex items-center gap-1.5 px-5 py-2 rounded-full text-xs font-bold text-white shadow-md transition-all hover:scale-105 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-amber-500 to-orange-500"}`}
       >
-        <Crown className="w-3 h-3" /> Upgrade
+        <Crown className="w-3 h-3" /> {t('common.upgrade', 'Upgrade')}
       </button>
     </div>
   );
@@ -283,10 +285,11 @@ function ConfidenceRing({ score, isDark }: { score: number; isDark: boolean }) {
 }
 
 function StreamBox({ stream, isDark }: { stream: ReturnType<typeof useStream>; isDark: boolean }) {
+  const { t } = useTranslation();
   return (
     <div className={`mt-3 min-h-12 max-h-72 overflow-y-auto rounded-xl p-4 border shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200'}`}>
       {stream.streaming && !stream.text && (
-        <span className={`text-xs animate-pulse ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Analysing...</span>
+        <span className={`text-xs animate-pulse ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{t('common.analysing', 'Analysing...')}</span>
       )}
       {(stream.text || stream.streaming) && (
         <div className={`prose prose-sm max-w-none leading-relaxed ${isDark ? 'text-slate-300' : 'text-slate-800'}`}>
@@ -295,16 +298,16 @@ function StreamBox({ stream, isDark }: { stream: ReturnType<typeof useStream>; i
         </div>
       )}
       {stream.error === "upgrade_required" && (
-        <span className={`text-xs font-medium ${isDark ? 'text-amber-500' : 'text-amber-600'}`}>Available on Premium plan. Upgrade to unlock.</span>
+        <span className={`text-xs font-medium ${isDark ? 'text-amber-500' : 'text-amber-600'}`}>{t('sellerPages.upgradeRequired', 'Available on Premium plan. Upgrade to unlock.')}</span>
       )}
       {stream.error === "ollama_offline" && (
-        <span className={`text-xs font-medium ${isDark ? 'text-red-400' : 'text-red-600'}`}>AI is temporarily unavailable. Please try again shortly.</span>
+        <span className={`text-xs font-medium ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('sellerPages.aiOffline', 'AI is temporarily unavailable. Please try again shortly.')}</span>
       )}
       {stream.error === "stream_interrupted" && (
-        <span className={`text-xs font-medium ${isDark ? 'text-red-400' : 'text-red-600'}`}>Analysis interrupted. Retry to continue — no data lost.</span>
+        <span className={`text-xs font-medium ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('sellerPages.analysisInterrupted', 'Analysis interrupted. Retry to continue — no data lost.')}</span>
       )}
       {stream.error && !["upgrade_required", "ollama_offline", "stream_interrupted"].includes(stream.error) && (
-        <span className={`text-xs font-medium ${isDark ? 'text-red-400' : 'text-red-600'}`}>Couldn't complete analysis. Please try again.</span>
+        <span className={`text-xs font-medium ${isDark ? 'text-red-400' : 'text-red-600'}`}>{t('sellerPages.analysisFailed', 'Couldn\'t complete analysis. Please try again.')}</span>
       )}
     </div>
   );
@@ -313,6 +316,7 @@ function StreamBox({ stream, isDark }: { stream: ReturnType<typeof useStream>; i
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function SellerPriceOptimizer() {
+  const { t } = useTranslation();
   const searchParams = useSearchParams();
   const router       = useRouter();
   const { user }     = useAuth();
@@ -408,10 +412,10 @@ export default function SellerPriceOptimizer() {
           </div>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-              Price Optimizer
+              {t('sellerPages.priceOptTitle', 'Price Optimizer')}
             </h1>
             <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-              Live repricing intelligence and price optimization recommendations for your tracked products.
+              {t('sellerPages.priceOptSubtitle', 'Live repricing intelligence and price optimization recommendations for your tracked products.')}
             </p>
           </div>
         </div>
@@ -436,12 +440,12 @@ export default function SellerPriceOptimizer() {
               <TrendingUp className="w-8 h-8 text-sky-400" />
             </div>
             <div>
-              <p className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>No product selected</p>
-              <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Select a product from My Products to run the price optimizer.</p>
+              <p className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{t('sellerPages.noProductSelected', 'No product selected')}</p>
+              <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{t('sellerPages.priceOptSub', 'Select a product from My Products to run the price optimizer.')}</p>
             </div>
             <button onClick={() => router.push("/seller/my-products")}
               className="px-5 py-2 bg-sky-600 text-white rounded-full text-sm font-semibold hover:bg-sky-700 transition-colors">
-              Go to My Products
+              {t('sellerPages.goToMyProducts', 'Go to My Products')}
             </button>
           </div>
         )}

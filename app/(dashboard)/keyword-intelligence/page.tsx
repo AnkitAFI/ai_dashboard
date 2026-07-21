@@ -22,6 +22,7 @@ import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useKIUsage } from "@/hooks/use-ki-usage";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 import {
   Loader2, X, TrendingUp, TrendingDown, Minus,
   Plus, Trash2, RefreshCw, BarChart3, Target, Crown,
@@ -622,6 +623,7 @@ function KeywordExplorerPanel({
   onKeywordAdded,
   userTier = "free",
 }: KeywordExplorerProps) {
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
   const isDark = mounted && resolvedTheme === "dark";
@@ -753,12 +755,12 @@ function KeywordExplorerPanel({
         <CardContent className="p-5">
           <div className="flex flex-col md:flex-row gap-4 items-end pt-4">
             <div className="flex-1 space-y-2 w-full">
-              <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Search by Product Name</Label>
+              <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">{t('ki.searchByProductName', 'Search by Product Name')}</Label>
               <div className="relative">
                 <SmartSearchInput
                   value={keyword}
                   onChange={setKeyword}
-                  placeholder="e.g. boAt Rockerz 450, iPhone 14 Pro, Vitamin C Face Serum"
+                  placeholder={t('ki.searchPlaceholder', 'e.g. boAt Rockerz 450, iPhone 14 Pro, Vitamin C Face Serum')}
                   inputClassName="h-11 border-slate-200 dark:border-slate-800 focus-visible:ring-purple-600 dark:focus-visible:ring-purple-500 rounded-xl bg-transparent"
                   onEnter={handleSearch}
                   id="keyword-search-input"
@@ -766,7 +768,7 @@ function KeywordExplorerPanel({
               </div>
             </div>
             <div className="w-full md:w-44 space-y-2">
-              <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Marketplace</Label>
+              <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">{t('ki.marketplace', 'Marketplace')}</Label>
               <Select value={platform} onValueChange={setPlatform}>
                 <SelectTrigger className="h-11 border-slate-200 dark:border-slate-800 bg-transparent rounded-xl" data-track-id="marketplace-select" data-filter-value={platform}>
                   <SelectValue />
@@ -794,12 +796,12 @@ function KeywordExplorerPanel({
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Analyzing...
+                  {t('ki.analyzing', 'Analyzing...')}
                 </>
               ) : (
                 <>
                   <Compass className="h-4 w-4" />
-                  Analyze
+                  {t('ki.analyze', 'Analyze')}
                 </>
               )}
             </Button>
@@ -814,10 +816,10 @@ function KeywordExplorerPanel({
             <Loader2 className="h-8 w-8 animate-spin text-purple-600 dark:text-purple-400" />
             <div>
               <h4 className="font-bold text-purple-950 dark:text-purple-100">
-                Retrieving Marketplace Intel
+                {t('ki.retrievingIntel', 'Retrieving Marketplace Intel')}
               </h4>
               <p className="text-xs text-purple-700 dark:text-purple-300 mt-1 max-w-md">
-                We are scanning local search index data, calculating product demand, classifying search intentions, and compiling search recommendations. This process operates 100% free of charge.
+                {t('ki.retrievingDesc', 'We are scanning local search index data, calculating product demand, classifying search intentions, and compiling search recommendations. This process operates 100% free of charge.')}
               </p>
             </div>
           </CardContent>
@@ -832,9 +834,9 @@ function KeywordExplorerPanel({
               <Compass className="h-6 w-6 animate-pulse" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-lg">Keyword Explorer</h3>
+              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-lg">{t('ki.keywordExplorer', 'Keyword Explorer')}</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mt-1.5 mx-auto">
-                Type in any search term above (e.g., "face serum", "water bottle") and click Analyze to retrieve search volumes, buyer intent, regional demand, competitor SERPs, and local AI advice.
+                {t('ki.emptyStateDesc', 'Type in any search term above (e.g., "face serum", "water bottle") and click Analyze to retrieve search volumes, buyer intent, regional demand, competitor SERPs, and local AI advice.')}
               </p>
             </div>
           </CardContent>
@@ -1434,6 +1436,7 @@ function KeywordExplorerPanel({
 // ── Main page content ─────────────────────────────────────────────────────────
 
 function KeywordTrackerIntelligenceContent() {
+  const { t } = useTranslation();
   const { user, isLoading } = useAuth();
   const userId = user?.id;
 
@@ -1506,7 +1509,7 @@ function KeywordTrackerIntelligenceContent() {
             {!usageLoading && user && (
               <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
                 <div className="flex items-center justify-between gap-3 mb-1">
-                  <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Searches used</p>
+                  <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{t('ki.searchesUsed', 'Searches used')}</p>
                   <Badge className={`h-4 text-[10px] border-none px-1.5 ${user.subscriptionTier?.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : user.subscriptionTier?.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : user.subscriptionTier?.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
                     {(user.subscriptionTier || "free").toUpperCase()}
                   </Badge>
@@ -1535,10 +1538,10 @@ function KeywordTrackerIntelligenceContent() {
               <Compass className="h-8 w-8 text-purple-600 dark:text-purple-400" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 dark:from-purple-400 dark:via-indigo-400 dark:to-blue-400 text-transparent bg-clip-text">
-              Keyword Intelligence
+              {t('ki.pageTitle', 'Keyword Intelligence')}
             </h1>
             <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-              Explore high-opportunity buyer search terms, analyze search volumes, and track buyer keywords.
+              {t('ki.pageSubtitle', 'Explore high-opportunity buyer search terms, analyze search volumes, and track buyer keywords.')}
             </p>
           </div>
 
@@ -1572,6 +1575,7 @@ function KeywordTrackerIntelligenceContent() {
 }
 
 export default function KeywordTrackerIntelligence() {
+  const { t } = useTranslation();
   return (
     <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>
       <KeywordTrackerIntelligenceContent />

@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 
 const API = `${API_BASE_URL}/api`;
 
@@ -69,6 +70,7 @@ interface SavedProduct extends SavedProductDB {
 // ── Sub-components ────────────────────────────────────────────────────────────
 
 const TabSlider = ({ activeTab, onChange, whiteSpaceCount, profitCount, isDark }: any) => {
+  const { t } = useTranslation();
   return (
     <div className={cn(
       "bg-slate-200/50 p-1 rounded-2xl flex items-center w-full max-w-sm mx-auto shadow-inner",
@@ -84,7 +86,7 @@ const TabSlider = ({ activeTab, onChange, whiteSpaceCount, profitCount, isDark }
         )}
       >
         <Sparkles className="w-4 h-4" />
-        Niches
+        {t("myWatchlist.niches", "Niches")}
         <span className={cn(
           "text-[10px] px-1.5 py-0.5 rounded-md", 
           activeTab === "whitespace" 
@@ -104,7 +106,7 @@ const TabSlider = ({ activeTab, onChange, whiteSpaceCount, profitCount, isDark }
         )}
       >
         <Calculator className="w-4 h-4" />
-        Calculator
+        {t("myWatchlist.calculator", "Calculator")}
         <span className={cn(
           "text-[10px] px-1.5 py-0.5 rounded-md", 
           activeTab === "profit" 
@@ -120,6 +122,7 @@ const TabSlider = ({ activeTab, onChange, whiteSpaceCount, profitCount, isDark }
 
 export default function MyWatchlist() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   useEffect(() => { setMounted(true); }, []);
@@ -243,10 +246,10 @@ export default function MyWatchlist() {
           </div>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-              My Watchlist
+              {t("myWatchlist.title", "My Watchlist")}
             </h1>
             <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
-              Your saved opportunities and product calculations, synced across all your devices.
+              {t("myWatchlist.subtitle", "Your saved opportunities and product calculations, synced across all your devices.")}
             </p>
           </div>
         </div>
@@ -267,7 +270,7 @@ export default function MyWatchlist() {
             className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-xl shadow hover:opacity-90 transition-all border-none"
           >
             <Sparkles className="w-4 h-4 mr-2" />
-            Find more gaps
+            {t("myWatchlist.findMoreGaps", "Find more gaps")}
           </Button>
         </div>
       </div>
@@ -288,7 +291,7 @@ export default function MyWatchlist() {
               <SmartSearchInput
                 value={search}
                 onChange={setSearch}
-                placeholder={activeTab === "whitespace" ? "Search niches, categories..." : "Search products, categories..."}
+                placeholder={activeTab === "whitespace" ? t("myWatchlist.searchNiches", "Search niches, categories...") : t("myWatchlist.searchProducts", "Search products, categories...")}
                 className="flex-1"
                 inputClassName="py-2.5 border-slate-300 dark:border-slate-800 dark:bg-slate-900"
                 dictionary={[
@@ -307,17 +310,17 @@ export default function MyWatchlist() {
                   onChange={(e) => setSortBy(e.target.value as any)}
                   className="h-10 px-3 text-xs border border-slate-300 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-800 outline-none"
                 >
-                  <option value="added">Recently added</option>
-                  <option value="score">Highest score</option>
-                  <option value="revenue">Est. revenue</option>
+                  <option value="added">{t("myWatchlist.recentlyAdded", "Recently added")}</option>
+                  <option value="score">{t("myWatchlist.highestScore", "Highest score")}</option>
+                  <option value="revenue">{t("myWatchlist.estRevenue", "Est. revenue")}</option>
                 </select>
                 {!confirmClear ? (
                   <Button variant="outline" size="sm" onClick={() => setConfirmClear(true)} className="text-red-500 border-red-200 dark:border-red-950/30 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl">
-                    <Trash2 className="w-3.5 h-3.5 mr-1.5" /> Clear
+                    <Trash2 className="w-3.5 h-3.5 mr-1.5" /> {t("myWatchlist.clear", "Clear")}
                   </Button>
                 ) : (
                   <div className="flex items-center gap-1.5">
-                    <Button size="sm" onClick={clearAll} className="bg-red-500 text-white rounded-xl hover:bg-red-600 border-none">Confirm</Button>
+                    <Button size="sm" onClick={clearAll} className="bg-red-500 text-white rounded-xl hover:bg-red-600 border-none">{t("myWatchlist.confirm", "Confirm")}</Button>
                     <Button size="sm" variant="outline" onClick={() => setConfirmClear(false)} className="rounded-xl border-slate-200 dark:border-slate-800">X</Button>
                   </div>
                 )}
@@ -328,9 +331,9 @@ export default function MyWatchlist() {
                 onChange={(e) => setProfitSortBy(e.target.value as any)}
                 className="h-10 px-3 text-xs border border-slate-300 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800 outline-none"
               >
-                <option value="added">Recently added</option>
-                <option value="margin">Best margin</option>
-                <option value="profit">Best profit</option>
+                <option value="added">{t("myWatchlist.recentlyAdded", "Recently added")}</option>
+                <option value="margin">{t("myWatchlist.bestMargin", "Best margin")}</option>
+                <option value="profit">{t("myWatchlist.bestProfit", "Best profit")}</option>
               </select>
             )}
           </div>
@@ -340,9 +343,9 @@ export default function MyWatchlist() {
         {!userId ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <div className="w-20 h-20 bg-amber-50 dark:bg-slate-900 rounded-2xl flex items-center justify-center mb-6 border border-amber-100 dark:border-slate-800"><Bookmark className="w-9 h-9 text-amber-350" /></div>
-            <h3 className="text-lg font-semibold text-slate-850 dark:text-slate-100 mb-2">Sign in to see your watchlist</h3>
-            <p className="text-sm text-slate-400 dark:text-slate-500 max-w-sm mb-6">Your watchlist is saved to your account so it's available on all your devices.</p>
-            <Button onClick={() => router.push("/login")} className="rounded-xl">Sign In Now</Button>
+            <h3 className="text-lg font-semibold text-slate-850 dark:text-slate-100 mb-2">{t("myWatchlist.signInTitle", "Sign in to see your watchlist")}</h3>
+            <p className="text-sm text-slate-400 dark:text-slate-500 max-w-sm mb-6">{t("myWatchlist.signInDesc", "Your watchlist is saved to your account so it's available on all your devices.")}</p>
+            <Button onClick={() => router.push("/login")} className="rounded-xl">{t("myWatchlist.signInNow", "Sign In Now")}</Button>
           </div>
         ) : apiLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -354,8 +357,8 @@ export default function MyWatchlist() {
           items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center bg-background border border-slate-200 dark:border-slate-800 border-dashed rounded-3xl">
               <div className="w-16 h-16 bg-slate-100 dark:bg-slate-900 rounded-2xl flex items-center justify-center mb-4"><Sparkles className="w-7 h-7 text-slate-350" /></div>
-              <p className="text-slate-500 dark:text-slate-400 font-medium">Your niche watchlist is empty</p>
-              <Button variant="link" onClick={() => router.push("/explorer/white-space-finder")} className="mt-2 text-violet-600 dark:text-violet-400">Start exploring market gaps</Button>
+              <p className="text-slate-500 dark:text-slate-400 font-medium">{t("myWatchlist.emptyNiches", "Your niche watchlist is empty")}</p>
+              <Button variant="link" onClick={() => router.push("/explorer/white-space-finder")} className="mt-2 text-violet-600 dark:text-violet-400">{t("myWatchlist.startExploring", "Start exploring market gaps")}</Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -376,7 +379,7 @@ export default function MyWatchlist() {
                             item.score >= 80 ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/35 dark:text-emerald-400" :
                               item.score >= 60 ? "bg-amber-100 text-amber-700 dark:bg-amber-950/35 dark:text-amber-400" : "bg-rose-100 text-rose-700 dark:bg-rose-950/35 dark:text-rose-400"
                           )}>
-                            Score: {item.score}
+                            {t("myWatchlist.score", "Score")}: {item.score}
                           </div>
                           <button onClick={() => removeItem(item.niche)} className="p-1.5 text-slate-350 hover:text-red-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                         </div>
@@ -384,15 +387,15 @@ export default function MyWatchlist() {
 
                       <div className="grid grid-cols-3 gap-2 bg-slate-50 dark:bg-slate-950/30 rounded-2xl p-3 border border-slate-100 dark:border-slate-800/60">
                         <div className="text-center">
-                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase mb-0.5">Rating</p>
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase mb-0.5">{t("myWatchlist.rating", "Rating")}</p>
                           <p className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-center gap-0.5">{item.avg_rating} <Star className="w-2.5 h-2.5 text-amber-400 fill-amber-400" /></p>
                         </div>
                         <div className="text-center border-x border-slate-200 dark:border-slate-800">
-                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase mb-0.5">Price</p>
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase mb-0.5">{t("myWatchlist.price", "Price")}</p>
                           <p className="text-xs font-bold text-slate-700 dark:text-slate-300">₹{Math.round(item.avg_price)}</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase mb-0.5">Competition</p>
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase mb-0.5">{t("myWatchlist.competition", "Competition")}</p>
                           <p className="text-xs font-bold text-slate-700 dark:text-slate-300">{item.competitor_count}</p>
                         </div>
                       </div>
@@ -400,7 +403,7 @@ export default function MyWatchlist() {
                       <div className="space-y-2">
                         <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 dark:text-slate-300">
                           <TrendingUp className="w-3.5 h-3.5 text-emerald-500" />
-                          Top Keyword: <span className="text-violet-600 dark:text-violet-400">{item.top_keyword}</span>
+                          {t("myWatchlist.topKeyword", "Top Keyword")}: <span className="text-violet-600 dark:text-violet-400">{item.top_keyword}</span>
                         </div>
                         <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed italic border-l-2 border-violet-100 dark:border-violet-900 pl-3">"{item.gap_summary}"</p>
                       </div>
@@ -411,13 +414,13 @@ export default function MyWatchlist() {
                         onClick={() => router.push(`/explorer/white-space-finder?q=${encodeURIComponent(item.query)}&platform=${item.platform}&category=${encodeURIComponent(item.category)}`)}
                         className="flex-1 py-3.5 text-xs font-bold text-slate-650 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-1.5 transition-colors border-r border-slate-100 dark:border-slate-800"
                       >
-                        <RefreshCw className="w-3.5 h-3.5" /> Analyze Now
+                        <RefreshCw className="w-3.5 h-3.5" /> {t("myWatchlist.analyzeNow", "Analyze Now")}
                       </button>
                       <button
                         onClick={() => window.open(item.platform === "flipkart" ? `https://www.flipkart.com/search?q=${item.query}` : `https://www.amazon.in/s?k=${item.query}`, "_blank")}
                         className="flex-1 py-3.5 text-xs font-bold text-slate-650 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-center gap-1.5 transition-colors"
                       >
-                        <ExternalLink className="w-3.5 h-3.5" /> Search Live
+                        <ExternalLink className="w-3.5 h-3.5" /> {t("myWatchlist.searchLive", "Search Live")}
                       </button>
                     </div>
                   </CardContent>
@@ -429,8 +432,8 @@ export default function MyWatchlist() {
           savedProducts.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-center bg-background border border-slate-200 dark:border-slate-800 border-dashed rounded-3xl">
               <div className="w-16 h-16 bg-slate-100 dark:bg-slate-900 rounded-2xl flex items-center justify-center mb-4"><Calculator className="w-7 h-7 text-slate-350" /></div>
-              <p className="text-slate-500 dark:text-slate-400 font-medium">No saved calculations yet</p>
-              <Button variant="link" onClick={() => router.push("/explorer/profitability-optimizer")} className="mt-2 text-blue-600 dark:text-blue-400">Open Profit Calculator</Button>
+              <p className="text-slate-500 dark:text-slate-400 font-medium">{t("myWatchlist.emptyProfit", "No saved calculations yet")}</p>
+              <Button variant="link" onClick={() => router.push("/explorer/profitability-optimizer")} className="mt-2 text-blue-600 dark:text-blue-400">{t("myWatchlist.openCalculator", "Open Profit Calculator")}</Button>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -451,19 +454,19 @@ export default function MyWatchlist() {
 
                       <div className="grid grid-cols-2 gap-3">
                         <div className="bg-blue-50/50 dark:bg-blue-950/20 p-3 rounded-2xl border border-blue-100/50 dark:border-blue-900/30">
-                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mb-1">Monthly Profit</p>
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mb-1">{t("myWatchlist.monthlyProfit", "Monthly Profit")}</p>
                           <p className="text-lg font-black text-blue-600 dark:text-blue-400">₹{Math.round(p.monthly_profit).toLocaleString()}</p>
                         </div>
                         <div className="bg-emerald-50/50 dark:bg-emerald-950/20 p-3 rounded-2xl border border-emerald-100/50 dark:border-emerald-900/30">
-                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mb-1">Net Margin</p>
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase mb-1">{t("myWatchlist.netMargin", "Net Margin")}</p>
                           <p className="text-lg font-black text-emerald-600 dark:text-emerald-400">{p.net_margin_pct.toFixed(1)}%</p>
                         </div>
                       </div>
 
                       <div className="grid grid-cols-3 gap-2 py-1">
-                        <div><p className="text-[9px] text-slate-400 dark:text-slate-500 uppercase font-medium">Price</p><p className="text-xs font-bold text-slate-700 dark:text-slate-300">₹{p.inputs.selling_price}</p></div>
-                        <div><p className="text-[9px] text-slate-400 dark:text-slate-500 uppercase font-medium">Cost</p><p className="text-xs font-bold text-slate-700 dark:text-slate-300">₹{p.inputs.product_cost}</p></div>
-                        <div><p className="text-[9px] text-slate-400 dark:text-slate-500 uppercase font-medium">Volume</p><p className="text-xs font-bold text-slate-700 dark:text-slate-300">{p.inputs.monthly_units}</p></div>
+                        <div><p className="text-[9px] text-slate-400 dark:text-slate-500 uppercase font-medium">{t("myWatchlist.price", "Price")}</p><p className="text-xs font-bold text-slate-700 dark:text-slate-300">₹{p.inputs.selling_price}</p></div>
+                        <div><p className="text-[9px] text-slate-400 dark:text-slate-500 uppercase font-medium">{t("myWatchlist.cost", "Cost")}</p><p className="text-xs font-bold text-slate-700 dark:text-slate-300">₹{p.inputs.product_cost}</p></div>
+                        <div><p className="text-[9px] text-slate-400 dark:text-slate-500 uppercase font-medium">{t("myWatchlist.volume", "Volume")}</p><p className="text-xs font-bold text-slate-700 dark:text-slate-300">{p.inputs.monthly_units}</p></div>
                       </div>
                     </div>
 
@@ -471,7 +474,7 @@ export default function MyWatchlist() {
                       onClick={() => router.push(`/explorer/profitability-optimizer?id=${p.id}`)}
                       className="w-full py-3.5 text-xs font-bold text-slate-650 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-1.5 transition-colors"
                     >
-                      <ArrowRight className="w-3.5 h-3.5" /> View Full Breakdown
+                      <ArrowRight className="w-3.5 h-3.5" /> {t("myWatchlist.viewBreakdown", "View Full Breakdown")}
                     </button>
                   </CardContent>
                 </Card>

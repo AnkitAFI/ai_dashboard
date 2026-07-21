@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { ChevronLeft, Star, ShoppingBag, Menu } from "lucide-react";
 import { useSidebar } from "@/components/layout/sidebar-context";
+import { useTranslation } from "react-i18next";
 
 interface Product {
   product_name: string;
@@ -25,6 +26,7 @@ interface Product {
 }
 
 export default function RatingProducts() {
+  const { t } = useTranslation();
   const params = useParams();
   const source = params?.source;
   const rating = params?.rating;
@@ -138,14 +140,14 @@ export default function RatingProducts() {
                   <tr className="bg-gradient-to-r from-blue-50 to-cyan-50 text-slate-700 border-b">
                     <th className="py-3 px-4 text-left font-semibold">#</th>
                     <th className="py-3 px-4 text-left font-semibold">
-                      Product Name
+                      {t('catProd.productName', 'Product Name')}
                     </th>
-                    <th className="py-3 px-4 text-left font-semibold">Avg. Price</th>
-                    <th className="py-3 px-4 text-left font-semibold">Min Price</th>
-                    <th className="py-3 px-4 text-left font-semibold">Max Price</th>
-                    <th className="py-3 px-4 text-left font-semibold">Rating</th>
-                    <th className="py-3 px-4 text-left font-semibold">Reviews</th>
-                    <th className="py-3 px-4 text-left font-semibold">Source</th>
+                    <th className="py-3 px-4 text-left font-semibold">{t('catProd.avgPrice', 'Avg. Price')}</th>
+                    <th className="py-3 px-4 text-left font-semibold">{t('catProd.minPrice', 'Min Price')}</th>
+                    <th className="py-3 px-4 text-left font-semibold">{t('catProd.maxPrice', 'Max Price')}</th>
+                    <th className="py-3 px-4 text-left font-semibold">{t('catProd.rating', 'Rating')}</th>
+                    <th className="py-3 px-4 text-left font-semibold">{t('catProd.reviews', 'Reviews')}</th>
+                    <th className="py-3 px-4 text-left font-semibold">{t('catProd.source', 'Source')}</th>
                   </tr>
                 </thead>
                 <tbody>

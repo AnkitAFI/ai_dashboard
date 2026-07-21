@@ -87,6 +87,6 @@ fetch_changes.log
 server_py/ai_models/**/*.onnx
 server_py/ai_models/**/*.bin
 
-# Ignore scripts
-update_explorer_json.cjs
+# Developer utility scripts (not needed in production)
 update_json.cjs
+update_explorer_json.cjs

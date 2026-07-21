@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Brain, ChartLine, Globe, Shield, Users, Zap, Target, Award, ExternalLink, MessageCircle, BookOpen, FileText } from "lucide-react";
@@ -82,6 +83,7 @@ const QUICK_LINKS = [
 
 export default function DashboardAboutPage() {
   const { resolvedTheme } = useTheme();
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -98,25 +100,25 @@ export default function DashboardAboutPage() {
         <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#00C6FF]/20 to-[#0072FF]/20 rounded-2xl mb-2 shadow-sm mx-auto border border-white/40 dark:border-slate-800">
           <Brain className="h-10 w-10 text-[#0072FF] dark:text-sky-400" />
         </div>
-        <h1 className="text-3xl font-bold text-[#003366] dark:text-slate-100">About Insydz</h1>
+        <h1 className="text-3xl font-bold text-[#003366] dark:text-slate-100">{t('about.title', 'About Insydz')}</h1>
         <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-          We're democratizing e-commerce intelligence by making advanced analytics and AI-powered insights accessible to businesses of all sizes.
+          {t('about.subtitle', "We're democratizing e-commerce intelligence by making advanced analytics and AI-powered insights accessible to businesses of all sizes.")}
         </p>
       </div>
 
       {/* Mission */}
       <Card className="bg-gradient-to-r from-[#00C6FF]/10 to-[#0072FF]/10 dark:from-[#00C6FF]/5 dark:to-[#0072FF]/5 border border-[#00C6FF]/20 dark:border-slate-800 rounded-2xl">
         <CardContent className="p-6 text-center">
-          <h2 className="text-xl font-bold mb-3 text-[#003366] dark:text-slate-100">Our Mission</h2>
+          <h2 className="text-xl font-bold mb-3 text-[#003366] dark:text-slate-100">{t('about.mission', 'Our Mission')}</h2>
           <p className="text-slate-700 dark:text-slate-300 leading-relaxed max-w-3xl mx-auto">
-            To democratize e-commerce intelligence by making advanced analytics and AI-powered insights accessible to businesses of all sizes, helping them compete and thrive in the digital marketplace.
+            {t('about.missionText', 'To democratize e-commerce intelligence by making advanced analytics and AI-powered insights accessible to businesses of all sizes, helping them compete and thrive in the digital marketplace.')}
           </p>
         </CardContent>
       </Card>
 
       {/* Features */}
       <div>
-        <h2 className="text-xl font-bold text-[#003366] dark:text-slate-100 mb-5">What We Offer</h2>
+        <h2 className="text-xl font-bold text-[#003366] dark:text-slate-100 mb-5">{t('about.whatWeOffer', 'What We Offer')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {FEATURES.map((feature, index) => (
             <Card key={index} className="h-full shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl bg-white/70 dark:bg-slate-900/60 hover:shadow-md transition-shadow">
@@ -136,7 +138,7 @@ export default function DashboardAboutPage() {
 
       {/* Stats */}
       <div>
-        <h2 className="text-xl font-bold text-[#003366] dark:text-slate-100 mb-5">Our Impact</h2>
+        <h2 className="text-xl font-bold text-[#003366] dark:text-slate-100 mb-5">{t('about.ourImpact', 'Our Impact')}</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {STATS.map((stat, index) => (
             <Card key={index} className="text-center p-4 shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl bg-white/70 dark:bg-slate-900/60">
@@ -154,7 +156,7 @@ export default function DashboardAboutPage() {
 
       {/* Values */}
       <div>
-        <h2 className="text-xl font-bold text-[#003366] dark:text-slate-100 mb-5">Our Values</h2>
+        <h2 className="text-xl font-bold text-[#003366] dark:text-slate-100 mb-5">{t('about.ourValues', 'Our Values')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {TEAM_VALUES.map((value, index) => (
             <Card key={index} className="text-center p-5 shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl bg-white/70 dark:bg-slate-900/60 hover:shadow-md transition-shadow">
@@ -169,9 +171,9 @@ export default function DashboardAboutPage() {
       {/* Contact */}
       <Card className="bg-slate-50/80 dark:bg-slate-900/60 shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl">
         <CardContent className="p-6 text-center">
-          <h2 className="text-lg font-semibold text-[#003366] dark:text-slate-100 mb-3">Get in Touch</h2>
+          <h2 className="text-lg font-semibold text-[#003366] dark:text-slate-100 mb-3">{t('about.getInTouch', 'Get in Touch')}</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
-            Have questions about Insydz? We'd love to hear from you and help you succeed in your e-commerce journey.
+            {t('about.getInTouchDesc', "Have questions about Insydz? We'd love to hear from you and help you succeed in your e-commerce journey.")}
           </p>
           <div className="flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm">
             <p>
