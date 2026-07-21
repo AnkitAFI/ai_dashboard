@@ -656,7 +656,7 @@ function KeywordGapContent() {
               )}
 
               {/* Competitors analysed */}
-              {isBasic && competitors.length > 0 && (
+              {isBasic && competitors && (
                 <Section title="Competitors Analysed" icon={Eye} count={competitors.length} defaultOpen={false} isDark={isDark}>
                   <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
                     Products ranked by semantic similarity to your title.
@@ -695,6 +695,11 @@ function KeywordGapContent() {
                         )}
                       </div>
                     ))}
+                    {competitors.length === 0 && (
+                      <div className={`p-4 text-center rounded-xl border border-dashed ${isDark ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-400'}`}>
+                        <p className="text-xs">No direct competitors found matching your specific product keywords.</p>
+                      </div>
+                    )}
                   </div>
                 </Section>
               )}

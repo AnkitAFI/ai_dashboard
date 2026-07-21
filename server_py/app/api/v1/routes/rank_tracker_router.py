@@ -662,7 +662,7 @@ def get_rank_profile(
  
     profile["recent_alerts"] = (
         _get_recent_alerts(db, seller_id, asin)
-        if tier == "premium"
+        if tier in ("premium", "enterprise")
         else []
     )
  

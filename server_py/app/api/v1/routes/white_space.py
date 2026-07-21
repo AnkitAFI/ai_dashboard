@@ -791,12 +791,12 @@ Be specific — mention niche names and numbers."""
     logger.info(f"[white_space] Using static fallback market summary for '{query}'")
     return _static_market_summary(query, opportunities)
 
-
+def _inr(n: int) -> str:
     if n >= 100000:
-        return f"₹{n/100000:.1f}L"
+        return f"{n/100000:.1f}L"
     if n >= 1000:
-        return f"₹{n//1000}K"
-    return f"₹{n}"
+        return f"{n//1000}K"
+    return str(n)
 
 
 # ── Endpoints ─────────────────────────────────────────────────────────────────

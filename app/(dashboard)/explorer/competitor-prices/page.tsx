@@ -270,7 +270,7 @@ function PriceComparisonContent() {
           </div>
 
           {/* ── Top Competitors Table (Basic+) ───────────────────────────── */}
-          {isBasic && data.top_competitors?.length > 0 && (
+          {isBasic && data.top_competitors && (
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
               <div className="flex items-center justify-between mb-4">
                 <div>
@@ -330,6 +330,11 @@ function PriceComparisonContent() {
                     </div>
                   </div>
                 ))}
+                {data.top_competitors.length === 0 && (
+                  <div className="p-4 text-center rounded-xl border border-dashed border-slate-200 text-slate-400">
+                    <p className="text-xs">No direct competitors found matching your specific product keywords.</p>
+                  </div>
+                )}
               </div>
             </div>
           )}

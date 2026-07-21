@@ -422,6 +422,11 @@ function ReviewComparisonContent() {
                     </div>
                   </div>
                 ))}
+                {(data.competitor_reviews || []).length === 0 && (
+                  <div className="p-4 text-center rounded-xl border border-dashed border-slate-200 text-slate-400">
+                    <p className="text-xs">No direct competitors found matching your specific product keywords.</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

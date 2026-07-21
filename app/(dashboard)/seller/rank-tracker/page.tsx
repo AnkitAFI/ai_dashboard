@@ -674,7 +674,7 @@ function RankTrackerContent() {
 
   const aiStream = useStream();
 
-  const tier = profile?.tier || user?.subscriptionTier || "free";
+  const tier = (user?.subscriptionTier || profile?.tier || "free").toLowerCase();
   const isBasic = tier === "basic" || tier === "premium" || tier === "enterprise";
   const isPremium = tier === "premium" || tier === "enterprise";
 
@@ -789,7 +789,6 @@ function RankTrackerContent() {
               <RefreshCw className={`w-3 h-3 ${refreshing ? "animate-spin" : ""}`} />
               Refresh
             </button>
-          )}
           {!isPremium && (
             <button
               onClick={() => router.push("/subscription")}
