@@ -4,18 +4,43 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Search, Clock, TrendingUp, Target, DollarSign, BarChart3,
-  MessageCircle, Package, Trophy, Zap, BookOpen, Video, FileText,
-  Menu, X, Sun, Moon, ChevronDown, ShoppingBag, Store, Briefcase,
-  Users, Bell, Code, Globe, ArrowLeft, Facebook, Twitter, Linkedin,
-  Instagram, Flame, Presentation,
+  Search,
+  Clock,
+  TrendingUp,
+  Target,
+  DollarSign,
+  BarChart3,
+  MessageCircle,
+  Package,
+  Trophy,
+  Zap,
+  BookOpen,
+  Video,
+  FileText,
+  Menu,
+  X,
+  Sun,
+  Moon,
+  ChevronDown,
+  ShoppingBag,
+  Store,
+  Briefcase,
+  Users,
+  Bell,
+  Code,
+  Globe,
+  ArrowLeft,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Instagram,
+  Flame,
+  Presentation,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BlogImageSection from "../components/BlogImageSection";
 
 export const dynamic = "force-static";
-
-
-
 
 const schemaBlog = {
   "@context": "https://schema.org",
@@ -23,142 +48,149 @@ const schemaBlog = {
     {
       "@type": "Organization",
       "@id": "https://insydz.com/#organization",
-      "name": "Insydz",
-      "url": "https://insydz.com",
-      "logo": {
+      name: "Insydz",
+      url: "https://insydz.com",
+      logo: {
         "@type": "ImageObject",
-        "url": "https://insydz.com/logo.png"
+        url: "https://insydz.com/logo.png",
       },
-      "sameAs": [
+      sameAs: [
         "https://www.instagram.com/growwithinsydz",
         "https://www.linkedin.com/company/insydz/",
         "https://www.facebook.com/profile.php?id=61586202582209",
-        "https://x.com/growwithinsydz"
-      ]
+        "https://x.com/growwithinsydz",
+      ],
     },
     {
       "@type": "WebPage",
-      "@id": "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool",
-      "url": "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool",
-      "name": "Amazon Competitor Price Tracking Tool India – Complete Guide",
-      "isPartOf": {
+      "@id":
+        "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool",
+      url: "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool",
+      name: "Amazon Competitor Price Tracking Tool India – Complete Guide",
+      isPartOf: {
         "@type": "WebSite",
-        "name": "Insydz",
-        "url": "https://insydz.com"
+        name: "Insydz",
+        url: "https://insydz.com",
       },
-      "about": {
-        "@id": "https://insydz.com/#organization"
+      about: {
+        "@id": "https://insydz.com/#organization",
       },
-      "breadcrumb": {
-        "@id": "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool#breadcrumb"
-      }
+      breadcrumb: {
+        "@id":
+          "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool#breadcrumb",
+      },
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool#breadcrumb",
-      "itemListElement": [
+      "@id":
+        "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool#breadcrumb",
+      itemListElement: [
         {
           "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "https://insydz.com"
+          position: 1,
+          name: "Home",
+          item: "https://insydz.com",
         },
         {
           "@type": "ListItem",
-          "position": 2,
-          "name": "Resources",
-          "item": "https://insydz.com/resources"
+          position: 2,
+          name: "Resources",
+          item: "https://insydz.com/resources",
         },
         {
           "@type": "ListItem",
-          "position": 3,
-          "name": "Expert Blog",
-          "item": "https://insydz.com/resources/expert-blog"
+          position: 3,
+          name: "Expert Blog",
+          item: "https://insydz.com/resources/expert-blog",
         },
         {
           "@type": "ListItem",
-          "position": 4,
-          "name": "Amazon Competitor Price Tracking Tool",
-          "item": "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool"
-        }
-      ]
+          position: 4,
+          name: "Amazon Competitor Price Tracking Tool",
+          item: "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool",
+        },
+      ],
     },
     {
       "@type": "BlogPosting",
-      "@id": "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool#article",
-      "headline": "Amazon Competitor Price Tracking Tool India – Complete Guide",
-      "description": "Learn how Amazon competitor price tracking tools help sellers monitor pricing, analyze competitors, and optimize strategies to increase sales and win the Buy Box.",
-      "image": "https://insydz.com/one.png",
-      "author": {
+      "@id":
+        "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool#article",
+      headline: "Amazon Competitor Price Tracking Tool India – Complete Guide",
+      description:
+        "Learn how Amazon competitor price tracking tools help sellers monitor pricing, analyze competitors, and optimize strategies to increase sales and win the Buy Box.",
+      image: "https://insydz.com/one.png",
+      author: {
         "@type": "Person",
-        "name": "Vikrant Singh",
-        "url": "https://insydz.com/author/vikrant-singh"
+        name: "Vikrant Singh",
+        url: "https://insydz.com/author/vikrant-singh",
       },
-      "publisher": {
-        "@id": "https://insydz.com/#organization"
+      publisher: {
+        "@id": "https://insydz.com/#organization",
       },
-      "datePublished": "2025-02-23",
-      "dateModified": "2025-02-23",
-      "mainEntityOfPage": {
-        "@id": "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool"
+      datePublished: "2025-02-23",
+      dateModified: "2025-02-23",
+      mainEntityOfPage: {
+        "@id":
+          "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool",
       },
-      "keywords": [
+      keywords: [
         "Amazon competitor price tracking tool",
         "Amazon price monitoring tool",
         "competitor price tracking Amazon India",
         "Amazon pricing strategy",
-        "Amazon seller tools"
+        "Amazon seller tools",
       ],
-      "articleSection": "Ecommerce Analytics",
-      "inLanguage": "en"
+      articleSection: "Ecommerce Analytics",
+      inLanguage: "en",
     },
     {
       "@type": "FAQPage",
-      "@id": "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool#faq",
-      "mainEntity": [
+      "@id":
+        "https://insydz.com/resources/expert-blog/amazon-competitor-price-tracking-tool#faq",
+      mainEntity: [
         {
           "@type": "Question",
-          "name": "What is the best Amazon competitor price tracking tool for India?",
-          "acceptedAnswer": {
+          name: "What is the best Amazon competitor price tracking tool for India?",
+          acceptedAnswer: {
             "@type": "Answer",
-            "text": "For Indian sellers, the best tool covers Amazon.in and Flipkart, sends alerts, and fits within a reasonable budget. Insydz is built specifically for this."
-          }
+            text: "For Indian sellers, the best tool covers Amazon.in and Flipkart, sends alerts, and fits within a reasonable budget. Insydz is built specifically for this.",
+          },
         },
         {
           "@type": "Question",
-          "name": "How often does a price tracking tool check competitor prices?",
-          "acceptedAnswer": {
+          name: "How often does a price tracking tool check competitor prices?",
+          acceptedAnswer: {
             "@type": "Answer",
-            "text": "Advanced tools check prices multiple times per hour to ensure quick reaction to competitor changes."
-          }
+            text: "Advanced tools check prices multiple times per hour to ensure quick reaction to competitor changes.",
+          },
         },
         {
           "@type": "Question",
-          "name": "Can I track competitor prices on Flipkart?",
-          "acceptedAnswer": {
+          name: "Can I track competitor prices on Flipkart?",
+          acceptedAnswer: {
             "@type": "Answer",
-            "text": "Yes, Insydz supports Amazon, Flipkart, and other Indian marketplaces."
-          }
+            text: "Yes, Insydz supports Amazon, Flipkart, and other Indian marketplaces.",
+          },
         },
         {
           "@type": "Question",
-          "name": "Will automation cause price wars?",
-          "acceptedAnswer": {
+          name: "Will automation cause price wars?",
+          acceptedAnswer: {
             "@type": "Answer",
-            "text": "Smart tools avoid price wars by optimizing pricing instead of blindly matching competitors."
-          }
+            text: "Smart tools avoid price wars by optimizing pricing instead of blindly matching competitors.",
+          },
         },
         {
           "@type": "Question",
-          "name": "Do I need technical skills?",
-          "acceptedAnswer": {
+          name: "Do I need technical skills?",
+          acceptedAnswer: {
             "@type": "Answer",
-            "text": "No, tools like Insydz are designed for non-technical users."
-          }
-        }
-      ]
-    }
-  ]
+            text: "No, tools like Insydz are designed for non-technical users.",
+          },
+        },
+      ],
+    },
+  ],
 };
 
 type MenuItemWithBadge = {
@@ -180,38 +212,137 @@ type NavigationMenu = {
 
 const navigationMenu: NavigationMenu = {
   Solutions: [
-    { name: "All Solutions (Overview)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions" },
-    { name: "For Amazon Sellers (India)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions/amazon-sellers" },
-    { name: "For Flipkart Sellers", icon: <Store className="w-4 h-4" />, route: "/solutions/flipkart-sellers" },
-    { name: "For E-commerce Agencies", icon: <Briefcase className="w-4 h-4" />, route: "/solutions/ecommerce-agencies" },
-    { name: "For Brand Managers", icon: <Users className="w-4 h-4" />, route: "/solutions/brand-managers" },
+    {
+      name: "All Solutions (Overview)",
+      icon: <ShoppingBag className="w-4 h-4" />,
+      route: "/solutions",
+    },
+    {
+      name: "For Amazon Sellers (India)",
+      icon: <ShoppingBag className="w-4 h-4" />,
+      route: "/solutions/amazon-sellers",
+    },
+    {
+      name: "For Flipkart Sellers",
+      icon: <Store className="w-4 h-4" />,
+      route: "/solutions/flipkart-sellers",
+    },
+    {
+      name: "For E-commerce Agencies",
+      icon: <Briefcase className="w-4 h-4" />,
+      route: "/solutions/ecommerce-agencies",
+    },
+    {
+      name: "For Brand Managers",
+      icon: <Users className="w-4 h-4" />,
+      route: "/solutions/brand-managers",
+    },
   ],
   "Use Cases": [
-    { name: "All Use Cases", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases" },
-    { name: "Track Competitor Prices", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases/track-competitor-prices" },
-    { name: "Find Profitable Products", icon: <Target className="w-4 h-4" />, route: "/use-cases/find-profitable-products" },
-    { name: "Analyze Customer Reviews", icon: <MessageCircle className="w-4 h-4" />, route: "/use-cases/analyze-customer-reviews" },
-    { name: "Improve Amazon & Flipkart SEO", icon: <Search className="w-4 h-4" />, route: "/use-cases/improve-seo" },
-    { name: "Avoid Stockouts & Missed Sales", icon: <Package className="w-4 h-4" />, route: "/use-cases/avoid-stockouts" },
+    {
+      name: "All Use Cases",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/use-cases",
+    },
+    {
+      name: "Track Competitor Prices",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/use-cases/track-competitor-prices",
+    },
+    {
+      name: "Find Profitable Products",
+      icon: <Target className="w-4 h-4" />,
+      route: "/use-cases/find-profitable-products",
+    },
+    {
+      name: "Analyze Customer Reviews",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/use-cases/analyze-customer-reviews",
+    },
+    {
+      name: "Improve Amazon & Flipkart SEO",
+      icon: <Search className="w-4 h-4" />,
+      route: "/use-cases/improve-seo",
+    },
+    {
+      name: "Avoid Stockouts & Missed Sales",
+      icon: <Package className="w-4 h-4" />,
+      route: "/use-cases/avoid-stockouts",
+    },
   ],
   Features: [
-    { name: "Competitor Price Tracking", icon: <DollarSign className="w-4 h-4" />, route: "/features/competitor-price-tracking-feature" },
-    { name: "Review Analytics", icon: <MessageCircle className="w-4 h-4" />, route: "/features/review-analytics-feature" },
-    { name: "Price Optimization", icon: <TrendingUp className="w-4 h-4" />, route: "/features/price-optimization-feature" },
-    { name: "Keyword & Rank Tracking", icon: <Search className="w-4 h-4" />, route: "/features/keyword-rank-tracking-feature" },
-    { name: "Product Research", icon: <Package className="w-4 h-4" />, route: "/features/product-research-feature" },
-    { name: "AI Recommendations", icon: <Zap className="w-4 h-4" />, route: "/features/ai-recommendations-feature" },
-    { name: "WhatsApp Alerts", icon: <Bell className="w-4 h-4" />, badge: "NEW", route: "/features/whatsapp-alerts-feature" },
-    { name: "Festive Trend Intelligence", icon: <Flame className="w-4 h-4" />, badge: "UPCOMING", route: "/features/festive-trend-feature" },
+    {
+      name: "Competitor Price Tracking",
+      icon: <DollarSign className="w-4 h-4" />,
+      route: "/features/competitor-price-tracking-feature",
+    },
+    {
+      name: "Review Analytics",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/features/review-analytics-feature",
+    },
+    {
+      name: "Price Optimization",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/features/price-optimization-feature",
+    },
+    {
+      name: "Keyword & Rank Tracking",
+      icon: <Search className="w-4 h-4" />,
+      route: "/features/keyword-rank-tracking-feature",
+    },
+    {
+      name: "Product Research",
+      icon: <Package className="w-4 h-4" />,
+      route: "/features/product-research-feature",
+    },
+    {
+      name: "AI Recommendations",
+      icon: <Zap className="w-4 h-4" />,
+      route: "/features/ai-recommendations-feature",
+    },
+    {
+      name: "WhatsApp Alerts",
+      icon: <Bell className="w-4 h-4" />,
+      badge: "NEW",
+      route: "/features/whatsapp-alerts-feature",
+    },
+    {
+      name: "Festive Trend Intelligence",
+      icon: <Flame className="w-4 h-4" />,
+      badge: "UPCOMING",
+      route: "/features/festive-trend-feature",
+    },
   ],
   "Free Tools": [
-    { name: "Free Amazon Product Analyzer", icon: <BarChart3 className="w-4 h-4" />, route: "/free-tools/free-amazon-product-analyzer" },
-    { name: "Free Review Sentiment Checker", icon: <MessageCircle className="w-4 h-4" />, route: "/free-tools/free-review-sentiment-checker" },
-    { name: "Free Competitor Price Checker", icon: <DollarSign className="w-4 h-4" />, route: "/free-tools/free-competitor-price-checker" },
-    { name: "Free Keyword Rank Checker", icon: <Search className="w-4 h-4" />, badge: "NEW", route: "/free-tools/free-keyword-rank-checker" },
+    {
+      name: "Free Amazon Product Analyzer",
+      icon: <BarChart3 className="w-4 h-4" />,
+      route: "/free-tools/free-amazon-product-analyzer",
+    },
+    {
+      name: "Free Review Sentiment Checker",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/free-tools/free-review-sentiment-checker",
+    },
+    {
+      name: "Free Competitor Price Checker",
+      icon: <DollarSign className="w-4 h-4" />,
+      route: "/free-tools/free-competitor-price-checker",
+    },
+    {
+      name: "Free Keyword Rank Checker",
+      icon: <Search className="w-4 h-4" />,
+      badge: "NEW",
+      route: "/free-tools/free-keyword-rank-checker",
+    },
   ],
   Resources: [
-    { name: "Expert Blog", icon: <BookOpen className="w-4 h-4" />, route: "/resources/expert-blog" },
+    {
+      name: "Expert Blog",
+      icon: <BookOpen className="w-4 h-4" />,
+      route: "/resources/expert-blog",
+    },
   ],
   Integrations: [
     { name: "Amazon", icon: <ShoppingBag className="w-4 h-4" /> },
@@ -220,27 +351,51 @@ const navigationMenu: NavigationMenu = {
     { name: "API Documentation", icon: <Code className="w-4 h-4" /> },
   ],
   Compare: [
-    { name: "Insydz vs Helium 10", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvshelium" },
-    { name: "Insydz vs Jungle Scout", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsjunglescout" },
-    { name: "Insydz vs Viral Launch", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsvirallaunch" },
+    {
+      name: "Insydz vs Helium 10",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvshelium",
+    },
+    {
+      name: "Insydz vs Jungle Scout",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvsjunglescout",
+    },
+    {
+      name: "Insydz vs Viral Launch",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvsvirallaunch",
+    },
   ],
   About: [
-    { name: "About Us", icon: <Presentation className="w-4 h-4" />, route: "/about/about-us" },
-    { name: "Our Vision", icon: <Globe className="w-4 h-4" />, route: "/about/our-vision" },
-    { name: "Careers", icon: <Users className="w-4 h-4" />, route: "/about/careers" },
+    {
+      name: "About Us",
+      icon: <Presentation className="w-4 h-4" />,
+      route: "/about/about-us",
+    },
+    {
+      name: "Our Vision",
+      icon: <Globe className="w-4 h-4" />,
+      route: "/about/our-vision",
+    },
+    {
+      name: "Careers",
+      icon: <Users className="w-4 h-4" />,
+      route: "/about/careers",
+    },
   ],
 };
 
 const TOC = [
-  { id: "what-is",        label: "What is Price Tracking?" },
-  { id: "why-critical",   label: "Why It's Critical for India" },
-  { id: "how-it-works",   label: "How It Works (5 Steps)" },
-  { id: "comparison",     label: "Tracking Methods Compared" },
-  { id: "mistakes",       label: "5 Common Mistakes" },
+  { id: "what-is", label: "What is Price Tracking?" },
+  { id: "why-critical", label: "Why It's Critical for India" },
+  { id: "how-it-works", label: "How It Works (5 Steps)" },
+  { id: "comparison", label: "Tracking Methods Compared" },
+  { id: "mistakes", label: "5 Common Mistakes" },
   { id: "best-practices", label: "Best Practices & Execution" },
-  { id: "best-tools",     label: "Best Tools for India" },
-  { id: "faq",            label: "FAQs" },
-  { id: "conclusion",     label: "Final Thoughts" },
+  { id: "best-tools", label: "Best Tools for India" },
+  { id: "faq", label: "FAQs" },
+  { id: "conclusion", label: "Final Thoughts" },
 ];
 
 const FAQS = [
@@ -272,33 +427,42 @@ const FAQS = [
 
 const IMAGES = {
   hero: {
-    src: "/one.png",
+    src: "/Amazon Competitor Price Tracking Tool India.png",
     alt: "Indian ecommerce seller working on laptop with Amazon analytics",
-    caption: "Indian e-commerce sellers who implement AI-powered competitor price tracking recover an average of ₹45,000/month in revenue previously lost to unmonitored price changes.",
+    caption:
+      "Indian e-commerce sellers who implement AI-powered competitor price tracking recover an average of ₹45,000/month in revenue previously lost to unmonitored price changes.",
   },
   tracking: {
     src: "/two.png",
     alt: "Real-time price tracking analytics dashboard on screen",
-    caption: "AI-powered price tracking dashboards convert raw competitor data into actionable decisions — showing you exactly what price to set, and why, for each ASIN.",
+    caption:
+      "AI-powered price tracking dashboards convert raw competitor data into actionable decisions — showing you exactly what price to set, and why, for each ASIN.",
   },
   mobile: {
     src: "/three.png",
     alt: "Mobile online shopping in India",
-    caption: "Over 78% of Amazon India orders originate from mobile. A competitor who undercuts you by ₹50 captures every one of those buyers — without you ever knowing it happened.",
+    caption:
+      "Over 78% of Amazon India orders originate from mobile. A competitor who undercuts you by ₹50 captures every one of those buyers — without you ever knowing it happened.",
   },
   festive: {
     src: "/Amazon Competitor Price Tracking Tool India-Blog1_image4.png",
     alt: "Festive season ecommerce shopping bags",
-    caption: "During Big Billion Days and Great Indian Festival, 40–60% of annual e-commerce revenue concentrates into 4–7 days. Real-time price tracking is your only defence against losing the Buy Box during these windows.",
+    caption:
+      "During Big Billion Days and Great Indian Festival, 40–60% of annual e-commerce revenue concentrates into 4–7 days. Real-time price tracking is your only defence against losing the Buy Box during these windows.",
   },
   warehouse: {
     src: "/Amazon Competitor Price Tracking Tool India-Blog1_image5.png",
     alt: "Ecommerce warehouse fulfillment and shipping",
-    caption: "India-first tools like Insydz cover Amazon.in, Flipkart simultaneously — closing the multi-platform gap that global tools leave open for Indian sellers.",
+    caption:
+      "India-first tools like Insydz cover Amazon.in, Flipkart simultaneously — closing the multi-platform gap that global tools leave open for Indian sellers.",
   },
 };
 
-interface ArticleImgProps { src: string; alt: string; caption?: string; }
+interface ArticleImgProps {
+  src: string;
+  alt: string;
+  caption?: string;
+}
 function ArticleImg({ src, alt, caption }: ArticleImgProps) {
   const [loaded, setLoaded] = useState(false);
   return (
@@ -308,7 +472,11 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
         src={src}
         alt={alt}
         onLoad={() => setLoaded(true)}
-        style={{ width: "100%", height: "auto", display: loaded ? "block" : "none" }}
+        style={{
+          width: "100%",
+          height: "auto",
+          display: loaded ? "block" : "none",
+        }}
       />
       {caption && <figcaption className="img-caption">{caption}</figcaption>}
     </figure>
@@ -319,14 +487,14 @@ const SCHEMAS = [schemaBlog];
 
 export default function AmazonCompetitorPriceTrackingTool() {
   const router = useRouter();
-  const [activeSection, setActiveSection]       = useState("what-is");
-  const [scrollPct, setScrollPct]               = useState(0);
-  const [tocOpen, setTocOpen]                   = useState(false);
-  const [openFaq, setOpenFaq]                   = useState<number | null>(null);
-  const [isMenuOpen, setIsMenuOpen]             = useState(false);
-  const [scrolled, setScrolled]                 = useState(false);
-  const [isDarkMode, setIsDarkMode]             = useState(false);
-  const [activeDropdown, setActiveDropdown]     = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState("what-is");
+  const [scrollPct, setScrollPct] = useState(0);
+  const [tocOpen, setTocOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -359,7 +527,10 @@ export default function AmazonCompetitorPriceTrackingTool() {
       setScrollPct(Math.min((window.scrollY / total) * 100, 100));
       for (let i = TOC.length - 1; i >= 0; i--) {
         const el = document.getElementById(TOC[i].id);
-        if (el && window.scrollY >= el.offsetTop - 130) { setActiveSection(TOC[i].id); break; }
+        if (el && window.scrollY >= el.offsetTop - 130) {
+          setActiveSection(TOC[i].id);
+          break;
+        }
       }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -368,32 +539,51 @@ export default function AmazonCompetitorPriceTrackingTool() {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setActiveDropdown(null);
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      )
+        setActiveDropdown(null);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   useEffect(() => {
-    const onResize = () => { if (window.innerWidth >= 1024) setIsMenuOpen(false); };
+    const onResize = () => {
+      if (window.innerWidth >= 1024) setIsMenuOpen(false);
+    };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
   const go = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
     setTocOpen(false);
   };
 
   const handleMenuItemClick = (item: MenuItemWithBadge) => {
-    if (item.route) { router.push(item.route); setActiveDropdown(null); setIsMenuOpen(false); }
+    if (item.route) {
+      router.push(item.route);
+      setActiveDropdown(null);
+      setIsMenuOpen(false);
+    }
   };
 
-  const toggleMobileMenu = (name: string) => setMobileActiveMenu(prev => prev === name ? null : name);
+  const toggleMobileMenu = (name: string) =>
+    setMobileActiveMenu((prev) => (prev === name ? null : name));
 
   const scrollToSection = (sectionId: string) => {
     router.push("/");
-    setTimeout(() => document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+    setTimeout(
+      () =>
+        document
+          .getElementById(sectionId)
+          ?.scrollIntoView({ behavior: "smooth", block: "start" }),
+      100,
+    );
   };
 
   // ── Inline link helper ──────────────────────────────────────────────────────
@@ -407,7 +597,10 @@ export default function AmazonCompetitorPriceTrackingTool() {
   }) => (
     <a
       href={to}
-      onClick={(e) => { e.preventDefault(); router.push(to); }}
+      onClick={(e) => {
+        e.preventDefault();
+        router.push(to);
+      }}
       style={{
         color: "#ea580c",
         textDecoration: "underline",
@@ -444,7 +637,9 @@ export default function AmazonCompetitorPriceTrackingTool() {
         ? "hover:bg-orange-50 dark:hover:bg-orange-900/20 group-hover:text-orange-600"
         : "hover:bg-purple-50 dark:hover:bg-purple-900/20 group-hover:text-purple-600";
     const iconCls =
-      accent === "orange" ? "text-orange-600 dark:text-orange-400" : "text-purple-600 dark:text-purple-400";
+      accent === "orange"
+        ? "text-orange-600 dark:text-orange-400"
+        : "text-purple-600 dark:text-purple-400";
 
     return (
       <div className="relative">
@@ -452,12 +647,16 @@ export default function AmazonCompetitorPriceTrackingTool() {
           onMouseEnter={() => setActiveDropdown(label)}
           className={`px-2 xl:px-3 py-2 text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${
             isActive
-              ? accent === "orange" ? "text-orange-600 font-semibold" : "text-purple-600 font-semibold"
+              ? accent === "orange"
+                ? "text-orange-600 font-semibold"
+                : "text-purple-600 font-semibold"
               : accentCls
           }`}
         >
           {label}
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isActive ? "rotate-180" : ""}`} />
+          <ChevronDown
+            className={`w-3.5 h-3.5 transition-transform ${isActive ? "rotate-180" : ""}`}
+          />
         </button>
         {isActive && (
           <div
@@ -470,8 +669,14 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 onClick={() => handleMenuItemClick(item)}
                 className={`w-full px-4 py-2.5 text-left transition-colors flex items-center gap-3 group ${dropHoverCls}`}
               >
-                <span className={`${iconCls} group-hover:scale-110 transition-transform flex-shrink-0`}>{item.icon}</span>
-                <span className="text-sm text-gray-700 dark:text-gray-300 flex-1 text-left">{item.name}</span>
+                <span
+                  className={`${iconCls} group-hover:scale-110 transition-transform flex-shrink-0`}
+                >
+                  {item.icon}
+                </span>
+                <span className="text-sm text-gray-700 dark:text-gray-300 flex-1 text-left">
+                  {item.name}
+                </span>
                 {item.badge && (
                   <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold flex-shrink-0">
                     {item.badge}
@@ -487,7 +692,6 @@ export default function AmazonCompetitorPriceTrackingTool() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
-      
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
@@ -505,32 +709,13 @@ export default function AmazonCompetitorPriceTrackingTool() {
         :root { --nav-h: 72px; }
         @media(min-width:1024px){ :root { --nav-h: 80px; } }
 
-        .article-layout {
-          max-width: 1200px; margin: 0 auto;
-          padding: 40px 16px 80px;
-          display: grid;
-          grid-template-columns: 220px 1fr;
-          gap: 40px;
-          align-items: start;
-        }
-        @media(min-width:1280px){
-          .article-layout { padding: 48px 24px 80px; grid-template-columns: 240px 1fr; gap: 48px; }
-        }
-        @media(max-width:1023px){
-          .article-layout { grid-template-columns: 1fr; gap: 0; padding: 24px 16px 60px; }
-        }
-        @media(max-width:480px){
-          .article-layout { padding: 16px 12px 48px; }
-        }
+        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0;align-items:start}
+        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px;align-items:start}}
+        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px;align-items:start}}
+        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px;align-items:start}}
 
-        .toc-sidebar {
-          position: sticky; top: calc(var(--nav-h) + 16px);
-          background: #fff; border: 1px solid #e5e7eb;
-          border-radius: 16px; padding: 20px;
-          box-shadow: 0 2px 12px rgba(0,0,0,.05);
-          max-height: calc(100vh - var(--nav-h) - 32px);
-          overflow-y: auto;
-        }
+        .toc-sidebar{display:none}
+        @media(min-width:768px){.toc-sidebar{display:block;position:sticky;top:76px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);max-height:calc(100vh - 96px);overflow-y:auto;align-self:start;height:fit-content}}
         .dark .toc-sidebar { background: #111827; border-color: #1f2937; }
         @media(max-width:1023px){ .toc-sidebar { display: none !important; } }
 
@@ -983,10 +1168,12 @@ export default function AmazonCompetitorPriceTrackingTool() {
       >
         <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-8">
           <div className="flex items-center justify-between h-[72px] lg:h-20">
-
             {/* Logo */}
             <div className="flex items-center space-x-2 flex-shrink-0">
-              <div className="flex items-center space-x-1 group cursor-pointer" onClick={() => router.push("/")}>
+              <div
+                className="flex items-center space-x-1 group cursor-pointer"
+                onClick={() => router.push("/")}
+              >
                 <div className="relative">
                   <img
                     src="/logo.png"
@@ -1002,10 +1189,13 @@ export default function AmazonCompetitorPriceTrackingTool() {
             </div>
 
             {/* Desktop nav */}
-            <div className="hidden lg:flex items-center space-x-0.5 xl:space-x-1" ref={dropdownRef}>
-              <DesktopDropdown label="Solutions"  menuKey="Solutions" />
-              <DesktopDropdown label="Use Cases"  menuKey="Use Cases" />
-              <DesktopDropdown label="Features"   menuKey="Features" />
+            <div
+              className="hidden lg:flex items-center space-x-0.5 xl:space-x-1"
+              ref={dropdownRef}
+            >
+              <DesktopDropdown label="Solutions" menuKey="Solutions" />
+              <DesktopDropdown label="Use Cases" menuKey="Use Cases" />
+              <DesktopDropdown label="Features" menuKey="Features" />
               <button
                 onClick={() => router.push("/pricing")}
                 onMouseEnter={() => setActiveDropdown(null)}
@@ -1014,9 +1204,13 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 Pricing
               </button>
               <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
-              <DesktopDropdown label="Compare"    menuKey="Compare" />
-              <DesktopDropdown label="Resources"  menuKey="Resources" accent="orange" />
-              <DesktopDropdown label="About"      menuKey="About" />
+              <DesktopDropdown label="Compare" menuKey="Compare" />
+              <DesktopDropdown
+                label="Resources"
+                menuKey="Resources"
+                accent="orange"
+              />
+              <DesktopDropdown label="About" menuKey="About" />
               <Button
                 onClick={() => router.push("/login")}
                 onMouseEnter={() => setActiveDropdown(null)}
@@ -1029,7 +1223,11 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 onClick={() => setIsDarkMode(!isDarkMode)}
                 aria-label="Toggle dark mode"
               >
-                {isDarkMode ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4 text-gray-800" />}
+                {isDarkMode ? (
+                  <Sun className="w-4 h-4 text-yellow-400" />
+                ) : (
+                  <Moon className="w-4 h-4 text-gray-800" />
+                )}
               </button>
             </div>
 
@@ -1040,14 +1238,22 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 onClick={() => setIsDarkMode(!isDarkMode)}
                 aria-label="Toggle dark mode"
               >
-                {isDarkMode ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4 text-gray-700 dark:text-gray-200" />}
+                {isDarkMode ? (
+                  <Sun className="w-4 h-4 text-yellow-400" />
+                ) : (
+                  <Moon className="w-4 h-4 text-gray-700 dark:text-gray-200" />
+                )}
               </button>
               <button
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="Toggle menu"
               >
-                {isMenuOpen ? <X className="w-6 h-6 text-gray-700 dark:text-gray-200" /> : <Menu className="w-6 h-6 text-gray-700 dark:text-gray-200" />}
+                {isMenuOpen ? (
+                  <X className="w-6 h-6 text-gray-700 dark:text-gray-200" />
+                ) : (
+                  <Menu className="w-6 h-6 text-gray-700 dark:text-gray-200" />
+                )}
               </button>
             </div>
           </div>
@@ -1058,20 +1264,23 @@ export default function AmazonCompetitorPriceTrackingTool() {
           <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100dvh-72px)] overflow-y-auto">
             <div className="px-4 py-4 space-y-1">
               <button
-                onClick={() => { router.push("/resources/expert-blog"); setIsMenuOpen(false); }}
+                onClick={() => {
+                  router.push("/resources/expert-blog");
+                  setIsMenuOpen(false);
+                }}
                 className="flex items-center gap-2 w-full px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium text-sm"
               >
                 <ArrowLeft className="w-4 h-4" /> Back to Blog
               </button>
               {(
                 [
-                  ["Solutions",  "Solutions",  "purple"],
-                  ["Use Cases",  "Use Cases",  "purple"],
-                  ["Features",   "Features",   "purple"],
+                  ["Solutions", "Solutions", "purple"],
+                  ["Use Cases", "Use Cases", "purple"],
+                  ["Features", "Features", "purple"],
                   ["Free Tools", "Free Tools", "purple"],
-                  ["Compare",    "Compare",    "purple"],
-                  ["Resources",  "Resources",  "orange"],
-                  ["About",      "About",      "purple"],
+                  ["Compare", "Compare", "purple"],
+                  ["Resources", "Resources", "orange"],
+                  ["About", "About", "purple"],
                 ] as [string, keyof NavigationMenu, string][]
               ).map(([label, key, accent]) => (
                 <div key={label}>
@@ -1084,7 +1293,9 @@ export default function AmazonCompetitorPriceTrackingTool() {
                     }`}
                   >
                     {label}
-                    <ChevronDown className={`w-4 h-4 transition-transform ${mobileActiveMenu === label ? "rotate-180" : ""}`} />
+                    <ChevronDown
+                      className={`w-4 h-4 transition-transform ${mobileActiveMenu === label ? "rotate-180" : ""}`}
+                    />
                   </button>
                   {mobileActiveMenu === label && (
                     <div className="ml-4 mt-1 space-y-0.5 pb-1">
@@ -1112,14 +1323,20 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 </div>
               ))}
               <button
-                onClick={() => { router.push("/pricing"); setIsMenuOpen(false); }}
+                onClick={() => {
+                  router.push("/pricing");
+                  setIsMenuOpen(false);
+                }}
                 className="block w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium text-sm"
               >
                 Pricing
               </button>
               <div className="pt-2">
                 <Button
-                  onClick={() => { router.push("/login"); setIsMenuOpen(false); }}
+                  onClick={() => {
+                    router.push("/login");
+                    setIsMenuOpen(false);
+                  }}
                   className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold py-3 rounded-xl"
                 >
                   Login
@@ -1132,13 +1349,28 @@ export default function AmazonCompetitorPriceTrackingTool() {
 
       {/* ════════════════════════════════════════════ HERO */}
       <section className="article-hero">
-        <div className="hero-inner" style={{marginLeft: "150px", marginRight: "auto"}}>
-
+        <div
+          className="hero-inner"
+          style={{ marginLeft: "150px", marginRight: "auto" }}
+        >
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-5 flex-wrap" aria-label="Breadcrumb">
-            <button onClick={() => router.push("/")} className="hover:text-orange-500 transition-colors">Home</button>
+          <nav
+            className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-5 flex-wrap"
+            aria-label="Breadcrumb"
+          >
+            <button
+              onClick={() => router.push("/")}
+              className="hover:text-orange-500 transition-colors"
+            >
+              Home
+            </button>
             <span>/</span>
-            <button onClick={() => router.push("/resources/expert-blog")} className="hover:text-orange-500 transition-colors">Expert Blog</button>
+            <button
+              onClick={() => router.push("/resources/expert-blog")}
+              className="hover:text-orange-500 transition-colors"
+            >
+              Expert Blog
+            </button>
             <span>/</span>
             <span className="hidden sm:inline">/</span>
             <span className="text-orange-500 font-medium">Price Tracking</span>
@@ -1158,22 +1390,40 @@ export default function AmazonCompetitorPriceTrackingTool() {
             India: Complete Guide for Sellers (2026)
           </h1>
 
-          <p className="text-base sm:text-sm md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mb-6" style={{ fontFamily: "'Lora', serif" }}>
-            Track competitor prices on Amazon.in, Flipkart in real time. Discover how Indian sellers use
-            AI-powered tools to protect margins, win the Buy Box, and outsell rivals — with a complete 2026 playbook.
+          <p
+            className="text-base sm:text-sm md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mb-6"
+            style={{ fontFamily: "'Lora', serif" }}
+          >
+            Track competitor prices on Amazon.in, Flipkart in real time.
+            Discover how Indian sellers use AI-powered tools to protect margins,
+            win the Buy Box, and outsell rivals — with a complete 2026 playbook.
           </p>
 
           {/* Meta row */}
           <div className="flex flex-wrap items-center gap-3 pb-6 border-b border-gray-200 dark:border-gray-800 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
             <div className="flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 flex-shrink-0" />
-              <strong className="text-gray-800 dark:text-gray-200 hover:text-orange-500 transition-colors cursor-pointer" onClick={() => router.push("/author/vikrant-singh")}>Vikrant Singh</strong>
+              <strong
+                className="text-gray-800 dark:text-gray-200 hover:text-orange-500 transition-colors cursor-pointer"
+                onClick={() => router.push("/author/vikrant-singh")}
+              >
+                Vikrant Singh
+              </strong>
             </div>
-            <span className="text-gray-300 dark:text-gray-700 hidden sm:inline">·</span>
-            <span className="hidden sm:inline">Last updated: <strong className="text-gray-700 dark:text-gray-300">January 2026</strong></span>
+            <span className="text-gray-300 dark:text-gray-700 hidden sm:inline">
+              ·
+            </span>
+            <span className="hidden sm:inline">
+              Last updated:{" "}
+              <strong className="text-gray-700 dark:text-gray-300">
+                January 2026
+              </strong>
+            </span>
             <div className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" />
-              <strong className="text-gray-700 dark:text-gray-300">14 min read</strong>
+              <strong className="text-gray-700 dark:text-gray-300">
+                14 min read
+              </strong>
             </div>
             <span className="bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400 text-xs font-bold px-2 py-0.5 rounded">
               Updated for 2026
@@ -1185,12 +1435,16 @@ export default function AmazonCompetitorPriceTrackingTool() {
             {[
               ["15–30%", "Monthly Profit Lost to Reactive Pricing"],
               ["70–80%", "Buy Box = Share of Category Sales"],
-              ["₹45K",   "Avg. Revenue Lost Per Seller / Month"],
-              ["<1 hr",  "AI Price Alert Response Time"],
+              ["₹45K", "Avg. Revenue Lost Per Seller / Month"],
+              ["<1 hr", "AI Price Alert Response Time"],
             ].map(([num, lbl]) => (
               <div className="stat-item" key={num}>
-                <div className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">{num}</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium leading-tight">{lbl}</div>
+                <div className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+                  {num}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium leading-tight">
+                  {lbl}
+                </div>
               </div>
             ))}
           </div>
@@ -1200,24 +1454,55 @@ export default function AmazonCompetitorPriceTrackingTool() {
           style={{
             width: "80%",
             margin: "0 auto",
-            borderTop: "1px solid #e5e7eb"
+            borderTop: "1px solid #e5e7eb",
           }}
         >
-          <ArticleImg {...IMAGES.hero} />
+          {/* <ArticleImg {...IMAGES.hero} /> */}
+          <BlogImageSection
+            altText={IMAGES.hero.alt}
+            caption={IMAGES.hero.caption}
+            imageSrc="/Amazon Competitor Price Tracking Tool India.png"
+          />
         </div>
       </section>
 
       {/* Key Takeaways */}
-      <div className="takeaway-box" style={{ maxWidth: "1170px", margin: "40px auto" }}>
-        <h3><span style={{ color: "#f97316" }}>✓</span> Key Takeaways</h3>
+      <div
+        className="takeaway-box"
+        style={{ maxWidth: "1170px", margin: "40px auto" }}
+      >
+        <h3>
+          <span style={{ color: "#f97316" }}>✓</span> Key Takeaways
+        </h3>
         {[
-          <>Amazon competitor price tracking tools automate what currently takes Indian sellers 3–5 hours daily in manual Excel work.</>,
-          <>Price changes affect your Amazon.in competitor price tracking search rank and Buy Box eligibility — not just your revenue.</>,
-          <>Real-time WhatsApp alerts (not email) are critical for Indian SMB sellers to act within minutes, not hours.</>,
-          <>AI-powered tools provide actionable recommendations — not just data dumps — which is the difference between insight and action.</>,
-          <>Global tools like Helium 10 don't cover Flipkart and are priced out of reach for most Indian sellers.</>,
-          <>India-first platforms like Insydz cover Amazon, Flipkart at 60–85% lower cost, with WhatsApp alerts.</>,
-          <>Combining price tracking with review intelligence and keyword tracking gives Indian sellers a complete competitive picture.</>,
+          <>
+            Amazon competitor price tracking tools automate what currently takes
+            Indian sellers 3–5 hours daily in manual Excel work.
+          </>,
+          <>
+            Price changes affect your Amazon.in competitor price tracking search
+            rank and Buy Box eligibility — not just your revenue.
+          </>,
+          <>
+            Real-time WhatsApp alerts (not email) are critical for Indian SMB
+            sellers to act within minutes, not hours.
+          </>,
+          <>
+            AI-powered tools provide actionable recommendations — not just data
+            dumps — which is the difference between insight and action.
+          </>,
+          <>
+            Global tools like Helium 10 don't cover Flipkart and are priced out
+            of reach for most Indian sellers.
+          </>,
+          <>
+            India-first platforms like Insydz cover Amazon, Flipkart at 60–85%
+            lower cost, with WhatsApp alerts.
+          </>,
+          <>
+            Combining price tracking with review intelligence and keyword
+            tracking gives Indian sellers a complete competitive picture.
+          </>,
         ].map((t, i) => (
           <div className="takeaway-item" key={i}>
             <div className="takeaway-dot">✓</div>
@@ -1228,13 +1513,12 @@ export default function AmazonCompetitorPriceTrackingTool() {
 
       {/* ════════════════════════════════════════════ ARTICLE LAYOUT */}
       <div className="article-layout">
-
         {/* Sidebar TOC */}
         <aside className="toc-sidebar" aria-label="Table of contents">
           <div className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-4">
             Table of Contents
           </div>
-          {TOC.map(t => (
+          {TOC.map((t) => (
             <button
               key={t.id}
               className={`toc-link${activeSection === t.id ? " active" : ""}`}
@@ -1243,81 +1527,121 @@ export default function AmazonCompetitorPriceTrackingTool() {
               {t.label}
             </button>
           ))}
-          <div className="mt-5 pt-5 border-t border-gray-200 dark:border-gray-800">
-            <button
-              onClick={() => router.push("/login")}
-              className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-sm font-bold py-2.5 rounded-xl transition-all"
-            >Start Free with Insydz
-            </button>
-          </div>
         </aside>
 
         {/* Article body */}
         <main>
           {/* Mobile TOC */}
-          <button className="mobile-toc-btn" onClick={() => setTocOpen(!tocOpen)} aria-expanded={tocOpen}>
+          <button
+            className="mobile-toc-btn"
+            onClick={() => setTocOpen(!tocOpen)}
+            aria-expanded={tocOpen}
+          >
             📋 Table of Contents <span>{tocOpen ? "▲" : "▼"}</span>
           </button>
-          <div className={`mobile-toc-panel${tocOpen ? " open" : ""}`} role="navigation">
-            {TOC.map(t => (
-              <button key={t.id} className="toc-link" style={{ display: "block", marginBottom: 4 }} onClick={() => go(t.id)}>
+          <div
+            className={`mobile-toc-panel${tocOpen ? " open" : ""}`}
+            role="navigation"
+          >
+            {TOC.map((t) => (
+              <button
+                key={t.id}
+                className="toc-link"
+                style={{ display: "block", marginBottom: 4 }}
+                onClick={() => go(t.id)}
+              >
                 {t.label}
               </button>
             ))}
           </div>
 
           <article className="article-body">
-
             {/* ── S1: What Is ─────────────────────────────────────────── */}
-            <h2 id="what-is">What is an Amazon Competitor Price Tracking Tool for India?</h2>
+            <h2 id="what-is">
+              What is an Amazon Competitor Price Tracking Tool for India?
+            </h2>
             <p>
-              An <InLink to="/use-cases/track-competitor-prices">amazon competitor price tracking tool India</InLink> is software that automatically monitors your rivals' product prices, stock availability, and listing
-              changes on Amazon.in, Flipkart in real time, without any manual effort. Unlike generic
-              global tools built for US or European marketplaces, India-focused platforms account for the pricing
-              dynamics, seller behaviour, and platform nuances unique to Indian e-commerce.
+              An{" "}
+              <InLink to="/use-cases/track-competitor-prices">
+                amazon competitor price tracking tool India
+              </InLink>{" "}
+              is software that automatically monitors your rivals' product
+              prices, stock availability, and listing changes on Amazon.in,
+              Flipkart in real time, without any manual effort. Unlike generic
+              global tools built for US or European marketplaces, India-focused
+              platforms account for the pricing dynamics, seller behaviour, and
+              platform nuances unique to Indian e-commerce.
             </p>
             <p>
-              Here's the scale of the problem: Indian sellers on Amazon.in collectively lose an estimated — rather than proactive pricing decisions cost sellers <strong>15–30% of potential monthly profit</strong>.
+              Here's the scale of the problem: Indian sellers on Amazon.in
+              collectively lose an estimated — rather than proactive pricing
+              decisions cost sellers{" "}
+              <strong>15–30% of potential monthly profit</strong>.
             </p>
 
             <div className="callout teal">
               <div className="callout-label">In Simple Terms</div>
               <div className="callout-text">
-                Instead of manually checking 10 competitor listings every morning on Amazon.in (which takes 2–3 hours),
-                a price tracking tool does it automatically, 24×7, and alerts you on WhatsApp the moment a competitor drops their price or goes out of stock — so you can act first.
+                Instead of manually checking 10 competitor listings every
+                morning on Amazon.in (which takes 2–3 hours), a price tracking
+                tool does it automatically, 24×7, and alerts you on WhatsApp the
+                moment a competitor drops their price or goes out of stock — so
+                you can act first.
               </div>
             </div>
 
-            <ArticleImg {...IMAGES.tracking} />
+            {/* <ArticleImg {...IMAGES.tracking} /> */}
+            <BlogImageSection
+              altText={IMAGES.tracking.alt}
+              caption={IMAGES.tracking.caption}
+              imageSrc={IMAGES.tracking.src}
+            />
 
             {/* ── S2: Why Critical ────────────────────────────────────── */}
-            <h2 id="why-critical">Why is Competitor Price Tracking Critical for Indian Sellers?</h2>
+            <h2 id="why-critical">
+              Why is Competitor Price Tracking Critical for Indian Sellers?
+            </h2>
             <p>
-              Indian e-commerce is one of the most price-sensitive markets in the world. Shoppers compare prices across
-              3–5 sellers before purchasing. Implementing <InLink to="/">dynamic pricing on Amazon India</InLink> is a necessity for survival — a ₹50 difference on a ₹500 product can shift the Buy Box
-              — and with it, 70–80% of the category's sales volume.
+              Indian e-commerce is one of the most price-sensitive markets in
+              the world. Shoppers compare prices across 3–5 sellers before
+              purchasing. Implementing{" "}
+              <InLink to="/">dynamic pricing on Amazon India</InLink> is a
+              necessity for survival — a ₹50 difference on a ₹500 product can
+              shift the Buy Box — and with it, 70–80% of the category's sales
+              volume.
             </p>
 
             <h3>Revenue Leakage is Silent and Compounding</h3>
             <p>
-              Most Indian sellers price once and forget. Using <InLink to="/resources/expert-blog/amazon-competitor-price-tracking-tool">automated price tracking tools </InLink>improve accuracy and efficiency, allowing you to stay ahead. When a competitor dropped their price by ₹100 overnight, your product slides off the first page of Amazon search results. You don't even know it happened. Three
-              weeks later, you've lost ₹45,000 in revenue you never even tracked.
+              Most Indian sellers price once and forget. Using{" "}
+              <InLink to="/resources/expert-blog/amazon-competitor-price-tracking-tool">
+                automated price tracking tools{" "}
+              </InLink>
+              improve accuracy and efficiency, allowing you to stay ahead. When
+              a competitor dropped their price by ₹100 overnight, your product
+              slides off the first page of Amazon search results. You don't even
+              know it happened. Three weeks later, you've lost ₹45,000 in
+              revenue you never even tracked.
             </p>
 
             <h3>Amazon &amp; Flipkart Algorithm Penalises Stale Pricing</h3>
             <p>
-              Both Amazon and Flipkart factor in price competitiveness when deciding which products to feature in search
-              results and 'Recommended' carousels. A product that's ₹200 more expensive than the category median gets
-              suppressed — even if your reviews are better.
+              Both Amazon and Flipkart factor in price competitiveness when
+              deciding which products to feature in search results and
+              'Recommended' carousels. A product that's ₹200 more expensive than
+              the category median gets suppressed — even if your reviews are
+              better.
             </p>
 
             <div className="callout warn">
               <div className="callout-label">Real Seller Example</div>
               <div className="callout-text">
-                A Delhi-based electronics accessories seller was doing ₹3.2 lakh/month on Amazon. A new competitor
-                entered with a ₹30 lower price. Sales dropped to ₹1.8 lakh within 6 weeks. The seller found out via a
-                customer message not a tool. Had they tracked prices in real time, they could have matched the
-                competitor within an hour and retained the Buy Box.
+                A Delhi-based electronics accessories seller was doing ₹3.2
+                lakh/month on Amazon. A new competitor entered with a ₹30 lower
+                price. Sales dropped to ₹1.8 lakh within 6 weeks. The seller
+                found out via a customer message not a tool. Had they tracked
+                prices in real time, they could have matched the competitor
+                within an hour and retained the Buy Box.
               </div>
             </div>
 
@@ -1328,7 +1652,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 backgroundColor: "#eef0f6",
                 border: "1px solid #d9dce6",
                 borderRadius: "12px",
-                padding: "18px"
+                padding: "18px",
               }}
             >
               <div
@@ -1338,7 +1662,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
                   fontWeight: "700",
                   fontSize: "14px",
                   letterSpacing: "0.5px",
-                  marginBottom: "8px"
+                  marginBottom: "8px",
                 }}
               >
                 AI OVERVIEW SUMMARY
@@ -1348,64 +1672,86 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 style={{
                   color: "#1f2937",
                   fontSize: "16px",
-                  lineHeight: "1.6"
+                  lineHeight: "1.6",
                 }}
               >
-                Amazon competitor price tracking tools help Indian sellers rival prices on Amazon.in,
-                Flipkart in real time. They reduce revenue leakage caused by reactive pricing, protect Buy Box position, and
-                enable faster, smarter decisions especially for sellers managing 10–50 SKUs without a full-time
-                analyst.
+                Amazon competitor price tracking tools help Indian sellers rival
+                prices on Amazon.in, Flipkart in real time. They reduce revenue
+                leakage caused by reactive pricing, protect Buy Box position,
+                and enable faster, smarter decisions especially for sellers
+                managing 10–50 SKUs without a full-time analyst.
               </div>
             </div>
 
             <h3>The Festive Season Window is Unforgiving</h3>
             <p>
-              During Big Billion Days and Great Indian Festival, 40–60% of annual e-commerce revenue concentrates into
-              4–7 days. A seller who loses the Buy Box on Day 1 of a festive event often can't recover the algorithm
-              has already reallocated visibility to competitors.
+              During Big Billion Days and Great Indian Festival, 40–60% of
+              annual e-commerce revenue concentrates into 4–7 days. A seller who
+              loses the Buy Box on Day 1 of a festive event often can't recover
+              the algorithm has already reallocated visibility to competitors.
             </p>
 
             {/* ── S3: How It Works ────────────────────────────────────── */}
-            <h2 id="how-it-works">How Does Amazon Competitor Price Tracking Work?</h2>
+            <h2 id="how-it-works">
+              How Does Amazon Competitor Price Tracking Work?
+            </h2>
             <p>
-              Modern tools have replaced the manual spreadsheet workflow with a 5-step automated intelligence loop:
+              Modern tools have replaced the manual spreadsheet workflow with a
+              5-step automated intelligence loop:
             </p>
 
             {/* Steps — Step 2 gets the amazon price tracker link (#5) */}
-            {(
-              [
-                {
-                  title: "Connect Your Seller Account",
-                  desc: <>Link your Amazon/Flipkart seller account and add your top 5–10 competitor ASINs to start monitoring immediately.</>,
-                },
-                {
-                  title: "Automated Live Data Crawling",
-                  desc: (
-                    <>
-                      The <InLink to="/free-tools/free-competitor-price-checker">amazon price tracker</InLink> crawler or API pulls live price data from product listings at frequent intervals every 15–60
-                      minutes for AI-powered tools like Insydz.
-                    </>
-                  ),
-                },
-                {
-                  title: "AI Engine Analysis",
-                  desc: (
-                    <>
-                      The competitor monitoring tool AI engine compares your price against the category benchmark and competitor prices, factoring in
-                      ratings, delivery speed, and stock levels.
-                    </>
-                  ),
-                },
-                {
-                  title: "WhatsApp / Email Alert Triggered",
-                  desc: <>You receive a WhatsApp or email alert the moment a competitor changes price by more than your defined threshold (e.g., ±5%).</>,
-                },
-                {
-                  title: "Actionable AI Recommendation",
-                  desc: <>{`The platform gives a decision, not just data: "Competitor A dropped to ₹899. Recommend adjusting to ₹919 to stay competitive while protecting ₹42 more margin."`}</>,
-                },
-              ]
-            ).map((step, i) => (
+            {[
+              {
+                title: "Connect Your Seller Account",
+                desc: (
+                  <>
+                    Link your Amazon/Flipkart seller account and add your top
+                    5–10 competitor ASINs to start monitoring immediately.
+                  </>
+                ),
+              },
+              {
+                title: "Automated Live Data Crawling",
+                desc: (
+                  <>
+                    The{" "}
+                    <InLink to="/free-tools/free-competitor-price-checker">
+                      amazon price tracker
+                    </InLink>{" "}
+                    crawler or API pulls live price data from product listings
+                    at frequent intervals every 15–60 minutes for AI-powered
+                    tools like Insydz.
+                  </>
+                ),
+              },
+              {
+                title: "AI Engine Analysis",
+                desc: (
+                  <>
+                    The competitor monitoring tool AI engine compares your price
+                    against the category benchmark and competitor prices,
+                    factoring in ratings, delivery speed, and stock levels.
+                  </>
+                ),
+              },
+              {
+                title: "WhatsApp / Email Alert Triggered",
+                desc: (
+                  <>
+                    You receive a WhatsApp or email alert the moment a
+                    competitor changes price by more than your defined threshold
+                    (e.g., ±5%).
+                  </>
+                ),
+              },
+              {
+                title: "Actionable AI Recommendation",
+                desc: (
+                  <>{`The platform gives a decision, not just data: "Competitor A dropped to ₹899. Recommend adjusting to ₹919 to stay competitive while protecting ₹42 more margin."`}</>
+                ),
+              },
+            ].map((step, i) => (
               <div className="step" key={i}>
                 <div className="step-num">{i + 1}</div>
                 <div className="step-content">
@@ -1418,15 +1764,24 @@ export default function AmazonCompetitorPriceTrackingTool() {
             <div className="callout pro">
               <div className="callout-label">Key Insight</div>
               <div className="callout-text">
-                Manual tracking gives you data points. AI-powered intelligence gives you decisions.
-                That gap is the difference between reacting tomorrow and winning today.
+                Manual tracking gives you data points. AI-powered intelligence
+                gives you decisions. That gap is the difference between reacting
+                tomorrow and winning today.
               </div>
             </div>
 
             {/* ── S4: Comparison ──────────────────────────────────────── */}
-            <h2 id="comparison">Types of Amazon Price Tracking Approaches (Comparison)</h2>
+            <h2 id="comparison">
+              Types of Amazon Price Tracking Approaches (Comparison)
+            </h2>
 
-            <figure style={{ margin: "24px 0", overflow: "hidden", borderRadius: "12px" }}>
+            <figure
+              style={{
+                margin: "24px 0",
+                overflow: "hidden",
+                borderRadius: "12px",
+              }}
+            >
               <img
                 src="/Amazon Competitor Price Tracking Tool India-Blog1_image3.png"
                 alt="Ecommerce pricing execution model"
@@ -1439,10 +1794,12 @@ export default function AmazonCompetitorPriceTrackingTool() {
                   fontSize: "13.5px",
                   lineHeight: "1.6",
                   color: "#64748b",
-                  borderTop: "1px solid #e2e8f0"
+                  borderTop: "1px solid #e2e8f0",
                 }}
               >
-                AI-powered price tracking dashboards surface the exact adjustments needed to protect Buy Box position no manual analysis required.
+                AI-powered price tracking dashboards surface the exact
+                adjustments needed to protect Buy Box position no manual
+                analysis required.
               </div>
             </figure>
 
@@ -1459,22 +1816,34 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>Manual Excel Tracking</strong></td>
-                    <td><span className="br">24–48 hours</span></td>
+                    <td>
+                      <strong>Manual Excel Tracking</strong>
+                    </td>
+                    <td>
+                      <span className="br">24–48 hours</span>
+                    </td>
                     <td>Low (human error)</td>
                     <td>None</td>
                     <td>3–5 hrs/day labour</td>
                   </tr>
                   <tr>
-                    <td><strong>Basic Free Alert Tools</strong></td>
-                    <td><span className="bo">2–6 hours</span></td>
+                    <td>
+                      <strong>Basic Free Alert Tools</strong>
+                    </td>
+                    <td>
+                      <span className="bo">2–6 hours</span>
+                    </td>
                     <td>Medium</td>
                     <td>Low (alerts only)</td>
                     <td>Free – ₹200/mo</td>
                   </tr>
                   <tr>
-                    <td><strong>Global SaaS (Helium 10)</strong></td>
-                    <td><span className="bb">1–2 hours</span></td>
+                    <td>
+                      <strong>Global SaaS (Helium 10)</strong>
+                    </td>
+                    <td>
+                      <span className="bb">1–2 hours</span>
+                    </td>
                     <td>High</td>
                     <td>Medium (US-focused)</td>
                     <td>₹4,000–8,000/mo</td>
@@ -1484,9 +1853,13 @@ export default function AmazonCompetitorPriceTrackingTool() {
                     <td>
                       <strong>India-First AI Platform (Insydz)</strong>
                     </td>
-                    <td><span className="bg">&lt; 1 hour</span></td>
+                    <td>
+                      <span className="bg">&lt; 1 hour</span>
+                    </td>
                     <td>High</td>
-                    <td><span className="bg">High — Actionable AI</span></td>
+                    <td>
+                      <span className="bg">High — Actionable AI</span>
+                    </td>
                     <td>₹1,999–2,999/mo</td>
                   </tr>
                 </tbody>
@@ -1496,15 +1869,23 @@ export default function AmazonCompetitorPriceTrackingTool() {
             <div className="inline-cta">
               <div style={{ flex: 1, minWidth: 0 }}>
                 <h4>Start Tracking Competitor Prices Free</h4>
-                <p>WhatsApp alerts. No credit card. No dashboards to learn. Set up in 5 minutes.</p>
+                <p>
+                  WhatsApp alerts. No credit card. No dashboards to learn. Set
+                  up in 5 minutes.
+                </p>
               </div>
-              <button className="inline-cta-btn" onClick={() => router.push("/login")}>
+              <button
+                className="inline-cta-btn"
+                onClick={() => router.push("/login")}
+              >
                 Try Insydz Free
               </button>
             </div>
 
             {/* ── S5: Mistakes ────────────────────────────────────────── */}
-            <h2 id="mistakes">5 Common Mistakes Indian Sellers Make with Price Tracking</h2>
+            <h2 id="mistakes">
+              5 Common Mistakes Indian Sellers Make with Price Tracking
+            </h2>
 
             {/* Mistake cards with inline links woven in */}
             <div className="mistake-card">
@@ -1512,9 +1893,10 @@ export default function AmazonCompetitorPriceTrackingTool() {
               <div className="mistake-body">
                 <strong>Tracking Prices in Excel Every Morning</strong>
                 <p>
-                  If you're opening 10 competitor tabs every morning and copying prices into a spreadsheet you're
-                  already 24 hours behind. The competitor changed their price at 11 PM last night. You found out at
-                  9 AM today. You lost the Buy Box for 10 hours.
+                  If you're opening 10 competitor tabs every morning and copying
+                  prices into a spreadsheet you're already 24 hours behind. The
+                  competitor changed their price at 11 PM last night. You found
+                  out at 9 AM today. You lost the Buy Box for 10 hours.
                 </p>
               </div>
             </div>
@@ -1524,8 +1906,10 @@ export default function AmazonCompetitorPriceTrackingTool() {
               <div className="mistake-body">
                 <strong>Ignoring Email Alerts (and Missing WhatsApp)</strong>
                 <p>
-                  Most Indian SMB sellers check email 2–3 times a day at most. They check WhatsApp 50+ times. A price
-                  alert sent to an email that's opened 4 hours later is not an alert it's a history lesson.
+                  Most Indian SMB sellers check email 2–3 times a day at most.
+                  They check WhatsApp 50+ times. A price alert sent to an email
+                  that's opened 4 hours later is not an alert it's a history
+                  lesson.
                 </p>
               </div>
             </div>
@@ -1535,8 +1919,11 @@ export default function AmazonCompetitorPriceTrackingTool() {
               <div className="mistake-body">
                 <strong>Over-Discounting in a Panic</strong>
                 <p>
-                  When sellers notice a competitor undercutting, the instinct is to slash prices immediately. This
-                  starts price wars that destroy margins across the entire category. Smart sellers use AI to find the minimum adjustment needed to stay competitive — not the maximum cut.
+                  When sellers notice a competitor undercutting, the instinct is
+                  to slash prices immediately. This starts price wars that
+                  destroy margins across the entire category. Smart sellers use
+                  AI to find the minimum adjustment needed to stay competitive —
+                  not the maximum cut.
                 </p>
               </div>
             </div>
@@ -1544,10 +1931,15 @@ export default function AmazonCompetitorPriceTrackingTool() {
             <div className="mistake-card">
               <div className="mistake-num">4</div>
               <div className="mistake-body">
-                <strong>Not Tracking Competitor Reviews Alongside Prices</strong>
+                <strong>
+                  Not Tracking Competitor Reviews Alongside Prices
+                </strong>
                 <p>
-                  Price is one signal. But a competitor with 500 reviews and 4.6 stars can charge ₹150 more than you
-                  and still win. Sellers who only track price miss the full picture. Review Analytics — review velocity and sentiment tracking should run alongside price tracking.
+                  Price is one signal. But a competitor with 500 reviews and 4.6
+                  stars can charge ₹150 more than you and still win. Sellers who
+                  only track price miss the full picture. Review Analytics —
+                  review velocity and sentiment tracking should run alongside
+                  price tracking.
                 </p>
               </div>
             </div>
@@ -1555,19 +1947,27 @@ export default function AmazonCompetitorPriceTrackingTool() {
             <div className="mistake-card">
               <div className="mistake-num">5</div>
               <div className="mistake-body">
-                <strong>Setting Prices Once at Launch and Never Revisiting</strong>
+                <strong>
+                  Setting Prices Once at Launch and Never Revisiting
+                </strong>
                 <p>
-                  Seasonal demand on Flipkart for electronics, apparel, and home goods swings 40–60% during festive
-                  periods. A seller who doesn't adjust pricing dynamically for Diwali, Republic Day Sale, or Big Billion Days leaves significant profit on the table.
+                  Seasonal demand on Flipkart for electronics, apparel, and home
+                  goods swings 40–60% during festive periods. A seller who
+                  doesn't adjust pricing dynamically for Diwali, Republic Day
+                  Sale, or Big Billion Days leaves significant profit on the
+                  table.
                 </p>
               </div>
             </div>
 
             {/* ── S6: Best Practices ──────────────────────────────────── */}
-            <h2 id="best-practices">Best Practices for Indian Sellers: Weekly Execution Model</h2>
+            <h2 id="best-practices">
+              Best Practices for Indian Sellers: Weekly Execution Model
+            </h2>
             <p>
-              The most successful Indian sellers don't react to pricing changes they run a structured weekly rhythm
-              that keeps them consistently competitive without manual effort.
+              The most successful Indian sellers don't react to pricing changes
+              they run a structured weekly rhythm that keeps them consistently
+              competitive without manual effort.
             </p>
 
             <div className="bp-grid">
@@ -1600,17 +2000,28 @@ export default function AmazonCompetitorPriceTrackingTool() {
                     "Review revenue impact of pricing changes (before vs. after)",
                   ],
                 },
-              ].map(col => (
+              ].map((col) => (
                 <div className="bp-card" key={col.head}>
-                  <div className="bp-head" style={{ background: col.color }}>{col.head}</div>
+                  <div className="bp-head" style={{ background: col.color }}>
+                    {col.head}
+                  </div>
                   <div className="bp-body">
-                    <ul>{col.items.map(it => <li key={it}>{it}</li>)}</ul>
+                    <ul>
+                      {col.items.map((it) => (
+                        <li key={it}>{it}</li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               ))}
             </div>
 
-            <ArticleImg {...IMAGES.festive} />
+            {/* <ArticleImg {...IMAGES.festive} /> */}
+            <BlogImageSection
+              altText={IMAGES.festive.alt}
+              caption={IMAGES.festive.caption}
+              imageSrc={IMAGES.festive.src}
+            />
 
             <h3>Key Metrics to Track</h3>
             <div className="metrics-grid">
@@ -1634,9 +2045,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
               ].map((m, idx) => (
                 <div className="metric-card" key={idx}>
                   <div>
-                    <div className="metric-title">
-                        {m.title}
-                    </div>
+                    <div className="metric-title">{m.title}</div>
                     <div className="metric-desc">{m.desc}</div>
                   </div>
                 </div>
@@ -1645,14 +2054,25 @@ export default function AmazonCompetitorPriceTrackingTool() {
 
             {/* Also add "track competitor prices" and "Keyword Rank Tracking" links in the weekly section prose */}
             <p>
-              The weekly rhythm also means you regularly perform <InLink to="/use-cases/track-competitor-prices">real-time competitor price monitoring</InLink> and review Keyword Rank Tracking movements to understand the full competitive picture not just price.
+              The weekly rhythm also means you regularly perform{" "}
+              <InLink to="/use-cases/track-competitor-prices">
+                real-time competitor price monitoring
+              </InLink>{" "}
+              and review Keyword Rank Tracking movements to understand the full
+              competitive picture not just price.
             </p>
 
             {/* ── S7: Best Tools ──────────────────────────────────────── */}
-            <h2 id="best-tools">Best Tools for Amazon Competitor Price Tracking in India</h2>
+            <h2 id="best-tools">
+              Best Tools for Amazon Competitor Price Tracking in India
+            </h2>
             <p>
-              Not all tools are built equally and for Indian sellers, the platform choice is critical. Finding the <InLink to="/resources/expert-blog/best-competitor-price-tracking-tools-india">best competitor price tracking tools in India</InLink> is the first step — here's an
-              honest, side-by-side comparison.
+              Not all tools are built equally and for Indian sellers, the
+              platform choice is critical. Finding the{" "}
+              <InLink to="/resources/expert-blog/best-competitor-price-tracking-tools-india">
+                best competitor price tracking tools in India
+              </InLink>{" "}
+              is the first step — here's an honest, side-by-side comparison.
             </p>
 
             <div className="dt-wrap">
@@ -1668,27 +2088,57 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td><strong>Helium 10</strong></td>
-                    <td><span className="bg">Yes</span></td>
-                    <td><span className="br">No</span></td>
-                    <td><span className="br">No</span></td>
-                    <td><span className="br">No</span></td>
+                    <td>
+                      <strong>Helium 10</strong>
+                    </td>
+                    <td>
+                      <span className="bg">Yes</span>
+                    </td>
+                    <td>
+                      <span className="br">No</span>
+                    </td>
+                    <td>
+                      <span className="br">No</span>
+                    </td>
+                    <td>
+                      <span className="br">No</span>
+                    </td>
                     <td>₹4,000–8,000/mo</td>
                   </tr>
                   <tr>
-                    <td><strong>Jungle Scout</strong></td>
-                    <td><span className="bg">Yes</span></td>
-                    <td><span className="br">No</span></td>
-                    <td><span className="br">No</span></td>
-                    <td><span className="br">No</span></td>
+                    <td>
+                      <strong>Jungle Scout</strong>
+                    </td>
+                    <td>
+                      <span className="bg">Yes</span>
+                    </td>
+                    <td>
+                      <span className="br">No</span>
+                    </td>
+                    <td>
+                      <span className="br">No</span>
+                    </td>
+                    <td>
+                      <span className="br">No</span>
+                    </td>
                     <td>₹4,500–7,000/mo</td>
                   </tr>
                   <tr>
-                    <td><strong>Insydz</strong></td>
-                    <td><span className="bg">Yes</span></td>
-                    <td><span className="bg">Yes</span></td>
-                    <td><span className="bg">Yes</span></td>
-                    <td><span className="bg">Yes</span></td>
+                    <td>
+                      <strong>Insydz</strong>
+                    </td>
+                    <td>
+                      <span className="bg">Yes</span>
+                    </td>
+                    <td>
+                      <span className="bg">Yes</span>
+                    </td>
+                    <td>
+                      <span className="bg">Yes</span>
+                    </td>
+                    <td>
+                      <span className="bg">Yes</span>
+                    </td>
                     <td>₹1,999/mo + Free plan</td>
                   </tr>
                 </tbody>
@@ -1700,9 +2150,10 @@ export default function AmazonCompetitorPriceTrackingTool() {
             </h3>
 
             <p>
-              Helium 10 and Jungle Scout are industry standards for Amazon sellers in the US and Europe.
-              They offer deep keyword research, product research, and price tracking capabilities.
-              However, for Indian sellers, they come with significant limitations.
+              Helium 10 and Jungle Scout are industry standards for Amazon
+              sellers in the US and Europe. They offer deep keyword research,
+              product research, and price tracking capabilities. However, for
+              Indian sellers, they come with significant limitations.
             </p>
 
             <div
@@ -1710,7 +2161,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr",
                 gap: "24px",
-                marginTop: "24px"
+                marginTop: "24px",
               }}
             >
               {/* Helium / Jungle Card */}
@@ -1718,7 +2169,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 style={{
                   background: "#f3f4f6",
                   borderRadius: "12px",
-                  border: "1px solid #e5e7eb"
+                  border: "1px solid #e5e7eb",
                 }}
               >
                 <div
@@ -1726,7 +2177,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
                     padding: "16px",
                     borderBottom: "1px solid #e5e7eb",
                     display: "flex",
-                    justifyContent: "space-between"
+                    justifyContent: "space-between",
                   }}
                 >
                   <strong>Helium 10 / Jungle Scout</strong>
@@ -1735,7 +2186,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
                       background: "#e5e7eb",
                       padding: "4px 10px",
                       borderRadius: "20px",
-                      fontSize: "12px"
+                      fontSize: "12px",
                     }}
                   >
                     US / Europe
@@ -1743,10 +2194,13 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 </div>
                 <div style={{ padding: "18px" }}>
                   <p>
-                    Industry standard globally — but significant gaps for Indian sellers:
+                    Industry standard globally — but significant gaps for Indian
+                    sellers:
                   </p>
                   <ul style={{ marginTop: "10px", lineHeight: "1.8" }}>
-                    <li>₹4,000–8,000/month — too expensive for most SMB sellers</li>
+                    <li>
+                      ₹4,000–8,000/month — too expensive for most SMB sellers
+                    </li>
                     <li>No Flipkart coverage</li>
                     <li>English-only dashboards</li>
                     <li>Email alerts only</li>
@@ -1758,7 +2212,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
               <div
                 style={{
                   borderRadius: "12px",
-                  border: "1px solid #fdba74"
+                  border: "1px solid #fdba74",
                 }}
               >
                 <div
@@ -1769,7 +2223,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
                     borderTopLeftRadius: "12px",
                     borderTopRightRadius: "12px",
                     display: "flex",
-                    justifyContent: "space-between"
+                    justifyContent: "space-between",
                   }}
                 >
                   <strong>Insydz</strong>
@@ -1778,16 +2232,14 @@ export default function AmazonCompetitorPriceTrackingTool() {
                       background: "#fb923c",
                       padding: "4px 10px",
                       borderRadius: "20px",
-                      fontSize: "12px"
+                      fontSize: "12px",
                     }}
                   >
                     India-First AI
                   </span>
                 </div>
                 <div style={{ padding: "18px" }}>
-                  <p>
-                    Built ground-up for how Indian sellers actually work:
-                  </p>
+                  <p>Built ground-up for how Indian sellers actually work:</p>
                   <ul style={{ marginTop: "10px", lineHeight: "1.8" }}>
                     <li>Real-time WhatsApp alerts</li>
                     <li>AI price recommendations</li>
@@ -1801,22 +2253,41 @@ export default function AmazonCompetitorPriceTrackingTool() {
             <div className="callout pro">
               <div className="callout-label">No Aggressive Pitch</div>
               <div className="callout-text">
-                If you're an Indian seller on Amazon.in or Flipkart and you're not tracking competitor prices with AI, you're operating on guesswork. The question isn't whether you need a tool it's which one fits your budget and platforms.
+                If you're an Indian seller on Amazon.in or Flipkart and you're
+                not tracking competitor prices with AI, you're operating on
+                guesswork. The question isn't whether you need a tool it's which
+                one fits your budget and platforms.
               </div>
             </div>
 
-            <ArticleImg {...IMAGES.warehouse} />
-
+            {/* <ArticleImg {...IMAGES.warehouse} /> */}
+            <BlogImageSection
+              altText={IMAGES.warehouse.alt}
+              caption={IMAGES.warehouse.caption}
+              imageSrc={IMAGES.warehouse.src}
+            />
 
             {/* ── FAQ ─────────────────────────────────────────────────── */}
             <h2 id="faq">Frequently Asked Questions</h2>
 
             {/* FAQ 1 — Link #2: "best Amazon competitor price tracking tool" self-references this page */}
             <div className={`faq-item${openFaq === 0 ? " open" : ""}`}>
-              <div className="faq-q" onClick={() => setOpenFaq(openFaq === 0 ? null : 0)} role="button" tabIndex={0}
-                onKeyDown={e => e.key === "Enter" && setOpenFaq(openFaq === 0 ? null : 0)}>
+              <div
+                className="faq-q"
+                onClick={() => setOpenFaq(openFaq === 0 ? null : 0)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && setOpenFaq(openFaq === 0 ? null : 0)
+                }
+              >
                 <span>{FAQS[0].q}</span>
-                <div className={`faq-icon${openFaq === 0 ? " open" : ""}`} aria-hidden="true">+</div>
+                <div
+                  className={`faq-icon${openFaq === 0 ? " open" : ""}`}
+                  aria-hidden="true"
+                >
+                  +
+                </div>
               </div>
               {openFaq === 0 && (
                 <div className="faq-a">
@@ -1825,73 +2296,129 @@ export default function AmazonCompetitorPriceTrackingTool() {
                   <InLink to="/resources/expert-blog/amazon-competitor-price-tracking-tool">
                     best Amazon competitor price tracking tool
                   </InLink>{" "}
-                  covers Amazon.in AND Flipkart, sends WhatsApp alerts, and fits within the ₹500–3,000/month
-                  budget range that Indian SMBs can justify. Insydz is purpose-built for this it's the only platform
-                  offering AI-powered price intelligence for all three major Indian marketplaces at this price point.
+                  covers Amazon.in AND Flipkart, sends WhatsApp alerts, and fits
+                  within the ₹500–3,000/month budget range that Indian SMBs can
+                  justify. Insydz is purpose-built for this it's the only
+                  platform offering AI-powered price intelligence for all three
+                  major Indian marketplaces at this price point.
                 </div>
               )}
             </div>
 
             {/* FAQ 2 — Link #7: "price tracking tool checks competitor prices" */}
             <div className={`faq-item${openFaq === 1 ? " open" : ""}`}>
-              <div className="faq-q" onClick={() => setOpenFaq(openFaq === 1 ? null : 1)} role="button" tabIndex={0}
-                onKeyDown={e => e.key === "Enter" && setOpenFaq(openFaq === 1 ? null : 1)}>
+              <div
+                className="faq-q"
+                onClick={() => setOpenFaq(openFaq === 1 ? null : 1)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && setOpenFaq(openFaq === 1 ? null : 1)
+                }
+              >
                 <span>{FAQS[1].q}</span>
-                <div className={`faq-icon${openFaq === 1 ? " open" : ""}`} aria-hidden="true">+</div>
+                <div
+                  className={`faq-icon${openFaq === 1 ? " open" : ""}`}
+                  aria-hidden="true"
+                >
+                  +
+                </div>
               </div>
               {openFaq === 1 && (
                 <div className="faq-a">
-                  Basic free tools may check every 12–24 hours — which is too slow for competitive categories. The way
-                  an AI-powered{" "}
+                  Basic free tools may check every 12–24 hours — which is too
+                  slow for competitive categories. The way an AI-powered{" "}
                   {/* Link #7 — "price tracking tool checks competitor prices" → /features/competitor-price-tracking-feature */}
                   <InLink to="/features/competitor-price-tracking-feature">
                     price tracking tool checks competitor prices
                   </InLink>{" "}
-                  multiple times per hour ensures you're alerted within 60 minutes of any significant price movement.
-                  For high-velocity categories like electronics or FMCG, faster tracking directly translates to Buy Box
-                  retention.
+                  multiple times per hour ensures you're alerted within 60
+                  minutes of any significant price movement. For high-velocity
+                  categories like electronics or FMCG, faster tracking directly
+                  translates to Buy Box retention.
                 </div>
               )}
             </div>
 
             {/* FAQ 3 — no specific link required */}
             <div className={`faq-item${openFaq === 2 ? " open" : ""}`}>
-              <div className="faq-q" onClick={() => setOpenFaq(openFaq === 2 ? null : 2)} role="button" tabIndex={0}
-                onKeyDown={e => e.key === "Enter" && setOpenFaq(openFaq === 2 ? null : 2)}>
+              <div
+                className="faq-q"
+                onClick={() => setOpenFaq(openFaq === 2 ? null : 2)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && setOpenFaq(openFaq === 2 ? null : 2)
+                }
+              >
                 <span>{FAQS[2].q}</span>
-                <div className={`faq-icon${openFaq === 2 ? " open" : ""}`} aria-hidden="true">+</div>
+                <div
+                  className={`faq-icon${openFaq === 2 ? " open" : ""}`}
+                  aria-hidden="true"
+                >
+                  +
+                </div>
               </div>
               {openFaq === 2 && <div className="faq-a">{FAQS[2].a}</div>}
             </div>
 
             {/* FAQ 4 — Link #14 already used in Mistake #3; repeat in FAQ answer naturally */}
             <div className={`faq-item${openFaq === 3 ? " open" : ""}`}>
-              <div className="faq-q" onClick={() => setOpenFaq(openFaq === 3 ? null : 3)} role="button" tabIndex={0}
-                onKeyDown={e => e.key === "Enter" && setOpenFaq(openFaq === 3 ? null : 3)}>
+              <div
+                className="faq-q"
+                onClick={() => setOpenFaq(openFaq === 3 ? null : 3)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) =>
+                  e.key === "Enter" && setOpenFaq(openFaq === 3 ? null : 3)
+                }
+              >
                 <span>{FAQS[3].q}</span>
-                <div className={`faq-icon${openFaq === 3 ? " open" : ""}`} aria-hidden="true">+</div>
+                <div
+                  className={`faq-icon${openFaq === 3 ? " open" : ""}`}
+                  aria-hidden="true"
+                >
+                  +
+                </div>
               </div>
               {openFaq === 3 && (
                 <div className="faq-a">
-                  Only if done poorly. Blind automation matching any competitor drop instantly does cause price
-                  wars. Smart tools like Insydz calculate the{" "}
+                  Only if done poorly. Blind automation matching any competitor
+                  drop instantly does cause price wars. Smart tools like Insydz
+                  calculate the{" "}
                   {/* Link #13 — "Price Optimization" → /features/price-optimization-feature */}
                   <InLink to="/features/price-optimization-feature">
                     Price Optimization
                   </InLink>{" "}
-                  minimum adjustment (e.g., 'Adjust from ₹999 to ₹979 — not ₹899') based on ratings, delivery, and
-                  margin data. This protects your margins while recovering the Buy Box.
+                  minimum adjustment (e.g., 'Adjust from ₹999 to ₹979 — not
+                  ₹899') based on ratings, delivery, and margin data. This
+                  protects your margins while recovering the Buy Box.
                 </div>
               )}
             </div>
 
             {/* FAQs 5 & 6 — no new links required */}
-            {[4, 5].map(i => (
-              <div className={`faq-item${openFaq === i ? " open" : ""}`} key={i}>
-                <div className="faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)} role="button" tabIndex={0}
-                  onKeyDown={e => e.key === "Enter" && setOpenFaq(openFaq === i ? null : i)}>
+            {[4, 5].map((i) => (
+              <div
+                className={`faq-item${openFaq === i ? " open" : ""}`}
+                key={i}
+              >
+                <div
+                  className="faq-q"
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" && setOpenFaq(openFaq === i ? null : i)
+                  }
+                >
                   <span>{FAQS[i].q}</span>
-                  <div className={`faq-icon${openFaq === i ? " open" : ""}`} aria-hidden="true">+</div>
+                  <div
+                    className={`faq-icon${openFaq === i ? " open" : ""}`}
+                    aria-hidden="true"
+                  >
+                    +
+                  </div>
                 </div>
                 {openFaq === i && <div className="faq-a">{FAQS[i].a}</div>}
               </div>
@@ -1900,18 +2427,24 @@ export default function AmazonCompetitorPriceTrackingTool() {
             {/* ── Conclusion ──────────────────────────────────────────── */}
             <h2 id="conclusion">Final Thoughts</h2>
             <p>
-              Winning on Amazon India and Flipkart in 2026 isn't about having the best product it's about having the
-              best intelligence. Competitor price tracking is the foundation of that intelligence layer.
+              Winning on Amazon India and Flipkart in 2026 isn't about having
+              the best product it's about having the best intelligence.
+              Competitor price tracking is the foundation of that intelligence
+              layer.
             </p>
             <p>
-              Sellers who implement real-time AI-powered price monitoring stop reacting to the market and start leading
-              it. They know when a rival goes out of stock before buyers do. They know when a competitor undercuts them
-              within 45 minutes, not 45 hours. And they recover their Buy Box with a precise price adjustment enabled
+              Sellers who implement real-time AI-powered price monitoring stop
+              reacting to the market and start leading it. They know when a
+              rival goes out of stock before buyers do. They know when a
+              competitor undercuts them within 45 minutes, not 45 hours. And
+              they recover their Buy Box with a precise price adjustment enabled
               by a complete competitive picture — not a panicked discount.
             </p>
             <p>
-              <strong>The data is clear: every hour without price tracking is an hour of revenue being silently
-              redirected to a competitor who does.</strong>
+              <strong>
+                The data is clear: every hour without price tracking is an hour
+                of revenue being silently redirected to a competitor who does.
+              </strong>
             </p>
 
             {/* ── Related Guides ──────────────────────────────────────── */}
@@ -1919,28 +2452,36 @@ export default function AmazonCompetitorPriceTrackingTool() {
             <div className="related-grid">
               {[
                 {
-                  title: "Flipkart Price Tracker: Monitor & Beat Competitor Prices in 2026",
+                  title:
+                    "Flipkart Price Tracker: Monitor & Beat Competitor Prices in 2026",
                   tag: "Flipkart Sellers",
                   time: "10 min",
                   imgSrc: "/01_hero_banner.png",
-                  route: "/resources/expert-blog/flipkart-price-tracker-monitor-beat-competitor-prices-2026",
+                  route:
+                    "/resources/expert-blog/flipkart-price-tracker-monitor-beat-competitor-prices-2026",
                 },
                 {
-                  title: "How to Win the Amazon Buy Box Consistently as an Indian Seller",
+                  title:
+                    "How to Win the Amazon Buy Box Consistently as an Indian Seller",
                   tag: "Buy Box Strategy",
                   time: "11 min",
                   imgSrc: "/three.png",
                   route: "/use-cases/track-competitor-prices",
                 },
                 {
-                  title: "Amazon Keyword Research India: Step-by-Step Guide for 2026",
+                  title:
+                    "Amazon Keyword Research India: Step-by-Step Guide for 2026",
                   tag: "Keyword Research",
                   time: "12 min",
                   imgSrc: "/keyword-research-hero.png",
                   route: "/features/keyword-rank-tracking-feature",
                 },
-              ].map(r => (
-                <div className="related-card" key={r.title} onClick={() => router.push(r.route)}>
+              ].map((r) => (
+                <div
+                  className="related-card"
+                  key={r.title}
+                  onClick={() => router.push(r.route)}
+                >
                   <div className="related-thumb">
                     <img src={r.imgSrc} alt={r.title} />
                   </div>
@@ -1954,23 +2495,41 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 </div>
               ))}
             </div>
-
           </article>
         </main>
       </div>
 
       {/* Final CTA */}
       <div className="final-cta-block">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+        <h2
+          className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3"
+          style={{ fontFamily: "'Sora',sans-serif" }}
+        >
           Beat Your Competitors to Every Price Move.
         </h2>
-        <p className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 24px" }}>
-          Insydz tracks Amazon.in competitor prices in real time and pushes Buy Box alerts to your WhatsApp — before you lose the sale.
+        <p
+          className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg"
+          style={{
+            fontFamily: "'Lora', serif",
+            maxWidth: 520,
+            margin: "0 auto 24px",
+          }}
+        >
+          Insydz tracks Amazon.in competitor prices in real time and pushes Buy
+          Box alerts to your WhatsApp — before you lose the sale.
         </p>
         <div className="final-cta-benefits">
-          {["Real-time price intelligence", "Buy Box protection alerts", "Amazon.in + Flipkart", "Free forever"].map(t => (
+          {[
+            "Real-time price intelligence",
+            "Buy Box protection alerts",
+            "Amazon.in + Flipkart",
+            "Free forever",
+          ].map((t) => (
             <div key={t} className="final-cta-benefit text-blue-100">
-              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+              <span className="text-white" style={{ fontWeight: 800 }}>
+                ✓
+              </span>{" "}
+              {t}
             </div>
           ))}
         </div>
@@ -1983,8 +2542,7 @@ export default function AmazonCompetitorPriceTrackingTool() {
         </p>
       </div>
 
-            {/* Footer */}
-      
+      {/* Footer */}
 
       <style>{`
         @keyframes fade-in {
@@ -2007,6 +2565,3 @@ export default function AmazonCompetitorPriceTrackingTool() {
     </div>
   );
 }
-
-
-

@@ -1,60 +1,4 @@
-// import styles from "./BlogLayout.module.css";
-
-// interface TOCItem {
-//   id: string;
-//   label: string;
-// }
-
-// interface TOCSidebarProps {
-//   items: TOCItem[];
-//   activeSection: string;
-//   onNavigate: (id: string) => void;
-// }
-
-// export default function TOCSidebar({
-//   items,
-//   activeSection,
-//   onNavigate,
-// }: TOCSidebarProps) {
-//   return (
-//     <aside className={styles.tocSidebar}>
-//       <h4>Table of Contents</h4>
-
-//       {items.map((item) => (
-//         <button
-//           key={item.id}
-//           onClick={() => onNavigate(item.id)}
-//           style={{
-//             display: "block",
-//             width: "100%",
-//             textAlign: "left",
-//             marginBottom: 8,
-//             color:
-//               activeSection === item.id
-//                 ? "#7C3AED"
-//                 : "#64748B",
-//           }}
-//         >
-//           {item.label}
-//         </button>
-//       ))}
-//     </aside>
-//   );
-// }
-
-
-
-
-
-
-
-
-
-
-
 "use client";
-
-import styles from "./BlogLayout.module.css";
 
 interface TOCItem {
   id: string;
@@ -116,17 +60,13 @@ export default function TOCSidebar({
 
                 borderRadius: 6,
 
-                background: active
-                  ? "#DFF4E8"
-                  : "transparent",
+                background: active ? "#DFF4E8" : "transparent",
 
                 borderLeft: active
                   ? "3px solid #16A34A"
                   : "3px solid transparent",
 
-                color: active
-                  ? "#166534"
-                  : "#64748B",
+                color: active ? "#166534" : "#64748B",
 
                 fontSize: 14,
                 fontWeight: active ? 600 : 500,

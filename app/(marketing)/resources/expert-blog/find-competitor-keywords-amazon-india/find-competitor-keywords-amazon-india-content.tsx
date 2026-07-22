@@ -664,13 +664,13 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
         @media(min-width:640px){.read-progress{top:72px}}
         @media(min-width:1024px){.read-progress{top:80px}}
 
-        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0}
-        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px}}
-        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px}}
-        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px}}
+        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0;align-items:start}
+        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px;align-items:start}}
+        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px;align-items:start}}
+        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px;align-items:start}}
 
         .toc-sidebar{display:none}
-        @media(min-width:768px){.toc-sidebar{display:block;position:sticky;top:76px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);max-height:calc(100vh - 96px);overflow-y:auto}}
+        @media(min-width:768px){.toc-sidebar{display:block;position:sticky;top:76px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);max-height:calc(100vh - 96px);overflow-y:auto;align-self:start;height:fit-content}}
         @media(min-width:1024px){.toc-sidebar{top:80px;padding:22px}}
         .dark .toc-sidebar{background:#111827;border-color:#1f2937}
 
@@ -902,7 +902,7 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
           <span
             style={{ color: resolvedTheme === "dark" ? "#64748b" : "#94A3B8" }}
           >
-            Competitor Undercutting Your Amazon India Price
+            Find Competitor Keywords on Amazon India
           </span>
         </div>
       </div>
@@ -913,11 +913,9 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
         badgeText="PRICING INTELLIGENCE"
         title={
           <>
-            How to Find Every Keyword Your{" "}
-            <span style={{ color: "#6366F1" }}>
-              Amazon <br /> India Competitor
-            </span>{" "}
-            Is Ranking For, and <br /> Use It to Outrank Them
+            How to Find{" "}
+            <span style={{ color: "#6366F1" }}>Competitor Keywords</span>
+            <br /> on Amazon India (2026)
           </>
         }
         description={
@@ -942,7 +940,7 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
 
       {/* Blog Image Section */}
       <BlogImageSection
-        imageSrc="/Blog2_find-competitor-keywords-amazon-india_BlogBanner.png"
+        imageSrc="/How to Find Competitor Keywords.png"
         altText="Competitor Keywords Amazon India"
         caption="Insydz keyword gap analysis. Your ASIN ranks for 63 keywords while the category leader ranks for 110. The 47 keyword gap contains the highest priority ranking opportunities, including 19 high intent and 8 Hindi terms you are missing entirely."
       />
