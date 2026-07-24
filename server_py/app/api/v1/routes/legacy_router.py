@@ -2317,7 +2317,7 @@ def get_top_items(
             "product_price IS NOT NULL",
             "sales_volume IS NOT NULL",
             "sales_volume != '0'",
-            "estimated_sales > 0"
+            "estimated_sales > 5000"
         ]
         params = {"n": n}
         
@@ -2340,9 +2340,9 @@ def get_top_items(
         # Build ORDER BY clause
         order_by = "product_review_count DESC, product_star_rating DESC"
         if sort_by == "sales_asc":
-            order_by = "sales_volume ASC"
+            order_by = "estimated_sales ASC NULLS FIRST"
         elif sort_by == "sales_desc":
-            order_by = "sales_volume DESC"
+            order_by = "estimated_sales DESC NULLS LAST"
         elif sort_by == "profit_desc":
             order_by = "product_price DESC"
         elif sort_by == "profit_asc":
@@ -3722,7 +3722,8 @@ def get_top_selling_products(limit: int = 20, db: Session = Depends(get_db)):
     """
    
     products = db.query(models.IndianProduct).filter(
-        models.IndianProduct.sales_estimate_high.isnot(None)
+        models.IndianProduct.sales_estimate_high.isnot(None),
+        models.IndianProduct.sales_estimate_high > 5000
     ).order_by(
         models.IndianProduct.sales_estimate_high.desc()
     ).limit(limit).all()
@@ -4034,9 +4035,9 @@ def get_amazon_top_sales(
             ROUND(CAST(SUM(daily_sales) AS NUMERIC), 0) as total_daily_sales,
             COUNT(*) as variant_count
         FROM sales_data
-        WHERE daily_sales IS NOT NULL AND daily_sales > 0
+        WHERE daily_sales IS NOT NULL AND daily_sales > 167
         GROUP BY product_title
-        HAVING ROUND(CAST(SUM(daily_sales) AS NUMERIC), 0) > 0
+        HAVING ROUND(CAST(SUM(daily_sales) AS NUMERIC), 0) > 167
         ORDER BY total_daily_sales DESC NULLS LAST
         LIMIT :limit
         """)
