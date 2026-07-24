@@ -5,7 +5,7 @@ import axios from "axios";
 import { API_BASE_URL } from "@/lib/config";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, IndianRupee, ArrowUpDown, TrendingUp, Search, X } from "lucide-react";
+import { Star, IndianRupee, ArrowUpDown, TrendingUp, Search, X, Filter } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import SmartSearchInput from "@/components/ui/smart-search-input";
@@ -49,6 +49,9 @@ export default function Sales() {
   const [itemsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All Categories");
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
 
   // Debounce searchQuery by 400ms
   useEffect(() => {
@@ -61,8 +64,19 @@ export default function Sales() {
 
   useEffect(() => {
     setMounted(true);
-    fetchData();
+  }, []);
+
+  // Fetch categories & reset selection when source changes
+  useEffect(() => {
+    setSelectedCategory("All Categories");
+    setCurrentPage(1);
+    fetchCategories();
   }, [source]);
+
+  // Re-fetch products when source or selected category changes
+  useEffect(() => {
+    fetchData();
+  }, [source, selectedCategory]);
 
   const isDark = mounted && resolvedTheme === "dark";
 
@@ -86,12 +100,37 @@ export default function Sales() {
     }
   };
 
-  const fetchData = () => {
-    setLoading(true);
+  const fetchCategories = () => {
+    setCategoriesLoading(true);
     const url =
       source === "flipkart"
-        ? `${API_BASE_URL}/top?table=rapidapi_flipkart_products&n=500`
-        : `${API_BASE_URL}/rapidapi/top-sales?limit=500`;
+        ? `${API_BASE_URL}/rapidapi_flipkart_products/categories`
+        : `${API_BASE_URL}/rapidapi_amazon_products/categories`;
+
+    axios
+      .get(url)
+      .then((res) => {
+        const data = Array.isArray(res.data) ? res.data : [];
+        const names = data
+          .map((c: { category_name?: string; category?: string }) => c.category_name || c.category || "")
+          .filter((name: string) => name.trim() !== "");
+        setCategories(names);
+      })
+      .catch(() => setCategories([]))
+      .finally(() => setCategoriesLoading(false));
+  };
+
+  const fetchData = () => {
+    setLoading(true);
+    const categoryParam =
+      selectedCategory && selectedCategory !== "All Categories"
+        ? `&category=${encodeURIComponent(selectedCategory)}`
+        : "";
+
+    const url =
+      source === "flipkart"
+        ? `${API_BASE_URL}/top?table=rapidapi_flipkart_products&n=500${categoryParam}`
+        : `${API_BASE_URL}/rapidapi/top-sales?limit=500${categoryParam}`;
 
     axios
       .get(url)
@@ -187,27 +226,66 @@ export default function Sales() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
         <div className="text-left space-y-1">
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-            {t('sales.title', 'Product Performance Overview ({{source}})', { source })}
+            Top {products.length} Selling Products ({source})
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm">
             {t('sales.subtitle', 'Analyze and sort by sales, reviews, price, or rating for data-driven decisions.')}
           </p>
         </div>
-        <select
-          value={source}
-          onChange={(e) => setSource(e.target.value as "flipkart" | "amazon")}
-          className={cn(
-            "border px-3 py-2 rounded-md font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20",
-            isDark 
-              ? "border-slate-700 bg-slate-900 text-slate-100" 
-              : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-          )}
-          data-track-id="sales_source_select"
-          data-filter-value={source}
-        >
-          <option value="flipkart" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Flipkart</option>
-          <option value="amazon" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Amazon</option>
-        </select>
+        <div className="flex items-center gap-3">
+          <select
+            value={source}
+            onChange={(e) => setSource(e.target.value as "flipkart" | "amazon")}
+            className={cn(
+              "border px-3 py-2 rounded-md font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20",
+              isDark 
+                ? "border-slate-700 bg-slate-900 text-slate-100" 
+                : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+            )}
+            data-track-id="sales_source_select"
+            data-filter-value={source}
+          >
+            <option value="flipkart" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Flipkart</option>
+            <option value="amazon" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Amazon</option>
+          </select>
+
+          <div className="relative">
+            <Filter className={cn(
+              "absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none",
+              isDark ? "text-slate-400" : "text-slate-500"
+            )} />
+            <select
+              value={selectedCategory}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+                setCurrentPage(1);
+              }}
+              disabled={categoriesLoading}
+              className={cn(
+                "border pl-8 pr-3 py-2 rounded-md font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 max-w-[220px] truncate",
+                isDark
+                  ? "border-slate-700 bg-slate-900 text-slate-100"
+                  : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50",
+                categoriesLoading && "opacity-50 cursor-wait"
+              )}
+              data-track-id="sales_category_select"
+              data-filter-value={selectedCategory}
+            >
+              <option value="All Categories" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>
+                All Categories
+              </option>
+              {categories.map((cat) => (
+                <option
+                  key={cat}
+                  value={cat}
+                  className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}
+                >
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
       {/* Search Bar & Sort Filters */}
