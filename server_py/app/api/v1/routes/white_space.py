@@ -939,7 +939,7 @@ LIMIT 500
 # For very specific queries (like a brand name) we lower this to 0.05 (5%).
 DEFAULT_RELEVANCE_THRESHOLD = 0.20
 MIN_RELEVANCE_THRESHOLD = 0.05  # floor for niche/brand queries with few results
-MIN_MATCHING_PRODUCTS = 1       # absolute minimum: at least 1 matching product
+MIN_MATCHING_PRODUCTS = 3       # absolute minimum: at least 1 matching product
 
 
 def _find_relevant_categories(
@@ -1257,10 +1257,13 @@ def scan_white_spaces(
             return parsed_cache
     except Exception as e:
         logger.warning(f"Redis error (get): {e}")
-
     import re
-    safe_query = re.escape(req.query.lower().strip()).replace("\\ ", " ")
-    regex_query = rf"\y{safe_query}\y"
+    # Convert spaces into .* to allow non-adjacent matching (e.g. "iphone accessories" matches "iphone case accessories")
+    words = [re.escape(w) for w in req.query.lower().strip().split()]
+    if len(words) == 1:
+        regex_query = rf"\y{words[0]}\y"
+    else:
+        regex_query = r".*".join(words)
 
     # ── Phase 1: Find only categories relevant to the searched product ────
     # This prevents unrelated categories from appearing (e.g. searching "iphone"
@@ -1302,6 +1305,58 @@ def scan_white_spaces(
             flipkart_rows = [dict(r._mapping) for r in res.fetchall()]
         except Exception as e:
             print(f"[white_space] flipkart error: {e}")
+
+    # ── Apply Robust Core Product Filter ──────────────────────────────────
+    # Drops accessories ("Case for iPhone") unless the user explicitly searched for them.
+    # Uses a multi-step heuristic (linguistic, positional, and keyword mismatch) 
+    # to be production-proof and handle dynamic categories.
+    
+    q_norm = req.query.lower().strip()
+    q_esc = re.escape(q_norm)
+    
+    # 1. Linguistic penalty (the 'for' pattern, using \s+ to avoid regex boundaries issues)
+    accessory_pattern = re.compile(r"\b(?:for|compatible with|fits|replacement for)\s+.*?" + q_esc)
+    
+    # 3. Common accessory keywords to watch out for
+    accessory_keywords = [
+        "case", "cover", "charger", "cable", "adapter", "protector", "glass", 
+        "mount", "holder", "strap", "band", "skin", "ssd", "wallet", "screen guard",
+        "earphone", "headphone", "stand"
+    ]
+
+    def _is_core_product(row: Dict) -> bool:
+        title = str(row.get("product_title", "")).lower()
+        
+        # Step 1: Linguistic match ("for iphone 16")
+        if accessory_pattern.search(title) and not accessory_pattern.search(q_norm):
+            return False
+            
+        # Step 2: Position penalty
+        # If the exact query is buried deep in the title (past char 40), it's likely an accessory 
+        # (e.g. "Spigen Silicone Magsafe Case... for iPhone 16").
+        # We use a generous threshold `max(40, len(q_norm) + 20)` for long queries.
+        idx = title.find(q_norm)
+        if idx > max(40, len(q_norm) + 20):
+            return False
+            
+        # Step 3: Keyword mismatch
+        # If the product contains "case" but the user didn't search for "case", it's an accessory.
+        # Bypass this step if the user explicitly searched for generic categories (accessories, gear, kit).
+        is_generic_search = any(g in q_norm for g in ["accessories", "gear", "kit", "bundle", "supplies"])
+        if not is_generic_search:
+            for kw in accessory_keywords:
+                if kw in title and kw not in q_norm:
+                    return False
+                
+        return True
+
+    filtered_amazon = [r for r in amazon_rows if _is_core_product(r)]
+    if filtered_amazon:
+        amazon_rows = filtered_amazon
+        
+    filtered_flipkart = [r for r in flipkart_rows if _is_core_product(r)]
+    if filtered_flipkart:
+        flipkart_rows = filtered_flipkart
 
     # ── Bucket by category ────────────────────────────────────────────────
     niche_buckets: Dict[str, Dict] = defaultdict(lambda: {"amazon": [], "flipkart": []})

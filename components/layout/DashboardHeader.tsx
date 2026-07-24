@@ -19,7 +19,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
 import { useAlerts, Notification, NotificationDetails } from "@/components/dashboard/alert-context";
 import { API_BASE_URL } from "@/lib/config";
-import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+// import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 // Types are now imported from alert-context
 
@@ -223,8 +223,7 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
           </>
         )}
 
-        {/* Language Switcher */}
-        <LanguageSwitcher />
+        {/* Language Switcher Removed Temporary */}
 
         {/* Theme Toggle */}
         <Button
