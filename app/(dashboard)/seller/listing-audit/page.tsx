@@ -6,10 +6,11 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 import {
   Pin, PinOff, Package, RefreshCw, Menu,
   Star, Flame, ArrowUpRight, ArrowDownRight,
-  Minus, Crown, Swords, AlertTriangle,
+  Minus, Crown, Swords, AlertTriangle, Store,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -43,12 +44,13 @@ function ThreatRing({ score, size = "sm", isDark }: { score: number; size?: "sm"
 }
 
 function PriceDelta({ pct, isDark }: { pct: number | null; isDark: boolean }) {
+  const { t } = useTranslation();
   if (pct == null) return null;
   if (Math.abs(pct) < 1)
-    return <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border ${isDark ? 'text-slate-400 bg-slate-800 border-slate-700' : 'text-slate-400 bg-slate-50 border-slate-200'}`}><Minus className="w-2.5 h-2.5" /> Same</span>;
+    return <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border ${isDark ? 'text-slate-400 bg-slate-800 border-slate-700' : 'text-slate-400 bg-slate-50 border-slate-200'}`}><Minus className="w-2.5 h-2.5" /> {t('common.same', 'Same')}</span>;
   if (pct < 0)
-    return <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border ${isDark ? 'text-red-400 bg-red-900/30 border-red-800/50' : 'text-red-600 bg-red-50 border-red-200'}`}><ArrowDownRight className="w-2.5 h-2.5" /> {Math.abs(pct).toFixed(0)}% cheaper</span>;
-  return <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border ${isDark ? 'text-emerald-400 bg-emerald-900/30 border-emerald-800/50' : 'text-emerald-600 bg-emerald-50 border-emerald-200'}`}><ArrowUpRight className="w-2.5 h-2.5" /> {pct.toFixed(0)}% pricier</span>;
+    return <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border ${isDark ? 'text-red-400 bg-red-900/30 border-red-800/50' : 'text-red-600 bg-red-50 border-red-200'}`}><ArrowDownRight className="w-2.5 h-2.5" /> {Math.abs(pct).toFixed(0)}% {t('common.cheaper', 'cheaper')}</span>;
+  return <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 border ${isDark ? 'text-emerald-400 bg-emerald-900/30 border-emerald-800/50' : 'text-emerald-600 bg-emerald-50 border-emerald-200'}`}><ArrowUpRight className="w-2.5 h-2.5" /> {pct.toFixed(0)}% {t('common.pricier', 'pricier')}</span>;
 }
 
 // ── Watchlist Card — same visual as CompetitorCard in competitor-analysis ─────
@@ -57,6 +59,7 @@ function WatchlistCard({
 }: {
   item: any; onUnpin: () => void; unpinLoading: boolean; isDark: boolean;
 }) {
+  const { t } = useTranslation();
   const sym = item.currency === "INR" ? "₹" : "$";
   const isTopThreat = item.threat_score >= 8;
 
@@ -68,7 +71,7 @@ function WatchlistCard({
     }`}>
       {isTopThreat && (
         <div className="absolute -top-2 left-4 flex items-center gap-1 bg-red-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow">
-          <Flame className="w-2.5 h-2.5" /> HIGH THREAT
+          <Flame className="w-2.5 h-2.5" /> {t('common.highThreat', 'HIGH THREAT')}
         </div>
       )}
 
@@ -98,7 +101,7 @@ function WatchlistCard({
               <button
                 onClick={onUnpin}
                 disabled={unpinLoading}
-                title="Remove from Listing Audit"
+                title={t('common.removeFromAudit', 'Remove from Listing Audit')}
                 className={`p-1 rounded-lg transition-colors ${
                   unpinLoading
                     ? isDark ? "opacity-50 cursor-not-allowed bg-slate-800" : "opacity-50 cursor-not-allowed bg-slate-50"
@@ -116,13 +119,13 @@ function WatchlistCard({
           {/* Platform badges */}
           <div className="flex flex-wrap gap-1 mt-2">
             {item.is_prime && (
-              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${isDark ? 'bg-blue-900/30 text-blue-400 border-blue-800/50' : 'bg-blue-50 text-blue-600 border-blue-200'}`}>PRIME</span>
+              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${isDark ? 'bg-blue-900/30 text-blue-400 border-blue-800/50' : 'bg-blue-50 text-blue-600 border-blue-200'}`}>{t('common.prime', 'PRIME')}</span>
             )}
             {item.is_best_seller && (
-              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${isDark ? 'bg-orange-900/30 text-orange-400 border-orange-800/50' : 'bg-orange-50 text-orange-600 border-orange-200'}`}>BEST SELLER</span>
+              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${isDark ? 'bg-orange-900/30 text-orange-400 border-orange-800/50' : 'bg-orange-50 text-orange-600 border-orange-200'}`}>{t('common.bestSeller', 'BEST SELLER')}</span>
             )}
             {item.is_amazon_choice && (
-              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${isDark ? 'bg-yellow-900/30 text-yellow-400 border-yellow-800/50' : 'bg-yellow-50 text-yellow-600 border-yellow-200'}`}>A's CHOICE</span>
+              <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${isDark ? 'bg-yellow-900/30 text-yellow-400 border-yellow-800/50' : 'bg-yellow-50 text-yellow-600 border-yellow-200'}`}>{t('common.asChoice', "A's CHOICE")}</span>
             )}
             {item.sales_volume && (
               <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded border ${isDark ? 'text-slate-400 bg-slate-800 border-slate-700' : 'text-slate-500 bg-slate-50 border-slate-200'}`}>{item.sales_volume}</span>
@@ -143,7 +146,7 @@ function WatchlistCard({
               </span>
             )}
             {item.num_ratings != null && (
-              <span className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{Number(item.num_ratings).toLocaleString()} reviews</span>
+              <span className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{Number(item.num_ratings).toLocaleString()} {t('common.reviews', 'reviews')}</span>
             )}
           </div>
 
@@ -157,7 +160,7 @@ function WatchlistCard({
           {/* Source ASIN context */}
           {item.source_asin && (
             <p className={`text-[10px] mt-1.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-              Tracked against your ASIN: <span className="font-mono">{item.source_asin}</span>
+              {t('sellerPages.trackedAgainst', 'Tracked against your ASIN')}: <span className="font-mono">{item.source_asin}</span>
             </p>
           )}
         </div>
@@ -168,10 +171,11 @@ function WatchlistCard({
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 function ListingAuditContent() {
+  const { t } = useTranslation();
   const router = useRouter();
   const { user } = useAuth();
   const { toggle } = useSidebar();
-  const { theme, resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   const sellerId = user?.seller_id || "";
@@ -182,7 +186,7 @@ function ListingAuditContent() {
   const [error, setError]             = useState<string | null>(null);
 
   const tier      = user?.subscriptionTier || "free";
-  const isPremium = tier === "premium";
+  const isPremium = tier === "premium" || tier === "enterprise";
 
   useEffect(() => {
     setMounted(true);
@@ -190,7 +194,7 @@ function ListingAuditContent() {
 
   // ── Load watchlist from Postgres ──────────────────────────────────────────
   const loadWatchlist = () => {
-    if (!user?.email && !sellerId) { setLoading(false); return; }
+    if (!user?.email || !sellerId) { setLoading(false); return; }
     setLoading(true);
     setError(null);
     const params = new URLSearchParams();
@@ -255,16 +259,16 @@ function ListingAuditContent() {
           </div>
           <div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-              Listing Audit
+              {t('sellerPages.listingAuditTitle', 'Listing Audit')}
             </h1>
             <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-              Competitors you're tracking — pinned from Competitor Analysis.
+              {t('sellerPages.listingAuditSubtitle', "Competitors you're tracking — pinned from Competitor Analysis.")}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Badge className={`text-xs font-bold ${
-            tier === "premium" ? isDark ? "bg-blue-900/30 text-blue-400" : "bg-blue-100 text-blue-700" :
+            tier === "enterprise" ? isDark ? "bg-fuchsia-900/40 text-fuchsia-400 border border-fuchsia-500/50" : "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300" : tier === "premium" ? isDark ? "bg-blue-900/30 text-blue-400" : "bg-blue-100 text-blue-700" :
             tier === "basic"   ? isDark ? "bg-amber-900/30 text-amber-400" : "bg-amber-100 text-amber-700" :
                                  isDark ? "bg-slate-800 text-slate-400" : "bg-slate-100 text-slate-600"
           }`}>
@@ -311,7 +315,7 @@ function ListingAuditContent() {
         )}
 
         {/* Error */}
-        {isPremium && !loading && error && (
+        {isPremium && !loading && sellerId && error && (
           <div className={`border rounded-2xl p-4 flex items-start gap-3 ${isDark ? 'bg-red-900/20 border-red-900/50' : 'bg-red-50 border-red-200'}`}>
             <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
             <div>
@@ -324,23 +328,44 @@ function ListingAuditContent() {
           </div>
         )}
 
+        {/* Missing Seller ID State */}
+        {isPremium && !loading && !sellerId && (
+          <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center ${isDark ? 'bg-orange-900/30' : 'bg-orange-100'}`}>
+              <Store className={`w-8 h-8 ${isDark ? 'text-orange-400' : 'text-orange-500'}`} />
+            </div>
+            <div>
+              <p className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>Connect your store</p>
+              <p className={`text-sm mt-1 max-w-xs mx-auto ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                A seller ID is required to use the Listing Audit. Please link your store on the Dashboard.
+              </p>
+            </div>
+            <button
+              onClick={() => router.push("/dashboard")}
+              className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-full font-bold text-sm shadow hover:shadow-md hover:scale-105 transition-all"
+            >
+              Go to Dashboard
+            </button>
+          </div>
+        )}
+
         {/* Empty state */}
-        {isPremium && !loading && !error && items.length === 0 && (
+        {isPremium && !loading && sellerId && !error && items.length === 0 && (
           <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
             <div className={`w-16 h-16 rounded-full flex items-center justify-center ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
               <PinOff className={`w-8 h-8 ${isDark ? 'text-slate-500' : 'text-slate-300'}`} />
             </div>
             <div>
-              <p className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>No rivals tracked yet</p>
+              <p className={`text-lg font-bold ${isDark ? 'text-slate-200' : 'text-slate-700'}`}>{t('sellerPages.listingAuditNoRivals', 'No rivals tracked yet')}</p>
               <p className={`text-sm mt-1 max-w-xs mx-auto ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
-                Go to Competitor Analysis and click the 📌 pin icon on any competitor card to start tracking them here.
+                {t('sellerPages.listingAuditGoTo', 'Go to Competitor Analysis and click the 📌 pin icon on any competitor card to start tracking them here.')}
               </p>
             </div>
             <button
               onClick={() => router.push("/seller/competitor-analysis")}
               className="flex items-center gap-2 px-5 py-2 bg-sky-600 text-white rounded-full text-sm font-semibold hover:bg-sky-700 transition-colors"
             >
-              <Swords className="w-4 h-4" /> Go to Competitor Analysis
+              <Swords className="w-4 h-4" /> {t('sellerPages.goToCompetitorAnalysis', 'Go to Competitor Analysis')}
             </button>
           </div>
         )}

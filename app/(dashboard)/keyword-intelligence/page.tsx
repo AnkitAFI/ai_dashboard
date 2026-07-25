@@ -13,11 +13,16 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useAuth } from "@/lib/auth-context";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
+import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useKIUsage } from "@/hooks/use-ki-usage";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 import {
   Loader2, X, TrendingUp, TrendingDown, Minus,
   Plus, Trash2, RefreshCw, BarChart3, Target, Crown,
@@ -35,6 +40,14 @@ import {
   CartesianGrid,
   Tooltip,
 } from "recharts";
+
+function formatNumberCompact(num: number): string {
+  if (num === null || num === undefined) return "0";
+  if (num >= 1000000000) return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B';
+  if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+  if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+  return num.toString();
+}
 
 // ── Types (page) ──────────────────────────────────────────────────────────────
 
@@ -158,12 +171,12 @@ const API = `${API_BASE_URL}/api/keyword-tracker`;
 
 // ── Subscription Tier Gate ────────────────────────────────────────────────────
 
-function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
+function TierGate({ tier, feature }: { tier: "basic" | "premium" | "enterprise"; feature: string }) {
   const router = useRouter();
   return (
     <div className="absolute inset-0 bg-background/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
-      <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? "bg-blue-50 dark:bg-blue-950/40" : "bg-amber-50 dark:bg-amber-950/40"}`}>
-        <Lock className={`w-6 h-6 ${tier === "premium" ? "text-blue-500 dark:text-blue-400" : "text-amber-500 dark:text-amber-400"}`} />
+      <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-sm ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-50 dark:bg-blue-950/40" : "bg-amber-50 dark:bg-amber-950/40"}`}>
+        <Lock className={`w-6 h-6 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "text-blue-500 dark:text-blue-400" : "text-amber-500 dark:text-amber-400"}`} />
       </div>
       <div className="text-center px-6">
         <p className="font-bold text-slate-800 dark:text-slate-200 text-sm">{feature} is locked</p>
@@ -171,9 +184,8 @@ function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: strin
       </div>
       <button
         onClick={() => router.push("/subscription")}
-        className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold text-white shadow-md transition-all hover:scale-105 ${
-          tier === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-amber-500 to-orange-500"
-        }`}
+        className={`flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-bold text-white shadow-md transition-all hover:scale-105 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-amber-500 to-orange-500"
+          }`}
       >
         <Crown className="w-4 h-4" /> Upgrade to {tier === "premium" ? "Premium" : "Basic"}
       </button>
@@ -611,6 +623,7 @@ function KeywordExplorerPanel({
   onKeywordAdded,
   userTier = "free",
 }: KeywordExplorerProps) {
+  const { t } = useTranslation();
   const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
   const isDark = mounted && resolvedTheme === "dark";
@@ -730,11 +743,6 @@ function KeywordExplorerPanel({
     }
   };
 
-  useEffect(() => {
-    if (keyword.trim()) {
-      handleSearch();
-    }
-  }, [platform]);
 
   const handleQuickTrack = (kw: string) => {
     setTrackTarget(kw);
@@ -743,41 +751,24 @@ function KeywordExplorerPanel({
   return (
     <div className="space-y-6">
       {/* Search Bar Section */}
-      <Card className="shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden bg-background opacity-100 relative">
+      <Card className="shadow-sm border border-slate-200 dark:border-slate-800 rounded-2xl overflow-visible bg-background opacity-100 relative">
         <CardContent className="p-5">
-          {/* Usage counter badge */}
-          {!isLocked && remainingSearches !== null && (
-            <div className="flex justify-end mb-3">
-              <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${
-                remainingSearches === 0
-                  ? "bg-red-50 text-red-600 border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800/40"
-                  : remainingSearches <= 1
-                  ? "bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/40"
-                  : "bg-purple-50 text-purple-600 border-purple-200 dark:bg-purple-900/20 dark:text-purple-400 dark:border-purple-800/40"
-              }`}>
-                {remainingSearches === 0
-                  ? "No searches left this month"
-                  : `${remainingSearches} of ${searchLimit} searches left`}
-              </span>
-            </div>
-          )}
-          <div className="flex flex-col md:flex-row gap-4 items-end">
+          <div className="flex flex-col md:flex-row gap-4 items-end pt-4">
             <div className="flex-1 space-y-2 w-full">
-              <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Search Keyword</Label>
+              <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">{t('ki.searchByProductName', 'Search by Product Name')}</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-3.5 h-4 w-4 text-slate-400 dark:text-slate-500" />
-                <Input
-                  className="pl-10 h-11 border-slate-200 dark:border-slate-800 focus-visible:ring-purple-600 dark:focus-visible:ring-purple-500 rounded-xl bg-transparent"
-                  placeholder="Analyze products, volume, & KD (e.g. bluetooth speakers, face serum)"
+                <SmartSearchInput
                   value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  data-track-id="keyword-search-input"
+                  onChange={setKeyword}
+                  placeholder={t('ki.searchPlaceholder', 'e.g. boAt Rockerz 450, iPhone 14 Pro, Vitamin C Face Serum')}
+                  inputClassName="h-11 border-slate-200 dark:border-slate-800 focus-visible:ring-purple-600 dark:focus-visible:ring-purple-500 rounded-xl bg-transparent"
+                  onEnter={handleSearch}
+                  id="keyword-search-input"
                 />
               </div>
             </div>
             <div className="w-full md:w-44 space-y-2">
-              <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Marketplace</Label>
+              <Label className="text-slate-500 font-semibold text-xs uppercase tracking-wider">{t('ki.marketplace', 'Marketplace')}</Label>
               <Select value={platform} onValueChange={setPlatform}>
                 <SelectTrigger className="h-11 border-slate-200 dark:border-slate-800 bg-transparent rounded-xl" data-track-id="marketplace-select" data-filter-value={platform}>
                   <SelectValue />
@@ -799,18 +790,18 @@ function KeywordExplorerPanel({
             <Button
               className="w-full md:w-36 h-11 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl flex gap-2 items-center justify-center transition-all disabled:opacity-60"
               onClick={() => handleSearch()}
-              disabled={loading || isLocked || isAtLimit}
+              disabled={loading || isLocked || isAtLimit || keyword.trim().length < 2}
               data-track-id="analyze-btn"
             >
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Analyzing...
+                  {t('ki.analyzing', 'Analyzing...')}
                 </>
               ) : (
                 <>
                   <Compass className="h-4 w-4" />
-                  Analyze
+                  {t('ki.analyze', 'Analyze')}
                 </>
               )}
             </Button>
@@ -825,10 +816,10 @@ function KeywordExplorerPanel({
             <Loader2 className="h-8 w-8 animate-spin text-purple-600 dark:text-purple-400" />
             <div>
               <h4 className="font-bold text-purple-950 dark:text-purple-100">
-                Retrieving Marketplace Intel
+                {t('ki.retrievingIntel', 'Retrieving Marketplace Intel')}
               </h4>
               <p className="text-xs text-purple-700 dark:text-purple-300 mt-1 max-w-md">
-                We are scanning local search index data, calculating product demand, classifying search intentions, and compiling search recommendations. This process operates 100% free of charge.
+                {t('ki.retrievingDesc', 'We are scanning local search index data, calculating product demand, classifying search intentions, and compiling search recommendations. This process operates 100% free of charge.')}
               </p>
             </div>
           </CardContent>
@@ -843,9 +834,9 @@ function KeywordExplorerPanel({
               <Compass className="h-6 w-6 animate-pulse" />
             </div>
             <div>
-              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-lg">Keyword Explorer</h3>
+              <h3 className="font-bold text-slate-800 dark:text-slate-200 text-lg">{t('ki.keywordExplorer', 'Keyword Explorer')}</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mt-1.5 mx-auto">
-                Type in any search term above (e.g., "face serum", "water bottle") and click Analyze to retrieve search volumes, buyer intent, regional demand, competitor SERPs, and local AI advice.
+                {t('ki.emptyStateDesc', 'Type in any search term above (e.g., "face serum", "water bottle") and click Analyze to retrieve search volumes, buyer intent, regional demand, competitor SERPs, and local AI advice.')}
               </p>
             </div>
           </CardContent>
@@ -863,24 +854,33 @@ function KeywordExplorerPanel({
             <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
               <CardHeader className="pb-2">
                 <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
-                  Monthly Volume
+                  <div className="flex items-center gap-1.5">
+                    Monthly Volume
+                    <TooltipProvider delayDuration={0}>
+                      <UITooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-3.5 w-3.5 text-slate-400 hover:text-slate-600 cursor-pointer" />
+                        </TooltipTrigger>
+                        <TooltipContent className="w-60" side="top">
+                          <p className="text-xs">Monthly searches by buyers. Higher means more potential customers.</p>
+                        </TooltipContent>
+                      </UITooltip>
+                    </TooltipProvider>
+                  </div>
                   <BarChart3 className="h-4 w-4 text-slate-400" />
                 </CardDescription>
                 <CardTitle className="text-3xl font-extrabold text-slate-800 dark:text-slate-200">
-                  {data.search_volume.toLocaleString("en-IN")}
+                  {formatNumberCompact(data.global_search_volume)}
                 </CardTitle>
-                <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
-                  Monthly searches by buyers. Higher means more potential customers.
-                </p>
               </CardHeader>
               <CardContent className="pt-2 text-xs text-slate-400 dark:text-slate-500 space-y-1.5 border-t border-slate-100 dark:border-slate-800 mt-2">
                 <div className="flex justify-between">
                   <span>Est. Impressions (Views):</span>
-                  <span className="font-semibold text-slate-600 dark:text-slate-300">{data.estimated_impressions.toLocaleString("en-IN")}</span>
+                  <span className="font-semibold text-slate-600 dark:text-slate-300">{formatNumberCompact(data.estimated_impressions)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Est. Clicks (Visits):</span>
-                  <span className="font-semibold text-slate-600 dark:text-slate-300">{data.estimated_clicks.toLocaleString("en-IN")}</span>
+                  <span className="font-semibold text-slate-600 dark:text-slate-300">{formatNumberCompact(data.estimated_clicks)}</span>
                 </div>
               </CardContent>
             </Card>
@@ -889,12 +889,20 @@ function KeywordExplorerPanel({
             <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
               <CardHeader className="pb-2">
                 <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
-                  KD%
-                  <Info className="h-4 w-4 text-slate-400" />
+                  <div className="flex items-center gap-1.5">
+                    KD%
+                    <TooltipProvider delayDuration={0}>
+                      <UITooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-3.5 w-3.5 text-slate-400 hover:text-slate-600 cursor-pointer" />
+                        </TooltipTrigger>
+                        <TooltipContent className="w-60" side="top">
+                          <p className="text-xs">How hard it is to rank on the first page. Lower scores are better.</p>
+                        </TooltipContent>
+                      </UITooltip>
+                    </TooltipProvider>
+                  </div>
                 </CardDescription>
-                <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
-                  Competition level to rank. Lower is easier to reach Page 1.
-                </p>
               </CardHeader>
               <CardContent className="pb-4">
                 <DifficultyGauge value={data.difficulty} />
@@ -905,15 +913,23 @@ function KeywordExplorerPanel({
             <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
               <CardHeader className="pb-2">
                 <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
-                  Regional Breakdown
-                  <MapPin className="h-4 w-4 text-emerald-500" />
+                  <div className="flex items-center gap-1.5">
+                    Regional Breakdown
+                    <TooltipProvider delayDuration={0}>
+                      <UITooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-3.5 w-3.5 text-slate-400 hover:text-slate-600 cursor-pointer" />
+                        </TooltipTrigger>
+                        <TooltipContent className="w-60 text-left whitespace-normal" side="top">
+                          <p className="text-xs font-normal text-slate-700 dark:text-slate-200">Search volume broken down by major Indian regions.</p>
+                        </TooltipContent>
+                      </UITooltip>
+                    </TooltipProvider>
+                  </div>
                 </CardDescription>
                 <CardTitle className="text-3xl font-extrabold text-slate-800 dark:text-slate-200">
                   India
                 </CardTitle>
-                <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
-                  Estimated search volume by Indian region.
-                </p>
               </CardHeader>
               <CardContent className="pt-2 border-t border-slate-100 dark:border-slate-800 mt-2 space-y-1 text-xs">
                 {regionalBreakdown.length > 0 ? (
@@ -935,15 +951,23 @@ function KeywordExplorerPanel({
             <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
               <CardHeader className="pb-2">
                 <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
-                  Competitive Density
-                  <Sparkles className="h-4 w-4 text-indigo-500" />
+                  <div className="flex items-center gap-1.5">
+                    Competitive Density
+                    <TooltipProvider delayDuration={0}>
+                      <UITooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-3.5 w-3.5 text-slate-400 hover:text-slate-600 cursor-pointer" />
+                        </TooltipTrigger>
+                        <TooltipContent className="w-60" side="top">
+                          <p className="text-xs">How many advertisers are competing for this keyword. Higher is more competitive.</p>
+                        </TooltipContent>
+                      </UITooltip>
+                    </TooltipProvider>
+                  </div>
                 </CardDescription>
                 <CardTitle className="text-3xl font-extrabold text-slate-800 dark:text-slate-200">
                   {data.competitive_density !== undefined ? data.competitive_density.toFixed(2) : "0.00"}
                 </CardTitle>
-                <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
-                  PPC competition index from 0.00 to 1.00.
-                </p>
               </CardHeader>
               <CardContent className="pt-2 border-t border-slate-100 dark:border-slate-800 mt-2">
                 <div className="space-y-1">
@@ -968,12 +992,21 @@ function KeywordExplorerPanel({
             <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
               <CardHeader className="pb-2">
                 <CardDescription className="text-slate-500 font-semibold text-xs uppercase tracking-wider flex items-center justify-between">
-                  Mindset & Ad Cost
+                  <div className="flex items-center gap-1.5">
+                    Mindset & Ad Cost
+                    <TooltipProvider delayDuration={0}>
+                      <UITooltip>
+                        <TooltipTrigger asChild>
+                          <Info className="h-3.5 w-3.5 text-slate-400 hover:text-slate-600 cursor-pointer" />
+                        </TooltipTrigger>
+                        <TooltipContent className="w-60" side="top">
+                          <p className="text-xs">What the buyer wants to do, and the estimated cost per click for ads.</p>
+                        </TooltipContent>
+                      </UITooltip>
+                    </TooltipProvider>
+                  </div>
                   <ArrowUpRight className="h-4 w-4 text-slate-400" />
                 </CardDescription>
-                <p className="text-[11px] text-slate-500 font-medium leading-relaxed mt-1">
-                  Buyer intent and estimated sponsor cost.
-                </p>
               </CardHeader>
               <CardContent className="space-y-3 pt-1">
                 <IntentBadge intent={data.intent} />
@@ -996,10 +1029,17 @@ function KeywordExplorerPanel({
                 <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
                   <BarChart3 className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
                   12-Month Search Volume Trend
+                  <TooltipProvider delayDuration={0}>
+                    <UITooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-4 w-4 text-slate-400 hover:text-slate-600 cursor-pointer ml-1" />
+                      </TooltipTrigger>
+                      <TooltipContent className="w-60" side="top">
+                        <p className="text-xs">How search interest for this product has changed over the last 12 months.</p>
+                      </TooltipContent>
+                    </UITooltip>
+                  </TooltipProvider>
                 </CardTitle>
-                <CardDescription className="text-xs">
-                  Historical search volume distribution over the past year.
-                </CardDescription>
               </CardHeader>
               <CardContent className="p-0 h-64">
                 <ResponsiveContainer width="100%" height="100%">
@@ -1033,12 +1073,18 @@ function KeywordExplorerPanel({
             <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl lg:col-span-2 relative overflow-hidden bg-white dark:bg-slate-900">
               <CardHeader>
                 <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-rose-500 dark:text-rose-400" />
                   State-wise Interest Distribution
+                  <TooltipProvider delayDuration={0}>
+                    <UITooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-4 w-4 text-slate-400 hover:text-slate-600 cursor-pointer ml-1" />
+                      </TooltipTrigger>
+                      <TooltipContent className="w-60 text-left whitespace-normal" side="top">
+                        <p className="text-xs font-normal text-slate-700 dark:text-slate-200">Which Indian states have the highest demand for this product.</p>
+                      </TooltipContent>
+                    </UITooltip>
+                  </TooltipProvider>
                 </CardTitle>
-                <CardDescription className="text-xs">
-                  Estimated percentage demand distribution across top Indian commerce hubs.
-                </CardDescription>
               </CardHeader>
               <CardContent className="relative min-h-[220px]">
                 <div className={showAllStates ? "max-h-[280px] overflow-y-auto pr-2 space-y-3" : "space-y-3"}>
@@ -1070,6 +1116,7 @@ function KeywordExplorerPanel({
                 </div>
               </CardContent>
             </Card>
+
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -1080,10 +1127,17 @@ function KeywordExplorerPanel({
                 <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
                   <Compass className="h-4 w-4 text-indigo-500 dark:text-indigo-400" />
                   Related Keyword Variations
+                  <TooltipProvider delayDuration={0}>
+                    <UITooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="h-4 w-4 text-slate-400 hover:text-slate-600 cursor-pointer ml-1" />
+                      </TooltipTrigger>
+                      <TooltipContent className="w-60" side="top">
+                        <p className="text-xs">Alternative search terms shoppers are using to find this product.</p>
+                      </TooltipContent>
+                    </UITooltip>
+                  </TooltipProvider>
                 </CardTitle>
-                <CardDescription className="text-xs">
-                  Autocomplete keywords matching your search prefix.
-                </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
@@ -1091,10 +1145,58 @@ function KeywordExplorerPanel({
                     <thead>
                       <tr className="border-y border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 font-semibold">
                         <th className="p-3">Keyword</th>
-                        <th className="p-3 text-right">Vol</th>
-                        <th className="p-3 text-center">KD%</th>
-                        <th className="p-3 text-center">Intent</th>
-                        <th className="p-3 text-right">CPC</th>
+                        <th className="p-3 text-right whitespace-nowrap">
+                          Vol
+                          <TooltipProvider delayDuration={0}>
+                            <UITooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="h-3.5 w-3.5 inline-block ml-1 -mt-0.5 text-slate-400 hover:text-slate-600 cursor-pointer" />
+                              </TooltipTrigger>
+                              <TooltipContent className="w-48 text-left whitespace-normal" side="top">
+                                <p className="text-xs font-normal text-slate-700 dark:text-slate-200">Monthly search volume for this term.</p>
+                              </TooltipContent>
+                            </UITooltip>
+                          </TooltipProvider>
+                        </th>
+                        <th className="p-3 text-center whitespace-nowrap">
+                          KD%
+                          <TooltipProvider delayDuration={0}>
+                            <UITooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="h-3.5 w-3.5 inline-block ml-1 -mt-0.5 text-slate-400 hover:text-slate-600 cursor-pointer" />
+                              </TooltipTrigger>
+                              <TooltipContent className="w-48 text-left whitespace-normal" side="top">
+                                <p className="text-xs font-normal text-slate-700 dark:text-slate-200">How hard it is to rank. Lower is better.</p>
+                              </TooltipContent>
+                            </UITooltip>
+                          </TooltipProvider>
+                        </th>
+                        <th className="p-3 text-center whitespace-nowrap">
+                          Intent
+                          <TooltipProvider delayDuration={0}>
+                            <UITooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="h-3.5 w-3.5 inline-block ml-1 -mt-0.5 text-slate-400 hover:text-slate-600 cursor-pointer" />
+                              </TooltipTrigger>
+                              <TooltipContent className="w-48 text-left whitespace-normal" side="top">
+                                <p className="text-xs font-normal text-slate-700 dark:text-slate-200">What the shopper is trying to do.</p>
+                              </TooltipContent>
+                            </UITooltip>
+                          </TooltipProvider>
+                        </th>
+                        <th className="p-3 text-right whitespace-nowrap">
+                          CPC
+                          <TooltipProvider delayDuration={0}>
+                            <UITooltip>
+                              <TooltipTrigger asChild>
+                                <Info className="h-3.5 w-3.5 inline-block ml-1 -mt-0.5 text-slate-400 hover:text-slate-600 cursor-pointer" />
+                              </TooltipTrigger>
+                              <TooltipContent className="w-48 text-left whitespace-normal" side="top">
+                                <p className="text-xs font-normal text-slate-700 dark:text-slate-200">Estimated cost per click for running ads.</p>
+                              </TooltipContent>
+                            </UITooltip>
+                          </TooltipProvider>
+                        </th>
                         <th className="p-3 text-center">Action</th>
                       </tr>
                     </thead>
@@ -1115,10 +1217,10 @@ function KeywordExplorerPanel({
                           <td className="p-3 text-center font-medium">
                             <span
                               className={`px-1.5 py-0.5 rounded text-[10px] ${v.difficulty >= 60
-                                  ? "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-800/40"
-                                  : v.difficulty >= 30
-                                    ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/40"
-                                    : "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-100 dark:border-green-800/40"
+                                ? "bg-rose-50 dark:bg-rose-900/20 text-rose-600 dark:text-rose-400 border border-rose-100 dark:border-rose-800/40"
+                                : v.difficulty >= 30
+                                  ? "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-800/40"
+                                  : "bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 border border-green-100 dark:border-green-800/40"
                                 }`}
                             >
                               {v.difficulty}%
@@ -1127,10 +1229,10 @@ function KeywordExplorerPanel({
                           <td className="p-3 text-center">
                             <span
                               className={`px-1.5 py-0.5 rounded-[4px] text-[10px] font-semibold ${v.intent === "Transactional"
-                                  ? "bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400"
-                                  : v.intent === "Commercial"
-                                    ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400"
-                                    : "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400"
+                                ? "bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-400"
+                                : v.intent === "Commercial"
+                                  ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400"
+                                  : "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400"
                                 }`}
                             >
                               {v.intent.charAt(0)}
@@ -1161,7 +1263,19 @@ function KeywordExplorerPanel({
           {/* SERP Features Badges */}
           {data.serp_features && data.serp_features.length > 0 && (
             <div className="flex flex-wrap gap-2 items-center bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 p-3 rounded-xl">
-              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">SERP Features:</span>
+              <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center">
+                SERP Features:
+                <TooltipProvider delayDuration={0}>
+                  <UITooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-3.5 w-3.5 inline-block ml-1.5 -mt-0.5 text-slate-400 hover:text-slate-600 cursor-pointer" />
+                    </TooltipTrigger>
+                    <TooltipContent className="w-64 text-left whitespace-normal" side="top">
+                      <p className="text-xs font-normal text-slate-700 dark:text-slate-200">These special sections (like Video Carousels or Badges) are currently showing on the search page for this keyword. This tells you exactly what extra content your product needs to capture top visibility.</p>
+                    </TooltipContent>
+                  </UITooltip>
+                </TooltipProvider>
+              </span>
               {data.serp_features.map((feature, idx) => (
                 <Badge key={idx} variant="secondary" className="bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 border border-indigo-150 dark:border-indigo-800/40 text-[10px] font-semibold">
                   {feature}
@@ -1176,10 +1290,17 @@ function KeywordExplorerPanel({
               <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
                 <ShoppingBag className="h-4 w-4 text-orange-500 dark:text-orange-400" />
                 SERP Analysis (Top 10 Results)
+                <TooltipProvider delayDuration={0}>
+                  <UITooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-slate-400 hover:text-slate-600 cursor-pointer ml-1" />
+                    </TooltipTrigger>
+                    <TooltipContent className="w-60" side="top">
+                      <p className="text-xs">The top performing products currently ranking for this search term.</p>
+                    </TooltipContent>
+                  </UITooltip>
+                </TooltipProvider>
               </CardTitle>
-              <CardDescription className="text-xs">
-                Real-time snapshot of the highest performing database listings for this search term.
-              </CardDescription>
             </CardHeader>
             <CardContent className="p-0">
               <div className="overflow-x-auto">
@@ -1233,10 +1354,10 @@ function KeywordExplorerPanel({
                             {item.rating ? `${item.rating}★` : "—"}
                           </td>
                           <td className="p-3 text-right font-medium text-slate-600 dark:text-slate-300">
-                            {item.reviews ? item.reviews.toLocaleString("en-IN") : "—"}
+                            {item.reviews ? formatNumberCompact(item.reviews) : "—"}
                           </td>
                           <td className="p-3 text-right font-bold text-indigo-600 dark:text-indigo-400">
-                            {item.sales_volume ? item.sales_volume.toLocaleString("en-IN") : "—"}
+                            {item.sales_volume ? formatNumberCompact(item.sales_volume) : "—"}
                           </td>
                           <td className="p-3 font-mono text-slate-400 dark:text-slate-500 text-[10px] select-all">
                             {item.asin_or_pid}
@@ -1254,18 +1375,24 @@ function KeywordExplorerPanel({
           <Card className="shadow-xs border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden relative bg-white dark:bg-slate-900">
             <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20 border-b border-slate-100 dark:border-slate-800">
               <CardTitle className="text-sm font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-purple-600 dark:text-purple-400 animate-pulse" />
                 AI Copywriting & PPC Bidding Strategy
+                <TooltipProvider delayDuration={0}>
+                  <UITooltip>
+                    <TooltipTrigger asChild>
+                      <Info className="h-4 w-4 text-slate-400 hover:text-slate-600 cursor-pointer ml-1" />
+                    </TooltipTrigger>
+                    <TooltipContent className="w-60" side="top">
+                      <p className="text-xs">Smart recommendations for writing your product listing and running ads.</p>
+                    </TooltipContent>
+                  </UITooltip>
+                </TooltipProvider>
               </CardTitle>
-              <CardDescription className="text-xs">
-                Local AI-generated strategy recommendations based on keyword intent, volume, and difficulty.
-              </CardDescription>
             </CardHeader>
             <CardContent className="p-6 min-h-[200px] relative">
               {strategyLoading ? (
                 <div className="flex flex-col items-center justify-center py-12 space-y-3">
                   <Loader2 className="h-8 w-8 animate-spin text-purple-600 dark:text-purple-400" />
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Generating copywriting & PPC strategy via Llama 3.2...</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Generating copywriting & PPC strategy...</p>
                 </div>
               ) : strategyError ? (
                 <div className="text-xs text-rose-600 dark:text-rose-400 p-4 border border-rose-100 dark:border-rose-900/40 rounded-lg bg-rose-50/50 dark:bg-rose-900/20">
@@ -1309,12 +1436,15 @@ function KeywordExplorerPanel({
 // ── Main page content ─────────────────────────────────────────────────────────
 
 function KeywordTrackerIntelligenceContent() {
+  const { t } = useTranslation();
   const { user, isLoading } = useAuth();
   const userId = user?.id;
 
   const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
   const isDark = mounted && resolvedTheme === "dark";
+
+  const { isLocked, isAtLimit, remaining: remainingSearches, limit: searchLimit, used, loading: usageLoading } = useKIUsage();
 
   useEffect(() => {
     setMounted(true);
@@ -1371,19 +1501,47 @@ function KeywordTrackerIntelligenceContent() {
         ))}
       </div>
 
-      <div className="space-y-6">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <div className="space-y-4">
+        <div className="max-w-7xl mx-auto space-y-4 relative">
+
+          {/* Visual Usage Meter (Top Right Header) */}
+          <div className="absolute top-0 right-4 sm:right-0 z-10">
+            {!usageLoading && user && (
+              <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
+                <div className="flex items-center justify-between gap-3 mb-1">
+                  <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{t('ki.searchesUsed', 'Searches used')}</p>
+                  <Badge className={`h-4 text-[10px] border-none px-1.5 ${user.subscriptionTier?.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : user.subscriptionTier?.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : user.subscriptionTier?.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+                    {(user.subscriptionTier || "free").toUpperCase()}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{
+                        width: `${remainingSearches === null ? 0 : Math.min((used / searchLimit) * 100, 100)}%`,
+                        background: (remainingSearches === null ? 0 : Math.min((used / searchLimit) * 100, 100)) >= 80 ? "#ef4444" : "#7F77DD"
+                      }}
+                    />
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-600">
+                    {used}/{remainingSearches === null ? "∞" : searchLimit}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Page Header */}
-          <div className="text-center space-y-4 pt-4">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 rounded-2xl mb-2 shadow-inner">
+          <div className="text-center space-y-3 pt-6">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 rounded-2xl mb-2 shadow-inner">
               <Compass className="h-8 w-8 text-purple-600 dark:text-purple-400" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 dark:from-purple-400 dark:via-indigo-400 dark:to-blue-400 text-transparent bg-clip-text">
-              Keyword Intelligence
+              {t('ki.pageTitle', 'Keyword Intelligence')}
             </h1>
-            <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-              Explore high-opportunity buyer search terms, analyze search volumes, and track buyer keywords.
+            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+              {t('ki.pageSubtitle', 'Explore high-opportunity buyer search terms, analyze search volumes, and track buyer keywords.')}
             </p>
           </div>
 
@@ -1417,6 +1575,7 @@ function KeywordTrackerIntelligenceContent() {
 }
 
 export default function KeywordTrackerIntelligence() {
+  const { t } = useTranslation();
   return (
     <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-600" /></div>}>
       <KeywordTrackerIntelligenceContent />

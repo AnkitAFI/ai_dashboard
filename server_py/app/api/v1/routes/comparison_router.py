@@ -423,8 +423,8 @@
 #     premium → + ai_pricing_tip, ai_velocity_insight, seller_other_products
 #     """
 #     tier       = _get_user_tier(db, user_email) if user_email else "free"
-#     is_basic   = tier in ("basic", "premium")
-#     is_premium = tier == "premium"
+#     is_basic = tier in ("basic", "premium", "enterprise")
+#     is_premium = tier in ("premium", "enterprise")
 
 #     # ── Fetch tracked product ─────────────────────────────────────────────
 #     tracked = (
@@ -678,8 +678,8 @@
 #                 avg_seller_portfolio_rating
 #     """
 #     tier       = _get_user_tier(db, user_email) if user_email else "free"
-#     is_basic   = tier in ("basic", "premium")
-#     is_premium = tier == "premium"
+#     is_basic = tier in ("basic", "premium", "enterprise")
+#     is_premium = tier in ("premium", "enterprise")
 
 #     # ── Fetch tracked product ─────────────────────────────────────────────
 #     tracked = (
@@ -1209,11 +1209,19 @@ def _find_best_competitors(
     price_hi = current_price * 1.60
     currency_prefix = "₹" if currency == "INR" else "$"
 
+    # Extract keywords to enforce relevance at the DB layer
+    keywords = _extract_keywords(tracked.product_title or "")
+    top_kws = []
+    if keywords:
+        top_kws = sorted(keywords, key=len, reverse=True)[:3]
+
     # ── Strategy 1: same currency + price range ───────────────────────────
     base_q = (
         db.query(RapidapiAmazonProducts)
         .filter(RapidapiAmazonProducts.product_price_numeric.isnot(None))
     )
+    if top_kws:
+        base_q = base_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in top_kws]))
     if currency == "INR":
         base_q = base_q.filter(
             RapidapiAmazonProducts.product_price.like("₹%"),
@@ -1240,50 +1248,34 @@ def _find_best_competitors(
 
     # ── Strategy 2: same currency prefix, relax price range ──────────────
     if len(candidates) < 5:
-        candidates = (
+        strat2_q = (
             db.query(RapidapiAmazonProducts)
             .filter(
                 RapidapiAmazonProducts.product_price_numeric.isnot(None),
                 RapidapiAmazonProducts.product_price.like(f"{currency_prefix}%"),
             )
-            .limit(300)
-            .all()
         )
+        if top_kws:
+            strat2_q = strat2_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in top_kws]))
+        candidates = strat2_q.limit(300).all()
 
-    # ── Strategy 3: sibling TrackedProduct rows (same currency) ──────────
-    if len(candidates) < 5:
-        siblings = (
-            db.query(TrackedProduct)
-            .filter(
-                TrackedProduct.asin != tracked.asin,
-                TrackedProduct.currency == currency,
-                TrackedProduct.product_price.isnot(None),
-            )
-            .limit(300)
-            .all()
-        )
-        proxies = [
-            _TrackedProxy(t)
-            for t in siblings
-            if _clean_price(t.product_price) is not None
+    # Filter out the seller's own products using seller_name as a proxy for brand
+    if tracked.seller_name and len(tracked.seller_name.strip()) >= 3:
+        banned_brand = tracked.seller_name.strip().lower()
+        candidates = [
+            c for c in candidates
+            if banned_brand not in (c.product_title or "").lower()
         ]
-        if proxies:
-            candidates = proxies  # type: ignore[assignment]
-
-    # ── Strategy 4: all rapidapi rows (last resort) ───────────────────────
-    if len(candidates) < 5:
-        candidates = (
-            db.query(RapidapiAmazonProducts)
-            .filter(RapidapiAmazonProducts.product_price_numeric.isnot(None))
-            .limit(200)
-            .all()
-        )
 
     # ── Score every candidate ─────────────────────────────────────────────
     scored: list[tuple[Any, float]] = []
+    seen_asins: set[str] = set()
     for row in candidates:
         if row.asin == tracked.asin:
             continue
+        if row.asin in seen_asins:
+            continue
+        seen_asins.add(row.asin)
         if row.product_price_numeric is None:
             continue
 
@@ -1303,7 +1295,7 @@ def _find_best_competitors(
             price_penalty = min(ratio * 0.10, 0.10)
 
         score = sim + cat_bonus - price_penalty
-        if score > 0.05:
+        if score > 0.15:
             scored.append((row, round(score, 4)))
 
     scored.sort(key=lambda x: x[1], reverse=True)
@@ -1609,8 +1601,8 @@ def get_price_comparison(
     Returns tiered price comparison data for a tracked product.
     """
     tier       = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
-    is_basic   = tier in ("basic", "premium")
-    is_premium = tier == "premium"
+    is_basic = tier in ("basic", "premium", "enterprise")
+    is_premium = tier in ("premium", "enterprise")
 
     # ── Fetch tracked product ─────────────────────────────────────────────
     tracked = (
@@ -1860,8 +1852,8 @@ def get_review_comparison(
     Returns tiered review / sentiment comparison data for a tracked product.
     """
     tier       = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
-    is_basic   = tier in ("basic", "premium")
-    is_premium = tier == "premium"
+    is_basic = tier in ("basic", "premium", "enterprise")
+    is_premium = tier in ("premium", "enterprise")
 
     # ── Fetch tracked product ─────────────────────────────────────────────
     tracked = (
@@ -1990,16 +1982,7 @@ def get_review_comparison(
             if row.product_star_rating_numeric is not None
         ]
 
-        # Hard fallback: grab top-rated rapidapi rows (any category)
-        if not rated_comps:
-            fallback_rows = (
-                db.query(RapidapiAmazonProducts)
-                .filter(RapidapiAmazonProducts.product_star_rating_numeric.isnot(None))
-                .order_by(RapidapiAmazonProducts.product_num_ratings.desc())
-                .limit(5)
-                .all()
-            )
-            rated_comps = [(row, 0.0) for row in fallback_rows]
+
 
         result["competitor_reviews"] = [
             {
@@ -2132,8 +2115,8 @@ def get_competitor_analysis(
     Tiered competitor analysis — identity, threat score, and Buy Box intelligence.
     """
     tier       = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
-    is_basic   = tier in ("basic", "premium")
-    is_premium = tier == "premium"
+    is_basic = tier in ("basic", "premium", "enterprise")
+    is_premium = tier in ("premium", "enterprise")
 
     # ── Fetch tracked product ─────────────────────────────────────────────
     tracked = (

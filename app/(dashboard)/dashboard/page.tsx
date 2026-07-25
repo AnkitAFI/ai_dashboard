@@ -129,6 +129,10 @@ function DashboardContent() {
 
         // ── Apply selections as live dashboard filters ──
         if (data.onboarding_goal === "new_seller") {
+          // Force explorer mode for new sellers
+          localStorage.setItem("sidebar-mode", "explorer");
+          window.dispatchEvent(new Event("sidebar-mode-changed"));
+
           const tableValue =
             MARKETPLACE_FILTER_MAP[data.onboarding_marketplace] ?? "amazon";
 
@@ -174,6 +178,9 @@ function DashboardContent() {
           });
         } else {
           // existing_seller with connected store — no category filter, just show dashboard
+          localStorage.setItem("sidebar-mode", "seller");
+          window.dispatchEvent(new Event("sidebar-mode-changed"));
+
           toast({
             title: "Profile updated",
             description: "Your dashboard is being personalized.",

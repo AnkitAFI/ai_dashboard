@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import { createPortal } from "react-dom";
 import {
   X, CreditCard, Building2, CheckCircle2, AlertCircle,
@@ -323,12 +324,12 @@ function PaymentModalInner({
     try {
       const res = await fetch(`${API_BASE}/api/promo/validate?code=${promoCode}&user_id=${userId}`);
       const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || "Invalid promo code.");
+      if (!res.ok) throw new Error(sanitizeApiError(data.detail, "Invalid promo code."));
       
       setPromoDiscount(data.discount_percentage);
       setPromoSuccess(`${data.discount_percentage}% discount applied!`);
     } catch (err) {
-      setPromoError(err instanceof Error ? err.message : "Invalid promo code.");
+      setPromoError(err instanceof Error ? sanitizeApiError(err.message, "Invalid promo code.") : "Invalid promo code.");
       setPromoDiscount(0);
     } finally {
       setIsValidatingPromo(false);
@@ -367,13 +368,13 @@ function PaymentModalInner({
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        throw new Error(d.detail || "Verification failed. Contact support.");
+        throw new Error(sanitizeApiError(d.detail, "Verification failed. Contact support."));
       }
       if (!mountedRef.current) return;
       setInvoiceId(dbId); setDone(true); onPaymentSuccess(plan.id);
     } catch (err) {
       if (!mountedRef.current) return;
-      setError(err instanceof Error ? err.message : "Verification failed. Contact support@insydz.com");
+      setError(err instanceof Error ? sanitizeApiError(err.message, "Verification failed. Contact support@insydz.com") : "Verification failed. Contact support@insydz.com");
     } finally {
       if (mountedRef.current) setLoading(false);
     }
@@ -426,7 +427,7 @@ function PaymentModalInner({
 
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        throw new Error(d.detail || "Failed to create payment order.");
+        throw new Error(sanitizeApiError(d.detail, "Failed to create payment order."));
       }
 
       const data = await res.json();
@@ -475,7 +476,7 @@ function PaymentModalInner({
 
     } catch (err) {
       if (!mountedRef.current) return;
-      setError(err instanceof Error ? err.message : "Payment failed. Please try again.");
+      setError(err instanceof Error ? sanitizeApiError(err.message, "Payment failed. Please try again.") : "Payment failed. Please try again.");
       setLoading(false); setStep(1);
     }
   };

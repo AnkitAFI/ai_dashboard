@@ -206,7 +206,7 @@ logger = logging.getLogger(__name__)
 
 OLLAMA_BASE_URL = settings.OLLAMA_BASE_URL
 OLLAMA_MODEL    = "llama3.2:3b"
-OLLAMA_TIMEOUT  = 120
+OLLAMA_TIMEOUT  = 300
 
 SYSTEM_PROMPT = """You are an expert Amazon and Flipkart FBA profitability analyst for Indian sellers.
 
@@ -259,15 +259,15 @@ async def model_is_available() -> bool:
         return False
 
 
-async def stream_ollama(prompt: str, system: str = SYSTEM_PROMPT) -> AsyncGenerator[str, None]:
+async def stream_ollama(prompt: str, system: str = SYSTEM_PROMPT, temperature: float = 0.3, top_p: float = 0.9) -> AsyncGenerator[str, None]:
     payload = {
         "model":  OLLAMA_MODEL,
         "prompt": prompt,
         "stream": True,
         "system": system,
         "options": {
-            "temperature": 0.3,
-            "top_p": 0.9,
+            "temperature": temperature,
+            "top_p": top_p,
             "num_predict": 600,
         },
     }
@@ -298,36 +298,60 @@ async def stream_ollama(prompt: str, system: str = SYSTEM_PROMPT) -> AsyncGenera
         yield f"\n\n[AI error: {e}]"
 
 
-async def complete_ollama(prompt: str, system: str = SYSTEM_PROMPT) -> str:
+async def complete_ollama(prompt: str, system: str = SYSTEM_PROMPT, temperature: float = 0.3, top_p: float = 0.9) -> str:
     chunks = []
 
-    async for token in stream_ollama(prompt, system):
+    async for token in stream_ollama(prompt, system, temperature, top_p):
         chunks.append(token)
 
     text = "".join(chunks)
 
-    # 🔧 Fix broken spacing from LLM
-    text = text.replace("\n", "\n\n")
-    text = text.replace("  ", " ")
     text = text.strip()
 
     return text
 
-async def analyze_product_image_with_moondream(image_base64: str) -> str:
+async def analyze_product_image_with_minicpm(image_base64_list: list[str]) -> str:
     """
-    Sends the base64 image to the local Ollama 'moondream' model to extract product details.
+    Sends a list of base64 images to the local Ollama 'minicpm-v' model to extract product details across all angles.
     """
-    # Clean up base64 string if it contains the data URI prefix (e.g., data:image/jpeg;base64,)
-    if "base64," in image_base64:
-        image_base64 = image_base64.split("base64,")[1]
+    cleaned_images = []
+    for img in image_base64_list:
+        if "base64," in img:
+            cleaned_images.append(img.split("base64,")[1])
+        else:
+            cleaned_images.append(img)
         
-    prompt = "You are an expert ecommerce product analyst. Describe this product in extreme detail. Include its color, material, shape, potential use case, and any text written on it. Do not hallucinate."
+    prompt = """You are an expert ecommerce product analyst. I am providing you with multiple images of the exact same product.
+
+CRITICAL INSTRUCTIONS:
+1. EXHAUSTIVE EXTRACTION: You MUST read and extract EVERY single word of text, feature icon, specification, and dimension visible across ALL images. Leave nothing out.
+2. FEATURE GRIDS: If you see a grid of features (e.g., PurColor, Q-Symphony, Adaptive Sound, Wi-Fi, Bluetooth), you MUST list every single one.
+3. DIMENSIONS & SPECS: If you see dimensions (e.g., Width, Height, Depth, Weight), you MUST extract the exact numbers and units. Be careful with numbers.
+4. APPS & LOGOS: If you see app logos (e.g., Netflix, YouTube, Prime Video, Sony LIV, ZEE5), list exactly the ones you recognize.
+5. NO HALLUCINATION: You must ONLY list things that are physically visible in the images. If you do not see text mentioning HDMI ports, USB ports, or specific resolutions, DO NOT invent them. 
+
+You must return ONLY a valid JSON object with this exact structure (no markdown, no extra text):
+{
+  "visual_description": "A massive, exhaustive paragraph detailing every single feature, dimension, app, and spec found in the images.",
+  "detected_attributes": {
+    "brand": "Brand Name (if found)",
+    "...": "Extract ALL specific features actually printed in text or explicitly visible."
+  },
+  "missing_critical_attributes": [
+    "Leave this array EMPTY [] in 99% of cases. Only list a missing attribute if it is IMPOSSIBLE to know what the product even is without it."
+  ]
+}"""
     
     payload = {
-        "model": "moondream",
+        "model": "minicpm-v",
         "prompt": prompt,
-        "images": [image_base64],
-        "stream": False
+        "images": cleaned_images,
+        "format": "json",
+        "stream": False,
+        "options": {
+            "temperature": 0.0,
+            "top_p": 0.1
+        }
     }
     
     try:
@@ -340,7 +364,8 @@ async def analyze_product_image_with_moondream(image_base64: str) -> str:
             data = response.json()
             return data.get("response", "").strip()
     except Exception as e:
-        logger.error(f"Failed to analyze image with moondream: {e}")
+        import traceback
+        logger.error(f"Failed to analyze image with minicpm-v: {e}\n{traceback.format_exc()}")
         return ""
 
 # ── Prompt builders ────────────────────────────────────────────────────────────
@@ -460,42 +485,55 @@ def build_amazon_listing_prompt(raw_description: str, category: str = "General",
     if use_hinglish:
         hinglish_instruction = "CRITICAL INSTRUCTION: Include highly searched colloquial 'Hinglish' variations of this product in the backend search terms (e.g., if it's a water bottle, include 'pani ki bottle'). This is targeting Tier 2/3 Indian cities.\n"
 
-    return f"""You are an expert Amazon India SEO copywriter.
-Take the following raw product details and generate an optimized Amazon listing.
+    return f"""You are an elite Amazon FBA Compliance Officer and SEO copywriter.
+Take the following raw product details and generate an optimized Amazon listing that STRICTLY adheres to Amazon's publishing policies.
 
 CONFLICT RESOLUTION RULE: The provided data has an "ABSOLUTE SOURCE OF TRUTH (Visual AI Analysis)" and "UNVERIFIED USER INPUT". If the user input contradicts the visual analysis (e.g., wrong brand, wrong product, wrong color), you MUST completely discard the contradicting user input and use ONLY the visual analysis. Do not try to merge contradictory items. The image facts are final.
+
+STRICT LEGAL, POLICY & ANTI-HALLUCINATION RULE: 
+1. NEVER invent, assume, infer, or guess ANY product details, specifications (like voltage, dimensions, resolution), ports, applications, or features. 
+2. You must ONLY use the exact facts provided in the RAW PRODUCT DETAILS. If a detail (like HDMI ports or app names) is not explicitly listed, DO NOT write it.
+3. Hallucinating unverified capabilities is illegal and will result in seller account suspension. 
+4. DO NOT use promotional phrases like "best", "cheapest", "number 1", or "free shipping" anywhere.
+5. Keep descriptions strictly factual and professional.
 
 RAW PRODUCT DETAILS:
 {raw_description}
 CATEGORY: {category}
 {hinglish_instruction}
 You must strictly return a JSON object with the following keys exactly:
-- "amazon_title": A title between 150-200 characters, rich in high-volume keywords, avoiding promotional words like 'best' or 'cheapest'.
-- "amazon_bullets": An array of exactly 5 bullet points. Each bullet must be under 200 characters. Start each bullet with a capitalized summary phrase followed by a colon.
-- "amazon_description": A 2-paragraph HTML formatted product description (use <p> and <b> tags). MUST BE ENCLOSED IN QUOTES AS A VALID JSON STRING. Do not output raw unquoted HTML.
+- "amazon_title": Brand + Core Product + Key Feature + Size/Color (Max 200 chars). NO promotional words.
+- "amazon_bullets": A valid JSON array containing exactly 5 strings (e.g., ["bullet 1", "bullet 2", ...]). DO NOT use markdown lists like `- "bullet"`. Detail exact specs, dimensions, and materials found in the RAW DETAILS ONLY. Do not invent marketing fluff.
+- "amazon_description": Exhaustive, professional HTML formatted description (use <p>, <b>, <ul>, <li>). List EVERY single detail from the raw data. Output as a SINGLE string on ONE line with NO actual newline characters. Do not output raw unquoted HTML.
 - "amazon_search_terms": A single string of backend search terms (max 249 bytes), space-separated, no commas, no duplicate words.
 
-Respond ONLY with valid JSON. Do not include any markdown formatting like ```json. Ensure all string values are properly escaped and enclosed in double quotes."""
+Respond ONLY with the raw, valid JSON object. Do not include ANY markdown formatting like ```json. Do not include ANY conversational text, explanations, or notes before or after the JSON. Ensure all string values are properly escaped and enclosed in double quotes."""
 
 def build_flipkart_listing_prompt(raw_description: str, category: str = "General", use_hinglish: bool = False) -> str:
     hinglish_instruction = ""
     if use_hinglish:
         hinglish_instruction = "CRITICAL INSTRUCTION: Include highly searched colloquial 'Hinglish' variations of this product in the flipkart description text seamlessly (e.g., if it's a water bottle, include 'pani ki bottle'). This is targeting Tier 2/3 Indian cities.\n"
 
-    return f"""You are an expert Flipkart SEO copywriter.
-Take the following raw product details and generate an optimized Flipkart listing.
+    return f"""You are an elite Flipkart Compliance Officer and SEO copywriter.
+Take the following raw product details and generate an optimized Flipkart listing that STRICTLY adheres to Flipkart's publishing policies.
 
-CONFLICT RESOLUTION RULE: The provided data has an "ABSOLUTE SOURCE OF TRUTH (Visual AI Analysis)" and "UNVERIFIED USER INPUT". If the user input contradicts the visual analysis (e.g., wrong brand, wrong product, wrong color), you MUST completely discard the contradicting user input and use ONLY the visual analysis. Do not try to merge contradictory items. The image facts are final.
+CONFLICT RESOLUTION RULE: Visual Analysis overrides Unverified User Input completely.
+
+STRICT LEGAL, POLICY & ANTI-HALLUCINATION RULE: 
+1. NEVER invent, assume, infer, or guess ANY product details, specifications, ports, applications, or features. 
+2. ONLY use the exact facts provided in the RAW PRODUCT DETAILS. If a detail is not explicitly listed, DO NOT write it.
+3. Hallucinating unverified capabilities will result in immediate account ban. 
+4. DO NOT use promotional phrases like "best" or "cheapest".
 
 RAW PRODUCT DETAILS:
 {raw_description}
 CATEGORY: {category}
 {hinglish_instruction}
 You must strictly return a JSON object with the following keys exactly:
-- "flipkart_title": A concise, brand-first title (max 100 characters). Format: [Brand] [Core Product] [Key Feature].
-- "flipkart_description": A clean, bulleted text description (no HTML allowed for Flipkart) focusing on specifications and warranty. MUST BE ENCLOSED IN QUOTES AS A VALID JSON STRING.
+- "flipkart_title": A concise, Brand-first title (Max 100 chars). Format: [Brand] [Core Product] [Key Feature].
+- "flipkart_description": An exhaustive plain text description. STRICTLY NO HTML ALLOWED. Output as a SINGLE string on ONE line with NO actual newline characters (use spaces or dashes to separate points). List ONLY verified specs.
 
-Respond ONLY with valid JSON. Do not include any markdown formatting like ```json. Ensure all string values are properly escaped and enclosed in double quotes."""
+Respond ONLY with the raw, valid JSON object. Do not include ANY markdown formatting like ```json. Do not include ANY conversational text, explanations, or notes before or after the JSON. Ensure all string values are properly escaped and enclosed in double quotes."""
 
 def build_attribute_extraction_prompt(raw_description: str) -> str:
     return f"""You are an expert Ecommerce Catalog Specialist.
@@ -511,23 +549,26 @@ Keys must be lowercase (e.g. brand, color, size, material, style).
 Respond ONLY with valid JSON. Do not include any markdown formatting like ```json."""
 
 def build_aplus_content_prompt(raw_description: str, category: str = "General") -> str:
-    return f"""You are an expert Premium E-commerce Brand Copywriter.
-Take the following raw product details and generate a visually engaging Premium A+ Content (Amazon) and Rich Description (Flipkart) copy.
+    return f"""You are an Elite E-commerce Brand Copywriter for Premium A+ Content.
+Generate visually engaging Premium A+ Content using ONLY verified facts.
 
-CONFLICT RESOLUTION RULE: The provided data has an "ABSOLUTE SOURCE OF TRUTH (Visual AI Analysis)" and "UNVERIFIED USER INPUT". If the user input contradicts the visual analysis (e.g., wrong brand, wrong product, wrong color), you MUST completely discard the contradicting user input and use ONLY the visual analysis. Do not try to merge contradictory items. The image facts are final.
+STRICT LEGAL & ANTI-HALLUCINATION RULE: 
+You are a premium copywriter, but you MUST remain factual. NEVER invent, assume, or guess ANY product specs, features, apps, or ports. Elevate the tone and make it sound premium without inventing new capabilities. If the raw details say '32 inch TV', make it sound immersive, but do NOT hallucinate that it has '4K resolution' or '3 HDMI ports'. Hallucinating data is strictly prohibited.
+
+CONFLICT RESOLUTION RULE: Visual Analysis overrides Unverified User Input completely.
 
 RAW PRODUCT DETAILS:
 {raw_description}
 CATEGORY: {category}
 
-You must strictly return a JSON object representing the "Standard 3-Image Text Module" and a "Brand Story".
+You must strictly return a SINGLE JSON object containing all the keys below. Do NOT output multiple JSON objects.
 Use the following keys exactly:
-- "brand_story_hook": A short, catchy 1-2 sentence hook about the brand's mission or product's core value (max 150 characters).
-- "feature_1_headline": A short, punchy 3-5 word headline highlighting the first major feature.
-- "feature_1_body": A short paragraph (30-50 words) elaborating on feature 1.
-- "feature_2_headline": A short, punchy 3-5 word headline highlighting the second major feature.
+- "brand_story_hook": A short, catchy 1-2 sentence premium hook based on verified value (max 150 chars).
+- "feature_1_headline": A short, punchy 3-5 word headline for the first major verified feature.
+- "feature_1_body": A short paragraph (30-50 words) elaborating on feature 1 using ONLY verified facts.
+- "feature_2_headline": A short, punchy 3-5 word headline for the second major verified feature.
 - "feature_2_body": A short paragraph (30-50 words) elaborating on feature 2.
-- "feature_3_headline": A short, punchy 3-5 word headline highlighting the third major feature.
+- "feature_3_headline": A short, punchy 3-5 word headline for the third major verified feature.
 - "feature_3_body": A short paragraph (30-50 words) elaborating on feature 3.
 
 Respond ONLY with valid JSON. Do not include any markdown formatting like ```json. Ensure all string values are properly escaped and enclosed in double quotes."""

@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, Integer, ARRAY, DateTime, Boolean
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship, validates
+from app.db.models.payment_order_model import PaymentOrder
 from app.db.base import Base
 from app.core.cryptography import EncryptedString, HashedString
 

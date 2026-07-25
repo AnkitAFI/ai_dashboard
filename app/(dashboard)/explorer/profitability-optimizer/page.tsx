@@ -625,8 +625,8 @@
 //   const [nicheKeyword, setNicheKeyword] = useState("");
 //   const [fetchingNiche, setFetchingNiche] = useState(false);
 
-//   const isBasicPlus = tier === "basic" || tier === "premium";
-//   const isPremium   = tier === "premium";
+//   const isBasicPlus = tier === "basic" || tier === "premium" || tier === "enterprise";
+//   const isPremium   = tier === "premium" || tier === "enterprise";
 //   const saveLimit   = tier === "free" ? 0 : tier === "basic" ? 5 : 9999;
 
 //   const toast = (title: string, description: string, variant: "success" | "error" = "success") => {
@@ -890,7 +890,7 @@
 //           <p className="text-slate-500 text-xs sm:text-sm mt-0.5">Real margins · Live market data</p>
 //         </div>
 //         <div className="flex items-center gap-3">
-//           <Badge className={`text-xs font-semibold ${tier === "premium" ? "bg-blue-100 text-blue-800" : tier === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+//           <Badge className={`text-xs font-semibold ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-100 text-blue-800" : tier === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
 //             {tier.toUpperCase()}
 //           </Badge>
 //           {calcResult && (
@@ -1448,9 +1448,11 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
 import { API_BASE_URL } from "@/lib/config";
 import axios from "axios";
 import { useAuth } from "@/lib/auth-context";
+import SmartSearchInput from "@/components/ui/smart-search-input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -1726,6 +1728,7 @@ function AIPanel({
   userId?: string;
   onUpgrade: (f: string) => void;
 }) {
+  const { t } = useTranslation();
   type AIStatus = {
     status?: string;
     model?: string;
@@ -1826,10 +1829,10 @@ function AIPanel({
   }
 
   const MODES = [
-    { id: "analyze",  label: "Full analysis",     tier: "premium" as const },
-    { id: "chat",     label: "Ask anything",       tier: "basic"   as const },
-    { id: "scenario", label: "Scenario advice",    tier: "premium" as const },
-    { id: "health",   label: "Health action plan", tier: "premium" as const },
+    { id: "analyze",  label: t('profitabilityOptimizer.ai.fullAnalysis', 'Full analysis'),     tier: "premium" as const },
+    { id: "chat",     label: t('profitabilityOptimizer.ai.askAnything', 'Ask anything'),       tier: "basic"   as const },
+    { id: "scenario", label: t('profitabilityOptimizer.ai.scenarioAdvice', 'Scenario advice'),    tier: "premium" as const },
+    { id: "health",   label: t('profitabilityOptimizer.ai.healthActionPlan', 'Health action plan'), tier: "premium" as const },
   ];
 
   const QUICK_Q = ["How do I reduce my ACOS?", "Should I raise price by 10%?", "What's eating my margin most?", "How do I hit 25% margin?"];
@@ -1865,8 +1868,8 @@ function AIPanel({
         <div className="bg-white dark:bg-slate-900/60 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
           <div className="flex items-start justify-between mb-2">
             <div>
-              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Full profitability analysis</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">4 recommendations from your exact numbers</p>
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{t('profitabilityOptimizer.ai.fullAnalysisTitle', 'Full profitability analysis')}</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{t('profitabilityOptimizer.ai.fullAnalysisDesc', '4 recommendations from your exact numbers')}</p>
             </div>
             <div className="flex gap-2">
               {analyzeStream.text && (
@@ -1880,7 +1883,7 @@ function AIPanel({
                 className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-200 dark:disabled:bg-slate-700 disabled:text-slate-400 dark:disabled:text-slate-500 text-white text-xs rounded-xl font-medium transition-all"
                 data-track-id="ai_run_analysis_btn"
               >
-                {analyzeStream.streaming ? <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> Analyzing...</> : "✦ Run analysis"}
+                {analyzeStream.streaming ? <><RefreshCw className="w-3.5 h-3.5 animate-spin" /> {t('profitabilityOptimizer.ai.analyzing', 'Analyzing...')}</> : `✦ ${t('profitabilityOptimizer.ai.runAnalysisBtn', 'Run analysis')}`}
               </button>
             </div>
           </div>
@@ -1888,7 +1891,7 @@ function AIPanel({
             <StreamBox stream={analyzeStream} />
           ) : (
             <div className="mt-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 text-center border border-slate-100 dark:border-slate-700">
-              <p className="text-slate-400 dark:text-slate-500 text-xs">Click "Run analysis" for AI recommendations</p>
+              <p className="text-slate-400 dark:text-slate-500 text-xs">{t('profitabilityOptimizer.ai.clickRunAnalysis', 'Click "Run analysis" for AI recommendations')}</p>
             </div>
           )}
         </div>
@@ -1900,7 +1903,7 @@ function AIPanel({
           <div className="max-h-72 overflow-y-auto space-y-3 mb-4">
             {chatHistory.length === 0 && (
               <div className="py-4 text-center">
-                <p className="text-slate-400 dark:text-slate-500 text-xs mb-3">Ask anything about your product&apos;s numbers</p>
+                <p className="text-slate-400 dark:text-slate-500 text-xs mb-3">{t('profitabilityOptimizer.ai.askAnythingAbout', 'Ask anything about your product\'s numbers')}</p>
                 <div className="flex flex-wrap gap-2 justify-center">
                   {QUICK_Q.map((q) => (
                     <button
@@ -1951,7 +1954,7 @@ function AIPanel({
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); runChat(); } }}
-              placeholder="Ask about your margins, pricing, ads..."
+              placeholder={t('profitabilityOptimizer.ai.chatPlaceholder', 'Ask about your margins, pricing, ads...')}
               className="flex-1 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-violet-400 dark:focus:border-violet-500 focus:bg-white dark:focus:bg-slate-800 transition-colors"
               data-track-id="ai_chat_input"
             />
@@ -1981,8 +1984,8 @@ function AIPanel({
         <div className="bg-white dark:bg-slate-900/60 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
           <div className="flex items-start justify-between mb-2">
             <div>
-              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">Which strategy should I pick?</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">AI compares your 4 scenarios and recommends one</p>
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{t('profitabilityOptimizer.ai.whichStrategy', 'Which strategy should I pick?')}</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{t('profitabilityOptimizer.ai.scenarioDesc', 'AI compares your 4 scenarios and recommends one')}</p>
             </div>
             <button
               onClick={runScenario}
@@ -1990,12 +1993,12 @@ function AIPanel({
               className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-200 dark:disabled:bg-slate-700 disabled:text-slate-400 dark:disabled:text-slate-500 text-white text-xs rounded-xl font-medium transition-all"
               data-track-id="ai_get_scenario_advice_btn"
             >
-              {scenarioStream.streaming ? "Thinking..." : "✦ Get advice"}
+              {scenarioStream.streaming ? t('profitabilityOptimizer.ai.thinking', 'Thinking...') : `✦ ${t('profitabilityOptimizer.ai.getAdvice', 'Get advice')}`}
             </button>
           </div>
           {!scenarios && (
             <p className="mt-3 text-xs text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-100 dark:border-slate-700">
-              Open the Scenarios tab first to generate data.
+              {t('profitabilityOptimizer.ai.openScenariosFirst', 'Open the Scenarios tab first to generate data.')}
             </p>
           )}
           {(scenarioStream.text || scenarioStream.streaming || scenarioStream.error) && (
@@ -2009,8 +2012,8 @@ function AIPanel({
         <div className="bg-white dark:bg-slate-900/60 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
           <div className="flex items-start justify-between mb-2">
             <div>
-              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">5-step health improvement plan</p>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">AI turns your health score into a prioritized action plan</p>
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{t('profitabilityOptimizer.ai.healthPlan', '5-step health improvement plan')}</p>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{t('profitabilityOptimizer.ai.healthDesc', 'AI turns your health score into a prioritized action plan')}</p>
             </div>
             <button
               onClick={runHealth}
@@ -2018,12 +2021,12 @@ function AIPanel({
               className="flex items-center gap-2 px-4 py-2 bg-violet-600 hover:bg-violet-500 disabled:bg-slate-200 dark:disabled:bg-slate-700 disabled:text-slate-400 dark:disabled:text-slate-500 text-white text-xs rounded-xl font-medium transition-all"
               data-track-id="ai_build_health_plan_btn"
             >
-              {healthStream.streaming ? "Thinking..." : "✦ Build plan"}
+              {healthStream.streaming ? t('profitabilityOptimizer.ai.thinking', 'Thinking...') : `✦ ${t('profitabilityOptimizer.ai.buildPlan', 'Build plan')}`}
             </button>
           </div>
           {!healthData && (
             <p className="mt-3 text-xs text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/50 rounded-xl p-4 border border-slate-100 dark:border-slate-700">
-              Open the Business Health tab first.
+              {t('profitabilityOptimizer.ai.openHealthFirst', 'Open the Business Health tab first.')}
             </p>
           )}
           {(healthStream.text || healthStream.streaming || healthStream.error) && (
@@ -2040,6 +2043,7 @@ function AIPanel({
 // ══════════════════════════════════════════════════════════════════════════════
 
 export default function ProfitabilityOptimizer() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const userId = user?.id;
 
@@ -2081,8 +2085,8 @@ export default function ProfitabilityOptimizer() {
   const [nicheProductCount, setNicheProductCount] = useState<number>(0);
   const [nicheConfidence, setNicheConfidence] = useState<string>("");
 
-  const isBasicPlus = tier === "basic" || tier === "premium";
-  const isPremium   = tier === "premium";
+  const isBasicPlus = tier === "basic" || tier === "premium" || tier === "enterprise";
+  const isPremium   = tier === "premium" || tier === "enterprise";
   const saveLimit   = tier === "free" ? 0 : tier === "basic" ? 5 : 9999;
 
   const toast = (title: string, description: string, variant: "success" | "error" = "success") => {
@@ -2364,11 +2368,11 @@ export default function ProfitabilityOptimizer() {
       {/* Title */}
       <div className="flex justify-between items-center bg-white dark:bg-slate-900/80 p-4 rounded-2xl border border-sky-100 dark:border-slate-700 shadow-sm">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-sky-900 dark:text-sky-300">Profitability Optimizer</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-0.5">Real margins · Live market data</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-sky-900 dark:text-sky-300">{t('profitabilityOptimizer.title', 'Profitability Optimizer')}</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-0.5">{t('profitabilityOptimizer.subtitle', 'Real margins · Live market data')}</p>
         </div>
         <div className="flex items-center gap-3">
-          <Badge className={`text-xs font-semibold ${tier === "premium" ? "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300" : tier === "basic" ? "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>
+          <Badge className={`text-xs font-semibold ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300" : tier === "basic" ? "bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300" : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"}`}>
             {tier.toUpperCase()}
           </Badge>
           {calcResult && (
@@ -2466,10 +2470,10 @@ export default function ProfitabilityOptimizer() {
         <CardContent className="p-0">
           <div className="flex border-b border-slate-200 dark:border-slate-700 overflow-x-auto">
             {([
-              { id: "calc",     label: "Calculator",   icon: <Calculator className="w-4 h-4" />,  min: "free"    },
-              { id: "scenario", label: "Scenarios",    icon: <BarChart3 className="w-4 h-4" />,   min: "premium" },
-              { id: "health",   label: "Health",       icon: <Activity className="w-4 h-4" />,    min: "premium" },
-              { id: "ai",       label: "AI Advisor",   icon: <Bot className="w-4 h-4" />,         min: "basic"   },
+              { id: "calc",     label: t('profitabilityOptimizer.tabs.calc', 'Calculator'),   icon: <Calculator className="w-4 h-4" />,  min: "free"    },
+              { id: "scenario", label: t('profitabilityOptimizer.tabs.scenario', 'Scenarios'),    icon: <BarChart3 className="w-4 h-4" />,   min: "premium" },
+              { id: "health",   label: t('profitabilityOptimizer.tabs.health', 'Health'),       icon: <Activity className="w-4 h-4" />,    min: "premium" },
+              { id: "ai",       label: t('profitabilityOptimizer.tabs.ai', 'AI Advisor'),   icon: <Bot className="w-4 h-4" />,         min: "basic"   },
             ] as { id: string; label: string; icon: JSX.Element; min: string }[]).map((tab) => {
               const locked = (tab.min === "premium" && !isPremium) || (tab.min === "basic" && !isBasicPlus);
               return (
@@ -2496,7 +2500,7 @@ export default function ProfitabilityOptimizer() {
             <CardHeader className="pb-3">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base flex items-center gap-2 text-slate-800 dark:text-slate-100">
-                  <Calculator className="w-4 h-4 text-blue-500" /> Cost inputs
+                  <Calculator className="w-4 h-4 text-blue-500" /> {t('profitabilityOptimizer.calculator.costInputs', 'Cost inputs')}
                 </CardTitle>
                 {calcLoading && <RefreshCw className="w-3.5 h-3.5 text-blue-400 animate-spin" />}
               </div>
@@ -2506,22 +2510,20 @@ export default function ProfitabilityOptimizer() {
               {/* ── Specific Product Research ── */}
               <div className="bg-sky-50/50 dark:bg-sky-900/20 border border-sky-100/80 dark:border-sky-800/50 p-3.5 rounded-2xl mb-4 space-y-2.5">
                 <label className="text-[10px] font-black text-sky-700 dark:text-sky-400 uppercase tracking-widest block">
-                  Specific Product Research
+                  {t('profitabilityOptimizer.calculator.specificProductResearch', 'Specific Product Research')}
                 </label>
                 <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                    <input
-                      type="text"
-                      placeholder="e.g. Bamboo Desk Organizer"
-                      className="w-full pl-9 pr-3 py-2 border border-slate-200 dark:border-slate-600 rounded-xl text-xs bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                  <div className="relative flex-1 overflow-visible">
+                    <SmartSearchInput
                       value={nicheKeyword}
-                      onChange={(e) => {
-                        setNicheKeyword(e.target.value);
+                      onChange={(val) => {
+                        setNicheKeyword(val);
                         // Clear badge when user types a new keyword
                         if (nicheDataSource) setNicheDataSource(null);
                       }}
-                      onKeyDown={(e) => e.key === "Enter" && handleNicheAutofill()}
+                      placeholder="e.g. Bamboo Desk Organizer"
+                      inputClassName="w-full py-2 border border-slate-200 dark:border-slate-600 rounded-xl text-xs bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 outline-none transition-all"
+                      onEnter={handleNicheAutofill}
                     />
                   </div>
                   <Button
@@ -2564,7 +2566,7 @@ export default function ProfitabilityOptimizer() {
               </div>
 
               <div className="mb-3">
-                <label className="text-xs text-slate-500 dark:text-slate-400 block mb-1">Marketplace</label>
+                <label className="text-xs text-slate-500 dark:text-slate-400 block mb-1">{t('profitabilityOptimizer.calculator.marketplace', 'Marketplace')}</label>
                 <select value={inputs.marketplace} onChange={(e) => inp("marketplace", e.target.value)}
                   className="w-full p-2.5 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
                   data-track-id="marketplace_select"
@@ -2576,26 +2578,26 @@ export default function ProfitabilityOptimizer() {
               </div>
 
               <div className="h-px bg-slate-100 dark:bg-slate-700 my-2" />
-              <p className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Core pricing</p>
+              <p className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">{t('profitabilityOptimizer.calculator.corePricing', 'Core pricing')}</p>
 
-              <SliderRow label="Selling price"   value={inputs.selling_price}     min={100}  max={Math.max(10000, Math.ceil(inputs.selling_price * 1.5 / 5000) * 5000)} step={50}  format={inr}           onChange={(v) => inp("selling_price", v)} />
-              <SliderRow label="Product cost"    value={inputs.product_cost}      min={50}   max={Math.max(5000,  Math.ceil(inputs.product_cost * 1.5 / 1000) * 1000)}  step={25}  format={inr}           onChange={(v) => inp("product_cost", v)} />
-              <SliderRow label="Shipping to FBA" value={inputs.shipping_to_fba}   min={0}    max={Math.max(800,   Math.ceil(inputs.shipping_to_fba * 2 / 100) * 100)}   step={10}  format={inr}           onChange={(v) => inp("shipping_to_fba", v)} />
-              <SliderRow label="FBA fee"         value={inputs.fba_fee}           min={0}    max={Math.max(600,   Math.ceil(inputs.fba_fee * 2 / 100) * 100)}           step={10}  format={inr}           onChange={(v) => inp("fba_fee", v)} />
-              <SliderRow label="Ad spend / unit" value={inputs.ad_spend_per_unit} min={0}    max={Math.max(800,   Math.ceil(inputs.ad_spend_per_unit * 2 / 100) * 100)} step={5}   format={inr}           onChange={(v) => inp("ad_spend_per_unit", v)} />
-              <SliderRow label="Monthly units"   value={inputs.monthly_units}     min={10}   max={Math.max(5000,  Math.ceil(inputs.monthly_units * 1.5 / 500) * 500)}   step={10}  format={(v) => `${v}`} onChange={(v) => inp("monthly_units", v)} />
-              <SliderRow label={`Referral (${Number(inputs.referral_fee_pct).toFixed(0)}%)`} value={inputs.referral_fee_pct} min={1} max={25} step={0.5} format={pct} onChange={(v) => inp("referral_fee_pct", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.sellingPrice', 'Selling price')}   value={inputs.selling_price}     min={100}  max={Math.max(10000, Math.ceil(inputs.selling_price * 1.5 / 5000) * 5000)} step={50}  format={inr}           onChange={(v) => inp("selling_price", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.productCost', 'Product cost')}    value={inputs.product_cost}      min={50}   max={Math.max(5000,  Math.ceil(inputs.product_cost * 1.5 / 1000) * 1000)}  step={25}  format={inr}           onChange={(v) => inp("product_cost", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.shippingToFba', 'Shipping to FBA')} value={inputs.shipping_to_fba}   min={0}    max={Math.max(800,   Math.ceil(inputs.shipping_to_fba * 2 / 100) * 100)}   step={10}  format={inr}           onChange={(v) => inp("shipping_to_fba", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.fbaFee', 'FBA fee')}         value={inputs.fba_fee}           min={0}    max={Math.max(600,   Math.ceil(inputs.fba_fee * 2 / 100) * 100)}           step={10}  format={inr}           onChange={(v) => inp("fba_fee", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.adSpendPerUnit', 'Ad spend / unit')} value={inputs.ad_spend_per_unit} min={0}    max={Math.max(800,   Math.ceil(inputs.ad_spend_per_unit * 2 / 100) * 100)} step={5}   format={inr}           onChange={(v) => inp("ad_spend_per_unit", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.monthlyUnits', 'Monthly units')}   value={inputs.monthly_units}     min={10}   max={Math.max(5000,  Math.ceil(inputs.monthly_units * 1.5 / 500) * 500)}   step={10}  format={(v) => `${v}`} onChange={(v) => inp("monthly_units", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.referralFee', 'Referral') + ` (${Number(inputs.referral_fee_pct).toFixed(0)}%)`} value={inputs.referral_fee_pct} min={1} max={25} step={0.5} format={pct} onChange={(v) => inp("referral_fee_pct", v)} />
 
               <div className="h-px bg-slate-100 dark:bg-slate-700 my-2" />
               <div className="flex items-center justify-between mb-1.5">
-                <p className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">Advanced</p>
+                <p className="text-xs font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">{t('profitabilityOptimizer.calculator.advanced', 'Advanced')}</p>
                 {!isBasicPlus && (
                   <span onClick={() => setUpgrade({ open: true, feature: "Advanced inputs" })}
                     className="text-xs bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium cursor-pointer hover:bg-amber-200 dark:hover:bg-amber-800/40 transition-colors">Basic+</span>
                 )}
               </div>
-              <SliderRow label="Return rate"    value={inputs.return_rate_pct}      min={0} max={40}  step={1} format={pct} locked={!isBasicPlus} onChange={(v) => inp("return_rate_pct", v)} />
-              <SliderRow label="Storage / unit" value={inputs.storage_fee_per_unit} min={0} max={150} step={2} format={inr} locked={!isBasicPlus} onChange={(v) => inp("storage_fee_per_unit", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.returnRate', 'Return rate')}    value={inputs.return_rate_pct}      min={0} max={40}  step={1} format={pct} locked={!isBasicPlus} onChange={(v) => inp("return_rate_pct", v)} />
+              <SliderRow label={t('profitabilityOptimizer.calculator.storagePerUnit', 'Storage / unit')} value={inputs.storage_fee_per_unit} min={0} max={150} step={2} format={inr} locked={!isBasicPlus} onChange={(v) => inp("storage_fee_per_unit", v)} />
               {!isBasicPlus && (
                 <button onClick={() => setUpgrade({ open: true, feature: "Advanced inputs" })}
                   className="w-full mt-3 py-2 text-xs text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors flex items-center justify-center gap-1.5">
@@ -2610,12 +2612,12 @@ export default function ProfitabilityOptimizer() {
               <>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                   {([
-                    { label: "Profit / unit",  val: inr(Number(calcResult.profit_per_unit)),  cls: Number(calcResult.profit_per_unit) > 0 ? (Number(calcResult.net_margin_pct) > 20 ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400") : "text-red-600 dark:text-red-400" },
-                    { label: "Net margin",     val: pct(Number(calcResult.net_margin_pct)),   cls: Number(calcResult.net_margin_pct) > 20 ? "text-green-600 dark:text-green-400" : Number(calcResult.net_margin_pct) > 10 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400" },
-                    { label: "Monthly profit", val: inr(Number(calcResult.monthly_profit)),   cls: "text-blue-600 dark:text-blue-400", sub: calcResult.yearly_profit ? "~" + inr(Number(calcResult.yearly_profit)) + "/yr" : undefined },
-                    { label: "Break-even",     val: String(Number(calcResult.breakeven_units) || 0) + " units", cls: "text-slate-700 dark:text-slate-200" },
-                    { label: "ROI",            val: calcResult.roi_pct !== undefined ? pct(Number(calcResult.roi_pct)) : "—", cls: "text-purple-600 dark:text-purple-400", locked: !isBasicPlus },
-                    { label: "True ACOS",      val: calcResult.acos_pct !== undefined ? pct(Number(calcResult.acos_pct)) : "—", cls: calcResult.acos_pct !== undefined && Number(calcResult.acos_pct) > 20 ? "text-amber-600 dark:text-amber-400" : "text-slate-700 dark:text-slate-200", locked: !isBasicPlus },
+                    { label: t('profitabilityOptimizer.calculator.profitPerUnit', 'Profit / unit'),  val: inr(Number(calcResult.profit_per_unit)),  cls: Number(calcResult.profit_per_unit) > 0 ? (Number(calcResult.net_margin_pct) > 20 ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400") : "text-red-600 dark:text-red-400" },
+                    { label: t('profitabilityOptimizer.calculator.netMargin', 'Net margin'),     val: pct(Number(calcResult.net_margin_pct)),   cls: Number(calcResult.net_margin_pct) > 20 ? "text-green-600 dark:text-green-400" : Number(calcResult.net_margin_pct) > 10 ? "text-amber-600 dark:text-amber-400" : "text-red-600 dark:text-red-400" },
+                    { label: t('profitabilityOptimizer.calculator.monthlyProfit', 'Monthly profit'), val: inr(Number(calcResult.monthly_profit)),   cls: "text-blue-600 dark:text-blue-400", sub: calcResult.yearly_profit ? "~" + inr(Number(calcResult.yearly_profit)) + "/yr" : undefined },
+                    { label: t('profitabilityOptimizer.calculator.breakEven', 'Break-even'),     val: String(Number(calcResult.breakeven_units) || 0) + ` ${t('profitabilityOptimizer.calculator.units', 'units')}`, cls: "text-slate-700 dark:text-slate-200" },
+                    { label: t('profitabilityOptimizer.calculator.roi', 'ROI'),            val: calcResult.roi_pct !== undefined ? pct(Number(calcResult.roi_pct)) : "—", cls: "text-purple-600 dark:text-purple-400", locked: !isBasicPlus },
+                    { label: t('profitabilityOptimizer.calculator.trueAcos', 'True ACOS'),      val: calcResult.acos_pct !== undefined ? pct(Number(calcResult.acos_pct)) : "—", cls: calcResult.acos_pct !== undefined && Number(calcResult.acos_pct) > 20 ? "text-amber-600 dark:text-amber-400" : "text-slate-700 dark:text-slate-200", locked: !isBasicPlus },
                   ] as { label: string; val: string; cls: string; sub?: string; locked?: boolean }[]).map((m, i) => (
                     <div key={i} className={`relative bg-white dark:bg-slate-900/80 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm ${m.locked ? "overflow-hidden" : ""}`}>
                       <p className="text-xs text-slate-400 dark:text-slate-500 mb-1">{m.label}</p>
@@ -2634,7 +2636,7 @@ export default function ProfitabilityOptimizer() {
                 <Card className="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm relative overflow-hidden">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm flex items-center gap-2 text-slate-800 dark:text-slate-100">
-                      Cost waterfall
+                      {t('profitabilityOptimizer.calculator.costWaterfall', 'Cost waterfall')}
                       {!isBasicPlus && <span className="text-xs bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium">Basic+</span>}
                     </CardTitle>
                   </CardHeader>
@@ -2656,7 +2658,7 @@ export default function ProfitabilityOptimizer() {
                           );
                         })}
                         <div className="pt-2 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
-                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">Profit / unit</span>
+                          <span className="text-sm font-semibold text-slate-700 dark:text-slate-200">{t('profitabilityOptimizer.calculator.profitPerUnit', 'Profit / unit')}</span>
                           <span className={`text-base font-black ${Number(calcResult.profit_per_unit) > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
                             {inr(Number(calcResult.profit_per_unit))} ({pct(Number(calcResult.net_margin_pct))})
                           </span>
@@ -2673,7 +2675,7 @@ export default function ProfitabilityOptimizer() {
                           ))}
                         </div>
                         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
-                          <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">Full cost breakdown</p>
+                          <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">{t('profitabilityOptimizer.calculator.fullCostBreakdown', 'Full cost breakdown')}</p>
                           <button className="text-xs px-4 py-1.5 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-full shadow"
                             onClick={() => setUpgrade({ open: true, feature: "Cost waterfall" })}>Unlock — Basic ₹1,999/mo</button>
                         </div>
@@ -2706,14 +2708,14 @@ export default function ProfitabilityOptimizer() {
                       <div className="w-2 h-2 rounded-full mb-2" style={{ background: String(s.color ?? "#888") }} />
                       <p className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: String(s.color ?? "#888") }}>{String(s.label ?? "")}</p>
                       <p className={`text-2xl font-black ${Number(s.profit_per_unit) > 0 ? "text-slate-800 dark:text-slate-100" : "text-red-600 dark:text-red-400"}`}>
-                        {inr(Number(s.profit_per_unit))}<span className="text-xs font-normal text-slate-400 dark:text-slate-500">/unit</span>
+                        {inr(Number(s.profit_per_unit))}<span className="text-xs font-normal text-slate-400 dark:text-slate-500">/{t('profitabilityOptimizer.calculator.unit', 'unit')}</span>
                       </p>
-                      <p className={`text-sm font-semibold mt-1 ${Number(s.net_margin_pct) > 15 ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}>{pct(Number(s.net_margin_pct))} margin</p>
+                      <p className={`text-sm font-semibold mt-1 ${Number(s.net_margin_pct) > 15 ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"}`}>{pct(Number(s.net_margin_pct))} {t('profitabilityOptimizer.calculator.margin', 'margin')}</p>
                       <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-700 space-y-1 text-xs text-slate-500 dark:text-slate-400">
-                        <div className="flex justify-between"><span>Monthly</span><span className="font-semibold text-slate-700 dark:text-slate-200">{inr(Number(s.monthly_profit))}</span></div>
-                        <div className="flex justify-between"><span>Units</span><span className="font-semibold text-slate-700 dark:text-slate-200">{Number(s.units || 0).toLocaleString()}</span></div>
-                        <div className="flex justify-between"><span>ROI</span><span className="font-semibold text-slate-700 dark:text-slate-200">{pct(Number(s.roi_pct))}</span></div>
-                        <div className="flex justify-between"><span>ACOS</span><span className={`font-semibold ${Number(s.acos_pct) > 20 ? "text-amber-600 dark:text-amber-400" : "text-slate-700 dark:text-slate-200"}`}>{pct(Number(s.acos_pct))}</span></div>
+                        <div className="flex justify-between"><span>{t('profitabilityOptimizer.calculator.monthly', 'Monthly')}</span><span className="font-semibold text-slate-700 dark:text-slate-200">{inr(Number(s.monthly_profit))}</span></div>
+                        <div className="flex justify-between"><span>{t('profitabilityOptimizer.calculator.units', 'Units')}</span><span className="font-semibold text-slate-700 dark:text-slate-200">{Number(s.units || 0).toLocaleString()}</span></div>
+                        <div className="flex justify-between"><span>{t('profitabilityOptimizer.calculator.roi', 'ROI')}</span><span className="font-semibold text-slate-700 dark:text-slate-200">{pct(Number(s.roi_pct))}</span></div>
+                        <div className="flex justify-between"><span>{t('profitabilityOptimizer.calculator.acos', 'ACOS')}</span><span className={`font-semibold ${Number(s.acos_pct) > 20 ? "text-amber-600 dark:text-amber-400" : "text-slate-700 dark:text-slate-200"}`}>{pct(Number(s.acos_pct))}</span></div>
                       </div>
                     </CardContent>
                   </Card>
@@ -2721,8 +2723,8 @@ export default function ProfitabilityOptimizer() {
               </div>
               <Card className="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm">
                 <CardHeader className="pb-2">
-                  <CardTitle className="text-sm text-slate-800 dark:text-slate-100">Price sensitivity — margin vs selling price</CardTitle>
-                  <CardDescription className="dark:text-slate-400">How net margin changes across a ±30% price range</CardDescription>
+                  <CardTitle className="text-sm text-slate-800 dark:text-slate-100">{t('profitabilityOptimizer.scenarios.priceSensitivity', 'Price sensitivity — margin vs selling price')}</CardTitle>
+                  <CardDescription className="dark:text-slate-400">{t('profitabilityOptimizer.scenarios.priceSensitivityDesc', 'How net margin changes across a ±30% price range')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={220}>
@@ -2751,17 +2753,17 @@ export default function ProfitabilityOptimizer() {
               {marketIntel.your_price_position && (
                 <div className={`p-4 rounded-2xl text-sm font-semibold border-2 flex items-center gap-2 ${marketIntel.your_price_position === "Above market" ? "bg-purple-50 dark:bg-purple-900/30 border-purple-300 dark:border-purple-700 text-purple-800 dark:text-purple-300" : marketIntel.your_price_position === "Below market" ? "bg-amber-50 dark:bg-amber-900/30 border-amber-300 dark:border-amber-700 text-amber-800 dark:text-amber-300" : "bg-green-50 dark:bg-green-900/30 border-green-300 dark:border-green-700 text-green-800 dark:text-green-300"}`}>
                   <Target className="w-4 h-4 shrink-0" />
-                  Your price ({inr(Number(marketIntel.your_price))}) is {String(marketIntel.your_price_position ?? "")} in this category
+                  {t('profitabilityOptimizer.market.yourPrice', 'Your price')} ({inr(Number(marketIntel.your_price))}) {t('profitabilityOptimizer.market.is', 'is')} {String(marketIntel.your_price_position ?? "")} {t('profitabilityOptimizer.market.inThisCategory', 'in this category')}
                 </div>
               )}
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
                 {([
-                  { label: "Avg price",     val: inr(Number(bench.avg_price)) },
-                  { label: "Min price",     val: inr(Number(bench.min_price)) },
-                  { label: "Max price",     val: inr(Number(bench.max_price)) },
-                  { label: "Avg rating",    val: bench.avg_rating != null ? "★ " + Number(bench.avg_rating).toFixed(1) : "N/A" },
-                  { label: "Avg sales/mo",  val: bench.avg_sales_volume != null ? Math.round(Number(bench.avg_sales_volume)).toLocaleString() : "N/A" },
-                  { label: "MRP discount",  val: bench.mrp_discount_depth_pct != null ? Math.round(Number(bench.mrp_discount_depth_pct)) + "%" : "N/A" },
+                  { label: t('profitabilityOptimizer.market.avgPrice', 'Avg price'),     val: inr(Number(bench.avg_price)) },
+                  { label: t('profitabilityOptimizer.market.minPrice', 'Min price'),     val: inr(Number(bench.min_price)) },
+                  { label: t('profitabilityOptimizer.market.maxPrice', 'Max price'),     val: inr(Number(bench.max_price)) },
+                  { label: t('profitabilityOptimizer.market.avgRating', 'Avg rating'),    val: bench.avg_rating != null ? "★ " + Number(bench.avg_rating).toFixed(1) : "N/A" },
+                  { label: t('profitabilityOptimizer.market.avgSalesMo', 'Avg sales/mo'),  val: bench.avg_sales_volume != null ? Math.round(Number(bench.avg_sales_volume)).toLocaleString() : "N/A" },
+                  { label: t('profitabilityOptimizer.market.mrpDiscount', 'MRP discount'),  val: bench.mrp_discount_depth_pct != null ? Math.round(Number(bench.mrp_discount_depth_pct)) + "%" : "N/A" },
                 ] as { label: string; val: string }[]).map((m, i) => (
                   <div key={i} className="bg-white dark:bg-slate-900/80 rounded-2xl p-3 border border-slate-200 dark:border-slate-700 shadow-sm text-center">
                     <p className="text-xs text-slate-400 dark:text-slate-500 mb-1">{m.label}</p>
@@ -2771,7 +2773,7 @@ export default function ProfitabilityOptimizer() {
               </div>
 
               <Card className="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm">
-                <CardHeader className="pb-2"><CardTitle className="text-sm text-slate-800 dark:text-slate-100">Your price vs market</CardTitle></CardHeader>
+                <CardHeader className="pb-2"><CardTitle className="text-sm text-slate-800 dark:text-slate-100">{t('profitabilityOptimizer.market.yourPriceVsMarket', 'Your price vs market')}</CardTitle></CardHeader>
                 <CardContent>
                   <ResponsiveContainer width="100%" height={180}>
                     <BarChart data={[
@@ -2795,8 +2797,8 @@ export default function ProfitabilityOptimizer() {
               {Array.isArray(marketIntel.price_bands) && (marketIntel.price_bands as unknown[]).length > 0 && (
                 <Card className="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm text-slate-800 dark:text-slate-100">Price band whitespace — from your DB</CardTitle>
-                    <CardDescription className="dark:text-slate-400">Green = fewer competitors · Red = crowded · Real data</CardDescription>
+                    <CardTitle className="text-sm text-slate-800 dark:text-slate-100">{t('profitabilityOptimizer.market.priceBandWhitespace', 'Price band whitespace — from your DB')}</CardTitle>
+                    <CardDescription className="dark:text-slate-400">{t('profitabilityOptimizer.market.priceBandDesc', 'Green = fewer competitors · Red = crowded · Real data')}</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {(marketIntel.price_bands as Record<string, unknown>[]).map((b, i) => {
@@ -2809,7 +2811,7 @@ export default function ProfitabilityOptimizer() {
                           <div className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
                             <div className="h-full rounded-full transition-all" style={{ width: `${(Number(b.brand_count) / maxB) * 100}%`, background: c }} />
                           </div>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 w-20 text-right">{String(b.brand_count ?? "0")} brands</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 w-20 text-right">{String(b.brand_count ?? "0")} {t('profitabilityOptimizer.market.brands', 'brands')}</span>
                           <span className="text-xs font-semibold w-16 text-right" style={{ color: c }}>{opp}</span>
                         </div>
                       );
@@ -2820,7 +2822,7 @@ export default function ProfitabilityOptimizer() {
 
               {Array.isArray(bench.top_brands) && (bench.top_brands as unknown[]).length > 0 && (
                 <Card className="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm">
-                  <CardHeader className="pb-2"><CardTitle className="text-sm text-slate-800 dark:text-slate-100">Top competitors in {String(inputs.category)} — {String(inputs.marketplace)}</CardTitle></CardHeader>
+                  <CardHeader className="pb-2"><CardTitle className="text-sm text-slate-800 dark:text-slate-100">{t('profitabilityOptimizer.market.topCompetitors', 'Top competitors in')} {String(inputs.category)} — {String(inputs.marketplace)}</CardTitle></CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
                       {(bench.top_brands as string[]).map((b, i) => (
@@ -2838,7 +2840,7 @@ export default function ProfitabilityOptimizer() {
       {/* ══ HEALTH ═══════════════════════════════════════════════════════ */}
       {activeTab === "health" && (
         <div className="space-y-5">
-          {tabLoading && <Card className="bg-background rounded-2xl shadow-lg"><CardContent className="p-12 flex flex-col items-center gap-3"><RefreshCw className="w-8 h-8 text-blue-500 animate-spin" /><p className="text-slate-500 text-sm">Computing health score...</p></CardContent></Card>}
+          {tabLoading && <Card className="bg-background rounded-2xl shadow-lg"><CardContent className="p-12 flex flex-col items-center gap-3"><RefreshCw className="w-8 h-8 text-blue-500 animate-spin" /><p className="text-slate-500 text-sm">{t('profitabilityOptimizer.health.computingScore', 'Computing health score...')}</p></CardContent></Card>}
           {!tabLoading && healthData && (
             <>
               <div className={`relative rounded-3xl p-6 text-white overflow-hidden ${Number(healthData.overall_score) > 75 ? "bg-gradient-to-r from-emerald-500 to-green-600" : Number(healthData.overall_score) > 50 ? "bg-gradient-to-r from-blue-500 to-cyan-500" : "bg-gradient-to-r from-amber-500 to-orange-500"}`}>
@@ -2848,16 +2850,16 @@ export default function ProfitabilityOptimizer() {
                     <p className="text-white/70 text-sm">/100</p>
                   </div>
                   <div>
-                    <p className="text-white/70 text-xs uppercase tracking-wider mb-1">Business health</p>
+                    <p className="text-white/70 text-xs uppercase tracking-wider mb-1">{t('profitabilityOptimizer.health.businessHealth', 'Business health')}</p>
                     <p className="text-3xl font-black">{String(healthData.overall_label ?? "")}</p>
-                    <p className="text-white/80 text-sm mt-1">Based on margin, ACOS, returns, volume, and ROI</p>
+                    <p className="text-white/80 text-sm mt-1">{t('profitabilityOptimizer.health.basedOn', 'Based on margin, ACOS, returns, volume, and ROI')}</p>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 <Card className="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm">
-                  <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2 text-slate-800 dark:text-slate-100"><ShieldCheck className="w-4 h-4 text-purple-500" /> Metric breakdown</CardTitle></CardHeader>
+                  <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2 text-slate-800 dark:text-slate-100"><ShieldCheck className="w-4 h-4 text-purple-500" /> {t('profitabilityOptimizer.health.metricBreakdown', 'Metric breakdown')}</CardTitle></CardHeader>
                   <CardContent className="space-y-4">
                     {(healthData.metrics as Record<string, unknown>[]).map((m, i) => {
                       const color = String(m.status) === "good" ? "#10b981" : String(m.status) === "warn" ? "#f59e0b" : "#ef4444";
@@ -2880,7 +2882,7 @@ export default function ProfitabilityOptimizer() {
                 </Card>
 
                 <Card className="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm">
-                  <CardHeader className="pb-2"><CardTitle className="text-sm text-slate-800 dark:text-slate-100">Health radar</CardTitle></CardHeader>
+                  <CardHeader className="pb-2"><CardTitle className="text-sm text-slate-800 dark:text-slate-100">{t('profitabilityOptimizer.health.healthRadar', 'Health radar')}</CardTitle></CardHeader>
                   <CardContent>
                     <ResponsiveContainer width="100%" height={230}>
                       <RadarChart data={(healthData.metrics as Record<string, unknown>[]).map((m) => ({ subject: String(m.label ?? "").replace(" health", "").replace(" risk", "").replace(" momentum", ""), value: Number(m.score) || 0 }))}>
@@ -2895,7 +2897,7 @@ export default function ProfitabilityOptimizer() {
               </div>
 
               <Card className="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm">
-                <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2 text-slate-800 dark:text-slate-100"><Zap className="w-4 h-4 text-amber-500" /> Action recommendations</CardTitle></CardHeader>
+                <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2 text-slate-800 dark:text-slate-100"><Zap className="w-4 h-4 text-amber-500" /> {t('profitabilityOptimizer.health.actionRecommendations', 'Action recommendations')}</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
                   {(healthData.recommendations as Record<string, unknown>[]).map((r, i) => (
                     <div key={i} className="flex gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-700 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-all">

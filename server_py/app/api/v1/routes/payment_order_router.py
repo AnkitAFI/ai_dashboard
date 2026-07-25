@@ -2,6 +2,7 @@ import hashlib
 import hmac
 import io
 import json
+import logging
 import os
 from datetime import datetime, timedelta
 
@@ -26,6 +27,7 @@ from app.schemas.payment_order_schema import BillingInfo, CreateOrderRequest, Ve
 
 # ─── Router ───────────────────────────────────────────────────────────────────
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 # ─── Environment ──────────────────────────────────────────────────────────────
 RAZORPAY_KEY_ID         = os.getenv("RAZORPAY_KEY_ID")
@@ -47,9 +49,9 @@ _brevo_config = sib_api_v3_sdk.Configuration()
 _brevo_config.api_key["api-key"] = BREVO_API_KEY
 
 # Plans ordered lowest → highest. Index = rank.
-PLAN_HIERARCHY: list[str] = ["free", "basic", "premium"]
-PLAN_PRICES:    dict[str, int] = {"basic": 1999, "premium": 2999}
-PLAN_LABELS:    dict[str, str] = {"basic": "Basic", "premium": "Premium", "free": "Free"}
+PLAN_HIERARCHY: list[str] = ["free", "basic", "premium", "enterprise"]
+PLAN_PRICES:    dict[str, int] = {"basic": 1999, "premium": 2999, "enterprise": 0}
+PLAN_LABELS:    dict[str, str] = {"basic": "Basic", "premium": "Premium", "free": "Free", "enterprise": "Enterprise"}
 
 GST_RATE          = 18   # percent
 SUBSCRIPTION_DAYS = 30   # one billing cycle
@@ -603,7 +605,8 @@ def create_payment_order(
         db.refresh(db_order)
     except Exception as e:
         db.rollback()
-        raise HTTPException(500, f"DB error: {e}")
+        logger.error("create_order DB error: %s", e, exc_info=True)
+        raise HTTPException(500, "Payment order creation failed. Please try again or contact support.")
 
     return {
         "razorpay_order_id": rzp_order["id"],
@@ -688,7 +691,8 @@ def verify_payment(
         _sync_user(current_user, order, db)
     except Exception as e:
         db.rollback()
-        raise HTTPException(500, f"DB error activating plan: {e}")
+        logger.error("verify_payment DB error activating plan: %s", e, exc_info=True)
+        raise HTTPException(500, "Failed to activate plan. Please contact support if the issue persists.")
 
     _email_payment_confirmed(
         email=order.billing_email or current_user.email,
@@ -774,7 +778,8 @@ def create_credit_order(
         db.refresh(db_order)
     except Exception as e:
         db.rollback()
-        raise HTTPException(500, f"DB error: {e}")
+        logger.error("create_credit_order DB error: %s", e, exc_info=True)
+        raise HTTPException(500, "Credit order creation failed. Please try again or contact support.")
 
     return {
         "razorpay_order_id": rzp_order["id"],
@@ -826,7 +831,8 @@ def verify_credit_order(
         db.commit()
     except Exception as e:
         db.rollback()
-        raise HTTPException(500, f"DB error adding credits: {e}")
+        logger.error("verify_credit_order DB error adding credits: %s", e, exc_info=True)
+        raise HTTPException(500, "Failed to add credits. Please contact support if the issue persists.")
 
     return {
         "success": True,

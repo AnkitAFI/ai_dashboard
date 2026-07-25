@@ -276,29 +276,48 @@ def _fetch_market(asin: str, db: Session, product_title: Optional[str] = None) -
     return result
 
 
-def _fetch_competitors(category_id: Optional[str], db: Session) -> list:
-    """Pull up to 15 products from the same category ordered by price."""
+def _fetch_competitors(category_id: Optional[str], db: Session, product_title: str = "", seller_name: str = "") -> list:
+    """Pull up to 15 products from the same category ordered by price, filtered by keywords."""
     if not category_id:
         return []
-    rows = db.execute(
-        text("""
-            SELECT
-                product_title, asin, product_price,
-                product_price_numeric           AS price_num,
-                product_star_rating_numeric     AS rating,
-                product_num_ratings             AS num_ratings,
-                is_best_seller, is_amazon_choice,
-                avg_sales_volume                AS sales_volume
-            FROM rapidapi_amazon_products
-            WHERE category_id = :cat
-              AND product_price_numeric IS NOT NULL
-              AND product_price_numeric > 0
-            ORDER BY product_price_numeric ASC
-            LIMIT 15
-        """),
-        {"cat": category_id},
-    ).mappings().all()
-    return [dict(r) for r in rows]
+
+    words = re.findall(r'[a-zA-Z0-9]+', product_title)
+    stop_words = {'reifica', 'women', 'mens', 'boys', 'girls', 'stylish', 'casual', 'front', 'button', 'cotton', 'for', 'with', 'and', 'the', 'a', 'of', 'in', 'pack'}
+    keywords = [w for w in words if w.lower() not in stop_words and len(w) > 2]
+    top_kws = sorted(keywords, key=len, reverse=True)[:3] if keywords else []
+
+    query = """
+        SELECT
+            product_title, asin, product_price,
+            product_price_numeric           AS price_num,
+            product_star_rating_numeric     AS rating,
+            product_num_ratings             AS num_ratings,
+            is_best_seller, is_amazon_choice,
+            avg_sales_volume                AS sales_volume
+        FROM rapidapi_amazon_products
+        WHERE category_id = :cat
+          AND product_price_numeric IS NOT NULL
+          AND product_price_numeric > 0
+    """
+    params = {"cat": category_id}
+
+    if top_kws:
+        kw_conditions = []
+        for i, kw in enumerate(top_kws):
+            kw_conditions.append(f"product_title ILIKE :kw_{i}")
+            params[f"kw_{i}"] = f"%{kw}%"
+        query += " AND (" + " OR ".join(kw_conditions) + ")"
+
+    query += " ORDER BY product_price_numeric ASC LIMIT 100"
+
+    rows = db.execute(text(query), params).mappings().all()
+    candidates = [dict(r) for r in rows]
+
+    if seller_name and len(seller_name.strip()) >= 3:
+        banned_brand = seller_name.strip().lower()
+        candidates = [c for c in candidates if banned_brand not in (c.get("product_title") or "").lower()]
+
+    return candidates[:15]
 
 
 # ── Analysis ───────────────────────────────────────────────────────────────────
@@ -537,7 +556,12 @@ async def price_gap(
     market      = _fetch_market(asin, db, tracked.get("product_title"))
     gap         = _price_gap(tracked, market)
     cat_meta    = _fetch_category_meta(asin, db, tracked.get("product_title"))
-    competitors = _fetch_competitors(cat_meta.get("category_id"), db)
+    competitors = _fetch_competitors(
+        cat_meta.get("category_id"),
+        db,
+        product_title=tracked.get("product_title") or "",
+        seller_name=tracked.get("seller_name") or ""
+    )
 
     bands: list = []
     lo_b = gap["market_min"]

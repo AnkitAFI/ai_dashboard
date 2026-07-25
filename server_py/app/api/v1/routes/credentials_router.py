@@ -33,7 +33,13 @@ def get_user_credentials(
 ):
     """
     Returns a masked list of platforms the user has connected.
+    Restricted to Enterprise tier.
     """
+    from app.models.schema_v2 import UserSubscription
+    sub = db.query(UserSubscription).filter(UserSubscription.user_id == int(user_id)).first()
+    if not sub or sub.subscription_tier != "enterprise":
+        raise HTTPException(status_code=403, detail="API Integrations are exclusively available on the Enterprise plan.")
+
     creds = db.query(UserApiCredential).filter(UserApiCredential.user_id == user_id).all()
     
     result = []
@@ -184,3 +190,48 @@ async def callback_flipkart(
         
     db.commit()
     return RedirectResponse(url="/seller/integrations?success=flipkart")
+
+@router.post("/test-amazon")
+async def test_amazon_sandbox(user_id: str = Depends(get_current_user_id)):
+    """
+    Tests the Amazon Sandbox connection by attempting to generate an LWA Access Token
+    and sign an AWS request.
+    """
+    try:
+        from app.services.amazon_auth_service import amazon_auth_service
+        import os
+        
+        # Try to get the LWA Access Token (Validates Refresh Token)
+        access_token = await amazon_auth_service.get_lwa_access_token()
+        
+        # Try to assume the AWS Role (Validates AWS IAM Keys)
+        auth = amazon_auth_service.get_signed_auth()
+        
+        # Check Seller ID
+        seller_id = os.getenv("AMAZON_SELLER_ID")
+        if not seller_id:
+            raise ValueError("AMAZON_SELLER_ID is missing from your .env file.")
+            
+        return {"status": "success", "message": "Amazon Sandbox connection successful!"}
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Sandbox connection failed: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Sandbox Connection Failed: {str(e)}")
+
+@router.post("/test-flipkart")
+async def test_flipkart_sandbox(user_id: str = Depends(get_current_user_id)):
+    """
+    Tests the Flipkart Sandbox connection by attempting to generate an Access Token
+    using the Developer API Keys.
+    """
+    try:
+        from app.services.flipkart_auth_service import flipkart_auth_service
+        
+        # Try to get the Sandbox Access Token
+        access_token = await flipkart_auth_service.get_sandbox_access_token()
+            
+        return {"status": "success", "message": "Flipkart Sandbox connection successful!"}
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).error(f"Flipkart Sandbox connection failed: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Sandbox Connection Failed: {str(e)}")

@@ -845,6 +845,7 @@ interface UserRow {
   seller_id: string | null;
   seller_sync_status: string | null;
   mobile_number: string | null;
+  total_amount_paid: number;
 }
 
 interface BehaviorLog {
@@ -895,6 +896,7 @@ export default function AdminDashboard() {
   const [filterTier, setFilterTier] = useState("all");
   const [filterVerified, setFilterVerified] = useState("all");
   const [filterActive, setFilterActive] = useState("all");
+  const [filterMonth, setFilterMonth] = useState("all");
   const [lastUpd, setLastUpd] = useState(new Date());
   const [expandedId, setExpandedId] = useState<number | null>(null);
   const [expandedPromoId, setExpandedPromoId] = useState<number | null>(null);
@@ -902,7 +904,7 @@ export default function AdminDashboard() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
   // Tab & User Behavior logs state
-  const [activeTab, setActiveTab] = useState<"overview" | "behavior" | "promo">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "behavior" | "promo" | "compliance">("overview");
   const [behaviorLogs, setBehaviorLogs] = useState<BehaviorLog[]>([]);
   const [behaviorLimit, setBehaviorLimit] = useState<number>(100);
   const [behaviorSearch, setBehaviorSearch] = useState<string>("");
@@ -914,6 +916,27 @@ export default function AdminDashboard() {
   const [behaviorHidePageViews, setBehaviorHidePageViews] = useState<boolean>(false);
   const [behaviorPage, setBehaviorPage] = useState<number>(0);
 
+  // Compliance Logs state
+  interface ComplianceLog {
+    id: number;
+    listing_id: number;
+    user_id: number;
+    user_email: string;
+    user_name: string;
+    agreed_to_accuracy: boolean;
+    agreed_to_legal_responsibility: boolean;
+    published_images: string[];
+    published_data_snapshot: any;
+    created_at: string;
+  }
+  const [complianceLogs, setComplianceLogs] = useState<ComplianceLog[]>([]);
+  const [complianceLoading, setComplianceLoading] = useState(false);
+  const [compliancePage, setCompliancePage] = useState(1);
+  const [complianceTotalPages, setComplianceTotalPages] = useState(1);
+  const [complianceSearch, setComplianceSearch] = useState("");
+  const [selectedLog, setSelectedLog] = useState<ComplianceLog | null>(null);
+  const [isSnapshotOpen, setIsSnapshotOpen] = useState(false);
+
   useEffect(() => {
     if (!user) return;
     if (user.email !== ADMIN_EMAIL) { router.push("/dashboard"); return; }
@@ -924,7 +947,29 @@ export default function AdminDashboard() {
     if (activeTab === "behavior" && user?.email === ADMIN_EMAIL) {
       fetchBehaviorLogs();
     }
+    if (activeTab === "compliance" && user?.email === ADMIN_EMAIL) {
+      fetchComplianceLogs();
+    }
   }, [activeTab]);
+
+  const fetchComplianceLogs = async (pg: number = compliancePage) => {
+    setComplianceLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/compliance-logs?page=${pg}&limit=20`, {
+        credentials: "include",
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setComplianceLogs(data.data || []);
+        setComplianceTotalPages(data.pagination?.total_pages || 1);
+      }
+    } catch (err) {
+      console.error("Error fetching compliance logs:", err);
+    } finally {
+      setComplianceLoading(false);
+    }
+  };
 
   const fetchStats = async () => {
     setIsLoading(true);
@@ -1050,6 +1095,17 @@ export default function AdminDashboard() {
     return data;
   }, [users]);
 
+  const uniqueMonths = useMemo(() => {
+    const months = new Set<string>();
+    users.forEach(u => {
+      if (u.created_at) {
+        const d = new Date(u.created_at);
+        months.add(d.toLocaleDateString("en-IN", { month: "short", year: "numeric" }));
+      }
+    });
+    return Array.from(months).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+  }, [users]);
+
   const filtered = users
     .filter(u => {
       const q = search.toLowerCase();
@@ -1067,7 +1123,10 @@ export default function AdminDashboard() {
         filterActive === "all" ||
         (filterActive === "active" && u.is_active !== false) ||
         (filterActive === "deleted" && u.is_active === false);
-      return matchesSearch && matchesTier && matchesVerified && matchesActive;
+      const matchesMonth = filterMonth === "all" || (
+        u.created_at && new Date(u.created_at).toLocaleDateString("en-IN", { month: "short", year: "numeric" }) === filterMonth
+      );
+      return matchesSearch && matchesTier && matchesVerified && matchesActive && matchesMonth;
     })
     .sort((a, b) => {
       const av = a[sortField] ?? "";
@@ -1201,6 +1260,23 @@ export default function AdminDashboard() {
           }}
         >
           Promo Codes
+        </button>
+        <button
+          onClick={() => setActiveTab("compliance")}
+          style={{
+            padding: "6px 16px",
+            borderRadius: 8,
+            fontSize: 12,
+            fontWeight: 600,
+            background: activeTab === "compliance" ? "white" : "transparent",
+            color: activeTab === "compliance" ? "#4f46e5" : "#64748b",
+            boxShadow: activeTab === "compliance" ? "0 1px 3px rgba(0,0,0,0.1)" : "none",
+            border: "none",
+            cursor: "pointer",
+            transition: "all 0.2s"
+          }}
+        >
+          🛡️ Compliance Logs
         </button>
       </div>
 
@@ -1356,6 +1432,7 @@ export default function AdminDashboard() {
                   <option value="free">Free</option>
                   <option value="basic">Basic</option>
                   <option value="premium">Premium</option>
+                  <option value="enterprise">Enterprise</option>
                 </select>
                 <select value={filterVerified} onChange={e => setFilterVerified(e.target.value)} className="tbl-select">
                   <option value="all">All Status</option>
@@ -1366,6 +1443,10 @@ export default function AdminDashboard() {
                   <option value="all">All Accounts</option>
                   <option value="active">Active</option>
                   <option value="deleted">Deleted</option>
+                </select>
+                <select value={filterMonth} onChange={e => setFilterMonth(e.target.value)} className="tbl-select">
+                  <option value="all">All Months</option>
+                  {uniqueMonths.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
               </div>
             </div>
@@ -1390,7 +1471,7 @@ export default function AdminDashboard() {
                     <Th label="SOV" field="sov_used" />
                     <Th label="KW Tracker" field="keyword_tracker_used" />
                     <Th label="KI Searches" field="ki_searches_used" />
-                    <Th label="MRR" />
+                    <Th label="Total Paid" field="total_amount_paid" />
                     <Th label="Expires" field="subscription_expires_at" />
                     <Th label="Joined" field="created_at" />
                   </tr>
@@ -1404,7 +1485,8 @@ export default function AdminDashboard() {
                       free: { color: "#64748b", bg: "#f1f5f9", border: "#e2e8f0" },
                       basic: { color: "#6366f1", bg: "#ede9fe", border: "#c4b5fd" },
                       premium: { color: "#f59e0b", bg: "#fef3c7", border: "#fde68a" },
-                    }[u.subscription_tier];
+                      enterprise: { color: "#c026d3", bg: "#fdf4ff", border: "#f5d0fe" },
+                    }[u.subscription_tier] || { color: "#64748b", bg: "#f1f5f9", border: "#e2e8f0" };
                     const isOpen = expandedId === u.id;
                     const syncColor = {
                       COMPLETED: "#10b981", IDLE: "#94a3b8", PENDING: "#f59e0b", FAILED: "#ef4444",
@@ -1523,10 +1605,10 @@ export default function AdminDashboard() {
                             <UsagePill used={u.ki_searches_used} color="#ec4899" />
                           </td>
 
-                          {/* MRR */}
+                          {/* Total Paid */}
                           <td style={{ padding: "11px 14px" }}>
-                            {TIER_PRICE[u.subscription_tier] > 0
-                              ? <span style={{ fontSize: 12, fontWeight: 700, color: "#6366f1" }}>{inr(TIER_PRICE[u.subscription_tier])}<span style={{ fontSize: 10, color: "#94a3b8", fontWeight: 400 }}>/mo</span></span>
+                            {u.total_amount_paid > 0
+                              ? <span style={{ fontSize: 12, fontWeight: 700, color: "#6366f1" }}>{inr(u.total_amount_paid)}</span>
                               : <span style={{ color: "#cbd5e1", fontSize: 12 }}>—</span>
                             }
                           </td>
@@ -1589,7 +1671,7 @@ export default function AdminDashboard() {
                                     <DetailRow label="Tier" value={u.subscription_tier} />
                                     <DetailRow label="Expires" value={u.subscription_expires_at ? new Date(u.subscription_expires_at).toLocaleDateString("en-IN") : null} />
                                     <DetailRow label="Downgrade To" value={u.scheduled_downgrade_to} />
-                                    <DetailRow label="MRR" value={TIER_PRICE[u.subscription_tier] > 0 ? inr(TIER_PRICE[u.subscription_tier]) : "Free"} />
+                                    <DetailRow label="Total Paid" value={u.total_amount_paid > 0 ? inr(u.total_amount_paid) : "₹0"} />
                                   </DetailCard>
 
                                   {/* Timestamps */}
@@ -2003,18 +2085,10 @@ export default function AdminDashboard() {
                                           <p style={{ margin: "2px 0 0", fontSize: 11, color: "#64748b" }}>{os}</p>
                                         </div>
 
-                                        {/* Time */}
-                                        <div style={{ flex: "1 1 130px", minWidth: 110 }}>
-                                          <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>Time</p>
-                                          <p style={{ margin: 0, fontSize: 12, color: "#1e293b", fontWeight: 600 }}>{timeStr}</p>
-                                          <p style={{ margin: "2px 0 0", fontSize: 11, color: "#64748b" }}>{dateStr}</p>
-                                        </div>
-
-                                        {/* User */}
+{/* User */}
                                         <div style={{ flex: "1 1 180px", minWidth: 160 }}>
                                           <p style={{ margin: "0 0 6px", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.08em" }}>User</p>
                                           <p style={{ margin: 0, fontSize: 12, color: "#1e293b", fontWeight: 600, wordBreak: "break-all" }}>{log.user_email ?? "Anonymous"}</p>
-
                                         </div>
 
                                       </div>
@@ -2048,13 +2122,111 @@ export default function AdminDashboard() {
           );
         })()
       )}
+
+      {/* Compliance Logs Tab */}
+      {activeTab === "compliance" && (
+        <div className="fade-in" style={{ animationDelay: "0.04s" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <div>
+              <p style={{ margin: "0 0 3px", fontSize: 15, fontWeight: 700, color: "#1e293b" }}>Publication Compliance Logs</p>
+              <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>Immutable proof-of-publish records. Every listing ever pushed live.</p>
+            </div>
+            <div style={{ display: "flex", gap: 8 }}>
+              <input value={complianceSearch} onChange={e => setComplianceSearch(e.target.value)} placeholder="Search email or listing ID..." className="tbl-input" style={{ width: 240 }} />
+              <button onClick={() => fetchComplianceLogs(compliancePage)} className="hdr-btn"><RefreshCw size={13} /> Refresh</button>
+            </div>
+          </div>
+          <div className="panel" style={{ padding: 0, overflow: "hidden" }}>
+            {complianceLoading ? (
+              <div style={{ display: "flex", justifyContent: "center", padding: 60 }}>
+                <div style={{ width: 32, height: 32, borderRadius: "50%", border: "3px solid #e2e8f0", borderTop: "3px solid #6366f1", animation: "spin 0.8s linear infinite" }} />
+              </div>
+            ) : (
+              <div className="table-scroll-container">
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr>
+                      {["Timestamp", "Seller", "Listing ID", "Accuracy", "Legal", "Images", "Action"].map(h => (
+                        <th key={h} style={{ padding: "10px 14px", textAlign: "left", fontSize: 10, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.1em", whiteSpace: "nowrap", borderBottom: "1px solid #f1f5f9", background: "#f8fafc" }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {complianceLogs.filter(l => !complianceSearch || l.user_email?.toLowerCase().includes(complianceSearch.toLowerCase()) || l.user_name?.toLowerCase().includes(complianceSearch.toLowerCase()) || String(l.listing_id).includes(complianceSearch)).map(log => (
+                      <tr key={log.id} className="tbl-row">
+                        <td style={{ padding: "11px 14px", fontSize: 12, color: "#475569", whiteSpace: "nowrap" }}>{new Date(log.created_at).toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" })}</td>
+                        <td style={{ padding: "11px 14px" }}><p style={{ margin: "0 0 2px", fontSize: 12, fontWeight: 600, color: "#1e293b" }}>{log.user_name}</p><p style={{ margin: 0, fontSize: 11, color: "#94a3b8" }}>{log.user_email}</p></td>
+                        <td style={{ padding: "11px 14px" }}><span style={{ fontFamily: "monospace", fontSize: 12, fontWeight: 600, background: "#f1f5f9", padding: "2px 8px", borderRadius: 6 }}>#{log.listing_id}</span></td>
+                        <td style={{ padding: "11px 14px", textAlign: "center" }}>{log.agreed_to_accuracy ? <span style={{ fontSize: 11, fontWeight: 600, color: "#10b981", background: "#d1fae5", padding: "2px 8px", borderRadius: 12 }}>Yes</span> : <span style={{ fontSize: 11, fontWeight: 600, color: "#ef4444", background: "#fee2e2", padding: "2px 8px", borderRadius: 12 }}>No</span>}</td>
+                        <td style={{ padding: "11px 14px", textAlign: "center" }}>{log.agreed_to_legal_responsibility ? <span style={{ fontSize: 11, fontWeight: 600, color: "#10b981", background: "#d1fae5", padding: "2px 8px", borderRadius: 12 }}>Yes</span> : <span style={{ fontSize: 11, fontWeight: 600, color: "#ef4444", background: "#fee2e2", padding: "2px 8px", borderRadius: 12 }}>No</span>}</td>
+                        <td style={{ padding: "11px 14px", textAlign: "center" }}><span style={{ fontSize: 12, fontWeight: 600, color: "#6366f1" }}>{log.published_images?.length ?? 0}</span></td>
+                        <td style={{ padding: "11px 14px" }}><button onClick={() => { setSelectedLog(log); setIsSnapshotOpen(true); }} className="hdr-btn" style={{ fontSize: 11 }}>View Snapshot</button></td>
+                      </tr>
+                    ))}
+                    {complianceLogs.length === 0 && !complianceLoading && (<tr><td colSpan={7} style={{ padding: 48, textAlign: "center", color: "#94a3b8", fontSize: 14 }}>No compliance logs found yet.</td></tr>)}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            {complianceTotalPages > 1 && (
+              <div style={{ padding: "10px 18px", borderTop: "1px solid #f1f5f9", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#f8fafc" }}>
+                <span style={{ fontSize: 12, color: "#94a3b8" }}>Page {compliancePage} of {complianceTotalPages}</span>
+                <div style={{ display: "flex", gap: 6 }}>
+                  <button onClick={() => { const p = Math.max(1, compliancePage - 1); setCompliancePage(p); fetchComplianceLogs(p); }} disabled={compliancePage === 1} className="hdr-btn" style={{ opacity: compliancePage === 1 ? 0.4 : 1, fontSize: 11 }}>Prev</button>
+                  <button onClick={() => { const p = Math.min(complianceTotalPages, compliancePage + 1); setCompliancePage(p); fetchComplianceLogs(p); }} disabled={compliancePage === complianceTotalPages} className="hdr-btn" style={{ opacity: compliancePage === complianceTotalPages ? 0.4 : 1, fontSize: 11 }}>Next</button>
+                </div>
+              </div>
+            )}
+          </div>
+          {isSnapshotOpen && selectedLog && (
+            <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: 24 }} onClick={() => setIsSnapshotOpen(false)}>
+              <div style={{ background: "white", borderRadius: 16, width: "90vw", maxWidth: 1000, maxHeight: "90vh", overflow: "hidden", display: "flex", flexDirection: "column", boxShadow: "0 24px 80px rgba(0,0,0,0.3)" }} onClick={e => e.stopPropagation()}>
+                <div style={{ background: "#0f172a", padding: "20px 24px", color: "white" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <div>
+                      <p style={{ margin: "0 0 4px", fontSize: 18, fontWeight: 700 }}>Snapshot - Listing #{selectedLog.listing_id}</p>
+                      <p style={{ margin: 0, fontSize: 12, color: "#94a3b8" }}>Published {new Date(selectedLog.created_at).toLocaleString("en-IN")} by {selectedLog.user_name} ({selectedLog.user_email})</p>
+                    </div>
+                    <button onClick={() => setIsSnapshotOpen(false)} style={{ background: "#1e293b", border: "none", borderRadius: 8, color: "#94a3b8", padding: "6px 12px", cursor: "pointer", fontSize: 18 }}>X</button>
+                  </div>
+                  <div style={{ display: "flex", gap: 12, marginTop: 12 }}>
+                    <span style={{ fontSize: 11, background: "#10b98120", color: "#10b981", padding: "3px 10px", borderRadius: 12, fontWeight: 600 }}>Accuracy Confirmed</span>
+                    <span style={{ fontSize: 11, background: "#10b98120", color: "#10b981", padding: "3px 10px", borderRadius: 12, fontWeight: 600 }}>Legal Responsibility Assumed</span>
+                  </div>
+                </div>
+                <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
+                  <div style={{ width: 200, flexShrink: 0, borderRight: "1px solid #f1f5f9", padding: 16, overflowY: "auto" }}>
+                    <p style={{ margin: "0 0 10px", fontSize: 11, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase" }}>Evidence ({selectedLog.published_images?.length ?? 0})</p>
+                    {(selectedLog.published_images?.length ?? 0) > 0 ? selectedLog.published_images.map((img, i) => (
+                      <div key={i} style={{ marginBottom: 8, borderRadius: 8, overflow: "hidden", border: "1px solid #e2e8f0", background: "#f8fafc", position: "relative" }}>
+                        <img src={img} alt={`Img ${i + 1}`} style={{ width: "100%", height: 120, objectFit: "contain" }} />
+                        <span style={{ position: "absolute", top: 4, left: 4, background: "rgba(0,0,0,0.6)", color: "white", fontSize: 9, padding: "1px 5px", borderRadius: 4 }}>IMG {i + 1}</span>
+                      </div>
+                    )) : <p style={{ fontSize: 12, color: "#94a3b8", textAlign: "center", paddingTop: 32 }}>No images</p>}
+                  </div>
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                    <div style={{ padding: "12px 16px", borderBottom: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase" }}>Text Payload</p>
+                      <span style={{ fontSize: 10, background: "#fef3c7", color: "#92400e", padding: "2px 8px", borderRadius: 6, fontWeight: 600 }}>READ-ONLY</span>
+                    </div>
+                    <div style={{ flex: 1, overflowY: "auto", padding: 16, background: "#0f172a" }}>
+                      <pre style={{ margin: 0, fontSize: 11, color: "#4ade80", fontFamily: "monospace", whiteSpace: "pre-wrap", wordBreak: "break-all", lineHeight: 1.7 }}>
+                        {selectedLog.published_data_snapshot ? JSON.stringify(selectedLog.published_data_snapshot, null, 2) : "No snapshot stored."}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
     </div>
   );
 }
 
-// â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-
-// â”€â”€ Sub-components â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// — Sub-components ——————————————————————————————————————————————————————————————————————————
 
 function UsagePill({ used, color }: { used: number; color: string }) {
   if (!used) return <span style={{ fontSize: 11, color: "#cbd5e1" }}>0</span>;

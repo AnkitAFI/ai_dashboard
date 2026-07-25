@@ -383,6 +383,12 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { LOCATIONS } from "@/lib/locations";
+import { Shield, ShieldAlert, CheckCircle2, Key } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp";
+import { QRCodeSVG } from "qrcode.react";
+import { sanitizeApiError } from "@/lib/sanitize-error";
+import { useTranslation } from "react-i18next";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -403,6 +409,7 @@ const TARGET_MARKETS = [
 
 
 export default function Settings() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const { user, refreshUser, isLoading: authLoading } = useAuth();
 
@@ -435,6 +442,112 @@ export default function Settings() {
   const [consentsLoading, setConsentsLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
 
+  // --- MFA State ---
+  const [mfaEnabled, setMfaEnabled] = useState(false);
+  const [mfaSetupStep, setMfaSetupStep] = useState<"idle" | "scan_qr" | "enter_code" | "backup_codes">("idle");
+  const [qrUri, setQrUri] = useState("");
+  const [mfaSecret, setMfaSecret] = useState("");
+  const [verificationCode, setVerificationCode] = useState("");
+  const [backupCodes, setBackupCodes] = useState<string[]>([]);
+  const [isDisablingMfa, setIsDisablingMfa] = useState(false);
+  const [disablePassword, setDisablePassword] = useState("");
+  const [disableCode, setDisableCode] = useState("");
+  const [mfaLoading, setMfaLoading] = useState(true);
+
+  const checkMfaStatus = async () => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/mfa/status`, { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        setMfaEnabled(data.mfa_enabled);
+      }
+    } catch (e) {
+      console.error("Failed to check MFA status", e);
+    } finally {
+      setMfaLoading(false);
+    }
+  };
+
+  const handleStartMfaSetup = async () => {
+    setMfaLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/mfa/setup`, { method: "POST", credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        setQrUri(data.provisioning_uri);
+        setMfaSecret(data.secret);
+        setMfaSetupStep("scan_qr");
+      } else {
+        toast({ title: "Error", description: "Failed to initialize MFA setup", variant: "destructive" });
+      }
+    } catch (e) {
+      toast({ title: "Error", description: "Failed to initialize MFA setup", variant: "destructive" });
+    } finally {
+      setMfaLoading(false);
+    }
+  };
+
+  const handleVerifyMfaSetup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (verificationCode.length !== 6) return;
+    setMfaLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/mfa/verify-setup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ secret: mfaSecret, code: verificationCode })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setBackupCodes(data.backup_codes);
+        setMfaEnabled(true);
+        setMfaSetupStep("backup_codes");
+        toast({ title: "Success", description: "Two-Factor Authentication is now enabled." });
+      } else {
+        const err = await res.json();
+        toast({ title: "Invalid Code", description: err.detail || "The code was incorrect.", variant: "destructive" });
+      }
+    } catch (e) {
+      toast({ title: "Error", description: "An error occurred.", variant: "destructive" });
+    } finally {
+      setMfaLoading(false);
+    }
+  };
+
+  const handleDisableMfa = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMfaLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/mfa/disable`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ password: disablePassword, code: disableCode })
+      });
+      if (res.ok) {
+        setMfaEnabled(false);
+        setIsDisablingMfa(false);
+        setDisablePassword("");
+        setDisableCode("");
+        toast({ title: "MFA Disabled", description: "Two-Factor Authentication has been removed." });
+      } else {
+        const err = await res.json();
+        toast({ title: "Error", description: err.detail || "Failed to disable MFA.", variant: "destructive" });
+      }
+    } catch (e) {
+      toast({ title: "Error", description: "An error occurred.", variant: "destructive" });
+    } finally {
+      setMfaLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user && !authLoading) {
+      checkMfaStatus();
+    }
+  }, [user, authLoading]);
+
   const handleDeleteAccount = async () => {
     if (deleteConfirmText !== "DELETE") return;
     if (!user?.id) return;
@@ -448,7 +561,7 @@ export default function Settings() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || "Failed to delete account");
+        throw new Error(sanitizeApiError(errorData.detail, "Failed to delete account"));
       }
 
       toast({
@@ -462,7 +575,7 @@ export default function Settings() {
       console.error("Error deleting account:", error);
       toast({
         title: "Deletion failed",
-        description: error.message || "Could not delete your account. Please try again.",
+        description: sanitizeApiError(error.message, "Could not delete your account. Please try again."),
         variant: "destructive",
       });
     } finally {
@@ -603,7 +716,7 @@ export default function Settings() {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || "Failed to revoke session");
+        throw new Error(sanitizeApiError(errorData.detail, "Failed to revoke session"));
       }
       toast({
         title: "Session revoked",
@@ -614,7 +727,7 @@ export default function Settings() {
       console.error("Error revoking session:", error);
       toast({
         title: "Revocation failed",
-        description: error.message || "Could not log out the device.",
+        description: sanitizeApiError(error.message, "Could not log out the device."),
         variant: "destructive",
       });
     }
@@ -664,7 +777,7 @@ export default function Settings() {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.detail || "Failed to update profile");
+        throw new Error(sanitizeApiError(errorData.detail, "Failed to update profile"));
       }
 
       await refreshUser();
@@ -709,7 +822,7 @@ export default function Settings() {
       <div className="flex items-center justify-center p-20">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading your settings...</p>
+          <p className="text-muted-foreground">{t('settings.loadingSettings', 'Loading your settings...')}</p>
         </div>
       </div>
     );
@@ -720,11 +833,11 @@ export default function Settings() {
       <div className="flex items-center justify-center p-20">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>Authentication Required</CardTitle>
-            <CardDescription>Please login to access settings</CardDescription>
+            <CardTitle>{t('settings.authRequired', 'Authentication Required')}</CardTitle>
+            <CardDescription>{t('settings.loginToAccess', 'Please login to access settings')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => window.location.href = "/login"} className="w-full">Go to Login</Button>
+            <Button onClick={() => window.location.href = "/login"} className="w-full">{t('settings.goToLogin', 'Go to Login')}</Button>
           </CardContent>
         </Card>
       </div>
@@ -737,20 +850,20 @@ export default function Settings() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            Profile Settings
-            <Badge variant="secondary">Session Authenticated</Badge>
+            {t('settings.title', 'Profile Settings')}
+            <Badge variant="secondary">{t('settings.sessionAuth', 'Session Authenticated')}</Badge>
           </CardTitle>
-          <CardDescription>Update your personal information</CardDescription>
+          <CardDescription>{t('settings.updatePersonal', 'Update your personal information')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Name row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="firstName">First Name</Label>
+              <Label htmlFor="firstName">{t('settings.firstName', 'First Name')}</Label>
               <Input id="firstName" value={profileData.firstName} onChange={handleInputChange("firstName")} />
             </div>
             <div>
-              <Label htmlFor="lastName">Last Name</Label>
+              <Label htmlFor="lastName">{t('settings.lastName', 'Last Name')}</Label>
               <Input id="lastName" value={profileData.lastName} onChange={handleInputChange("lastName")} />
             </div>
           </div>
@@ -758,12 +871,12 @@ export default function Settings() {
           {/* Email + Business Name row */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t('settings.email', 'Email')}</Label>
               <Input id="email" type="email" value={profileData.email} disabled className="bg-muted" />
-              <p className="text-xs text-muted-foreground mt-1">Email cannot be changed directly for security. Please contact support.</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('settings.emailNote', 'Email cannot be changed directly for security. Please contact support.')}</p>
             </div>
             <div>
-              <Label htmlFor="businessName">Business Name</Label>
+              <Label htmlFor="businessName">{t('settings.businessName', 'Business Name')}</Label>
               <Input id="businessName" value={profileData.businessName} onChange={handleInputChange("businessName")} placeholder="Optional" />
             </div>
           </div>
@@ -771,7 +884,7 @@ export default function Settings() {
           {/* Mobile Number */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="mobileNumber">Mobile Number *</Label>
+              <Label htmlFor="mobileNumber">{t('settings.mobileNumber', 'Mobile Number *')}</Label>
               <div className="flex gap-2">
                 <span className="flex items-center px-3 border rounded-md bg-muted text-muted-foreground text-sm">+91</span>
                 <Input
@@ -784,13 +897,13 @@ export default function Settings() {
                   className="flex-1"
                 />
               </div>
-              <p className="text-xs text-muted-foreground mt-1">10-digit Indian mobile number</p>
+              <p className="text-xs text-muted-foreground mt-1">{t('settings.mobileNote', '10-digit Indian mobile number')}</p>
             </div>
           </div>
 
           {/* Location */}
           <div>
-            <Label>Primary Location</Label>
+            <Label>{t('settings.primaryLocation', 'Primary Location')}</Label>
             <Select value={profileData.location} onValueChange={handleLocationChange}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select state or city" />
@@ -805,10 +918,10 @@ export default function Settings() {
 
           <div className="flex flex-col sm:flex-row gap-2">
             <Button onClick={handleProfileSubmit} disabled={isSaving}>
-              {isSaving ? "Saving..." : "Save Changes"}
+              {isSaving ? t('settings.saving', 'Saving...') : t('settings.saveChanges', 'Save Changes')}
             </Button>
             <Button type="button" variant="outline" onClick={handleResetSettings}>
-              Reset to Defaults
+              {t('settings.resetDefaults', 'Reset to Defaults')}
             </Button>
           </div>
         </CardContent>
@@ -817,8 +930,8 @@ export default function Settings() {
       {/* Display Preferences */}
       <Card>
         <CardHeader>
-          <CardTitle>Display Preferences</CardTitle>
-          <CardDescription>Configure how you want to view data</CardDescription>
+          <CardTitle>{t('settings.displayPrefs', 'Display Preferences')}</CardTitle>
+          <CardDescription>{t('settings.displayPrefsDesc', 'Configure how you want to view data')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {[
@@ -840,8 +953,8 @@ export default function Settings() {
       {/* Target Market */}
       <Card>
         <CardHeader>
-          <CardTitle>Target Market Focus</CardTitle>
-          <CardDescription>Choose your primary market focus</CardDescription>
+          <CardTitle>{t('settings.targetMarket', 'Target Market Focus')}</CardTitle>
+          <CardDescription>{t('settings.targetMarketDesc', 'Choose your primary market focus')}</CardDescription>
         </CardHeader>
         <CardContent>
           <Select value={preferences.targetMarket} onValueChange={(value) => setPreferences((prev) => ({ ...prev, targetMarket: value }))}>
@@ -860,20 +973,20 @@ export default function Settings() {
       {/* Account Info */}
       <Card>
         <CardHeader>
-          <CardTitle>Account Information</CardTitle>
-          <CardDescription>Your account details and subscription</CardDescription>
+          <CardTitle>{t('settings.accountInfo', 'Account Information')}</CardTitle>
+          <CardDescription>{t('settings.accountInfoDesc', 'Your account details and subscription')}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Account ID</span>
+            <span className="text-sm text-muted-foreground">{t('settings.accountId', 'Account ID')}</span>
             <Badge variant="outline">{user.id}</Badge>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Mobile</span>
+            <span className="text-sm text-muted-foreground">{t('settings.mobile', 'Mobile')}</span>
             <span className="text-sm">+91 {user.mobileNumber || "—"}</span>
           </div>
           <div className="flex justify-between items-center">
-            <span className="text-sm text-muted-foreground">Subscription</span>
+            <span className="text-sm text-muted-foreground">{t('settings.subscription', 'Subscription')}</span>
             <Badge>
               {user.subscriptionTier
                 ? `${user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1)} Plan`
@@ -882,7 +995,7 @@ export default function Settings() {
           </div>
           {user.subscriptionTier !== "free" && user.subscriptionExpiresAt && (
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Plan Expires On</span>
+              <span className="text-sm text-muted-foreground">{t('settings.planExpires', 'Plan Expires On')}</span>
               <span className="text-sm font-medium">
                 {new Date(user.subscriptionExpiresAt).toLocaleDateString(undefined, {
                   year: 'numeric',
@@ -894,16 +1007,16 @@ export default function Settings() {
           )}
           {user.createdAt && (
             <div className="flex justify-between items-center">
-              <span className="text-sm text-muted-foreground">Member Since</span>
+              <span className="text-sm text-muted-foreground">{t('settings.memberSince', 'Member Since')}</span>
               <span className="text-sm">{new Date(user.createdAt).toLocaleDateString()}</span>
             </div>
           )}
 
           {/* Active Sessions Section */}
           <div className="border-t pt-4 mt-6">
-            <h4 className="text-sm font-semibold mb-3">Active Sessions</h4>
+            <h4 className="text-sm font-semibold mb-3">{t('settings.activeSessions', 'Active Sessions')}</h4>
             <p className="text-xs text-muted-foreground mb-4">
-              Devices currently logged into your account. You can log out of any session to keep your account secure.
+              {t('settings.activeSessionsDesc', 'Devices currently logged into your account. You can log out of any session to keep your account secure.')}
             </p>
             
             {sessionsLoading ? (
@@ -973,9 +1086,9 @@ export default function Settings() {
 
           {/* Privacy & Consents */}
           <div className="border-t pt-4 mt-6">
-            <h4 className="text-sm font-semibold mb-3">Privacy & Consents</h4>
+            <h4 className="text-sm font-semibold mb-3">{t('settings.privacyConsents', 'Privacy & Consents')}</h4>
             <p className="text-xs text-muted-foreground mb-4">
-              Manage your legal agreements and privacy preferences.
+              {t('settings.privacyConsentsDesc', 'Manage your legal agreements and privacy preferences.')}
             </p>
             {consentsLoading ? (
               <div className="flex items-center justify-center py-4">
@@ -1008,21 +1121,137 @@ export default function Settings() {
           <div className="border-t pt-4 mt-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h4 className="text-sm font-semibold">Download My Data</h4>
-                <p className="text-xs text-muted-foreground mt-0.5">Export a copy of all your personal data in JSON format.</p>
+                <h4 className="text-sm font-semibold">{t('settings.downloadData', 'Download My Data')}</h4>
+                <p className="text-xs text-muted-foreground mt-0.5">{t('settings.downloadDataDesc', 'Export a copy of all your personal data in JSON format.')}</p>
               </div>
               <Button variant="outline" size="sm" onClick={handleDownloadData} disabled={isDownloading}>
-                {isDownloading ? "Downloading..." : "Export Data"}
+                {isDownloading ? t('settings.downloading', 'Downloading...') : t('settings.exportData', 'Export Data')}
               </Button>
             </div>
+          </div>
+
+          {/* Two-Factor Authentication (MFA) */}
+          <div className="border-t pt-4 mt-6">
+            <div className="mb-4">
+              <h4 className="text-sm font-semibold flex items-center gap-2">
+                {mfaEnabled ? <Shield className="h-4 w-4 text-green-500" /> : <ShieldAlert className="h-4 w-4 text-yellow-500" />}
+                {t('settings.twoFactorAuth', 'Two-Factor Authentication (2FA)')}
+              </h4>
+              <p className="text-xs text-muted-foreground mt-0.5">{t('settings.twoFactorAuthDesc', 'Add an extra layer of security requiring a code from your authenticator app.')}</p>
+            </div>
+
+            {mfaEnabled && !isDisablingMfa && (
+              <div className="space-y-4">
+                <Alert className="bg-green-500/10 text-green-600 border-green-500/20 py-2">
+                  <CheckCircle2 className="h-4 w-4 mt-0" />
+                  <AlertTitle className="text-sm">{t('settings.mfaEnabled', '2FA is Enabled')}</AlertTitle>
+                </Alert>
+                <Button variant="destructive" size="sm" onClick={() => setIsDisablingMfa(true)}>
+                  {t('settings.disable2FA', 'Disable 2FA')}
+                </Button>
+              </div>
+            )}
+
+            {mfaEnabled && isDisablingMfa && (
+              <form onSubmit={handleDisableMfa} className="space-y-4 border p-4 rounded-lg bg-muted/30">
+                <h3 className="text-sm font-medium">{t('settings.disable2FATitle', 'Disable Two-Factor Authentication')}</h3>
+                <div className="space-y-2 max-w-sm">
+                  <Input type="password" placeholder={t('settings.currentPassword', 'Current Password')} value={disablePassword} onChange={e => setDisablePassword(e.target.value)} required />
+                  <Input type="text" placeholder={t('settings.authCode', '6-Digit Authenticator Code')} value={disableCode} onChange={e => setDisableCode(e.target.value)} required maxLength={6} />
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <Button variant="destructive" size="sm" type="submit" disabled={mfaLoading}>
+                    {mfaLoading ? t('settings.disabling', 'Disabling...') : t('settings.confirmDisable', 'Confirm Disable')}
+                  </Button>
+                  <Button variant="outline" size="sm" type="button" onClick={() => setIsDisablingMfa(false)}>
+                    {t('settings.cancel', 'Cancel')}
+                  </Button>
+                </div>
+              </form>
+            )}
+
+            {!mfaEnabled && mfaSetupStep === "idle" && (
+              <Button size="sm" onClick={handleStartMfaSetup} disabled={mfaLoading}>
+                {mfaLoading ? t('settings.settingUp', 'Setting up...') : t('settings.setup2FA', 'Set up Two-Factor Authentication')}
+              </Button>
+            )}
+
+            {!mfaEnabled && mfaSetupStep === "scan_qr" && (
+              <div className="space-y-6">
+                <div className="flex flex-col md:flex-row gap-6 items-start">
+                  <div className="p-4 bg-white rounded-lg shadow-sm border border-gray-100">
+                    {qrUri && <QRCodeSVG value={qrUri} size={150} />}
+                  </div>
+                  <div className="space-y-3 max-w-sm mt-2">
+                    <h3 className="text-base font-semibold">{t('settings.scanQrTitle', '1. Scan the QR Code')}</h3>
+                    <p className="text-sm text-muted-foreground">{t('settings.scanQrDesc', 'Open your authenticator app (like Google Authenticator) and scan this QR code.')}</p>
+                    <div className="flex gap-2 pt-4">
+                      <Button size="sm" onClick={() => setMfaSetupStep("enter_code")}>
+                        {t('settings.nextScanDone', 'Next: I have scanned the code')}
+                      </Button>
+                      <Button variant="outline" size="sm" onClick={() => setMfaSetupStep("idle")}>
+                        {t('settings.cancel', 'Cancel')}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {!mfaEnabled && mfaSetupStep === "enter_code" && (
+              <div className="space-y-4 max-w-sm border p-5 rounded-xl bg-gray-50/50">
+                <h3 className="text-base font-semibold">{t('settings.enterCodeTitle', '2. Enter the Code')}</h3>
+                <p className="text-sm text-muted-foreground">{t('settings.enterCodeDesc', 'Enter the 6-digit code from your authenticator app to verify setup.')}</p>
+                <form onSubmit={handleVerifyMfaSetup} className="space-y-5 pt-2">
+                  <InputOTP maxLength={6} value={verificationCode} onChange={setVerificationCode} autoFocus>
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                  <div className="flex gap-3">
+                    <Button type="submit" size="sm" disabled={mfaLoading || verificationCode.length !== 6}>
+                      {mfaLoading ? t('settings.verifying', 'Verifying...') : t('settings.verifyEnable', 'Verify & Enable')}
+                    </Button>
+                    <Button variant="outline" size="sm" type="button" onClick={() => setMfaSetupStep("scan_qr")}>
+                      {t('settings.back', 'Back')}
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {mfaSetupStep === "backup_codes" && (
+              <div className="space-y-4">
+                <Alert className="border-yellow-500/50 bg-yellow-500/10 py-2">
+                  <Key className="h-4 w-4 text-yellow-600 mt-0" />
+                  <AlertTitle className="text-yellow-700 text-sm">{t('settings.backupCodesTitle', 'Save Your Backup Codes')}</AlertTitle>
+                  <AlertDescription className="text-yellow-600/90 text-xs">
+                    {t('settings.backupCodesDesc', 'They will only be shown once. Keep them safe!')}
+                  </AlertDescription>
+                </Alert>
+                <div className="grid grid-cols-2 gap-2 p-4 bg-muted/50 rounded-lg border font-mono text-sm tracking-wider">
+                  {backupCodes.map((code, i) => (
+                    <div key={i} className="bg-background p-1.5 text-center rounded border shadow-sm">
+                      {code}
+                    </div>
+                  ))}
+                </div>
+                <Button size="sm" onClick={() => setMfaSetupStep("idle")}>{t('settings.savedBackupCodes', 'I have saved my backup codes')}</Button>
+              </div>
+            )}
           </div>
 
           {/* Clean and Simple Danger Zone Row */}
           <div className="border-t pt-4 mt-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h4 className="text-sm font-semibold text-destructive">Delete Account</h4>
-                <p className="text-xs text-muted-foreground mt-0.5">Permanently delete your account and all associated data.</p>
+                <h4 className="text-sm font-semibold text-destructive">{t('settings.deleteAccount', 'Delete Account')}</h4>
+                <p className="text-xs text-muted-foreground mt-0.5">{t('settings.deleteAccountDesc', 'Permanently delete your account and all associated data.')}</p>
               </div>
               <AlertDialog open={isDeleteDialogOpen} onOpenChange={(open) => {
                 setIsDeleteDialogOpen(open);

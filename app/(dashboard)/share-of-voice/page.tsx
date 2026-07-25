@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import { useTheme } from "next-themes";
 import { API_BASE_URL as CONFIG_API_BASE_URL } from "@/lib/config";
 import axios from "axios";
+import ReactMarkdown from "react-markdown";
 import { useAuth } from "@/lib/auth-context";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,6 +14,8 @@ import { TrendingUp, Target, BarChart3, Search, RefreshCw, AlertCircle, CheckCir
 import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, ZAxis,
 } from "recharts";
+import SmartSearchInput from "@/components/ui/smart-search-input";
+import { useTranslation } from "react-i18next";
 
 interface BrandShareData {
   brand: string;
@@ -350,6 +354,7 @@ function OppBadge({ opp }: { opp: string }) {
 }
 
 export default function ShareOfVoice() {
+  const { t } = useTranslation();
   const { user, isLoading } = useAuth();
   const userEmail = user?.email || "";
   const userId = user?.id;
@@ -464,7 +469,7 @@ export default function ShareOfVoice() {
         setTimeout(() => window.scrollTo({ top: 500, behavior: "smooth" }), 100);
       }
     } catch (err: any) {
-      const msg = err.response?.data?.detail || "Market data unavailable. Please retry shortly.";
+      const msg = sanitizeApiError(err.response?.data?.detail || err.message, "Market data unavailable. Please retry shortly.");
       if (err.response?.status === 403) setShowUpgradeModal(true);
       setError(msg);
       showToast("Analysis Failed", msg, "error");
@@ -557,18 +562,47 @@ export default function ShareOfVoice() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
+      <div className="max-w-7xl mx-auto space-y-4 relative">
+
+        {/* Visual Usage Meter (Top Right Header) */}
+        <div className="absolute top-0 right-4 sm:right-0 z-10">
+          {!loadingUsage && userId && usageLimits && (
+            <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
+              <div className="flex items-center justify-between gap-3 mb-1">
+                <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{t('sov.analysesUsed', 'Analyses used')}</p>
+                <Badge className={`h-4 text-[10px] border-none px-1.5 ${usageLimits.subscription_tier.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : usageLimits.subscription_tier.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : usageLimits.subscription_tier.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
+                  {(usageLimits.subscription_tier || "free").toUpperCase()}
+                </Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${usageLimits.limit === Infinity ? 0 : Math.min((usageLimits.count / usageLimits.limit) * 100, 100)}%`, 
+                      background: (usageLimits.limit === Infinity ? 0 : Math.min((usageLimits.count / usageLimits.limit) * 100, 100)) >= 80 ? "#ef4444" : "#7F77DD" 
+                    }}
+                  />
+                </div>
+                <span className="text-[11px] font-bold text-slate-600">
+                  {usageLimits.count}/{usageLimits.limit === Infinity ? "∞" : usageLimits.limit}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
 
       {/* Hero Header */}
-      <div className="text-center space-y-4 mb-8">
+      <div className="text-center space-y-3 pt-6 mb-8">
         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl mb-2 shadow-inner">
           <BarChart3 className="h-8 w-8 text-blue-500" />
         </div>
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-          Share of Voice (SOV) & Market Intelligence
+          {t('sov.title', 'Share of Voice (SOV) & Market Intelligence')}
         </h1>
-        <p className="text-lg text-slate-500 max-w-2xl mx-auto">
-          Analyze brand visibility, measure search market share, track competitors, and uncover category opportunities.
+        <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
+          {t('sov.subtitle', 'Analyze brand visibility, measure search market share, track competitors, and uncover category opportunities.')}
         </p>
       </div>
 
@@ -633,13 +667,13 @@ export default function ShareOfVoice() {
         <Card className="bg-background border border-slate-200 rounded-2xl shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
-              <Filter className="w-4 h-4 text-blue-600" /> Search Parameters
+              <Filter className="w-4 h-4 text-blue-600" /> {t('sov.searchParams', 'Search Parameters')}
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-2">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Marketplace</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('sov.marketplace', 'Marketplace')}</label>
                 <select
                   value={marketplace}
                   onChange={(e) => setMarketplace(e.target.value as any)}
@@ -654,7 +688,7 @@ export default function ShareOfVoice() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Category</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('sov.category', 'Category')}</label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
@@ -663,19 +697,20 @@ export default function ShareOfVoice() {
                   data-track-id="category_select"
                   data-filter-value={selectedCategory}
                 >
-                  <option value="" className="bg-white dark:bg-slate-800">Select Category</option>
+                  <option value="" className="bg-white dark:bg-slate-800">{t('sov.selectCategory', 'Select Category')}</option>
                   {categories.map((c, i) => <option key={i} value={c} className="bg-white dark:bg-slate-800">{c}</option>)}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">Your Brand <span className="text-gray-400 dark:text-slate-500 text-xs">(Optional)</span></label>
-                <input
-                  type="text" value={yourBrand}
-                  onChange={(e) => setYourBrand(e.target.value)}
-                  placeholder="Enter your brand name"
+                <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('sov.yourBrand', 'Your Brand')} <span className="text-gray-400 dark:text-slate-500 text-xs">({t('sov.optional', 'Optional')})</span></label>
+                <SmartSearchInput
+                  value={yourBrand}
+                  onChange={setYourBrand}
+                  placeholder={t('sov.enterBrandName', 'Enter your brand name')}
                   disabled={loading}
-                  className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
-                  data-track-id="your_brand_input"
+                  inputClassName="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 text-sm disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
+                  id="your_brand_input"
+                  onEnter={analyzeCategorySov}
                 />
               </div>
               <div className="flex items-end">
@@ -687,9 +722,9 @@ export default function ShareOfVoice() {
                   }`}
                   data-track-id="analyze_category_sov_btn"
                 >
-                  {loading ? <><RefreshCw className="w-4 h-4 animate-spin" /> Analyzing…</>
-                    : userId && !canAnalyze ? <><Lock className="w-4 h-4" /> Limit Reached</>
-                      : <><Search className="w-4 h-4" /> Analyze</>}
+                  {loading ? <><RefreshCw className="w-4 h-4 animate-spin" /> {t('sov.analyzing', 'Analyzing…')}</>
+                    : userId && !canAnalyze ? <><Lock className="w-4 h-4" /> {t('sov.limitReached', 'Limit Reached')}</>
+                      : <><Search className="w-4 h-4" /> {t('sov.analyze', 'Analyze')}</>}
                 </Button>
               </div>
             </div>
@@ -1172,16 +1207,16 @@ export default function ShareOfVoice() {
               </Card>
             )}
 
-            {marketHealth && marketHealth.top_price_gaps.length > 0 && (
+            {marketHealth && marketHealth.all_price_gaps.length > 0 && (
               <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2 text-base">
-                    <Map className="w-5 h-5 text-green-600" /> Top Price-Gap Opportunities
+                    <Map className="w-5 h-5 text-green-600" /> Full Price-Gap Analysis
                   </CardTitle>
-                  <CardDescription>High/medium opportunity bands with low competition</CardDescription>
+                  <CardDescription>Complete breakdown of all price bands and competition levels</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200">
                     <table className="w-full text-sm">
                       <thead>
                         <tr className="border-b border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">
@@ -1193,7 +1228,7 @@ export default function ShareOfVoice() {
                         </tr>
                       </thead>
                       <tbody>
-                        {marketHealth.top_price_gaps.map((g, i) => (
+                        {marketHealth.all_price_gaps.map((g, i) => (
                           <tr key={i} className="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                             <td className="p-3 font-semibold text-slate-800 dark:text-slate-100">{g.price_band}</td>
                             <td className="p-3 text-right text-slate-600 dark:text-slate-300">{g.brand_count}</td>
@@ -1394,8 +1429,17 @@ export default function ShareOfVoice() {
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6">
-                          <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-                            <pre className="whitespace-pre-wrap text-slate-700 font-sans text-sm leading-relaxed">{aiInsights.ai_generated_insights}</pre>
+                          <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm prose prose-sm prose-slate max-w-none prose-headings:text-slate-800 prose-a:text-blue-600">
+                            <ReactMarkdown>
+                              {(() => {
+                                let txt = aiInsights.ai_generated_insights;
+                                // Clean up annoying AI preambles
+                                txt = txt.replace(/^(Here is the analysis.*?:\s*)/i, "");
+                                txt = txt.replace(/^(Here's the analysis.*?:\s*)/i, "");
+                                txt = txt.replace(/^(Based on the data.*?:\s*)/i, "");
+                                return txt.trim();
+                              })()}
+                            </ReactMarkdown>
                           </div>
                         </CardContent>
                       </Card>
@@ -1588,58 +1632,12 @@ export default function ShareOfVoice() {
               </>
             )}
 
-            {competitors?.length > 0 && (
-              <div id="competitor-section">
-                <div className="flex items-center gap-3 mt-2 mb-4">
-                  <Users className="w-6 h-6 text-blue-500" />
-                  <h2 className="text-2xl font-bold text-sky-900">Competitor Analysis</h2>
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {paginatedCompetitors.map((c, idx) => {
-                    const rank = (competitorPage - 1) * competitorsPerPage + idx + 1;
-                    return (
-                      <Card key={idx} className="bg-background border border-slate-200 rounded-2xl shadow-lg hover:shadow-xl hover:scale-[1.01] transition-all overflow-hidden">
-                        <CardContent className="p-5">
-                          <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-center gap-3">
-                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-sm shadow ${rank === 1 ? "bg-yellow-400" : rank === 2 ? "bg-slate-400" : rank === 3 ? "bg-orange-400" : "bg-blue-500"
-                                }`}>{rank}</div>
-                              <div>
-                                <h4 className="font-bold text-slate-800">{c.competitor_name}</h4>
-                                <p className="text-xs text-slate-500">{c.total_products} products</p>
-                              </div>
-                            </div>
-                            <div className="text-right bg-gradient-to-br from-blue-500 to-cyan-500 text-white px-3 py-2 rounded-xl shadow">
-                              <p className="text-2xl font-black">{c.market_share}%</p>
-                              <p className="text-xs opacity-80">Share</p>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-3 gap-2">
-                            {[
-                              { l: "Reviews", v: c.total_reviews.toLocaleString(), c: "text-green-700" },
-                              { l: "Rating", v: c.avg_rating ? `⭐ ${c.avg_rating}` : "—", c: "text-yellow-700" },
-                              { l: "Avg Price", v: `₹${c.avg_price.toLocaleString()}`, c: "text-purple-700" },
-                            ].map((x) => (
-                              <div key={x.l} className="bg-slate-50 rounded-lg p-2 text-center border border-slate-100">
-                                <p className="text-xs text-slate-400 mb-0.5">{x.l}</p>
-                                <p className={`font-bold text-sm ${x.c}`}>{x.v}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
-                </div>
-                {totalCompetitorPages > 1 && (
-                  <Pagination currentPage={competitorPage} totalPages={totalCompetitorPages} onPageChange={handleCompetitorPageChange} />
-                )}
-              </div>
-            )}
+            {/* Competitor Analysis section removed to avoid redundancy with Detailed Brand Analysis table */}
           </>
         )}
 
 
+        </div>
       </div>
     </div>
   );

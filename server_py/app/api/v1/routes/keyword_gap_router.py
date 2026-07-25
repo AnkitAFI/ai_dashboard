@@ -674,8 +674,8 @@
 #                 AI listing rewrite, prioritised action plan
 #     """
 #     tier       = _get_user_tier(db, user_email) if user_email else "free"
-#     is_basic   = tier in ("basic", "premium")
-#     is_premium = tier == "premium"
+#     is_basic = tier in ("basic", "premium", "enterprise")
+#     is_premium = tier in ("premium", "enterprise")
 
 #     # ── Load tracked product ──────────────────────────────────────────────
 #     tracked = (
@@ -1499,28 +1499,16 @@ def _get_competitor_titles(
     all_candidates: list[Any] = []
     seen_asins: set[str]      = set()
 
-    # Source A: tracked_products (same currency)
-    tracked_siblings = (
-        db.query(TrackedProduct)
-        .filter(
-            TrackedProduct.asin       != tracked.asin,
-            TrackedProduct.currency   == currency,
-            TrackedProduct.user_email == tracked.user_email,
-            TrackedProduct.product_title.isnot(None),
-        )
-        .limit(500)
-        .all()
-    )
-    for t in tracked_siblings:
-        if t.asin not in seen_asins:
-            seen_asins.add(t.asin)
-            all_candidates.append(_TrackedProxy(t))
+    keywords = list(_keyword_set(tracked.product_title or ""))
+    top_kws = sorted(keywords, key=len, reverse=True)[:3] if keywords else []
 
     # Source B: rapidapi same currency + price range
     base_q = db.query(RapidapiAmazonProducts).filter(
         RapidapiAmazonProducts.product_title.isnot(None),
         RapidapiAmazonProducts.asin.notin_(seen_asins),
     )
+    if top_kws:
+        base_q = base_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in top_kws]))
     if currency == "INR":
         base_q = base_q.filter(
             RapidapiAmazonProducts.product_price.like("₹%"),
@@ -1547,32 +1535,29 @@ def _get_competitor_titles(
 
     # Source C: relax price filter
     if len(all_candidates) < 10:
-        for row in (
+        strat2_q = (
             db.query(RapidapiAmazonProducts)
             .filter(
                 RapidapiAmazonProducts.product_title.isnot(None),
                 RapidapiAmazonProducts.product_price.like(f"{cur_prefix}%"),
                 RapidapiAmazonProducts.asin.notin_(seen_asins),
             )
-            .limit(200)
-            .all()
-        ):
+        )
+        if top_kws:
+            strat2_q = strat2_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in top_kws]))
+            
+        for row in strat2_q.limit(200).all():
             if row.asin not in seen_asins:
                 seen_asins.add(row.asin)
                 all_candidates.append(row)
 
-    # Source D: absolute fallback
-    if len(all_candidates) < 5:
-        for row in (
-            db.query(RapidapiAmazonProducts)
-            .filter(
-                RapidapiAmazonProducts.product_title.isnot(None),
-                RapidapiAmazonProducts.asin.notin_(seen_asins),
-            )
-            .limit(100)
-            .all()
-        ):
-            all_candidates.append(row)
+    # Filter out the seller's own products using seller_name as a proxy for brand
+    if tracked.seller_name and len(tracked.seller_name.strip()) >= 3:
+        banned_brand = tracked.seller_name.strip().lower()
+        all_candidates = [
+            c for c in all_candidates
+            if banned_brand not in (c.product_title or "").lower()
+        ]
 
     # ── Batch semantic similarity ─────────────────────────────────────────
     your_title     = _decode_html(tracked.product_title or "")
@@ -1943,7 +1928,7 @@ def keyword_gap_analyse(
     Full keyword gap analysis, tiered by subscription.
     """
     from app.api.deps import r
-    cache_key = f"keyword_gap:analyse:{asin}:{seller_id}:{current_user.email}"
+    cache_key = f"keyword_gap:analyse:v3:{asin}:{seller_id}:{current_user.email}"
     try:
         cached = r.get(cache_key)
         if cached:
@@ -1952,8 +1937,8 @@ def keyword_gap_analyse(
         logger.warning("Redis error (get): %s", e)
 
     tier       = current_user.subscription_tier.lower().strip() if current_user.subscription_tier else "free"
-    is_basic   = tier in ("basic", "premium")
-    is_premium = tier == "premium"
+    is_basic = tier in ("basic", "premium", "enterprise")
+    is_premium = tier in ("premium", "enterprise")
 
     tracked = (
         db.query(TrackedProduct)

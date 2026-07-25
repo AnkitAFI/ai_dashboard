@@ -5,9 +5,11 @@ import axios from "axios";
 import { API_BASE_URL } from "@/lib/config";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Star, IndianRupee, ArrowUpDown, TrendingUp, Search, X } from "lucide-react";
+import { Star, IndianRupee, ArrowUpDown, TrendingUp, Search, X, Filter } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
+import SmartSearchInput from "@/components/ui/smart-search-input";
+import { useTranslation } from "react-i18next";
 
 // Unified interface for both Flipkart & Amazon
 interface TrendingProduct {
@@ -34,6 +36,7 @@ interface TrendingProduct {
 }
 
 export default function Sales() {
+  const { t } = useTranslation();
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [products, setProducts] = useState<TrendingProduct[]>([]);
@@ -46,6 +49,9 @@ export default function Sales() {
   const [itemsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All Categories");
+  const [categoriesLoading, setCategoriesLoading] = useState(false);
 
   // Debounce searchQuery by 400ms
   useEffect(() => {
@@ -58,8 +64,19 @@ export default function Sales() {
 
   useEffect(() => {
     setMounted(true);
-    fetchData();
+  }, []);
+
+  // Fetch categories & reset selection when source changes
+  useEffect(() => {
+    setSelectedCategory("All Categories");
+    setCurrentPage(1);
+    fetchCategories();
   }, [source]);
+
+  // Re-fetch products when source or selected category changes
+  useEffect(() => {
+    fetchData();
+  }, [source, selectedCategory]);
 
   const isDark = mounted && resolvedTheme === "dark";
 
@@ -83,12 +100,37 @@ export default function Sales() {
     }
   };
 
-  const fetchData = () => {
-    setLoading(true);
+  const fetchCategories = () => {
+    setCategoriesLoading(true);
     const url =
       source === "flipkart"
-        ? `${API_BASE_URL}/top?table=rapidapi_flipkart_products&n=500`
-        : `${API_BASE_URL}/rapidapi/top-sales?limit=500`;
+        ? `${API_BASE_URL}/rapidapi_flipkart_products/categories`
+        : `${API_BASE_URL}/rapidapi_amazon_products/categories`;
+
+    axios
+      .get(url)
+      .then((res) => {
+        const data = Array.isArray(res.data) ? res.data : [];
+        const names = data
+          .map((c: { category_name?: string; category?: string }) => c.category_name || c.category || "")
+          .filter((name: string) => name.trim() !== "");
+        setCategories(names);
+      })
+      .catch(() => setCategories([]))
+      .finally(() => setCategoriesLoading(false));
+  };
+
+  const fetchData = () => {
+    setLoading(true);
+    const categoryParam =
+      selectedCategory && selectedCategory !== "All Categories"
+        ? `&category=${encodeURIComponent(selectedCategory)}`
+        : "";
+
+    const url =
+      source === "flipkart"
+        ? `${API_BASE_URL}/top?table=rapidapi_flipkart_products&n=500${categoryParam}`
+        : `${API_BASE_URL}/rapidapi/top-sales?limit=500${categoryParam}`;
 
     axios
       .get(url)
@@ -109,7 +151,8 @@ export default function Sales() {
       case "rating":
         return p.rating ?? p.avg_rating ?? p.product_star_rating_numeric ?? p.product_star_rating ?? 0;
       case "sales":
-        return parseSalesVolume(p.sales_volume, p.avg_sales_volume);
+        const rawSales = parseSalesVolume(p.sales_volume, p.avg_sales_volume ?? (p as any).estimated_sales);
+        return source === "flipkart" ? rawSales / 125 : rawSales;
       default:
         return 0;
     }
@@ -166,7 +209,7 @@ export default function Sales() {
       <div className="flex h-[400px] items-center justify-center text-slate-400">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
-          <p>Loading {source} top product data...</p>
+          <p>{t('sales.loading', 'Loading {{source}} top product data...', { source })}</p>
         </div>
       </div>
     );
@@ -184,54 +227,83 @@ export default function Sales() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
         <div className="text-left space-y-1">
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-            Product Performance Overview ({source})
+            Top {products.length} Selling Products ({source})
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm">
-            Analyze and sort by sales, reviews, price, or rating for data-driven decisions.
+            {t('sales.subtitle', 'Analyze and sort by sales, reviews, price, or rating for data-driven decisions.')}
           </p>
         </div>
-        <select
-          value={source}
-          onChange={(e) => setSource(e.target.value as "flipkart" | "amazon")}
-          className={cn(
-            "border px-3 py-2 rounded-md font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20",
-            isDark 
-              ? "border-slate-700 bg-slate-900 text-slate-100" 
-              : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
-          )}
-          data-track-id="sales_source_select"
-          data-filter-value={source}
-        >
-          <option value="flipkart" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Flipkart</option>
-          <option value="amazon" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Amazon</option>
-        </select>
+        <div className="flex items-center gap-3">
+          <select
+            value={source}
+            onChange={(e) => setSource(e.target.value as "flipkart" | "amazon")}
+            className={cn(
+              "border px-3 py-2 rounded-md font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20",
+              isDark 
+                ? "border-slate-700 bg-slate-900 text-slate-100" 
+                : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
+            )}
+            data-track-id="sales_source_select"
+            data-filter-value={source}
+          >
+            <option value="flipkart" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Flipkart</option>
+            <option value="amazon" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Amazon</option>
+          </select>
+
+          <div className="relative">
+            <Filter className={cn(
+              "absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none",
+              isDark ? "text-slate-400" : "text-slate-500"
+            )} />
+            <select
+              value={selectedCategory}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+                setCurrentPage(1);
+              }}
+              disabled={categoriesLoading}
+              className={cn(
+                "border pl-8 pr-3 py-2 rounded-md font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 max-w-[220px] truncate",
+                isDark
+                  ? "border-slate-700 bg-slate-900 text-slate-100"
+                  : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50",
+                categoriesLoading && "opacity-50 cursor-wait"
+              )}
+              data-track-id="sales_category_select"
+              data-filter-value={selectedCategory}
+            >
+              <option value="All Categories" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>
+                All Categories
+              </option>
+              {categories.map((cat) => (
+                <option
+                  key={cat}
+                  value={cat}
+                  className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}
+                >
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
       </div>
 
       {/* Search Bar & Sort Filters */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
         <div className="relative w-full sm:w-80">
-          <input
-            type="text"
-            placeholder="Search products..."
+          <SmartSearchInput
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className={cn(
-              "w-full pl-10 pr-10 py-2 text-sm border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all font-medium",
+            onChange={setSearchQuery}
+            placeholder={t('sales.searchPlaceholder', 'Search products...')}
+            className="w-full"
+            inputClassName={cn(
+              "w-full text-sm font-medium",
               isDark 
                 ? "border-slate-800 bg-slate-900 text-slate-100 placeholder:text-slate-500" 
                 : "border-slate-200 bg-white text-slate-800 placeholder:text-slate-400 shadow-sm"
             )}
           />
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => { setSearchQuery(""); setDebouncedSearch(""); setCurrentPage(1); }}
-              className="absolute right-3 top-2.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
         </div>
         <div className="flex justify-end gap-3 flex-wrap">
           {["sales", "reviews", "price", "rating"].map((field) => (
@@ -252,7 +324,7 @@ export default function Sales() {
               disabled={loading}
             >
               <ArrowUpDown className="w-4 h-4" />
-              {field.charAt(0).toUpperCase() + field.slice(1)}
+              {t(`sales.sort_${field}`, field.charAt(0).toUpperCase() + field.slice(1))}
               {sortField === field ? ` (${sortOrder === "asc" ? "↑" : "↓"})` : ""}
             </Button>
           ))}
@@ -265,9 +337,9 @@ export default function Sales() {
       )}>
         <CardHeader className="py-3 px-4 border-b border-slate-100 dark:border-slate-800">
           <CardTitle className={cn("text-base font-semibold", isDark ? "text-slate-200" : "text-slate-700")}>
-            Showing Page {currentPage} of {totalPages} — Sorted by{" "}
-            {sortField.charAt(0).toUpperCase() + sortField.slice(1)}{" "}
-            ({sortOrder === "asc" ? "Low → High" : "High → Low"})
+            {t('sales.showingPage', 'Showing Page')} {currentPage} {t('sales.of', 'of')} {totalPages} — {t('sales.sortedBy', 'Sorted by')}{" "}
+            {t(`sales.sort_${sortField}`, sortField.charAt(0).toUpperCase() + sortField.slice(1))}{" "}
+            ({sortOrder === "asc" ? t('sales.lowToHigh', 'Low → High') : t('sales.highToLow', 'High → Low')})
           </CardTitle>
         </CardHeader>
 
@@ -279,12 +351,12 @@ export default function Sales() {
             )}>
               <tr>
                 <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>#</th>
-                <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>Product</th>
-                <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>Category</th>
-                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>Price (₹)</th>
-                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>Rating</th>
-                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>Reviews</th>
-                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>Sales</th>
+                <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.product', 'Product')}</th>
+                <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.category', 'Category')}</th>
+                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.price', 'Price (₹)')}</th>
+                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.rating', 'Rating')}</th>
+                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.reviews', 'Reviews')}</th>
+                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.sales', 'Sales')}</th>
               </tr>
             </thead>
 
@@ -350,11 +422,11 @@ export default function Sales() {
           )}
           data-track-id="sales_prev_page_btn"
         >
-          Previous
+          {t('sales.previous', 'Previous')}
         </Button>
 
         <span className={cn("font-medium", isDark ? "text-slate-400" : "text-slate-600")}>
-          Page {currentPage} of {totalPages}
+          {t('sales.page', 'Page')} {currentPage} {t('sales.of', 'of')} {totalPages}
         </span>
 
         <Button
@@ -368,7 +440,7 @@ export default function Sales() {
           )}
           data-track-id="sales_next_page_btn"
         >
-          Next
+          {t('sales.next', 'Next')}
         </Button>
       </div>
     </div>

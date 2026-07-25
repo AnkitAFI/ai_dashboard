@@ -573,7 +573,7 @@ try:
        
         # Amazon methods
         def get_amazon_products_by_category(self, category_id: str, page: int = 1, country: str = "IN",
-                                           sort_by: str = "RELEVANCE", product_condition: str = "ALL",
+                                           sort_by: str = "NEWEST", product_condition: str = "ALL",
                                            is_prime: str = "false", deals_and_discounts: str = "NONE"):
             endpoint = (f"/products-by-category?category_id={category_id}&page={page}"
                        f"&country={country}&sort_by={sort_by}&product_condition={product_condition}"
@@ -581,7 +581,7 @@ try:
             return self._make_request(endpoint, method="GET")
        
         # Flipkart methods
-        def get_flipkart_products_by_category(self, category_id: str, page: int = 1, sort_by: str = "POPULARITY"):
+        def get_flipkart_products_by_category(self, category_id: str, page: int = 1, sort_by: str = "NEWEST"):
             """Fetch Flipkart products by category ID (BASIC plan compatible)"""
             from urllib.parse import quote
             # URL encode the category ID (handles commas and special chars)

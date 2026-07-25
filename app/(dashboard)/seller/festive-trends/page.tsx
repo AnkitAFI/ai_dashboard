@@ -113,12 +113,12 @@ function getDisplayPrice(val: number | null | undefined, currency: string | null
 }
 
 // ── Tier Gate — identical pattern to price-comparison page ────────────────────
-function TierGate({ tier, feature }: { tier: "basic" | "premium"; feature: string }) {
+function TierGate({ tier, feature }: { tier: "basic" | "premium" | "enterprise"; feature: string }) {
   const router = useRouter();
   return (
     <div className="absolute inset-0 bg-white/85 backdrop-blur-[3px] rounded-2xl flex flex-col items-center justify-center z-10 gap-3">
-      <div className={`w-11 h-11 rounded-full flex items-center justify-center shadow-sm ${tier === "premium" ? "bg-blue-50" : "bg-amber-50"}`}>
-        <Lock className={`w-5 h-5 ${tier === "premium" ? "text-blue-500" : "text-amber-500"}`} />
+      <div className={`w-11 h-11 rounded-full flex items-center justify-center shadow-sm ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-50" : "bg-amber-50"}`}>
+        <Lock className={`w-5 h-5 ${tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "text-blue-500" : "text-amber-500"}`} />
       </div>
       <div className="text-center px-4">
         <p className="font-bold text-slate-800 text-sm">{feature}</p>
@@ -259,8 +259,8 @@ function SellerFestiveTrendsContent() {
   const [categoryName, setCategoryName]     = useState<string>("");
 
   const tier      = tierInfo?.tier || user?.subscriptionTier || "free";
-  const isBasic   = tier === "basic" || tier === "premium";
-  const isPremium = tier === "premium";
+  const isBasic   = tier === "basic" || tier === "premium" || tier === "enterprise";
+  const isPremium = tier === "premium" || tier === "enterprise";
 
   // ── Fetch helpers ─────────────────────────────────────────────────────────
   const get = useCallback(
@@ -370,7 +370,7 @@ function SellerFestiveTrendsContent() {
         <div className="flex items-center gap-2">
           {isLoading && <RefreshCw className="w-4 h-4 animate-spin text-sky-400" />}
           <Badge className={`text-xs font-bold ${
-            tier === "premium" ? "bg-blue-100 text-blue-700"
+            tier === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : tier === "premium" ? "bg-blue-100 text-blue-700"
             : tier === "basic" ? "bg-amber-100 text-amber-700"
             : "bg-slate-100 text-slate-600"
           }`}>

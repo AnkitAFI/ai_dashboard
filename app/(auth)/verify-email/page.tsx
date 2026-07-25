@@ -240,6 +240,7 @@ import { useAuth } from "@/lib/auth-context";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 
 
 function getCookie(name: string): string | null {
@@ -292,13 +293,13 @@ export default function VerifyEmail() {
       });
       const data = await response.json();
       console.log("Verification response:", data);  
-      if (!response.ok) throw new Error(data.detail || "Verification failed");
+      if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Verification failed. Please check your OTP and try again."));
       deleteCookie("verify_email");
       await refreshUser();
       toast({ title: "Email verified!", description: "Welcome to Insydz!" });
       router.push("/dashboard");
     } catch (err: any) {
-      toast({ title: "Verification failed", description: err.message || "Invalid or expired OTP.", variant: "destructive" });
+      toast({ title: "Verification failed", description: sanitizeApiError(err.message, "Invalid or expired OTP."), variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -314,11 +315,11 @@ export default function VerifyEmail() {
         body: JSON.stringify({ email }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || "Failed to resend OTP");
+      if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Failed to resend OTP. Please try again."));
       toast({ title: "OTP resent", description: `New code sent to ${email}` });
       setResendCooldown(60);
     } catch (err: any) {
-      toast({ title: "Failed to resend", description: err.message, variant: "destructive" });
+      toast({ title: "Failed to resend", description: sanitizeApiError(err.message, "Failed to resend OTP. Please try again."), variant: "destructive" });
     } finally {
       setIsResending(false);
     }

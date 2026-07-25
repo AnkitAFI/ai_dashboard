@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -164,8 +164,8 @@ const SELLER_SECTIONS: NavSection[] = [
     items: [
       { href: "/dashboard", label: "Dashboard", icon: Home },
       // Temporarily hidden until API keys are secured
-      // { href: "/seller/listing-studio", label: "One-Click Cataloger", icon: Sparkles, badge: "NEW" },
-      // { href: "/seller/integrations", label: "Integrations", icon: LinkIcon, badge: "NEW" },
+      { href: "/seller/listing-studio", label: "One-Click Cataloger", icon: Sparkles, badge: "NEW" },
+      { href: "/seller/integrations", label: "Integrations", icon: LinkIcon, badge: "NEW" },
       { href: "/seller/my-products", label: "My Products", icon: Tag, badge: "NEW" },
       { href: "/seller/listing-audit", label: "Listing Audit", icon: Search, badge: "NEW" },
     ],
@@ -307,7 +307,12 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
     }
   }, [pathname]);
 
+  const initialMount = useRef(true);
   useEffect(() => {
+    if (initialMount.current) {
+      initialMount.current = false;
+      return;
+    }
     localStorage.setItem("sidebar-mode", mode);
     window.dispatchEvent(new Event("sidebar-mode-changed"));
   }, [mode]);
@@ -335,6 +340,8 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
   const getSubscriptionColor = (tier: string) => {
     switch (tier?.toLowerCase()) {
+      case "enterprise":
+        return "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-md border-0";
       case "premium":
         return "bg-gradient-to-r from-[#00D4FF] to-[#0099FF] text-white";
       case "basic":
@@ -508,6 +515,12 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
                 <div className="space-y-1">
                   {section.items.map((item) => {
+                    if (
+                      (item.href === "/seller/listing-studio" || item.href === "/seller/integrations") && 
+                      user?.subscriptionTier !== "enterprise"
+                    ) {
+                      return null;
+                    }
                     const Icon = item.icon;
                     return (
                       <Link

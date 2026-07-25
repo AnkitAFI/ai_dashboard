@@ -375,6 +375,20 @@ def _get_tier_config(tier: str) -> Dict[str, Any]:
             "badges": True,
             "ai_market_summary": True,
         },
+        "enterprise": {
+            "scans_limit": 9_999_999,
+            "results_visible": 999,
+            "competitors": True,
+            "breakdown": True,
+            "trend": True,
+            "watchlist": True,
+            "export": True,
+            "ai_insights": True,
+            "entry_price": True,
+            "demand": True,
+            "badges": True,
+            "ai_market_summary": True,
+        },
     }.get(tier, {
         "scans_limit": 3, "results_visible": 3,
         "competitors": False, "breakdown": False, "trend": False,
@@ -780,13 +794,92 @@ Be specific — mention niche names and numbers."""
 
 def _inr(n: int) -> str:
     if n >= 100000:
-        return f"₹{n/100000:.1f}L"
+        return f"{n/100000:.1f}L"
     if n >= 1000:
-        return f"₹{n//1000}K"
-    return f"₹{n}"
+        return f"{n//1000}K"
+    return str(n)
+
+
+# ── Endpoints ─────────────────────────────────────────────────────────────────
+
+def _count_scans_this_month(user_id: int, db: Session) -> int:
+    try:
+        row = db.execute(
+            text("""
+                SELECT COUNT(*) FROM white_space_scans 
+                WHERE user_id=:uid AND created_at > NOW() - INTERVAL '30 days'
+            """),
+            {"uid": user_id}
+        ).scalar()
+        return int(row or 0)
+    except Exception as e:
+        logger.error(f"Error counting scans: {e}")
+        return 0
+
+@router.get("/usage/{user_id}")
+def get_usage(
+    user_id: int,
+    current_user_id: str = Depends(get_current_user_id),
+    db: Session = Depends(get_db)
+):
+    """Get current usage and limits for white space finder"""
+    if str(current_user_id) != str(user_id):
+        raise HTTPException(403, "Not authorised")
+    
+    tier = get_user_tier(user_id, db)
+    config = _get_tier_config(tier)
+    used = _count_scans_this_month(user_id, db)
+    
+    limit = config["scans_limit"]
+    remaining = (limit - used) if limit != 9_999_999 else float("inf")
+    
+    return {
+        "count": used,
+        "limit": limit if limit != 9_999_999 else -1,
+        "remaining": remaining if remaining != float("inf") else -1,
+        "subscription_tier": tier
+    }
 
 
 # ── SQL queries ───────────────────────────────────────────────────────────────
+
+# Phase 1: find categories that are genuinely about the searched product.
+# We count total products in each category vs how many match the query term.
+# This prevents unrelated categories (e.g. "Chargers" that mention "iPhone compatible")
+# from appearing when the user searches a specific product like "iphone".
+
+AMAZON_CATEGORY_RELEVANCE_SQL = """
+SELECT
+    category_name,
+    COUNT(*) AS total_in_cat,
+    SUM(CASE WHEN product_title ~* :regex_query THEN 1 ELSE 0 END) AS matching_in_cat
+FROM rapidapi_amazon_products
+WHERE
+    category_name IS NOT NULL
+    AND (:category IS NULL OR category_name = :category)
+    AND product_price_numeric > 0
+    AND product_star_rating_numeric IS NOT NULL
+GROUP BY category_name
+HAVING SUM(CASE WHEN product_title ~* :regex_query THEN 1 ELSE 0 END) > 0
+"""
+
+FLIPKART_CATEGORY_RELEVANCE_SQL = """
+SELECT
+    category_name,
+    COUNT(*) AS total_in_cat,
+    SUM(CASE WHEN product_title ~* :regex_query THEN 1 ELSE 0 END) AS matching_in_cat
+FROM rapidapi_flipkart_products
+WHERE
+    category_name IS NOT NULL
+    AND (:category IS NULL OR category_name = :category)
+    AND product_price > 0
+GROUP BY category_name
+HAVING SUM(CASE WHEN product_title ~* :regex_query THEN 1 ELSE 0 END) > 0
+"""
+
+# Phase 2: once we know which categories are relevant, fetch ALL products from
+# those categories so we can compute an accurate market-wide gap score.
+# The :categories param is filled in at runtime with the relevant category names.
 
 AMAZON_SQL = """
 SELECT
@@ -808,12 +901,12 @@ SELECT
     asin
 FROM rapidapi_amazon_products
 WHERE
-    (:query IS NULL OR LOWER(product_title) LIKE :like_query OR LOWER(category_name) LIKE :like_query)
-    AND (:category IS NULL OR category_name = :category)
+    category_name = ANY(:categories)
+    AND (:query IS NULL OR product_title ~* :regex_query)
     AND product_price_numeric > 0
     AND product_star_rating_numeric IS NOT NULL
 ORDER BY avg_sales_volume DESC NULLS LAST
-LIMIT 300
+LIMIT 500
 """
 
 FLIPKART_SQL = """
@@ -834,11 +927,77 @@ SELECT
     max_price
 FROM rapidapi_flipkart_products
 WHERE
-    (:query IS NULL OR LOWER(product_title) LIKE :like_query OR LOWER(category_name) LIKE :like_query)
-    AND (:category IS NULL OR category_name = :category)
+    category_name = ANY(:categories)
+    AND (:query IS NULL OR product_title ~* :regex_query)
     AND product_price > 0
-LIMIT 300
+LIMIT 500
 """
+
+# Minimum relevance threshold: a category must have at least this fraction of
+# its products matching the query term to be considered relevant.
+# E.g. 0.20 = at least 20% of products in the category must contain the query word.
+# For very specific queries (like a brand name) we lower this to 0.05 (5%).
+DEFAULT_RELEVANCE_THRESHOLD = 0.20
+MIN_RELEVANCE_THRESHOLD = 0.05  # floor for niche/brand queries with few results
+MIN_MATCHING_PRODUCTS = 3       # absolute minimum: at least 1 matching product
+
+
+def _find_relevant_categories(
+    db,
+    regex_query: str,
+    category_filter: Optional[str],
+    platform: str,
+) -> Dict[str, List[str]]:
+    """
+    Phase 1: Identify categories that are genuinely about the searched product.
+
+    Returns a dict with keys 'amazon' and 'flipkart', each containing a list of
+    relevant category names. A category is relevant if at least
+    DEFAULT_RELEVANCE_THRESHOLD of its products match the query term.
+    If that yields no categories at all, we fall back to MIN_RELEVANCE_THRESHOLD
+    so very specific brand/model queries still return results.
+    """
+    params = {"regex_query": regex_query, "category": category_filter}
+
+    amazon_cats: List[str] = []
+    flipkart_cats: List[str] = []
+
+    if platform in ("amazon", "both"):
+        try:
+            res = db.execute(text(AMAZON_CATEGORY_RELEVANCE_SQL), params)
+            rows = res.fetchall()
+            # Try strict threshold first, fall back to loose if nothing found
+            for threshold in [DEFAULT_RELEVANCE_THRESHOLD, MIN_RELEVANCE_THRESHOLD]:
+                cats = [
+                    row[0] for row in rows
+                    if row[1] > 0
+                    and (row[2] / row[1]) >= threshold
+                    and row[2] >= MIN_MATCHING_PRODUCTS
+                ]
+                if cats:
+                    amazon_cats = cats
+                    break
+        except Exception as e:
+            print(f"[white_space] amazon category relevance error: {e}")
+
+    if platform in ("flipkart", "both"):
+        try:
+            res = db.execute(text(FLIPKART_CATEGORY_RELEVANCE_SQL), params)
+            rows = res.fetchall()
+            for threshold in [DEFAULT_RELEVANCE_THRESHOLD, MIN_RELEVANCE_THRESHOLD]:
+                cats = [
+                    row[0] for row in rows
+                    if row[1] > 0
+                    and (row[2] / row[1]) >= threshold
+                    and row[2] >= MIN_MATCHING_PRODUCTS
+                ]
+                if cats:
+                    flipkart_cats = cats
+                    break
+        except Exception as e:
+            print(f"[white_space] flipkart category relevance error: {e}")
+
+    return {"amazon": amazon_cats, "flipkart": flipkart_cats}
 
 
 # ── Ollama status endpoint ────────────────────────────────────────────────────
@@ -901,139 +1060,63 @@ def get_categories(platform: str = "both", db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+import pkg_resources
+from symspellpy import SymSpell, Verbosity
 
-def _levenshtein(s1: str, s2: str) -> int:
-    if len(s1) < len(s2):
-        return _levenshtein(s2, s1)
-    if len(s2) == 0:
-        return len(s1)
-    previous_row = range(len(s2) + 1)
-    for i, c1 in enumerate(s1):
-        current_row = [i + 1]
-        for j, c2 in enumerate(s2):
-            insertions = previous_row[j + 1] + 1
-            deletions = current_row[j] + 1
-            substitutions = previous_row[j] + (c1 != c2)
-            current_row.append(min(insertions, deletions, substitutions))
-        previous_row = current_row
-    return previous_row[-1]
+_sym_spell = None
+
+def _get_symspell():
+    global _sym_spell
+    if _sym_spell is None:
+        _sym_spell = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
+        try:
+            dictionary_path = pkg_resources.resource_filename("symspellpy", "frequency_dictionary_en_82_765.txt")
+            _sym_spell.load_dictionary(dictionary_path, term_index=0, count_index=1)
+            print("[autocomplete] Loaded SymSpell dictionary.")
+        except Exception as e:
+            print(f"[autocomplete] Error loading SymSpell dictionary: {e}")
+    return _sym_spell
 
 
-def _clean_title_suggestion(title: str) -> str:
+def _clean_title_suggestion(title: str, target_q: str = "") -> str:
     import re
     cleaned = re.sub(r'[^\w\s-]', '', title)
     words = cleaned.split()
-    return " ".join(words[:4]).strip()
-
-
-_db_vocabulary = None
-
-
-def _get_db_vocabulary(db: Session) -> set:
-    global _db_vocabulary
-    if _db_vocabulary is not None:
-        return _db_vocabulary
-        
-    vocab = set()
-    try:
-        import re
-        # 1. Words from categories
-        res_cats = db.execute(text("""
-            SELECT DISTINCT category_name FROM (
-                SELECT category_name FROM rapidapi_amazon_products WHERE category_name IS NOT NULL
-                UNION
-                SELECT category_name FROM rapidapi_flipkart_products WHERE category_name IS NOT NULL
-            ) AS cats
-        """)).fetchall()
-        for row in res_cats:
-            if row[0]:
-                for word in re.findall(r'[a-zA-Z]{3,}', row[0]):
-                    vocab.add(word.lower())
-                    
-        # 2. Top 500 words from Amazon product titles
-        res_am_words = db.execute(text("""
-            SELECT word FROM (
-                SELECT regexp_split_to_table(LOWER(product_title), '\s+') AS word 
-                FROM rapidapi_amazon_products
-                WHERE product_title IS NOT NULL
-            ) AS w
-            WHERE length(word) >= 3 AND word ~ '^[a-z]+$'
-            GROUP BY word
-            ORDER BY count(*) DESC
-            LIMIT 500
-        """)).fetchall()
-        for row in res_am_words:
-            if row[0]:
-                vocab.add(row[0])
-                
-        # 3. Top 500 words from Flipkart product titles
-        res_fk_words = db.execute(text("""
-            SELECT word FROM (
-                SELECT regexp_split_to_table(LOWER(product_title), '\s+') AS word 
-                FROM rapidapi_flipkart_products
-                WHERE product_title IS NOT NULL
-            ) AS w
-            WHERE length(word) >= 3 AND word ~ '^[a-z]+$'
-            GROUP BY word
-            ORDER BY count(*) DESC
-            LIMIT 500
-        """)).fetchall()
-        for row in res_fk_words:
-            if row[0]:
-                vocab.add(row[0])
-                
-        _db_vocabulary = vocab
-        logger.info(f"[autocomplete] Built database vocabulary of {len(vocab)} words.")
-    except Exception as e:
-        print(f"[autocomplete] Error building vocabulary: {e}")
-        # Fallback basic list
-        _db_vocabulary = {
-            "shirt", "tshirt", "organizer", "bottle", "grooming",
-            "charger", "wireless", "holder", "shoes", "cable", "case", "glass",
-            "kitchen", "baby", "feeding", "grooming", "sleep", "aid", "skincare",
-            "tools", "scent", "accessories", "fitness", "gear", "care", "desk",
-            "water", "yoga", "mat", "air", "purifier", "led", "lights", "speaker",
-            "headphones", "earbuds"
-        }
-    return _db_vocabulary
-
-
-def _correct_query(query: str, vocab: set) -> Optional[str]:
-    import re
-    words = query.strip().split()
-    if not words:
-        return None
-        
-    corrected_words = []
-    has_correction = False
     
-    for word in words:
-        word_clean = re.sub(r'[^a-zA-Z]', '', word).lower()
-        if len(word_clean) < 3:
-            corrected_words.append(word)
-            continue
-            
-        if word_clean in vocab:
-            corrected_words.append(word)
-            continue
-            
-        best_match = None
-        best_dist = float('inf')
-        max_allowed = 1 if len(word_clean) <= 4 else (2 if len(word_clean) <= 7 else 3)
+    if not target_q:
+        return " ".join(words[:4]).strip()
         
-        for vocab_word in vocab:
-            dist = _levenshtein(word_clean, vocab_word)
-            if dist < best_dist and dist <= max_allowed:
-                best_dist = dist
-                best_match = vocab_word
-                
-        if best_match:
-            corrected_words.append(best_match)
-            has_correction = True
-        else:
-            corrected_words.append(word)
+    target_words = target_q.lower().split()
+    target_first = target_words[0] if target_words else ""
+    
+    start_idx = 0
+    for i, w in enumerate(words):
+        if target_first in w.lower():
+            start_idx = i
+            break
             
-    return " ".join(corrected_words) if has_correction else None
+    extracted = words[start_idx:start_idx+4]
+    if not extracted:
+        extracted = words[:4]
+        
+    return " ".join(extracted).strip()
+
+
+def _correct_query(query: str) -> Optional[str]:
+    spell = _get_symspell()
+    if not spell:
+        return None
+    
+    try:
+        suggestions = spell.lookup_compound(query, max_edit_distance=2, ignore_non_words=True)
+        if suggestions:
+            corrected = suggestions[0].term
+            if corrected.lower() != query.lower():
+                return corrected
+    except Exception as e:
+        print(f"[autocomplete] Error in spelling correction: {e}")
+        
+    return None
 
 
 @router.get("/autocomplete")
@@ -1044,9 +1127,8 @@ def autocomplete_suggestions(q: str = "", db: Session = Depends(get_db)):
     q_clean = q.strip().lower()
     
     try:
-        # Check spelling first using database vocabulary
-        vocab = _get_db_vocabulary(db)
-        corrected_q = _correct_query(q_clean, vocab)
+        # Check spelling using global SymSpell dictionary
+        corrected_q = _correct_query(q_clean)
         
         correction = None
         target_q = q_clean
@@ -1098,7 +1180,7 @@ def autocomplete_suggestions(q: str = "", db: Session = Depends(get_db)):
         # Add matching cleaned product titles
         for row in res_am_titles + res_fk_titles:
             if row[0]:
-                cleaned = _clean_title_suggestion(row[0])
+                cleaned = _clean_title_suggestion(row[0], target_q)
                 if cleaned and cleaned.lower() != q_clean:
                     suggestions_set.add(cleaned)
                     
@@ -1175,30 +1257,106 @@ def scan_white_spaces(
             return parsed_cache
     except Exception as e:
         logger.warning(f"Redis error (get): {e}")
+    import re
+    # Convert spaces into .* to allow non-adjacent matching (e.g. "iphone accessories" matches "iphone case accessories")
+    words = [re.escape(w) for w in req.query.lower().strip().split()]
+    if len(words) == 1:
+        regex_query = rf"\y{words[0]}\y"
+    else:
+        regex_query = r".*".join(words)
 
-    params = {
-        "query": req.query if req.query else None,
-        "like_query": f"%{req.query.lower()}%",
-        "category": req.category,
-    }
+    # ── Phase 1: Find only categories relevant to the searched product ────
+    # This prevents unrelated categories from appearing (e.g. searching "iphone"
+    # should not show "Headphones" just because some headphone titles say
+    # "compatible with iPhone").
+    relevant_cats = _find_relevant_categories(
+        db,
+        regex_query=regex_query,
+        category_filter=req.category,
+        platform=req.platform,
+    )
 
-    # ── Fetch rows ────────────────────────────────────────────────────────
+    amazon_relevant = relevant_cats["amazon"]
+    flipkart_relevant = relevant_cats["flipkart"]
+
+    print(f"[white_space] Phase1 relevant categories — amazon: {amazon_relevant}, flipkart: {flipkart_relevant}")
+
+    # ── Phase 2: Fetch matching products from only the relevant categories ─────
+    # We pull the actual competitor products matching the query from the relevant categories
+    # to accurately score the market gap for this specific product niche.
     amazon_rows: List[Dict] = []
     flipkart_rows: List[Dict] = []
+    
+    phase2_params = {
+        "query": req.query if req.query else None,
+        "regex_query": regex_query
+    }
 
-    if req.platform in ("amazon", "both"):
+    if req.platform in ("amazon", "both") and amazon_relevant:
         try:
-            res = db.execute(text(AMAZON_SQL), params)
+            res = db.execute(text(AMAZON_SQL), {**phase2_params, "categories": amazon_relevant})
             amazon_rows = [dict(r._mapping) for r in res.fetchall()]
         except Exception as e:
             print(f"[white_space] amazon error: {e}")
 
-    if req.platform in ("flipkart", "both"):
+    if req.platform in ("flipkart", "both") and flipkart_relevant:
         try:
-            res = db.execute(text(FLIPKART_SQL), params)
+            res = db.execute(text(FLIPKART_SQL), {**phase2_params, "categories": flipkart_relevant})
             flipkart_rows = [dict(r._mapping) for r in res.fetchall()]
         except Exception as e:
             print(f"[white_space] flipkart error: {e}")
+
+    # ── Apply Robust Core Product Filter ──────────────────────────────────
+    # Drops accessories ("Case for iPhone") unless the user explicitly searched for them.
+    # Uses a multi-step heuristic (linguistic, positional, and keyword mismatch) 
+    # to be production-proof and handle dynamic categories.
+    
+    q_norm = req.query.lower().strip()
+    q_esc = re.escape(q_norm)
+    
+    # 1. Linguistic penalty (the 'for' pattern, using \s+ to avoid regex boundaries issues)
+    accessory_pattern = re.compile(r"\b(?:for|compatible with|fits|replacement for)\s+.*?" + q_esc)
+    
+    # 3. Common accessory keywords to watch out for
+    accessory_keywords = [
+        "case", "cover", "charger", "cable", "adapter", "protector", "glass", 
+        "mount", "holder", "strap", "band", "skin", "ssd", "wallet", "screen guard",
+        "earphone", "headphone", "stand"
+    ]
+
+    def _is_core_product(row: Dict) -> bool:
+        title = str(row.get("product_title", "")).lower()
+        
+        # Step 1: Linguistic match ("for iphone 16")
+        if accessory_pattern.search(title) and not accessory_pattern.search(q_norm):
+            return False
+            
+        # Step 2: Position penalty
+        # If the exact query is buried deep in the title (past char 40), it's likely an accessory 
+        # (e.g. "Spigen Silicone Magsafe Case... for iPhone 16").
+        # We use a generous threshold `max(40, len(q_norm) + 20)` for long queries.
+        idx = title.find(q_norm)
+        if idx > max(40, len(q_norm) + 20):
+            return False
+            
+        # Step 3: Keyword mismatch
+        # If the product contains "case" but the user didn't search for "case", it's an accessory.
+        # Bypass this step if the user explicitly searched for generic categories (accessories, gear, kit).
+        is_generic_search = any(g in q_norm for g in ["accessories", "gear", "kit", "bundle", "supplies"])
+        if not is_generic_search:
+            for kw in accessory_keywords:
+                if kw in title and kw not in q_norm:
+                    return False
+                
+        return True
+
+    filtered_amazon = [r for r in amazon_rows if _is_core_product(r)]
+    if filtered_amazon:
+        amazon_rows = filtered_amazon
+        
+    filtered_flipkart = [r for r in flipkart_rows if _is_core_product(r)]
+    if filtered_flipkart:
+        flipkart_rows = filtered_flipkart
 
     # ── Bucket by category ────────────────────────────────────────────────
     niche_buckets: Dict[str, Dict] = defaultdict(lambda: {"amazon": [], "flipkart": []})

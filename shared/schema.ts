@@ -10,6 +10,12 @@ export const usersAuth = pgTable("users_auth", {
   passwordHash: varchar("password_hash", { length: 255 }).notNull(),
   isActive: boolean("is_active").default(true),
   isVerified: boolean("is_verified").default(false),
+  
+  // MFA Fields
+  mfaEnabled: boolean("mfa_enabled").default(false),
+  mfaSecret: text("mfa_secret"), // Encrypted AES-256
+  mfaBackupCodes: text("mfa_backup_codes").array(), // Hashed backup codes
+
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),
 });

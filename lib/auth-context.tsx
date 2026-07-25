@@ -316,7 +316,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   const refreshUser = async () => {
-    setIsLoading(true);
     hasFetched.current = true;
     await fetchCurrentUser();
   };

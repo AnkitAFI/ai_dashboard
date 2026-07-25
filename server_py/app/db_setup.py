@@ -55,6 +55,7 @@ def _create_all_tables():
 # ─────────────────────────────────────────────────────────────────────────────
 
 _USERS_VIEW_SQL = """
+DROP VIEW IF EXISTS users CASCADE;
 CREATE OR REPLACE VIEW users AS
 SELECT
     ua.id,

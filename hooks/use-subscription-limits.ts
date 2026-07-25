@@ -113,7 +113,7 @@ const TIER_LIMITS: Record<string, SubscriptionLimits> = {
     maxNotifications: UNLIMITED,
     maxFullAnalysesPerMonth: UNLIMITED, // ✅ Unlimited product analyses
     maxAIChatMessagesPerMonth: UNLIMITED, // Unlimited AI chat messages
-    maxKeywordIntelligenceSearchesPerMonth: UNLIMITED, // ✅ Unlimited for enterprise
+    maxKeywordIntelligenceSearchesPerMonth: 50, // ✅ 50 keyword intelligence searches per month for enterprise
   },
 };
 

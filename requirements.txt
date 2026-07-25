@@ -22,6 +22,9 @@ apscheduler
 redis
 structlog
 reportlab
+# Security & MFA
+pyotp==2.9.0
+slowapi==0.1.9
 
 # Core Framework
 fastapi==0.104.1
@@ -57,3 +60,6 @@ faster-whisper
 # Festival libraries
 ephem==4.2
 hijridate==2.4.0
+
+# Spell checking
+symspellpy==6.10.0

@@ -16,8 +16,10 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
 import { useRouter, usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { useAlerts, Notification, NotificationDetails } from "@/components/dashboard/alert-context";
 import { API_BASE_URL } from "@/lib/config";
+// import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 // Types are now imported from alert-context
 
@@ -82,6 +84,7 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     setMounted(true);
@@ -90,10 +93,15 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
   const selectedSource = filters.table || "amazon";
   const BASE_URL = API_BASE_URL;
 
+  const defaultTitle = pathname.split("/").pop()?.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()) || "Dashboard";
   const currentRoute = ROUTE_TITLES[pathname] || {
-    title: pathname.split("/").pop()?.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()) || "Dashboard",
+    title: defaultTitle,
     subtitle: "AI-powered marketplace intelligence",
   };
+
+  const routeKey = pathname.replace(/\//g, '_').replace(/^_/, '') || 'home';
+  const displayTitle = t(`routes.${routeKey}.title`, currentRoute.title);
+  const displaySubtitle = t(`routes.${routeKey}.subtitle`, currentRoute.subtitle);
 
   const isDashboard = pathname === "/overview" || pathname === "/dashboard" || pathname === "/";
 
@@ -171,14 +179,14 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
         </button>
         <div className="flex-1 sm:flex-none">
           <h2 className="text-xl sm:text-2xl font-bold text-sky-900 dark:text-sky-100 flex items-center gap-2">
-            {currentRoute.title} {isDashboard && (
+            {displayTitle} {isDashboard && (
               <span className="w-5 h-3 sm:w-6 sm:h-4 inline-block">
                 <img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" alt="Indian Flag" className="w-full h-full object-cover shadow-sm rounded-sm" />
               </span>
             )}
           </h2>
           <p className="text-slate-600 dark:text-slate-400 text-[10px] sm:text-xs">
-            {currentRoute.subtitle} • <span className="font-semibold text-sky-600 dark:text-sky-400">{currentTier.toUpperCase()}</span>
+            {displaySubtitle} • <span className="font-semibold text-sky-600 dark:text-sky-400">{currentTier.toUpperCase()}</span>
           </p>
         </div>
       </div>
@@ -197,7 +205,7 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
               data-panel-id="global_filters_panel"
             >
               <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-              <span>{showFilters ? "Hide Filters" : "Filters"}</span>
+              <span>{showFilters ? t("header.hideFilters", "Hide Filters") : t("header.filters", "Filters")}</span>
             </Button>
 
 
@@ -214,6 +222,8 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
             </select>
           </>
         )}
+
+        {/* Language Switcher Removed Temporary */}
 
         {/* Theme Toggle */}
         <Button
@@ -255,9 +265,9 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-96 max-w-[95vw] rounded-2xl shadow-2xl bg-white dark:bg-slate-900 max-h-[80vh] overflow-y-auto border-slate-200 dark:border-slate-800">
             <DropdownMenuLabel className="font-bold text-slate-800 dark:text-slate-100 text-base sticky top-0 bg-white dark:bg-slate-900 z-10 p-4 border-b border-slate-100 dark:border-slate-800">
-              🚨 Competitor Alerts
+              {t("header.competitorAlerts", "🚨 Competitor Alerts")}
               <p className="text-[10px] font-normal text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1">
-                Real-time marketplace monitoring
+                {t("header.realTimeMonitoring", "Real-time marketplace monitoring")}
                 {limits.maxNotifications < UNLIMITED && (
                   <span className="text-amber-600 font-bold bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded ml-auto flex items-center gap-1">
                     <Lock className="w-2.5 h-2.5" /> {notifications.filter(n => n.id !== 'upgrade-prompt').length}/{limits.maxNotifications}
@@ -271,8 +281,8 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
                   <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
                     <Bell className="w-6 h-6 text-slate-200" />
                   </div>
-                  <p className="font-medium">All caught up!</p>
-                  <p className="text-xs text-slate-400">No new alerts at the moment.</p>
+                  <p className="font-medium">{t("header.allCaughtUp", "All caught up!")}</p>
+                  <p className="text-xs text-slate-400">{t("header.noNewAlerts", "No new alerts at the moment.")}</p>
                 </div>
               </div>
             ) : (
@@ -310,8 +320,8 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
               </div>
             )}
             <div className="sticky bottom-0 bg-white dark:bg-slate-900 p-3 border-t border-slate-100 dark:border-slate-800 flex gap-2">
-              <Button size="sm" variant="ghost" className="flex-1 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300" onClick={() => setNotifications([])} data-track-id="clear_alerts_btn">Clear All</Button>
-              <Button size="sm" className="flex-1 text-xs font-bold bg-sky-600 hover:bg-sky-700 shadow-md shadow-sky-100 dark:shadow-none" onClick={() => fetchNotifications(selectedSource)} data-track-id="refresh_alerts_btn">Refresh Feed</Button>
+              <Button size="sm" variant="ghost" className="flex-1 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300" onClick={() => setNotifications([])} data-track-id="clear_alerts_btn">{t("header.clearAll", "Clear All")}</Button>
+              <Button size="sm" className="flex-1 text-xs font-bold bg-sky-600 hover:bg-sky-700 shadow-md shadow-sky-100 dark:shadow-none" onClick={() => fetchNotifications(selectedSource)} data-track-id="refresh_alerts_btn">{t("header.refreshFeed", "Refresh Feed")}</Button>
             </div>
             {!canAccessFeature('hasRealTimeAlerts') && notifications.length > 0 && (
               <div className="m-3 p-4 bg-gradient-to-br from-indigo-600 to-sky-600 rounded-xl text-white shadow-lg">
@@ -320,10 +330,10 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
                     <Crown className="w-4 h-4 text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-xs font-bold mb-1">Unlock Real-Time Intelligence</p>
+                    <p className="text-xs font-bold mb-1">{t("header.unlockIntelligence", "Unlock Real-Time Intelligence")}</p>
                     <p className="text-[10px] text-sky-100 mb-3 opacity-90">Get instant price & review alerts before competitors react.</p>
                     <Button size="sm" className="w-full bg-white text-sky-600 hover:bg-sky-50 font-bold text-[10px] h-8 rounded-lg" onClick={() => router.push("/subscription")} data-track-id="upgrade_premium_alerts_btn">
-                      Upgrade to Premium
+                      {t("header.upgradePremium", "Upgrade to Premium")}
                     </Button>
                   </div>
                 </div>

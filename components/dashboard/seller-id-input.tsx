@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle, Loader2, Save, ShoppingBag, Globe } from "lucide-react";
 import { useAuth } from '@/lib/auth-context';
 import { API_BASE_URL } from "@/lib/config";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import {
   Select,
   SelectContent,
@@ -49,7 +50,7 @@ export default function SellerIdInput({ onSaved }: { onSaved: (id: string) => vo
       // Backend now automatically handles background ingestion based on updated profile
 
     } catch (err: any) {
-      setError(err.message || "Something went wrong. Please try again.");
+      setError(sanitizeApiError(err.message, "Something went wrong. Please try again."));
     } finally {
       setIsSaving(false);
     }

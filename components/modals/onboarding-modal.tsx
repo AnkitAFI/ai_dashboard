@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { sanitizeApiError } from "@/lib/sanitize-error";
 import { API_BASE_URL } from "@/lib/config";
 import { analytics } from "@/lib/analytics";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -154,7 +155,7 @@ export default function OnboardingModal({
       setFormData((prev) => ({ ...prev, seller_id: sellerId }));
     } catch (err: any) {
       setConnectionError(
-        err.message || "Something went wrong. Please try again.",
+        err.message ? sanitizeApiError(err.message, "Something went wrong. Please try again.") : "Something went wrong. Please try again.",
       );
     } finally {
       setIsConnecting(false);

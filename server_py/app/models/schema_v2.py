@@ -14,6 +14,12 @@ class UserAuth(Base):
     password_hash = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
+    
+    # MFA Fields
+    mfa_enabled = Column(Boolean, default=False)
+    mfa_secret = Column(EncryptedString(), nullable=True)
+    mfa_backup_codes = Column(ARRAY(Text), nullable=True)
+
     role = Column(String(50), default="user")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
