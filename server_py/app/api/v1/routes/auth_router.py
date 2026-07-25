@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks, Request, Response
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
@@ -26,6 +27,7 @@ class MFAVerifyRequest(BaseModel):
 class MFALoginRequest(BaseModel):
     temp_token: str
     code: str
+    remember_me: bool = False
 
 class MFADisableRequest(BaseModel):
     password: str
@@ -236,19 +238,9 @@ def mfa_verify_login(req: MFALoginRequest, request: Request, response: Response,
 
         session_token = create_session(
             user_id=user_obj.id,
-            remember_me=False,
+            remember_me=req.remember_me,
             ip_address=ip_address,
             user_agent=user_agent
-        )
-        
-        max_age = SESSION_EXPIRE_DAYS_NO_REMEMBER * 24 * 60 * 60
-        response.set_cookie(
-            key="session_id",
-            value=session_token,
-            httponly=True,
-            secure=SESSION_COOKIE_SECURE,
-            samesite="lax",
-            max_age=max_age,
         )
         
         from app.models.schema_v2 import AuditLog
@@ -262,24 +254,36 @@ def mfa_verify_login(req: MFALoginRequest, request: Request, response: Response,
         db.add(audit_log)
         db.commit()
         
-        current_month = datetime.now().strftime("%Y-%m")
-        return {
+        max_age = SESSION_EXPIRE_DAYS_REMEMBER * 24 * 60 * 60 if req.remember_me else SESSION_EXPIRE_DAYS_NO_REMEMBER * 24 * 60 * 60
+        
+        content = {
             "success": True,
             "message": "Login successful",
             "user": {
                 "id": user_obj.id,
+                "email": user_obj.email,
                 "first_name": user_obj.first_name,
                 "last_name": user_obj.last_name,
-                "email": user_obj.email,
-                "business_name": user_obj.business_name,
-                "location": user_obj.location,
-                "business_interests": user_obj.business_interests,
-                "subscription_tier": user_obj.subscription_tier or 'free',
-                "ai_chat_used": user_obj.ai_chat_used or 0,
-                "ai_chat_month": user_obj.ai_chat_month or current_month,
+                "business_name": getattr(user_obj, "business_name", ""),
+                "location": getattr(user_obj, "location", ""),
+                "subscription_tier": getattr(user_obj, "subscription_tier", "free"),
+                "ai_chat_used": getattr(user_obj, "ai_chat_used", 0),
+                "ai_chat_month": getattr(user_obj, "ai_chat_month", ""),
                 "created_at": str(user_obj.created_at)
             }
         }
+        
+        json_resp = JSONResponse(content=content)
+        json_resp.set_cookie(
+            key="session_id",
+            value=session_token,
+            httponly=True,
+            secure=SESSION_COOKIE_SECURE,
+            samesite="lax",
+            max_age=max_age,
+            # domain=".insydz.com"
+        )
+        return json_resp
 
     # Check TOTP
     secret = user_auth.mfa_secret
