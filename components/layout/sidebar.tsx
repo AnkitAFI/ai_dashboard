@@ -515,7 +515,10 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
 
                 <div className="space-y-1">
                   {section.items.map((item) => {
-                    if (item.href === "/seller/listing-studio" && user?.subscriptionTier !== "enterprise") {
+                    if (
+                      (item.href === "/seller/listing-studio" || item.href === "/seller/integrations") && 
+                      user?.subscriptionTier !== "enterprise"
+                    ) {
                       return null;
                     }
                     const Icon = item.icon;

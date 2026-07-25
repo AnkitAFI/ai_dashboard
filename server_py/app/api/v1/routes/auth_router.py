@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks, Request
+from fastapi import APIRouter, HTTPException, Depends, status, BackgroundTasks, Request, Response
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import timedelta
@@ -70,14 +70,19 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         )
         
         
-    if getattr(user, "mfa_enabled", False):
-        temp_expires = timedelta(minutes=5)
+    from app.models.schema_v2 import UserAuth
+    user_auth = db.query(UserAuth).filter(UserAuth.id == user.id).first()
+
+    if user_auth and getattr(user_auth, "mfa_enabled", False):
+        # Create a temporary token for MFA verification
+        temp_expires = timedelta(minutes=10)
         temp_token = create_access_token(
             data={"sub": user.email, "scope": "mfa_pending"}, expires_delta=temp_expires
         )
         return {"status": "mfa_required", "temp_token": temp_token}
-
-    access_token_expires = timedelta(minutes=30)
+    
+    # Create standard token
+    access_token_expires = timedelta(days=settings.SESSION_EXPIRE_DAYS_NO_REMEMBER)
     access_token = create_access_token(
         data={"sub": user.email, "scope": "full_access"}, expires_delta=access_token_expires
     )
@@ -95,13 +100,18 @@ class MFAVerifySetupRequest(BaseModel):
     code: str
 
 @router.post("/mfa/verify-setup")
-def mfa_verify_setup(req: MFAVerifySetupRequest, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
+def mfa_verify_setup(req: MFAVerifySetupRequest, request: Request, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     totp = pyotp.TOTP(req.secret)
     if not totp.verify(req.code, valid_window=1):
         raise HTTPException(status_code=400, detail="Invalid verification code")
     
-    current_user.mfa_secret = req.secret
-    current_user.mfa_enabled = True
+    from app.models.schema_v2 import UserAuth
+    user_auth = db.query(UserAuth).filter(UserAuth.id == current_user.id).first()
+    if not user_auth:
+        raise HTTPException(status_code=500, detail="UserAuth record not found")
+        
+    user_auth.mfa_secret = req.secret
+    user_auth.mfa_enabled = True
     
     # Generate 8 backup codes
     import secrets
@@ -117,33 +127,76 @@ def mfa_verify_setup(req: MFAVerifySetupRequest, current_user = Depends(get_curr
         hashed = bcrypt.hashpw(code.encode('utf-8'), salt).decode('utf-8')
         backup_codes_hashed.append(hashed)
         
-    current_user.mfa_backup_codes = backup_codes_hashed
+    user_auth.mfa_backup_codes = backup_codes_hashed
+    
+    from app.models.schema_v2 import AuditLog
+    from app.core.cryptography import HashedString
+    
+    ip_hash = None
+    if request.client and request.client.host:
+        hasher = HashedString()
+        ip_hash = hasher.process_bind_param(request.client.host, None)
+        
+    audit = AuditLog(
+        actor_user_id=current_user.id,
+        action="MFA_ENABLED",
+        resource_type="USER_AUTH",
+        resource_id=str(current_user.id),
+        ip_hash=ip_hash
+    )
+    db.add(audit)
     db.commit()
     
     return {"message": "MFA enabled successfully", "backup_codes": backup_codes_plain}
 
 @router.post("/mfa/disable")
-def mfa_disable(req: MFADisableRequest, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
+def mfa_disable(req: MFADisableRequest, request: Request, current_user = Depends(get_current_user), db: Session = Depends(get_db)):
     from app.core.security import verify_password
     if not verify_password(req.password, current_user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid password")
+    from app.models.schema_v2 import UserAuth
+    user_auth = db.query(UserAuth).filter(UserAuth.id == current_user.id).first()
+    if not user_auth:
+        raise HTTPException(status_code=500, detail="UserAuth record not found")
         
-    totp = pyotp.TOTP(current_user.mfa_secret)
+    if not user_auth.mfa_enabled:
+        raise HTTPException(status_code=400, detail="MFA is not enabled")
+        
+    totp = pyotp.TOTP(user_auth.mfa_secret)
     if not totp.verify(req.code, valid_window=1):
         raise HTTPException(status_code=400, detail="Invalid MFA code")
         
-    current_user.mfa_enabled = False
-    current_user.mfa_secret = None
-    current_user.mfa_backup_codes = None
+    user_auth.mfa_enabled = False
+    user_auth.mfa_secret = None
+    user_auth.mfa_backup_codes = None
+    
+    from app.models.schema_v2 import AuditLog
+    from app.core.cryptography import HashedString
+    
+    ip_hash = None
+    if request.client and request.client.host:
+        hasher = HashedString()
+        ip_hash = hasher.process_bind_param(request.client.host, None)
+        
+    audit = AuditLog(
+        actor_user_id=current_user.id,
+        action="MFA_DISABLED",
+        resource_type="USER_AUTH",
+        resource_id=str(current_user.id),
+        ip_hash=ip_hash
+    )
+    db.add(audit)
     db.commit()
     return {"message": "MFA disabled successfully"}
 
 @router.get("/mfa/status")
-def mfa_status(current_user = Depends(get_current_user)):
-    return {"mfa_enabled": getattr(current_user, "mfa_enabled", False)}
+def mfa_status(current_user = Depends(get_current_user), db: Session = Depends(get_db)):
+    from app.models.schema_v2 import UserAuth
+    user_auth = db.query(UserAuth).filter(UserAuth.id == current_user.id).first()
+    return {"mfa_enabled": getattr(user_auth, "mfa_enabled", False)}
 
 @router.post("/mfa/verify-login")
-def mfa_verify_login(req: MFALoginRequest, db: Session = Depends(get_db)):
+def mfa_verify_login(req: MFALoginRequest, request: Request, response: Response, db: Session = Depends(get_db)):
     from app.core.security import verify_password
     try:
         payload = jwt.decode(req.temp_token, settings.SECRET_KEY, algorithms=["HS256"])
@@ -157,32 +210,92 @@ def mfa_verify_login(req: MFALoginRequest, db: Session = Depends(get_db)):
     user_repo = UserRepository()
     user = user_repo.get_by_email(db, email=email)
     
-    if not user or not user.mfa_enabled:
+    from app.models.schema_v2 import UserAuth
+    user_auth = db.query(UserAuth).filter(UserAuth.id == user.id).first()
+    
+    if not user_auth or not user_auth.mfa_enabled:
         raise HTTPException(status_code=401, detail="User not found or MFA not enabled")
     
+    # Helper to finish login
+    def finish_login(user_obj):
+        from app.api.v1.routes.legacy_router import (
+            create_session, delete_all_user_sessions, 
+            SESSION_EXPIRE_DAYS_NO_REMEMBER, SESSION_COOKIE_SECURE
+        )
+        from datetime import datetime
+        
+        ip_address = request.headers.get("x-forwarded-for") or request.headers.get("x-real-ip")
+        if ip_address:
+            ip_address = ip_address.split(",")[0].strip()
+        else:
+            ip_address = request.client.host if request.client else "Unknown IP"
+            
+        user_agent = request.headers.get("user-agent")
+
+        delete_all_user_sessions(user_obj.id)
+
+        session_token = create_session(
+            user_id=user_obj.id,
+            remember_me=False,
+            ip_address=ip_address,
+            user_agent=user_agent
+        )
+        
+        max_age = SESSION_EXPIRE_DAYS_NO_REMEMBER * 24 * 60 * 60
+        response.set_cookie(
+            key="session_id",
+            value=session_token,
+            httponly=True,
+            secure=SESSION_COOKIE_SECURE,
+            samesite="lax",
+            max_age=max_age,
+        )
+        
+        from app.models.schema_v2 import AuditLog
+        audit_log = AuditLog(
+            actor_user_id=user_obj.id,
+            action="user_logged_in_mfa",
+            resource_type="User",
+            resource_id=str(user_obj.id),
+            ip_hash=ip_address
+        )
+        db.add(audit_log)
+        db.commit()
+        
+        current_month = datetime.now().strftime("%Y-%m")
+        return {
+            "success": True,
+            "message": "Login successful",
+            "user": {
+                "id": user_obj.id,
+                "first_name": user_obj.first_name,
+                "last_name": user_obj.last_name,
+                "email": user_obj.email,
+                "business_name": user_obj.business_name,
+                "location": user_obj.location,
+                "business_interests": user_obj.business_interests,
+                "subscription_tier": user_obj.subscription_tier or 'free',
+                "ai_chat_used": user_obj.ai_chat_used or 0,
+                "ai_chat_month": user_obj.ai_chat_month or current_month,
+                "created_at": str(user_obj.created_at)
+            }
+        }
+
     # Check TOTP
-    secret = user.mfa_secret
-    # In schema_v2, mfa_secret is EncryptedString. Assuming accessing it returns decrypted text.
+    secret = user_auth.mfa_secret
     totp = pyotp.TOTP(secret)
     if totp.verify(req.code, valid_window=1):
-        access_token = create_access_token(
-            data={"sub": user.email, "scope": "full_access"}, expires_delta=timedelta(minutes=30)
-        )
-        return {"access_token": access_token, "token_type": "bearer"}
+        return finish_login(user)
     
     # Check backup codes if TOTP fails
-    if user.mfa_backup_codes:
-        for idx, hashed_code in enumerate(user.mfa_backup_codes):
+    if user_auth.mfa_backup_codes:
+        for idx, hashed_code in enumerate(user_auth.mfa_backup_codes):
             if bcrypt.checkpw(req.code.encode('utf-8'), hashed_code.encode('utf-8')):
-                # Consume backup code
-                codes = list(user.mfa_backup_codes)
+                codes = list(user_auth.mfa_backup_codes)
                 codes.pop(idx)
-                user.mfa_backup_codes = codes
+                user_auth.mfa_backup_codes = codes
                 db.commit()
-                access_token = create_access_token(
-                    data={"sub": user.email, "scope": "full_access"}, expires_delta=timedelta(minutes=30)
-                )
-                return {"access_token": access_token, "token_type": "bearer"}
+                return finish_login(user)
 
     raise HTTPException(status_code=401, detail="Invalid code")
 

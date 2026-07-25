@@ -28,6 +28,25 @@ const CREDIT_PACKS: Record<string, PaymentPlan[]> = {
 };
 
 export default function ListingStudioPage() {
+  return (
+    <div className="p-8 max-w-[1000px] mx-auto h-[80vh] flex flex-col items-center justify-center text-center">
+      <div className="w-24 h-24 bg-blue-50 dark:bg-blue-950/50 rounded-full flex items-center justify-center mb-6 shadow-sm border border-blue-100 dark:border-blue-900">
+        <span className="text-4xl">✨</span>
+      </div>
+      <h1 className="text-4xl font-extrabold tracking-tight mb-4 text-slate-900 dark:text-slate-50">
+        Coming Soon
+      </h1>
+      <p className="text-slate-500 dark:text-slate-400 text-lg max-w-xl mb-8">
+        We are actively working on this feature. Stay tuned for an incredible experience!
+      </p>
+      <div className="flex items-center justify-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-5 py-2.5 rounded-full shadow-sm">
+        <span>🚀</span> Launching very soon
+      </div>
+    </div>
+  );
+}
+
+export function OldListingStudioPage() {
   const { user, refreshUser, isLoading: authLoading } = useAuth();
   const [description, setDescription] = useState("");
   const [imageBase64List, setImageBase64List] = useState<string[]>([]);

@@ -33,7 +33,13 @@ def get_user_credentials(
 ):
     """
     Returns a masked list of platforms the user has connected.
+    Restricted to Enterprise tier.
     """
+    from app.models.schema_v2 import UserSubscription
+    sub = db.query(UserSubscription).filter(UserSubscription.user_id == int(user_id)).first()
+    if not sub or sub.subscription_tier != "enterprise":
+        raise HTTPException(status_code=403, detail="API Integrations are exclusively available on the Enterprise plan.")
+
     creds = db.query(UserApiCredential).filter(UserApiCredential.user_id == user_id).all()
     
     result = []

@@ -151,7 +151,8 @@ export default function Sales() {
       case "rating":
         return p.rating ?? p.avg_rating ?? p.product_star_rating_numeric ?? p.product_star_rating ?? 0;
       case "sales":
-        return parseSalesVolume(p.sales_volume, p.avg_sales_volume);
+        const rawSales = parseSalesVolume(p.sales_volume, p.avg_sales_volume ?? (p as any).estimated_sales);
+        return source === "flipkart" ? rawSales / 125 : rawSales;
       default:
         return 0;
     }

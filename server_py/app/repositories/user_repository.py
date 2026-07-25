@@ -6,7 +6,9 @@ from datetime import datetime
 
 class UserRepository:
     def get_by_email(self, db: Session, email: str):
-        return db.query(User).filter(User.email == email).first()
+        from app.core.cryptography import HashedString
+        hashed = HashedString().process_bind_param(email, None)
+        return db.query(User).filter(User.email_hash == hashed).first()
 
     def create(self, db: Session, user_in: UserCreate, hashed_password: str, business_interests: list, ip_hash: str = "unknown"):
         db_user = User(

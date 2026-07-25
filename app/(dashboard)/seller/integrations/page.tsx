@@ -6,10 +6,31 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { API_BASE_URL } from "@/lib/config";
 import { sanitizeApiError } from "@/lib/sanitize-error";
-import { CheckCircle2, Link as LinkIcon, Loader2, Sparkles } from "lucide-react";
+import { useAuth } from "@/lib/auth-context";
+import { Lock, ArrowRight, CheckCircle2, Link as LinkIcon, Loader2, Sparkles } from "lucide-react";
 
 export default function IntegrationsPage() {
+  return (
+    <div className="p-8 max-w-[1000px] mx-auto h-[80vh] flex flex-col items-center justify-center text-center">
+      <div className="w-24 h-24 bg-blue-50 dark:bg-blue-950/50 rounded-full flex items-center justify-center mb-6 shadow-sm border border-blue-100 dark:border-blue-900">
+        <span className="text-4xl">✨</span>
+      </div>
+      <h1 className="text-4xl font-extrabold tracking-tight mb-4 text-slate-900 dark:text-slate-50">
+        Coming Soon
+      </h1>
+      <p className="text-slate-500 dark:text-slate-400 text-lg max-w-xl mb-8">
+        We are actively working on this feature. Stay tuned for an incredible experience!
+      </p>
+      <div className="flex items-center justify-center gap-2 text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/50 px-5 py-2.5 rounded-full shadow-sm">
+        <span>🚀</span> Launching very soon
+      </div>
+    </div>
+  );
+}
+
+export function OldIntegrationsPage() {
   const { toast } = useToast();
+  const { user, isLoading: authLoading } = useAuth();
   
   const [loading, setLoading] = useState(true);
   const [testingAmazon, setTestingAmazon] = useState(false);
@@ -121,8 +142,29 @@ export default function IntegrationsPage() {
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return <div className="p-8 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+  }
+
+  const isNonEnterprise = user?.subscriptionTier !== "enterprise";
+
+  if (isNonEnterprise) {
+    return (
+      <div className="p-8 max-w-[1000px] mx-auto h-[80vh] flex flex-col items-center justify-center text-center">
+        <div className="w-24 h-24 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-200 dark:border-slate-700">
+          <Lock className="w-12 h-12 text-slate-400 dark:text-slate-500" />
+        </div>
+        <h1 className="text-4xl font-extrabold tracking-tight mb-4 text-slate-900 dark:text-slate-50">
+          Enterprise Exclusive Feature
+        </h1>
+        <p className="text-slate-500 dark:text-slate-400 text-lg max-w-xl mb-8">
+          API Integrations are exclusively available on the Enterprise plan. Upgrade to enable one-click publishing and syncing.
+        </p>
+        <Button size="lg" className="h-12 px-8 text-lg font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg" onClick={() => window.location.href = '/subscription'}>
+          View Upgrade Plans <ArrowRight className="w-5 h-5 ml-2" />
+        </Button>
+      </div>
+    );
   }
 
   return (

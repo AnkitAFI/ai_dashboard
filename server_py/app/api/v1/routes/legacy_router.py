@@ -6811,8 +6811,10 @@ def login_user(login_data: UserLogin, response: Response, request: Request, db: 
             )
             
         from datetime import timedelta, datetime
+        from app.models.schema_v2 import UserAuth
+        user_auth = db.query(UserAuth).filter(UserAuth.id == user.id).first()
         
-        if getattr(user, "mfa_enabled", False):
+        if user_auth and getattr(user_auth, "mfa_enabled", False):
             # Create a temporary token for MFA verification
             from jose import jwt
             from app.core.config import settings
@@ -7291,9 +7293,30 @@ def update_tour_completion(
 # ============================================
 
 @router.post("/api/auth/logout")
-def logout(response: Response, session_id: str = Cookie(None)):
+def logout(request: Request, response: Response, db: Session = Depends(get_db), session_id: str = Cookie(None)):
     """Logout user and clear session"""
     if session_id:
+        session_data = validate_session(session_id)
+        if session_data:
+            user_id = session_data.get("user_id")
+            if user_id:
+                from app.models.schema_v2 import AuditLog
+                ip_address = request.headers.get("x-forwarded-for") or request.headers.get("x-real-ip")
+                if ip_address:
+                    ip_address = ip_address.split(",")[0].strip()
+                else:
+                    ip_address = request.client.host if request.client else "Unknown IP"
+                    
+                audit_log = AuditLog(
+                    actor_user_id=user_id,
+                    action="user_logged_out",
+                    resource_type="User",
+                    resource_id=str(user_id),
+                    ip_hash=ip_address
+                )
+                db.add(audit_log)
+                db.commit()
+
         delete_session(session_id)
         print(f"✅ Session deleted from Redis")
     

@@ -139,12 +139,8 @@ async def api_generate_listing(
         from app.models.schema_v2 import UserSubscription
         sub = db.query(UserSubscription).filter(UserSubscription.user_id == user_id).first()
         
-        if not sub or sub.subscription_tier == "free":
-            raise HTTPException(status_code=403, detail="Free Tier locked. Please upgrade to Basic or Premium to access AI Listing Studio.")
-            
-        if sub.subscription_tier == "basic":
-            if sub.ai_listings_generated >= 20:
-                raise HTTPException(status_code=403, detail="You have reached your 20 SKU limit for this month. Please upgrade to Premium for unlimited access.")
+        if not sub or sub.subscription_tier != "enterprise":
+            raise HTTPException(status_code=403, detail="AI Listing Studio is an exclusive feature for Enterprise users. Please upgrade your plan.")
         
         # === SANDBOX TESTING ===
         # Bypassing backend wallet balance check for infinite testing

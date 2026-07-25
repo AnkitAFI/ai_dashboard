@@ -22,6 +22,23 @@ interface TrendingProduct {
   product_price?: number;
 }
 
+const scaleFlipkartProducts = (data: any[]) => {
+  if (!data) return [];
+  return data.map(p => {
+    const adjusted = { ...p };
+    if (adjusted.daily_sales) adjusted.daily_sales = Math.round(adjusted.daily_sales / 450);
+    if (adjusted.total_daily_sales) adjusted.total_daily_sales = Math.round(adjusted.total_daily_sales / 450);
+    if (adjusted.estimated_sales) adjusted.estimated_sales = Math.round(adjusted.estimated_sales / 450);
+    if (typeof adjusted.sales_volume === 'string') {
+      const num = parseFloat(adjusted.sales_volume.replace(/[^0-9.]/g, '')) || 0;
+      adjusted.sales_volume = Math.round(num / 450);
+    } else if (typeof adjusted.sales_volume === 'number') {
+      adjusted.sales_volume = Math.round(adjusted.sales_volume / 450);
+    }
+    return adjusted;
+  });
+};
+
 function ProductCard({
   product,
   index,
@@ -180,7 +197,7 @@ function ProductCard({
             amazonRes.json(),
           ]);
 
-          setFlipkartProducts(flipkartJson.data || []);
+          setFlipkartProducts(scaleFlipkartProducts(flipkartJson.data) || []);
           setAmazonProducts(amazonJson.data || []);
         } else if (table === "amazon" || table === "rapidapi_amazon_products") {
           const res = await fetch(`${BASE_URL}/rapidapi/top-sales?limit=${topN}&${queryParams}`);
@@ -190,7 +207,7 @@ function ProductCard({
         } else {
           const res = await fetch(`${BASE_URL}/rapidapi/flipkart/top-sales?limit=${topN}&${queryParams}`);
           const json = await res.json();
-          setFlipkartProducts(json.data || []);
+          setFlipkartProducts(scaleFlipkartProducts(json.data) || []);
           setAmazonProducts([]);
         }
       } catch (error) {

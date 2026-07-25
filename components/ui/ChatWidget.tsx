@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { MessageCircle, X, Send, Bot, User, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -82,8 +83,8 @@ export function ChatWidget() {
             <Card className="w-full h-full sm:w-[350px] shadow-2xl shadow-orange-900/10 border-primary/10 rounded-none sm:rounded-2xl border-0 sm:border flex flex-col overflow-hidden bg-white/95 backdrop-blur-md dark:bg-gray-950/95">
               <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 flex flex-row justify-between items-center space-y-0 shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-inner">
-                    <Sparkles className="w-5 h-5 text-white" />
+                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-inner overflow-hidden border border-white/20">
+                    <Image src="/chatbot_owl_v2.png" alt="Apex Owl" width={40} height={40} className="object-cover" />
                   </div>
                   <div className="flex flex-col">
                     <CardTitle className="text-lg font-bold">Apex</CardTitle>
@@ -114,7 +115,11 @@ export function ChatWidget() {
                           : "bg-white border border-slate-100 text-slate-800 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-200 rounded-tl-sm"
                       }`}
                     >
-                      {msg.role === "bot" && <Sparkles className="w-4 h-4 mt-0.5 shrink-0 text-orange-500" />}
+                      {msg.role === "bot" && (
+                        <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 shadow-sm border border-slate-200 dark:border-slate-800">
+                          <Image src="/chatbot_owl_v2.png" alt="Apex Owl" width={24} height={24} className="object-cover" />
+                        </div>
+                      )}
                       <span className="text-sm whitespace-pre-wrap break-words w-full leading-relaxed">
                         {msg.content.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")}
                       </span>
@@ -172,9 +177,9 @@ export function ChatWidget() {
             <Button
               onClick={() => setIsOpen(true)}
               size="icon"
-              className="w-14 h-14 rounded-full shadow-2xl shadow-orange-500/30 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 border-2 border-white/20 transition-all hover:scale-105"
+              className="w-14 h-14 rounded-full shadow-2xl shadow-orange-500/30 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 border-2 border-white/20 transition-all hover:scale-105 p-0 overflow-hidden relative"
             >
-              <Sparkles className="w-6 h-6 text-white" />
+              <Image src="/chatbot_owl_v2.png" alt="Chat with Apex" fill sizes="56px" className="object-cover" />
             </Button>
           </motion.div>
         )}

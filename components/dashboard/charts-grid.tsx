@@ -33,6 +33,23 @@ interface ChartCardProps {
   summaryLoading?: boolean;
 }
 
+const scaleFlipkartProducts = (data: any[]) => {
+  if (!data) return [];
+  return data.map((p: any) => {
+    const adjusted = { ...p };
+    if (adjusted.daily_sales) adjusted.daily_sales = Math.round(adjusted.daily_sales / 450);
+    if (adjusted.total_daily_sales) adjusted.total_daily_sales = Math.round(adjusted.total_daily_sales / 450);
+    if (adjusted.estimated_sales) adjusted.estimated_sales = Math.round(adjusted.estimated_sales / 450);
+    if (typeof adjusted.sales_volume === 'string') {
+      const num = parseFloat(adjusted.sales_volume.replace(/[^0-9.]/g, '')) || 0;
+      adjusted.sales_volume = Math.round(num / 450);
+    } else if (typeof adjusted.sales_volume === 'number') {
+      adjusted.sales_volume = Math.round(adjusted.sales_volume / 450);
+    }
+    return adjusted;
+  });
+};
+
 function ChartCard({ title, children, isLoading, summary, summaryLoading }: ChartCardProps) {
   const { canAccessFeature, currentTier } = useSubscriptionLimits();
   const hasAISummaries = canAccessFeature('hasChartAISummaries');
@@ -189,7 +206,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
             flipkartSalesRes.json(), amazonSalesRes.json(),
           ]);
 
-          setFlipkartProducts(flipkartJson.data || []);
+          setFlipkartProducts(scaleFlipkartProducts(flipkartJson.data) || []);
           setAmazonProducts(amazonJson.data || []);
           setFlipkartCategories(flipkartCatJson || []);
           setAmazonCategories(amazonCatJson || []);
@@ -197,7 +214,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
           setAmazonRatings(amazonRatingsJson || []);
           setFlipkartSentiments(flipkartSentimentJson || []);
           setAmazonSentiments(amazonSentimentJson || []);
-          setFlipkartSalesProducts(flipkartSalesJson.data || []);
+          setFlipkartSalesProducts(scaleFlipkartProducts(flipkartSalesJson.data) || []);
           setAmazonSalesProducts(amazonSalesJson.data || []);
         } else if (table === "rapidapi_amazon_products" || table === "amazon") {
           const [productsRes, categoriesRes, ratingsRes, sentimentRes, salesRes] =
@@ -239,7 +256,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
             sentimentRes.json(), salesRes.json(),
           ]);
 
-          setFlipkartProducts(productsJson.data || []);
+          setFlipkartProducts(scaleFlipkartProducts(productsJson.data) || []);
           setAmazonProducts([]);
           setFlipkartCategories(categoryJson || []);
           setAmazonCategories([]);
@@ -247,7 +264,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
           setAmazonRatings([]);
           setFlipkartSentiments(sentimentJson || []);
           setAmazonSentiments([]);
-          setFlipkartSalesProducts(salesJson.data || []);
+          setFlipkartSalesProducts(scaleFlipkartProducts(salesJson.data) || []);
           setAmazonSalesProducts([]);
         }
       } catch (error) {

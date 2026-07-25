@@ -168,7 +168,7 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/users/mfa/verify-login`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/mfa/verify-login`, {
         method: "POST",
         credentials: "include",
         headers: {
