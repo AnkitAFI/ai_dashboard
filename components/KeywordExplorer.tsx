@@ -630,7 +630,7 @@ export default function KeywordExplorer({
             <div>
               <h3 className="font-bold text-slate-800 text-lg">Keyword Explorer</h3>
               <p className="text-sm text-slate-500 max-w-sm mt-1.5 mx-auto">
-                Type in any search term above (e.g., "face serum", "water bottle") and click **Analyze** to retrieve search volumes, buyer intent, regional demand, competitor SERPs, and local AI advice.
+                Type in any search term above and click **Analyze** to retrieve search volumes, buyer intent, regional demand, and competitor SERPs.
               </p>
             </div>
           </CardContent>

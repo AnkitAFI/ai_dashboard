@@ -338,7 +338,7 @@
     "checkingSession": "Checking session…",
     "guestMode": "Guest Mode",
     "planComparison": "Plan comparison",
-    "searchPlaceholder": "Search a category or product, e.g. \"kitchen organizer\", \"baby feeding\", \"pet care\"",
+    "searchPlaceholder": "Search a product...",
     "scanning": "Scanning…",
     "findGaps": "Find gaps",
     "both": "Both",
@@ -465,7 +465,7 @@
     "retrievingIntel": "Retrieving Marketplace Intel",
     "retrievingDesc": "We are scanning local search index data, calculating product demand, classifying search intentions, and compiling search recommendations. This process operates 100% free of charge.",
     "keywordExplorer": "Keyword Explorer",
-    "emptyStateDesc": "Type in any search term above (e.g., \"face serum\", \"water bottle\") and click Analyze to retrieve search volumes, buyer intent, regional demand, competitor SERPs, and local AI advice."
+    "emptyStateDesc": "Type in any search term above and click Analyze to retrieve search volumes, buyer intent, regional demand, and competitor SERPs."
   },
   "pr": {
     "analysesUsed": "Analyses used",
