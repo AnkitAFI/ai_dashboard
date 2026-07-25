@@ -1183,7 +1183,7 @@ function WhiteSpaceFinderContent() {
                     value={query}
                     onChange={setQuery}
                     onEnter={runScan}
-                    placeholder={t("whiteSpaceFinder.searchPlaceholder", "Search a category or product, e.g. \"kitchen organizer\", \"baby feeding\", \"pet care\"")}
+                    placeholder={t("whiteSpaceFinder.searchPlaceholder", "Search a product...")}
                     inputClassName="py-3 border-slate-300 dark:border-slate-700 rounded-xl text-sm bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/20 focus:border-violet-400 dark:focus:border-violet-500/40"
                     dictionary={[
                       "kitchen organizer",
@@ -1247,35 +1247,7 @@ function WhiteSpaceFinderContent() {
                   ))}
                 </select>
 
-                {/* Min score */}
-                <select
-                  value={minScore}
-                  onChange={(e) => setMinScore(Number(e.target.value))}
-                  className="h-9 px-3 text-xs border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-650 dark:text-slate-200 focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/20 outline-none"
-                  data-track-id="min_score_filter_select"
-                  data-filter-value={String(minScore)}
-                >
-                  <option value={0}>{t("whiteSpaceFinder.anyScore", "Any score")}</option>
-                  <option value={80}>{t("whiteSpaceFinder.hotOnly", "Hot only (80+)")}</option>
-                  <option value={65}>{t("whiteSpaceFinder.goodPlus", "Good+ (65+)")}</option>
-                  <option value={50}>{t("whiteSpaceFinder.moderatePlus", "Moderate+ (50+)")}</option>
-                </select>
 
-                {/* Sort */}
-                <div className="flex items-center gap-1.5 ml-auto">
-                  <SortAsc className="w-3.5 h-3.5 text-slate-400" />
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                    className="h-9 px-3 text-xs border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 text-slate-650 dark:text-slate-200 focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-500/20 outline-none"
-                    data-track-id="sort_by_filter_select"
-                    data-filter-value={sortBy}
-                  >
-                    <option value="score">Sort: Score</option>
-                    <option value="revenue">Sort: Revenue</option>
-                    <option value="competition">Sort: Fewest competitors</option>
-                  </select>
-                </div>
               </div>
 
               {/* Quick pills */}

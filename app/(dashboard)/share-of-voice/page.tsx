@@ -769,6 +769,19 @@ export default function ShareOfVoice() {
 
         {!loading && sovData && (
           <>
+            {/* Breadcrumb Hierarchy */}
+            <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-2 px-1">
+              <span className="font-semibold text-slate-700 dark:text-slate-200 capitalize">{sovData.marketplace}</span>
+              <ChevronRight className="w-4 h-4 text-slate-400" />
+              <span className="font-semibold text-slate-700 dark:text-slate-200">{sovData.category_name}</span>
+              {yourBrand && (
+                <>
+                  <ChevronRight className="w-4 h-4 text-slate-400" />
+                  <span className="font-semibold text-slate-700 dark:text-slate-200">{yourBrand}</span>
+                </>
+              )}
+            </div>
+
             {/* Summary Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[

@@ -836,7 +836,7 @@ function KeywordExplorerPanel({
             <div>
               <h3 className="font-bold text-slate-800 dark:text-slate-200 text-lg">{t('ki.keywordExplorer', 'Keyword Explorer')}</h3>
               <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mt-1.5 mx-auto">
-                {t('ki.emptyStateDesc', 'Type in any search term above (e.g., "face serum", "water bottle") and click Analyze to retrieve search volumes, buyer intent, regional demand, competitor SERPs, and local AI advice.')}
+                {t('ki.emptyStateDesc', 'Type in any search term above and click Analyze to retrieve search volumes, buyer intent, regional demand, and competitor SERPs.')}
               </p>
             </div>
           </CardContent>
