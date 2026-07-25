@@ -122,7 +122,6 @@ const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "All Premium features",
       "White-label options",
       "Premium support",
-      "Dedicated account manager",
       "Custom integrations",
     ],
     limitations: [],
