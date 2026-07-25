@@ -145,8 +145,8 @@ export default function Login() {
         description: "Successfully logged in.",
       });
 
-      // Non-blocking refresh (this fixes the delay)
-      refreshUser().catch((err) => {
+      // Wait for user context to populate before redirecting
+      await refreshUser().catch((err) => {
         console.warn("Refresh user after login failed (non-critical)", err);
       });
 
@@ -193,7 +193,7 @@ export default function Login() {
         description: "MFA verified successfully.",
       });
 
-      refreshUser().catch(() => {});
+      await refreshUser().catch(() => {});
       router.push("/dashboard");
     } catch (err: any) {
       setErrorMessage("An unexpected error occurred. Please try again.");
