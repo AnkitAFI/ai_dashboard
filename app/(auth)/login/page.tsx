@@ -150,8 +150,8 @@ export default function Login() {
         console.warn("Refresh user after login failed (non-critical)", err);
       });
 
-      // Redirect immediately
-      router.push("/dashboard");
+      // Redirect immediately using window.location to bypass Next.js client cache
+      window.location.href = "/dashboard";
     } catch (error: any) {
       console.error("Login error:", error);
       setErrorMessage(
@@ -194,7 +194,7 @@ export default function Login() {
       });
 
       await refreshUser().catch(() => {});
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch (err: any) {
       setErrorMessage("An unexpected error occurred. Please try again.");
     } finally {
