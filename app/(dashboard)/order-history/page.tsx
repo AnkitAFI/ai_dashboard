@@ -152,6 +152,7 @@ function OrderDetailModal({
   onClose: () => void;
   isDark?: boolean;
 }) {
+  const { t } = useTranslation();
   const status = STATUS_CONFIG[order.status] ?? STATUS_CONFIG.pending;
 
   return (

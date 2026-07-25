@@ -7,7 +7,7 @@ interface PTUsageState {
   used: number;
   limit: number;
   remaining: number | null; // null = unlimited
-  isLocked: boolean;        // free tier — no access at all
+  isLocked: boolean;        // free tier ï¿½ no access at all
   isAtLimit: boolean;       // has a limit and has reached it
   loading: boolean;
 }
@@ -42,7 +42,7 @@ export function usePTUsage() {
     }
 
     try {
-      const res = await fetch(${API_BASE_URL}/users//analysis-usage, {
+      const res = await fetch(`${API_BASE_URL}/users/${user?.id}/analysis-usage`, {
         credentials: 'include',
       });
 
@@ -75,7 +75,7 @@ export function usePTUsage() {
     if (!user?.id || searchLimit === 0 || searchLimit >= UNLIMITED) return;
 
     try {
-      const res = await fetch(${API_BASE_URL}/users//analysis-usage, {
+      const res = await fetch(`${API_BASE_URL}/users/${user?.id}/analysis-usage`, {
         method: 'POST',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

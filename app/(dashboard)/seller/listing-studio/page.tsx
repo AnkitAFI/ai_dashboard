@@ -1349,7 +1349,6 @@ ${generatedListing?.flipkart_description || ""}
               rightTitle="Your Edited Draft"
               hideLineNumbers={true}
               showDiffOnly={false}
-              renderFoldMessage={() => <div />}
               styles={{
                 contentText: {
                   wordBreak: 'break-word',

@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Filter, X, RotateCcw, Lock, Crown, Info, AlertCircle } from "lucide-react";
-import { useFilters, FilterState } from "./filters-context";
+import { useFilters, Filters } from "./filters-context";
 import { useSubscriptionLimits, UNLIMITED } from "@/hooks/use-subscription-limits";
 import { useTranslation } from "react-i18next";
 import {
