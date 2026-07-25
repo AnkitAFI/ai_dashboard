@@ -1143,20 +1143,20 @@ function WhiteSpaceFinderContent() {
                     <tfoot>
                       <tr>
                         <td className="bg-transparent" />
-                        {(["free", "basic", "premium"] as const).map((t) => (
+                        {(["free", "basic", "premium"] as const).map((planTier) => (
                           <td
-                            key={t}
-                            className={`p-3 text-center ${t === "basic" ? "bg-amber-50/40 dark:bg-amber-950/10" : t === "premium" ? "bg-violet-50/40 dark:bg-violet-950/10" : "bg-transparent"}`}
+                            key={planTier}
+                            className={`p-3 text-center ${planTier === "basic" ? "bg-amber-50/40 dark:bg-amber-950/10" : planTier === "premium" ? "bg-violet-50/40 dark:bg-violet-950/10" : "bg-transparent"}`}
                           >
-                            {tier === t ? (
+                            {tier === planTier ? (
                               <span className="inline-flex items-center gap-1 text-xs font-semibold text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-950/30 px-3 py-1 rounded-full border border-violet-200/55 dark:border-violet-900/35">
                                 <CheckCircle className="w-3 h-3" /> {t("whiteSpaceFinder.yourPlan", "Your plan")}
                               </span>
-                            ) : t !== "free" ? (
+                            ) : planTier !== "free" ? (
                               <a
                                 href="/subscription"
                                 className={`text-xs px-4 py-1.5 rounded-full font-medium transition-colors ${
-                                  t === "basic"
+                                  planTier === "basic"
                                     ? "bg-amber-500 text-white hover:bg-amber-600"
                                     : "bg-violet-600 text-white hover:bg-violet-700"
                                 }`}
