@@ -121,7 +121,11 @@ export function ChatWidget() {
                         </div>
                       )}
                       <span className="text-sm whitespace-pre-wrap break-words w-full leading-relaxed">
-                        {msg.content.replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")}
+                        {msg.content
+                          .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+                          .replace(/\*\*(.*?)\*\*/g, "$1")
+                          .replace(/^\s*[\*\-]\s+/gm, "")
+                          .replace(/^\s*\d+\.\s+/gm, "")}
                       </span>
                     </div>
                   </div>

@@ -4,12 +4,13 @@ import PrimeDayIndia2026SellerQuestionsContent from "./prime-day-india-2026-sell
 export const dynamic = "force-static";
 
 export const metadata: Metadata = {
-  title: "Amazon Prime Day India 2026: Every Seller Question Answered",
+  title:
+    "Amazon Prime Day India 2026: Every Question Indian Sellers Are Asking Right Now, All Answered",
   description:
-    "Every question Indian Amazon sellers are asking about Prime Day 2026 answered in one place. Inventory formula, PPC strategy, Lightning Deal submission, pricing and more.",
+    "Amazon Prime Day India 2026 questions answered - inventory, Lightning Deals, PPC budget, pricing, and competitor Buy Box moves, all in one seller guide.",
   alternates: {
     canonical:
-      "https://insydz.com/resources/expert-blog/amazon-prime-day-india-2026-seller-questions",
+      "https://insydz.com/resources/expert-blog/prime-day-india-2026-seller-questions",
   },
 };
 
@@ -37,25 +38,26 @@ const schemaPrimeDayIndia2026 = {
     {
       "@type": "WebPage",
       "@id":
-        "https://insydz.com/resources/expert-blog/amazon-prime-day-india-2026-seller-questions",
-      url: "https://insydz.com/resources/expert-blog/amazon-prime-day-india-2026-seller-questions",
+        "https://insydz.com/resources/expert-blog/prime-day-india-2026-seller-questions",
+      url: "https://insydz.com/resources/expert-blog/prime-day-india-2026-seller-questions",
       name: "Amazon Prime Day India 2026: Every Question Indian Sellers Are Asking Right Now, All Answered",
-      description:
-        "Every question Indian Amazon sellers are asking about Prime Day 2026 answered in one place.",
       isPartOf: {
         "@type": "WebSite",
         name: "Insydz",
         url: "https://insydz.com",
       },
+      about: {
+        "@id": "https://insydz.com/#organization",
+      },
       breadcrumb: {
         "@id":
-          "https://insydz.com/resources/expert-blog/amazon-prime-day-india-2026-seller-questions#breadcrumb",
+          "https://insydz.com/resources/expert-blog/prime-day-india-2026-seller-questions#breadcrumb",
       },
     },
     {
       "@type": "BreadcrumbList",
       "@id":
-        "https://insydz.com/resources/expert-blog/amazon-prime-day-india-2026-seller-questions#breadcrumb",
+        "https://insydz.com/resources/expert-blog/prime-day-india-2026-seller-questions#breadcrumb",
       itemListElement: [
         {
           "@type": "ListItem",
@@ -66,106 +68,78 @@ const schemaPrimeDayIndia2026 = {
         {
           "@type": "ListItem",
           position: 2,
-          name: "Resources",
-          item: "https://insydz.com/resources",
+          name: "Blog",
+          item: "https://insydz.com/blog",
         },
         {
           "@type": "ListItem",
           position: 3,
-          name: "Expert Blog",
-          item: "https://insydz.com/resources/expert-blog",
-        },
-        {
-          "@type": "ListItem",
-          position: 4,
-          name: "Prime Day India 2026 Seller Questions",
-          item: "https://insydz.com/resources/expert-blog/amazon-prime-day-india-2026-seller-questions",
+          name: "Amazon Prime Day India 2026: Every Question Indian Sellers Are Asking Right Now, All Answered",
+          item: "https://insydz.com/resources/expert-blog/prime-day-india-2026-seller-questions",
         },
       ],
     },
     {
       "@type": "BlogPosting",
       "@id":
-        "https://insydz.com/resources/expert-blog/amazon-prime-day-india-2026-seller-questions#article",
+        "https://insydz.com/resources/expert-blog/prime-day-india-2026-seller-questions#article",
       headline:
         "Amazon Prime Day India 2026: Every Question Indian Sellers Are Asking Right Now, All Answered",
       description:
-        "Every question Indian Amazon sellers are asking about Prime Day 2026 answered in one place. Prep your store before it is too late.",
+        "Amazon Prime Day India 2026 questions answered - inventory, Lightning Deals, PPC budget, pricing, and competitor Buy Box moves, all in one seller guide.",
       image:
-        "https://insydz.com/prime-day-india-2026-seller-questions_blogbanner.png",
+        "https://insydz.com/amazon-prime-day-india-2026-seller-questions-blogbanner.png",
       author: {
         "@type": "Organization",
         name: "Insydz Research Team",
-        url: "https://insydz.com",
       },
       publisher: {
         "@id": "https://insydz.com/#organization",
       },
-      datePublished: "2026-07-14",
-      dateModified: "2026-07-14",
+      datePublished: "2026-07-04",
+      dateModified: "2026-07-04",
+      mainEntityOfPage: {
+        "@id":
+          "https://insydz.com/resources/expert-blog/prime-day-india-2026-seller-questions",
+      },
       keywords: [
-        "amazon prime day india 2026 seller preparation questions",
-        "prime day seller checklist india 2026",
-        "how to prepare for prime day amazon india",
-        "prime day listing optimization india 2026",
-        "prime day stock preparation amazon india",
+        "Amazon Prime Day India 2026",
+        "Prime Day seller guide",
+        "Amazon Lightning Deal India",
+        "Prime Day PPC strategy",
+        "Prime Day inventory planning",
+        "Amazon Prime Day competitor pricing",
       ],
-      articleSection: "Prime Day Strategy",
-      inLanguage: "en-IN",
-      wordCount: 3400,
-      timeRequired: "PT13M",
+      articleSection: "Competitor Intel, Prime Day 2026 ",
+      inLanguage: "en",
     },
     {
       "@type": "FAQPage",
       "@id":
-        "https://insydz.com/resources/expert-blog/amazon-prime-day-india-2026-seller-questions#faq",
+        "https://insydz.com/resources/expert-blog/prime-day-india-2026-seller-questions#faq",
       mainEntity: [
         {
           "@type": "Question",
           name: "When is Amazon Prime Day 2026 in India?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Amazon Prime Day 2026 in India is expected in July 2026 for a 48-hour window. Amazon officially announces dates 2 to 4 weeks in advance. Start your 6-week preparation calendar now rather than waiting for the announcement.",
+            text: "Amazon typically announces Prime Day dates 2 to 4 weeks before the event via Seller Central and email. The event is expected in July 2026 for a 48-hour window. Do not wait for the official announcement to begin preparation as every critical deadline falls 4 to 6 weeks before the event. ",
           },
         },
         {
           "@type": "Question",
-          name: "How do I submit my product for a Lightning Deal on Amazon India Prime Day?",
+          name: "What happens if I run out of FBA inventory during Prime Day?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Go to Seller Central, then Advertising, then Deals. Eligible ASINs appear automatically. You need a minimum 3-star rating, sufficient inventory, and the deal price must be at least 15 percent below the reference price. Submission windows typically close 2 weeks before Prime Day.",
+            text: "Running out of inventory means your listing goes out of stock, stops appearing in search results, all active deals are cancelled, and you miss the highest-traffic hours of the year. There is no way to replenish FBA stock during the event. This is why the inventory formula and the send deadline are the two most critical Prime Day preparations. ",
           },
         },
         {
           "@type": "Question",
-          name: "How much extra inventory should I stock for Prime Day India 2026?",
+          name: "Can a new seller with under 10 reviews participate in Prime Day?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Use this formula: average daily sales times 3 (sale multiplier) times 7 (safety days). Send inventory to Amazon warehouses at least 3 to 4 weeks before Prime Day to clear inbound processing.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Should I increase or pause my PPC budget during Prime Day?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Increase budget before Prime Day. During the event, organic conversion is higher so monitor ACoS carefully. After Prime Day, sustain moderate spend for 3 to 7 days to capture post-event browse traffic.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Should I raise or lower my price before Prime Day?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Do not lower your price in the 30 days before Prime Day. Amazon calculates reference price from this window. Lowering early shrinks the displayed discount percentage on your deal. Hold or raise your price 30 days before, then discount on the day itself.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "My product is not Prime eligible. Can I still benefit from Prime Day?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Yes. Non-Prime products still appear in standard search results during Prime Day. Use coupons for a visible green badge, competitive pricing, and PPC to capture the traffic lift even without a Lightning Deal badge.",
+            text: "Yes. New sellers with under 10 reviews cannot submit Lightning Deals but can still participate through coupons, Prime Exclusive Discounts, and PPC campaigns. Prime Day traffic benefits all active listings. A new listing at a competitive price with a coupon will see meaningfully higher impressions during the event even without a Lightning Deal badge. ",
           },
         },
         {
@@ -173,15 +147,23 @@ const schemaPrimeDayIndia2026 = {
           name: "How do I handle a competitor who keeps undercutting me during Prime Day?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Set a price floor in Insydz and use WhatsApp alerts to get notified within minutes of a competitor dropping below your threshold. Do not engage in a price war without a floor as this destroys margins during the highest-volume hours of your year.",
+            text: "Set a price floor in Insydz below which you will not go, and use WhatsApp alerts to get notified within minutes of a competitor dropping below your threshold. Do not engage in a price war without a floor. Race-to-the-bottom repricing during Prime Day destroys margins on the highest-volume hours of your year. Protect your floor and accept that some Buy Box windows will go to an undercutting competitor while you hold margin.",
           },
         },
         {
           "@type": "Question",
-          name: "What should I do in the 2 weeks before Prime Day to prepare my listing?",
+          name: "Should I pause PPC campaigns during Prime Day to save budget?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Audit your main image, update your title with sale-intent keywords, apply a coupon, ensure A+ Content is live, respond to negative reviews, load Sponsored Products with event keywords, and set up real time competitor price monitoring before the event starts.",
+            text: "Do not pause campaigns, but do set an ACoS ceiling per campaign. Pausing entirely loses impression share to competitors who are actively bidding. Instead, increase budgets to prevent campaign exhaustion, monitor ACoS hourly, and pause only specific keyword campaigns that breach your threshold. Keep broad and category campaigns running throughout the event. ",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What is the difference between a Lightning Deal and a Prime Exclusive Discount?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "A Lightning Deal is a time-limited offer (4 to 12 hours) that appears in the Deals section with a countdown timer and a limited-quantity progress bar. It requires approval through Seller Central's Deals tab. A Prime Exclusive Discount is a permanent discount for Prime members, shown as a strike-through price and badge throughout the event. Lightning Deals have higher visibility but are harder to qualify for and have limited deal slots per category. ",
           },
         },
       ],
