@@ -4,8 +4,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { API_BASE_URL } from "@/lib/config";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Star, IndianRupee, ArrowUpDown, TrendingUp, Search, X, Filter } from "lucide-react";
+import { Star, IndianRupee, ArrowUpDown, TrendingUp, Search, X, Filter, ExternalLink } from "lucide-react";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import SmartSearchInput from "@/components/ui/smart-search-input";
@@ -32,7 +33,16 @@ interface TrendingProduct {
   sales_volume?: string;
   avg_sales_volume?: number;
   source?: string;
-  product_price?: string;
+  product_price?: string | number;
+  product_price_numeric?: number;
+  pid?: string;
+  asin?: string;
+  product_subtitle?: string;
+  description?: string;
+  highlights?: any;
+  brand?: string;
+  product_url?: string;
+  product_photo?: string;
 }
 
 export default function Sales() {
@@ -52,6 +62,7 @@ export default function Sales() {
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("All Categories");
   const [categoriesLoading, setCategoriesLoading] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<TrendingProduct | null>(null);
 
   // Debounce searchQuery by 400ms
   useEffect(() => {
@@ -98,6 +109,35 @@ export default function Sales() {
       case 'B': return num * 1000000000;
       default: return num;
     }
+  };
+
+  const getProductPrice = (p: TrendingProduct): number => {
+    if (typeof p.price === "number" && !isNaN(p.price) && p.price > 0) return p.price;
+    if (typeof p.product_price === "number" && !isNaN(p.product_price) && p.product_price > 0) return p.product_price;
+    if (typeof p.product_price === "string") {
+      const parsed = parseFloat(p.product_price);
+      if (!isNaN(parsed) && parsed > 0) return parsed;
+    }
+    if (typeof p.product_price_numeric === "number" && !isNaN(p.product_price_numeric) && p.product_price_numeric > 0) return p.product_price_numeric;
+    return p.avg_price ?? 0;
+  };
+
+  const getHighlightsArray = (highlights?: any): string[] => {
+    if (!highlights) return [];
+    if (Array.isArray(highlights)) {
+      return highlights.map(h => typeof h === 'string' ? h : (h?.text || h?.title || JSON.stringify(h)));
+    }
+    if (typeof highlights === 'string') {
+      try {
+        const parsed = JSON.parse(highlights);
+        if (Array.isArray(parsed)) {
+          return parsed.map(h => typeof h === 'string' ? h : (h?.text || h?.title || JSON.stringify(h)));
+        }
+      } catch (e) {
+        return highlights.split('•').map(s => s.trim()).filter(Boolean);
+      }
+    }
+    return [];
   };
 
   const fetchCategories = () => {
@@ -147,7 +187,7 @@ export default function Sales() {
       case "reviews":
         return p.reviews ?? p.total_reviews ?? p.total_ratings ?? p.product_num_ratings ?? p.product_rating_count ?? 0;
       case "price":
-        return p.price ?? p.avg_price ?? 0;
+        return getProductPrice(p);
       case "rating":
         return p.rating ?? p.avg_rating ?? p.product_star_rating_numeric ?? p.product_star_rating ?? 0;
       case "sales":
@@ -180,6 +220,67 @@ export default function Sales() {
     } else {
       setSortField(field);
       setSortOrder("desc");
+    }
+  };
+
+  const getMetricColumns = (): Array<"sales" | "reviews" | "price" | "rating"> => {
+    const allMetrics: Array<"sales" | "reviews" | "price" | "rating"> = ["sales", "reviews", "price", "rating"];
+    const rest = allMetrics.filter((m) => m !== sortField);
+    return [sortField, ...rest];
+  };
+
+  const getMetricLabel = (field: "sales" | "reviews" | "price" | "rating") => {
+    switch (field) {
+      case "price":
+        return t("sales.price", "Price (₹)");
+      case "rating":
+        return t("sales.rating", "Rating");
+      case "reviews":
+        return t("sales.reviews", "Reviews");
+      case "sales":
+        return t("sales.sales", "Sales");
+    }
+  };
+
+  const renderMetricCell = (p: TrendingProduct, field: "sales" | "reviews" | "price" | "rating") => {
+    const isSorted = sortField === field;
+    const baseCellClass = cn(
+      "py-3 px-4 text-right transition-colors",
+      isSorted
+        ? isDark
+          ? "bg-blue-950/20 font-bold"
+          : "bg-blue-50/50 font-bold"
+        : ""
+    );
+
+    switch (field) {
+      case "price":
+        return (
+          <td key={field} className={cn(baseCellClass, "text-emerald-600 dark:text-emerald-450 font-semibold")}>
+            <IndianRupee className="inline w-4 h-4" />
+            {getProductPrice(p).toFixed(2)}
+          </td>
+        );
+      case "rating":
+        return (
+          <td key={field} className={cn(baseCellClass, "text-yellow-500 font-medium")}>
+            <Star className="inline w-4 h-4 mr-1" />
+            {(p.rating ?? p.avg_rating ?? p.product_star_rating_numeric ?? p.product_star_rating ?? 0).toFixed(1)}
+          </td>
+        );
+      case "reviews":
+        return (
+          <td key={field} className={cn(baseCellClass, isDark ? "text-blue-400 font-semibold" : "text-blue-600 font-semibold")}>
+            {(p.reviews ?? p.total_reviews ?? p.total_ratings ?? p.product_num_ratings ?? p.product_rating_count ?? 0).toLocaleString()}
+          </td>
+        );
+      case "sales":
+        return (
+          <td key={field} className={cn(baseCellClass, isDark ? "text-purple-400 font-semibold" : "text-purple-600 font-semibold")}>
+            <TrendingUp className="inline w-4 h-4 mr-1" />
+            {formatSalesDisplay(p)}
+          </td>
+        );
     }
   };
 
@@ -353,10 +454,32 @@ export default function Sales() {
                 <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>#</th>
                 <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.product', 'Product')}</th>
                 <th className={cn("py-3 px-4 text-left border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.category', 'Category')}</th>
-                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.price', 'Price (₹)')}</th>
-                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.rating', 'Rating')}</th>
-                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.reviews', 'Reviews')}</th>
-                <th className={cn("py-3 px-4 text-right border-b", isDark ? "bg-slate-800/80 border-slate-700" : "bg-slate-100 border-slate-200")}>{t('sales.sales', 'Sales')}</th>
+                {getMetricColumns().map((field) => {
+                  const isSorted = sortField === field;
+                  return (
+                    <th
+                      key={field}
+                      onClick={() => toggleSort(field)}
+                      className={cn(
+                        "py-3 px-4 text-right border-b cursor-pointer select-none transition-colors",
+                        isSorted
+                          ? isDark
+                            ? "bg-blue-950/40 text-blue-400 font-bold border-blue-500/40"
+                            : "bg-blue-50 text-blue-700 font-bold border-blue-300"
+                          : isDark
+                            ? "bg-slate-800/80 border-slate-700 hover:bg-slate-750"
+                            : "bg-slate-100 border-slate-200 hover:bg-slate-200/70"
+                      )}
+                    >
+                      <div className="flex items-center justify-end gap-1.5">
+                        <span>{getMetricLabel(field)}</span>
+                        {isSorted && (
+                          <span className="text-xs font-extrabold">{sortOrder === "asc" ? "↑" : "↓"}</span>
+                        )}
+                      </div>
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
 
@@ -364,8 +487,9 @@ export default function Sales() {
               {currentProducts.map((p, i) => (
                 <tr
                   key={i}
+                  onClick={() => setSelectedProduct(p)}
                   className={cn(
-                    "border-b transition-colors",
+                    "border-b transition-colors cursor-pointer",
                     isDark 
                       ? "border-slate-800/80 hover:bg-slate-800/30" 
                       : "border-slate-200 hover:bg-slate-50"
@@ -377,32 +501,38 @@ export default function Sales() {
                     {(currentPage - 1) * itemsPerPage + i + 1}
                   </td>
 
-                  <td className={cn("py-3 px-4 font-semibold truncate max-w-xs", isDark ? "text-slate-100" : "text-slate-800")} title={p.title || p.product_title}>
-                    {p.title || p.product_title}
+                  <td className="py-3 px-4 max-w-md">
+                    <div className="flex flex-col gap-1">
+                      <span
+                        className={cn(
+                          "font-semibold line-clamp-2 transition-colors hover:text-blue-500",
+                          isDark ? "text-slate-100" : "text-slate-800"
+                        )}
+                        title={p.title || p.product_title}
+                      >
+                        {p.title || p.product_title}
+                      </span>
+                      <div className="flex items-center gap-2 flex-wrap text-xs text-slate-400">
+                        {p.brand && <span className="font-medium text-slate-500 dark:text-slate-400">{p.brand}</span>}
+                        {(p.description || p.product_subtitle) && (
+                          <span className="truncate max-w-[240px]" title={p.description || p.product_subtitle}>
+                            • {p.description || p.product_subtitle}
+                          </span>
+                        )}
+                        {(p.pid || p.asin) && (
+                          <span className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-[10px] text-slate-500 dark:text-slate-400">
+                            {source === "flipkart" ? `PID: ${p.pid}` : `ASIN: ${p.asin}`}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </td>
 
                   <td className={cn("py-3 px-4", isDark ? "text-slate-400" : "text-slate-600")}>
                     {p.category || p.category_name || source}
                   </td>
 
-                  <td className="py-3 px-4 text-right text-emerald-600 dark:text-emerald-450 font-semibold">
-                    <IndianRupee className="inline w-4 h-4" />
-                    {(p.price ?? p.avg_price ?? 0).toFixed(2)}
-                  </td>
-
-                  <td className="py-3 px-4 text-right text-yellow-500 font-medium">
-                    <Star className="inline w-4 h-4 mr-1" />
-                    {(p.rating ?? p.avg_rating ?? p.product_star_rating_numeric ?? p.product_star_rating ?? 0).toFixed(1)}
-                  </td>
-
-                  <td className={cn("py-3 px-4 text-right font-semibold", isDark ? "text-blue-400" : "text-blue-600")}>
-                    {(p.reviews ?? p.total_reviews ?? p.total_ratings ?? p.product_num_ratings ?? p.product_rating_count ?? 0).toLocaleString()}
-                  </td>
-
-                  <td className={cn("py-3 px-4 text-right font-semibold", isDark ? "text-purple-400" : "text-purple-600")}>
-                    <TrendingUp className="inline w-4 h-4 mr-1" />
-                    {formatSalesDisplay(p)}
-                  </td>
+                  {getMetricColumns().map((field) => renderMetricCell(p, field))}
                 </tr>
               ))}
             </tbody>
@@ -443,6 +573,111 @@ export default function Sales() {
           {t('sales.next', 'Next')}
         </Button>
       </div>
+
+      {/* Product Details Modal */}
+      <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
+        <DialogContent className={cn("max-w-2xl max-h-[85vh] overflow-y-auto", isDark ? "bg-slate-900 border-slate-800 text-slate-100" : "bg-white text-slate-800")}>
+          {selectedProduct && (
+            <>
+              <DialogHeader>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs font-semibold uppercase px-2 py-0.5 rounded bg-blue-500/10 text-blue-500">
+                      {selectedProduct.category || selectedProduct.category_name || source}
+                    </span>
+                    {selectedProduct.brand && (
+                      <span className="text-xs font-medium px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                        {selectedProduct.brand}
+                      </span>
+                    )}
+                    {(selectedProduct.pid || selectedProduct.asin) && (
+                      <span className="text-xs font-mono px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                        {source === "flipkart" ? `PID: ${selectedProduct.pid}` : `ASIN: ${selectedProduct.asin}`}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <DialogTitle className="text-lg font-bold mt-2 text-left">
+                  {selectedProduct.title || selectedProduct.product_title}
+                </DialogTitle>
+                <DialogDescription className="text-xs text-slate-500 dark:text-slate-400 text-left">
+                  {selectedProduct.brand ? `Brand: ${selectedProduct.brand}` : ""}
+                </DialogDescription>
+              </DialogHeader>
+
+              <div className="space-y-4 my-2">
+                {/* Metrics Row */}
+                <div className="grid grid-cols-4 gap-3">
+                  <div className={cn("p-3 rounded-xl border text-center", isDark ? "bg-slate-800/40 border-slate-800" : "bg-slate-50 border-slate-200")}>
+                    <div className="text-xs text-slate-400 font-medium">Price</div>
+                    <div className="text-base font-bold text-emerald-600 dark:text-emerald-450 mt-1">
+                      ₹{getProductPrice(selectedProduct).toFixed(2)}
+                    </div>
+                  </div>
+                  <div className={cn("p-3 rounded-xl border text-center", isDark ? "bg-slate-800/40 border-slate-800" : "bg-slate-50 border-slate-200")}>
+                    <div className="text-xs text-slate-400 font-medium">Rating</div>
+                    <div className="text-base font-bold text-yellow-500 mt-1">
+                      ★ {(selectedProduct.rating ?? selectedProduct.avg_rating ?? selectedProduct.product_star_rating_numeric ?? selectedProduct.product_star_rating ?? 0).toFixed(1)}
+                    </div>
+                  </div>
+                  <div className={cn("p-3 rounded-xl border text-center", isDark ? "bg-slate-800/40 border-slate-800" : "bg-slate-50 border-slate-200")}>
+                    <div className="text-xs text-slate-400 font-medium">Reviews</div>
+                    <div className="text-base font-bold text-blue-500 mt-1">
+                      {(selectedProduct.reviews ?? selectedProduct.total_reviews ?? selectedProduct.total_ratings ?? selectedProduct.product_num_ratings ?? selectedProduct.product_rating_count ?? 0).toLocaleString()}
+                    </div>
+                  </div>
+                  <div className={cn("p-3 rounded-xl border text-center", isDark ? "bg-slate-800/40 border-slate-800" : "bg-slate-50 border-slate-200")}>
+                    <div className="text-xs text-slate-400 font-medium">Sales</div>
+                    <div className="text-base font-bold text-purple-500 mt-1">
+                      {formatSalesDisplay(selectedProduct)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Subtitle / Description */}
+                {(selectedProduct.description || selectedProduct.product_subtitle) && (
+                  <div className={cn("p-3.5 rounded-xl border", isDark ? "bg-slate-800/30 border-slate-800" : "bg-slate-50 border-slate-200")}>
+                    <div className="text-xs font-semibold text-slate-400 uppercase mb-1">Subtitle & Variant</div>
+                    <p className="text-sm font-medium leading-relaxed">
+                      {selectedProduct.description || selectedProduct.product_subtitle}
+                    </p>
+                  </div>
+                )}
+
+                {/* Highlights / Features List */}
+                {getHighlightsArray(selectedProduct.highlights).length > 0 && (
+                  <div className={cn("p-3.5 rounded-xl border", isDark ? "bg-slate-800/30 border-slate-800" : "bg-slate-50 border-slate-200")}>
+                    <div className="text-xs font-semibold text-slate-400 uppercase mb-2">Key Highlights & Features</div>
+                    <ul className="space-y-1.5 list-disc list-inside text-sm font-medium">
+                      {getHighlightsArray(selectedProduct.highlights).map((h, i) => (
+                        <li key={i} className="leading-snug text-slate-600 dark:text-slate-300">
+                          {h}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Actions */}
+                {selectedProduct.product_url && (
+                  <div className="flex justify-end pt-2">
+                    <Button
+                      asChild
+                      variant="default"
+                      className="bg-blue-500 text-white hover:bg-blue-600 font-medium"
+                    >
+                      <a href={selectedProduct.product_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5">
+                        Open on {source === "flipkart" ? "Flipkart" : "Amazon"}
+                        <ExternalLink className="w-4 h-4 ml-1" />
+                      </a>
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

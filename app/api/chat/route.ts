@@ -95,8 +95,15 @@ export async function POST(req: Request) {
     // Keep only the last 2 messages in history so the lightweight model focuses strictly on the latest question without re-answering old turns
     const fullMessages = [systemMessage, ...messages.slice(-2)];
 
-    // Attempt to connect to a local Ollama instance
-    const ollamaUrl = process.env.OLLAMA_BASE_URL || "http://127.0.0.1:11434";
+    // Fetch Ollama base URL strictly from environment variable
+    const ollamaUrl = process.env.OLLAMA_BASE_URL;
+    if (!ollamaUrl) {
+      console.error("OLLAMA_BASE_URL is not defined in environment variables.");
+      return NextResponse.json(
+        { reply: "I am currently offline for maintenance. Please contact support@insydz.com." },
+        { status: 503 }
+      );
+    }
 
     try {
       const ollamaRes = await fetch(`${ollamaUrl}/api/chat`, {

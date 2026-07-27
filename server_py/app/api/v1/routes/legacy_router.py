@@ -2366,6 +2366,7 @@ def get_top_items(
                 product_url,
                 product_photo,
                 product_price,
+                product_price AS price,
                 product_mrp,
                 product_star_rating AS rating,
                 product_rating_count,
@@ -2373,6 +2374,9 @@ def get_top_items(
                 sales_volume,
                 estimated_sales,
                 stock_status,
+                product_subtitle,
+                product_subtitle AS description,
+                highlights,
                 avg_price,
                 min_price,
                 max_price,
@@ -2394,8 +2398,13 @@ def get_top_items(
                 m = merged[key]
                 m["rating"] = (m["rating"] + row["rating"]) / 2 if row["rating"] else m["rating"]
                 m["product_price"] = (m["product_price"] + row["product_price"]) / 2 if row["product_price"] else m["product_price"]
+                m["price"] = m["product_price"]
                 m["reviews"] = (m["reviews"] or 0) + (row["reviews"] or 0)
+                m["product_subtitle"] = m.get("product_subtitle") or row.get("product_subtitle")
+                m["description"] = m.get("description") or row.get("description")
+                m["highlights"] = m.get("highlights") or row.get("highlights")
             else:
+                row["price"] = row["product_price"]
                 merged[key] = row
         
         top_items = list(merged.values())[:n]
@@ -4027,6 +4036,9 @@ def get_amazon_top_sales(
             STRING_AGG(DISTINCT category_name, ', ') as categories,
             MAX(product_url) as product_url,
             MAX(product_photo) as product_photo,
+            MAX(asin) as asin,
+            MAX(asin) as id,
+            ROUND(CAST(MIN(product_price_numeric) AS NUMERIC), 2) as price,
             ROUND(CAST(AVG(product_price_numeric) AS NUMERIC), 2) as avg_price,
             ROUND(CAST(AVG(product_star_rating_numeric) AS NUMERIC), 2) as avg_rating,
             SUM(product_num_ratings) as total_ratings,
@@ -4111,7 +4123,7 @@ def get_flipkart_top_sales_products(
             SELECT 
                 product_title, category_name, product_url, product_photo,
                 product_price, product_mrp, product_star_rating, product_review_count,
-                sales_volume, estimated_sales, brand,
+                sales_volume, estimated_sales, brand, product_subtitle, highlights, pid,
                 CASE 
                     WHEN sales_volume LIKE '%M+%' THEN (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000000) / 30
                     WHEN sales_volume LIKE '%K+%' THEN (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000) / 30
@@ -4126,6 +4138,11 @@ def get_flipkart_top_sales_products(
             MAX(product_url) as product_url,
             MAX(product_photo) as product_photo,
             MAX(brand) as brand,
+            MAX(product_subtitle) as product_subtitle,
+            MAX(product_subtitle) as description,
+            MAX(highlights::text) as highlights,
+            MAX(pid) as pid,
+            ROUND(CAST(MIN(product_price) AS NUMERIC), 2) as price,
             ROUND(CAST(AVG(product_price) AS NUMERIC), 2) as avg_price,
             ROUND(CAST(AVG(product_mrp) AS NUMERIC), 2) as avg_mrp,
             ROUND(CAST(AVG(product_star_rating) AS NUMERIC), 2) as avg_rating,
