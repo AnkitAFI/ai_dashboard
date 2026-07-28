@@ -311,6 +311,7 @@ export default function ProductTracker() {
   const [loading, setLoading] = useState(false);
 
   const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
+  const [notFoundMessage, setNotFoundMessage] = useState<string | null>(null);
   const result = apiResponse?.data ?? null;
 
   const [toasts, setToasts] = useState<Toast[]>([]);
@@ -386,13 +387,13 @@ export default function ProductTracker() {
       showToast("Analysis Limit Reached", `You've used all ${usageLimits?.limit} analyses this month.`, "error");
       return;
     }
-    if (!productName || !category || !baseCost) {
-      showToast("Missing Information", "Please fill in all fields to analyse your product.", "error");
+    if (!productName || !category) {
+      showToast("Missing Information", "Please fill in Product Name and Category to analyse your product.", "error");
       return;
     }
-    const cost = parseFloat(baseCost);
-    if (isNaN(cost) || cost <= 0) {
-      showToast("Invalid Cost", "Please enter a valid cost price.", "error");
+    const cost = baseCost.trim() ? parseFloat(baseCost) : 0;
+    if (baseCost.trim() && (isNaN(cost) || cost < 0)) {
+      showToast("Invalid Cost", "Please enter a valid cost price (or leave it blank).", "error");
       return;
     }
     if (cost > 50000) {
@@ -404,6 +405,7 @@ export default function ProductTracker() {
 
     setLoading(true);
     setApiResponse(null);
+    setNotFoundMessage(null);
 
     try {
       const res = await fetch(`${API_BASE_URL}/product-tracker/analyze`, {
@@ -423,8 +425,12 @@ export default function ProductTracker() {
 
       if (!res.ok) {
         const err = body as ApiErrorResponse;
+        if (res.status === 404 || err.detail?.toLowerCase().includes("no products found")) {
+          setNotFoundMessage(err.detail || `No products found for "${productName}" in "${category}" on ${source === "both" ? "Amazon India and Flipkart India" : source === "amazon" ? "Amazon India" : "Flipkart India"}. Try a simpler product name or different category.`);
+          return;
+        }
         if (err.error_code === "QUOTA_EXCEEDED") setShowUpgradeModal(true);
-        showToast("Analysis Failed", "Couldn't complete analysis. Please try again.", "error");
+        showToast("Analysis Failed", err.detail || "Couldn't complete analysis. Please try again.", "error");
         return;
       }
 
@@ -453,7 +459,16 @@ export default function ProductTracker() {
   const getDemandBadgeColor = (d: string) =>
     d === "High" ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800" :
       d === "Medium" ? "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300 border-blue-300 dark:border-blue-800" :
-        "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border-slate-300 dark:border-slate-600";
+        "bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800";
+
+  const getDemandExplanation = (demand: string) => {
+    switch (demand?.toLowerCase()) {
+      case "high": return "🔥 High customer demand & active buying interest in this category. Excellent market opportunity.";
+      case "medium": return "⚖️ Moderate customer demand & steady search volume in this category. Balanced market.";
+      case "low": return "🌱 Niche market with specialized customer demand. Lower competition, ideal for targeted audiences.";
+      default: return "📊 Overall market demand estimate based on category activity.";
+    }
+  };
 
   const getSourceColor = (s: string) =>
     s.toLowerCase() === "amazon"
@@ -566,7 +581,7 @@ export default function ProductTracker() {
               {t('pr.title', 'Product Radar (AI)')}
             </h1>
             <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto">
-              {t('pr.subtitle', 'Scan specific products to analyze market competition, pricing metrics, and project AI viability reports.')}
+              {t('pr.subtitle', 'Scan specific products to analyze market competition, pricing metrics, and project AI reports.')}
             </p>
           </div>
 
@@ -577,7 +592,7 @@ export default function ProductTracker() {
                 <div>
                   <CardTitle className="text-lg font-semibold text-slate-700 dark:text-slate-200">{t('pr.productInfo', 'Product Information')}</CardTitle>
                   <CardDescription className="text-slate-500 dark:text-slate-400">
-                    {t('pr.enterDetails', 'Enter your product details to get AI-powered market insights from')} {source === "amazon" ? "Amazon" : "Flipkart"}
+                    {t('pr.enterDetails', 'Enter your product details to get AI-powered market insights from')} Amazon India / Flipkart India
                   </CardDescription>
                 </div>
                 <a
@@ -622,23 +637,23 @@ export default function ProductTracker() {
                     <SelectTrigger id="source" data-track-id="marketplace_select" data-filter-value={source}><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="amazon">
-                        <div className="flex items-center gap-2"><ShoppingBag className="h-4 w-4 text-orange-600" /> Amazon</div>
+                        <div className="flex items-center gap-2"><ShoppingBag className="h-4 w-4 text-orange-600" /> Amazon India</div>
                       </SelectItem>
                       <SelectItem value="flipkart">
-                        <div className="flex items-center gap-2"><ShoppingBag className="h-4 w-4 text-yellow-600" /> Flipkart</div>
+                        <div className="flex items-center gap-2"><ShoppingBag className="h-4 w-4 text-yellow-600" /> Flipkart India</div>
                       </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="base-cost">{t('pr.yourCostPrice', 'Your Cost Price (₹)')}</Label>
+                  <Label htmlFor="base-cost">{t('pr.yourCostPrice', 'Your Cost Price (₹) (Optional)')}</Label>
                   <Input
                     id="base-cost"
                     data-track-id="base-cost-input"
                     type="number"
                     value={baseCost}
                     onChange={e => setBaseCost(e.target.value)}
-                    placeholder="e.g., 500"
+                    placeholder="e.g., 500 (Auto-calculated if blank)"
                     disabled={!!userId && !canAnalyze}
                   />
                 </div>
@@ -664,6 +679,31 @@ export default function ProductTracker() {
               )}
             </CardContent>
           </Card>
+
+          {/* ── NOT FOUND MESSAGE CARD ── */}
+          {!loading && notFoundMessage && (
+            <Card className="border-2 border-amber-300 dark:border-amber-700/60 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 rounded-2xl p-6 shadow-md">
+              <CardContent className="p-0 flex flex-col items-center text-center space-y-4">
+                <div className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                  <Package className="h-8 w-8" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 mb-2">No Similar Products Found</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 max-w-lg mx-auto leading-relaxed">
+                    {notFoundMessage}
+                  </p>
+                </div>
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                  <Badge variant="outline" className="bg-white/80 dark:bg-slate-800/80 px-3 py-1.5 text-xs text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700">
+                    💡 Tip: Use general keywords (e.g., &quot;Wireless Headphones&quot;)
+                  </Badge>
+                  <Badge variant="outline" className="bg-white/80 dark:bg-slate-800/80 px-3 py-1.5 text-xs text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700">
+                    💡 Tip: Try checking a broader category
+                  </Badge>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           {/* ── RESULTS ── */}
           {apiResponse && result && (
@@ -809,9 +849,14 @@ export default function ProductTracker() {
                       <p className="text-sm text-slate-600 dark:text-slate-400 mb-1">Daily Average</p>
                       <p className="text-xl font-semibold text-slate-700 dark:text-slate-200">{result.sales.estimated_daily_sales.toFixed(0)} units/day</p>
                     </div>
-                    <Badge className={getDemandBadgeColor(result.sales.market_demand)}>
-                      {result.sales.market_demand} Demand
-                    </Badge>
+                    <div className="space-y-1.5">
+                      <Badge className={getDemandBadgeColor(result.sales.market_demand)}>
+                        {result.sales.market_demand} Demand
+                      </Badge>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                        {getDemandExplanation(result.sales.market_demand)}
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
 

@@ -14,7 +14,7 @@ import uvicorn, hashlib
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 from sklearn.preprocessing import MinMaxScaler
-import re, random
+import re, random, html
 import redis
 from urllib.parse import unquote
 from decimal import Decimal
@@ -53,13 +53,15 @@ IS_LOCAL = True
 # app.include_router(payment_router, prefix="/api/payments", tags=["payments"]) # Migrated to main.py
 
 def sanitize_data(data):
-    """Recursively convert Decimal objects to floats for JSON serialization."""
+    """Recursively convert Decimal objects to floats and unescape HTML entities for JSON serialization."""
     if isinstance(data, list):
         return [sanitize_data(v) for v in data]
     if isinstance(data, dict):
         return {k: sanitize_data(v) for k, v in data.items()}
     if isinstance(data, Decimal):
         return float(data)
+    if isinstance(data, str):
+        return html.unescape(data)
     return data
 
 class AIQuery(BaseModel):
@@ -4022,7 +4024,7 @@ def get_amazon_top_sales(
             SELECT 
                 product_title, category_name, product_url, product_photo,
                 product_price_numeric, product_star_rating_numeric, product_num_ratings,
-                sales_volume, country,
+                sales_volume, country, asin,
                 CASE 
                     WHEN sales_volume LIKE '%M+%' THEN (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000000) / 30
                     WHEN sales_volume LIKE '%K+%' THEN (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000) / 30
@@ -8073,20 +8075,22 @@ class ProductTrackerRequest(BaseModel):
     product_name: str
     category:     str
     source:       str
-    base_cost:    float
+    base_cost:    Optional[float] = 0.0
     user_email:   Optional[str] = None
- 
+
     @validator("product_name", "category")
     def not_empty(cls, v: str) -> str:
         if not v.strip():
             raise ValueError("must not be blank")
         return v.strip()
- 
-    @validator("base_cost")
-    def positive_cost(cls, v: float) -> float:
-        if v < 0:
-            raise ValueError("base_cost must be >= 0")
-        return v
+
+    @validator("base_cost", pre=True, always=True)
+    def positive_cost(cls, v) -> float:
+        try:
+            val = float(v) if v is not None and v != "" else 0.0
+            return max(0.0, val)
+        except (ValueError, TypeError):
+            return 0.0
  
  
 class PricingInsights(BaseModel):
@@ -9490,9 +9494,19 @@ async def analyze_product_opportunity(
             detail=(f"No products found for '{request_body.product_name}' in '{request_body.category}' "
                     f"on {request_body.source}. Try a simpler product name or different category."),
         )
- 
+
     log.info("products_matched", count=len(similar_products), tier=tier_used.value)
- 
+
+    # If user did not input a cost price (or passed <= 0), estimate from lowest and average market prices
+    if not request_body.base_cost or request_body.base_cost <= 0:
+        prices = [float(p.get("price", 0) or 0) for p in similar_products if p.get("price", 0) > 0]
+        if prices:
+            lowest_p = float(np.min(prices))
+            avg_p = float(np.mean(prices))
+            request_body.base_cost = round((lowest_p + avg_p) / 2.0, 2)
+        else:
+            request_body.base_cost = 500.0
+
     keywords = extract_keywords(request_body.product_name)
  
     # ── Analytics ────────────────────────────────────────────────────────────

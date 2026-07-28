@@ -599,7 +599,7 @@ export default function ShareOfVoice() {
           <BarChart3 className="h-8 w-8 text-blue-500" />
         </div>
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
-          {t('sov.title', 'Share of Voice (SOV) & Market Intelligence')}
+          {t('sov.title', 'Market Visibility')}
         </h1>
         <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
           {t('sov.subtitle', 'Analyze brand visibility, measure search market share, track competitors, and uncover category opportunities.')}
@@ -682,8 +682,8 @@ export default function ShareOfVoice() {
                   data-track-id="marketplace_select"
                   data-filter-value={marketplace}
                 >
-                  <option value="flipkart" className="bg-white dark:bg-slate-800">Flipkart</option>
-                  <option value="amazon" className="bg-white dark:bg-slate-800">Amazon</option>
+                  <option value="flipkart" className="bg-white dark:bg-slate-800">Flipkart India</option>
+                  <option value="amazon" className="bg-white dark:bg-slate-800">Amazon India</option>
                 </select>
               </div>
 
@@ -1331,11 +1331,14 @@ export default function ShareOfVoice() {
                               </div>
                             </td>
                             <td className="p-3 text-right">
-                              <div className="flex items-center justify-end gap-1.5">
-                                <div className="w-12 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                  <div className="h-full bg-blue-500 rounded-full" style={{ width: `${Math.min(brand.share_percentage * 2, 100)}%` }} />
+                              <div className="flex items-center justify-end gap-2">
+                                <div className="w-16 h-2 bg-slate-200/80 dark:bg-slate-700/60 rounded-full overflow-hidden shadow-inner flex items-center">
+                                  <div
+                                    className="h-full bg-gradient-to-r from-blue-500 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 rounded-full transition-all duration-500"
+                                    style={{ width: `${Math.min(Math.max(brand.share_percentage * 5, 15), 100)}%` }}
+                                  />
                                 </div>
-                                <span className="font-bold text-blue-700 text-xs w-10 text-right">{brand.share_percentage}%</span>
+                                <span className="font-bold text-blue-700 dark:text-blue-400 text-xs w-10 text-right">{brand.share_percentage}%</span>
                               </div>
                             </td>
                             <td className="p-3 text-right text-slate-700 font-medium">{brand.total_reviews.toLocaleString()}</td>
@@ -1561,9 +1564,9 @@ export default function ShareOfVoice() {
                       <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
                         <CardHeader className="pb-2">
                           <CardTitle className="flex items-center gap-2 text-base">
-                            <span className="text-xl">🔍</span> Top Product Gaps
+                            <span className="text-xl">🔍</span> Top Product Opportunities & Market Gaps
                           </CardTitle>
-                          <CardDescription>High-demand products competitors offer but you don't</CardDescription>
+                          <CardDescription>High-demand competitor products in your category showing strong sales velocity and expansion potential</CardDescription>
                         </CardHeader>
                         <CardContent>
                           <div className="overflow-x-auto">

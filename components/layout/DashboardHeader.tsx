@@ -54,7 +54,7 @@ const ROUTE_TITLES: Record<string, { title: string; subtitle: string }> = {
     subtitle: "Track price movements across major platforms",
   },
   "/explorer/profitability-optimizer": {
-    title: "Profitability Optimizer",
+    title: "Price Optimizer",
     subtitle: "Calculate margins and optimize your pricing strategy",
   },
   "/explorer/review-analytics": {
@@ -216,8 +216,8 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
               data-track-id="source_platform_select"
               data-filter-value={selectedSource}
             >
-              <option value="flipkart">Flipkart</option>
-              <option value="amazon">Amazon</option>
+              <option value="flipkart">Flipkart India</option>
+              <option value="amazon">Amazon India</option>
               <option value="both">All Platforms</option>
             </select>
           </>

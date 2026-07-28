@@ -254,7 +254,7 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
   const makeWelcomeMsg = (authed: boolean): ChatMessage => ({
     id: "welcome",
     message: authed
-      ? "👋 Hi! I'm your AI Assistant.\n\nSelect a data source below (Flipkart or Amazon), and ask me anything like:\n• What products are trending now?\n• Which category has the best ratings?\n• Can I sell wireless earbuds under ₹1500?"
+      ? "👋 Hi! I'm your AI Assistant.\n\nSelect a data source below (Flipkart India or Amazon India), and ask me anything like:\n• What products are trending now?\n• Which category has the best ratings?\n• Can I sell wireless earbuds under ₹1500?"
       : "👋 Welcome! Please login to use the AI Assistant and get personalized insights.",
     isUser: false,
     timestamp: new Date(),
@@ -707,8 +707,8 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                       <SelectValue placeholder="Data Source" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-850 dark:text-slate-150 shadow-xl">
-                      <SelectItem value="flipkart">🛍 Flipkart Data</SelectItem>
-                      <SelectItem value="amazon">💬 Amazon Data</SelectItem>
+                      <SelectItem value="flipkart">🛍 Flipkart India</SelectItem>
+                      <SelectItem value="amazon">💬 Amazon India</SelectItem>
                     </SelectContent>
                   </Select>
 

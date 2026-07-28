@@ -347,8 +347,8 @@ export default function Sales() {
             data-track-id="sales_source_select"
             data-filter-value={source}
           >
-            <option value="flipkart" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Flipkart</option>
-            <option value="amazon" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Amazon</option>
+            <option value="flipkart" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Flipkart India</option>
+            <option value="amazon" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Amazon India</option>
           </select>
 
           <div className="relative">

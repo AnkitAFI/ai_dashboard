@@ -211,7 +211,7 @@ const INFO_MODALS: Record<
     content: (
       <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
         <p>
-          Every product niche is evaluated on a strict 100-point scale designed specifically for Indian marketplaces (Amazon.in and Flipkart).
+          Every product niche is evaluated on a strict 100-point scale designed specifically for Indian marketplaces (Amazon India and Flipkart India).
         </p>
         <div className="space-y-2">
           <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50">
@@ -272,7 +272,7 @@ const INFO_MODALS: Record<
     content: (
       <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
         <p>
-          This is the approximate monthly sales revenue (in Indian Rupees) that an active seller generates in this product category on Amazon India or Flipkart.
+          This is the approximate monthly sales revenue (in Indian Rupees) that an active seller generates in this product category on Amazon India or Flipkart India.
         </p>
         <div className="space-y-2.5">
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
@@ -344,7 +344,7 @@ const INFO_MODALS: Record<
     content: (
       <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
         <p>
-          This is the total number of competing product listings currently active in this category on Amazon India and Flipkart.
+          This is the total number of competing product listings currently active in this category on Amazon India and Flipkart India.
         </p>
         <div className="space-y-2.5">
           <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
@@ -600,7 +600,7 @@ function CompetitorRow({ comp, index }: { comp: Competitor; index: number }) {
           <span className="text-[10px] text-slate-500 dark:text-slate-400">{comp.review_count.toLocaleString()} {t("whiteSpaceFinder.reviews", "reviews")}</span>
           <span className="text-[10px] text-slate-500 dark:text-slate-400">₹{comp.price.toLocaleString("en-IN")}</span>
           <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${comp.platform === "amazon" ? "bg-amber-100 dark:bg-amber-950/35 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40" : "bg-blue-100 dark:bg-blue-950/35 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40"}`}>
-            {comp.platform === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon.in") : t("whiteSpaceFinder.flipkart", "Flipkart")}
+            {comp.platform === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon India") : t("whiteSpaceFinder.flipkart", "Flipkart India")}
           </span>
           {comp.is_best_seller && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-950/35 text-yellow-750 dark:text-yellow-400 border border-yellow-250 dark:border-yellow-900/40">{t("whiteSpaceFinder.bestSeller", "Best Seller")}</span>
@@ -735,7 +735,7 @@ function OpportunityCard({
                 {sl.label}
               </span>
               <span className={`text-[10px] font-medium px-2.5 py-0.5 rounded-full ${opp.platform === "both" ? "bg-purple-100 dark:bg-purple-950/35 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800/40" : opp.platform === "amazon" ? "bg-amber-100 dark:bg-amber-950/35 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40" : "bg-blue-100 dark:bg-blue-950/35 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40"}`}>
-                {opp.platform === "both" ? t("whiteSpaceFinder.amazonFlipkart", "Amazon + Flipkart") : opp.platform === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon.in") : t("whiteSpaceFinder.flipkart", "Flipkart")}
+                {opp.platform === "both" ? t("whiteSpaceFinder.amazonFlipkart", "Amazon India + Flipkart India") : opp.platform === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon India") : t("whiteSpaceFinder.flipkart", "Flipkart India")}
               </span>
               {opp.has_best_seller_gap && (
                 <span className="text-[10px] bg-yellow-100 dark:bg-yellow-950/35 text-yellow-750 dark:text-yellow-400 px-2.5 py-0.5 rounded-full font-medium border border-yellow-200/50 dark:border-yellow-900/30">{t("whiteSpaceFinder.noBestSellerYet", "No Best Seller yet")}</span>
@@ -1358,7 +1358,7 @@ function WhiteSpaceFinderContent() {
                 {t("whiteSpaceFinder.opportunityFinder", "Opportunity Finder")}
               </h1>
               <p className="text-slate-500 text-sm font-medium">
-                {t("whiteSpaceFinder.discoverUntapped", "Discover untapped product gaps and find hidden opportunities across Amazon and Flipkart.")}
+                {t("whiteSpaceFinder.discoverUntapped", "Discover untapped product gaps and find hidden opportunities across Amazon India and Flipkart India.")}
               </p>
             </div>
           </div>
@@ -1590,7 +1590,7 @@ function WhiteSpaceFinderContent() {
                       data-track-id="platform_filter_btn"
                       data-filter-value={p}
                     >
-                      {p === "both" ? t("whiteSpaceFinder.both", "Both") : p === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon.in") : t("whiteSpaceFinder.flipkart", "Flipkart")}
+                      {p === "both" ? t("whiteSpaceFinder.both", "Both") : p === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon India") : t("whiteSpaceFinder.flipkart", "Flipkart India")}
                     </button>
                   ))}
                 </div>
@@ -2337,7 +2337,7 @@ function WhiteSpaceFinderContent() {
               </h3>
               <p className="text-sm text-slate-400 dark:text-slate-500 max-w-md leading-relaxed mb-4">
                 Scan any product to surface real white spaces — niches with high
-                demand and weak competition on Amazon.in and Flipkart.
+                demand and weak competition on Amazon India and Flipkart India.
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 w-full max-w-xl">
                 {[

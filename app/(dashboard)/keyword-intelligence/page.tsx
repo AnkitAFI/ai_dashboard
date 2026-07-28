@@ -521,7 +521,7 @@ function QuickTrackModal({
           Track Keyword
         </h3>
         <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-          Add <strong className="text-slate-700 dark:text-slate-300">"{keyword}"</strong> on {platform === "amazon" ? "Amazon" : "Flipkart"} to your dashboard rankings.
+          Add <strong className="text-slate-700 dark:text-slate-300">"{keyword}"</strong> on {platform === "amazon" ? "Amazon India" : "Flipkart India"} to your dashboard rankings.
         </p>
 
         <div className="space-y-4">
@@ -560,7 +560,7 @@ function QuickTrackModal({
                 <SelectContent>
                   {platformMatchedProducts.map((p) => (
                     <SelectItem key={p.asin_or_pid} value={p.asin_or_pid}>
-                      {p.asin_or_pid} ({platform === "amazon" ? "Amazon" : "Flipkart"})
+                      {p.asin_or_pid} ({platform === "amazon" ? "Amazon India" : "Flipkart India"})
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -781,7 +781,7 @@ function KeywordExplorerPanel({
                   </SelectItem>
                   <SelectItem value="flipkart">
                     <div className="flex items-center gap-2">
-                      <ShoppingBag className="h-4 w-4 text-yellow-600" /> Flipkart
+                      <ShoppingBag className="h-4 w-4 text-yellow-600" /> Flipkart India
                     </div>
                   </SelectItem>
                 </SelectContent>

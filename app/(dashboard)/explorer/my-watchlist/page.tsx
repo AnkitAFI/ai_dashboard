@@ -212,11 +212,28 @@ export default function MyWatchlist() {
   };
 
   const filteredItems = items
-    .filter((i) =>
-      !search ||
-      i.niche.toLowerCase().includes(search.toLowerCase()) ||
-      i.category.toLowerCase().includes(search.toLowerCase())
-    )
+    .filter((i) => {
+      if (!search) return true;
+      const q = search.toLowerCase();
+      const platformStr =
+        i.platform === "both"
+          ? "amazon india flipkart india both"
+          : i.platform === "amazon"
+          ? "amazon india"
+          : "flipkart india";
+      return (
+        (i.niche && i.niche.toLowerCase().includes(q)) ||
+        (i.category && i.category.toLowerCase().includes(q)) ||
+        (i.query && i.query.toLowerCase().includes(q)) ||
+        (i.gap_summary && i.gap_summary.toLowerCase().includes(q)) ||
+        (i.top_keyword && i.top_keyword.toLowerCase().includes(q)) ||
+        platformStr.includes(q) ||
+        String(i.score).includes(q) ||
+        String(i.competitor_count).includes(q) ||
+        String(i.avg_price).includes(q) ||
+        String(i.avg_rating).includes(q)
+      );
+    })
     .sort((a, b) => {
       if (sortBy === "score") return b.score - a.score;
       if (sortBy === "revenue") return b.est_revenue_max - a.est_revenue_max;
@@ -224,11 +241,15 @@ export default function MyWatchlist() {
     });
 
   const filteredProfit = savedProducts
-    .filter((p) =>
-      !search ||
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.inputs.category.toLowerCase().includes(search.toLowerCase())
-    )
+    .filter((p) => {
+      if (!search) return true;
+      const q = search.toLowerCase();
+      return (
+        (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.inputs?.category && p.inputs.category.toLowerCase().includes(q)) ||
+        ((p as any).notes && (p as any).notes.toLowerCase().includes(q))
+      );
+    })
     .sort((a, b) => {
       if (profitSortBy === "margin") return b.net_margin_pct - a.net_margin_pct;
       if (profitSortBy === "profit") return b.monthly_profit - a.monthly_profit;
@@ -303,17 +324,8 @@ export default function MyWatchlist() {
               />
             </div>
             
-            {activeTab === "whitespace" ? (
+            {activeTab === "whitespace" && (
               <div className="flex items-center gap-2">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="h-10 px-3 text-xs border border-slate-300 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-violet-300 dark:focus:ring-violet-800 outline-none"
-                >
-                  <option value="added">{t("myWatchlist.recentlyAdded", "Recently added")}</option>
-                  <option value="score">{t("myWatchlist.highestScore", "Highest score")}</option>
-                  <option value="revenue">{t("myWatchlist.estRevenue", "Est. revenue")}</option>
-                </select>
                 {!confirmClear ? (
                   <Button variant="outline" size="sm" onClick={() => setConfirmClear(true)} className="text-red-500 border-red-200 dark:border-red-950/30 hover:bg-red-50 dark:hover:bg-red-950/20 rounded-xl">
                     <Trash2 className="w-3.5 h-3.5 mr-1.5" /> {t("myWatchlist.clear", "Clear")}
@@ -325,16 +337,6 @@ export default function MyWatchlist() {
                   </div>
                 )}
               </div>
-            ) : (
-              <select
-                value={profitSortBy}
-                onChange={(e) => setProfitSortBy(e.target.value as any)}
-                className="h-10 px-3 text-xs border border-slate-300 dark:border-slate-850 rounded-xl bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-800 outline-none"
-              >
-                <option value="added">{t("myWatchlist.recentlyAdded", "Recently added")}</option>
-                <option value="margin">{t("myWatchlist.bestMargin", "Best margin")}</option>
-                <option value="profit">{t("myWatchlist.bestProfit", "Best profit")}</option>
-              </select>
             )}
           </div>
         )}

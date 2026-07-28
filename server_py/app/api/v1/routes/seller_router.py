@@ -10,6 +10,7 @@ from app.services.inbound_service import SellerInboundService
 import random
 import json
 import threading
+import html
 
 class _ReviewSentimentAnalyzer:
     _instance = None
@@ -329,7 +330,7 @@ def get_seller_products(
     for p in products:
         result.append({
             "asin":           p.asin,
-            "title":          p.product_title or "Unknown Product",
+            "title":          html.unescape(p.product_title or "Unknown Product"),
             "image":          p.product_photo or "",
             "price":          p.product_price,
             "rating":         p.product_star_rating_numeric or 0,

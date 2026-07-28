@@ -5,6 +5,7 @@ import logging
 import math
 import os
 import re
+import html
 import threading
 from datetime import datetime, timedelta, timezone
 from typing import AsyncGenerator, Optional
@@ -549,7 +550,7 @@ def _build_profile_response(
  
     return {
         "asin":               tracked.asin,
-        "product_title":      tracked.product_title or "",
+        "product_title":      html.unescape(tracked.product_title or ""),
         "product_photo":      tracked.product_photo,
         "is_prime":           bool(tracked.is_prime),
         "is_best_seller":     bool(tracked.is_best_seller),

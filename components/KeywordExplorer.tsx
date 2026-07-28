@@ -575,7 +575,7 @@ export default function KeywordExplorer({
                   </SelectItem>
                   <SelectItem value="flipkart">
                     <div className="flex items-center gap-2">
-                      <ShoppingBag className="h-4 w-4 text-yellow-600" /> Flipkart
+                      <ShoppingBag className="h-4 w-4 text-yellow-600" /> Flipkart India
                     </div>
                   </SelectItem>
                 </SelectContent>

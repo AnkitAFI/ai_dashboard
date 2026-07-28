@@ -289,9 +289,9 @@
     "bestSeller": "Best Seller",
     "asChoice": "A's Choice",
     "steady": "steady",
-    "amazonFlipkart": "Amazon + Flipkart",
-    "amazonIn": "Amazon.in",
-    "flipkart": "Flipkart",
+    "amazonFlipkart": "Amazon India + Flipkart India",
+    "amazonIn": "Amazon India",
+    "flipkart": "Flipkart India",
     "noBestSellerYet": "No Best Seller yet",
     "noAsChoice": "No A's Choice",
     "estRevenueMo": "Est. revenue / mo",
@@ -331,7 +331,7 @@
     "yourPlan": "Your plan",
     "upgrade": "Upgrade",
     "opportunityFinder": "Opportunity Finder",
-    "discoverUntapped": "Discover untapped product gaps and find hidden opportunities across Amazon and Flipkart.",
+    "discoverUntapped": "Discover untapped product gaps and find hidden opportunities across Amazon India and Flipkart India.",
     "scansUsed": "Scans used",
     "exportCsv": "Export CSV",
     "plans": "Plans",
@@ -350,7 +350,7 @@
     "monthText": "/mo"
   },
   "profitabilityOptimizer": {
-    "title": "Profitability Optimizer",
+    "title": "Price Optimizer",
     "subtitle": "Real margins · Live market data",
     "tabs": {
       "calc": "Calculator",
@@ -440,7 +440,7 @@
   },
   "sov": {
     "analysesUsed": "Analyses used",
-    "title": "Share of Voice (SOV) & Market Intelligence",
+    "title": "Market Visibility",
     "subtitle": "Analyze brand visibility, measure search market share, track competitors, and uncover category opportunities.",
     "searchParams": "Search Parameters",
     "marketplace": "Marketplace",
@@ -470,7 +470,7 @@
   "pr": {
     "analysesUsed": "Analyses used",
     "title": "Product Radar (AI)",
-    "subtitle": "Scan specific products to analyze market competition, pricing metrics, and project AI viability reports.",
+    "subtitle": "Scan specific products to analyze market competition, pricing metrics, and project AI reports.",
     "productInfo": "Product Information",
     "enterDetails": "Enter your product details to get AI-powered market insights from",
     "analyticsHistory": "Analytics History",
@@ -556,7 +556,7 @@
       "subtitle": "Track price movements across major platforms"
     },
     "explorer_profitability_optimizer": {
-      "title": "Profitability Optimizer",
+      "title": "Price Optimizer",
       "subtitle": "Calculate margins and optimize your pricing strategy"
     },
     "explorer_review_analytics": {
@@ -652,10 +652,10 @@
     "voiceOfCustomer": "Voice of the Customer",
     "highVelocity": "High-Velocity Products",
     "marketMoversBoth": "Market Movers (Both Sources)",
-    "marketMoversAmazon": "Market Movers (Amazon)",
-    "marketMoversFlipkart": "Market Movers (Flipkart)",
-    "flipkartTop": "Flipkart Top",
-    "amazonTop": "Amazon Top",
+    "marketMoversAmazon": "Market Movers (Amazon India)",
+    "marketMoversFlipkart": "Market Movers (Flipkart India)",
+    "flipkartTop": "Flipkart India Top",
+    "amazonTop": "Amazon India Top",
     "noTrendingProducts": "No trending products available"
   },
   "sellerPages": {

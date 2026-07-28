@@ -321,12 +321,28 @@ export default function MyWatchlistPage() {
   };
 
   const filteredWS = items
-    .filter((i) =>
-      !search ||
-      i.niche.toLowerCase().includes(search.toLowerCase()) ||
-      i.category.toLowerCase().includes(search.toLowerCase()) ||
-      i.query.toLowerCase().includes(search.toLowerCase())
-    )
+    .filter((i) => {
+      if (!search) return true;
+      const q = search.toLowerCase();
+      const platformStr =
+        i.platform === "both"
+          ? "amazon india flipkart india both"
+          : i.platform === "amazon"
+          ? "amazon india"
+          : "flipkart india";
+      return (
+        (i.niche && i.niche.toLowerCase().includes(q)) ||
+        (i.category && i.category.toLowerCase().includes(q)) ||
+        (i.query && i.query.toLowerCase().includes(q)) ||
+        (i.gap_summary && i.gap_summary.toLowerCase().includes(q)) ||
+        (i.top_keyword && i.top_keyword.toLowerCase().includes(q)) ||
+        platformStr.includes(q) ||
+        String(i.score).includes(q) ||
+        String(i.competitor_count).includes(q) ||
+        String(i.avg_price).includes(q) ||
+        String(i.avg_rating).includes(q)
+      );
+    })
     .sort((a, b) => {
       if (sortBy === "score")   return b.score - a.score;
       if (sortBy === "revenue") return b.est_revenue_max - a.est_revenue_max;
@@ -334,11 +350,15 @@ export default function MyWatchlistPage() {
     });
 
   const filteredProfit = savedProducts
-    .filter((p) =>
-      !search ||
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.inputs.category.toLowerCase().includes(search.toLowerCase())
-    )
+    .filter((p) => {
+      if (!search) return true;
+      const q = search.toLowerCase();
+      return (
+        (p.name && p.name.toLowerCase().includes(q)) ||
+        (p.inputs?.category && p.inputs.category.toLowerCase().includes(q)) ||
+        ((p as any).notes && (p as any).notes.toLowerCase().includes(q))
+      );
+    })
     .sort((a, b) => {
       if (profitSortBy === "margin") return b.net_margin_pct - a.net_margin_pct;
       if (profitSortBy === "profit") return b.monthly_profit - a.monthly_profit;
@@ -414,17 +434,8 @@ export default function MyWatchlistPage() {
               />
             </div>
             
-            {activeTab === "whitespace" ? (
+            {activeTab === "whitespace" && (
               <div className="flex items-center gap-2">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white text-slate-600 focus:ring-2 focus:ring-violet-300 outline-none"
-                >
-                  <option value="added">Recently added</option>
-                  <option value="score">Highest score</option>
-                  <option value="revenue">Est. revenue</option>
-                </select>
                 {!confirmClear ? (
                   <button onClick={() => setConfirmClear(true)} className="h-10 px-3 text-xs border border-red-200 text-red-500 rounded-xl hover:bg-red-50 flex items-center gap-1.5"><Trash2 className="w-3.5 h-3.5" /> Clear</button>
                 ) : (
@@ -434,16 +445,6 @@ export default function MyWatchlistPage() {
                   </div>
                 )}
               </div>
-            ) : (
-              <select
-                value={profitSortBy}
-                onChange={(e) => setProfitSortBy(e.target.value as any)}
-                className="h-10 px-3 text-xs border border-slate-300 rounded-xl bg-white text-slate-600 focus:ring-2 focus:ring-blue-300 outline-none"
-              >
-                <option value="added">Recently added</option>
-                <option value="margin">Best margin</option>
-                <option value="profit">Best profit</option>
-              </select>
             )}
           </div>
         )}
@@ -475,7 +476,7 @@ export default function MyWatchlistPage() {
                             <span className={cn("text-[10px] font-semibold px-2 py-0.5 rounded-full border", getScoreBg(item.score), getScoreColor(item.score))}>{getScoreLabel(item.score)}</span>
                             <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{item.category}</span>
                             <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full", item.platform === "both" ? "bg-purple-100 text-purple-700" : item.platform === "amazon" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700")}>
-                              {item.platform === "both" ? "Amazon + Flipkart" : item.platform === "amazon" ? "Amazon.in" : "Flipkart"}
+                              {item.platform === "both" ? "Amazon India + Flipkart India" : item.platform === "amazon" ? "Amazon India" : "Flipkart India"}
                             </span>
                           </div>
                         </div>
@@ -524,7 +525,7 @@ export default function MyWatchlistPage() {
                           <div className="flex items-center gap-1.5 flex-wrap">
                             <span className="text-[10px] text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">{p.inputs.category}</span>
                             <span className={cn("text-[10px] font-medium px-2 py-0.5 rounded-full", p.inputs.marketplace === "amazon" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700")}>
-                              {p.inputs.marketplace === "amazon" ? "Amazon.in" : "Flipkart"}
+                              {p.inputs.marketplace === "amazon" ? "Amazon India" : "Flipkart India"}
                             </span>
                           </div>
                         </div>

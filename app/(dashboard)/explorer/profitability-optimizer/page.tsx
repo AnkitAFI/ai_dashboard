@@ -2368,7 +2368,7 @@ export default function ProfitabilityOptimizer() {
       {/* Title */}
       <div className="flex justify-between items-center bg-white dark:bg-slate-900/80 p-4 rounded-2xl border border-sky-100 dark:border-slate-700 shadow-sm">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-sky-900 dark:text-sky-300">{t('profitabilityOptimizer.title', 'Profitability Optimizer')}</h1>
+          <h1 className="text-xl sm:text-2xl font-bold text-sky-900 dark:text-sky-300">{t('profitabilityOptimizer.title', 'Price Optimizer')}</h1>
           <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-0.5">{t('profitabilityOptimizer.subtitle', 'Real margins · Live market data')}</p>
         </div>
         <div className="flex items-center gap-3">
@@ -2572,8 +2572,8 @@ export default function ProfitabilityOptimizer() {
                   data-track-id="marketplace_select"
                   data-filter-value={inputs.marketplace}
                 >
-                  <option value="amazon" className="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">Amazon</option>
-                  <option value="flipkart" className="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">Flipkart</option>
+                  <option value="amazon" className="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">Amazon India</option>
+                  <option value="flipkart" className="bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100">Flipkart India</option>
                 </select>
               </div>
 

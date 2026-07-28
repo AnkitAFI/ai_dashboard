@@ -105,8 +105,8 @@ export default function Categories() {
             data-filter-value={tableFilter}
           >
             <option value="all" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>{t('categories.allMarketplaces', 'All Marketplaces')}</option>
-            <option value="flipkart" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Flipkart</option>
-            <option value="amazon" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Amazon</option>
+            <option value="flipkart" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Flipkart India</option>
+            <option value="amazon" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Amazon India</option>
           </select>
         </div>
 

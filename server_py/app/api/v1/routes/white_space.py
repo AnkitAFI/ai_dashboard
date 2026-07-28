@@ -303,6 +303,7 @@ import hashlib
 import json
 import logging
 import re
+import html
 from collections import defaultdict
 from typing import Optional, List, Dict, Any
 
@@ -1646,7 +1647,7 @@ def scan_white_spaces(
         competitors = [
             Competitor(
                 asin=str(r.get("asin") or ""),
-                title=str(r.get("product_title") or "")[:160],
+                title=html.unescape(str(r.get("product_title") or "")[:160]),
                 rating=float(r.get("product_star_rating_numeric") or r.get("product_star_rating") or 0),
                 review_count=int(r.get("product_num_ratings") or r.get("product_rating_count") or 0),
                 price=float(r.get("product_price_numeric") or r.get("product_price") or 0),
