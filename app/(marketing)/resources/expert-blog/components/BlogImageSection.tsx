@@ -2,20 +2,20 @@ interface BlogImageSectionProps {
   imageSrc: string;
   altText: string;
   caption?: string;
-  maxWidth?: number;
+  // maxWidth?: number;
 }
 
 export default function BlogImageSection({
   imageSrc,
   altText,
   caption,
-  maxWidth = 1040,
+  // maxWidth = 1040,
 }: BlogImageSectionProps) {
   return (
     <div
       className="my-10"
       style={{
-        maxWidth,
+        // maxWidth,
         margin: "16px auto 0",
         padding: "0 16px",
       }}

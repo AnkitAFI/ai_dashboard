@@ -56,6 +56,17 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "27",
+    title: "Analyze Amazon Reviews India Content",
+    excerpt:
+      "Amazon reviews are goldmines of information. Discover how to analyze Amazon reviews in India to find hidden patterns and improve your product. Learn the best practices for sentiment analysis, theme extraction, and product improvement.",
+    category: "Review Intelligence Pillar",
+    readTime: "12 min read",
+    image: "/Analyze 500+ Reviews for Product Opportunities.png",
+    route: "/resources/expert-blog/analyze-amazon-reviews-india-content",
+    popular: true,
+  },
+  {
     id: "26",
     title: "Switch From Excel to SellerApp",
     excerpt:
@@ -924,8 +935,8 @@ export default function ExpertBlog() {
         .delay-1000 {
           animation-delay: 1s;
         }
-        .blog-card-thumb { position: relative; width:100%; aspect-ratio:16 / 9; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
-        .blog-card-thumb img { width:100%; height:100%; object-fit:object-fit; display:block; }
+        .blog-card-thumb { position: relative; width:100%; aspect-ratio:1978 / 795; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+        .blog-card-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
       `}</style>
     </div>
   );

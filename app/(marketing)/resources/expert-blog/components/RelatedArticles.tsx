@@ -87,7 +87,7 @@ export default function RelatedArticles({
                 style={{
                   overflow: "hidden",
                   background: resolvedTheme === "dark" ? "#1e293b" : "#f8fafc",
-                  aspectRatio: "16/9",
+                  aspectRatio: "1978 / 795",
                   width: "100%",
                 }}
               >
