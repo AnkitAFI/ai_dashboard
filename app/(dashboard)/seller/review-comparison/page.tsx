@@ -1,5 +1,4 @@
 "use client";
-import { API_BASE_URL } from "@/lib/config";
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -7,6 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
+import { API_BASE_URL } from "@/lib/config";
 import {
   Lock, Crown, Star, MessageSquare, RefreshCw,
   Menu, X, TrendingUp, CheckCircle, Zap,
@@ -82,30 +82,124 @@ function StarRow({ rating, count, total, isDark }: { rating: number; count: numb
   );
 }
 
-function ReviewCard({ review, isDark }: { review: any; isDark: boolean }) {
+function ReviewCard({ review, isDark, isPremium, productTitle }: { review: any; isDark: boolean; isPremium: boolean; productTitle?: string }) {
+  const [showDraft, setShowDraft] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [aiReply, setAiReply] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
+
   const ratingColor = review.rating >= 4 ? isDark ? "text-emerald-400 bg-emerald-900/30" : "text-emerald-600 bg-emerald-50" : review.rating === 3 ? isDark ? "text-amber-400 bg-amber-900/30" : "text-amber-600 bg-amber-50" : isDark ? "text-red-400 bg-red-900/30" : "text-red-600 bg-red-50";
+
+  const handleToggleDraft = async () => {
+    setShowDraft((v) => !v);
+    // Only generate once — cache result in state
+    if (!aiReply && !generating) {
+      setGenerating(true);
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/comparison/ai-review-reply`, {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            review_text:   review.comment || "",
+            rating:        review.rating  ?? 3,
+            author:        review.author  || "Valued Customer",
+            product_title: productTitle   || "",
+          }),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setAiReply(data.reply || "");
+        } else {
+          setAiReply("Unable to generate reply. Please try again.");
+        }
+      } catch {
+        setAiReply("Unable to generate reply. Please try again.");
+      } finally {
+        setGenerating(false);
+      }
+    }
+  };
+
+  const handleCopy = () => {
+    if (!aiReply) return;
+    navigator.clipboard.writeText(aiReply).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
   return (
-    <div className={`rounded-xl p-4 border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <div className="flex items-center gap-2">
-          <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? 'bg-sky-900/50 text-sky-400' : 'bg-sky-100 text-sky-700'}`}>
-            {(review.author || "A").charAt(0).toUpperCase()}
+    <div className={`rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <div className="flex items-center gap-2">
+            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${isDark ? 'bg-sky-900/50 text-sky-400' : 'bg-sky-100 text-sky-700'}`}>
+              {(review.author || "A").charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <p className={`text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{review.author || "Anonymous"}</p>
+              <p className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{review.date}</p>
+            </div>
           </div>
-          <div>
-            <p className={`text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{review.author || "Anonymous"}</p>
-            <p className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{review.date}</p>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {review.rating != null && (
+              <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${ratingColor}`}>★ {review.rating}</span>
+            )}
+            {review.has_response && (
+              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'text-blue-400 bg-blue-900/30 border-blue-800/50' : 'text-blue-600 bg-blue-50 border-blue-100'}`}>Replied</span>
+            )}
           </div>
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
-          {review.rating != null && (
-            <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${ratingColor}`}>★ {review.rating}</span>
-          )}
-          {review.has_response && (
-            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'text-blue-400 bg-blue-900/30 border-blue-800/50' : 'text-blue-600 bg-blue-50 border-blue-100'}`}>Replied</span>
-          )}
-        </div>
+        <p className={`text-xs leading-relaxed line-clamp-3 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{review.comment}</p>
+
+        {/* Per-review AI Draft Reply Button (Premium only) */}
+        {isPremium && (
+          <button
+            onClick={handleToggleDraft}
+            className={`mt-3 flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1 rounded-full border transition-all ${
+              showDraft
+                ? isDark ? 'bg-blue-900/40 border-blue-700 text-blue-300' : 'bg-blue-50 border-blue-200 text-blue-600'
+                : isDark ? 'bg-slate-700 border-slate-600 text-slate-400 hover:text-slate-200' : 'bg-white border-slate-200 text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            {generating ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Zap className="w-3 h-3" />}
+            {showDraft ? 'Hide AI Draft' : aiReply ? 'AI Draft Reply' : 'AI Draft Reply'}
+          </button>
+        )}
       </div>
-      <p className={`text-xs leading-relaxed line-clamp-3 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{review.comment}</p>
+
+      {/* Draft reply expandable panel */}
+      {isPremium && showDraft && (
+        <div className={`mx-4 mb-4 rounded-xl p-3 border ${isDark ? 'bg-blue-900/20 border-blue-800/40' : 'bg-blue-50 border-blue-100'}`}>
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div className="flex items-center gap-1.5">
+              <Zap className={`w-3 h-3 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
+              <p className={`text-[11px] font-bold ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>AI-Drafted Reply</p>
+            </div>
+            {aiReply && !generating && (
+              <button
+                onClick={handleCopy}
+                className={`text-[10px] font-semibold px-2.5 py-1 rounded-full border transition-all ${
+                  copied
+                    ? isDark ? 'bg-emerald-900/40 border-emerald-700 text-emerald-400' : 'bg-emerald-50 border-emerald-200 text-emerald-600'
+                    : isDark ? 'bg-slate-700 border-slate-600 text-slate-300 hover:bg-slate-600' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                {copied ? '✓ Copied!' : 'Copy'}
+              </button>
+            )}
+          </div>
+          {generating ? (
+            <div className="flex items-center gap-2">
+              <RefreshCw className={`w-3.5 h-3.5 animate-spin ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
+              <p className={`text-xs ${isDark ? 'text-blue-300' : 'text-blue-600'}`}>Generating AI reply…</p>
+            </div>
+          ) : (
+            <p className={`text-xs leading-relaxed ${isDark ? 'text-blue-200' : 'text-blue-800'}`}>{aiReply}</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -336,11 +430,22 @@ function ReviewComparisonContent() {
                     )}
                   </div>
                   {(data.recent_reviews || []).length > 0
-                    ? <div className="space-y-3">{(data.recent_reviews || []).map((r: any, i: number) => <ReviewCard key={i} review={r} isDark={isDark} />)}</div>
+                    ? <div className="space-y-3">{(data.recent_reviews || []).map((r: any, i: number) => <ReviewCard key={i} review={r} isDark={isDark} isPremium={isPremium} productTitle={data.product_title} />)}</div>
                     : <p className={`text-sm text-center py-8 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>No recent reviews tracked.</p>
                   }
                 </div>
               </div>
+
+              {/* ── Review Velocity Insight (moved here, right after reviews) ── */}
+              {isPremium && data.review_velocity_insight && (
+                <div className={`rounded-2xl border p-4 flex items-start gap-3 ${isDark ? 'bg-sky-900/20 border-sky-800/50' : 'bg-gradient-to-r from-sky-50 to-blue-50 border-sky-100'}`}>
+                  <Activity className="w-5 h-5 text-sky-500 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className={`text-xs font-bold mb-0.5 ${isDark ? 'text-sky-400' : 'text-sky-700'}`}>Review Velocity Insight</p>
+                    <p className={`text-sm ${isDark ? 'text-sky-300' : 'text-sky-800'}`}>{data.review_velocity_insight}</p>
+                  </div>
+                </div>
+              )}
 
               {/* ── Cards ──────────────────────────────────────── */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -451,31 +556,20 @@ function ReviewComparisonContent() {
                 </div>
               </div>
 
-              {/* ── AI Response Suggestion ──────────────────────────── */}
-              {(data.ai_response_suggestion || !isPremium) && (
+              {/* ── AI Response Suggestion (locked gate for non-premium) ── */}
+              {!isPremium && (
                 <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
-                  {!isPremium && <TierGate tier="premium" feature="AI Response Suggestion" isDark={isDark} />}
-                  <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
+                  <TierGate tier="premium" feature="AI Draft Replies (Per Review)" isDark={isDark} />
+                  <div className="blur-sm pointer-events-none">
                     <div className="flex gap-3">
                       <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center flex-shrink-0 shadow">
                         <Zap className="w-4 h-4 text-white" />
                       </div>
                       <div>
-                        <p className={`font-bold text-sm mb-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>AI-Drafted Review Response</p>
-                        <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>{data.ai_response_suggestion || "Generating personalized response…"}</p>
+                        <p className={`font-bold text-sm mb-1 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>AI Draft Replies — Per Review</p>
+                        <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>Unlock instant AI-drafted replies for every customer review. Click "AI Draft Reply" under any review to generate and copy a personalized response in one click.</p>
                       </div>
                     </div>
-                  </div>
-                </div>
-              )}
-
-              {/* ── Review Velocity Insight ─────────────────────────── */}
-              {isPremium && data.review_velocity_insight && (
-                <div className={`rounded-2xl border p-4 flex items-start gap-3 ${isDark ? 'bg-sky-900/20 border-sky-800/50' : 'bg-gradient-to-r from-sky-50 to-blue-50 border-sky-100'}`}>
-                  <Activity className="w-5 h-5 text-sky-500 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className={`text-xs font-bold mb-0.5 ${isDark ? 'text-sky-400' : 'text-sky-700'}`}>Review Velocity Insight</p>
-                    <p className={`text-sm ${isDark ? 'text-sky-300' : 'text-sky-800'}`}>{data.review_velocity_insight}</p>
                   </div>
                 </div>
               )}

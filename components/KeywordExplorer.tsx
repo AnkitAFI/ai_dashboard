@@ -613,7 +613,9 @@ export default function KeywordExplorer({
                 Retrieving Marketplace Intel
               </h4>
               <p className="text-xs text-purple-700 mt-1 max-w-md">
-                We are scanning local search index data, calculating product demand, classifying search intentions, and compiling search recommendations. This process operates 100% free of charge.
+                {platform === "flipkart"
+                  ? "Scanning live Flipkart India search index data, calculating real-time buyer demand velocity, and classifying purchase intent to compile high-converting keyword intelligence."
+                  : "Scanning live Amazon India search index data, calculating real-time buyer demand velocity, and classifying purchase intent to compile high-converting keyword intelligence."}
               </p>
             </div>
           </CardContent>

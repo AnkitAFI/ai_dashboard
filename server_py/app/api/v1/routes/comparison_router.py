@@ -2101,7 +2101,96 @@ def get_review_comparison(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# COMPETITOR ANALYSIS  (/comparison/competitors)
+# AI REVIEW REPLY  (/comparison/ai-review-reply)
+# Per-review AI-generated seller response using Ollama
+# ─────────────────────────────────────────────────────────────────────────────
+
+from pydantic import BaseModel as _BaseModel
+
+class ReviewReplyRequest(_BaseModel):
+    review_text: str
+    rating:      int
+    author:      Optional[str] = None
+    product_title: Optional[str] = None
+
+@router.post("/ai-review-reply")
+def generate_review_reply(
+    body:         ReviewReplyRequest,
+    current_user: User = Depends(get_current_user),
+) -> dict:
+    """
+    Generate a professional, context-aware seller reply for a specific customer review.
+    Premium feature — uses Ollama LLM.
+    """
+    tier       = (current_user.subscription_tier or "free").lower().strip()
+    is_premium = tier in ("premium", "enterprise")
+    if not is_premium:
+        raise HTTPException(status_code=403, detail="Premium subscription required.")
+
+    review_text   = (body.review_text or "").strip()[:500]
+    rating        = max(1, min(5, body.rating or 3))
+    author        = (body.author or "Valued Customer").strip()[:60]
+    product_title = (body.product_title or "our product").strip()[:100]
+
+    if not review_text:
+        raise HTTPException(status_code=400, detail="review_text is required.")
+
+    # Build a tone-aware, structured prompt
+    if rating <= 2:
+        tone_instruction = (
+            "The customer is unhappy. Acknowledge their specific complaint directly, "
+            "apologize sincerely without using the phrase 'we value your feedback', "
+            "offer a concrete resolution (replacement/refund/escalation), and invite them "
+            "to contact you privately. Keep it under 60 words."
+        )
+    elif rating == 3:
+        tone_instruction = (
+            "The customer has mixed feelings. Thank them for honest feedback, acknowledge "
+            "the specific concern, and reassure them of your commitment to improvement. "
+            "Keep it under 50 words and sound genuine, not corporate."
+        )
+    else:
+        tone_instruction = (
+            "The customer is happy. Thank them warmly by referencing a specific detail "
+            "from their review, and encourage them to return. Keep it under 40 words. "
+            "Do not be sycophantic or use generic phrases like 'your satisfaction is our priority'."
+        )
+
+    prompt = (
+        f"You are a professional Indian e-commerce seller responding to a customer review on Amazon India.\n"
+        f"Product: \"{product_title}\"\n"
+        f"Customer name: {author}\n"
+        f"Star rating given: {rating}/5\n"
+        f"Customer review: \"{review_text}\"\n\n"
+        f"Write a seller response. {tone_instruction}\n"
+        f"Start with 'Dear {author},' and write ONLY the response text, nothing else."
+    )
+
+    ai_reply = _ollama(prompt, max_tokens=150)
+
+    # Graceful fallback if Ollama is offline or times out
+    if not ai_reply:
+        if rating <= 2:
+            ai_reply = (
+                f"Dear {author}, we sincerely apologize for the inconvenience you experienced. "
+                f"This does not reflect our quality standards. Please share your order details "
+                f"and we will resolve this immediately with a replacement or full refund."
+            )
+        elif rating == 3:
+            ai_reply = (
+                f"Dear {author}, thank you for your honest feedback. We appreciate your "
+                f"thoughts and are continuously working to improve. Please feel free to reach "
+                f"out if there is anything we can do to make your experience better."
+            )
+        else:
+            ai_reply = (
+                f"Dear {author}, thank you so much for your kind review! We are glad the "
+                f"product met your expectations and look forward to serving you again."
+            )
+
+    return {"reply": ai_reply}
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 
 @router.get("/competitors")

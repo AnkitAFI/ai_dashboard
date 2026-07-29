@@ -819,7 +819,9 @@ function KeywordExplorerPanel({
                 {t('ki.retrievingIntel', 'Retrieving Marketplace Intel')}
               </h4>
               <p className="text-xs text-purple-700 dark:text-purple-300 mt-1 max-w-md">
-                {t('ki.retrievingDesc', 'We are scanning local search index data, calculating product demand, classifying search intentions, and compiling search recommendations. This process operates 100% free of charge.')}
+                {platform === "flipkart"
+                  ? t('ki.retrievingDescFlipkart', 'Scanning live Flipkart India search index data, calculating real-time buyer demand velocity, and classifying purchase intent to compile high-converting keyword intelligence.')
+                  : t('ki.retrievingDescAmazon', 'Scanning live Amazon India search index data, calculating real-time buyer demand velocity, and classifying purchase intent to compile high-converting keyword intelligence.')}
               </p>
             </div>
           </CardContent>

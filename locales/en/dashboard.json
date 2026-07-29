@@ -463,7 +463,9 @@
     "analyzing": "Analyzing...",
     "analyze": "Analyze",
     "retrievingIntel": "Retrieving Marketplace Intel",
-    "retrievingDesc": "We are scanning local search index data, calculating product demand, classifying search intentions, and compiling search recommendations. This process operates 100% free of charge.",
+    "retrievingDesc": "Scanning live marketplace search index data, calculating real-time buyer demand velocity, and classifying purchase intent to compile high-converting keyword intelligence.",
+    "retrievingDescAmazon": "Scanning live Amazon India search index data, calculating real-time buyer demand velocity, and classifying purchase intent to compile high-converting keyword intelligence.",
+    "retrievingDescFlipkart": "Scanning live Flipkart India search index data, calculating real-time buyer demand velocity, and classifying purchase intent to compile high-converting keyword intelligence.",
     "keywordExplorer": "Keyword Explorer",
     "emptyStateDesc": "Type in any search term above and click Analyze to retrieve search volumes, buyer intent, regional demand, and competitor SERPs."
   },
