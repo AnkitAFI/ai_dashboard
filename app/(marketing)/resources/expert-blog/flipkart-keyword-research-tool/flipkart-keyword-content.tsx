@@ -39,6 +39,7 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BlogImageSection from "../components/BlogImageSection";
 
 // ── Nav Types ─────────────────────────────────────────────────────────────────
 type MenuItemWithBadge = {
@@ -752,14 +753,14 @@ export default function FlipkartKeywordContent() {
             ))}
           </div>
         </div>
-        <div className="border-gray-200 dark:border-gray-800 py-2">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <ArticleImg
-              src="/Flipkart Keyword Research Tool.png"
-              alt="Flipkart Keyword Research Tool dashboard showing search volume, keyword ranking, and AI-powered SEO suggestions."
-              caption="The Insydz Flipkart Keyword Tool: Real-time search volume and organic rank tracking for Indian sellers."
-            />
-          </div>
+        <div
+          style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 16px 0" }}
+        >
+          <BlogImageSection
+            imageSrc="/Flipkart Keyword Research Tool.png"
+            altText="Flipkart Keyword Research Tool dashboard showing search volume, keyword ranking, and AI-powered SEO suggestions."
+            caption="The Insydz Flipkart Keyword Tool: Real-time search volume and organic rank tracking for Indian sellers."
+          />
         </div>
       </section>
 

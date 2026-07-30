@@ -56,6 +56,17 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "28",
+    title: "Amazon India Repricing Strategy 2026",
+    excerpt:
+      "In competitive categories on Amazon India, your Buy Box is won or lost multiple times a day. Sellers who reprice manually, or not at all, are giving it away. This is the 2026 playbook for margin-safe, rule-based repricing that holds your position without racing to the bottom.",
+    category: "Pricing Strategy",
+    readTime: "12 min read",
+    image: "/amazon-repricing-strategy-india-image0.png",
+    route: "/resources/expert-blog/amazon-repricing-strategy-india-2026",
+    popular: true,
+  },
+  {
     id: "27",
     title: "Analyze Amazon Reviews India Content",
     excerpt:
@@ -95,7 +106,7 @@ const articles: Article[] = [
       "Prime Day 2026 lasts 48 hours. The sellers who win it spend 6 to 8 weeks preparing. The sellers who lose it start the week before. This guide covers everything you need to do right now.",
     category: "Festive Trends",
     readTime: "13 min read",
-    image: "/amazon-prime-day-india-2026-seller-questions-blogbanner.png",
+    image: "/prime-day-india-2026-seller-questions.png",
     route: "/resources/expert-blog/prime-day-india-2026-seller-questions",
     popular: true,
   },

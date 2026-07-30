@@ -1158,196 +1158,6 @@ export default function AmazonCompetitorPriceTrackingTool() {
       {/* Reading progress */}
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
 
-      {/* ════════════════════════════════════════════ NAV */}
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled
-            ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg"
-            : "bg-background dark:bg-gray-900/80 backdrop-blur-none"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-8">
-          <div className="flex items-center justify-between h-[72px] lg:h-20">
-            {/* Logo */}
-            <div className="flex items-center space-x-2 flex-shrink-0">
-              <div
-                className="flex items-center space-x-1 group cursor-pointer"
-                onClick={() => router.push("/")}
-              >
-                <div className="relative">
-                  <img
-                    src="/logo.png"
-                    alt="Insydz Logo"
-                    className="w-10 h-10 lg:w-12 lg:h-12 rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain"
-                  />
-                  <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
-                </div>
-                <span className="text-lg lg:text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Insydz
-                </span>
-              </div>
-            </div>
-
-            {/* Desktop nav */}
-            <div
-              className="hidden lg:flex items-center space-x-0.5 xl:space-x-1"
-              ref={dropdownRef}
-            >
-              <DesktopDropdown label="Solutions" menuKey="Solutions" />
-              <DesktopDropdown label="Use Cases" menuKey="Use Cases" />
-              <DesktopDropdown label="Features" menuKey="Features" />
-              <button
-                onClick={() => router.push("/pricing")}
-                onMouseEnter={() => setActiveDropdown(null)}
-                className="px-2 xl:px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all"
-              >
-                Pricing
-              </button>
-              <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
-              <DesktopDropdown label="Compare" menuKey="Compare" />
-              <DesktopDropdown
-                label="Resources"
-                menuKey="Resources"
-                accent="orange"
-              />
-              <DesktopDropdown label="About" menuKey="About" />
-              <Button
-                onClick={() => router.push("/login")}
-                onMouseEnter={() => setActiveDropdown(null)}
-                className="ml-2 text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-4 xl:px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-              >
-                Login
-              </Button>
-              <button
-                className="ml-1 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                aria-label="Toggle dark mode"
-              >
-                {isDarkMode ? (
-                  <Sun className="w-4 h-4 text-yellow-400" />
-                ) : (
-                  <Moon className="w-4 h-4 text-gray-800" />
-                )}
-              </button>
-            </div>
-
-            {/* Mobile right controls */}
-            <div className="lg:hidden flex items-center gap-2">
-              <button
-                className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 transition-colors"
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                aria-label="Toggle dark mode"
-              >
-                {isDarkMode ? (
-                  <Sun className="w-4 h-4 text-yellow-400" />
-                ) : (
-                  <Moon className="w-4 h-4 text-gray-700 dark:text-gray-200" />
-                )}
-              </button>
-              <button
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                aria-label="Toggle menu"
-              >
-                {isMenuOpen ? (
-                  <X className="w-6 h-6 text-gray-700 dark:text-gray-200" />
-                ) : (
-                  <Menu className="w-6 h-6 text-gray-700 dark:text-gray-200" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile menu */}
-        {isMenuOpen && (
-          <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100dvh-72px)] overflow-y-auto">
-            <div className="px-4 py-4 space-y-1">
-              <button
-                onClick={() => {
-                  router.push("/resources/expert-blog");
-                  setIsMenuOpen(false);
-                }}
-                className="flex items-center gap-2 w-full px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium text-sm"
-              >
-                <ArrowLeft className="w-4 h-4" /> Back to Blog
-              </button>
-              {(
-                [
-                  ["Solutions", "Solutions", "purple"],
-                  ["Use Cases", "Use Cases", "purple"],
-                  ["Features", "Features", "purple"],
-                  ["Free Tools", "Free Tools", "purple"],
-                  ["Compare", "Compare", "purple"],
-                  ["Resources", "Resources", "orange"],
-                  ["About", "About", "purple"],
-                ] as [string, keyof NavigationMenu, string][]
-              ).map(([label, key, accent]) => (
-                <div key={label}>
-                  <button
-                    onClick={() => toggleMobileMenu(label)}
-                    className={`flex items-center justify-between w-full px-4 py-3 rounded-lg font-medium text-sm ${
-                      accent === "orange"
-                        ? "text-orange-600 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                        : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                    }`}
-                  >
-                    {label}
-                    <ChevronDown
-                      className={`w-4 h-4 transition-transform ${mobileActiveMenu === label ? "rotate-180" : ""}`}
-                    />
-                  </button>
-                  {mobileActiveMenu === label && (
-                    <div className="ml-4 mt-1 space-y-0.5 pb-1">
-                      {navigationMenu[key].map((item, i) => (
-                        <button
-                          key={i}
-                          onClick={() => handleMenuItemClick(item)}
-                          className={`flex items-center gap-2 w-full px-4 py-2.5 text-sm rounded-lg ${
-                            accent === "orange"
-                              ? "text-gray-600 dark:text-gray-400 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-                              : "text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                          }`}
-                        >
-                          <span className="flex-shrink-0">{item.icon}</span>
-                          <span className="flex-1 text-left">{item.name}</span>
-                          {item.badge && (
-                            <span className="ml-auto text-xs bg-purple-600 text-white px-2 py-0.5 rounded-full flex-shrink-0">
-                              {item.badge}
-                            </span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              <button
-                onClick={() => {
-                  router.push("/pricing");
-                  setIsMenuOpen(false);
-                }}
-                className="block w-full text-left px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium text-sm"
-              >
-                Pricing
-              </button>
-              <div className="pt-2">
-                <Button
-                  onClick={() => {
-                    router.push("/login");
-                    setIsMenuOpen(false);
-                  }}
-                  className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-semibold py-3 rounded-xl"
-                >
-                  Login
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-      </nav>
-
-      {/* ════════════════════════════════════════════ HERO */}
       <section className="article-hero">
         <div
           className="hero-inner"
@@ -1371,9 +1181,10 @@ export default function AmazonCompetitorPriceTrackingTool() {
             >
               Expert Blog
             </button>
-            <span>/</span>
             <span className="hidden sm:inline">/</span>
-            <span className="text-orange-500 font-medium">Price Tracking</span>
+            <span className="text-orange-500 font-medium">
+              Amazon Competitor Price Tracking Tool
+            </span>
           </nav>
 
           {/* Category tag */}
@@ -1414,7 +1225,6 @@ export default function AmazonCompetitorPriceTrackingTool() {
               ·
             </span>
             <span className="hidden sm:inline">
-              Last updated:{" "}
               <strong className="text-gray-700 dark:text-gray-300">
                 January 2026
               </strong>
@@ -1425,9 +1235,6 @@ export default function AmazonCompetitorPriceTrackingTool() {
                 14 min read
               </strong>
             </div>
-            <span className="bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400 text-xs font-bold px-2 py-0.5 rounded">
-              Updated for 2026
-            </span>
           </div>
 
           {/* Stat strip */}
@@ -2260,7 +2067,6 @@ export default function AmazonCompetitorPriceTrackingTool() {
               </div>
             </div>
 
-            {/* <ArticleImg {...IMAGES.warehouse} /> */}
             <BlogImageSection
               altText={IMAGES.warehouse.alt}
               caption={IMAGES.warehouse.caption}

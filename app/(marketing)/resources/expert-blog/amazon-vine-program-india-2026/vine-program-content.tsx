@@ -956,30 +956,6 @@ export default function AmazonVineProgramContent() {
           >
             📖 <strong>11 min read</strong>
           </div>
-          <span
-            style={{
-              background: "#FFF7ED",
-              color: "#F4500A",
-              fontSize: "clamp(9px,2vw,11px)",
-              fontWeight: 700,
-              padding: "3px 10px",
-              borderRadius: 20,
-            }}
-          >
-            BOFU · D2C Strategy
-          </span>
-          <span
-            style={{
-              background: "#ECFDF5",
-              color: "#059669",
-              fontSize: "clamp(9px,2vw,11px)",
-              fontWeight: 700,
-              padding: "3px 10px",
-              borderRadius: 20,
-            }}
-          >
-            Review Pillar
-          </span>
         </div>
 
         <div className="stat-strip" style={{ marginBottom: 24 }}>

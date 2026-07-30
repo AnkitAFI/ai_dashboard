@@ -1077,17 +1077,16 @@ export default function AmazonListingNotRankingIndiaContent() {
           light: "#F1F2FF",
           dark: "#0f1120",
         }}
-        tags={["Keyword Intelligence", "SEO Organic"]}
-      />
-
-      {/* Blog Image Section */}
-      <BlogImageSection
-        imageSrc="/Amazon India Listing Not Ranking.png"
-        altText="Amazon Listing Not Ranking India"
-        caption="Insydz rank diagnostic on a real ASIN. Three issues found: keyword not indexed, backend field only 19% used, and wrong category mapping. Any one of these is enough to keep a listing off page 1."
       />
 
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 16px 0" }}>
+        {/* Blog Image Section */}
+        <BlogImageSection
+          imageSrc="/Amazon India Listing Not Ranking.png"
+          altText="Amazon Listing Not Ranking India"
+          caption="Insydz rank diagnostic on a real ASIN. Three issues found: keyword not indexed, backend field only 19% used, and wrong category mapping. Any one of these is enough to keep a listing off page 1."
+        />
+
         {/* Quick Answer Box */}
         <div
           style={{

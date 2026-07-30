@@ -528,7 +528,6 @@ export default function PrimeDayIndia2026SellerQuestionsContent() {
         publishDate="July 2026"
         readTime="13 min read"
         bgColor={{ light: "#FFF7ED", dark: "#1c0900" }}
-        tags={["Community Q&A", "Prime Day 2026"]}
       />
 
       <div style={{ maxWidth: 1240, margin: "16px auto", padding: "0 16px" }}>
@@ -610,7 +609,7 @@ export default function PrimeDayIndia2026SellerQuestionsContent() {
 
         {/* Blog Image Section */}
         <BlogImageSection
-          imageSrc="/amazon-prime-day-india-2026-seller-questions-blogbanner.png"
+          imageSrc="/prime-day-india-2026-seller-questions.png"
           altText="Amazon Prime Day India 2026 Seller Questions"
           caption="Prime Day preparation status tracker in Insydz. With 18 days remaining, Lightning Deal submission deadlines have passed for most categories. The two most critical remaining tasks are competitor price monitoring setup and PPC budget loading."
         />

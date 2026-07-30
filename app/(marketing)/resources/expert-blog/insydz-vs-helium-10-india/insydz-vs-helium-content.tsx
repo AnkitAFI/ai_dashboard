@@ -892,169 +892,6 @@ export default function InsydzVsHelium10India() {
 
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
 
-      {/* ══ NAV ══ */}
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
-            <div
-              className="flex items-center space-x-1 group cursor-pointer"
-              onClick={() => router.push("/")}
-            >
-              <div className="relative">
-                <img
-                  src="/logo.png"
-                  alt="Insydz Logo"
-                  className="w-12 h-12 rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain"
-                />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent ml-2">
-                Insydz
-              </span>
-            </div>
-            <div
-              className="hidden lg:flex items-center space-x-3"
-              ref={dropdownRef}
-            >
-              <DesktopDropdown label="Solutions" menuKey="Solutions" />
-              <DesktopDropdown label="Use Cases" menuKey="Use Cases" />
-              <DesktopDropdown label="Features" menuKey="Features" />
-              <button
-                onClick={() => router.push("/pricing")}
-                onMouseEnter={() => setActiveDropdown(null)}
-                className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all"
-              >
-                Pricing
-              </button>
-              <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
-              <DesktopDropdown label="Compare" menuKey="Compare" />
-              <DesktopDropdown
-                label="Resources"
-                menuKey="Resources"
-                accent="orange"
-              />
-              <DesktopDropdown label="About" menuKey="About" />
-              <Button
-                onClick={() => router.push("/login")}
-                onMouseEnter={() => setActiveDropdown(null)}
-                className="ml-2 text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-              >
-                Login
-              </Button>
-              <button
-                className="ml-2 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                onClick={() => setIsDarkMode(!isDarkMode)}
-              >
-                {isDarkMode ? (
-                  <Sun className="w-5 h-5 text-yellow-400" />
-                ) : (
-                  <Moon className="w-5 h-5 text-gray-800" />
-                )}
-              </button>
-            </div>
-            <div className="flex lg:hidden items-center gap-2">
-              <button
-                className="p-1.5 rounded-full bg-gray-200 dark:bg-gray-700"
-                onClick={() => setIsDarkMode(!isDarkMode)}
-              >
-                {isDarkMode ? (
-                  <Sun className="w-4 h-4 text-yellow-400" />
-                ) : (
-                  <Moon className="w-4 h-4 text-gray-800 dark:text-gray-200" />
-                )}
-              </button>
-              <button
-                className="p-2"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                {isMenuOpen ? (
-                  <X className="w-6 h-6" />
-                ) : (
-                  <Menu className="w-6 h-6" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-        {isMenuOpen && (
-          <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100vh-5rem)] overflow-y-auto">
-            <div className="px-4 py-4 space-y-2">
-              <button
-                onClick={() => {
-                  router.push("/resources/expert-blog");
-                  setIsMenuOpen(false);
-                }}
-                className="flex items-center gap-2 w-full px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium"
-              >
-                <ArrowLeft className="w-4 h-4" /> Back to Blog
-              </button>
-              {(
-                [
-                  ["Solutions", "Solutions", "purple"],
-                  ["Use Cases", "Use Cases", "purple"],
-                  ["Features", "Features", "purple"],
-                  ["Free Tools", "Free Tools", "purple"],
-                  ["Compare", "Compare", "purple"],
-                  ["Resources", "Resources", "orange"],
-                  ["About", "About", "purple"],
-                ] as [string, keyof NavigationMenu, string][]
-              ).map(([label, key, accent]) => (
-                <div key={label}>
-                  <button
-                    onClick={() => toggleMobileMenu(label)}
-                    className={`flex items-center justify-between w-full px-4 py-2 rounded-lg font-medium ${accent === "orange" ? "text-orange-600 dark:text-orange-500 hover:bg-orange-50" : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"}`}
-                  >
-                    {label}
-                    <ChevronDown
-                      className={`w-4 h-4 transition-transform ${mobileActiveMenu === label ? "rotate-180" : ""}`}
-                    />
-                  </button>
-                  {mobileActiveMenu === label && (
-                    <div className="ml-4 mt-1 space-y-1">
-                      {navigationMenu[key].map((item, i) => (
-                        <button
-                          key={i}
-                          onClick={() => handleMenuItemClick(item)}
-                          className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg"
-                        >
-                          {item.icon}
-                          {item.name}
-                          {item.badge && (
-                            <span className="ml-auto text-xs bg-purple-600 text-white px-2 py-0.5 rounded-full">
-                              {item.badge}
-                            </span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              <button
-                onClick={() => {
-                  router.push("/pricing");
-                  setIsMenuOpen(false);
-                }}
-                className="block w-full text-left px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 rounded-lg font-medium"
-              >
-                Pricing
-              </button>
-              <Button
-                onClick={() => {
-                  router.push("/login");
-                  setIsMenuOpen(false);
-                }}
-                className="w-full mt-2 bg-gradient-to-r from-pink-500 to-rose-500"
-              >
-                Login
-              </Button>
-            </div>
-          </div>
-        )}
-      </nav>
-
       {/* ══ BREADCRUMB ══ */}
       <div
         style={{
@@ -1212,18 +1049,6 @@ export default function InsydzVsHelium10India() {
             <Clock className="w-3.5 h-3.5" />
             <strong>14 min read</strong>
           </div>
-          <span
-            style={{
-              background: "#FFEDD5",
-              color: "#F97316",
-              fontSize: 11,
-              fontWeight: 700,
-              padding: "2px 8px",
-              borderRadius: 4,
-            }}
-          >
-            Updated for 2026
-          </span>
         </div>
 
         {/* Stat strip */}
@@ -1270,7 +1095,7 @@ export default function InsydzVsHelium10India() {
       </div>
 
       {/* IMG 1 */}
-      <div style={{ maxWidth: "auto", margin: "0 auto", padding: "0 24px" }}>
+      <div style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 16px 0" }}>
         <BlogImageSection
           imageSrc="/Insydz-vs-Helium-10.png"
           altText="Insydz vs Helium 10 India comparison platform coverage, pricing, and features"

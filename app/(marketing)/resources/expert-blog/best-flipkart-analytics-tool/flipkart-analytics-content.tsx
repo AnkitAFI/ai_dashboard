@@ -1081,176 +1081,6 @@ export default function BestFlipkartAnalyticsTool() {
 
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
 
-      {/* ═══ NAV ════════════════════════════════════════════════════════════════ */}
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}
-      >
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
-            {/* Logo */}
-            <div
-              className="flex items-center space-x-1 group cursor-pointer"
-              onClick={() => router.push("/")}
-            >
-              <div className="relative">
-                <img
-                  src="/logo.png"
-                  alt="Insydz Logo"
-                  className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-xl sm:rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain"
-                />
-                <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
-              </div>
-              <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent ml-1 sm:ml-2">
-                Insydz
-              </span>
-            </div>
-
-            {/* Desktop Nav */}
-            <div
-              className="hidden lg:flex items-center space-x-0.5 xl:space-x-1"
-              ref={dropdownRef}
-            >
-              <DesktopDropdown label="Solutions" menuKey="Solutions" />
-              <DesktopDropdown label="Use Cases" menuKey="Use Cases" />
-              <DesktopDropdown label="Features" menuKey="Features" />
-              <button
-                onClick={() => router.push("/pricing")}
-                onMouseEnter={() => setActiveDropdown(null)}
-                className="px-2 xl:px-3 py-2 text-xs xl:text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all"
-              >
-                Pricing
-              </button>
-              <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
-              <DesktopDropdown label="Compare" menuKey="Compare" />
-              <DesktopDropdown
-                label="Resources"
-                menuKey="Resources"
-                accent="orange"
-              />
-              <DesktopDropdown label="About" menuKey="About" />
-              <Button
-                onClick={() => router.push("/login")}
-                onMouseEnter={() => setActiveDropdown(null)}
-                className="ml-1 text-xs xl:text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-4 xl:px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-              >
-                Login
-              </Button>
-              <button
-                className="ml-1 p-1.5 xl:p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex-shrink-0"
-                onClick={() => setIsDarkMode(!isDarkMode)}
-              >
-                {isDarkMode ? (
-                  <Sun className="w-4 h-4 xl:w-5 xl:h-5 text-yellow-400" />
-                ) : (
-                  <Moon className="w-4 h-4 xl:w-5 xl:h-5 text-gray-800" />
-                )}
-              </button>
-            </div>
-
-            {/* Mobile right controls */}
-            <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
-              <button
-                className="p-1.5 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 transition-colors"
-                onClick={() => setIsDarkMode(!isDarkMode)}
-              >
-                {isDarkMode ? (
-                  <Sun className="w-4 h-4 text-yellow-400" />
-                ) : (
-                  <Moon className="w-4 h-4 text-gray-800 dark:text-gray-200" />
-                )}
-              </button>
-              <button
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                {isMenuOpen ? (
-                  <X className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-                ) : (
-                  <Menu className="w-5 h-5 text-gray-700 dark:text-gray-300" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100vh-4rem)] overflow-y-auto">
-            <div className="px-3 sm:px-4 py-3 sm:py-4 space-y-1.5">
-              <button
-                onClick={() => {
-                  router.push("/resources/expert-blog");
-                  setIsMenuOpen(false);
-                }}
-                className="flex items-center gap-2 w-full px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 rounded-lg font-medium text-sm"
-              >
-                <ArrowLeft className="w-4 h-4 flex-shrink-0" /> Back to Blog
-              </button>
-              {(
-                [
-                  ["Solutions", "Solutions", "purple"],
-                  ["Use Cases", "Use Cases", "purple"],
-                  ["Features", "Features", "purple"],
-                  ["Free Tools", "Free Tools", "purple"],
-                  ["Compare", "Compare", "purple"],
-                  ["Resources", "Resources", "orange"],
-                  ["About", "About", "purple"],
-                ] as [string, keyof NavigationMenu, string][]
-              ).map(([label, key, accent]) => (
-                <div key={label}>
-                  <button
-                    onClick={() => toggleMobileMenu(label)}
-                    className={`flex items-center justify-between w-full px-3 sm:px-4 py-2 rounded-lg font-medium text-sm ${accent === "orange" ? "text-orange-600 hover:bg-orange-50" : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"}`}
-                  >
-                    {label}
-                    <ChevronDown
-                      className={`w-4 h-4 transition-transform flex-shrink-0 ${mobileActiveMenu === label ? "rotate-180" : ""}`}
-                    />
-                  </button>
-                  {mobileActiveMenu === label && (
-                    <div className="ml-3 sm:ml-4 mt-1 space-y-0.5">
-                      {navigationMenu[key].map((item, i) => (
-                        <button
-                          key={i}
-                          onClick={() => handleMenuItemClick(item)}
-                          className="flex items-center gap-2 w-full px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:bg-purple-50 rounded-lg"
-                        >
-                          <span className="flex-shrink-0">{item.icon}</span>
-                          <span className="text-left flex-1">{item.name}</span>
-                          {item.badge && (
-                            <span className="text-xs bg-purple-600 text-white px-1.5 py-0.5 rounded-full flex-shrink-0">
-                              {item.badge}
-                            </span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              <button
-                onClick={() => {
-                  router.push("/pricing");
-                  setIsMenuOpen(false);
-                }}
-                className="block w-full text-left px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 rounded-lg font-medium text-sm"
-              >
-                Pricing
-              </button>
-              <Button
-                onClick={() => {
-                  router.push("/login");
-                  setIsMenuOpen(false);
-                }}
-                className="w-full mt-2 bg-gradient-to-r from-pink-500 to-rose-500 text-sm py-2"
-              >
-                Login
-              </Button>
-            </div>
-          </div>
-        )}
-      </nav>
-
       {/* ── BREADCRUMB ─────────────────────────────────────────────────────────── */}
       <div className="breadcrumb" style={{ marginTop: 80 }}>
         <div className="breadcrumb-inner">
@@ -1392,32 +1222,6 @@ export default function BestFlipkartAnalyticsTool() {
             <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
             <strong>14 min read</strong>
           </div>
-          <span
-            style={{
-              background: "#FEF3C7",
-              color: "#92400E",
-              fontSize: "clamp(9px,2vw,11px)",
-              fontWeight: 700,
-              padding: "2px 7px",
-              borderRadius: 4,
-              fontFamily: "'Sora',sans-serif",
-            }}
-          >
-            Updated for 2026
-          </span>
-          <span
-            style={{
-              background: "#EDE9FE",
-              color: "#5B21B6",
-              fontSize: "clamp(9px,2vw,11px)",
-              fontWeight: 700,
-              padding: "2px 7px",
-              borderRadius: 4,
-              fontFamily: "'Sora',sans-serif",
-            }}
-          >
-            Seller Strategy Guide
-          </span>
         </div>
 
         {/* Stat strip */}
@@ -1470,74 +1274,19 @@ export default function BestFlipkartAnalyticsTool() {
         </div>
       </div>
 
-      {/* ── HERO BANNER ──────────────────────────────────────────────────────── */}
-      {/* <div
-        style={{ maxWidth: 1240, margin: "0 auto", padding: "0 16px" }}
-        className="sm:px-5 lg:px-6"
-      >
-        <div className="hero-banner">
-          <div className="hb-left">
-            <div className="platform-pills">
-              <span className="pill pill-fk">Flipkart</span>
-              <span className="pill pill-az">Amazon.in</span>
-              <span className="pill pill-me">Meesho</span>
-            </div>
-            <h2>
-              Indian Sellers Are Invisible on Flipkart{" "}
-              <span className="accent">Without the Right Analytics</span>
-            </h2>
-            <p>
-              AI-powered marketplace intelligence built for India — competitor
-              insights, pricing automation, WhatsApp rank-drop alerts, and a
-              seller dashboard covering Flipkart natively. Not adapted from
-              global tools.
-            </p>
-          </div>
-          <div className="hb-right">
-            <div className="metric-card">
-              <div className="mc-label">Competitor Keywords Found</div>
-              <div className="mc-value">+312</div>
-              <div className="mc-sub">Keywords you're missing on Flipkart</div>
-            </div>
-            <div className="metric-card">
-              <div className="mc-label">Rank After Fix</div>
-              <div className="mc-value">P6 → P1</div>
-              <div className="mc-sub">After backend keyword update</div>
-            </div>
-            <div className="alert-pill">
-              Rival ranking #1 for "mixer grinder under 3000" fix now
-            </div>
-          </div>
-        </div>
-        <p
-          style={{
-            fontSize: "clamp(10px,2vw,12px)",
-            color: "#94A3B8",
-            textAlign: "center",
-            margin: "6px 0 28px",
-            fontStyle: "italic",
-            fontFamily: "'Sora',sans-serif",
-          }}
-        >
-          Insydz Flipkart intelligence surfaces competitor keyword gaps, rank
-          positions, and pricing automation opportunities across Flipkart and
-          Amazon.in simultaneously.
-        </p>
-      </div> */}
-
-      <BlogImageSection
-        imageSrc="/Best-Flipkart-Analytics-Tool.png"
-        altText="Flipkart Analytics Dashboard with Competitor Tracking and Price Intelligence"
-        caption="Insydz Flipkart intelligence surfaces competitor keyword gaps, rank
-          positions, and pricing automation opportunities across Flipkart and
-          Amazon.in simultaneously."
-      />
-
       {/* ── KEY TAKEAWAYS ─────────────────────────────────────────────────────── */}
       <div
         style={{ maxWidth: 1240, margin: "0 auto", padding: "0 16px 28px" }}
         className="sm:px-5 lg:px-6"
       >
+        <BlogImageSection
+          imageSrc="/Best-Flipkart-Analytics-Tool.png"
+          altText="Flipkart Analytics Dashboard with Competitor Tracking and Price Intelligence"
+          caption="Insydz Flipkart intelligence surfaces competitor keyword gaps, rank
+          positions, and pricing automation opportunities across Flipkart and
+          Amazon.in simultaneously."
+        />
+
         <div className="takeaway-box">
           <h3>Key Takeaways</h3>
           {[

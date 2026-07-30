@@ -629,30 +629,6 @@ export default function AmazonPrivateLabelContent() {
                 <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
                 <strong>12 min read</strong>
               </div>
-              <span
-                style={{
-                  background: "#FFEDD5",
-                  color: "#F97316",
-                  fontSize: "clamp(9px,2vw,11px)",
-                  fontWeight: 700,
-                  padding: "2px 7px",
-                  borderRadius: 4,
-                }}
-              >
-                Updated for 2026
-              </span>
-              <span
-                style={{
-                  background: "#F5F3FF",
-                  color: "#7C3AED",
-                  fontSize: "clamp(9px,2vw,11px)",
-                  fontWeight: 700,
-                  padding: "2px 7px",
-                  borderRadius: 4,
-                }}
-              >
-                Tool Analysis
-              </span>
             </div>
 
             <div className="flex flex-wrap gap-4">

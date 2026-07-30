@@ -917,17 +917,16 @@ export default function NegativeReviewsAmazonIndiaContent() {
           light: "#F1F2FF",
           dark: "#0f1120",
         }}
-        tags={["Review Intelligence", "SEO Organic"]}
-      />
-
-      {/* Blog Image Section */}
-      <BlogImageSection
-        imageSrc="/How Negative Reviews Are Killing Your Amazon India Sales.png"
-        altText="Negative Reviews Impact Amazon India Sales"
-        caption="Insydz review sentiment view. The same 23 negative reviews, grouped by theme. Eleven name packaging damage, six name sizing, four name durability. The dominant cluster tells you exactly what to fix first, which no single review ever does."
       />
 
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 16px 0" }}>
+        {/* Blog Image Section */}
+        <BlogImageSection
+          imageSrc="/How Negative Reviews Are Killing Your Amazon India Sales.png"
+          altText="Negative Reviews Impact Amazon India Sales"
+          caption="Insydz review sentiment view. The same 23 negative reviews, grouped by theme. Eleven name packaging damage, six name sizing, four name durability. The dominant cluster tells you exactly what to fix first, which no single review ever does."
+        />
+
         {/* Quick Answer Box */}
         <div
           style={{
