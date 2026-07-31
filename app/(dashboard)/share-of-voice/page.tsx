@@ -10,9 +10,17 @@ import { useAuth } from "@/lib/auth-context";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { TrendingUp, Target, BarChart3, Search, RefreshCw, AlertCircle, CheckCircle, Users, Award, Filter, ChevronLeft, ChevronRight, Lock, Crown, XCircle, X, Zap, ShieldCheck, Map, Layers, Star, ArrowRight, } from "lucide-react";
 import {
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, ZAxis,
+  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ScatterChart, Scatter, ZAxis, LabelList,
 } from "recharts";
 import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useTranslation } from "react-i18next";
@@ -350,6 +358,64 @@ function OppBadge({ opp }: { opp: string }) {
     <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${map[opp] || map.Low}`}>
       {opp}
     </span>
+  );
+}
+
+function CardInfoModal({
+  title,
+  description,
+  items,
+  variant = "dark",
+}: {
+  title: string;
+  description: string;
+  items?: { label: string; detail: string }[];
+  variant?: "light" | "dark";
+}) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <button
+          type="button"
+          onClick={(e) => e.stopPropagation()}
+          className={`inline-flex items-center justify-center w-5 h-5 rounded-full transition-all shrink-0 ml-1.5 focus:outline-none shadow-sm ${
+            variant === "light"
+              ? "bg-white/20 hover:bg-white/40 text-white border border-white/30"
+              : "bg-slate-100 dark:bg-slate-800 hover:bg-blue-500 hover:text-white dark:hover:bg-blue-500 dark:hover:text-white text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700"
+          }`}
+          title="Click for explanation"
+        >
+          <span className="text-xs font-black">!</span>
+        </button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl rounded-2xl p-6 z-50">
+        <DialogHeader className="space-y-2">
+          <DialogTitle className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 text-xs font-black">
+              !
+            </span>
+            {title}
+          </DialogTitle>
+          <DialogDescription className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            {description}
+          </DialogDescription>
+        </DialogHeader>
+        {items && items.length > 0 && (
+          <div className="mt-4 space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+            {items.map((item, index) => (
+              <div key={index} className="text-sm bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                <span className="font-semibold text-slate-800 dark:text-slate-200 block mb-0.5">
+                  • {item.label}
+                </span>
+                <span className="text-slate-600 dark:text-slate-400 text-xs leading-normal">
+                  {item.detail}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
   );
 }
 
@@ -785,22 +851,32 @@ export default function ShareOfVoice() {
             {/* Summary Cards */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { label: "Total Products", value: sovData.total_products.toLocaleString(), icon: <BarChart3 className="w-6 h-6 text-blue-500" />, grad: "from-blue-500 to-blue-600", sub: "In this category" },
-                { label: "Total Reviews", value: sovData.total_reviews.toLocaleString(), icon: <Users className="w-6 h-6 text-emerald-500" />, grad: "from-green-500 to-emerald-600", sub: "Customer feedback" },
-                { label: "Market Leader", value: sovData.market_leader || "—", icon: <Award className="w-6 h-6 text-purple-500" />, grad: "from-purple-500 to-pink-600", sub: "Top brand", truncate: true },
+                { label: "Total Products", value: sovData.total_products.toLocaleString(), icon: <BarChart3 className="w-6 h-6 text-blue-100" />, grad: "from-blue-600 to-indigo-700", sub: "In this category", desc: "Total number of products currently selling in this category on the marketplace. Helps you understand how big and active this product market is." },
+                { label: "Total Reviews", value: sovData.total_reviews.toLocaleString(), icon: <Users className="w-6 h-6 text-emerald-100" />, grad: "from-emerald-600 to-teal-700", sub: "Customer feedback", desc: "Total customer reviews across all products here. Shows overall customer demand and how actively buyers leave ratings." },
+                { label: "Market Leader", value: sovData.market_leader || "—", icon: <Award className="w-6 h-6 text-purple-100" />, grad: "from-purple-600 to-pink-700", sub: "Top brand", truncate: true, desc: "The #1 top-selling brand with the most reviews and visibility in this category. This is your main competitor to learn from." },
                 ...(sovData.your_brand_share !== null
-                  ? [{ label: "Your Share", value: `${sovData.your_brand_share}%`, icon: <Target className="w-6 h-6 text-orange-500" />, grad: "from-orange-500 to-red-600", sub: "Market position" }]
-                  : [{ label: "Total Brands", value: String(sovData.brands.length), icon: <Layers className="w-6 h-6 text-cyan-500" />, grad: "from-cyan-500 to-sky-600", sub: "Competing brands" }]),
+                  ? [{ label: "Your Share", value: `${sovData.your_brand_share}%`, icon: <Target className="w-6 h-6 text-amber-100" />, grad: "from-amber-600 to-orange-700", sub: "Market position", desc: "Your brand's share of total customer attention and reviews compared to all other competitors selling here." }]
+                  : [{ label: "Total Brands", value: String(sovData.brands.length), icon: <Layers className="w-6 h-6 text-cyan-100" />, grad: "from-cyan-600 to-blue-700", sub: "Competing brands", desc: "The total number of different brands competing for customer orders in this category." }]),
               ].map((c, i) => (
                 <Card key={i} className={`relative bg-gradient-to-br ${c.grad} text-white border-0 rounded-3xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-transform`}>
                   <CardContent className="p-5 relative">
                     <div className="flex items-start justify-between">
                       <div className="min-w-0 flex-1">
-                        <p className="text-white/80 text-xs font-medium mb-1">{c.label}</p>
+                        <div className="flex items-center gap-1 mb-1">
+                          <p className="text-white/90 text-xs font-semibold">{c.label}</p>
+                          <CardInfoModal
+                            title={c.label}
+                            description={(c as any).desc}
+                            variant="light"
+                            items={[
+                              { label: "Overview", detail: (c as any).desc }
+                            ]}
+                          />
+                        </div>
                         <p className={`font-black text-white ${(c as any).truncate ? "text-xl truncate" : "text-3xl"}`}>{c.value}</p>
-                        <p className="text-white/60 text-xs mt-1">{c.sub}</p>
+                        <p className="text-white/70 text-xs mt-1 font-medium">{c.sub}</p>
                       </div>
-                      <div className="w-12 h-12 bg-background opacity-100 rounded-xl flex items-center justify-center shrink-0 ml-2">{c.icon}</div>
+                      <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shrink-0 ml-2 border border-white/20 shadow-inner">{c.icon}</div>
                     </div>
                   </CardContent>
                 </Card>
@@ -836,13 +912,22 @@ export default function ShareOfVoice() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-semibold text-slate-600 flex items-center gap-2">
-                        <Layers className="w-4 h-4 text-blue-500" /> Market Concentration
+                  <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                    <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                      <CardTitle className="text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          <Layers className="w-4 h-4 text-blue-500" /> Market Concentration
+                        </span>
+                        <CardInfoModal
+                          title="Market Monopoly Check"
+                          description="Checks if a few big brands dominate all sales in this category, or if sales are well-distributed among many sellers."
+                          items={[
+                            { label: "Why it matters", detail: "If a few brands don't own the whole market, it is much easier for your new product to get orders and rank higher." }
+                          ]}
+                        />
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-6 pt-4">
                       <div className="flex items-center gap-4">
                         <div className="relative flex items-center justify-center">
                           <ScoreRing score={Math.min(marketHealth.concentration.hhi_score / 100, 100)} color="blue" size={76} />
@@ -858,13 +943,22 @@ export default function ShareOfVoice() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-semibold text-slate-600 flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4 text-emerald-500" /> Category Trend
+                  <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                    <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                      <CardTitle className="text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          <TrendingUp className="w-4 h-4 text-emerald-500" /> Category Trend
+                        </span>
+                        <CardInfoModal
+                          title="Category Sales Growth Trend"
+                          description="Compares the number of reviews on new listings versus older listings to see if customer demand in this category is growing."
+                          items={[
+                            { label: "Why it matters", detail: "A growing category means more customers are buying here every day, giving your brand a bigger chance to get fast sales." }
+                          ]}
+                        />
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-6 pt-4">
                       <div className="flex items-center gap-3 mb-2">
                         <div className={`px-3 py-1 rounded-full text-sm font-bold ${
                           marketHealth.trend.trend === "Growing" ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400" :
@@ -891,13 +985,22 @@ export default function ShareOfVoice() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-semibold text-slate-600 flex items-center gap-2">
-                        <ShieldCheck className="w-4 h-4 text-purple-500" /> Data Confidence
+                  <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                    <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                      <CardTitle className="text-sm font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-between">
+                        <span className="flex items-center gap-2">
+                          <ShieldCheck className="w-4 h-4 text-purple-500" /> Data Confidence
+                        </span>
+                        <CardInfoModal
+                          title="Data Reliability & Accuracy"
+                          description="Shows how trustworthy this category data is based on the number of products and genuine customer reviews analyzed."
+                          items={[
+                            { label: "Why it matters", detail: "A high score (80+) means you can trust these numbers to make pricing, inventory, and launch decisions without worry." }
+                          ]}
+                        />
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-6 pt-4">
                       <div className="flex items-center gap-4">
                         <div className="relative flex items-center justify-center">
                           <ScoreRing score={marketHealth.confidence_score.score} color={marketHealth.confidence_score.color} size={76} />
@@ -918,12 +1021,26 @@ export default function ShareOfVoice() {
                   </Card>
                 </div>
 
-                <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="flex items-center gap-2">
-                      <Zap className="w-5 h-5 text-amber-500" /> Launch Readiness Breakdown
+                <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                  <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                    <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                      <span className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-sm">
+                          <Zap className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                          <span className="block leading-snug">Launch Readiness Breakdown</span>
+                          <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">Four pillars scored 0–25 each</span>
+                        </div>
+                      </span>
+                      <CardInfoModal
+                        title="Should You Launch Here? (Readiness Score)"
+                        description="A simple 100-point check that looks at competition, price gaps, customer ratings, and reviews to see if launching a new product here is safe and profitable."
+                        items={[
+                          { label: "Why it matters", detail: "Gives you a clear green light on whether you can easily win sales or if the competition is too tough." }
+                        ]}
+                      />
                     </CardTitle>
-                    <CardDescription>Four pillars scored 0–25 each</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -962,64 +1079,114 @@ export default function ShareOfVoice() {
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg flex items-center justify-center">
-                      <BarChart3 className="w-4 h-4 text-white" />
-                    </div>
-                    Market Share Distribution
+              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                  <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                    <span className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-sm">
+                        <BarChart3 className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <span className="block leading-snug">Market Share Distribution</span>
+                        <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">Top 8 brands by review share</span>
+                      </div>
+                    </span>
+                    <CardInfoModal
+                      title="Brand Market Share %"
+                      description="Shows what percentage of total customer reviews and sales each top brand is getting in this category."
+                      items={[
+                        { label: "Why it matters", detail: "Helps you see if one big brand is taking all the orders or if sales are spread across many sellers." }
+                      ]}
+                    />
                   </CardTitle>
-                  <CardDescription>Top 8 brands by review share</CardDescription>
                 </CardHeader>
-                <CardContent className="pt-0">
-                  <ResponsiveContainer width="100%" height={280}>
+                <CardContent className="p-6 pt-4">
+                  <ResponsiveContainer width="100%" height={330}>
                     <PieChart>
                       <Pie
                         data={(sovData.brands ?? []).slice(0, 8).map((b) => ({ name: b.brand, value: b.share_percentage }))}
                         cx="50%" cy="50%"
-                        innerRadius={65} outerRadius={100}
-                        paddingAngle={3} dataKey="value"
+                        innerRadius={72} outerRadius={110}
+                        paddingAngle={4} dataKey="value"
                         label={({ name, value }) => `${value}%`}
                         labelLine={false}
                       >
-                        {sovData.brands.slice(0, 8).map((_, i) => (
-                          <Cell key={i} fill={COLORS[i % COLORS.length]} stroke="#fff" strokeWidth={2} />
+                        {(sovData.brands ?? []).slice(0, 8).map((_, i) => (
+                          <Cell key={i} fill={COLORS[i % COLORS.length]} stroke={isDark ? "#0f172a" : "#fff"} strokeWidth={2} />
                         ))}
                       </Pie>
                       <Tooltip contentStyle={getTooltipStyle(isDark)} formatter={(v: any) => [`${v}%`, "Share"]} />
                       <Legend
-                        iconType="circle" iconSize={8}
-                        formatter={(v) => <span className="text-xs text-slate-600 dark:text-slate-300">{v}</span>}
+                        iconType="circle" iconSize={9}
+                        wrapperStyle={{ paddingTop: 16 }}
+                        formatter={(v) => <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{v.length > 14 ? v.slice(0, 14) + "…" : v}</span>}
                       />
                     </PieChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
 
-              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 dark:border-slate-800 rounded-2xl shadow-lg">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                      <Users className="w-4 h-4 text-white" />
-                    </div>
-                    Top Brands by Reviews
+              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                  <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                    <span className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-sm">
+                        <Users className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <span className="block leading-snug">Top Brands by Reviews</span>
+                        <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">Customer engagement comparison</span>
+                      </div>
+                    </span>
+                    <CardInfoModal
+                      title="Top Brands by Customer Reviews"
+                      description="Compares the total number of customer reviews collected by each top brand selling in this category."
+                      items={[
+                        { label: "Why it matters", detail: "Customer reviews are the #1 trust factor for buyers. This shows how many reviews you need to compete with top sellers." }
+                      ]}
+                    />
                   </CardTitle>
-                  <CardDescription>Customer engagement comparison</CardDescription>
                 </CardHeader>
-                <CardContent className="pt-0">
-                  <ResponsiveContainer width="100%" height={280}>
+                <CardContent className="p-6 pt-4">
+                  <ResponsiveContainer width="100%" height={330}>
                     <BarChart
-                      data={sovData.brands.slice(0, 8).map((b) => ({ brand: b.brand.length > 10 ? b.brand.slice(0, 10) + "…" : b.brand, reviews: b.total_reviews, share: b.share_percentage }))}
-                      layout="vertical" margin={{ left: 0, right: 20, top: 4, bottom: 4 }}
-                      barCategoryGap="25%"
+                      data={sovData.brands.slice(0, 8).map((b) => {
+                        const rawName = b.brand.length > 15 ? b.brand.slice(0, 15) + "…" : b.brand;
+                        const cleanName = rawName.replace(/ /g, "\u00A0");
+                        return {
+                          brand: cleanName,
+                          reviews: b.total_reviews,
+                          share: b.share_percentage,
+                        };
+                      })}
+                      layout="vertical" margin={{ left: 10, right: 55, top: 12, bottom: 12 }}
+                      barCategoryGap="30%"
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} horizontal={false} />
-                      <XAxis type="number" tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} tick={{ fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
-                      <YAxis type="category" dataKey="brand" tick={{ fontSize: 11, fill: isDark ? "#94a3b8" : "#64748b" }} width={80} axisLine={false} tickLine={false} />
+                      <XAxis
+                        type="number"
+                        tickFormatter={(v) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}
+                        tick={{ fontSize: 11, fontWeight: 500, fill: isDark ? "#64748b" : "#94a3b8" }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        type="category"
+                        dataKey="brand"
+                        tick={{ fontSize: 12, fontWeight: 600, fill: isDark ? "#cbd5e1" : "#334155" }}
+                        width={130}
+                        axisLine={false}
+                        tickLine={false}
+                      />
                       <Tooltip contentStyle={getTooltipStyle(isDark)} formatter={(v: any, n: string) => [n === "reviews" ? v.toLocaleString() : `${v}%`, n === "reviews" ? "Reviews" : "Share"]} />
-                      <Bar dataKey="reviews" radius={[0, 6, 6, 0]} maxBarSize={22}>
+                      <Bar dataKey="reviews" radius={[0, 8, 8, 0]} maxBarSize={20}>
                         {sovData.brands.slice(0, 8).map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                        <LabelList
+                          dataKey="reviews"
+                          position="right"
+                          formatter={(v: number) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v.toLocaleString()}
+                          style={{ fontSize: 11, fontWeight: 700, fill: isDark ? "#cbd5e1" : "#475569" }}
+                        />
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
@@ -1028,15 +1195,29 @@ export default function ShareOfVoice() {
             </div>
 
             {marketHealth && marketHealth.all_price_gaps.length > 0 && (
-              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 dark:border-slate-800 rounded-2xl shadow-lg">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Map className="w-5 h-5 text-blue-600" /> Price Band Whitespace Map
+              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                  <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                    <span className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl flex items-center justify-center shadow-sm">
+                        <Map className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <span className="block leading-snug">Price Band Whitespace Map</span>
+                        <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">Brand density per price band — green = opportunity, red = crowded</span>
+                      </div>
+                    </span>
+                    <CardInfoModal
+                      title="Best Price Point to Sell (Price Gaps)"
+                      description="Shows which price ranges (MRP/selling price) are crowded with too many sellers, and which price ranges have high customer demand with low competition."
+                      items={[
+                        { label: "Why it matters", detail: "Helps you choose an attractive price point where buyers want to spend but very few good competitors exist." }
+                      ]}
+                    />
                   </CardTitle>
-                  <CardDescription>Brand density per price band — green = opportunity, red = crowded</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={260}>
+                <CardContent className="p-6 pt-4">
+                  <ResponsiveContainer width="100%" height={320}>
                     <BarChart
                       data={marketHealth.all_price_gaps.map((g) => ({
                         band: g.price_band.replace("₹", "").replace(",", ""),
@@ -1044,12 +1225,12 @@ export default function ShareOfVoice() {
                         opp: g.opportunity,
                         rating: g.avg_rating,
                       }))}
-                      margin={{ left: 0, right: 10, top: 4, bottom: 60 }}
-                      barCategoryGap="12%"
+                      margin={{ left: 10, right: 10, top: 24, bottom: 50 }}
+                      barCategoryGap="25%"
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} vertical={false} />
-                      <XAxis dataKey="band" tick={{ fontSize: 10, fill: isDark ? "#64748b" : "#94a3b8" }} angle={-35} textAnchor="end" interval="preserveStartEnd" minTickGap={20} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="band" tick={{ fontSize: 11, fontWeight: 600, fill: isDark ? "#64748b" : "#94a3b8" }} angle={-35} textAnchor="end" interval="preserveStartEnd" minTickGap={20} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fontWeight: 500, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
                       <Tooltip
                         contentStyle={getTooltipStyle(isDark)}
                         content={({ active, payload }) => {
@@ -1064,7 +1245,7 @@ export default function ShareOfVoice() {
                           );
                         }}
                       />
-                      <Bar dataKey="brands" radius={[4, 4, 0, 0]} maxBarSize={36}>
+                      <Bar dataKey="brands" radius={[6, 6, 0, 0]} maxBarSize={36}>
                         {marketHealth.all_price_gaps.map((g, i) => (
                           <Cell key={i} fill={
                             g.opportunity === "High" ? "#10b981" :
@@ -1072,14 +1253,19 @@ export default function ShareOfVoice() {
                                 g.opportunity === "Low" ? "#3b82f6" : "#ef4444"
                           } />
                         ))}
+                        <LabelList
+                          dataKey="brands"
+                          position="top"
+                          style={{ fontSize: 11, fontWeight: 700, fill: isDark ? "#cbd5e1" : "#475569" }}
+                        />
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
-                  <div className="flex items-center gap-4 mt-2 flex-wrap">
-                    {[["#10b981", "High Opportunity"], ["#f59e0b", "Medium"], ["#3b82f6", "Low"], ["#ef4444", "Crowded"]].map(([c, l]) => (
-                      <div key={l} className="flex items-center gap-1.5">
-                        <div className="w-3 h-3 rounded-sm" style={{ background: c }} />
-                        <span className="text-xs text-slate-500 dark:text-slate-400">{l}</span>
+                  <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex-wrap">
+                    {[["#10b981", "High Opportunity"], ["#f59e0b", "Medium Opportunity"], ["#3b82f6", "Low Opportunity"], ["#ef4444", "Crowded Band"]].map(([c, l]) => (
+                      <div key={l} className="flex items-center gap-2">
+                        <div className="w-3.5 h-3.5 rounded-md shadow-sm" style={{ background: c }} />
+                        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{l}</span>
                       </div>
                     ))}
                   </div>
@@ -1088,21 +1274,35 @@ export default function ShareOfVoice() {
             )}
 
             {marketHealth && scatterData.length > 0 && (
-              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 dark:border-slate-800 rounded-2xl shadow-lg">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Star className="w-5 h-5 text-yellow-500" /> Brand Value Map
+              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                  <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                    <span className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center shadow-sm">
+                        <Star className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <span className="block leading-snug">Brand Value Map</span>
+                        <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">Price vs Rating — bubble size = review count · color = quadrant</span>
+                      </div>
+                    </span>
+                    <CardInfoModal
+                      title="Price vs. Customer Rating Map"
+                      description="Shows where every brand stands based on their selling price and customer rating, helping you choose the right price and quality for your product."
+                      items={[
+                        { label: "Why it matters", detail: "Lets you see who is selling premium high-rated products and who is winning with affordable budget prices." }
+                      ]}
+                    />
                   </CardTitle>
-                  <CardDescription>Price vs Rating — bubble size = review count · color = quadrant</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <ScatterChart margin={{ top: 10, right: 20, bottom: 10, left: 10 }}>
+                <CardContent className="p-6 pt-4">
+                  <ResponsiveContainer width="100%" height={320}>
+                    <ScatterChart margin={{ top: 16, right: 20, bottom: 16, left: 10 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} />
                       <XAxis type="number" dataKey="x" name="Avg Price" tickFormatter={(v) => `₹${v.toLocaleString()}`}
-                        tick={{ fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} label={{ value: "Avg Price (₹)", position: "insideBottom", offset: -4, fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} />
+                        tick={{ fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} label={{ value: "Avg Price (₹)", position: "insideBottom", offset: -8, fontSize: 11, fontWeight: 600, fill: isDark ? "#64748b" : "#94a3b8" }} />
                       <YAxis type="number" dataKey="y" name="Avg Rating" domain={[2.5, 5]} tickFormatter={(v) => `${v}★`}
-                        tick={{ fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} label={{ value: "Rating", angle: -90, position: "insideLeft", fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} />
+                        tick={{ fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} label={{ value: "Rating", angle: -90, position: "insideLeft", fontSize: 11, fontWeight: 600, fill: isDark ? "#64748b" : "#94a3b8" }} />
                       <ZAxis type="number" dataKey="z" range={[40, 600]} />
                       <Tooltip
                         contentStyle={getTooltipStyle(isDark)}
@@ -1126,8 +1326,9 @@ export default function ShareOfVoice() {
                         ) : null;
                       })}
                       <Legend
+                        wrapperStyle={{ paddingTop: 16 }}
                         payload={Object.entries(QUADRANT_COLORS).map(([q, c]) => ({ value: q, type: "circle" as const, color: c }))}
-                        formatter={(v) => <span className="text-xs text-slate-600 dark:text-slate-300">{v}</span>}
+                        formatter={(v) => <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{v}</span>}
                       />
                     </ScatterChart>
                   </ResponsiveContainer>
@@ -1136,40 +1337,60 @@ export default function ShareOfVoice() {
             )}
 
             {marketHealth && marketHealth.review_velocity.length > 0 && (
-              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 dark:border-slate-800 rounded-2xl shadow-lg">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <TrendingUp className="w-5 h-5 text-emerald-500" /> Review Velocity
+              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                  <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                    <span className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center shadow-sm">
+                        <TrendingUp className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <span className="block leading-snug">Review Velocity</span>
+                        <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">Reviews per product — who has momentum</span>
+                      </div>
+                    </span>
+                    <CardInfoModal
+                      title="Fastest Growing Brands (Review Speed)"
+                      description="Shows which brands are getting new customer reviews the fastest right now—a strong sign of who is winning daily sales."
+                      items={[
+                        { label: "Why it matters", detail: "Brands with high review speed are growing fast. Watch their listings and pricing to see what is working for them." }
+                      ]}
+                    />
                   </CardTitle>
-                  <CardDescription>Reviews per product — who has momentum</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={240}>
+                <CardContent className="p-6 pt-4">
+                  <ResponsiveContainer width="100%" height={320}>
                     <BarChart
                       data={(marketHealth?.review_velocity ?? []).slice(0, 12).map((v) => ({
                         brand: v.brand.length > 12 ? v.brand.slice(0, 12) + "…" : v.brand,
                         density: v.review_density,
                         label: v.velocity_label,
                       }))}
-                      margin={{ left: 0, right: 10, top: 4, bottom: 40 }}
-                      barCategoryGap="20%"
+                      margin={{ left: 10, right: 10, top: 24, bottom: 45 }}
+                      barCategoryGap="25%"
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} vertical={false} />
-                      <XAxis dataKey="brand" tick={{ fontSize: 10, fill: isDark ? "#64748b" : "#94a3b8" }} angle={-35} textAnchor="end" interval={0} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="brand" tick={{ fontSize: 11, fontWeight: 600, fill: isDark ? "#64748b" : "#94a3b8" }} angle={-35} textAnchor="end" interval={0} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fontWeight: 500, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
                       <Tooltip contentStyle={getTooltipStyle(isDark)} formatter={(v: any) => [v.toFixed(1), "Reviews/product"]} />
-                      <Bar dataKey="density" radius={[4, 4, 0, 0]} maxBarSize={32}>
+                      <Bar dataKey="density" radius={[6, 6, 0, 0]} maxBarSize={32}>
                         {marketHealth.review_velocity.slice(0, 12).map((v, i) => (
                           <Cell key={i} fill={v.velocity_label === "Rising" ? "#10b981" : v.velocity_label === "Declining" ? "#ef4444" : "#3b82f6"} />
                         ))}
+                        <LabelList
+                          dataKey="density"
+                          position="top"
+                          formatter={(v: number) => v.toFixed(1)}
+                          style={{ fontSize: 11, fontWeight: 700, fill: isDark ? "#cbd5e1" : "#475569" }}
+                        />
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
-                  <div className="flex items-center gap-4 mt-2">
-                    {[["#10b981", "Rising"], ["#3b82f6", "Stable"], ["#ef4444", "Declining"]].map(([c, l]) => (
-                      <div key={l} className="flex items-center gap-1.5">
-                        <div className="w-3 h-3 rounded-sm" style={{ background: c }} />
-                        <span className="text-xs text-slate-500">{l}</span>
+                  <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex-wrap">
+                    {[["#10b981", "Rising Velocity"], ["#3b82f6", "Stable Velocity"], ["#ef4444", "Declining Velocity"]].map(([c, l]) => (
+                      <div key={l} className="flex items-center gap-2">
+                        <div className="w-3.5 h-3.5 rounded-md shadow-sm" style={{ background: c }} />
+                        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{l}</span>
                       </div>
                     ))}
                   </div>
@@ -1178,19 +1399,32 @@ export default function ShareOfVoice() {
             )}
 
             {marketHealth && marketHealth.action_plan.steps.length > 0 && (
-              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2">
-                    <span className="text-2xl">📋</span> Step-by-Step Action Plan
+              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                  <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                    <span className="flex items-center gap-3">
+                      <span className="text-2xl">📋</span>
+                      <div>
+                        <span className="block leading-snug">Step-by-Step Action Plan</span>
+                        <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">AI-generated roadmap based on market whitespace & HHI</span>
+                      </div>
+                    </span>
+                    <CardInfoModal
+                      title="Recommended Launch Roadmap"
+                      description="Easy-to-follow steps to launch your new product safely, attract customers faster, and avoid wasting money."
+                      items={[
+                        { label: "Why it matters", detail: "Gives you clear guidance on pricing, reviews, and listing improvements so you can rank higher on Amazon/Flipkart." }
+                      ]}
+                    />
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="mt-2">
                     {marketHealth.action_plan.entry_price_recommendation && (
                       <span>Recommended entry price: <strong>{marketHealth.action_plan.entry_price_recommendation}</strong> · </span>
                     )}
                     Positioning: <strong>{marketHealth.action_plan.positioning_quadrant}</strong>
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6 pt-4">
                   <div className="space-y-4">
                     {marketHealth.action_plan.steps.map((step) => (
                       <div key={step.step} className="flex gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-700 hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-all">
@@ -1221,14 +1455,28 @@ export default function ShareOfVoice() {
             )}
 
             {marketHealth && marketHealth.all_price_gaps.length > 0 && (
-              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Map className="w-5 h-5 text-green-600" /> Full Price-Gap Analysis
+              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                  <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                    <span className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
+                        <Map className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <span className="block leading-snug">Full Price-Gap Analysis</span>
+                        <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">Complete breakdown of all price bands and competition levels</span>
+                      </div>
+                    </span>
+                    <CardInfoModal
+                      title="All Price Ranges Breakdown Table"
+                      description="A detailed table showing every price range (e.g., ₹200-₹500), how many brands sell there, and which price point is the best opportunity."
+                      items={[
+                        { label: "Why it matters", detail: "Helps you pick the exact MRP and selling price where customer demand is high and competition is low." }
+                      ]}
+                    />
                   </CardTitle>
-                  <CardDescription>Complete breakdown of all price bands and competition levels</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6 pt-4">
                   <div className="overflow-x-auto max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-slate-200">
                     <table className="w-full text-sm">
                       <thead>
@@ -1258,14 +1506,28 @@ export default function ShareOfVoice() {
             )}
 
             {marketHealth && (
-              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
-                <CardHeader className="pb-2">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Award className="w-5 h-5 text-purple-500" /> Listing Quality Benchmarks
+              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                  <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                    <span className="flex items-center gap-3">
+                      <div className="w-9 h-9 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
+                        <Award className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <span className="block leading-snug">Listing Quality Benchmarks</span>
+                        <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">Category medians to help you calibrate your listings</span>
+                      </div>
+                    </span>
+                    <CardInfoModal
+                      title="Category Standards (Title & Reviews)"
+                      description="Shows the average title length, review count, and customer rating of top products selling in this category."
+                      items={[
+                        { label: "Why it matters", detail: "Check these average numbers to make sure your product title is descriptive enough and you have enough reviews to win buyers' trust." }
+                      ]}
+                    />
                   </CardTitle>
-                  <CardDescription>Category medians to help you calibrate your listings</CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6 pt-4">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {[
                       { label: "Median Title Length", value: `${marketHealth.listing_quality.median_title_length} chars`, icon: "✏️" },
@@ -1273,16 +1535,16 @@ export default function ShareOfVoice() {
                       { label: "% With Ratings", value: `${marketHealth.listing_quality.pct_with_ratings}%`, icon: "⭐" },
                       { label: "Review Density Median", value: `${marketHealth.listing_quality.review_density_median}/product`, icon: "📊" },
                     ].map((m) => (
-                      <div key={m.label} className="bg-slate-50 rounded-xl p-4 border border-slate-200 text-center">
+                      <div key={m.label} className="bg-slate-50 dark:bg-slate-800/60 rounded-xl p-4 border border-slate-200 dark:border-slate-700 text-center">
                         <p className="text-2xl mb-1">{m.icon}</p>
-                        <p className="text-lg font-black text-slate-800">{m.value}</p>
-                        <p className="text-xs text-slate-500 mt-1">{m.label}</p>
+                        <p className="text-lg font-black text-slate-800 dark:text-slate-100">{m.value}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{m.label}</p>
                       </div>
                     ))}
                   </div>
                   {marketHealth.listing_quality.your_brand_vs_median && (
-                    <div className={`mt-4 p-3 rounded-xl text-sm font-medium flex items-center gap-2 ${marketHealth.listing_quality.your_brand_vs_median === "Above" ? "bg-green-50 text-green-700" :
-                      marketHealth.listing_quality.your_brand_vs_median === "Below" ? "bg-red-50 text-red-700" : "bg-blue-50 text-blue-700"
+                    <div className={`mt-4 p-3 rounded-xl text-sm font-medium flex items-center gap-2 ${marketHealth.listing_quality.your_brand_vs_median === "Above" ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800" :
+                      marketHealth.listing_quality.your_brand_vs_median === "Below" ? "bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800" : "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
                       }`}>
                       {marketHealth.listing_quality.your_brand_vs_median === "Above" ? "✅" : marketHealth.listing_quality.your_brand_vs_median === "Below" ? "⚠️" : "➡️"}
                       Your brand is <strong>&nbsp;{marketHealth.listing_quality.your_brand_vs_median}&nbsp;</strong> median review density
@@ -1293,15 +1555,29 @@ export default function ShareOfVoice() {
               </Card>
             )}
 
-            <Card id="brands-table" className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg overflow-hidden">
-              <CardHeader className="bg-slate-50 border-b border-slate-200">
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-blue-600" /> Detailed Brand Analysis
+            <Card id="brands-table" className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl overflow-hidden transition-all">
+              <CardHeader className="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-200 dark:border-slate-800 p-6 pb-4">
+                <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                  <span className="flex items-center gap-3">
+                    <div className="w-9 h-9 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-sm">
+                      <Users className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <span className="block leading-snug">Detailed Brand Analysis</span>
+                      <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">
+                        {paginatedBrands.length} of {sovData.brands.length} brands
+                        {yourBrand && <span className="text-blue-600 font-semibold"> · Your brand highlighted</span>}
+                      </span>
+                    </div>
+                  </span>
+                  <CardInfoModal
+                    title="All Competitors Comparison Table"
+                    description="A complete list of every brand selling in this category, showing their market share, reviews, rating, and average selling price (MRP/Selling Price)."
+                    items={[
+                      { label: "Why it matters", detail: "Lets you see exactly who your biggest competitors are, how many products they list, and at what price they sell." }
+                    ]}
+                  />
                 </CardTitle>
-                <CardDescription>
-                  {paginatedBrands.length} of {sovData.brands.length} brands
-                  {yourBrand && <span className="text-blue-600 font-semibold"> · Your brand highlighted</span>}
-                </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
@@ -1395,20 +1671,35 @@ export default function ShareOfVoice() {
                   </Card>
                 </div>
 
-                <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
-                  <CardHeader className="pb-2">
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <TrendingUp className="w-5 h-5 text-green-500" /> Weekly Progress Projection
+                <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                  <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                    <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                      <span className="flex items-center gap-3">
+                        <div className="w-9 h-9 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-sm">
+                          <TrendingUp className="w-4 h-4 text-white" />
+                        </div>
+                        <div>
+                          <span className="block leading-snug">Weekly Progress Projection</span>
+                          <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">Projected trajectory toward your target market share</span>
+                        </div>
+                      </span>
+                      <CardInfoModal
+                        title="Weekly Market Share Forecast"
+                        description="Shows your expected week-by-week progress toward your target market share goal."
+                        items={[
+                          { label: "Why it matters", detail: "Helps you see if you are growing fast enough to reach your target share on time." }
+                        ]}
+                      />
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <ResponsiveContainer width="100%" height={260}>
-                      <LineChart data={progressData.weekly_progress} margin={{ left: 0, right: 20, top: 4, bottom: 4 }}>
+                  <CardContent className="p-6 pt-4">
+                    <ResponsiveContainer width="100%" height={320}>
+                      <LineChart data={progressData.weekly_progress} margin={{ left: 10, right: 20, top: 24, bottom: 20 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} />
-                        <XAxis dataKey="date" tick={{ fontSize: 10, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fontSize: 11, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
+                        <XAxis dataKey="date" tick={{ fontSize: 11, fontWeight: 600, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fontSize: 11, fontWeight: 500, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
                         <Tooltip contentStyle={getTooltipStyle(isDark)} />
-                        <Line type="monotone" dataKey="share_percentage" stroke="#10b981" strokeWidth={2.5} name="Market Share %" dot={{ fill: "#10b981", r: 3 }} activeDot={{ r: 6 }} />
+                        <Line type="monotone" dataKey="share_percentage" stroke="#10b981" strokeWidth={3} name="Market Share %" dot={{ fill: "#10b981", r: 4 }} activeDot={{ r: 7 }} />
                       </LineChart>
                     </ResponsiveContainer>
                   </CardContent>
@@ -1438,10 +1729,23 @@ export default function ShareOfVoice() {
                 {aiInsights && !loadingInsights && (
                   <>
                     {aiInsights.ai_generated_insights && (
-                      <Card className="bg-background border border-slate-200 rounded-2xl shadow-lg overflow-hidden border-t-4 border-t-blue-600">
-                        <CardHeader className="bg-slate-50 border-b border-slate-100">
-                          <CardTitle className="text-xl flex items-center gap-3 text-slate-800">
-                            <span className="text-2xl">🤖</span> Insydz Strategic Analysis
+                      <Card className="bg-background border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl overflow-hidden border-t-4 border-t-blue-600 transition-all">
+                        <CardHeader className="bg-slate-50 dark:bg-slate-900/60 border-b border-slate-100 dark:border-slate-800 p-6 pb-4">
+                          <CardTitle className="text-xl flex items-center justify-between text-slate-800 dark:text-slate-100">
+                            <span className="flex items-center gap-3">
+                              <span className="text-2xl">🤖</span>
+                              <div>
+                                <span className="block leading-snug">Insydz Strategic Analysis</span>
+                                <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">Deep-dive AI narrative on competitive moats and growth vectors</span>
+                              </div>
+                            </span>
+                            <CardInfoModal
+                              title="AI Strategy Guide for Your Brand"
+                              description="Our AI analyzes your competitors and gives you simple, practical advice on how to win more sales and grow your brand."
+                              items={[
+                                { label: "Why it matters", detail: "Explains in plain language what top competitors are doing right and where you have an advantage." }
+                              ]}
+                            />
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="pt-6">
@@ -1492,30 +1796,43 @@ export default function ShareOfVoice() {
                     )}
 
                     {aiInsights.actionable_recommendations?.length > 0 && (
-                      <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
-                        <CardHeader className="pb-2">
-                          <CardTitle className="flex items-center gap-2 text-base">
-                            <span className="text-xl">💡</span> Actionable Recommendations
+                      <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                        <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                          <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                            <span className="flex items-center gap-3">
+                              <span className="text-xl">💡</span>
+                              <div>
+                                <span className="block leading-snug">Actionable Recommendations</span>
+                                <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">Prioritized tactical moves to improve your category rank</span>
+                              </div>
+                            </span>
+                            <CardInfoModal
+                              title="Priority Action Steps"
+                              description="Clear, practical tasks you should do right now to rank higher and get more customer orders."
+                              items={[
+                                { label: "Why it matters", detail: "Instead of guessing what to fix, follow these priority steps to improve your listings and reviews." }
+                              ]}
+                            />
                           </CardTitle>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-6 pt-4">
                           <div className="space-y-3">
                             {aiInsights.actionable_recommendations.map((rec: any, idx: number) => (
-                              <div key={idx} className="flex gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:border-orange-200 hover:bg-orange-50/30 transition-all">
+                              <div key={idx} className="flex gap-4 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 hover:border-orange-200 dark:hover:border-orange-700 hover:bg-orange-50/30 dark:hover:bg-orange-900/10 transition-all">
                                 <div className={`shrink-0 w-9 h-9 rounded-lg flex items-center justify-center text-white font-black text-sm ${rec.priority === "High" ? "bg-red-500" : rec.priority === "Medium" ? "bg-yellow-500" : "bg-blue-500"
                                   }`}>{idx + 1}</div>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                                    <span className="font-bold text-slate-800 text-sm">{rec.type}</span>
-                                    <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${rec.priority === "High" ? "bg-red-100 text-red-700" : rec.priority === "Medium" ? "bg-yellow-100 text-yellow-700" : "bg-blue-100 text-blue-700"
+                                    <span className="font-bold text-slate-800 dark:text-slate-100 text-sm">{rec.type}</span>
+                                    <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${rec.priority === "High" ? "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400" : rec.priority === "Medium" ? "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-400" : "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-400"
                                       }`}>{rec.priority}</span>
                                   </div>
-                                  <p className="text-xs text-slate-600">{rec.action}</p>
-                                  <p className="text-xs text-emerald-600 font-medium mt-1">💡 {rec.impact}</p>
+                                  <p className="text-xs text-slate-600 dark:text-slate-300">{rec.action}</p>
+                                  <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1">💡 {rec.impact}</p>
                                 </div>
                                 <div className="text-right shrink-0">
-                                  <p className="text-xs text-slate-400">Now → Target</p>
-                                  <p className="text-sm font-bold text-slate-700">{rec.current} → {rec.benchmark}</p>
+                                  <p className="text-xs text-slate-400 dark:text-slate-500">Now → Target</p>
+                                  <p className="text-sm font-bold text-slate-700 dark:text-slate-300">{rec.current} → {rec.benchmark}</p>
                                 </div>
                               </div>
                             ))}
@@ -1525,27 +1842,39 @@ export default function ShareOfVoice() {
                     )}
 
                     {aiInsights.growth_strategy?.length > 0 && (
-                      <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
-                        <CardHeader className="pb-2">
-                          <CardTitle className="flex items-center gap-2 text-base">
-                            <span className="text-xl">🚀</span> Growth Strategy Roadmap
+                      <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                        <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                          <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                            <span className="flex items-center gap-3">
+                              <span className="text-xl">🚀</span>
+                              <div>
+                                <span className="block leading-snug">Growth Strategy Roadmap</span>
+                                <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">Phased approach to {aiInsights.current_analysis.target_share}% market share</span>
+                              </div>
+                            </span>
+                            <CardInfoModal
+                              title="Step-by-Step Growth Plan"
+                              description="A simple phase-by-phase plan showing what to do in the first 30, 60, and 90 days to grow your market share."
+                              items={[
+                                { label: "Why it matters", detail: "Breaks big sales targets into simple monthly goals you and your team can easily achieve." }
+                              ]}
+                            />
                           </CardTitle>
-                          <CardDescription>Phased approach to {aiInsights.current_analysis.target_share}% market share</CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-6 pt-4">
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {aiInsights.growth_strategy.map((phase: any, idx: number) => (
-                              <div key={idx} className="bg-gradient-to-br from-slate-50 to-green-50/40 rounded-2xl border border-green-200/60 p-5 hover:shadow-md transition-shadow">
+                              <div key={idx} className="bg-gradient-to-br from-slate-50 to-green-50/40 dark:from-slate-800/60 dark:to-green-900/10 rounded-2xl border border-green-200/60 dark:border-green-800/60 p-5 hover:shadow-md transition-shadow">
                                 <div className="flex items-center gap-3 mb-3">
                                   <div className="w-9 h-9 bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-xl flex items-center justify-center font-black text-sm shadow">{idx + 1}</div>
                                   <div>
-                                    <p className="font-bold text-slate-800 text-sm">{phase.phase}</p>
-                                    <p className="text-xs text-green-600 font-semibold">{phase.focus}</p>
+                                    <p className="font-bold text-slate-800 dark:text-slate-100 text-sm">{phase.phase}</p>
+                                    <p className="text-xs text-green-600 dark:text-green-400 font-semibold">{phase.focus}</p>
                                   </div>
                                 </div>
                                 <ul className="space-y-1.5 mb-3">
                                   {phase.actions.map((a: string, i: number) => (
-                                    <li key={i} className="flex items-start gap-1.5 text-xs text-slate-600">
+                                    <li key={i} className="flex items-start gap-1.5 text-xs text-slate-600 dark:text-slate-300">
                                       <span className="text-green-500 font-bold shrink-0 mt-0.5">✓</span> {a}
                                     </li>
                                   ))}
@@ -1561,34 +1890,46 @@ export default function ShareOfVoice() {
                     )}
 
                     {aiInsights.product_gaps?.length > 0 && (
-                      <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
-                        <CardHeader className="pb-2">
-                          <CardTitle className="flex items-center gap-2 text-base">
-                            <span className="text-xl">🔍</span> Top Product Opportunities & Market Gaps
+                      <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                        <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                          <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                            <span className="flex items-center gap-3">
+                              <span className="text-xl">🔍</span>
+                              <div>
+                                <span className="block leading-snug">Top Product Opportunities & Market Gaps</span>
+                                <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">High-demand competitor products showing strong sales velocity</span>
+                              </div>
+                            </span>
+                            <CardInfoModal
+                              title="High-Demand Products You Should Launch"
+                              description="Shows popular types of products in this category that customers are buying fast, but your brand is not selling yet."
+                              items={[
+                                { label: "Why it matters", detail: "Great ideas for new product launches that already have proven customer demand on Amazon/Flipkart." }
+                              ]}
+                            />
                           </CardTitle>
-                          <CardDescription>High-demand competitor products in your category showing strong sales velocity and expansion potential</CardDescription>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-6 pt-4">
                           <div className="overflow-x-auto">
                             <table className="w-full text-sm">
                               <thead>
-                                <tr className="border-b border-slate-200 text-xs text-slate-500 uppercase tracking-wide">
-                                  <th className="p-3 text-left">Product Type</th>
-                                  <th className="p-3 text-right">Competitors</th>
-                                  <th className="p-3 text-right">Avg Price</th>
-                                  <th className="p-3 text-right">Rating</th>
-                                  <th className="p-3 text-right">Demand</th>
-                                  <th className="p-3 text-center">Opportunity</th>
+                                <tr className="border-b border-slate-200 dark:border-slate-700 text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                                  <th className="p-3 text-left font-semibold">Product Type</th>
+                                  <th className="p-3 text-right font-semibold">Competitors</th>
+                                  <th className="p-3 text-right font-semibold">Avg Price</th>
+                                  <th className="p-3 text-right font-semibold">Rating</th>
+                                  <th className="p-3 text-right font-semibold">Demand</th>
+                                  <th className="p-3 text-center font-semibold">Opportunity</th>
                                 </tr>
                               </thead>
                               <tbody>
-                                {aiInsights.product_gaps.map((g: any, i: number) => (
-                                  <tr key={i} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                                    <td className="p-3 font-medium text-slate-800">{g.product_type}</td>
-                                    <td className="p-3 text-right text-slate-600">{g.competitors_offering}</td>
-                                    <td className="p-3 text-right font-bold text-emerald-700">₹{g.avg_price.toLocaleString()}</td>
-                                    <td className="p-3 text-right"><span className="text-yellow-600 font-semibold">⭐ {g.avg_rating}</span></td>
-                                    <td className="p-3 text-right text-slate-700 font-medium">{g.total_demand.toLocaleString()}</td>
+                                {aiInsights.product_gaps.map((g: any, idx: number) => (
+                                  <tr key={idx} className="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                    <td className="p-3 font-semibold text-slate-800 dark:text-slate-100">{g.format}</td>
+                                    <td className="p-3 text-right text-slate-600 dark:text-slate-300">{g.competitors_offering}</td>
+                                    <td className="p-3 text-right text-slate-600 dark:text-slate-300">{g.avg_price}</td>
+                                    <td className="p-3 text-right"><span className="text-yellow-600 dark:text-yellow-400 font-semibold">⭐ {g.avg_rating}</span></td>
+                                    <td className="p-3 text-right font-bold text-slate-700 dark:text-slate-300">{g.est_demand}</td>
                                     <td className="p-3 text-center"><OppBadge opp={g.opportunity} /></td>
                                   </tr>
                                 ))}
@@ -1600,40 +1941,53 @@ export default function ShareOfVoice() {
                     )}
 
                     {aiInsights.pricing_insights && Object.keys(aiInsights.pricing_insights).length > 0 && (
-                      <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200 rounded-2xl shadow-lg">
-                        <CardHeader className="pb-2">
-                          <CardTitle className="flex items-center gap-2 text-base">
-                            <span className="text-xl">💰</span> Pricing Intelligence
+                      <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
+                        <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+                          <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
+                            <span className="flex items-center gap-3">
+                              <span className="text-xl">💰</span>
+                              <div>
+                                <span className="block leading-snug">Pricing Intelligence</span>
+                                <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">Your price position relative to budget and premium competitors</span>
+                              </div>
+                            </span>
+                            <CardInfoModal
+                              title="Price Competitiveness Check"
+                              description="Compares your selling price with the market average and shows if your competitors are selling budget or premium products."
+                              items={[
+                                { label: "Why it matters", detail: "Helps you set the right price so you don't lose customers by being too expensive or lose profit by selling too cheap." }
+                              ]}
+                            />
                           </CardTitle>
                         </CardHeader>
-                        <CardContent>
+                        <CardContent className="p-6 pt-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-                              <h4 className="font-bold text-slate-700 text-sm mb-3">Price Position</h4>
+                            <div className="bg-slate-50 dark:bg-slate-800/60 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                              <h4 className="font-bold text-slate-700 dark:text-slate-200 text-sm mb-3">Price Position</h4>
                               <div className="flex justify-between items-end">
                                 <div>
                                   <p className="text-xs text-slate-400">Your price</p>
-                                  <p className="text-2xl font-black text-purple-700">₹{aiInsights.pricing_insights.your_price?.toLocaleString()}</p>
+                                  <p className="text-2xl font-black text-purple-700 dark:text-purple-400">₹{aiInsights.pricing_insights.your_price?.toLocaleString()}</p>
                                 </div>
                                 <div className="text-right">
                                   <p className="text-xs text-slate-400">Market avg</p>
-                                  <p className="text-xl font-bold text-slate-700">₹{aiInsights.pricing_insights.market_average?.toLocaleString()}</p>
+                                  <p className="text-xl font-bold text-slate-700 dark:text-slate-300">₹{aiInsights.pricing_insights.market_average?.toLocaleString()}</p>
                                 </div>
                               </div>
-                              <div className="mt-3 px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-xs font-bold inline-block">
+                              <div className="mt-3 px-3 py-1.5 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 rounded-lg text-xs font-bold inline-block">
                                 {aiInsights.pricing_insights.price_positioning}
                               </div>
                             </div>
-                            <div className="bg-slate-50 rounded-xl p-4 border border-slate-200">
-                              <h4 className="font-bold text-slate-700 text-sm mb-3">Competitive Landscape</h4>
+                            <div className="bg-slate-50 dark:bg-slate-800/60 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+                              <h4 className="font-bold text-slate-700 dark:text-slate-200 text-sm mb-3">Competitive Landscape</h4>
                               <div className="space-y-2">
                                 {[
-                                  { l: "Budget competitors", v: aiInsights.pricing_insights.budget_competitors, c: "text-blue-600" },
-                                  { l: "Similar price", v: aiInsights.pricing_insights.similar_price_competitors, c: "text-green-600" },
-                                  { l: "Premium", v: aiInsights.pricing_insights.premium_competitors, c: "text-purple-600" },
+                                  { l: "Budget competitors", v: aiInsights.pricing_insights.budget_competitors, c: "text-blue-600 dark:text-blue-400" },
+                                  { l: "Similar price", v: aiInsights.pricing_insights.similar_price_competitors, c: "text-green-600 dark:text-green-400" },
+                                  { l: "Premium", v: aiInsights.pricing_insights.premium_competitors, c: "text-purple-600 dark:text-purple-400" },
                                 ].map((x) => (
                                   <div key={x.l} className="flex justify-between items-center text-sm">
-                                    <span className="text-slate-600">{x.l}</span>
+                                    <span className="text-slate-600 dark:text-slate-300">{x.l}</span>
                                     <span className={`font-black ${x.c}`}>{x.v}</span>
                                   </div>
                                 ))}

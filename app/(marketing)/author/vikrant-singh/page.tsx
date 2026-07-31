@@ -54,7 +54,7 @@ const articles: Article[] = [
     excerpt: "A practitioner's comparison for ₹5L–50L/month Indian sellers — INR pricing vs USD billing, Flipkart-native vs Amazon-only. Read before you commit.",
     category: "Tool Comparison & Reviews",
     readTime: "10 min read",
-    image: "/insydz-vs-seller-hero-guide.png",
+    image: "/Insydz-vs-SellerApp.png",
     route: "/resources/expert-blog/insydz-vs-sellerapp-india",
     featured: true,
     popular: true
@@ -65,7 +65,7 @@ const articles: Article[] = [
     excerpt: "AI-powered Amazon review analysis for Indian D2C sellers — sentiment clustering, Hinglish support, RTO signals, and WhatsApp alerts.",
     category: "Review Intelligence",
     readTime: "12 min read",
-    image: "/amazon-review-analysis-hero.png",
+    image: "/Analyze Amazon Reviews.png",
     route: "/resources/expert-blog/amazon-review-analysis-guide-india",
     popular: true
   },
@@ -75,7 +75,7 @@ const articles: Article[] = [
     excerpt: "Indian ecommerce sellers spend 3–5 hours daily tracking competitor prices in Excel — and still react 24 hours too late.",
     category: "Seller Tools & Strategy",
     readTime: "8 min read",
-    image: "/manual_vs_automated.png",
+    image: "/Manual-vs-Automated.png",
     route: "/resources/expert-blog/manual-vs-automated-competitor-tracking-tool",
     popular: true
   },
@@ -85,7 +85,7 @@ const articles: Article[] = [
     excerpt: "Most Indian sellers are bleeding margin by choosing the wrong platform without running the numbers first. See how successful D2C brands evaluate fees, traffic, and competition data to decide where every rupee of inventory should go.",
     category: "Seller Tools & Strategy",
     readTime: "8 min read",
-    image: "/amazon-vs-flipkart-hero-metrics.png",
+    image: "/Amazon vs Flipkart India Sellers.png",
     route: "/resources/expert-blog/amazon-vs-flipkart-india-seller",
     popular: true
   },
@@ -95,7 +95,7 @@ const articles: Article[] = [
     excerpt: "Your listings are invisible to lakhs of Flipkart shoppers because you're targeting the wrong keywords. Discover how India's top Flipkart sellers use AI-powered keyword research to dominate search rankings and multiply their organic traffic.",
     category: "Flipkart SEO & Seller Strategy",
     readTime: "9 min read",
-    image: "/01_hero_banner.png",
+    image: "/Flipkart Keyword Research Tool.png",
     route: "/resources/expert-blog/flipkart-keyword-research-tool"
   },
   {
@@ -104,7 +104,7 @@ const articles: Article[] = [
     excerpt: "Stop flying blind on Flipkart. The right analytics tool surfaces which competitor keywords are stealing your rank, which SKUs are losing the Buy Box.",
     category: "Flipkart Seller Tools & Strategy",
     readTime: "9 min read",
-    image: "/flipkart-analytics.png",
+    image: "/Best-Flipkart-Analytics-Tool.png",
     route: "/resources/expert-blog/best-flipkart-analytics-tool"
   },
   {
@@ -113,7 +113,7 @@ const articles: Article[] = [
     excerpt: "Your customers are telling you exactly what to fix and why they're switching to a competitor inside every review.",
     category: "D2C Growth & Brand Intelligence",
     readTime: "14 min read",
-    image: "/review-analysis-hero (1).png",
+    image: "/Best-Review-Analysis-Tools.png",
     route: "/resources/expert-blog/review-analysis-guide-india",
   },
   {
@@ -122,7 +122,7 @@ const articles: Article[] = [
     excerpt: "Find buyer-intent keywords your competitors are ranking for on Amazon.in and win the search result before they know you're there.",
     category: "Seller Tools & Strategy",
     readTime: "6 min read",
-    image: "/keyword-research-hero.png",
+    image: "/Amazon-SEO-Tool-India.png",
     route: "/resources/expert-blog/best-amazon-keyword-research-tool-india",
   },
   {
@@ -131,7 +131,7 @@ const articles: Article[] = [
     excerpt: "Track competitor prices on Amazon.in, Flipkart in real time. Discover how Indian sellers use AI-powered tools to protect margins.",
     category: "Seller Tools & Strategy",
     readTime: "8 min read",
-    image: "/one.png",
+    image: "/Amazon Competitor Price Tracking Tool India.png",
     route: "/resources/expert-blog/amazon-competitor-price-tracking-tool",
     popular: true
   },
@@ -141,7 +141,7 @@ const articles: Article[] = [
     excerpt: "Discover how an Amazon SEO tool built for India helps sellers rank higher, find buying keywords, and grow sales on Amazon.in.",
     category: "SEO & Keyword Intelligence",
     readTime: "12 min read",
-    image: "/Amazon_SEO_Tool-Blog3_image1.png",
+    image: "/Amazon-SEO-Tool-India.png",
     route: "/resources/expert-blog/amazon-seo-tool-india",
     popular: true
   },
@@ -151,7 +151,7 @@ const articles: Article[] = [
     excerpt: "Learn exactly how to rank on page 1 of Amazon India using the A9 algorithm, keyword optimization & competitor intelligence.",
     category: "The Complete Guide for Sellers (2026)",
     readTime: "15 min read",
-    image: "/twenty three.png",
+    image: "/How-to-Rank-on-Page-1.png",
     route: "/resources/expert-blog/how-to-rank-page-1-amazon-india",
     popular: true
   },
@@ -161,7 +161,7 @@ const articles: Article[] = [
     excerpt: "Your competitors are repricing in real time while you're still checking prices manually — and losing the Buy Box because of it. See how India's smartest marketplace sellers use automated price intelligence across Amazon, Flipkart, and Meesho to protect margin and win more sales.",
     category: "Tool Comparison & Reviews",
     readTime: "10 min read",
-    image: "/Best_Price_Tracer-blog2_image1.png?v=1",
+    image: "/Best-Competitor-Price-Tracking-Tools.png",
     route: "/resources/expert-blog/best-competitor-price-tracking-tools-india",
     popular: true
   },
@@ -171,7 +171,7 @@ const articles: Article[] = [
     excerpt: "Helium 10 was built for Amazon US — not for the way Indian marketplaces actually work. Find out why thousands of Indian sellers are switching to a tool built specifically for Amazon India, Flipkart, and Meesho.",
     category: "Pricing + Compare",
     readTime: "7 min read",
-    image: "/thirteen.png",
+    image: "/Insydz-vs-Helium-10.png",
     route: "/resources/expert-blog/insydz-vs-helium-10-india",
   },
   {
@@ -180,7 +180,7 @@ const articles: Article[] = [
     excerpt: "Your customers are already telling you exactly what's broken and why they're switching to a competitor — inside every review. Learn how India's fastest-growing D2C brands use AI review analysis to cut returns, fix listings, and grow revenue.",
     category: "Review Intelligence Pillar",
     readTime: "11 min read",
-    image: "/eighteen.png",
+    image: "/AI Review Intelligence Tool.png",
     route: "/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers",
   },
 ];
@@ -263,7 +263,7 @@ export default function VikrantSinghAuthorPage() {
                 <div
                   className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800 transform hover:-translate-y-2 cursor-pointer flex flex-col h-full"
                 >
-                  <div className="w-100 aspect-[2.4/1] overflow-hidden bg-[#0A0F1A] flex items-center justify-center">
+                  <div className="w-full aspect-[2.4/1] overflow-hidden bg-[#0A0F1A] flex items-center justify-center">
                     {article.image ? (
                       <img
                         src={article.image}
