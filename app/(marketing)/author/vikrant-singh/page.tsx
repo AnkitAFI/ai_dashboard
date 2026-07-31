@@ -360,14 +360,14 @@ const articles: Article[] = [
 
 export default function VikrantSinghAuthorPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 pt-20">
+    <div className="min-h-screen bg-white dark:bg-gray-950 pt-16">
       {/* Author Hero Section */}
-      <section className="relative bg-gradient-to-br from-orange-50 via-white to-red-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 pt-32 pb-16 overflow-hidden">
+      <section className="relative bg-gradient-to-br from-orange-50 via-white to-red-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900 pt-8 pb-8 overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwMDAwMDEwIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-40"></div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="max-w-4xl mx-auto text-center">
-            <div className="mx-auto mb-8 flex justify-center">
+            <div className="mx-auto mb-4 flex justify-center">
               <img
                 src="/vikrant-singh-author.png"
                 alt="Professional portrait of Vikrant Singh sitting at a desk in a modern office."
@@ -375,54 +375,56 @@ export default function VikrantSinghAuthorPage() {
               />
             </div>
 
-            <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-400 px-4 py-2 rounded-full text-sm font-semibold mb-6 shadow-sm border border-orange-200 dark:border-orange-900">
+            <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-400 px-4 py-2 rounded-full text-sm font-semibold mb-2 shadow-sm border border-orange-200 dark:border-orange-900">
               <Users className="w-4 h-4" />
               <span>Author Profile</span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 leading-tight">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-2 leading-tight">
               <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent">
                 Vikrant Singh
               </span>
             </h1>
 
-            <p className="text-xl font-medium text-orange-600 dark:text-orange-500 mb-6">
+            <p className="text-xl font-medium text-orange-600 dark:text-orange-500 mb-2">
               Expert E-commerce Strategist at Insydz
             </p>
 
-            <p className="text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed max-w-2xl mx-auto">
-              Vikrant writes extensively about Amazon and Flipkart SEO, competitor intelligence, and scaling D2C brands in India. His insights help Indian sellers optimize pricing, uncover high-intent keywords, and dominate the buy box.
+            <p className="text-lg text-gray-600 dark:text-gray-400 mb-4 leading-relaxed max-w-2xl mx-auto">
+              Vikrant writes extensively about Amazon and Flipkart SEO,
+              competitor intelligence, and scaling D2C brands in India. His
+              insights help Indian sellers optimize pricing, uncover high-intent
+              keywords, and dominate the buy box.
             </p>
 
             <div className="flex justify-center items-center gap-4">
-               <a 
-                 href="https://www.linkedin.com/in/singhvikrant?utm_source=share_via&utm_content=profile&utm_medium=member_ios" 
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 className="p-3 bg-white dark:bg-gray-800 shadow-md hover:shadow-lg rounded-full text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
-                >
-                 <Linkedin className="w-5 h-5" />
-               </a>
-               <a 
-                 href="https://x.com/vsingh_afi" 
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 className="p-3 bg-white dark:bg-gray-800 shadow-md hover:shadow-lg rounded-full text-gray-500 hover:text-blue-400 dark:hover:text-blue-300 transition-all"
-                >
-                 <Twitter className="w-5 h-5" />
-               </a>
+              <a
+                href="https://www.linkedin.com/in/singhvikrant?utm_source=share_via&utm_content=profile&utm_medium=member_ios"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 bg-white dark:bg-gray-800 shadow-md hover:shadow-lg rounded-full text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
+              >
+                <Linkedin className="w-5 h-5" />
+              </a>
+              <a
+                href="https://x.com/vsingh_afi"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-3 bg-white dark:bg-gray-800 shadow-md hover:shadow-lg rounded-full text-gray-500 hover:text-blue-400 dark:hover:text-blue-300 transition-all"
+              >
+                <Twitter className="w-5 h-5" />
+              </a>
             </div>
-            
           </div>
         </div>
       </section>
 
       {/* Articles by Author */}
-      <section className="py-16 bg-white dark:bg-gray-950">
+      <section className="py-4 bg-white dark:bg-gray-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3 mb-10 border-b border-gray-200 dark:border-gray-800 pb-4">
             <div className="w-1 h-8 bg-gradient-to-b from-orange-500 to-red-500 rounded-full"></div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               Articles by Vikrant
             </h2>
             <span className="ml-auto bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 text-sm font-semibold px-3 py-1 rounded-full">
@@ -433,9 +435,7 @@ export default function VikrantSinghAuthorPage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {articles.map((article) => (
               <Link key={article.id} href={article.route}>
-                <div
-                  className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800 transform hover:-translate-y-2 cursor-pointer flex flex-col h-full"
-                >
+                <div className="group bg-white dark:bg-gray-900 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800 transform hover:-translate-y-2 cursor-pointer flex flex-col h-full">
                   <div className="blog-card-thumb relative">
                     {article.image ? (
                       <img
@@ -467,7 +467,9 @@ export default function VikrantSinghAuthorPage() {
                     <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-800 mt-auto">
                       <div className="flex items-center gap-2 text-gray-500 dark:text-gray-500">
                         <Clock className="w-4 h-4" />
-                        <span className="text-sm font-medium">{article.readTime}</span>
+                        <span className="text-sm font-medium">
+                          {article.readTime}
+                        </span>
                       </div>
 
                       <div className="flex items-center text-orange-600 dark:text-orange-500 font-semibold text-sm group-hover:gap-2 gap-1 transition-all">
