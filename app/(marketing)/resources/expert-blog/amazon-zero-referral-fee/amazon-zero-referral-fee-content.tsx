@@ -19,62 +19,105 @@ const schemaPrivateLabel = {
     {
       "@type": "Organization",
       "@id": "https://insydz.com/#organization",
-      "name": "Insydz",
-      "url": "https://insydz.com",
-      "logo": { "@type": "ImageObject", "url": "https://insydz.com/logo.png" },
-      "sameAs": [
+      name: "Insydz",
+      url: "https://insydz.com",
+      logo: { "@type": "ImageObject", url: "https://insydz.com/logo.png" },
+      sameAs: [
         "https://www.instagram.com/growwithinsydz",
         "https://www.linkedin.com/company/insydz/",
         "https://www.facebook.com/profile.php?id=61586202582209",
-        "https://x.com/growwithinsydz"
+        "https://x.com/growwithinsydz",
       ],
-      "description": "AI-powered ecommerce analytics platform for Amazon and Flipkart sellers."
+      description:
+        "AI-powered ecommerce analytics platform for Amazon and Flipkart sellers.",
     },
     {
       "@type": "WebPage",
-      "@id": "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india",
-      "url": "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india",
-      "name": "Competitor Undercutting Your Amazon India Price",
-      "description": "A competitor cut your Amazon India price by ₹200 and you lost 90% of sales overnight. Here is how to detect undercutting within 1 hour and respond before your listing collapses.",
-      "isPartOf": { "@type": "WebSite", "name": "Insydz", "url": "https://insydz.com" },
-      "breadcrumb": { "@id": "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india#breadcrumb" }
+      "@id":
+        "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india",
+      url: "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india",
+      name: "Competitor Undercutting Your Amazon India Price",
+      description:
+        "A competitor cut your Amazon India price by ₹200 and you lost 90% of sales overnight. Here is how to detect undercutting within 1 hour and respond before your listing collapses.",
+      isPartOf: {
+        "@type": "WebSite",
+        name: "Insydz",
+        url: "https://insydz.com",
+      },
+      breadcrumb: {
+        "@id":
+          "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india#breadcrumb",
+      },
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india#breadcrumb",
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home",         "item": "https://insydz.com" },
-        { "@type": "ListItem", "position": 2, "name": "Resources",    "item": "https://insydz.com/resources" },
-        { "@type": "ListItem", "position": 3, "name": "Expert Blog",  "item": "https://insydz.com/resources/expert-blog" },
-        { "@type": "ListItem", "position": 4, "name": "Competitor Undercutting Your Amazon India Price", "item": "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india" }
-      ]
+      "@id":
+        "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india#breadcrumb",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://insydz.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Resources",
+          item: "https://insydz.com/resources",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "Expert Blog",
+          item: "https://insydz.com/resources/expert-blog",
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: "Competitor Undercutting Your Amazon India Price",
+          item: "https://insydz.com/resources/expert-blog/competitor-undercutting-amazon-india",
+        },
+      ],
     },
     {
       "@type": "BlogPosting",
-      "@id": "https://insydz.com/resources/expert-blog/amazon-private-label-india-2026#article",
-      "headline": "Amazon Private Label Guide India 2026: Everything You Need to Know",
-      "description": "A comprehensive guide to starting an Amazon Private Label business in India for 2026. Replicating the success of top brands.",
-      "image": "https://insydz.com/Amazon-Vine-India-image1.png",
-      "author": { "@type": "Person", "name": "Vikrant Singh", "url": "https://insydz.com/author/vikrant-singh" },
-      "publisher": { "@id": "https://insydz.com/#organization" },
-      "datePublished": "2026-05-15",
-      "dateModified": "2026-05-15",
-      "keywords": ["amazon private label india","private label amazon 2026","sell on amazon india","ecommerce brand building india"],
-      "articleSection": "Seller Tools & Strategy",
-      "inLanguage": "en-IN",
-      "wordCount": 4400,
-      "timeRequired": "PT12M"
-    }
-  ]
+      "@id":
+        "https://insydz.com/resources/expert-blog/amazon-private-label-india-2026#article",
+      headline:
+        "Amazon Private Label Guide India 2026: Everything You Need to Know",
+      description:
+        "A comprehensive guide to starting an Amazon Private Label business in India for 2026. Replicating the success of top brands.",
+      image: "https://insydz.com/Amazon-Vine-India-image1.png",
+      author: {
+        "@type": "Person",
+        name: "Vikrant Singh",
+        url: "https://insydz.com/author/vikrant-singh",
+      },
+      publisher: { "@id": "https://insydz.com/#organization" },
+      datePublished: "2026-05-15",
+      dateModified: "2026-05-15",
+      keywords: [
+        "amazon private label india",
+        "private label amazon 2026",
+        "sell on amazon india",
+        "ecommerce brand building india",
+      ],
+      articleSection: "Seller Tools & Strategy",
+      inLanguage: "en-IN",
+      wordCount: 4400,
+      timeRequired: "PT12M",
+    },
+  ],
 };
 
 const keyTakeaways = [
-            "Effective March 16, 2026, Amazon India eliminated referral fees on products priced up to ₹999 across 1,800+ categories including fashion, accessories, earphones, T-shirts, jewellery, and stationery.",
-            "The fee saving is 5% to 12% of selling price depending on category. At volume, this is a meaningful margin improvement—not a rounding error.",
-            "The strategic window is narrow. Sellers who reprice or reinvest within the first 4 to 6 weeks gain ranking and Buy Box advantage before the category recalibrates.",
-            "Indian buyers have a strong psychological preference for sub-₹1,000 pricing. If your product sits between ₹1,000 and ₹1,199, repricing to ₹999 may unlock significant conversion improvement on top of the fee saving.",
-            "Sellers who do not adjust will be undercut by those who do. Use Insydz to track how competitors in your category are repricing so you are not the last to know.",
-        ];
+  "Effective March 16, 2026, Amazon India eliminated referral fees on products priced up to ₹999 across 1,800+ categories including fashion, accessories, earphones, T-shirts, jewellery, and stationery.",
+  "The fee saving is 5% to 12% of selling price depending on category. At volume, this is a meaningful margin improvement—not a rounding error.",
+  "The strategic window is narrow. Sellers who reprice or reinvest within the first 4 to 6 weeks gain ranking and Buy Box advantage before the category recalibrates.",
+  "Indian buyers have a strong psychological preference for sub-₹1,000 pricing. If your product sits between ₹1,000 and ₹1,199, repricing to ₹999 may unlock significant conversion improvement on top of the fee saving.",
+  "Sellers who do not adjust will be undercut by those who do. Use Insydz to track how competitors in your category are repricing so you are not the last to know.",
+];
 
 // ── TOC ───────────────────────────────────────────────────────────────────────
 
@@ -122,20 +165,22 @@ export default function AmazonZeroReferralFeeContent() {
   const router = useRouter();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [activeSection, setActiveSection] = useState("what-is-private-label");
-  const [scrollPct, setScrollPct]   = useState(0);
-  const [tocOpen, setTocOpen]       = useState(false);
-  const [openFaq, setOpenFaq]       = useState<number | null>(0);
-  const [scrolled, setScrolled]     = useState(false);
+  const [scrollPct, setScrollPct] = useState(0);
+  const [tocOpen, setTocOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const id = "insydz-private-label-schema";
     if (document.getElementById(id)) return;
     const script = document.createElement("script");
-    script.id   = id;
+    script.id = id;
     script.type = "application/ld+json";
     script.textContent = JSON.stringify(schemaPrivateLabel);
     document.head.appendChild(script);
-    return () => { document.getElementById(id)?.remove(); };
+    return () => {
+      document.getElementById(id)?.remove();
+    };
   }, []);
 
   useEffect(() => {
@@ -145,7 +190,10 @@ export default function AmazonZeroReferralFeeContent() {
       setScrollPct(Math.min((window.scrollY / total) * 100, 100));
       for (let i = TOC.length - 1; i >= 0; i--) {
         const el = document.getElementById(TOC[i].id);
-        if (el && window.scrollY >= el.offsetTop - 130) { setActiveSection(TOC[i].id); break; }
+        if (el && window.scrollY >= el.offsetTop - 130) {
+          setActiveSection(TOC[i].id);
+          break;
+        }
       }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -159,7 +207,10 @@ export default function AmazonZeroReferralFeeContent() {
       setScrollPct(Math.min((window.scrollY / total) * 100, 100));
       for (let i = TOC.length - 1; i >= 0; i--) {
         const el = document.getElementById(TOC[i].id);
-        if (el && window.scrollY >= el.offsetTop - 130) { setActiveSection(TOC[i].id); break; }
+        if (el && window.scrollY >= el.offsetTop - 130) {
+          setActiveSection(TOC[i].id);
+          break;
+        }
       }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -167,30 +218,39 @@ export default function AmazonZeroReferralFeeContent() {
   }, []);
 
   const go = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
     setTocOpen(false);
   };
 
-  interface ArticleImgProps { src: string; alt: string; caption?: string; }
-function ArticleImg({ src, alt, caption }: ArticleImgProps) {
-  const [loaded, setLoaded] = useState(false);
-  return (
-    <figure className="article-img-wrap">
-      {!loaded && <div className="img-shimmer" />}
-      <img
-        src={src}
-        alt={alt}
-        onLoad={() => setLoaded(true)}
-        style={{ width: "100%", height: "auto", display: loaded ? "block" : "none" }}
-      />
-      {caption && <figcaption className="img-caption">{caption}</figcaption>}
-    </figure>
-  );
-}
+  interface ArticleImgProps {
+    src: string;
+    alt: string;
+    caption?: string;
+  }
+  function ArticleImg({ src, alt, caption }: ArticleImgProps) {
+    const [loaded, setLoaded] = useState(false);
+    return (
+      <figure className="article-img-wrap">
+        {!loaded && <div className="img-shimmer" />}
+        <img
+          src={src}
+          alt={alt}
+          onLoad={() => setLoaded(true)}
+          style={{
+            width: "100%",
+            height: "auto",
+            display: loaded ? "block" : "none",
+          }}
+        />
+        {caption && <figcaption className="img-caption">{caption}</figcaption>}
+      </figure>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
-      
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
         *,*::before,*::after{box-sizing:border-box}
@@ -201,13 +261,13 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
         @media(min-width:640px){.read-progress{top:72px}}
         @media(min-width:1024px){.read-progress{top:80px}}
 
-        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0}
-        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px}}
-        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px}}
-        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px}}
+        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0;align-items:start}
+        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px;align-items:start}}
+        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px;align-items:start}}
+        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px;align-items:start}}
 
         .toc-sidebar{display:none}
-        @media(min-width:768px){.toc-sidebar{display:block;position:sticky;top:76px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);max-height:calc(100vh - 96px);overflow-y:auto}}
+        @media(min-width:768px){.toc-sidebar{display:block;position:sticky;top:76px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);max-height:calc(100vh - 96px);overflow-y:auto;align-self:start;height:fit-content}}
         @media(min-width:1024px){.toc-sidebar{top:80px;padding:22px}}
         .dark .toc-sidebar{background:#111827;border-color:#1f2937}
 
@@ -384,101 +444,272 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
         .final-cta-block { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%); padding: clamp(48px,8vw,40px) 20px; text-align:center; margin:60px 0 0; }
       `}</style>
 
-      
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
 
       {/* ═══ NAV ══════════════════════════════════════════════════════════════ */}
       <MarketingHeader />
 
       {/* BREADCRUMB */}
-      <div 
-        className="breadcrumb" 
-        style={{ 
+      <div
+        className="breadcrumb"
+        style={{
           marginTop: 80,
-          background: resolvedTheme === 'dark' ? "#0f172a" : "#F5F8FF",
-          borderBottom: resolvedTheme === 'dark' ? "1px solid #1e293b" : "1px solid #E5E7EB",
-          padding: "8px 0"
+          background: resolvedTheme === "dark" ? "#0f172a" : "#F5F8FF",
+          borderBottom:
+            resolvedTheme === "dark"
+              ? "1px solid #1e293b"
+              : "1px solid #E5E7EB",
+          padding: "8px 0",
         }}
       >
-        <div className="breadcrumb-inner" style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#94A3B8" }}>
-          <Link href="/" style={{ color: resolvedTheme === 'dark' ? "#cbd5e1" : "#64748B", fontWeight:500, textDecoration:"none" }}>Home</Link>
-          <span style={{ color: resolvedTheme === 'dark' ? "#475569" : "#cbd5e1" }}>›</span>
-          <Link href="/resources/expert-blog" style={{ color: resolvedTheme === 'dark' ? "#cbd5e1" : "#64748B", fontWeight:500, textDecoration:"none" }}>Blog</Link>
-          <span style={{ color: resolvedTheme === 'dark' ? "#475569" : "#cbd5e1" }}>›</span>
-          <span style={{ color: resolvedTheme === 'dark' ? "#64748b" : "#94A3B8" }}>Competitor Undercutting Your Amazon India Price</span>
+        <div
+          className="breadcrumb-inner"
+          style={{ color: resolvedTheme === "dark" ? "#94a3b8" : "#94A3B8" }}
+        >
+          <Link
+            href="/"
+            style={{
+              color: resolvedTheme === "dark" ? "#cbd5e1" : "#64748B",
+              fontWeight: 500,
+              textDecoration: "none",
+            }}
+          >
+            Home
+          </Link>
+          <span
+            style={{ color: resolvedTheme === "dark" ? "#475569" : "#cbd5e1" }}
+          >
+            ›
+          </span>
+          <Link
+            href="/resources/expert-blog"
+            style={{
+              color: resolvedTheme === "dark" ? "#cbd5e1" : "#64748B",
+              fontWeight: 500,
+              textDecoration: "none",
+            }}
+          >
+            Blog
+          </Link>
+          <span
+            style={{ color: resolvedTheme === "dark" ? "#475569" : "#cbd5e1" }}
+          >
+            ›
+          </span>
+          <span
+            style={{ color: resolvedTheme === "dark" ? "#64748b" : "#94A3B8" }}
+          >
+            Amazon Zero Referral Fee
+          </span>
         </div>
       </div>
 
       {/* HERO SECTION - REVISED TO MATCH IMAGE */}
-      <div 
-        style={{ 
-          background: resolvedTheme === 'dark' ? "#0f1120" : "#F1F2FF", 
-          padding: "48px 0", 
-          borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E2E8F0" 
-        }} 
+      <div
+        style={{
+          background: resolvedTheme === "dark" ? "#0f1120" : "#F1F2FF",
+          padding: "48px 0",
+          borderBottom:
+            resolvedTheme === "dark"
+              ? "1px solid #1f2937"
+              : "1px solid #E2E8F0",
+        }}
       >
-        <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 16px" }} className="w-full">
-          
+        <div
+          style={{ maxWidth: 1240, margin: "0 auto", padding: "0 16px" }}
+          className="w-full"
+        >
           <div className="w-full">
-            <div style={{ 
-              display:"inline-flex", 
-              alignItems:"center", 
-              background: resolvedTheme === 'dark' ? "#1e1b4b" : "#E0E2FF", 
-              color: resolvedTheme === 'dark' ? "#818cf8" : "#6366F1", 
-              fontSize:11, fontWeight:800, letterSpacing:0.5, textTransform:"uppercase", padding:"6px 16px", borderRadius:20, marginBottom:20, fontFamily:"'Sora',sans-serif" 
-            }}>
-              <span style={{ marginRight: 8, color: "#6366F1" }}>●</span> PRICING INTELLIGENCE
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                background: resolvedTheme === "dark" ? "#1e1b4b" : "#E0E2FF",
+                color: resolvedTheme === "dark" ? "#818cf8" : "#6366F1",
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: 0.5,
+                textTransform: "uppercase",
+                padding: "6px 16px",
+                borderRadius: 20,
+                marginBottom: 20,
+                fontFamily: "'Sora',sans-serif",
+              }}
+            >
+              <span style={{ marginRight: 8, color: "#6366F1" }}>●</span>{" "}
+              PRICING INTELLIGENCE
             </div>
-            
-            <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(28px, 4.5vw, 48px)", fontWeight:900, lineHeight:1.1, color: resolvedTheme === 'dark' ? "white" : "#111827", letterSpacing:"-1px", marginBottom:20 }}>
-              Amazon <span style={{ color: "#6366F1" }}>Zero Referral Fee Undercutting< br/></span> India 2026: How to Rebuild Your <br/>Pricing Strategy and Keep More Profit
+
+            <h1
+              style={{
+                fontFamily: "'Sora',sans-serif",
+                fontSize: "clamp(28px, 4.5vw, 48px)",
+                fontWeight: 900,
+                lineHeight: 1.1,
+                color: resolvedTheme === "dark" ? "white" : "#111827",
+                letterSpacing: "-1px",
+                marginBottom: 20,
+              }}
+            >
+              Amazon India{" "}
+              <span style={{ color: "#6366F1" }}>Zero Referral Fee</span> 2026:{" "}
+              <br />
+              Pricing Strategy Guide
             </h1>
 
-            <p style={{ margin: 0, fontSize: 16, color: resolvedTheme === 'dark' ? "#d1d5db" : "#4B5563", lineHeight: 1.65, fontFamily: "'Lora', serif" }}>
-              Amazon handed Indian sellers a margin gift in March 2026. Zero referral fees on 1,800+ categories for products priced up to ₹999. Most sellers know it happened. Most are leaving money on the table because they have not acted on it strategically.
+            <p
+              style={{
+                margin: 0,
+                fontSize: 16,
+                color: resolvedTheme === "dark" ? "#d1d5db" : "#4B5563",
+                lineHeight: 1.65,
+                fontFamily: "'Lora', serif",
+              }}
+            >
+              Amazon handed Indian sellers a margin gift in March 2026. Zero
+              referral fees on 1,800+ categories for products priced up to ₹999.
+              Most sellers know it happened. Most are leaving money on the table
+              because they have not acted on it strategically.
             </p>
 
-
-            
-            <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20, marginTop:12 }}>
-              <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => router.push("/author/vikrant-singh")}>Vikrant Singh</strong></div>
-              <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>🕐 June 2026</div>
-              <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>📖 <strong>11 min read</strong></div>
-              <span style={{ background:"rgba(244,80,10,.12)", color:"#F4500A", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"3px 10px", borderRadius:20 }}>Updated for 2026</span>
-              <span style={{ background:"rgba(10,191,164,.12)", color:"#0ABFA4", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"3px 10px", borderRadius:20 }}>Competitor Intelligence</span>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                flexWrap: "wrap" as const,
+                gap: "4px 14px",
+                marginBottom: 20,
+                marginTop: 12,
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  fontSize: "clamp(11px,2vw,13px)",
+                  color: "#64748B",
+                }}
+              >
+                👤{" "}
+                <strong
+                  className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer"
+                  onClick={() => router.push("/author/vikrant-singh")}
+                >
+                  Vikrant Singh
+                </strong>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  fontSize: "clamp(11px,2vw,13px)",
+                  color: "#64748B",
+                }}
+              >
+                🕐 June 2026
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  fontSize: "clamp(11px,2vw,13px)",
+                  color: "#64748B",
+                }}
+              >
+                📖 <strong>11 min read</strong>
+              </div>
+              <span
+                style={{
+                  background: "rgba(244,80,10,.12)",
+                  color: "#F4500A",
+                  fontSize: "clamp(9px,2vw,11px)",
+                  fontWeight: 700,
+                  padding: "3px 10px",
+                  borderRadius: 20,
+                }}
+              >
+                Updated for 2026
+              </span>
+              <span
+                style={{
+                  background: "rgba(10,191,164,.12)",
+                  color: "#0ABFA4",
+                  fontSize: "clamp(9px,2vw,11px)",
+                  fontWeight: 700,
+                  padding: "3px 10px",
+                  borderRadius: 20,
+                }}
+              >
+                Competitor Intelligence
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="my-10" style={{ maxWidth: 1040, margin: "20px auto 0", padding: "0 16px" }}>
+      <div
+        className="my-10"
+        style={{ maxWidth: 1040, margin: "20px auto 0", padding: "0 16px" }}
+      >
         <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
-          <img 
-            src="/amazon-zero-referral-fee-india_blogbanner.png" 
-            // src="/amazon-zero-referral-fee-india_Image2.png" 
-            alt="Amazon Sales Drop" 
+          <img
+            src="/Amazon India Zero Referral Fee.png"
+            alt="Amazon Sales Drop"
             className="w-full h-auto block"
           />
         </div>
         <p className="mt-4 text-center text-[13px] text-gray-400 italic font-medium font-sans px-4">
-          Amazon India zero referral fee the March 2026 fee cut applies to all products priced up to ₹999 across 1,800+ categories. An earphones seller at 200 units/month saves ₹12,784 in referral fees every month from this date.
+          Amazon India zero referral fee the March 2026 fee cut applies to all
+          products priced up to ₹999 across 1,800+ categories. An earphones
+          seller at 200 units/month saves ₹12,784 in referral fees every month
+          from this date.
         </p>
       </div>
 
       {/* QUICK SUMMARY & TAKEAWAYS - MATCHING IMAGE */}
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 16px 0" }}>
-        
         {/* Quick Answer Box */}
-        <div style={{ 
-          background: resolvedTheme === 'dark' ? "#111827" : "#F8F9FF", 
-          borderLeft: "4px solid #6366F1", 
-          borderRadius: 8, padding: "24px 32px", marginBottom: 40 
-        }} className="dark:border-indigo-500">
-          <div style={{ fontSize: 11, fontWeight: 800, color: "#6366F1", textTransform: "uppercase", letterSpacing: 1, marginBottom: 12, fontFamily: "'Sora', sans-serif" }}>
+        <div
+          style={{
+            background: resolvedTheme === "dark" ? "#111827" : "#F8F9FF",
+            borderLeft: "4px solid #6366F1",
+            borderRadius: 8,
+            padding: "24px 32px",
+            marginBottom: 40,
+          }}
+          className="dark:border-indigo-500"
+        >
+          <div
+            style={{
+              fontSize: 11,
+              fontWeight: 800,
+              color: "#6366F1",
+              textTransform: "uppercase",
+              letterSpacing: 1,
+              marginBottom: 12,
+              fontFamily: "'Sora', sans-serif",
+            }}
+          >
             QUICK ANSWER
           </div>
-          <p style={{ margin: 0, fontSize: 16, color: resolvedTheme === 'dark' ? "#d1d5db" : "#4B5563", lineHeight: 1.65, fontFamily: "'Lora', serif" }}>
-            Amazon India eliminated referral fees on products priced up to ₹999 across 1,800+ categories effective March 16, 2026. The strategic options are: keep your current price and bank the freed margin, drop price to gain Buy Box share before competitors adjust, or reinvest the freed margin into ads and inventory. The right choice depends on your category's competitive intensity and your current margin floor.
+          <p
+            style={{
+              margin: 0,
+              fontSize: 16,
+              color: resolvedTheme === "dark" ? "#d1d5db" : "#4B5563",
+              lineHeight: 1.65,
+              fontFamily: "'Lora', serif",
+            }}
+          >
+            Amazon India eliminated referral fees on products priced up to ₹999
+            across 1,800+ categories effective March 16, 2026. The strategic
+            options are: keep your current price and bank the freed margin, drop
+            price to gain Buy Box share before competitors adjust, or reinvest
+            the freed margin into ads and inventory. The right choice depends on
+            your category's competitive intensity and your current margin floor.
           </p>
         </div>
 
@@ -493,114 +724,242 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
 
       {/* ARTICLE LAYOUT */}
       <div className="article-layout">
-
         {/* SIDEBAR */}
-        <aside className="toc-sidebar" style={{ 
-          background: resolvedTheme === 'dark' ? "#111827" : "#fff",
-          borderColor: resolvedTheme === 'dark' ? "#1f2937" : "#E5E7EB"
-        }}>
-          <h4 style={{ 
-            fontSize: "11px", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.1em", 
-            color: resolvedTheme === 'dark' ? "#94a3b8" : "#64748B", marginBottom: "16px",
-            fontFamily: "'Sora', sans-serif" 
-          }}>Table of Contents</h4>
-          <ul className="space-y-1" style={{ listStyle:"none", padding:0, margin:0 }}>
-            {TOC.map(t => (
+        <aside
+          className="toc-sidebar"
+          style={{
+            background: resolvedTheme === "dark" ? "#111827" : "#fff",
+            borderColor: resolvedTheme === "dark" ? "#1f2937" : "#E5E7EB",
+          }}
+        >
+          <h4
+            style={{
+              fontSize: "11px",
+              fontWeight: "bold",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              color: resolvedTheme === "dark" ? "#94a3b8" : "#64748B",
+              marginBottom: "16px",
+              fontFamily: "'Sora', sans-serif",
+            }}
+          >
+            Table of Contents
+          </h4>
+          <ul
+            className="space-y-1"
+            style={{ listStyle: "none", padding: 0, margin: 0 }}
+          >
+            {TOC.map((t) => (
               <li key={t.id}>
-                <button 
-                  className={`toc-link${activeSection === t.id ? " active" : ""}`} 
+                <button
+                  className={`toc-link${activeSection === t.id ? " active" : ""}`}
                   onClick={() => go(t.id)}
                   style={{
-                    color: activeSection === t.id ? "#7C3AED" : (resolvedTheme === 'dark' ? "#94a3b8" : "#64748B"),
-                    background: activeSection === t.id ? (resolvedTheme === 'dark' ? "#1e1033" : "#F5F3FF") : "transparent",
-                    borderLeft: activeSection === t.id ? "2px solid #7C3AED" : "2px solid transparent"
+                    color:
+                      activeSection === t.id
+                        ? "#7C3AED"
+                        : resolvedTheme === "dark"
+                          ? "#94a3b8"
+                          : "#64748B",
+                    background:
+                      activeSection === t.id
+                        ? resolvedTheme === "dark"
+                          ? "#1e1033"
+                          : "#F5F3FF"
+                        : "transparent",
+                    borderLeft:
+                      activeSection === t.id
+                        ? "2px solid #7C3AED"
+                        : "2px solid transparent",
                   }}
-                >{t.label}</button>
+                >
+                  {t.label}
+                </button>
               </li>
             ))}
           </ul>
         </aside>
 
         {/* MAIN */}
-        <main style={{ minWidth:0 }}>
-          <button 
-            className="mobile-toc-btn" 
+        <main style={{ minWidth: 0 }}>
+          <button
+            className="mobile-toc-btn"
             onClick={() => setTocOpen(!tocOpen)}
-            style={{ 
-              background: resolvedTheme === 'dark' ? "#111827" : "#fff",
-              color: resolvedTheme === 'dark' ? "#f9fafb" : "#111",
-              borderColor: resolvedTheme === 'dark' ? "#1f2937" : "#E5E7EB"
+            style={{
+              background: resolvedTheme === "dark" ? "#111827" : "#fff",
+              color: resolvedTheme === "dark" ? "#f9fafb" : "#111",
+              borderColor: resolvedTheme === "dark" ? "#1f2937" : "#E5E7EB",
             }}
           >
             Table of Contents <span>{tocOpen ? "▲" : "▼"}</span>
           </button>
-          <div className={`mobile-toc-panel${tocOpen ? " open" : ""}`} style={{ 
-            background: resolvedTheme === 'dark' ? "#111827" : "#fff",
-            borderColor: resolvedTheme === 'dark' ? "#1f2937" : "#E5E7EB"
-          }}>
-            {TOC.map(t => (
-              <button key={t.id} className="toc-link" style={{ display:"block", marginBottom:3 }} onClick={() => go(t.id)}>{t.label}</button>
+          <div
+            className={`mobile-toc-panel${tocOpen ? " open" : ""}`}
+            style={{
+              background: resolvedTheme === "dark" ? "#111827" : "#fff",
+              borderColor: resolvedTheme === "dark" ? "#1f2937" : "#E5E7EB",
+            }}
+          >
+            {TOC.map((t) => (
+              <button
+                key={t.id}
+                className="toc-link"
+                style={{ display: "block", marginBottom: 3 }}
+                onClick={() => go(t.id)}
+              >
+                {t.label}
+              </button>
             ))}
           </div>
 
           <article className="article-body">
-
-            <h2 id="what-changed" style={{ 
-              fontFamily: "'Sora', sans-serif",
-              fontSize: "clamp(22px, 3vw, 28px)", 
-              fontWeight: 900, 
-              color: resolvedTheme === 'dark' ? "#f9fafb" : "#0A0F1A", 
-              lineHeight: 1.2,
-              letterSpacing: "-0.5px",
-              paddingBottom: "16px",
-              borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB",
-              margin: "0 0 28px"
-            }}>
+            <h2
+              id="what-changed"
+              style={{
+                fontFamily: "'Sora', sans-serif",
+                fontSize: "clamp(22px, 3vw, 28px)",
+                fontWeight: 900,
+                color: resolvedTheme === "dark" ? "#f9fafb" : "#0A0F1A",
+                lineHeight: 1.2,
+                letterSpacing: "-0.5px",
+                paddingBottom: "16px",
+                borderBottom:
+                  resolvedTheme === "dark"
+                    ? "1px solid #1f2937"
+                    : "1px solid #E5E7EB",
+                margin: "0 0 28px",
+              }}
+            >
               What Changed on March 16, 2026 and Why It Matters
             </h2>
-            
-            <p style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.7, marginBottom: "20px", fontFamily: "'Lora', serif" }}>
-              Amazon India made its largest seller-facing fee cut in the history of the India marketplace on March 16, 2026. Products priced up to ₹999 (inclusive) in over 1,800 categories now attract zero referral fee. Previously, sellers were paying 5 to 12 percent of the selling price as a referral fee on every transaction money that went directly to Amazon before you even calculated your own margin.
+
+            <p
+              style={{
+                color: resolvedTheme === "dark" ? "#94a3b8" : "#4B5563",
+                fontSize: "16px",
+                lineHeight: 1.7,
+                marginBottom: "20px",
+                fontFamily: "'Lora', serif",
+              }}
+            >
+              Amazon India made its largest seller-facing fee cut in the history
+              of the India marketplace on March 16, 2026. Products priced up to
+              ₹999 (inclusive) in over 1,800 categories now attract zero
+              referral fee. Previously, sellers were paying 5 to 12 percent of
+              the selling price as a referral fee on every transaction money
+              that went directly to Amazon before you even calculated your own
+              margin.
             </p>
 
-            <p style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.7, marginBottom: "32px", fontFamily: "'Lora', serif" }}>
-              For a seller doing 500 units a month at ₹799 in a category with an 8 percent referral fee, that was ₹31,960 per month leaving your account in referral fees alone. From March 16, 2026 that number is zero.
+            <p
+              style={{
+                color: resolvedTheme === "dark" ? "#94a3b8" : "#4B5563",
+                fontSize: "16px",
+                lineHeight: 1.7,
+                marginBottom: "32px",
+                fontFamily: "'Lora', serif",
+              }}
+            >
+              For a seller doing 500 units a month at ₹799 in a category with an
+              8 percent referral fee, that was ₹31,960 per month leaving your
+              account in referral fees alone. From March 16, 2026 that number is
+              zero.
             </p>
 
-            <div className="box box-purple" style={{ 
-              background: resolvedTheme === 'dark' ? "#1e1b4b" : "#F5F3FF", 
-              borderLeft: "6px solid #8B5CF6", 
-              borderRadius: 20, padding: "32px", margin: "40px 0",
-              boxShadow: resolvedTheme === 'dark' ? "0 4px 20px rgba(0,0,0,0.3)" : "0 10px 30px rgba(139,92,246,0.08)"
-            }}>
-              <div style={{ fontSize:11, fontWeight:800, color:"#7C3AED", textTransform:"uppercase", letterSpacing:1.2, marginBottom:18, fontFamily:"'Sora',sans-serif", display:"flex", alignItems:"center", gap:8 }}>
+            <div
+              className="box box-purple"
+              style={{
+                background: resolvedTheme === "dark" ? "#1e1b4b" : "#F5F3FF",
+                borderLeft: "6px solid #8B5CF6",
+                borderRadius: 20,
+                padding: "32px",
+                margin: "40px 0",
+                boxShadow:
+                  resolvedTheme === "dark"
+                    ? "0 4px 20px rgba(0,0,0,0.3)"
+                    : "0 10px 30px rgba(139,92,246,0.08)",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 11,
+                  fontWeight: 800,
+                  color: "#7C3AED",
+                  textTransform: "uppercase",
+                  letterSpacing: 1.2,
+                  marginBottom: 18,
+                  fontFamily: "'Sora',sans-serif",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
                 📌 What "Zero Referral Fee" Actually Means
               </div>
-              <p style={{ margin:"0 0 16px", fontSize:15.5, color: resolvedTheme === 'dark' ? "#cbd5e1" : "#4B5563", lineHeight:1.75, fontFamily: "'Sora', sans-serif" }}>
-              The referral fee is the percentage Amazon charges on each completed sale separate from FBA fees, Easy Ship fees, and storage. Zero referral fee means that specific component drops to zero for qualifying ASINs. All other fees remain unchanged.
+              <p
+                style={{
+                  margin: "0 0 16px",
+                  fontSize: 15.5,
+                  color: resolvedTheme === "dark" ? "#cbd5e1" : "#4B5563",
+                  lineHeight: 1.75,
+                  fontFamily: "'Sora', sans-serif",
+                }}
+              >
+                The referral fee is the percentage Amazon charges on each
+                completed sale separate from FBA fees, Easy Ship fees, and
+                storage. Zero referral fee means that specific component drops
+                to zero for qualifying ASINs. All other fees remain unchanged.
               </p>
             </div>
 
-            <p style={{ margin:"0 0 16px", fontSize:15.5, color: resolvedTheme === 'dark' ? "#cbd5e1" : "#4B5563", lineHeight:1.75, fontFamily: "'Sora', sans-serif" }}>
-              This is a permanent fee change not a promotion. Amazon India structured it as part of a broader push to compete with Flipkart's fee structure and accelerate onboarding of new sellers from tier-2 and tier-3 cities.
-            </p>             
+            <p
+              style={{
+                margin: "0 0 16px",
+                fontSize: 15.5,
+                color: resolvedTheme === "dark" ? "#cbd5e1" : "#4B5563",
+                lineHeight: 1.75,
+                fontFamily: "'Sora', sans-serif",
+              }}
+            >
+              This is a permanent fee change not a promotion. Amazon India
+              structured it as part of a broader push to compete with Flipkart's
+              fee structure and accelerate onboarding of new sellers from tier-2
+              and tier-3 cities.
+            </p>
 
-            <h2 id="categories" style={{ 
-              fontFamily: "'Sora', sans-serif",
-              fontSize: "clamp(22px, 3vw, 28px)", 
-              fontWeight: 900, 
-              color: resolvedTheme === 'dark' ? "#f9fafb" : "#0A0F1A", 
-              lineHeight: 1.2,
-              letterSpacing: "-0.5px",
-              paddingBottom: "16px",
-              borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB",
-              margin: "40px 0 28px"
-            }}>
+            <h2
+              id="categories"
+              style={{
+                fontFamily: "'Sora', sans-serif",
+                fontSize: "clamp(22px, 3vw, 28px)",
+                fontWeight: 900,
+                color: resolvedTheme === "dark" ? "#f9fafb" : "#0A0F1A",
+                lineHeight: 1.2,
+                letterSpacing: "-0.5px",
+                paddingBottom: "16px",
+                borderBottom:
+                  resolvedTheme === "dark"
+                    ? "1px solid #1f2937"
+                    : "1px solid #E5E7EB",
+                margin: "40px 0 28px",
+              }}
+            >
               Which Categories and Products Are Affected?
             </h2>
 
-            <p style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.7, marginBottom: "32px", fontFamily: "'Lora', serif" }}>
-              The zero referral fee applies broadly across product categories where the listed price is ₹999 or below. The affected categories include most everyday consumer products. Here are the most commercially significant ones:
+            <p
+              style={{
+                color: resolvedTheme === "dark" ? "#94a3b8" : "#4B5563",
+                fontSize: "16px",
+                lineHeight: 1.7,
+                marginBottom: "32px",
+                fontFamily: "'Lora', serif",
+              }}
+            >
+              The zero referral fee applies broadly across product categories
+              where the listed price is ₹999 or below. The affected categories
+              include most everyday consumer products. Here are the most
+              commercially significant ones:
             </p>
 
             <div
@@ -750,8 +1109,8 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
                               ? "#1E293B20"
                               : "#EEF3F1"
                             : resolvedTheme === "dark"
-                            ? "#111827"
-                            : "#FFFFFF",
+                              ? "#111827"
+                              : "#FFFFFF",
                         borderBottom:
                           resolvedTheme === "dark"
                             ? "1px solid #1f2937"
@@ -780,9 +1139,7 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
                           padding: "20px 18px",
                           fontSize: 14,
                           color:
-                            resolvedTheme === "dark"
-                              ? "#CBD5E1"
-                              : "#0F172A",
+                            resolvedTheme === "dark" ? "#CBD5E1" : "#0F172A",
                           fontFamily: "'Sora', sans-serif",
                         }}
                       >
@@ -842,33 +1199,52 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
 
             <div className="my-10">
               <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
-                <img 
-                  src="/amazon-zero-referral-fee-india_Image2.png" 
-                  alt="Amazon Sales Drop" 
+                <img
+                  src="/amazon-zero-referral-fee-india_Image2.png"
+                  alt="Amazon Sales Drop"
                   className="w-full h-auto block"
                 />
               </div>
               <p className="mt-4 text-center text-[13px] text-gray-400 italic font-medium font-sans px-4">
-                  Amazon India zero referral fee impact monthly savings at 200 units for four common sub ₹1,000 product types. An earphones seller saves ₹12,784 per month in referral fees from March 16, 2026.
+                Amazon India zero referral fee impact monthly savings at 200
+                units for four common sub ₹1,000 product types. An earphones
+                seller saves ₹12,784 per month in referral fees from March 16,
+                2026.
               </p>
             </div>
 
-            <h2 id="profit-math" style={{ 
-              fontFamily: "'Sora', sans-serif",
-              fontSize: "clamp(22px, 3vw, 28px)", 
-              fontWeight: 900, 
-              color: resolvedTheme === 'dark' ? "#f9fafb" : "#0A0F1A", 
-              lineHeight: 1.2,
-              letterSpacing: "-0.5px",
-              paddingBottom: "16px",
-              borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB",
-              margin: "40px 0 28px"
-            }}>
+            <h2
+              id="profit-math"
+              style={{
+                fontFamily: "'Sora', sans-serif",
+                fontSize: "clamp(22px, 3vw, 28px)",
+                fontWeight: 900,
+                color: resolvedTheme === "dark" ? "#f9fafb" : "#0A0F1A",
+                lineHeight: 1.2,
+                letterSpacing: "-0.5px",
+                paddingBottom: "16px",
+                borderBottom:
+                  resolvedTheme === "dark"
+                    ? "1px solid #1f2937"
+                    : "1px solid #E5E7EB",
+                margin: "40px 0 28px",
+              }}
+            >
               The Real Math: How Much Extra Profit Per Unit?
             </h2>
 
-            <p style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.7, marginBottom: "32px", fontFamily: "'Lora', serif" }}>
-              Here are three concrete before-and-after unit economics examples. These use actual typical fee structures for each category prior to March 2026. FBA fees are unchanged.
+            <p
+              style={{
+                color: resolvedTheme === "dark" ? "#94a3b8" : "#4B5563",
+                fontSize: "16px",
+                lineHeight: 1.7,
+                marginBottom: "32px",
+                fontFamily: "'Lora', serif",
+              }}
+            >
+              Here are three concrete before-and-after unit economics examples.
+              These use actual typical fee structures for each category prior to
+              March 2026. FBA fees are unchanged.
             </p>
 
             <div style={{ marginBottom: 48 }}>
@@ -1089,8 +1465,8 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
                                     ? "#1E293B20"
                                     : "#EEF3F1"
                                   : resolvedTheme === "dark"
-                                  ? "#111827"
-                                  : "#FFFFFF",
+                                    ? "#111827"
+                                    : "#FFFFFF",
                               borderBottom:
                                 resolvedTheme === "dark"
                                   ? "1px solid #1F2937"
@@ -1152,14 +1528,13 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
                                 padding: "18px 16px",
                                 fontSize: 14,
                                 fontFamily: "'Sora', sans-serif",
-                                fontWeight:
-                                  row.change !== "—" ? 700 : 500,
+                                fontWeight: row.change !== "—" ? 700 : 500,
                                 color:
                                   row.change !== "—"
                                     ? "#00A63E"
                                     : resolvedTheme === "dark"
-                                    ? "#CBD5E1"
-                                    : "#334155",
+                                      ? "#CBD5E1"
+                                      : "#334155",
                               }}
                             >
                               {row.change}
@@ -1173,23 +1548,28 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
               ))}
             </div>
 
-            <div
-            >
+            <div>
               {/* Heading */}
-              
-                <h2 id="drop-to-999" style={{ 
-                          fontFamily: "'Sora', sans-serif",
-                          fontSize: "clamp(22px, 3vw, 28px)", 
-                          fontWeight: 900, 
-                          color: resolvedTheme === 'dark' ? "#f9fafb" : "#0A0F1A", 
-                          lineHeight: 1.2,
-                          letterSpacing: "-0.5px",
-                          paddingBottom: "16px",
-                          borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB",
-                          margin: "40px 0 28px"
-                        }}>
-                          Should You Drop Your Price to ₹999 or Pocket the Margin?
-                        </h2>
+
+              <h2
+                id="drop-to-999"
+                style={{
+                  fontFamily: "'Sora', sans-serif",
+                  fontSize: "clamp(22px, 3vw, 28px)",
+                  fontWeight: 900,
+                  color: resolvedTheme === "dark" ? "#f9fafb" : "#0A0F1A",
+                  lineHeight: 1.2,
+                  letterSpacing: "-0.5px",
+                  paddingBottom: "16px",
+                  borderBottom:
+                    resolvedTheme === "dark"
+                      ? "1px solid #1f2937"
+                      : "1px solid #E5E7EB",
+                  margin: "40px 0 28px",
+                }}
+              >
+                Should You Drop Your Price to ₹999 or Pocket the Margin?
+              </h2>
 
               {/* Content */}
               <div
@@ -1202,10 +1582,7 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
                     margin: "0 0 32px",
                     fontSize: 16,
                     lineHeight: 2,
-                    color:
-                      resolvedTheme === "dark"
-                        ? "#CBD5E1"
-                        : "#334155",
+                    color: resolvedTheme === "dark" ? "#CBD5E1" : "#334155",
                     fontFamily: "'Sora', sans-serif",
                   }}
                 >
@@ -1234,19 +1611,16 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
                       margin: 0,
                       fontSize: 16,
                       lineHeight: 2,
-                      color:
-                        resolvedTheme === "dark"
-                          ? "#CBD5E1"
-                          : "#334155",
+                      color: resolvedTheme === "dark" ? "#CBD5E1" : "#334155",
                       fontFamily: "'Sora', sans-serif",
                     }}
                   >
                     The fee saving arrives automatically. You now have a choice:
                     hold the current price and improve your net margin, or pass
-                    part of the saving to buyers through a price reduction to gain
-                    ranking and Buy Box share. The right choice depends on how
-                    competitively priced you already are and whether your category
-                    is seeing competitor repricing.
+                    part of the saving to buyers through a price reduction to
+                    gain ranking and Buy Box share. The right choice depends on
+                    how competitively priced you already are and whether your
+                    category is seeing competitor repricing.
                   </p>
                 </div>
 
@@ -1270,10 +1644,7 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
                       margin: 0,
                       fontSize: 16,
                       lineHeight: 2,
-                      color:
-                        resolvedTheme === "dark"
-                          ? "#CBD5E1"
-                          : "#334155",
+                      color: resolvedTheme === "dark" ? "#CBD5E1" : "#334155",
                       fontFamily: "'Sora', sans-serif",
                     }}
                   >
@@ -1287,18 +1658,28 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
               </div>
             </div>
 
-            <div className="my-10" style={{ maxWidth: 1040, margin: "20px auto 0", padding: "0 16px" }}>
-            <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
-              <img 
-                src="/amazon-zero-referral-fee-india_image3.png"  
-                alt="Amazon Sales Drop" 
-                className="w-full h-auto block"
-              />
+            <div
+              className="my-10"
+              style={{
+                maxWidth: 1040,
+                margin: "20px auto 0",
+                padding: "0 16px",
+              }}
+            >
+              <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
+                <img
+                  src="/amazon-zero-referral-fee-india_image3.png"
+                  alt="Amazon Sales Drop"
+                  className="w-full h-auto block"
+                />
+              </div>
+              <p className="mt-4 text-center text-[13px] text-gray-400 italic font-medium font-sans px-4">
+                Pricing model for a ₹1,099 product repriced to ₹999 the fee
+                saving of ₹87.92 nearly offsets the ₹100 price drop, and the
+                conversion rate uplift from sub-₹1,000 pricing more than
+                compensates at typical Indian marketplace volumes.
+              </p>
             </div>
-            <p className="mt-4 text-center text-[13px] text-gray-400 italic font-medium font-sans px-4">
-                    Pricing model for a ₹1,099 product repriced to ₹999 the fee saving of ₹87.92 nearly offsets the ₹100 price drop, and the conversion rate uplift from sub-₹1,000 pricing more than compensates at typical Indian marketplace volumes.
-            </p>
-          </div>
 
             <InfoBanner
               accentColor="#16A34A"
@@ -1306,43 +1687,123 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
               content="If the gap between your current price and ₹999 is smaller than the referral fee you were paying, repricing to ₹999 is margin-neutral or better — plus you get the conversion lift from Indian buyer price psychology. If the gap is larger than the fee saving, hold your price and take the margin improvement instead."
             />
 
-            <div style={{ background:"#0A1524", borderRadius:12, padding:"clamp(24px,5vw,32px)", display:"flex", alignItems:"center", justifyContent:"space-between", gap:24, flexWrap:"wrap", marginBottom:40 }}>
-              <div style={{ flex:1, minWidth:280 }}>
-                <h3 id="competitor-reaction" style={{ color:"white", fontSize:"clamp(18px,3vw,22px)", fontWeight:800, marginBottom:12, fontFamily:"'Sora',sans-serif", border:"none", padding:0 }}>Track how competitors are repricing after the fee cut</h3>
-                <p style={{ color:"#94A3B8", fontSize:15, margin:0, lineHeight:1.6 }}>Insydz shows competitor price changes across your category in real time. See who moved and by how much — and decide your response before the market settles.</p>
+            <div
+              style={{
+                background: "#0A1524",
+                borderRadius: 12,
+                padding: "clamp(24px,5vw,32px)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                gap: 24,
+                flexWrap: "wrap",
+                marginBottom: 40,
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 280 }}>
+                <h3
+                  id="competitor-reaction"
+                  style={{
+                    color: "white",
+                    fontSize: "clamp(18px,3vw,22px)",
+                    fontWeight: 800,
+                    marginBottom: 12,
+                    fontFamily: "'Sora',sans-serif",
+                    border: "none",
+                    padding: 0,
+                  }}
+                >
+                  Track how competitors are repricing after the fee cut
+                </h3>
+                <p
+                  style={{
+                    color: "#94A3B8",
+                    fontSize: 15,
+                    margin: 0,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Insydz shows competitor price changes across your category in
+                  real time. See who moved and by how much — and decide your
+                  response before the market settles.
+                </p>
               </div>
-              <Link href="/login" style={{ background:"#F4500A", color:"white", padding:"12px 24px", borderRadius:8, fontWeight:700, fontSize:14, whiteSpace:"nowrap", textDecoration:"none", fontFamily:"'Sora',sans-serif" }} className="sm:w-auto w-full text-center">Check Competitor Prices Free →</Link>
+              <Link
+                href="/login"
+                style={{
+                  background: "#F4500A",
+                  color: "white",
+                  padding: "12px 24px",
+                  borderRadius: 8,
+                  fontWeight: 700,
+                  fontSize: 14,
+                  whiteSpace: "nowrap",
+                  textDecoration: "none",
+                  fontFamily: "'Sora',sans-serif",
+                }}
+                className="sm:w-auto w-full text-center"
+              >
+                Check Competitor Prices Free →
+              </Link>
             </div>
 
-            <div className="my-10" style={{ maxWidth: 1040, margin: "20px auto 0", padding: "0 16px" }}>
-            <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
-              <img 
-                src="/amazon-zero-referral-fee-india_image4.png" 
-                alt="Amazon Sales Drop" 
-                className="w-full h-auto block"
-              />
+            <div
+              className="my-10"
+              style={{
+                maxWidth: 1040,
+                margin: "20px auto 0",
+                padding: "0 16px",
+              }}
+            >
+              <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
+                <img
+                  src="/amazon-zero-referral-fee-india_image4.png"
+                  alt="Amazon Sales Drop"
+                  className="w-full h-auto block"
+                />
+              </div>
+              <p className="mt-4 text-center text-[13px] text-gray-400 italic font-medium font-sans px-4">
+                Insydz category price tracking 3 of the top 5 sellers in an
+                earphones category have already repriced downward after the
+                March 2026 fee cut. Sellers who have not moved are now ₹50 to
+                ₹70 above the competitive midpoint.
+              </p>
             </div>
-            <p className="mt-4 text-center text-[13px] text-gray-400 italic font-medium font-sans px-4">
-                        Insydz category price tracking 3 of the top 5 sellers in an earphones category have already repriced downward after the March 2026 fee cut. Sellers who have not moved are now ₹50 to ₹70 above the competitive midpoint.
-            </p>
-          </div>
 
-            <h2 id="reinvest-margin" style={{ 
-              fontFamily: "'Sora', sans-serif",
-              fontSize: "clamp(22px, 3vw, 28px)", 
-              fontWeight: 900, 
-              color: resolvedTheme === 'dark' ? "#f9fafb" : "#0A0F1A", 
-              lineHeight: 1.2,
-              letterSpacing: "-0.5px",
-              paddingBottom: "16px",
-              borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB",
-              margin: "40px 0 28px"
-            }}>
-              The Hidden Opportunity: Reinvest the Freed Margin Instead of Discounting
+            <h2
+              id="reinvest-margin"
+              style={{
+                fontFamily: "'Sora', sans-serif",
+                fontSize: "clamp(22px, 3vw, 28px)",
+                fontWeight: 900,
+                color: resolvedTheme === "dark" ? "#f9fafb" : "#0A0F1A",
+                lineHeight: 1.2,
+                letterSpacing: "-0.5px",
+                paddingBottom: "16px",
+                borderBottom:
+                  resolvedTheme === "dark"
+                    ? "1px solid #1f2937"
+                    : "1px solid #E5E7EB",
+                margin: "40px 0 28px",
+              }}
+            >
+              The Hidden Opportunity: Reinvest the Freed Margin Instead of
+              Discounting
             </h2>
 
-            <p style={{ color: resolvedTheme === 'dark' ? "#94a3b8" : "#4B5563", fontSize: "16px", lineHeight: 1.7, marginBottom: "32px", fontFamily: "'Lora', serif" }}>
-              Dropping price is the most obvious response to the fee saving. It is not always the best one. For sellers who are already competitively priced and winning their Buy Box, the smarter move is reinvestment.
+            <p
+              style={{
+                color: resolvedTheme === "dark" ? "#94a3b8" : "#4B5563",
+                fontSize: "16px",
+                lineHeight: 1.7,
+                marginBottom: "32px",
+                fontFamily: "'Lora', serif",
+              }}
+            >
+              Dropping price is the most obvious response to the fee saving. It
+              is not always the best one. For sellers who are already
+              competitively priced and winning their Buy Box, the smarter move
+              is reinvestment.
             </p>
 
             <div
@@ -1359,8 +1820,7 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
                   iconBg: "#DDF5E8",
                   iconColor: "#059669",
                   title: "Reinvest into Sponsored Products",
-                  text:
-                    "A ₹12,784/month fee saving on an earphones ASIN at 200 units is exactly enough to run a competitive Sponsored Products campaign. More ad spend → more visibility → more organic rank → more sales. The freed fee compounds through the ad flywheel.",
+                  text: "A ₹12,784/month fee saving on an earphones ASIN at 200 units is exactly enough to run a competitive Sponsored Products campaign. More ad spend → more visibility → more organic rank → more sales. The freed fee compounds through the ad flywheel.",
                   tag: "High ROI",
                   tagBg: "#DDF5E8",
                   tagColor: "#047857",
@@ -1370,8 +1830,7 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
                   iconBg: "#F8F1DF",
                   iconColor: "#D97706",
                   title: "Build Stock Depth",
-                  text:
-                    "Sellers who run out of inventory during a sales surge lose ranking that takes weeks to rebuild. The freed margin is an FBA inventory buffer fund. Buy 30 to 50 extra units now and never lose ranking to stockouts again.",
+                  text: "Sellers who run out of inventory during a sales surge lose ranking that takes weeks to rebuild. The freed margin is an FBA inventory buffer fund. Buy 30 to 50 extra units now and never lose ranking to stockouts again.",
                   tag: "Category Moat",
                   tagBg: "#F8F1DF",
                   tagColor: "#B45309",
@@ -1381,8 +1840,7 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
                   iconBg: "#E8F0FF",
                   iconColor: "#2563EB",
                   title: "Pass Some to Price, Keep Some",
-                  text:
-                    "A split reinvestment approach: drop price by half the fee saving (e.g. ₹799 → ₹769) and keep the other half as margin improvement. You gain ranking and Buy Box competitiveness while also improving unit economics.",
+                  text: "A split reinvestment approach: drop price by half the fee saving (e.g. ₹799 → ₹769) and keep the other half as margin improvement. You gain ranking and Buy Box competitiveness while also improving unit economics.",
                   tag: "Balanced",
                   tagBg: "#E8F0FF",
                   tagColor: "#1D4ED8",
@@ -1427,10 +1885,7 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
                       fontSize: 20,
                       fontWeight: 700,
                       lineHeight: 1.4,
-                      color:
-                        resolvedTheme === "dark"
-                          ? "#F8FAFC"
-                          : "#071827",
+                      color: resolvedTheme === "dark" ? "#F8FAFC" : "#071827",
                       fontFamily: "'Sora', sans-serif",
                     }}
                   >
@@ -1444,10 +1899,7 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
                       flex: 1,
                       fontSize: 15,
                       lineHeight: 1.9,
-                      color:
-                        resolvedTheme === "dark"
-                          ? "#94A3B8"
-                          : "#64748B",
+                      color: resolvedTheme === "dark" ? "#94A3B8" : "#64748B",
                       fontFamily: "'Sora', sans-serif",
                     }}
                   >
@@ -1481,93 +1933,179 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
               ))}
             </div>
 
-            <div className="my-10" style={{ maxWidth: 1040, margin: "20px auto 0", padding: "0 16px" }}>
-        <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
-          <img 
-            src="/amazon-zero-referral-fee-india_image5.png"  
-            alt="Amazon Sales Drop" 
-            className="w-full h-auto block"
-          />
-        </div>
-        <p className="mt-4 text-center text-[13px] text-gray-400 italic font-medium font-sans px-4">
-              Insydz rank tracking a Pune earphones seller moved from #34 to #17 in 4 weeks after March 2026 by repricing from ₹799 to ₹769. Revenue up 31%, unit margin up ₹33.92 versus the pre-fee-cut baseline.
-        </p>
-      </div>
+            <div
+              className="my-10"
+              style={{
+                maxWidth: 1040,
+                margin: "20px auto 0",
+                padding: "0 16px",
+              }}
+            >
+              <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
+                <img
+                  src="/amazon-zero-referral-fee-india_image5.png"
+                  alt="Amazon Sales Drop"
+                  className="w-full h-auto block"
+                />
+              </div>
+              <p className="mt-4 text-center text-[13px] text-gray-400 italic font-medium font-sans px-4">
+                Insydz rank tracking a Pune earphones seller moved from #34 to
+                #17 in 4 weeks after March 2026 by repricing from ₹799 to ₹769.
+                Revenue up 31%, unit margin up ₹33.92 versus the pre-fee-cut
+                baseline.
+              </p>
+            </div>
 
-            <h2 id="faq" style={{ 
-              fontFamily: "'Sora', sans-serif",
-              fontSize: "clamp(22px, 3vw, 28px)", 
-              fontWeight: 900, 
-              color: resolvedTheme === 'dark' ? "#f9fafb" : "#0A0F1A", 
-              lineHeight: 1.2,
-              letterSpacing: "-0.5px",
-              paddingBottom: "16px",
-              borderBottom: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #E5E7EB",
-              margin: "40px 0 28px"
-            }}>
+            <h2
+              id="faq"
+              style={{
+                fontFamily: "'Sora', sans-serif",
+                fontSize: "clamp(22px, 3vw, 28px)",
+                fontWeight: 900,
+                color: resolvedTheme === "dark" ? "#f9fafb" : "#0A0F1A",
+                lineHeight: 1.2,
+                letterSpacing: "-0.5px",
+                paddingBottom: "16px",
+                borderBottom:
+                  resolvedTheme === "dark"
+                    ? "1px solid #1f2937"
+                    : "1px solid #E5E7EB",
+                margin: "40px 0 28px",
+              }}
+            >
               Frequently Asked Questions
             </h2>
 
-            <FAQ
-              accentColor="#34D399"
-              faqs={faqs}
-            />
+            <FAQ accentColor="#34D399" faqs={faqs} />
 
             {/* More Marketplace Playbooks */}
             <div style={{ marginTop: 48 }}>
-              <h3 style={{ 
-                fontFamily: "'Sora', sans-serif", fontSize: "clamp(20px, 3vw, 26px)", fontWeight: 900, 
-                color: resolvedTheme === 'dark' ? "#f9fafb" : "#111827", marginBottom: 32, letterSpacing: "-0.5px"
-              }}>
+              <h3
+                style={{
+                  fontFamily: "'Sora', sans-serif",
+                  fontSize: "clamp(20px, 3vw, 26px)",
+                  fontWeight: 900,
+                  color: resolvedTheme === "dark" ? "#f9fafb" : "#111827",
+                  marginBottom: 32,
+                  letterSpacing: "-0.5px",
+                }}
+              >
                 More Marketplace Playbooks
               </h3>
-              
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 24 }}>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                  gap: 24,
+                }}
+              >
                 {[
-                  { 
-                    tag: "REVIEW STRATEGY", tagColor: "#059669",
-                    title: "Amazon Vine India 2026: Cost, Worth & How to Enrol", 
-                    route: "/resources/expert-blog/amazon-vine-program-india-2026",
-                    image: "/Amazon-Vine-India-image1.png"
+                  {
+                    tag: "REVIEW STRATEGY",
+                    tagColor: "#059669",
+                    title: "Amazon Vine India 2026: Cost, Worth & How to Enrol",
+                    route:
+                      "/resources/expert-blog/amazon-vine-program-india-2026",
+                    image: "/Amazon-Vine-India-image1.png",
                   },
-                  { 
-                    tag: "SEO STRATEGY", tagColor: "#3B82F6",
-                    title: "Amazon India Keyword Ranking: How to Track and Improve in 2026", 
-                    route: "/resources/expert-blog/how-to-rank-page-1-amazon-india",
-                    image: "/twenty three.png"
+                  {
+                    tag: "SEO STRATEGY",
+                    tagColor: "#3B82F6",
+                    title:
+                      "Amazon India Keyword Ranking: How to Track and Improve in 2026",
+                    route:
+                      "/resources/expert-blog/how-to-rank-page-1-amazon-india",
+                    image: "/twenty three.png",
                   },
-                  { 
-                    tag: "REVIEW INTELLIGENCE", tagColor: "#DC2626",
-                    title: "AI Review Analysis Tool for Amazon India & Flipkart: Complete Guide", 
-                    route: "/resources/expert-blog/amazon-review-analysis-guide-india",
-                    image: "/01_hero_review_intelligence_banner.png"
+                  {
+                    tag: "REVIEW INTELLIGENCE",
+                    tagColor: "#DC2626",
+                    title:
+                      "AI Review Analysis Tool for Amazon India & Flipkart: Complete Guide",
+                    route:
+                      "/resources/expert-blog/amazon-review-analysis-guide-india",
+                    image: "/01_hero_review_intelligence_banner.png",
                   },
                 ].map((card, i) => (
-                  <Link key={i} href={card.route} style={{ textDecoration: "none", display: "block" }}>
-                    <div style={{ 
-                      background: resolvedTheme === 'dark' ? "#111827" : "white",
-                      borderRadius: 20, overflow: "hidden",
-                      border: resolvedTheme === 'dark' ? "1px solid #1f2937" : "1px solid #F1F5F9",
-                      boxShadow: resolvedTheme === 'dark' ? "none" : "0 4px 16px rgba(0,0,0,0.04)",
-                      transition: "transform 0.2s, box-shadow 0.2s", cursor: "pointer"
-                    }}
-                    onMouseOver={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 12px 32px rgba(0,0,0,0.1)"; }}
-                    onMouseOut={(e) => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = resolvedTheme === 'dark' ? "none" : "0 4px 16px rgba(0,0,0,0.04)"; }}
+                  <Link
+                    key={i}
+                    href={card.route}
+                    style={{ textDecoration: "none", display: "block" }}
+                  >
+                    <div
+                      style={{
+                        background:
+                          resolvedTheme === "dark" ? "#111827" : "white",
+                        borderRadius: 20,
+                        overflow: "hidden",
+                        border:
+                          resolvedTheme === "dark"
+                            ? "1px solid #1f2937"
+                            : "1px solid #F1F5F9",
+                        boxShadow:
+                          resolvedTheme === "dark"
+                            ? "none"
+                            : "0 4px 16px rgba(0,0,0,0.04)",
+                        transition: "transform 0.2s, box-shadow 0.2s",
+                        cursor: "pointer",
+                      }}
+                      onMouseOver={(e) => {
+                        e.currentTarget.style.transform = "translateY(-4px)";
+                        e.currentTarget.style.boxShadow =
+                          "0 12px 32px rgba(0,0,0,0.1)";
+                      }}
+                      onMouseOut={(e) => {
+                        e.currentTarget.style.transform = "translateY(0)";
+                        e.currentTarget.style.boxShadow =
+                          resolvedTheme === "dark"
+                            ? "none"
+                            : "0 4px 16px rgba(0,0,0,0.04)";
+                      }}
                     >
-                      <div style={{ overflow: "hidden", background: resolvedTheme === 'dark' ? "#1e293b" : "#f8fafc" }}>
-                        <img src={card.image} alt={card.title} style={{ width: "100%", height: "auto", display: "block" }} />
+                      <div
+                        style={{
+                          overflow: "hidden",
+                          background:
+                            resolvedTheme === "dark" ? "#1e293b" : "#f8fafc",
+                        }}
+                      >
+                        <img
+                          src={card.image}
+                          alt={card.title}
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            display: "block",
+                          }}
+                        />
                       </div>
                       <div style={{ padding: "20px 22px 24px" }}>
-                        <span style={{ 
-                          fontSize: 10, fontWeight: 800, color: card.tagColor, 
-                          textTransform: "uppercase", letterSpacing: 1, fontFamily: "'Sora', sans-serif", marginBottom: 8, display: "block"
-                        }}>
+                        <span
+                          style={{
+                            fontSize: 10,
+                            fontWeight: 800,
+                            color: card.tagColor,
+                            textTransform: "uppercase",
+                            letterSpacing: 1,
+                            fontFamily: "'Sora', sans-serif",
+                            marginBottom: 8,
+                            display: "block",
+                          }}
+                        >
                           {card.tag}
                         </span>
-                        <h4 style={{ 
-                          margin: 0, fontSize: 15, fontWeight: 800, lineHeight: 1.4, 
-                          color: resolvedTheme === 'dark' ? "#f9fafb" : "#111827", fontFamily: "'Sora', sans-serif"
-                        }}>
+                        <h4
+                          style={{
+                            margin: 0,
+                            fontSize: 15,
+                            fontWeight: 800,
+                            lineHeight: 1.4,
+                            color:
+                              resolvedTheme === "dark" ? "#f9fafb" : "#111827",
+                            fontFamily: "'Sora', sans-serif",
+                          }}
+                        >
                           {card.title}
                         </h4>
                       </div>
@@ -1576,11 +2114,9 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
                 ))}
               </div>
             </div>
-
           </article>
         </main>
       </div>
-
 
       {/* Final CTA */}
       <FinalCTA
@@ -1611,9 +2147,6 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
           },
         ]}
       />
-
-      
-      
     </div>
   );
 }

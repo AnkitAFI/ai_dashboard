@@ -4,31 +4,79 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Search, Clock, TrendingUp, Target, DollarSign, BarChart3,
-  MessageCircle, Package, Trophy, Zap, BookOpen, Video, FileText,
-  Menu, X, Sun, Moon, ChevronDown, ShoppingBag, Store, Briefcase,
-  Users, Bell, Code, Globe, ArrowLeft, Facebook, Twitter, Linkedin,
-  Instagram, Flame, Presentation, LayoutGrid, Check, ArrowRight, ChevronRight, Share2, Rocket, Pin, Key, Plus
+  Search,
+  Clock,
+  TrendingUp,
+  Target,
+  DollarSign,
+  BarChart3,
+  MessageCircle,
+  Package,
+  Trophy,
+  Zap,
+  BookOpen,
+  Video,
+  FileText,
+  Menu,
+  X,
+  Sun,
+  Moon,
+  ChevronDown,
+  ShoppingBag,
+  Store,
+  Briefcase,
+  Users,
+  Bell,
+  Code,
+  Globe,
+  ArrowLeft,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Instagram,
+  Flame,
+  Presentation,
+  LayoutGrid,
+  Check,
+  ArrowRight,
+  ChevronRight,
+  Share2,
+  Rocket,
+  Pin,
+  Key,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SELLARIMAGE from "public/sellerapp.png";
 import SELLARIMAGE2 from "public/sellerapp_2.png";
 import SELLARIMAGE3 from "public/img6_comparison.png";
-import HERO_GUIDE from "public/insydz-vs-seller-hero-guide.png";
 import MISMATCH_IMAGE from "public/img2_mismatches.png";
 import MARKET_INTEL_IMAGE from "public/img5_market_intel.png";
 import KNOW_POSITION_IMAGE from "public/img4_know_position.png";
 import TOP_PRODUCTS_IMAGE from "public/img1_top_products.png";
 export const dynamic = "force-static";
 import Image from "next/image";
+import BlogImageSection from "../components/BlogImageSection";
 
 // ─── Inline link helper ──────────────────────────────────────────────────────
-const InLink = ({ to, children, color = "#F97316" }: { to: string; children: React.ReactNode, color?: string }) => {
+const InLink = ({
+  to,
+  children,
+  color = "#F97316",
+}: {
+  to: string;
+  children: React.ReactNode;
+  color?: string;
+}) => {
   const router = useRouter();
   return (
     <a
       href={to}
-      onClick={(e) => { e.preventDefault(); router.push(to); window.scrollTo(0,0); }}
+      onClick={(e) => {
+        e.preventDefault();
+        router.push(to);
+        window.scrollTo(0, 0);
+      }}
       style={{
         color: color,
         textDecoration: "underline",
@@ -46,106 +94,276 @@ const InLink = ({ to, children, color = "#F97316" }: { to: string; children: Rea
   );
 };
 
-function ArticleImg({ src, alt, caption }: { src: string; alt: string; caption: string }) {
+function ArticleImg({
+  src,
+  alt,
+  caption,
+}: {
+  src: string;
+  alt: string;
+  caption: string;
+}) {
   const [loaded, setLoaded] = useState(false);
   return (
-    <div style={{ margin:"24px 0 0" }}>
-      <div style={{ position:"relative", borderRadius:12, overflow:"hidden", background:"#f1f5f9", minHeight:200 }}>
+    <div style={{ margin: "24px 0 0" }}>
+      <div
+        style={{
+          position: "relative",
+          borderRadius: 12,
+          overflow: "hidden",
+          background: "#f1f5f9",
+          minHeight: 200,
+        }}
+      >
         {!loaded && (
-          <div style={{ position:"absolute", inset:0, background:"linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%)", backgroundSize:"200% 100%", animation:"imgShimmer 1.5s infinite" }} />
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background:
+                "linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%)",
+              backgroundSize: "200% 100%",
+              animation: "imgShimmer 1.5s infinite",
+            }}
+          />
         )}
-        <Image src={src} alt={alt} onLoad={() => setLoaded(true)} style={{ width:"100%", display:"block", opacity: loaded ? 1 : 0, transition:"opacity .3s" }} />
+        <Image
+          src={src}
+          alt={alt}
+          onLoad={() => setLoaded(true)}
+          style={{
+            width: "100%",
+            display: "block",
+            opacity: loaded ? 1 : 0,
+            transition: "opacity .3s",
+          }}
+        />
       </div>
       <p className="art-img-cap">{caption}</p>
     </div>
   );
 }
 
-type MenuItemWithBadge = { name: string; icon: JSX.Element; badge?: string; route?: string; };
+type MenuItemWithBadge = {
+  name: string;
+  icon: JSX.Element;
+  badge?: string;
+  route?: string;
+};
 type NavigationMenu = {
-  Solutions: MenuItemWithBadge[]; "Use Cases": MenuItemWithBadge[]; Features: MenuItemWithBadge[];
-  "Free Tools": MenuItemWithBadge[]; Resources: MenuItemWithBadge[]; Integrations: MenuItemWithBadge[];
-  Compare: MenuItemWithBadge[]; About: MenuItemWithBadge[];
+  Solutions: MenuItemWithBadge[];
+  "Use Cases": MenuItemWithBadge[];
+  Features: MenuItemWithBadge[];
+  "Free Tools": MenuItemWithBadge[];
+  Resources: MenuItemWithBadge[];
+  Integrations: MenuItemWithBadge[];
+  Compare: MenuItemWithBadge[];
+  About: MenuItemWithBadge[];
 };
 
 const navigationMenu: NavigationMenu = {
   Solutions: [
-    { name: "All Solutions (Overview)",      icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions" },
-    { name: "For Amazon Sellers (India)",     icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions/amazon-sellers" },
-    { name: "For Flipkart Sellers",           icon: <Store       className="w-4 h-4" />, route: "/solutions/flipkart-sellers" },
-    { name: "For E-commerce Agencies",        icon: <Briefcase   className="w-4 h-4" />, route: "/solutions/ecommerce-agencies" },
-    { name: "For Brand Managers",             icon: <Users       className="w-4 h-4" />, route: "/solutions/brand-managers" },
+    {
+      name: "All Solutions (Overview)",
+      icon: <ShoppingBag className="w-4 h-4" />,
+      route: "/solutions",
+    },
+    {
+      name: "For Amazon Sellers (India)",
+      icon: <ShoppingBag className="w-4 h-4" />,
+      route: "/solutions/amazon-sellers",
+    },
+    {
+      name: "For Flipkart Sellers",
+      icon: <Store className="w-4 h-4" />,
+      route: "/solutions/flipkart-sellers",
+    },
+    {
+      name: "For E-commerce Agencies",
+      icon: <Briefcase className="w-4 h-4" />,
+      route: "/solutions/ecommerce-agencies",
+    },
+    {
+      name: "For Brand Managers",
+      icon: <Users className="w-4 h-4" />,
+      route: "/solutions/brand-managers",
+    },
   ],
   "Use Cases": [
-    { name: "All Use Cases",                  icon: <TrendingUp    className="w-4 h-4" />, route: "/use-cases" },
-    { name: "Track Competitor Prices",        icon: <TrendingUp    className="w-4 h-4" />, route: "/use-cases/track-competitor-prices" },
-    { name: "Find Profitable Products",       icon: <Target        className="w-4 h-4" />, route: "/use-cases/find-profitable-products" },
-    { name: "Analyze Customer Reviews",       icon: <MessageCircle className="w-4 h-4" />, route: "/use-cases/analyze-customer-reviews" },
-    { name: "Improve Amazon & Flipkart SEO",  icon: <Search        className="w-4 h-4" />, route: "/use-cases/improve-seo" },
-    { name: "Avoid Stockouts & Missed Sales", icon: <Package       className="w-4 h-4" />, route: "/use-cases/avoid-stockouts" },
+    {
+      name: "All Use Cases",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/use-cases",
+    },
+    {
+      name: "Track Competitor Prices",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/use-cases/track-competitor-prices",
+    },
+    {
+      name: "Find Profitable Products",
+      icon: <Target className="w-4 h-4" />,
+      route: "/use-cases/find-profitable-products",
+    },
+    {
+      name: "Analyze Customer Reviews",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/use-cases/analyze-customer-reviews",
+    },
+    {
+      name: "Improve Amazon & Flipkart SEO",
+      icon: <Search className="w-4 h-4" />,
+      route: "/use-cases/improve-seo",
+    },
+    {
+      name: "Avoid Stockouts & Missed Sales",
+      icon: <Package className="w-4 h-4" />,
+      route: "/use-cases/avoid-stockouts",
+    },
   ],
   Features: [
-    { name: "All Features",                   icon: <LayoutGrid    className="w-4 h-4" />, route: "/features" },
-    { name: "Competitor Price Tracking",      icon: <DollarSign    className="w-4 h-4" />, route: "/features/competitor-price-tracking-feature" },
-    { name: "Review Analytics",               icon: <MessageCircle className="w-4 h-4" />, route: "/features/review-analytics-feature" },
-    { name: "Price Optimization",             icon: <TrendingUp    className="w-4 h-4" />, route: "/features/price-optimization-feature" },
-    { name: "Keyword & Rank Tracking",        icon: <Search        className="w-4 h-4" />, route: "/features/keyword-rank-tracking-feature" },
-    { name: "Product Research",               icon: <Package       className="w-4 h-4" />, route: "/features/product-research-feature" },
-    { name: "AI Recommendations",             icon: <Zap           className="w-4 h-4" />, route: "/features/ai-recommendations-feature" },
-    { name: "WhatsApp Alerts",                icon: <Bell          className="w-4 h-4" />, badge: "NEW",      route: "/features/whatsapp-alerts-feature" },
-    { name: "Festive Trend Intelligence",     icon: <Flame         className="w-4 h-4" />, badge: "UPCOMING", route: "/features/festive-trend-feature" },
+    {
+      name: "All Features",
+      icon: <LayoutGrid className="w-4 h-4" />,
+      route: "/features",
+    },
+    {
+      name: "Competitor Price Tracking",
+      icon: <DollarSign className="w-4 h-4" />,
+      route: "/features/competitor-price-tracking-feature",
+    },
+    {
+      name: "Review Analytics",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/features/review-analytics-feature",
+    },
+    {
+      name: "Price Optimization",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/features/price-optimization-feature",
+    },
+    {
+      name: "Keyword & Rank Tracking",
+      icon: <Search className="w-4 h-4" />,
+      route: "/features/keyword-rank-tracking-feature",
+    },
+    {
+      name: "Product Research",
+      icon: <Package className="w-4 h-4" />,
+      route: "/features/product-research-feature",
+    },
+    {
+      name: "AI Recommendations",
+      icon: <Zap className="w-4 h-4" />,
+      route: "/features/ai-recommendations-feature",
+    },
+    {
+      name: "WhatsApp Alerts",
+      icon: <Bell className="w-4 h-4" />,
+      badge: "NEW",
+      route: "/features/whatsapp-alerts-feature",
+    },
+    {
+      name: "Festive Trend Intelligence",
+      icon: <Flame className="w-4 h-4" />,
+      badge: "UPCOMING",
+      route: "/features/festive-trend-feature",
+    },
   ],
   "Free Tools": [
-    { name: "Free Amazon Product Analyzer",   icon: <BarChart3     className="w-4 h-4" />, route: "/free-tools/free-amazon-product-analyzer" },
-    { name: "Free Review Sentiment Checker",  icon: <MessageCircle className="w-4 h-4" />, route: "/free-tools/free-review-sentiment-checker" },
-    { name: "Free Competitor Price Checker",  icon: <DollarSign    className="w-4 h-4" />, route: "/free-tools/free-competitor-price-checker" },
-    { name: "Free Keyword Rank Checker",      icon: <Search        className="w-4 h-4" />, badge: "NEW", route: "/free-tools/free-keyword-rank-checker" },
+    {
+      name: "Free Amazon Product Analyzer",
+      icon: <BarChart3 className="w-4 h-4" />,
+      route: "/free-tools/free-amazon-product-analyzer",
+    },
+    {
+      name: "Free Review Sentiment Checker",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/free-tools/free-review-sentiment-checker",
+    },
+    {
+      name: "Free Competitor Price Checker",
+      icon: <DollarSign className="w-4 h-4" />,
+      route: "/free-tools/free-competitor-price-checker",
+    },
+    {
+      name: "Free Keyword Rank Checker",
+      icon: <Search className="w-4 h-4" />,
+      badge: "NEW",
+      route: "/free-tools/free-keyword-rank-checker",
+    },
   ],
   Resources: [
-    { name: "Expert Blog",         icon: <BookOpen className="w-4 h-4" />, route: "/resources/expert-blog" },
+    {
+      name: "Expert Blog",
+      icon: <BookOpen className="w-4 h-4" />,
+      route: "/resources/expert-blog",
+    },
   ],
   Integrations: [
-    { name: "Amazon",            icon: <ShoppingBag className="w-4 h-4" /> },
-    { name: "Flipkart",          icon: <Store       className="w-4 h-4" /> },
-    { name: "Shopify",           icon: <Globe       className="w-4 h-4" /> },
-    { name: "API Documentation", icon: <Code        className="w-4 h-4" /> },
+    { name: "Amazon", icon: <ShoppingBag className="w-4 h-4" /> },
+    { name: "Flipkart", icon: <Store className="w-4 h-4" /> },
+    { name: "Shopify", icon: <Globe className="w-4 h-4" /> },
+    { name: "API Documentation", icon: <Code className="w-4 h-4" /> },
   ],
   Compare: [
-    { name: "Insydz vs Helium 10",    icon: <Trophy className="w-4 h-4" />, route: "/resources/expert-blog/insydz-vs-helium-10-india" },
-    { name: "Insydz vs Jungle Scout", icon: <Trophy className="w-4 h-4" />, route: "/resources/expert-blog/insydz-vs-jungle-scout-india" },
+    {
+      name: "Insydz vs Helium 10",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/resources/expert-blog/insydz-vs-helium-10-india",
+    },
+    {
+      name: "Insydz vs Jungle Scout",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/resources/expert-blog/insydz-vs-jungle-scout-india",
+    },
   ],
   About: [
-    { name: "Our Vision", icon: <Presentation className="w-4 h-4" />, route: "/about/our-vision" },
-    { name: "Careers",    icon: <Globe        className="w-4 h-4" />, route: "/about/careers" },
-    { name: "Contact-us", icon: <Users        className="w-4 h-4" />, route: "/about/contact-us" },
+    {
+      name: "Our Vision",
+      icon: <Presentation className="w-4 h-4" />,
+      route: "/about/our-vision",
+    },
+    {
+      name: "Careers",
+      icon: <Globe className="w-4 h-4" />,
+      route: "/about/careers",
+    },
+    {
+      name: "Contact-us",
+      icon: <Users className="w-4 h-4" />,
+      route: "/about/contact-us",
+    },
   ],
 };
 
 const TOC = [
-  { id: "quick-answer",   label: "Quick Answer" },
+  { id: "quick-answer", label: "Quick Answer" },
   { id: "why-alternatives", label: "Why Indian Sellers Look for Alternatives" },
-  { id: "side-by-side",   label: "Side-by-Side Comparison" },
+  { id: "side-by-side", label: "Side-by-Side Comparison" },
   { id: "capability-matrix", label: "Full Capability Matrix" },
-  { id: "where-wins",     label: "Where Each Tool Wins" },
-  { id: "how-to-switch",  label: "How to Switch in 30 Days" },
-  { id: "mistakes",       label: "5 Mistakes Sellers Make When Comparing" },
-  { id: "faq",            label: "Frequently Asked Questions" },
+  { id: "where-wins", label: "Where Each Tool Wins" },
+  { id: "how-to-switch", label: "How to Switch in 30 Days" },
+  { id: "mistakes", label: "5 Mistakes Sellers Make When Comparing" },
+  { id: "faq", label: "Frequently Asked Questions" },
 ];
 
 export default function InsydzVsSellerAppContent() {
   const router = useRouter();
   const [activeSection, setActiveSection] = useState("quick-answer");
-  const [scrollPct, setScrollPct]   = useState(0);
-  const [tocOpen, setTocOpen]       = useState(false);
+  const [scrollPct, setScrollPct] = useState(0);
+  const [tocOpen, setTocOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
-  const [scrolled, setScrolled]     = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeDropdown, setActiveDropdown]     = useState<string | null>(null);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { document.documentElement.classList.toggle("dark", isDarkMode); }, [isDarkMode]);
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+  }, [isDarkMode]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -154,33 +372,83 @@ export default function InsydzVsSellerAppContent() {
       setScrollPct(Math.min((window.scrollY / total) * 100, 100));
       for (let i = TOC.length - 1; i >= 0; i--) {
         const el = document.getElementById(TOC[i].id);
-        if (el && window.scrollY >= el.offsetTop - 130) { setActiveSection(TOC[i].id); break; }
+        if (el && window.scrollY >= el.offsetTop - 130) {
+          setActiveSection(TOC[i].id);
+          break;
+        }
       }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const go = (id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" }); setTocOpen(false); };
-  const handleMenuItemClick = (item: MenuItemWithBadge) => { if (item.route) { router.push(item.route); setActiveDropdown(null); setIsMenuOpen(false); } };
-  const toggleMobileMenu = (name: string) => setMobileActiveMenu(p => p === name ? null : name);
+  const go = (id: string) => {
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setTocOpen(false);
+  };
+  const handleMenuItemClick = (item: MenuItemWithBadge) => {
+    if (item.route) {
+      router.push(item.route);
+      setActiveDropdown(null);
+      setIsMenuOpen(false);
+    }
+  };
+  const toggleMobileMenu = (name: string) =>
+    setMobileActiveMenu((p) => (p === name ? null : name));
 
-  const DesktopDropdown = ({ label, menuKey, accent = "purple" }: { label: string; menuKey: keyof NavigationMenu; accent?: "purple" | "orange" }) => {
+  const DesktopDropdown = ({
+    label,
+    menuKey,
+    accent = "purple",
+  }: {
+    label: string;
+    menuKey: keyof NavigationMenu;
+    accent?: "purple" | "orange";
+  }) => {
     const items = navigationMenu[menuKey];
     const isActive = activeDropdown === label;
     const ac = accent === "orange";
     return (
       <div className="relative">
-        <button onMouseEnter={() => setActiveDropdown(label)} className={`px-2 xl:px-3 py-2 text-xs xl:text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${isActive ? (ac ? "text-orange-600 font-semibold" : "text-purple-600 font-semibold") : "text-gray-700 dark:text-gray-300 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all"}`}>
-          {label}<ChevronDown className={`w-3 h-3 xl:w-3.5 xl:h-3.5 transition-transform ${isActive ? "rotate-180" : ""}`} />
+        <button
+          onMouseEnter={() => setActiveDropdown(label)}
+          className={`px-2 xl:px-3 py-2 text-xs xl:text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${isActive ? (ac ? "text-orange-600 font-semibold" : "text-purple-600 font-semibold") : "text-gray-700 dark:text-gray-300 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all"}`}
+        >
+          {label}
+          <ChevronDown
+            className={`w-3 h-3 xl:w-3.5 xl:h-3.5 transition-transform ${isActive ? "rotate-180" : ""}`}
+          />
         </button>
         {isActive && (
-          <div onMouseLeave={() => setActiveDropdown(null)} className="absolute top-full left-0 mt-2 w-64 xl:w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 z-50">
+          <div
+            onMouseLeave={() => setActiveDropdown(null)}
+            className="absolute top-full left-0 mt-2 w-64 xl:w-72 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 py-2 z-50"
+          >
             {items.map((item, i) => (
-              <button key={i} onClick={() => handleMenuItemClick(item)} className={`w-full px-4 py-2.5 text-left flex items-center gap-3 group ${ac ? "hover:bg-orange-50" : "hover:bg-purple-50 dark:hover:bg-purple-900/20"}`}>
-                <span className={ac ? "text-orange-600" : "text-purple-600 dark:text-purple-400"}>{item.icon}</span>
-                <span className="text-xs xl:text-sm text-gray-700 dark:text-gray-300 flex-1 text-left">{item.name}</span>
-                {item.badge && <span className="text-xs bg-purple-600 text-white px-1.5 py-0.5 rounded-full font-semibold">{item.badge}</span>}
+              <button
+                key={i}
+                onClick={() => handleMenuItemClick(item)}
+                className={`w-full px-4 py-2.5 text-left flex items-center gap-3 group ${ac ? "hover:bg-orange-50" : "hover:bg-purple-50 dark:hover:bg-purple-900/20"}`}
+              >
+                <span
+                  className={
+                    ac
+                      ? "text-orange-600"
+                      : "text-purple-600 dark:text-purple-400"
+                  }
+                >
+                  {item.icon}
+                </span>
+                <span className="text-xs xl:text-sm text-gray-700 dark:text-gray-300 flex-1 text-left">
+                  {item.name}
+                </span>
+                {item.badge && (
+                  <span className="text-xs bg-purple-600 text-white px-1.5 py-0.5 rounded-full font-semibold">
+                    {item.badge}
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -227,10 +495,10 @@ export default function InsydzVsSellerAppContent() {
         .stat-item:last-child{border-right:none}
         @media(max-width:639px){.stat-item:nth-child(2){border-right:none}.stat-item:nth-child(3){border-right:1px solid #E2E8F0}.stat-item:nth-child(4){border-right:none;border-bottom:none}.stat-item:nth-child(3){border-bottom:none}}
 
-        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0}
-        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px}}
-        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px}}
-        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px}}
+        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0;align-items:start}
+        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px;align-items:start}}
+        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px;align-items:start}}
+        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px;align-items:start}}
 
         .toc-sidebar{display:none}
         @media(min-width:768px){
@@ -402,25 +670,53 @@ export default function InsydzVsSellerAppContent() {
 
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
 
-      <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 shadow-lg h-16 sm:h-18 lg:h-20" : "bg-background dark:bg-gray-900/80 h-16 sm:h-18 lg:h-20"}`}>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 shadow-lg h-16 sm:h-18 lg:h-20" : "bg-background dark:bg-gray-900/80 h-16 sm:h-18 lg:h-20"}`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
           <div className="flex items-center justify-between h-full">
-            <div className="flex items-center space-x-1 group cursor-pointer" onClick={() => router.push("/")}>
-              <img src="/logo.png" alt="Insydz Logo" className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3" />
-              <span className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent ml-2">Insydz</span>
+            <div
+              className="flex items-center space-x-1 group cursor-pointer"
+              onClick={() => router.push("/")}
+            >
+              <img
+                src="/logo.png"
+                alt="Insydz Logo"
+                className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3"
+              />
+              <span className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent ml-2">
+                Insydz
+              </span>
             </div>
             <div className="hidden lg:flex items-center space-x-2">
-              <DesktopDropdown label="Solutions"  menuKey="Solutions" />
-              <DesktopDropdown label="Use Cases"  menuKey="Use Cases" />
-              <DesktopDropdown label="Features"   menuKey="Features" />
-              <button onClick={() => router.push("/pricing")} className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-orange-600 font-medium transition-colors">Pricing</button>
+              <DesktopDropdown label="Solutions" menuKey="Solutions" />
+              <DesktopDropdown label="Use Cases" menuKey="Use Cases" />
+              <DesktopDropdown label="Features" menuKey="Features" />
+              <button
+                onClick={() => router.push("/pricing")}
+                className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-orange-600 font-medium transition-colors"
+              >
+                Pricing
+              </button>
               <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
-              <DesktopDropdown label="Compare"    menuKey="Compare" />
-              <DesktopDropdown label="Resources"  menuKey="Resources" accent="orange" />
-              <DesktopDropdown label="About"      menuKey="About" />
-              <Button onClick={() => router.push("/login")} className="ml-4 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">Login</Button>
+              <DesktopDropdown label="Compare" menuKey="Compare" />
+              <DesktopDropdown
+                label="Resources"
+                menuKey="Resources"
+                accent="orange"
+              />
+              <DesktopDropdown label="About" menuKey="About" />
+              <Button
+                onClick={() => router.push("/login")}
+                className="ml-4 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+              >
+                Login
+              </Button>
             </div>
-            <button className="lg:hidden p-2 text-gray-600 dark:text-gray-300" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <button
+              className="lg:hidden p-2 text-gray-600 dark:text-gray-300"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
               {isMenuOpen ? <X /> : <Menu />}
             </button>
           </div>
@@ -430,397 +726,861 @@ export default function InsydzVsSellerAppContent() {
       {/* BREADCRUMB */}
       <div className="breadcrumb">
         <div className="breadcrumb-inner">
-          <button onClick={() => router.push("/")} style={{ color:"#64748B", fontWeight:500, background:"none", border:"none", cursor:"pointer", fontSize:"inherit" }}>Home</button>
+          <button
+            onClick={() => router.push("/")}
+            style={{
+              color: "#64748B",
+              fontWeight: 500,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "inherit",
+            }}
+          >
+            Home
+          </button>
           <span style={{ fontSize: 10 }}>›</span>
-          <button onClick={() => router.push("/resources/expert-blog")} style={{ color:"#64748B", fontWeight:500, background:"none", border:"none", cursor:"pointer", fontSize:"inherit" }}>Blog</button>
+          <button
+            onClick={() => router.push("/resources/expert-blog")}
+            style={{
+              color: "#64748B",
+              fontWeight: 500,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "inherit",
+            }}
+          >
+            Blog
+          </button>
           <span style={{ fontSize: 10 }}>›</span>
-          <button onClick={() => router.push("/resources/expert-blog")} style={{ color:"#64748B", fontWeight:500, background:"none", border:"none", cursor:"pointer", fontSize:"inherit" }}>Compare</button>
+          <button
+            onClick={() => router.push("/resources/expert-blog")}
+            style={{
+              color: "#64748B",
+              fontWeight: 500,
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "inherit",
+            }}
+          >
+            Compare
+          </button>
           <span style={{ fontSize: 10 }}>›</span>
-          <span style={{ color:"#94A3B8" }}>Insydz vs SellerApp</span>
+          <span style={{ color: "#94A3B8" }}>Insydz vs SellerApp</span>
         </div>
       </div>
 
       {/* HERO SECTION */}
       <div className="article-hero">
-        <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#F5F3FF", color:"#7C3AED", fontSize:"clamp(10px,2vw,11.5px)", fontWeight:700, letterSpacing:.6, textTransform:"uppercase" as const, padding:"4px 12px", borderRadius:20, marginBottom:14 }}>
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            background: "#F5F3FF",
+            color: "#7C3AED",
+            fontSize: "clamp(10px,2vw,11.5px)",
+            fontWeight: 700,
+            letterSpacing: 0.6,
+            textTransform: "uppercase" as const,
+            padding: "4px 12px",
+            borderRadius: 20,
+            marginBottom: 14,
+          }}
+        >
           <Trophy className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           Compare · Tool Comparison
         </div>
-        
-        <h1 style={{ fontFamily:"'Sora',sans-serif", fontSize:"clamp(22px,4vw,40px)", fontWeight:800, lineHeight:1.18, color:"#0D1B2A", letterSpacing:"-.5px", marginBottom:14, maxWidth:820 }} className="dark:text-white">
-          <span style={{ color:"#7C3AED" }}>Insydz vs SellerApp</span>: Which Amazon Seller Tool Actually Works for the Indian Market?
+
+        <h1
+          style={{
+            fontFamily: "'Sora',sans-serif",
+            fontSize: "clamp(22px,4vw,40px)",
+            fontWeight: 800,
+            lineHeight: 1.18,
+            color: "#0D1B2A",
+            letterSpacing: "-.5px",
+            marginBottom: 14,
+            maxWidth: 820,
+          }}
+          className="dark:text-white"
+        >
+          <span style={{ color: "#7C3AED" }}>Insydz vs SellerApp</span>: Best
+          Tool for <br /> Indian Sellers (2026)
         </h1>
 
-        <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2vw,17px)", color:"#475569", lineHeight:1.65, maxWidth:760, marginBottom:16 }} className="dark:text-gray-400">
-          A practitioner's comparison built for ₹5L–50L/month Indian sellers — INR pricing vs USD billing, 
-          Flipkart-native vs Amazon-only, WhatsApp alerts vs email digests. Read this before you commit to a 12-month contract.
+        <p
+          style={{
+            fontFamily: "'Lora',serif",
+            fontSize: "clamp(14px,2vw,17px)",
+            color: "#475569",
+            lineHeight: 1.65,
+            maxWidth: 760,
+            marginBottom: 16,
+          }}
+          className="dark:text-gray-400"
+        >
+          A practitioner's comparison built for ₹5L–50L/month Indian sellers —
+          INR pricing vs USD billing, Flipkart-native vs Amazon-only, WhatsApp
+          alerts vs email digests. Read this before you commit to a 12-month
+          contract.
         </p>
 
-        <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong className="text-[#0D1B2A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => router.push("/author/vikrant-singh")}>Vikrant Singh</strong></div>
-          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />May 2026</div>
-          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}><Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" /><strong>11 min read</strong></div>
-          <span style={{ background:"#FFEDD5", color:"#F97316", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Updated for 2026</span>
-          <span style={{ background:"#F5F3FF", color:"#7C3AED", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"2px 7px", borderRadius:4 }}>Tool Comparison</span>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            flexWrap: "wrap" as const,
+            gap: "4px 14px",
+            marginBottom: 20,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 5,
+              fontSize: "clamp(11px,2vw,13px)",
+              color: "#64748B",
+            }}
+          >
+            <Users className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+            <strong
+              className="text-[#0D1B2A] hover:text-orange-500 transition-colors cursor-pointer"
+              onClick={() => router.push("/author/vikrant-singh")}
+            >
+              Vikrant Singh
+            </strong>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 5,
+              fontSize: "clamp(11px,2vw,13px)",
+              color: "#64748B",
+            }}
+          >
+            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+            May 2026
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 5,
+              fontSize: "clamp(11px,2vw,13px)",
+              color: "#64748B",
+            }}
+          >
+            <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
+            <strong>11 min read</strong>
+          </div>
+          <span
+            style={{
+              background: "#FFEDD5",
+              color: "#F97316",
+              fontSize: "clamp(9px,2vw,11px)",
+              fontWeight: 700,
+              padding: "2px 7px",
+              borderRadius: 4,
+            }}
+          >
+            Updated for 2026
+          </span>
+          <span
+            style={{
+              background: "#F5F3FF",
+              color: "#7C3AED",
+              fontSize: "clamp(9px,2vw,11px)",
+              fontWeight: 700,
+              padding: "2px 7px",
+              borderRadius: 4,
+            }}
+          >
+            Tool Comparison
+          </span>
         </div>
 
         <div className="stat-strip">
           {[
-            ["₹8,300+", "SellerApp Pro starting price/mo (USD billed) — vs ₹1,999 Insydz"],
-            ["0",      "Native Flipkart features in SellerApp — Indian sellers leave half their data behind"],
-            ["16",     "Marketplaces SellerApp supports — but only 1 (Amazon.in) is Indian"],
-            ["< 60 min",  "WhatsApp rank-drop alerts on Insydz — SellerApp only sends email"]
+            [
+              "₹8,300+",
+              "SellerApp Pro starting price/mo (USD billed) — vs ₹1,999 Insydz",
+            ],
+            [
+              "0",
+              "Native Flipkart features in SellerApp — Indian sellers leave half their data behind",
+            ],
+            [
+              "16",
+              "Marketplaces SellerApp supports — but only 1 (Amazon.in) is Indian",
+            ],
+            [
+              "< 60 min",
+              "WhatsApp rank-drop alerts on Insydz — SellerApp only sends email",
+            ],
           ].map(([val, lbl], i) => (
             <div className="stat-item" key={i}>
-              <span style={{ display:"block", fontSize:24, fontWeight:800, color:"#F97316", fontFamily:"'Sora',sans-serif", lineHeight:1 }}>{val}</span>
-              <span style={{ display:"block", fontSize:11, color:"#64748B", marginTop:5, lineHeight:1.4, fontWeight:500 }}>{lbl}</span>
+              <span
+                style={{
+                  display: "block",
+                  fontSize: 24,
+                  fontWeight: 800,
+                  color: "#F97316",
+                  fontFamily: "'Sora',sans-serif",
+                  lineHeight: 1,
+                }}
+              >
+                {val}
+              </span>
+              <span
+                style={{
+                  display: "block",
+                  fontSize: 11,
+                  color: "#64748B",
+                  marginTop: 5,
+                  lineHeight: 1.4,
+                  fontWeight: 500,
+                }}
+              >
+                {lbl}
+              </span>
             </div>
           ))}
         </div>
 
-        <ArticleImg 
-          src={HERO_GUIDE}
-          alt="Insydz vs SellerApp India Hero Guide" 
-          caption="Insydz is purpose-built for Indian sellers operating on Amazon.in + Flipkart — not a global tool retrofitted for India." 
-        />
-        <ArticleImg 
-          src={SELLARIMAGE}
-          alt="SellerApp vs Insydz Comparison Dashboard" 
-          caption="SellerApp vs Insydz at a glance — pricing model, marketplace coverage, and India-first feature gaps surfaced upfront." 
-        />
-        <ArticleImg 
-          src={SELLARIMAGE2}
-          alt="SellerApp vs Insydz Comparison Dashboard" 
-          caption="SellerApp vs Insydz at a glance — pricing model, marketplace coverage, and India-first feature gaps surfaced upfront." 
+        {/* Blog Image Section */}
+
+        {/* Blog Image Section */}
+
+        <BlogImageSection
+          imageSrc="/Insydz-vs-SellerApp.png"
+          altText="Insydz vs SellerApp India Hero Guide"
+          caption="Insydz is purpose-built for Indian sellers operating on Amazon.in + Flipkart — not a global tool retrofitted for India."
         />
       </div>
 
       {/* Main Content Layout */}
       <div className="article-layout">
         <aside className="toc-sidebar">
-          <h4 style={{ fontFamily: "'Sora',sans-serif", fontSize: 11, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: 1, color: "#94A3B8", marginBottom: 14 }}>Inside This Comparison</h4>
+          <h4
+            style={{
+              fontFamily: "'Sora',sans-serif",
+              fontSize: 11,
+              fontWeight: 700,
+              textTransform: "uppercase" as const,
+              letterSpacing: 1,
+              color: "#94A3B8",
+              marginBottom: 14,
+            }}
+          >
+            Inside This Comparison
+          </h4>
           <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-            {TOC.map(t => (
-              <li key={t.id}><button className={`toc-link${activeSection === t.id ? " active" : ""}`} onClick={() => go(t.id)}>{t.label}</button></li>
+            {TOC.map((t) => (
+              <li key={t.id}>
+                <button
+                  className={`toc-link${activeSection === t.id ? " active" : ""}`}
+                  onClick={() => go(t.id)}
+                >
+                  {t.label}
+                </button>
+              </li>
             ))}
           </ul>
-
-          <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-800">
-            <div className="bg-gray-900 rounded-xl p-5 text-white">
-              <h5 style={{ fontFamily: "'Sora',sans-serif", fontSize: 14, fontWeight: 800, color: "white", marginBottom: 8, lineHeight: 1.35 }}>See Insydz vs Your Stack</h5>
-              <p style={{ fontSize: "11.5px", color: "#94A3B8", marginBottom: 14, lineHeight: 1.6, fontFamily: "'Sora',sans-serif" }}>Free 30-min audit — we map your SellerApp data to Insydz and show you the INR savings.</p>
-              <ul style={{ listStyle: "none", padding: 0, margin: "0 0 16px" }} className="text-[10px] space-y-2 font-['Sora'] font-semibold">
-                <li className="flex items-center gap-2 text-green-400"><Check className="w-3 h-3" /> Free forever plan</li>
-                <li className="flex items-center gap-2 text-green-400"><Check className="w-3 h-3" /> Amazon.in + Flipkart</li>
-                <li className="flex items-center gap-2 text-green-400"><Check className="w-3 h-3" /> WhatsApp rank alerts</li>
-              </ul>
-              <Button onClick={() => router.push("/login")} className="w-full bg-purple-600 hover:bg-purple-700 text-white text-xs py-5 rounded-lg shadow-lg font-bold">Start Free</Button>
-            </div>
-          </div>
         </aside>
 
         <main className="article-body">
-          <button className="mobile-toc-btn" onClick={() => setTocOpen(!tocOpen)}>
-            <span className="flex items-center gap-2"><Menu className="w-4 h-4" /> Table of Contents</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${tocOpen ? "rotate-180" : ""}`} />
+          <button
+            className="mobile-toc-btn"
+            onClick={() => setTocOpen(!tocOpen)}
+          >
+            <span className="flex items-center gap-2">
+              <Menu className="w-4 h-4" /> Table of Contents
+            </span>
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${tocOpen ? "rotate-180" : ""}`}
+            />
           </button>
           <div className={`mobile-toc-panel ${tocOpen ? "open" : ""}`}>
-             {TOC.map(t => (
-                <button key={t.id} onClick={() => go(t.id)} className={`toc-link ${activeSection === t.id ? "active" : ""}`}>{t.label}</button>
-             ))}
+            {TOC.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => go(t.id)}
+                className={`toc-link ${activeSection === t.id ? "active" : ""}`}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
 
           <div id="quick-answer" className="quick-answer">
-             <div className="flex-shrink-0 mt-1">
-                <Zap className="w-4 h-4 text-blue-600 fill-blue-600" />
-             </div>
-             <div>
-                <span className="block font-['Sora'] text-[11px] font-[800] text-blue-600 tracking-wider mb-2 uppercase">Quick Answer</span>
-                <p className="text-[#1E293B] dark:text-gray-300 m-0 font-['Lora'] text-[15px] leading-relaxed">
-                  For Indian sellers active on both Amazon.in and Flipkart, Insydz is the better SellerApp alternative — it costs roughly 75% less, supports Flipkart natively, sends WhatsApp rank-drop alerts within 60 minutes, and is calibrated on Indian marketplace data. SellerApp remains a strong choice for India-based sellers focused exclusively on Amazon.com or other global marketplaces.
-                </p>
-             </div>
+            <div className="flex-shrink-0 mt-1">
+              <Zap className="w-4 h-4 text-blue-600 fill-blue-600" />
+            </div>
+            <div>
+              <span className="block font-['Sora'] text-[11px] font-[800] text-blue-600 tracking-wider mb-2 uppercase">
+                Quick Answer
+              </span>
+              <p className="text-[#1E293B] dark:text-gray-300 m-0 font-['Lora'] text-[15px] leading-relaxed">
+                For Indian sellers active on both Amazon.in and Flipkart, Insydz
+                is the better SellerApp alternative — it costs roughly 75% less,
+                supports Flipkart natively, sends WhatsApp rank-drop alerts
+                within 60 minutes, and is calibrated on Indian marketplace data.
+                SellerApp remains a strong choice for India-based sellers
+                focused exclusively on Amazon.com or other global marketplaces.
+              </p>
+            </div>
           </div>
 
-          <h2 id="why-alternatives">Why Are Indian Sellers Searching for a SellerApp Alternative?</h2>
+          <h2 id="why-alternatives">
+            Why Are Indian Sellers Searching for a SellerApp Alternative?
+          </h2>
           <p>
-            SellerApp is a competent platform — there's no need to oversell the criticism. The reason Indian sellers keep typing "sellerapp alternative india" into Google is rarely about feature gaps. It's about three structural mismatches that show up the moment you actually try to run an Indian D2C business on the platform.
+            SellerApp is a competent platform — there's no need to oversell the
+            criticism. The reason Indian sellers keep typing "sellerapp
+            alternative india" into Google is rarely about feature gaps. It's
+            about three structural mismatches that show up the moment you
+            actually try to run an Indian D2C business on the platform.
           </p>
 
           <h3>1. Pricing is in USD — Your Revenue is in INR</h3>
           <p>
-            SellerApp's paid plans start at $99/month and scale to $199+/month for the Pro tier most growth sellers need. At current FX, that's roughly ₹8,300–₹16,500/month — a real number when your monthly Amazon.in revenue is ₹5L and PPC eats another ₹40K. Worse, USD billing means your tool cost moves every month with the rupee. Most Indian SMB sellers also can't claim GST input credit cleanly on USD invoices issued from a foreign entity.
-            <br /><br />
-            Insydz prices in rupees, issues GST-compliant invoices from an Indian entity, and starts at ₹1,999/month with a forever-free tier for sellers under 1,000 reviews tracked. For a ₹15L/month seller, that's roughly ₹78,000 saved per year on tooling alone.
+            SellerApp's paid plans start at $99/month and scale to $199+/month
+            for the Pro tier most growth sellers need. At current FX, that's
+            roughly ₹8,300–₹16,500/month — a real number when your monthly
+            Amazon.in revenue is ₹5L and PPC eats another ₹40K. Worse, USD
+            billing means your tool cost moves every month with the rupee. Most
+            Indian SMB sellers also can't claim GST input credit cleanly on USD
+            invoices issued from a foreign entity.
+            <br />
+            <br />
+            Insydz prices in rupees, issues GST-compliant invoices from an
+            Indian entity, and starts at ₹1,999/month with a forever-free tier
+            for sellers under 1,000 reviews tracked. For a ₹15L/month seller,
+            that's roughly ₹78,000 saved per year on tooling alone.
           </p>
 
           <h3>2. Flipkart is the Missing Marketplace</h3>
           <p>
-            SellerApp supports 16 marketplaces — almost all Amazon. Flipkart is not among them. For an Indian seller, that means roughly 30–45% of your marketplace data simply isn't visible in the platform you're paying for. You can't track Flipkart keyword ranks, you can't see Flipkart competitor pricing, you can't run unified review analysis across both marketplaces. Most Indian sellers end up running SellerApp for Amazon and a separate manual process for Flipkart — paying for half a tool.
-            <br /><br />
-            Insydz tracks Amazon.in and Flipkart natively in the same dashboard. Same competitor lists, same keyword universe, unified PPC and rank reporting.
+            SellerApp supports 16 marketplaces — almost all Amazon. Flipkart is
+            not among them. For an Indian seller, that means roughly 30–45% of
+            your marketplace data simply isn't visible in the platform you're
+            paying for. You can't track Flipkart keyword ranks, you can't see
+            Flipkart competitor pricing, you can't run unified review analysis
+            across both marketplaces. Most Indian sellers end up running
+            SellerApp for Amazon and a separate manual process for Flipkart —
+            paying for half a tool.
+            <br />
+            <br />
+            Insydz tracks Amazon.in and Flipkart natively in the same dashboard.
+            Same competitor lists, same keyword universe, unified PPC and rank
+            reporting.
           </p>
 
           <h3>3. The Feature Set Is Calibrated on US Buyer Behaviour</h3>
           <p>
-            SellerApp's keyword research, listing optimization, and review intelligence are tuned on Amazon.com data and English-language buyer signals. That means Hinglish reviews ("bahut bekaar product hai bhai") get classified as neutral, Hindi-transliterated search queries don't surface in keyword reports, and the festive window logic that drives 40–60% of Indian category revenue in 4–7 days doesn't exist. You're paying for a global platform and adapting it to India — every week.
+            SellerApp's keyword research, listing optimization, and review
+            intelligence are tuned on Amazon.com data and English-language buyer
+            signals. That means Hinglish reviews ("bahut bekaar product hai
+            bhai") get classified as neutral, Hindi-transliterated search
+            queries don't surface in keyword reports, and the festive window
+            logic that drives 40–60% of Indian category revenue in 4–7 days
+            doesn't exist. You're paying for a global platform and adapting it
+            to India — every week.
           </p>
 
-          <ArticleImg 
+          <ArticleImg
             src={MISMATCH_IMAGE}
-            alt="3 Structural Mismatches in Global Seller Tools" 
-            caption="Three structural gaps that make global tools fail Indian D2C sellers — and how Insydz closes each one." 
+            alt="3 Structural Mismatches in Global Seller Tools"
+            caption="Three structural gaps that make global tools fail Indian D2C sellers — and how Insydz closes each one."
           />
 
           <div className="reality-box">
-             <span className="reality-label">Practitioner Reality</span>
-             <p className="text-[#1E293B] dark:text-gray-300 m-0 font-['Lora'] text-[15px] leading-relaxed">
-               A Bengaluru-based home goods seller running ₹22L/month on Amazon.in summed it up: "SellerApp's PPC dashboard is genuinely better than what most Indian tools offer. But I was paying ₹14,000/month for something that ignored my Flipkart business completely and couldn't tell me when a Hindi-language competitor stole my festive rank. I wasn't getting 70% of my own data back."
-             </p>
+            <span className="reality-label">Practitioner Reality</span>
+            <p className="text-[#1E293B] dark:text-gray-300 m-0 font-['Lora'] text-[15px] leading-relaxed">
+              A Bengaluru-based home goods seller running ₹22L/month on
+              Amazon.in summed it up: "SellerApp's PPC dashboard is genuinely
+              better than what most Indian tools offer. But I was paying
+              ₹14,000/month for something that ignored my Flipkart business
+              completely and couldn't tell me when a Hindi-language competitor
+              stole my festive rank. I wasn't getting 70% of my own data back."
+            </p>
           </div>
 
-          <h2 id="side-by-side">Insydz vs SellerApp: Side-by-Side Comparison</h2>
-          <p>Here is the comparison most Indian growth sellers actually need to make before signing a 12-month contract.</p>
-          <ArticleImg 
+          <h2 id="side-by-side">
+            Insydz vs SellerApp: Side-by-Side Comparison
+          </h2>
+          <p>
+            Here is the comparison most Indian growth sellers actually need to
+            make before signing a 12-month contract.
+          </p>
+          <ArticleImg
             src={SELLARIMAGE3}
-            alt="SellerApp vs Insydz Side-by-Side Comparison" 
-            caption="SellerApp vs Insydz — what changes when the platform is actually built for the Indian seller workflow." 
+            alt="SellerApp vs Insydz Side-by-Side Comparison"
+            caption="SellerApp vs Insydz — what changes when the platform is actually built for the Indian seller workflow."
           />
           <h3>Full Capability Matrix</h3>
           <div className="overflow-x-auto rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm my-8 mb-12">
-             <table className="matrix-table">
-                <thead>
-                   <tr>
-                      <th>CAPABILITY</th>
-                      <th>SELLERAPP</th>
-                      <th>INSYDZ (INDIA-FIRST)</th>
-                   </tr>
-                </thead>
-                <tbody>
-                   <tr>
-                      <td><strong>Pricing (Starting)</strong></td>
-                      <td style={{ color: "#D97706" }}>~₹8,300/mo (USD)</td>
-                      <td><span className="p-badge p-green">₹1,999/mo + Free Plan</span></td>
-                   </tr>
-                   <tr>
-                      <td><strong>Billing Currency</strong></td>
-                      <td>USD — FX volatility</td>
-                      <td><strong>INR — predictable</strong></td>
-                   </tr>
-                   <tr>
-                      <td><strong>GST Invoice / Input Credit</strong></td>
-                      <td><span className="p-badge p-red">No — foreign entity</span></td>
-                      <td><span className="p-badge p-green">Yes — Indian entity</span></td>
-                   </tr>
-                   <tr>
-                      <td><strong>Amazon.in Native Data</strong></td>
-                      <td>Partial — global engine</td>
-                      <td><strong>Native — India-first</strong></td>
-                   </tr>
-                   <tr>
-                      <td><strong>Flipkart Rank & Reviews</strong></td>
-                      <td><span className="p-badge p-red">Not supported</span></td>
-                      <td><span className="p-badge p-green">Full coverage</span></td>
-                   </tr>
-                   <tr>
-                      <td><strong>Meesho Visibility</strong></td>
-                      <td>Not supported</td>
-                      <td className="text-gray-500">Roadmap (Q3 2026)</td>
-                   </tr>
-                   <tr>
-                      <td><strong>Hindi / Hinglish NLP</strong></td>
-                      <td><span className="p-badge p-red">English only</span></td>
-                      <td><span className="p-badge p-green">Native + transliteration</span></td>
-                   </tr>
-                   <tr>
-                      <td><strong>Festive Calendar Logic (BBD, GIF, Diwali)</strong></td>
-                      <td className="text-gray-500">Generic seasonality</td>
-                      <td><strong>India calendar tuned</strong></td>
-                   </tr>
-                   <tr>
-                      <td><strong>Rank Drop Alerts</strong></td>
-                      <td className="text-gray-500">Email — daily digest</td>
-                      <td><strong>WhatsApp — &lt; 60 min</strong></td>
-                   </tr>
-                   <tr>
-                      <td><strong>PPC Automation Depth</strong></td>
-                      <td><span className="p-badge p-green">Mature, multi-marketplace</span></td>
-                      <td className="text-gray-500">India-Amazon focused</td>
-                   </tr>
-                   <tr>
-                      <td><strong>Profit Dashboard</strong></td>
-                      <td className="text-gray-500">Strong — multi-currency</td>
-                      <td>India fee + GST aware</td>
-                   </tr>
-                   <tr>
-                      <td><strong>RTO / COD Returns Intelligence</strong></td>
-                      <td><span className="p-badge p-red">Not built for it</span></td>
-                      <td><span className="p-badge p-green">India-calibrated</span></td>
-                   </tr>
-                   <tr>
-                      <td><strong>Customer Support Channel</strong></td>
-                      <td className="text-gray-500">Email + chat (US/SG hours)</td>
-                      <td><strong>WhatsApp (IST hours)</strong></td>
-                   </tr>
-                   <tr style={{ background: "#F5F3FF" }}>
-                      <td style={{ color: "#7C3AED" }}><strong>Best For</strong> <span className="tag-verdict">VERDICT</span></td>
-                      <td style={{ color: "#7C3AED" }}>Sellers on Amazon.com / global SKUs</td>
-                      <td style={{ color: "#7C3AED" }}><strong>Indian SMB on Amazon.in + Flipkart</strong></td>
-                   </tr>
-                </tbody>
-             </table>
+            <table className="matrix-table">
+              <thead>
+                <tr>
+                  <th>CAPABILITY</th>
+                  <th>SELLERAPP</th>
+                  <th>INSYDZ (INDIA-FIRST)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <strong>Pricing (Starting)</strong>
+                  </td>
+                  <td style={{ color: "#D97706" }}>~₹8,300/mo (USD)</td>
+                  <td>
+                    <span className="p-badge p-green">
+                      ₹1,999/mo + Free Plan
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Billing Currency</strong>
+                  </td>
+                  <td>USD — FX volatility</td>
+                  <td>
+                    <strong>INR — predictable</strong>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>GST Invoice / Input Credit</strong>
+                  </td>
+                  <td>
+                    <span className="p-badge p-red">No — foreign entity</span>
+                  </td>
+                  <td>
+                    <span className="p-badge p-green">Yes — Indian entity</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Amazon.in Native Data</strong>
+                  </td>
+                  <td>Partial — global engine</td>
+                  <td>
+                    <strong>Native — India-first</strong>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Flipkart Rank & Reviews</strong>
+                  </td>
+                  <td>
+                    <span className="p-badge p-red">Not supported</span>
+                  </td>
+                  <td>
+                    <span className="p-badge p-green">Full coverage</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Meesho Visibility</strong>
+                  </td>
+                  <td>Not supported</td>
+                  <td className="text-gray-500">Roadmap (Q3 2026)</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Hindi / Hinglish NLP</strong>
+                  </td>
+                  <td>
+                    <span className="p-badge p-red">English only</span>
+                  </td>
+                  <td>
+                    <span className="p-badge p-green">
+                      Native + transliteration
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Festive Calendar Logic (BBD, GIF, Diwali)</strong>
+                  </td>
+                  <td className="text-gray-500">Generic seasonality</td>
+                  <td>
+                    <strong>India calendar tuned</strong>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Rank Drop Alerts</strong>
+                  </td>
+                  <td className="text-gray-500">Email — daily digest</td>
+                  <td>
+                    <strong>WhatsApp — &lt; 60 min</strong>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>PPC Automation Depth</strong>
+                  </td>
+                  <td>
+                    <span className="p-badge p-green">
+                      Mature, multi-marketplace
+                    </span>
+                  </td>
+                  <td className="text-gray-500">India-Amazon focused</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Profit Dashboard</strong>
+                  </td>
+                  <td className="text-gray-500">Strong — multi-currency</td>
+                  <td>India fee + GST aware</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>RTO / COD Returns Intelligence</strong>
+                  </td>
+                  <td>
+                    <span className="p-badge p-red">Not built for it</span>
+                  </td>
+                  <td>
+                    <span className="p-badge p-green">India-calibrated</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>Customer Support Channel</strong>
+                  </td>
+                  <td className="text-gray-500">Email + chat (US/SG hours)</td>
+                  <td>
+                    <strong>WhatsApp (IST hours)</strong>
+                  </td>
+                </tr>
+                <tr style={{ background: "#F5F3FF" }}>
+                  <td style={{ color: "#7C3AED" }}>
+                    <strong>Best For</strong>{" "}
+                    <span className="tag-verdict">VERDICT</span>
+                  </td>
+                  <td style={{ color: "#7C3AED" }}>
+                    Sellers on Amazon.com / global SKUs
+                  </td>
+                  <td style={{ color: "#7C3AED" }}>
+                    <strong>Indian SMB on Amazon.in + Flipkart</strong>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
-          <ArticleImg 
+          <ArticleImg
             src={MARKET_INTEL_IMAGE}
-            alt="Real-time competitor price and rank monitoring" 
-            caption="Insydz surfaces real-time competitor price moves across Amazon.in and Flipkart in one unified view — with WhatsApp alerts under 60 minutes." 
+            alt="Real-time competitor price and rank monitoring"
+            caption="Insydz surfaces real-time competitor price moves across Amazon.in and Flipkart in one unified view — with WhatsApp alerts under 60 minutes."
           />
 
           <h2 id="where-wins">Where Does Each Tool Genuinely Win?</h2>
-          <p className="text-gray-600 dark:text-gray-400 font-['Lora'] mb-8">This isn't a hit piece — both tools have strengths. Knowing which fits your seller profile prevents a 12-month regret.</p>
-          
+          <p className="text-gray-600 dark:text-gray-400 font-['Lora'] mb-8">
+            This isn't a hit piece — both tools have strengths. Knowing which
+            fits your seller profile prevents a 12-month regret.
+          </p>
+
           <div className="choice-box box-green">
             <span className="choice-label text-emerald-700 dark:text-emerald-400">
-              <Check className="w-4 h-4 bg-emerald-500 text-white rounded-[2px] p-[1px]" /> Choose SellerApp if...
+              <Check className="w-4 h-4 bg-emerald-500 text-white rounded-[2px] p-[1px]" />{" "}
+              Choose SellerApp if...
             </span>
             <p className="text-[#1E293B] dark:text-gray-300 m-0 font-['Lora'] text-[15px] leading-relaxed">
-              You sell primarily on Amazon.com (or UAE / UK / DE marketplaces), USD billing isn't a problem, you don't need Flipkart visibility, and you need mature multi-marketplace PPC automation. SellerApp's keyword tools, profit dashboard, and ad automation are genuinely strong for a global Amazon-only operation. If your Amazon.in revenue is under ₹2L/month and your bigger play is US export, SellerApp's depth justifies the price.
+              You sell primarily on Amazon.com (or UAE / UK / DE marketplaces),
+              USD billing isn't a problem, you don't need Flipkart visibility,
+              and you need mature multi-marketplace PPC automation. SellerApp's
+              keyword tools, profit dashboard, and ad automation are genuinely
+              strong for a global Amazon-only operation. If your Amazon.in
+              revenue is under ₹2L/month and your bigger play is US export,
+              SellerApp's depth justifies the price.
             </p>
           </div>
 
           <div className="choice-box box-purple">
             <span className="choice-label text-purple-700 dark:text-purple-400">
-              <Check className="w-4 h-4 bg-purple-500 text-white rounded-[2px] p-[1px]" /> Choose Insydz if...
+              <Check className="w-4 h-4 bg-purple-500 text-white rounded-[2px] p-[1px]" />{" "}
+              Choose Insydz if...
             </span>
             <p className="text-[#1E293B] dark:text-gray-300 m-0 font-['Lora'] text-[15px] leading-relaxed">
-              You run Amazon.in and Flipkart together (most Indian SMB sellers), your monthly tool budget is in rupees and matters, you want WhatsApp alerts at 11pm during Big Billion Days, and your reviews and search queries include Hinglish or regional language. Insydz is built specifically for the ₹5L–50L/month Indian D2C operator who needs an integrated marketplace view, GST-compliant invoicing, and India-calibrated AI — without a US-priced contract.
+              You run Amazon.in and Flipkart together (most Indian SMB sellers),
+              your monthly tool budget is in rupees and matters, you want
+              WhatsApp alerts at 11pm during Big Billion Days, and your reviews
+              and search queries include Hinglish or regional language. Insydz
+              is built specifically for the ₹5L–50L/month Indian D2C operator
+              who needs an integrated marketplace view, GST-compliant invoicing,
+              and India-calibrated AI — without a US-priced contract.
             </p>
           </div>
 
-          <h3 className="mt-12 mb-4 font-['Sora'] font-extrabold text-xl">The Honest Trade-Off</h3>
+          <h3 className="mt-12 mb-4 font-['Sora'] font-extrabold text-xl">
+            The Honest Trade-Off
+          </h3>
           <p className="text-gray-700 dark:text-gray-300 font-['Lora'] leading-relaxed mb-12">
-            SellerApp's PPC automation depth on global Amazon is more mature than what any India-first tool, including Insydz, currently offers — that's a fair admission. The question is whether you'll actually use that depth on Amazon.in, where your ₹35K/month ad budget needs sharper INR-priced tooling and Flipkart visibility more than it needs multi-marketplace bid stacking.
+            SellerApp's PPC automation depth on global Amazon is more mature
+            than what any India-first tool, including Insydz, currently offers —
+            that's a fair admission. The question is whether you'll actually use
+            that depth on Amazon.in, where your ₹35K/month ad budget needs
+            sharper INR-priced tooling and Flipkart visibility more than it
+            needs multi-marketplace bid stacking.
           </p>
 
-          <ArticleImg 
+          <ArticleImg
             src={KNOW_POSITION_IMAGE}
-            alt="Know Your Position rank intelligence dashboard" 
-            caption="Insydz tracks rank positions across Amazon.in and Flipkart in real time — so Indian sellers never lose their position during festive windows." 
+            alt="Know Your Position rank intelligence dashboard"
+            caption="Insydz tracks rank positions across Amazon.in and Flipkart in real time — so Indian sellers never lose their position during festive windows."
           />
 
-          <h2 id="how-to-switch">How Do You Switch From SellerApp to Insydz in 30 Days?</h2>
-          <p className="text-gray-600 dark:text-gray-400 font-['Lora'] mb-8">If you've decided to test the alternative, here's the sequence Indian sellers we've onboarded actually follow. No big-bang migration, no data loss, no mid-month subscription overlap drama.</p>
-          
+          <h2 id="how-to-switch">
+            How Do You Switch From SellerApp to Insydz in 30 Days?
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 font-['Lora'] mb-8">
+            If you've decided to test the alternative, here's the sequence
+            Indian sellers we've onboarded actually follow. No big-bang
+            migration, no data loss, no mid-month subscription overlap drama.
+          </p>
+
           <div className="space-y-4 mb-8">
-             <div className="switch-step">
-                <div className="step-num">1</div>
-                <div className="step-body">
-                   <strong className="block text-[#0D1B2A] dark:text-white font-['Sora'] text-base mb-2">Week 1: Run Both Tools in Parallel</strong>
-                   <p className="text-sm text-gray-600 dark:text-gray-400 m-0 font-['Lora'] leading-relaxed">Activate the Insydz free plan. Connect your Amazon.in and Flipkart seller accounts. Don't cancel SellerApp yet. For the first week, do nothing except let both tools track the same ASINs side-by-side — you'll instantly see the Flipkart data SellerApp was missing.</p>
-                </div>
-             </div>
-             <div className="switch-step">
-                <div className="step-num">2</div>
-                <div className="step-body">
-                   <strong className="block text-[#0D1B2A] dark:text-white font-['Sora'] text-base mb-2">Week 2: Export and Map Your SellerApp Data</strong>
-                   <p className="text-sm text-gray-600 dark:text-gray-400 m-0 font-['Lora'] leading-relaxed">Export your tracked keyword list, competitor ASINs, and PPC negatives from SellerApp as CSV. Insydz import handles all three in one upload. Your historical PPC learnings come with you — you don't restart from zero.</p>
-                </div>
-             </div>
-             <div className="switch-step">
-                <div className="step-num">3</div>
-                <div className="step-body">
-                   <strong className="block text-[#0D1B2A] dark:text-white font-['Sora'] text-base mb-2">Week 3: Set Up WhatsApp Alerts and Festive Calendar</strong>
-                   <p className="text-sm text-gray-600 dark:text-gray-400 m-0 font-['Lora'] leading-relaxed">Configure WhatsApp rank-drop alerts (the single biggest behavioural change you'll feel — no more email dashboards at 9am after a 2am festive event). Tag your top 10 ASINs to the BBD/GIF/Diwali festive calendar so the AI primes 21 days before each window.</p>
-                </div>
-             </div>
-             <div className="switch-step">
-                <div className="step-num">4</div>
-                <div className="step-body">
-                   <strong className="block text-[#0D1B2A] dark:text-white font-['Sora'] text-base mb-2">Week 4: Cancel SellerApp at Renewal</strong>
-                   <p className="text-sm text-gray-600 dark:text-gray-400 m-0 font-['Lora'] leading-relaxed">By Week 4 you'll have a parallel data set across both tools. Cancel SellerApp at next renewal — no early-cancellation drama, no contract cliff. Re-route your ₹8,300+/month savings into PPC budget or product photography. Most sellers see ROI inside the first 60 days from the freed-up budget alone.</p>
-                </div>
-             </div>
+            <div className="switch-step">
+              <div className="step-num">1</div>
+              <div className="step-body">
+                <strong className="block text-[#0D1B2A] dark:text-white font-['Sora'] text-base mb-2">
+                  Week 1: Run Both Tools in Parallel
+                </strong>
+                <p className="text-sm text-gray-600 dark:text-gray-400 m-0 font-['Lora'] leading-relaxed">
+                  Activate the Insydz free plan. Connect your Amazon.in and
+                  Flipkart seller accounts. Don't cancel SellerApp yet. For the
+                  first week, do nothing except let both tools track the same
+                  ASINs side-by-side — you'll instantly see the Flipkart data
+                  SellerApp was missing.
+                </p>
+              </div>
+            </div>
+            <div className="switch-step">
+              <div className="step-num">2</div>
+              <div className="step-body">
+                <strong className="block text-[#0D1B2A] dark:text-white font-['Sora'] text-base mb-2">
+                  Week 2: Export and Map Your SellerApp Data
+                </strong>
+                <p className="text-sm text-gray-600 dark:text-gray-400 m-0 font-['Lora'] leading-relaxed">
+                  Export your tracked keyword list, competitor ASINs, and PPC
+                  negatives from SellerApp as CSV. Insydz import handles all
+                  three in one upload. Your historical PPC learnings come with
+                  you — you don't restart from zero.
+                </p>
+              </div>
+            </div>
+            <div className="switch-step">
+              <div className="step-num">3</div>
+              <div className="step-body">
+                <strong className="block text-[#0D1B2A] dark:text-white font-['Sora'] text-base mb-2">
+                  Week 3: Set Up WhatsApp Alerts and Festive Calendar
+                </strong>
+                <p className="text-sm text-gray-600 dark:text-gray-400 m-0 font-['Lora'] leading-relaxed">
+                  Configure WhatsApp rank-drop alerts (the single biggest
+                  behavioural change you'll feel — no more email dashboards at
+                  9am after a 2am festive event). Tag your top 10 ASINs to the
+                  BBD/GIF/Diwali festive calendar so the AI primes 21 days
+                  before each window.
+                </p>
+              </div>
+            </div>
+            <div className="switch-step">
+              <div className="step-num">4</div>
+              <div className="step-body">
+                <strong className="block text-[#0D1B2A] dark:text-white font-['Sora'] text-base mb-2">
+                  Week 4: Cancel SellerApp at Renewal
+                </strong>
+                <p className="text-sm text-gray-600 dark:text-gray-400 m-0 font-['Lora'] leading-relaxed">
+                  By Week 4 you'll have a parallel data set across both tools.
+                  Cancel SellerApp at next renewal — no early-cancellation
+                  drama, no contract cliff. Re-route your ₹8,300+/month savings
+                  into PPC budget or product photography. Most sellers see ROI
+                  inside the first 60 days from the freed-up budget alone.
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="key-insight-box">
-             <span className="choice-label text-purple-700 dark:text-purple-400">KEY INSIGHT</span>
-             <p className="text-[#1E293B] dark:text-gray-300 m-0 font-['Lora'] text-[15px] leading-relaxed">
-               The biggest switching mistake isn't picking the wrong tool — it's running them sequentially instead of in parallel for two weeks. Parallel tracking gives you actual Insydz vs SellerApp data on your own ASINs, not marketing-page screenshots.
-             </p>
+            <span className="choice-label text-purple-700 dark:text-purple-400">
+              KEY INSIGHT
+            </span>
+            <p className="text-[#1E293B] dark:text-gray-300 m-0 font-['Lora'] text-[15px] leading-relaxed">
+              The biggest switching mistake isn't picking the wrong tool — it's
+              running them sequentially instead of in parallel for two weeks.
+              Parallel tracking gives you actual Insydz vs SellerApp data on
+              your own ASINs, not marketing-page screenshots.
+            </p>
           </div>
 
-          <h2 id="mistakes">5 Mistakes Indian Sellers Make When Comparing Tools</h2>
-          <p className="text-gray-600 dark:text-gray-400 font-['Lora'] mb-8">Most tool-comparison decisions go wrong before the trial even starts. These are the patterns we see across hundreds of Indian seller switch conversations.</p>
+          <h2 id="mistakes">
+            5 Mistakes Indian Sellers Make When Comparing Tools
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 font-['Lora'] mb-8">
+            Most tool-comparison decisions go wrong before the trial even
+            starts. These are the patterns we see across hundreds of Indian
+            seller switch conversations.
+          </p>
 
           <div className="space-y-4 my-8">
             {[
-              ["Comparing on Feature Count, Not Feature Fit", "SellerApp lists 30+ features. Insydz lists fewer. That's irrelevant if the features you'll actually use weekly are the same six — keyword research, rank tracking, review mining, PPC alerts, competitor pricing, profit dashboard. Map your weekly workflow first, then compare."],
-              ["Ignoring USD-to-INR FX Risk", "A $99/month plan was ₹7,200 in 2022, ₹8,000 in 2024, ₹8,300+ in 2026. That's a 15% silent price increase no one asked you to approve. Tool cost should be predictable — INR billing makes it so."],
-              ["Trusting G2 / Capterra Reviews Without an Indian Filter", "SellerApp's G2 page is dominated by US sellers raving about ACoS reduction on Amazon.com. That's a different product context than yours. Filter reviews by India-based sellers, or — better — find sellers in your category on r/IndianEcommerce and ask directly."],
-              ["Skipping the Free Trial Because You're Already Paying", "Sunk-cost thinking is the most expensive bias in SaaS. You're paying SellerApp ₹14,000 this month whether or not you trial Insydz. The cost of running both for 14 days is ₹0 — and the cost of staying on the wrong tool for 12 months is ₹1.6L+."],
-              ["Not Asking About Festive Support Hours", "Big Billion Days runs through October. If your tool's support is in PT or SGT timezone, your 11pm IST rank drop on Day 2 of BBD waits till morning. Ask the support timezone question before signing anything. WhatsApp-based IST support is the difference between catching a ₹4L revenue dip and not."]
+              [
+                "Comparing on Feature Count, Not Feature Fit",
+                "SellerApp lists 30+ features. Insydz lists fewer. That's irrelevant if the features you'll actually use weekly are the same six — keyword research, rank tracking, review mining, PPC alerts, competitor pricing, profit dashboard. Map your weekly workflow first, then compare.",
+              ],
+              [
+                "Ignoring USD-to-INR FX Risk",
+                "A $99/month plan was ₹7,200 in 2022, ₹8,000 in 2024, ₹8,300+ in 2026. That's a 15% silent price increase no one asked you to approve. Tool cost should be predictable — INR billing makes it so.",
+              ],
+              [
+                "Trusting G2 / Capterra Reviews Without an Indian Filter",
+                "SellerApp's G2 page is dominated by US sellers raving about ACoS reduction on Amazon.com. That's a different product context than yours. Filter reviews by India-based sellers, or — better — find sellers in your category on r/IndianEcommerce and ask directly.",
+              ],
+              [
+                "Skipping the Free Trial Because You're Already Paying",
+                "Sunk-cost thinking is the most expensive bias in SaaS. You're paying SellerApp ₹14,000 this month whether or not you trial Insydz. The cost of running both for 14 days is ₹0 — and the cost of staying on the wrong tool for 12 months is ₹1.6L+.",
+              ],
+              [
+                "Not Asking About Festive Support Hours",
+                "Big Billion Days runs through October. If your tool's support is in PT or SGT timezone, your 11pm IST rank drop on Day 2 of BBD waits till morning. Ask the support timezone question before signing anything. WhatsApp-based IST support is the difference between catching a ₹4L revenue dip and not.",
+              ],
             ].map(([title, desc], i) => (
-              <div key={i} className="flex gap-5 p-6 rounded-xl border border-[#F1F5F9] bg-white dark:bg-gray-900 dark:border-gray-800 shadow-sm transition-all hover:shadow-md">
-                <span className="flex-shrink-0 w-8 h-8 rounded-md bg-black text-white flex items-center justify-center text-xs font-black font-['Sora']">{i+1}</span>
+              <div
+                key={i}
+                className="flex gap-5 p-6 rounded-xl border border-[#F1F5F9] bg-white dark:bg-gray-900 dark:border-gray-800 shadow-sm transition-all hover:shadow-md"
+              >
+                <span className="flex-shrink-0 w-8 h-8 rounded-md bg-black text-white flex items-center justify-center text-xs font-black font-['Sora']">
+                  {i + 1}
+                </span>
                 <div>
-                  <strong className="block text-[#0D1B2A] dark:text-white mb-2 font-['Sora'] text-base">{title}</strong>
-                  <p className="text-[14.5px] text-gray-600 dark:text-gray-400 m-0 font-['Lora'] leading-relaxed">{desc}</p>
+                  <strong className="block text-[#0D1B2A] dark:text-white mb-2 font-['Sora'] text-base">
+                    {title}
+                  </strong>
+                  <p className="text-[14.5px] text-gray-600 dark:text-gray-400 m-0 font-['Lora'] leading-relaxed">
+                    {desc}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
 
-          <h2 id="story" className="mt-16">Real Switch Story: Surat Apparel Brand</h2>
-          <p className="text-gray-600 dark:text-gray-400 font-['Lora'] mb-8">A Surat-based apparel D2C brand selling kurtas across Amazon.in and Flipkart was running SellerApp for 14 months before switching to Insydz in late 2025. Same SKUs, same team, same ad budget. Here's what changed.</p>
+          <h2 id="story" className="mt-16">
+            Real Switch Story: Surat Apparel Brand
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 font-['Lora'] mb-8">
+            A Surat-based apparel D2C brand selling kurtas across Amazon.in and
+            Flipkart was running SellerApp for 14 months before switching to
+            Insydz in late 2025. Same SKUs, same team, same ad budget. Here's
+            what changed.
+          </p>
 
           <div className="case-study-box">
-            <div className="cs-header">CASE STUDY · SURAT APPAREL · ₹28L/MO REVENUE</div>
+            <div className="cs-header">
+              CASE STUDY · SURAT APPAREL · ₹28L/MO REVENUE
+            </div>
             <div className="cs-grid">
               <div className="cs-item">
                 <span className="cs-label">BEFORE — ON SELLERAPP</span>
                 <span className="cs-val text-red-600">₹14,200/mo</span>
-                <p className="cs-desc">USD billing, no Flipkart data, missed 3 of 5 BBD rank drops because email alerts arrived next morning. Flipkart managed manually in spreadsheets.</p>
+                <p className="cs-desc">
+                  USD billing, no Flipkart data, missed 3 of 5 BBD rank drops
+                  because email alerts arrived next morning. Flipkart managed
+                  manually in spreadsheets.
+                </p>
               </div>
               <div className="cs-item">
                 <span className="cs-label">ACTION — SWITCH TO INSYDZ</span>
                 <span className="cs-val text-blue-600">30 days</span>
-                <p className="cs-desc">Parallel run for 2 weeks, exported keywords + PPC negatives, set up WhatsApp festive alerts on top 12 ASINs, cancelled SellerApp at renewal.</p>
+                <p className="cs-desc">
+                  Parallel run for 2 weeks, exported keywords + PPC negatives,
+                  set up WhatsApp festive alerts on top 12 ASINs, cancelled
+                  SellerApp at renewal.
+                </p>
               </div>
               <div className="cs-item">
                 <span className="cs-label">AFTER — 90 DAYS IN</span>
                 <span className="cs-val text-emerald-600">+₹4.6L/mo</span>
-                <p className="cs-desc">Tool cost down to ₹1,999/mo (-86%), Flipkart revenue up 31% from previously invisible keyword gaps, festive rank recovery time cut from 18 hours to 90 minutes.</p>
+                <p className="cs-desc">
+                  Tool cost down to ₹1,999/mo (-86%), Flipkart revenue up 31%
+                  from previously invisible keyword gaps, festive rank recovery
+                  time cut from 18 hours to 90 minutes.
+                </p>
               </div>
             </div>
           </div>
 
           <p className="text-gray-700 dark:text-gray-300 font-['Lora'] leading-relaxed mb-12">
-            The Flipkart upside surprised everyone — including the Insydz team. The brand had 22 SKUs on Flipkart that were ranking P3–P8 for buy-intent terms, but no one was watching them because SellerApp simply didn't show that data. Surfacing it took 11 days. Acting on it added ₹4.6L in monthly Flipkart revenue inside one quarter.
+            The Flipkart upside surprised everyone — including the Insydz team.
+            The brand had 22 SKUs on Flipkart that were ranking P3–P8 for
+            buy-intent terms, but no one was watching them because SellerApp
+            simply didn't show that data. Surfacing it took 11 days. Acting on
+            it added ₹4.6L in monthly Flipkart revenue inside one quarter.
           </p>
 
-          <ArticleImg 
+          <ArticleImg
             src={TOP_PRODUCTS_IMAGE}
-            alt="Product Intelligence Top Products Ranked" 
-            caption="Insydz's India-calibrated AI ranks your products by opportunity across Amazon.in and Flipkart — with Hinglish sentiment and festive priming built in." 
+            alt="Product Intelligence Top Products Ranked"
+            caption="Insydz's India-calibrated AI ranks your products by opportunity across Amazon.in and Flipkart — with Hinglish sentiment and festive priming built in."
           />
 
           <div className="internal-cta">
             <h3>Run Insydz and SellerApp in Parallel — Free for 14 Days</h3>
-            <p>No card, no contract. See your Amazon.in + Flipkart data side-by-side. If Insydz isn't sharper for the Indian market, keep SellerApp.</p>
-            <Button onClick={() => router.push("/login")} className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-12 py-6 rounded-xl text-base transition-all transform hover:scale-105">
+            <p>
+              No card, no contract. See your Amazon.in + Flipkart data
+              side-by-side. If Insydz isn't sharper for the Indian market, keep
+              SellerApp.
+            </p>
+            <Button
+              onClick={() => router.push("/login")}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-12 py-6 rounded-xl text-base transition-all transform hover:scale-105"
+            >
               Start Free Trial →
             </Button>
           </div>
-          <h2 id="why-pick" className="mt-16">Why Indian SMB Sellers Pick Insydz Specifically</h2>
+          <h2 id="why-pick" className="mt-16">
+            Why Indian SMB Sellers Pick Insydz Specifically
+          </h2>
           <div className="space-y-3 mb-12">
             {[
-              ["🇮🇳", "INR-priced, GST-compliant from day 1", "Predictable monthly cost in rupees, GST input credit available, no FX surprises mid-quarter. Built and billed from an Indian entity."],
-              ["🛒", "Amazon.in + Flipkart in one dashboard", "Same competitor lists, same keyword universe, unified review and rank tracking — no spreadsheet juggling between two tools."],
-              ["📱", "WhatsApp alerts within 60 minutes", "Rank drops, competitor moves, festive sentiment spikes — delivered to where Indian sellers already work, not buried in email at 6am."],
-              ["🪔", "Festive calendar tuned for Indian e-commerce", "BBD, Great Indian Festival, Diwali, Republic Day Sale — keyword priming starts 21 days before each window. Generic seasonality models miss this entirely."],
-              ["💬", "Hinglish & regional NLP", "Reviews and search queries in Hindi, Hinglish, and transliterated Tamil/Telugu are clustered correctly — not flagged as low-confidence and dropped."],
-              ["🚚", "RTO & COD-aware analytics", "Returns, COD refusal patterns, and pin-code-level RTO signals are part of the standard view — because in India, that's where margin actually leaks."]
+              [
+                "🇮🇳",
+                "INR-priced, GST-compliant from day 1",
+                "Predictable monthly cost in rupees, GST input credit available, no FX surprises mid-quarter. Built and billed from an Indian entity.",
+              ],
+              [
+                "🛒",
+                "Amazon.in + Flipkart in one dashboard",
+                "Same competitor lists, same keyword universe, unified review and rank tracking — no spreadsheet juggling between two tools.",
+              ],
+              [
+                "📱",
+                "WhatsApp alerts within 60 minutes",
+                "Rank drops, competitor moves, festive sentiment spikes — delivered to where Indian sellers already work, not buried in email at 6am.",
+              ],
+              [
+                "🪔",
+                "Festive calendar tuned for Indian e-commerce",
+                "BBD, Great Indian Festival, Diwali, Republic Day Sale — keyword priming starts 21 days before each window. Generic seasonality models miss this entirely.",
+              ],
+              [
+                "💬",
+                "Hinglish & regional NLP",
+                "Reviews and search queries in Hindi, Hinglish, and transliterated Tamil/Telugu are clustered correctly — not flagged as low-confidence and dropped.",
+              ],
+              [
+                "🚚",
+                "RTO & COD-aware analytics",
+                "Returns, COD refusal patterns, and pin-code-level RTO signals are part of the standard view — because in India, that's where margin actually leaks.",
+              ],
             ].map(([icon, title, desc], i) => (
               <div key={i} className="feature-pick-box">
                 {/* <div className="fp-icon">{icon}</div> */}
@@ -832,9 +1592,18 @@ export default function InsydzVsSellerAppContent() {
             ))}
 
             <div className="soft-pitch-box">
-              <span className="soft-pitch-label"><Pin className="w-4 h-4 fill-[#E11D48]" /> SOFT PITCH — NOT A SALES PUSH</span>
+              <span className="soft-pitch-label">
+                <Pin className="w-4 h-4 fill-[#E11D48]" /> SOFT PITCH — NOT A
+                SALES PUSH
+              </span>
               <p className="text-[#1E293B] dark:text-gray-300 m-0 font-['Lora'] text-[15.5px] leading-relaxed">
-                SellerApp is genuinely good at what it does. It's just not designed for the Indian SMB seller's actual workflow — and paying USD prices for a tool that can't see your Flipkart revenue is a math problem, not a brand argument. If you're already on SellerApp and your Amazon.in business is the larger half of your revenue, run Insydz alongside for 14 days. The data will tell you which one to keep.
+                SellerApp is genuinely good at what it does. It's just not
+                designed for the Indian SMB seller's actual workflow — and
+                paying USD prices for a tool that can't see your Flipkart
+                revenue is a math problem, not a brand argument. If you're
+                already on SellerApp and your Amazon.in business is the larger
+                half of your revenue, run Insydz alongside for 14 days. The data
+                will tell you which one to keep.
               </p>
             </div>
           </div>
@@ -842,96 +1611,181 @@ export default function InsydzVsSellerAppContent() {
           <h2 id="faq">Frequently Asked Questions</h2>
           <div className="mb-24">
             {[
-              ["Is Insydz really cheaper than SellerApp, or are features cut?", "Insydz starts at ₹1,999/mo with a forever-free tier; SellerApp paid plans start around $99/mo (~₹8,300). Insydz hasn't cut features — it's cut the global-marketplace overhead Indian sellers don't use, and added Flipkart, Hinglish NLP, and WhatsApp alerts that SellerApp doesn't offer. The savings are real because the product scope is different."],
-              ["Can I migrate my SellerApp keyword and competitor data to Insydz?", "Yes. Insydz import accepts SellerApp's standard CSV exports — tracked keywords, competitor ASINs, PPC negatives, and historical rank data all map across without manual reformatting. Most growth sellers complete migration in under 30 minutes. Your historical PPC learnings carry over; you don't start from zero."],
-              ["Does SellerApp support Flipkart at all?", "No — SellerApp's 16-marketplace coverage is built around Amazon properties (US, UK, IN, JP, DE, etc.). Flipkart is not a supported marketplace. Indian sellers using SellerApp typically run Flipkart in spreadsheets or a separate tool. Insydz tracks Amazon.in and Flipkart natively in the same dashboard."],
-              ["What about PPC automation? Isn't SellerApp stronger there?", "For multi-marketplace global sellers, yes — SellerApp's PPC depth across Amazon US/EU/JP is more mature. For Amazon.in-focused sellers running ₹20K–₹2L/month in ad spend, Insydz's India-tuned automation closes the gap and adds Flipkart ad signals SellerApp can't see. Above ₹5L/month Amazon.in ad spend, run both for 30 days and compare ACoS directly."],
-              ["Is Insydz reliable for serious growth sellers, or just SMB?", "Insydz is built for ₹5L–50L/month Indian D2C operators — exactly the growth-seller segment. The platform handles 500+ ASINs per account, tracks 100+ competitors, supports agency workspaces, and delivers SLA-backed WhatsApp alerts. Enterprise brands above ₹2Cr/month typically still benefit from running Insydz for India + a global tool for export markets."],
-              ["What happens to my data if I cancel Insydz later?", "All your tracked keywords, competitor lists, PPC history, and review intelligence exports as CSV anytime — including after cancellation, for 90 days. There's no data lock-in; you own your seller intelligence. Indian data is hosted on Indian cloud regions, so GST and data-residency questions are handled cleanly."]
+              [
+                "Is Insydz really cheaper than SellerApp, or are features cut?",
+                "Insydz starts at ₹1,999/mo with a forever-free tier; SellerApp paid plans start around $99/mo (~₹8,300). Insydz hasn't cut features — it's cut the global-marketplace overhead Indian sellers don't use, and added Flipkart, Hinglish NLP, and WhatsApp alerts that SellerApp doesn't offer. The savings are real because the product scope is different.",
+              ],
+              [
+                "Can I migrate my SellerApp keyword and competitor data to Insydz?",
+                "Yes. Insydz import accepts SellerApp's standard CSV exports — tracked keywords, competitor ASINs, PPC negatives, and historical rank data all map across without manual reformatting. Most growth sellers complete migration in under 30 minutes. Your historical PPC learnings carry over; you don't start from zero.",
+              ],
+              [
+                "Does SellerApp support Flipkart at all?",
+                "No — SellerApp's 16-marketplace coverage is built around Amazon properties (US, UK, IN, JP, DE, etc.). Flipkart is not a supported marketplace. Indian sellers using SellerApp typically run Flipkart in spreadsheets or a separate tool. Insydz tracks Amazon.in and Flipkart natively in the same dashboard.",
+              ],
+              [
+                "What about PPC automation? Isn't SellerApp stronger there?",
+                "For multi-marketplace global sellers, yes — SellerApp's PPC depth across Amazon US/EU/JP is more mature. For Amazon.in-focused sellers running ₹20K–₹2L/month in ad spend, Insydz's India-tuned automation closes the gap and adds Flipkart ad signals SellerApp can't see. Above ₹5L/month Amazon.in ad spend, run both for 30 days and compare ACoS directly.",
+              ],
+              [
+                "Is Insydz reliable for serious growth sellers, or just SMB?",
+                "Insydz is built for ₹5L–50L/month Indian D2C operators — exactly the growth-seller segment. The platform handles 500+ ASINs per account, tracks 100+ competitors, supports agency workspaces, and delivers SLA-backed WhatsApp alerts. Enterprise brands above ₹2Cr/month typically still benefit from running Insydz for India + a global tool for export markets.",
+              ],
+              [
+                "What happens to my data if I cancel Insydz later?",
+                "All your tracked keywords, competitor lists, PPC history, and review intelligence exports as CSV anytime — including after cancellation, for 90 days. There's no data lock-in; you own your seller intelligence. Indian data is hosted on Indian cloud regions, so GST and data-residency questions are handled cleanly.",
+              ],
             ].map(([q, a], idx) => (
-              <div key={idx} className={`faq-item ${activeIndex === idx ? 'active' : ''}`}>
-                <div className="faq-q" onClick={() => setActiveIndex(activeIndex === idx ? null : idx)}>
+              <div
+                key={idx}
+                className={`faq-item ${activeIndex === idx ? "active" : ""}`}
+              >
+                <div
+                  className="faq-q"
+                  onClick={() =>
+                    setActiveIndex(activeIndex === idx ? null : idx)
+                  }
+                >
                   {q}
-                  <div className={`faq-icon-container ${activeIndex === idx ? 'faq-icon-x' : 'faq-icon-plus'}`}>
-                    {activeIndex === idx ? <X className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
+                  <div
+                    className={`faq-icon-container ${activeIndex === idx ? "faq-icon-x" : "faq-icon-plus"}`}
+                  >
+                    {activeIndex === idx ? (
+                      <X className="w-3 h-3" />
+                    ) : (
+                      <Plus className="w-3 h-3" />
+                    )}
                   </div>
                 </div>
-                {activeIndex === idx && (
-                  <div className="faq-a">
-                    {a}
-                  </div>
-                )}
+                {activeIndex === idx && <div className="faq-a">{a}</div>}
               </div>
             ))}
           </div>
 
           {/* Related */}
-            <div style={{ marginTop:48, paddingTop:28, borderTop:"2px solid #E2E8F0" }}>
-              <h2 style={{ fontSize:"clamp(16px,3vw,20px)", fontWeight:800, color:"#0D1B2A", margin:"0 0 18px", border:"none", padding:0, fontFamily:"'Sora',sans-serif" }} className="dark:text-white">Related Guides</h2>
-              <div className="related-grid">
-                <Link href="/resources/expert-blog/flipkart-keyword-research-tool" className="rel-card" title="Flipkart keyword research for Indian sellers">
-                  <div className="rel-thumb">
-                    <img src="/01_hero_banner.png" alt="Flipkart Keyword Research Guide" />
+          <div
+            style={{
+              marginTop: 48,
+              paddingTop: 28,
+              borderTop: "2px solid #E2E8F0",
+            }}
+          >
+            <h2
+              style={{
+                fontSize: "clamp(16px,3vw,20px)",
+                fontWeight: 800,
+                color: "#0D1B2A",
+                margin: "0 0 18px",
+                border: "none",
+                padding: 0,
+                fontFamily: "'Sora',sans-serif",
+              }}
+              className="dark:text-white"
+            >
+              Related Guides
+            </h2>
+            <div className="related-grid">
+              <Link
+                href="/resources/expert-blog/flipkart-keyword-research-tool"
+                className="rel-card"
+                title="Flipkart keyword research for Indian sellers"
+              >
+                <div className="rel-thumb">
+                  <img
+                    src="/01_hero_banner.png"
+                    alt="Flipkart Keyword Research Guide"
+                  />
+                </div>
+                <div className="rel-body">
+                  <div className="rel-tag">Keyword Research</div>
+                  <div className="rel-title">
+                    Flipkart Keyword Research for Indian Sellers: Complete 2026
+                    Guide
                   </div>
-                  <div className="rel-body">
-                    <div className="rel-tag">Keyword Research</div>
-                    <div className="rel-title">Flipkart Keyword Research for Indian Sellers: Complete 2026 Guide</div>
+                </div>
+              </Link>
+              <Link
+                href="/resources/expert-blog/insydz-vs-helium-10-india"
+                className="rel-card"
+                title="Insydz vs Helium 10 for Indian sellers"
+              >
+                <div className="rel-thumb">
+                  <img
+                    src="/thirteen.png"
+                    alt="Insydz vs Helium 10 comparison"
+                  />
+                </div>
+                <div className="rel-body">
+                  <div className="rel-tag">Compare</div>
+                  <div className="rel-title">
+                    Insydz vs Helium 10: Which is the Right Tool for Indian
+                    Sellers?
                   </div>
-                </Link>
-                <Link href="/resources/expert-blog/insydz-vs-helium-10-india" className="rel-card" title="Insydz vs Helium 10 for Indian sellers">
-                  <div className="rel-thumb">
-                    <img src="/thirteen.png" alt="Insydz vs Helium 10 comparison" />
+                </div>
+              </Link>
+              <Link
+                href="/resources/expert-blog/amazon-competitor-price-tracking-tool"
+                className="rel-card"
+                title="Flipkart pricing automation strategy"
+              >
+                <div className="rel-thumb">
+                  <img
+                    src="/one.png"
+                    alt="Flipkart Pricing Automation Strategy"
+                  />
+                </div>
+                <div className="rel-body">
+                  <div className="rel-tag">Pricing Strategy</div>
+                  <div className="rel-title">
+                    Flipkart Pricing Automation: How to Win the SmartBuy Badge
+                    in 2026
                   </div>
-                  <div className="rel-body">
-                    <div className="rel-tag">Compare</div>
-                    <div className="rel-title">Insydz vs Helium 10: Which is the Right Tool for Indian Sellers?</div>
-                  </div>
-                </Link>
-                <Link href="/resources/expert-blog/amazon-competitor-price-tracking-tool" className="rel-card" title="Flipkart pricing automation strategy">
-                  <div className="rel-thumb">
-                    <img src="/one.png" alt="Flipkart Pricing Automation Strategy" />
-                  </div>
-                  <div className="rel-body">
-                    <div className="rel-tag">Pricing Strategy</div>
-                    <div className="rel-title">Flipkart Pricing Automation: How to Win the SmartBuy Badge in 2026</div>
-                  </div>
-                </Link>
-              </div>
+                </div>
+              </Link>
             </div>
+          </div>
         </main>
       </div>
 
       <section className="py-20 bg-blue-600 text-center relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-4 relative z-10 text-center">
           <h2 className="text-3xl md:text-5xl font-black text-white mb-6 font-['Sora'] leading-tight">
-            Stop Paying USD Prices for a Tool That Can't See Half Your Indian Revenue.
+            Stop Paying USD Prices for a Tool That Can't See Half Your Indian
+            Revenue.
           </h2>
           <p className="text-blue-50 font-['Lora'] text-lg md:text-xl max-w-3xl mx-auto mb-10 leading-relaxed">
-            Insydz is built ground-up for Indian Amazon and Flipkart sellers — INR pricing, GST invoices, WhatsApp alerts, and AI calibrated on Amazon.in plus Flipkart data. Try it parallel to SellerApp, free, for 14 days. The numbers will speak for themselves.
+            Insydz is built ground-up for Indian Amazon and Flipkart sellers —
+            INR pricing, GST invoices, WhatsApp alerts, and AI calibrated on
+            Amazon.in plus Flipkart data. Try it parallel to SellerApp, free,
+            for 14 days. The numbers will speak for themselves.
           </p>
-          
+
           <div className="flex flex-wrap justify-center gap-4 md:gap-8 mb-12">
             {[
               "Forever free plan",
               "₹1,999/mo paid",
               "Amazon.in + Flipkart",
-              "WhatsApp alerts"
+              "WhatsApp alerts",
             ].map((item) => (
-              <div key={item} className="flex items-center gap-2 text-white font-['Sora'] text-sm md:text-base">
+              <div
+                key={item}
+                className="flex items-center gap-2 text-white font-['Sora'] text-sm md:text-base"
+              >
                 <span className="text-white font-bold">✓</span> {item}
               </div>
             ))}
           </div>
 
-          <Button 
-            onClick={() => router.push("/login")} 
+          <Button
+            onClick={() => router.push("/login")}
             className="bg-white text-purple-700 hover:bg-gray-100 font-bold px-8 md:px-12 py-6 md:py-8 text-base md:text-lg rounded-full shadow-2xl transition-all transform hover:scale-105 mb-6"
           >
             → Start Free Trial
           </Button>
 
           <p className="text-blue-200 text-sm font-['Lora']">
-            No credit card · GST invoice on first paid plan · Migration help included
+            No credit card · GST invoice on first paid plan · Migration help
+            included
           </p>
         </div>
       </section>

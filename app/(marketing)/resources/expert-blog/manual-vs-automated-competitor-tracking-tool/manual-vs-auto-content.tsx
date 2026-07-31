@@ -4,18 +4,40 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Search, TrendingUp, Target, DollarSign, BarChart3,
-  MessageCircle, Package, Trophy, Zap, BookOpen,
-  Menu, X, Sun, Moon, ChevronDown, ShoppingBag, Store, Briefcase,
-  Users, Bell, Code, Globe, ArrowLeft, Facebook, Twitter, Linkedin,
-  Instagram, Flame, Presentation, LayoutGrid
+  Search,
+  TrendingUp,
+  Target,
+  DollarSign,
+  BarChart3,
+  MessageCircle,
+  Package,
+  Trophy,
+  Zap,
+  BookOpen,
+  Menu,
+  X,
+  Sun,
+  Moon,
+  ChevronDown,
+  ShoppingBag,
+  Store,
+  Briefcase,
+  Users,
+  Bell,
+  Code,
+  Globe,
+  ArrowLeft,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Instagram,
+  Flame,
+  Presentation,
+  LayoutGrid,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
-
-
-
 
 // ── Schema ─────────────────────────────────────────────────────────────────────
 const schemaManualVsAuto = {
@@ -24,144 +46,369 @@ const schemaManualVsAuto = {
     {
       "@type": "Organization",
       "@id": "https://insydz.com/#organization",
-      "name": "Insydz",
-      "url": "https://insydz.com",
-      "logo": { "@type": "ImageObject", "url": "https://insydz.com/logo.png" },
-      "sameAs": [
+      name: "Insydz",
+      url: "https://insydz.com",
+      logo: { "@type": "ImageObject", url: "https://insydz.com/logo.png" },
+      sameAs: [
         "https://www.instagram.com/growwithinsydz",
         "https://www.linkedin.com/company/insydz/",
         "https://www.facebook.com/profile.php?id=61586202582209",
-        "https://x.com/growwithinsydz"
+        "https://x.com/growwithinsydz",
       ],
-      "description": "AI-powered ecommerce analytics platform for Amazon and Flipkart sellers."
+      description:
+        "AI-powered ecommerce analytics platform for Amazon and Flipkart sellers.",
     },
     {
       "@type": "WebPage",
-      "@id": "https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking",
-      "url": "https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking",
-      "name": "Manual vs Automated Competitor Tracking: What Works in 2026?",
-      "description": "Manual price tracking in Excel vs AI-powered automated competitor tracking — which actually works for Indian ecommerce sellers in 2026?",
-      "isPartOf": { "@type": "WebSite", "name": "Insydz", "url": "https://insydz.com" },
-      "breadcrumb": { "@id": "https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking#breadcrumb" }
+      "@id":
+        "https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking",
+      url: "https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking",
+      name: "Manual vs Automated Competitor Tracking: What Works in 2026?",
+      description:
+        "Manual price tracking in Excel vs AI-powered automated competitor tracking — which actually works for Indian ecommerce sellers in 2026?",
+      isPartOf: {
+        "@type": "WebSite",
+        name: "Insydz",
+        url: "https://insydz.com",
+      },
+      breadcrumb: {
+        "@id":
+          "https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking#breadcrumb",
+      },
     },
     {
       "@type": "BreadcrumbList",
-      "@id": "https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking#breadcrumb",
-      "itemListElement": [
-        { "@type": "ListItem", "position": 1, "name": "Home",         "item": "https://insydz.com" },
-        { "@type": "ListItem", "position": 2, "name": "Resources",    "item": "https://insydz.com/resources" },
-        { "@type": "ListItem", "position": 3, "name": "Expert Blog",  "item": "https://insydz.com/resources/expert-blog" },
-        { "@type": "ListItem", "position": 4, "name": "Manual vs Automated Competitor Tracking", "item": "https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking" }
-      ]
+      "@id":
+        "https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking#breadcrumb",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: "https://insydz.com",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Resources",
+          item: "https://insydz.com/resources",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "Expert Blog",
+          item: "https://insydz.com/resources/expert-blog",
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: "Manual vs Automated Competitor Tracking",
+          item: "https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking",
+        },
+      ],
     },
     {
       "@type": "BlogPosting",
-      "@id": "https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking#article",
-      "headline": "Manual vs Automated Competitor Tracking: What Works in 2026?",
-      "description": "Indian ecommerce sellers spend 3–5 hours daily tracking competitor prices in Excel and still react 24 hours too late. A data-backed comparison of manual vs AI-powered automated competitor tracking for Indian sellers.",
-      "image": "https://insydz.com/assets/images/blog/manual-vs-automated-competitor-tracking.png",
-      "author": { "@type": "Person", "name": "Vikrant Singh", "url": "https://insydz.com/author/vikrant-singh" },
-      "publisher": { "@id": "https://insydz.com/#organization" },
-      "datePublished": "2026-01-20",
-      "dateModified": "2026-01-20",
-      "keywords": ["manual competitor tracking","automated competitor tracking india","amazon price tracking india","ecommerce automation india","buy box price monitoring","competitor price tracking tool"],
-      "articleSection": "Seller Tools & Strategy",
-      "inLanguage": "en-IN",
-      "wordCount": 4400,
-      "timeRequired": "PT12M"
+      "@id":
+        "https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking#article",
+      headline: "Manual vs Automated Competitor Tracking: What Works in 2026?",
+      description:
+        "Indian ecommerce sellers spend 3–5 hours daily tracking competitor prices in Excel and still react 24 hours too late. A data-backed comparison of manual vs AI-powered automated competitor tracking for Indian sellers.",
+      image:
+        "https://insydz.com/assets/images/blog/manual-vs-automated-competitor-tracking.png",
+      author: {
+        "@type": "Person",
+        name: "Vikrant Singh",
+        url: "https://insydz.com/author/vikrant-singh",
+      },
+      publisher: { "@id": "https://insydz.com/#organization" },
+      datePublished: "2026-01-20",
+      dateModified: "2026-01-20",
+      keywords: [
+        "manual competitor tracking",
+        "automated competitor tracking india",
+        "amazon price tracking india",
+        "ecommerce automation india",
+        "buy box price monitoring",
+        "competitor price tracking tool",
+      ],
+      articleSection: "Seller Tools & Strategy",
+      inLanguage: "en-IN",
+      wordCount: 4400,
+      timeRequired: "PT12M",
     },
     {
       "@type": "FAQPage",
-      "@id": "https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking#faq",
-      "mainEntity": [
-        { "@type": "Question", "name": "Is manual price tracking still worth it for Indian ecommerce sellers in 2026?", "acceptedAnswer": { "@type": "Answer", "text": "Manual price tracking in Excel is still viable for sellers at the very early stage — 1–5 SKUs, low-competition categories, or pre-revenue validation. For any seller beyond that threshold, the true cost of manual tracking typically exceeds ₹50,000/month — far more than the ₹1,999/month cost of AI-powered automation." } },
-        { "@type": "Question", "name": "How does automated competitor tracking actually work for Amazon.in sellers?", "acceptedAnswer": { "@type": "Answer", "text": "Automated competitor tracking tools use crawlers or APIs to pull live price data from Amazon.in, Flipkart, and Meesho listings every 15–60 minutes. When a competitor price change exceeds your defined threshold, you receive an instant WhatsApp alert with the competitor's new price, your current price, and an AI-generated recommendation." } },
-        { "@type": "Question", "name": "What's the main difference between free tools and AI-powered price tracking tools?", "acceptedAnswer": { "@type": "Answer", "text": "Free tools show you what the price is. AI-powered tools tell you what the price should be, why it should be that, and what the margin impact will be. Free tools send alerts; AI tools send recommendations." } },
-        { "@type": "Question", "name": "How quickly does automated tracking detect a competitor price change?", "acceptedAnswer": { "@type": "Answer", "text": "India-first AI platforms like Insydz detect competitor price changes within 15–60 minutes and send a WhatsApp alert within the same window. Manual Excel tracking has an average detection delay of 24–48 hours." } },
-        { "@type": "Question", "name": "Will automating price tracking lead to price wars with competitors?", "acceptedAnswer": { "@type": "Answer", "text": "This is backwards. Manual tracking actually causes more destructive price wars because sellers, when they finally discover a competitor's price drop after 24 hours, tend to panic and over-cut. AI-powered automation recommends the minimum adjustment needed — usually a ₹10–50 reduction, not a 15% slash. Precision pricing prevents price wars." } },
-        { "@type": "Question", "name": "How much do automated competitor tracking tools cost for Indian sellers?", "acceptedAnswer": { "@type": "Answer", "text": "Pricing ranges from free (basic tools with Amazon-only, email-only alerts) to ₹1,999–2,999/month for full India-market AI platforms (Insydz), to ₹4,000–8,000/month for global tools that don't even cover Flipkart." } }
-      ]
-    }
-  ]
+      "@id":
+        "https://insydz.com/resources/expert-blog/manual-vs-automated-competitor-tracking#faq",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "Is manual price tracking still worth it for Indian ecommerce sellers in 2026?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Manual price tracking in Excel is still viable for sellers at the very early stage — 1–5 SKUs, low-competition categories, or pre-revenue validation. For any seller beyond that threshold, the true cost of manual tracking typically exceeds ₹50,000/month — far more than the ₹1,999/month cost of AI-powered automation.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How does automated competitor tracking actually work for Amazon.in sellers?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Automated competitor tracking tools use crawlers or APIs to pull live price data from Amazon.in, Flipkart, and Meesho listings every 15–60 minutes. When a competitor price change exceeds your defined threshold, you receive an instant WhatsApp alert with the competitor's new price, your current price, and an AI-generated recommendation.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "What's the main difference between free tools and AI-powered price tracking tools?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Free tools show you what the price is. AI-powered tools tell you what the price should be, why it should be that, and what the margin impact will be. Free tools send alerts; AI tools send recommendations.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How quickly does automated tracking detect a competitor price change?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "India-first AI platforms like Insydz detect competitor price changes within 15–60 minutes and send a WhatsApp alert within the same window. Manual Excel tracking has an average detection delay of 24–48 hours.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "Will automating price tracking lead to price wars with competitors?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "This is backwards. Manual tracking actually causes more destructive price wars because sellers, when they finally discover a competitor's price drop after 24 hours, tend to panic and over-cut. AI-powered automation recommends the minimum adjustment needed — usually a ₹10–50 reduction, not a 15% slash. Precision pricing prevents price wars.",
+          },
+        },
+        {
+          "@type": "Question",
+          name: "How much do automated competitor tracking tools cost for Indian sellers?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Pricing ranges from free (basic tools with Amazon-only, email-only alerts) to ₹1,999–2,999/month for full India-market AI platforms (Insydz), to ₹4,000–8,000/month for global tools that don't even cover Flipkart.",
+          },
+        },
+      ],
+    },
+  ],
 };
 
 // ── Nav Types ─────────────────────────────────────────────────────────────────
-type MenuItemWithBadge = { name: string; icon: JSX.Element; badge?: string; route?: string; };
+type MenuItemWithBadge = {
+  name: string;
+  icon: JSX.Element;
+  badge?: string;
+  route?: string;
+};
 type NavigationMenu = {
-  Solutions: MenuItemWithBadge[]; "Use Cases": MenuItemWithBadge[]; Features: MenuItemWithBadge[];
-  "Free Tools": MenuItemWithBadge[]; Resources: MenuItemWithBadge[]; Integrations: MenuItemWithBadge[];
-  Compare: MenuItemWithBadge[]; About: MenuItemWithBadge[];
+  Solutions: MenuItemWithBadge[];
+  "Use Cases": MenuItemWithBadge[];
+  Features: MenuItemWithBadge[];
+  "Free Tools": MenuItemWithBadge[];
+  Resources: MenuItemWithBadge[];
+  Integrations: MenuItemWithBadge[];
+  Compare: MenuItemWithBadge[];
+  About: MenuItemWithBadge[];
 };
 
 const navigationMenu: NavigationMenu = {
   Solutions: [
-    { name:"All Solutions (Overview)",      icon:<ShoppingBag className="w-4 h-4"/>, route:"/solutions" },
-    { name:"For Amazon Sellers (India)",     icon:<ShoppingBag className="w-4 h-4"/>, route:"/solutions/amazon-sellers" },
-    { name:"For Flipkart Sellers",           icon:<Store     className="w-4 h-4"/>, route:"/solutions/flipkart-sellers" },
-    { name:"For E-commerce Agencies",        icon:<Briefcase className="w-4 h-4"/>, route:"/solutions/ecommerce-agencies" },
-    { name:"For Brand Managers",             icon:<Users     className="w-4 h-4"/>, route:"/solutions/brand-managers" },
+    {
+      name: "All Solutions (Overview)",
+      icon: <ShoppingBag className="w-4 h-4" />,
+      route: "/solutions",
+    },
+    {
+      name: "For Amazon Sellers (India)",
+      icon: <ShoppingBag className="w-4 h-4" />,
+      route: "/solutions/amazon-sellers",
+    },
+    {
+      name: "For Flipkart Sellers",
+      icon: <Store className="w-4 h-4" />,
+      route: "/solutions/flipkart-sellers",
+    },
+    {
+      name: "For E-commerce Agencies",
+      icon: <Briefcase className="w-4 h-4" />,
+      route: "/solutions/ecommerce-agencies",
+    },
+    {
+      name: "For Brand Managers",
+      icon: <Users className="w-4 h-4" />,
+      route: "/solutions/brand-managers",
+    },
   ],
   "Use Cases": [
-    { name:"All Use Cases",                  icon:<TrendingUp    className="w-4 h-4"/>, route:"/use-cases" },
-    { name:"Track Competitor Prices",        icon:<TrendingUp    className="w-4 h-4"/>, route:"/use-cases/track-competitor-prices" },
-    { name:"Find Profitable Products",       icon:<Target        className="w-4 h-4"/>, route:"/use-cases/find-profitable-products" },
-    { name:"Analyze Customer Reviews",       icon:<MessageCircle className="w-4 h-4"/>, route:"/use-cases/analyze-customer-reviews" },
-    { name:"Improve Amazon & Flipkart SEO",  icon:<Search        className="w-4 h-4"/>, route:"/use-cases/improve-seo" },
-    { name:"Avoid Stockouts & Missed Sales", icon:<Package       className="w-4 h-4"/>, route:"/use-cases/avoid-stockouts" },
+    {
+      name: "All Use Cases",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/use-cases",
+    },
+    {
+      name: "Track Competitor Prices",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/use-cases/track-competitor-prices",
+    },
+    {
+      name: "Find Profitable Products",
+      icon: <Target className="w-4 h-4" />,
+      route: "/use-cases/find-profitable-products",
+    },
+    {
+      name: "Analyze Customer Reviews",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/use-cases/analyze-customer-reviews",
+    },
+    {
+      name: "Improve Amazon & Flipkart SEO",
+      icon: <Search className="w-4 h-4" />,
+      route: "/use-cases/improve-seo",
+    },
+    {
+      name: "Avoid Stockouts & Missed Sales",
+      icon: <Package className="w-4 h-4" />,
+      route: "/use-cases/avoid-stockouts",
+    },
   ],
   Features: [
-    { name:"All Features",                   icon:<LayoutGrid    className="w-4 h-4"/>, route:"/features" },
-    { name:"Competitor Price Tracking",      icon:<DollarSign    className="w-4 h-4"/>, route:"/features/competitor-price-tracking-feature" },
-    { name:"Review Analytics",               icon:<MessageCircle className="w-4 h-4"/>, route:"/features/review-analytics-feature" },
-    { name:"Price Optimization",             icon:<TrendingUp    className="w-4 h-4"/>, route:"/features/price-optimization-feature" },
-    { name:"Keyword & Rank Tracking",        icon:<Search        className="w-4 h-4"/>, route:"/features/keyword-rank-tracking-feature" },
-    { name:"Product Research",               icon:<Package       className="w-4 h-4"/>, route:"/features/product-research-feature" },
-    { name:"AI Recommendations",             icon:<Zap           className="w-4 h-4"/>, route:"/features/ai-recommendations-feature" },
-    { name:"WhatsApp Alerts",                icon:<Bell          className="w-4 h-4"/>, badge:"NEW",      route:"/features/whatsapp-alerts-feature" },
-    { name:"Festive Trend Intelligence",     icon:<Flame         className="w-4 h-4"/>, badge:"UPCOMING", route:"/features/festive-trend-feature" },
+    {
+      name: "All Features",
+      icon: <LayoutGrid className="w-4 h-4" />,
+      route: "/features",
+    },
+    {
+      name: "Competitor Price Tracking",
+      icon: <DollarSign className="w-4 h-4" />,
+      route: "/features/competitor-price-tracking-feature",
+    },
+    {
+      name: "Review Analytics",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/features/review-analytics-feature",
+    },
+    {
+      name: "Price Optimization",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/features/price-optimization-feature",
+    },
+    {
+      name: "Keyword & Rank Tracking",
+      icon: <Search className="w-4 h-4" />,
+      route: "/features/keyword-rank-tracking-feature",
+    },
+    {
+      name: "Product Research",
+      icon: <Package className="w-4 h-4" />,
+      route: "/features/product-research-feature",
+    },
+    {
+      name: "AI Recommendations",
+      icon: <Zap className="w-4 h-4" />,
+      route: "/features/ai-recommendations-feature",
+    },
+    {
+      name: "WhatsApp Alerts",
+      icon: <Bell className="w-4 h-4" />,
+      badge: "NEW",
+      route: "/features/whatsapp-alerts-feature",
+    },
+    {
+      name: "Festive Trend Intelligence",
+      icon: <Flame className="w-4 h-4" />,
+      badge: "UPCOMING",
+      route: "/features/festive-trend-feature",
+    },
   ],
   "Free Tools": [
-    { name:"Free Amazon Product Analyzer",   icon:<BarChart3     className="w-4 h-4"/>, route:"/free-tools/free-amazon-product-analyzer" },
-    { name:"Free Review Sentiment Checker",  icon:<MessageCircle className="w-4 h-4"/>, route:"/free-tools/free-review-sentiment-checker" },
-    { name:"Free Competitor Price Checker",  icon:<DollarSign    className="w-4 h-4"/>, route:"/free-tools/free-competitor-price-checker" },
-    { name:"Free Keyword Rank Checker",      icon:<Search        className="w-4 h-4"/>, badge:"NEW", route:"/free-tools/free-keyword-rank-checker" },
+    {
+      name: "Free Amazon Product Analyzer",
+      icon: <BarChart3 className="w-4 h-4" />,
+      route: "/free-tools/free-amazon-product-analyzer",
+    },
+    {
+      name: "Free Review Sentiment Checker",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/free-tools/free-review-sentiment-checker",
+    },
+    {
+      name: "Free Competitor Price Checker",
+      icon: <DollarSign className="w-4 h-4" />,
+      route: "/free-tools/free-competitor-price-checker",
+    },
+    {
+      name: "Free Keyword Rank Checker",
+      icon: <Search className="w-4 h-4" />,
+      badge: "NEW",
+      route: "/free-tools/free-keyword-rank-checker",
+    },
   ],
   Resources: [
-    { name:"Expert Blog", icon:<BookOpen className="w-4 h-4"/>, route:"/resources/expert-blog" },
+    {
+      name: "Expert Blog",
+      icon: <BookOpen className="w-4 h-4" />,
+      route: "/resources/expert-blog",
+    },
   ],
   Integrations: [
-    { name:"Amazon",            icon:<ShoppingBag className="w-4 h-4"/> },
-    { name:"Flipkart",          icon:<Store       className="w-4 h-4"/> },
-    { name:"Shopify",           icon:<Globe       className="w-4 h-4"/> },
-    { name:"API Documentation", icon:<Code        className="w-4 h-4"/> },
+    { name: "Amazon", icon: <ShoppingBag className="w-4 h-4" /> },
+    { name: "Flipkart", icon: <Store className="w-4 h-4" /> },
+    { name: "Shopify", icon: <Globe className="w-4 h-4" /> },
+    { name: "API Documentation", icon: <Code className="w-4 h-4" /> },
   ],
   Compare: [
-    { name:"Insydz vs Helium 10",    icon:<Trophy className="w-4 h-4"/>, route:"/compare/insydzvshelium" },
-    { name:"Insydz vs Jungle Scout", icon:<Trophy className="w-4 h-4"/>, route:"/compare/insydzvsjunglescout" },
-    { name:"Insydz vs Viral Launch", icon:<Trophy className="w-4 h-4"/>, route:"/compare/insydzvsvirallaunch" },
+    {
+      name: "Insydz vs Helium 10",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvshelium",
+    },
+    {
+      name: "Insydz vs Jungle Scout",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvsjunglescout",
+    },
+    {
+      name: "Insydz vs Viral Launch",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvsvirallaunch",
+    },
   ],
   About: [
-    { name:"Our Vision",   icon:<Presentation className="w-4 h-4"/>, route:"/about/our-vision" },
-    { name:"Careers",      icon:<Globe        className="w-4 h-4"/>, route:"/about/careers" },
-    { name:"Contact Us",   icon:<Users        className="w-4 h-4"/>, route:"/about/contact-us" },
+    {
+      name: "Our Vision",
+      icon: <Presentation className="w-4 h-4" />,
+      route: "/about/our-vision",
+    },
+    {
+      name: "Careers",
+      icon: <Globe className="w-4 h-4" />,
+      route: "/about/careers",
+    },
+    {
+      name: "Contact Us",
+      icon: <Users className="w-4 h-4" />,
+      route: "/about/contact-us",
+    },
   ],
 };
 
 // ── TOC ───────────────────────────────────────────────────────────────────────
 const TOC = [
-  { id:"core-diff",    label:"The Core Difference" },
-  { id:"full-compare", label:"Manual vs Automated — Full Breakdown" },
-  { id:"manual",       label:"Manual Price Tracking: Full Picture" },
-  { id:"automated",    label:"Automated Tracking: Full Picture" },
-  { id:"real-cost",    label:"Real Cost Comparison" },
-  { id:"when-manual",  label:"When Manual Still Makes Sense" },
-  { id:"signs",        label:"5 Signs You've Waited Too Long" },
-  { id:"execution",    label:"Weekly Execution Model" },
-  { id:"metrics",      label:"Key Metrics to Track" },
-  { id:"tools",        label:"Best Tools in India (2026)" },
-  { id:"verdict",      label:"The 2026 Verdict" },
-  { id:"faq",          label:"Frequently Asked Questions" },
-  { id:"final",        label:"Final Thoughts" },
+  { id: "core-diff", label: "The Core Difference" },
+  { id: "full-compare", label: "Manual vs Automated — Full Breakdown" },
+  { id: "manual", label: "Manual Price Tracking: Full Picture" },
+  { id: "automated", label: "Automated Tracking: Full Picture" },
+  { id: "real-cost", label: "Real Cost Comparison" },
+  { id: "when-manual", label: "When Manual Still Makes Sense" },
+  { id: "signs", label: "5 Signs You've Waited Too Long" },
+  { id: "execution", label: "Weekly Execution Model" },
+  { id: "metrics", label: "Key Metrics to Track" },
+  { id: "tools", label: "Best Tools in India (2026)" },
+  { id: "verdict", label: "The 2026 Verdict" },
+  { id: "faq", label: "Frequently Asked Questions" },
+  { id: "final", label: "Final Thoughts" },
 ];
 
 // ── FAQ ───────────────────────────────────────────────────────────────────────
@@ -194,63 +441,174 @@ const FAQS = [
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 const compareRows = [
-  { factor:"Detection Speed",    manual:"24–48 hours",          auto:"< 60 minutes",         winner:"AI" },
-  { factor:"Data Accuracy",      manual:"82–88% (human error)",  auto:"99.9% (API crawl)",    winner:"AI" },
-  { factor:"Daily Labour",       manual:"3–5 hrs/day",           auto:"Zero — fully automated",winner:"AI" },
-  { factor:"SKU Scalability",    manual:"8–12 SKUs practical",   auto:"Unlimited",            winner:"AI" },
-  { factor:"Alert Method",       manual:"None — proactive check",auto:"WhatsApp in real time", winner:"AI" },
-  { factor:"Recommendation",     manual:"Raw data only",         auto:"AI decision + margin",  winner:"AI" },
-  { factor:"Monthly Tool Cost",  manual:"Free",                  auto:"₹1,999–2,999/mo",       winner:"Manual" },
-  { factor:"True Monthly Cost",  manual:"₹96,000+ (all-in)",     auto:"₹1,999–2,999/mo",       winner:"AI" },
+  {
+    factor: "Detection Speed",
+    manual: "24–48 hours",
+    auto: "< 60 minutes",
+    winner: "AI",
+  },
+  {
+    factor: "Data Accuracy",
+    manual: "82–88% (human error)",
+    auto: "99.9% (API crawl)",
+    winner: "AI",
+  },
+  {
+    factor: "Daily Labour",
+    manual: "3–5 hrs/day",
+    auto: "Zero — fully automated",
+    winner: "AI",
+  },
+  {
+    factor: "SKU Scalability",
+    manual: "8–12 SKUs practical",
+    auto: "Unlimited",
+    winner: "AI",
+  },
+  {
+    factor: "Alert Method",
+    manual: "None — proactive check",
+    auto: "WhatsApp in real time",
+    winner: "AI",
+  },
+  {
+    factor: "Recommendation",
+    manual: "Raw data only",
+    auto: "AI decision + margin",
+    winner: "AI",
+  },
+  {
+    factor: "Monthly Tool Cost",
+    manual: "Free",
+    auto: "₹1,999–2,999/mo",
+    winner: "Manual",
+  },
+  {
+    factor: "True Monthly Cost",
+    manual: "₹96,000+ (all-in)",
+    auto: "₹1,999–2,999/mo",
+    winner: "AI",
+  },
 ];
 
 const costRows = [
-  { method:"Manual Excel Tracking",      speed:"24–48 hrs", accuracy:"Low (human error)", action:"None — just data",  cost:"₹96,000+ (labour + revenue loss)" },
-  { method:"Basic Free Alert Tools",     speed:"2–6 hours", accuracy:"Medium",            action:"Low — alerts only", cost:"Free–₹500 + partial revenue loss" },
-  { method:"Global SaaS (Helium 10)",    speed:"1–2 hours", accuracy:"High",              action:"Medium (US-focused)",cost:"₹4,000–8,000/mo (no Flipkart)" },
-  { method:"India-First AI (Insydz) ★", speed:"< 1 hour",  accuracy:"High",              action:"High — Actionable AI",cost:"₹1,999–2,999/mo" },
+  {
+    method: "Manual Excel Tracking",
+    speed: "24–48 hrs",
+    accuracy: "Low (human error)",
+    action: "None — just data",
+    cost: "₹96,000+ (labour + revenue loss)",
+  },
+  {
+    method: "Basic Free Alert Tools",
+    speed: "2–6 hours",
+    accuracy: "Medium",
+    action: "Low — alerts only",
+    cost: "Free–₹500 + partial revenue loss",
+  },
+  {
+    method: "Global SaaS (Helium 10)",
+    speed: "1–2 hours",
+    accuracy: "High",
+    action: "Medium (US-focused)",
+    cost: "₹4,000–8,000/mo (no Flipkart)",
+  },
+  {
+    method: "India-First AI (Insydz) ★",
+    speed: "< 1 hour",
+    accuracy: "High",
+    action: "High — Actionable AI",
+    cost: "₹1,999–2,999/mo",
+  },
 ];
 
 const toolRows = [
-  { tool:"Helium 10",   amz:"Partial", fk:"No",  wa:"No",  intent:"US Only",    price:"₹4,000–8,000/mo" },
-  { tool:"Jungle Scout",amz:"Partial", fk:"No",  wa:"No",  intent:"US Only",    price:"₹4,500–7,000/mo" },
-  { tool:"Sonar (Free)",amz:"Yes",     fk:"No",  wa:"No",  intent:"Basic",      price:"Free" },
-  { tool:"Insydz ✦",   amz:"Yes",     fk:"Yes", wa:"Yes", intent:"AI-Powered", price:"₹1,999/mo + Free" },
+  {
+    tool: "Helium 10",
+    amz: "Partial",
+    fk: "No",
+    wa: "No",
+    intent: "US Only",
+    price: "₹4,000–8,000/mo",
+  },
+  {
+    tool: "Jungle Scout",
+    amz: "Partial",
+    fk: "No",
+    wa: "No",
+    intent: "US Only",
+    price: "₹4,500–7,000/mo",
+  },
+  {
+    tool: "Sonar (Free)",
+    amz: "Yes",
+    fk: "No",
+    wa: "No",
+    intent: "Basic",
+    price: "Free",
+  },
+  {
+    tool: "Insydz ✦",
+    amz: "Yes",
+    fk: "Yes",
+    wa: "Yes",
+    intent: "AI-Powered",
+    price: "₹1,999/mo + Free",
+  },
 ];
 
 const signs = [
-  { t:"You're Discovering Price Changes Through Customer Complaints",      d:"If buyers are telling you 'I bought from Competitor X because they were cheaper' the competitor changed their price days ago. By the time a customer tells you, you've already lost dozens of sales to that price gap. This is the most expensive early warning sign." },
-  { t:"Your Buy Box Win Rate Has Dropped Without an Obvious Reason",       d:"If your Buy Box percentage has fallen 10–20 points but your listing quality hasn't changed, a competitor almost certainly made a price move you didn't catch in time. Manual Excel monitoring doesn't track Buy Box win rate it only captures the price you remembered to check that morning." },
-  { t:"You're Reactively Slashing Prices Instead of Precisely Adjusting", d:"Without real-time data and AI intelligence, most Indian sellers respond to perceived competitive pressure by cutting prices aggressively destroying margins unnecessarily. AI price tracking tools calculate the minimum adjustment needed to stay competitive, which is almost always less than the instinctive panic cut." },
-  { t:"You Can't Scale Past 20 SKUs Without Hiring Someone for Price Tracking", d:"Manual tracking scales linearly with SKU count. At 20 SKUs, the daily price check becomes a 3–4 hour job. At 50 SKUs, it's a full-time role. Ecommerce automation in India means your price intelligence capacity should grow with your catalogue not require headcount." },
-  { t:"You're Missing Overnight Price Changes Despite Daily Manual Checks",  d:"Most price wars happen at 10 PM. Competitors make moves knowing you won't notice until 9 AM giving them a 10-hour window to capture your Buy Box while you sleep. Automated real-time alerts have no business hours." },
+  {
+    t: "You're Discovering Price Changes Through Customer Complaints",
+    d: "If buyers are telling you 'I bought from Competitor X because they were cheaper' the competitor changed their price days ago. By the time a customer tells you, you've already lost dozens of sales to that price gap. This is the most expensive early warning sign.",
+  },
+  {
+    t: "Your Buy Box Win Rate Has Dropped Without an Obvious Reason",
+    d: "If your Buy Box percentage has fallen 10–20 points but your listing quality hasn't changed, a competitor almost certainly made a price move you didn't catch in time. Manual Excel monitoring doesn't track Buy Box win rate it only captures the price you remembered to check that morning.",
+  },
+  {
+    t: "You're Reactively Slashing Prices Instead of Precisely Adjusting",
+    d: "Without real-time data and AI intelligence, most Indian sellers respond to perceived competitive pressure by cutting prices aggressively destroying margins unnecessarily. AI price tracking tools calculate the minimum adjustment needed to stay competitive, which is almost always less than the instinctive panic cut.",
+  },
+  {
+    t: "You Can't Scale Past 20 SKUs Without Hiring Someone for Price Tracking",
+    d: "Manual tracking scales linearly with SKU count. At 20 SKUs, the daily price check becomes a 3–4 hour job. At 50 SKUs, it's a full-time role. Ecommerce automation in India means your price intelligence capacity should grow with your catalogue not require headcount.",
+  },
+  {
+    t: "You're Missing Overnight Price Changes Despite Daily Manual Checks",
+    d: "Most price wars happen at 10 PM. Competitors make moves knowing you won't notice until 9 AM giving them a 10-hour window to capture your Buy Box while you sleep. Automated real-time alerts have no business hours.",
+  },
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function ManualVsAutomatedCompetitorTracking() {
   const router = useRouter();
   const [activeSection, setActiveSection] = useState("core-diff");
-  const [scrollPct, setScrollPct]   = useState(0);
-  const [tocOpen, setTocOpen]       = useState(false);
-  const [openFaq, setOpenFaq]       = useState<number | null>(0);
+  const [scrollPct, setScrollPct] = useState(0);
+  const [tocOpen, setTocOpen] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled]     = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [activeDropdown, setActiveDropdown]     = useState<string | null>(null);
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { document.documentElement.classList.toggle("dark", isDarkMode); }, [isDarkMode]);
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+  }, [isDarkMode]);
 
   useEffect(() => {
     const id = "insydz-manual-vs-auto-schema";
     if (document.getElementById(id)) return;
     const script = document.createElement("script");
-    script.id   = id;
+    script.id = id;
     script.type = "application/ld+json";
     script.textContent = JSON.stringify(schemaManualVsAuto);
     document.head.appendChild(script);
-    return () => { document.getElementById(id)?.remove(); };
+    return () => {
+      document.getElementById(id)?.remove();
+    };
   }, []);
 
   useEffect(() => {
@@ -260,7 +618,10 @@ export default function ManualVsAutomatedCompetitorTracking() {
       setScrollPct(Math.min((window.scrollY / total) * 100, 100));
       for (let i = TOC.length - 1; i >= 0; i--) {
         const el = document.getElementById(TOC[i].id);
-        if (el && window.scrollY >= el.offsetTop - 130) { setActiveSection(TOC[i].id); break; }
+        if (el && window.scrollY >= el.offsetTop - 130) {
+          setActiveSection(TOC[i].id);
+          break;
+        }
       }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -269,31 +630,52 @@ export default function ManualVsAutomatedCompetitorTracking() {
 
   useEffect(() => {
     const h = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setActiveDropdown(null);
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      )
+        setActiveDropdown(null);
     };
     document.addEventListener("mousedown", h);
     return () => document.removeEventListener("mousedown", h);
   }, []);
 
   useEffect(() => {
-    const handleResize = () => { if (window.innerWidth >= 1024) setIsMenuOpen(false); };
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) setIsMenuOpen(false);
+    };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const go = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
     setTocOpen(false);
   };
 
   const handleMenuItemClick = (item: MenuItemWithBadge) => {
-    if (item.route) { router.push(item.route); setActiveDropdown(null); setIsMenuOpen(false); }
+    if (item.route) {
+      router.push(item.route);
+      setActiveDropdown(null);
+      setIsMenuOpen(false);
+    }
   };
 
-  const toggleMobileMenu = (name: string) => setMobileActiveMenu(p => p === name ? null : name);
+  const toggleMobileMenu = (name: string) =>
+    setMobileActiveMenu((p) => (p === name ? null : name));
 
-  const DesktopDropdown = ({ label, menuKey, accent = "blue" }: { label: string; menuKey: keyof NavigationMenu; accent?: "blue" | "orange" }) => {
-    const items    = navigationMenu[menuKey];
+  const DesktopDropdown = ({
+    label,
+    menuKey,
+    accent = "blue",
+  }: {
+    label: string;
+    menuKey: keyof NavigationMenu;
+    accent?: "blue" | "orange";
+  }) => {
+    const items = navigationMenu[menuKey];
     const isActive = activeDropdown === label;
     const isOrange = accent === "orange";
     return (
@@ -302,12 +684,16 @@ export default function ManualVsAutomatedCompetitorTracking() {
           onMouseEnter={() => setActiveDropdown(label)}
           className={`px-2 xl:px-3 py-2 text-xs xl:text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${
             isActive
-              ? (isOrange ? "text-orange-500 font-semibold" : "text-blue-600 font-semibold")
+              ? isOrange
+                ? "text-orange-500 font-semibold"
+                : "text-blue-600 font-semibold"
               : "text-gray-700 dark:text-gray-300 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
           }`}
         >
           {label}
-          <ChevronDown className={`w-3 h-3 xl:w-3.5 xl:h-3.5 transition-transform ${isActive ? "rotate-180" : ""}`} />
+          <ChevronDown
+            className={`w-3 h-3 xl:w-3.5 xl:h-3.5 transition-transform ${isActive ? "rotate-180" : ""}`}
+          />
         </button>
         {isActive && (
           <div
@@ -320,8 +706,12 @@ export default function ManualVsAutomatedCompetitorTracking() {
                 onClick={() => handleMenuItemClick(item)}
                 className="w-full px-4 py-2.5 text-left flex items-center gap-3 hover:bg-blue-50 dark:hover:bg-blue-900/20"
               >
-                <span className="flex-shrink-0 text-blue-600 dark:text-blue-400">{item.icon}</span>
-                <span className="text-xs xl:text-sm text-gray-700 dark:text-gray-300 flex-1 text-left">{item.name}</span>
+                <span className="flex-shrink-0 text-blue-600 dark:text-blue-400">
+                  {item.icon}
+                </span>
+                <span className="text-xs xl:text-sm text-gray-700 dark:text-gray-300 flex-1 text-left">
+                  {item.name}
+                </span>
                 {item.badge && (
                   <span className="text-xs bg-gradient-to-r from-blue-600 to-orange-500 text-white px-1.5 py-0.5 rounded-full font-semibold flex-shrink-0">
                     {item.badge}
@@ -337,8 +727,6 @@ export default function ManualVsAutomatedCompetitorTracking() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
-      
-
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
         *,*::before,*::after{box-sizing:border-box}
@@ -349,13 +737,13 @@ export default function ManualVsAutomatedCompetitorTracking() {
         @media(min-width:640px){.read-progress{top:72px}}
         @media(min-width:1024px){.read-progress{top:80px}}
 
-        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0}
-        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px}}
-        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px}}
-        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px}}
+        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0;align-items:start}
+        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px;align-items:start}}
+        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px;align-items:start}}
+        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px;align-items:start}}
 
         .toc-sidebar{display:none}
-        @media(min-width:768px){.toc-sidebar{display:block;position:sticky;top:76px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);max-height:calc(100vh - 96px);overflow-y:auto}}
+        @media(min-width:768px){.toc-sidebar{display:block;position:sticky;top:76px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);max-height:calc(100vh - 96px);overflow-y:auto;align-self:start;height:fit-content}}
         @media(min-width:1024px){.toc-sidebar{top:80px;padding:22px}}
         .dark .toc-sidebar{background:#111827;border-color:#1f2937}
 
@@ -644,62 +1032,249 @@ export default function ManualVsAutomatedCompetitorTracking() {
       {/* BREADCRUMB */}
       <div className="breadcrumb" style={{ marginTop: 80 }}>
         <div className="breadcrumb-inner">
-          <Link href="/" style={{ color:"#64748B", fontWeight:500, textDecoration:"none" }}>Home</Link>
+          <Link
+            href="/"
+            style={{
+              color: "#64748B",
+              fontWeight: 500,
+              textDecoration: "none",
+            }}
+          >
+            Home
+          </Link>
           <span>›</span>
-          <Link href="/resources/expert-blog" style={{ color:"#64748B", fontWeight:500, textDecoration:"none" }}>Blog</Link>
+          <Link
+            href="/resources/expert-blog"
+            style={{
+              color: "#64748B",
+              fontWeight: 500,
+              textDecoration: "none",
+            }}
+          >
+            Blog
+          </Link>
           <span>›</span>
-          <Link href="/resources/expert-blog" style={{ color:"#64748B", fontWeight:500, textDecoration:"none" }}>Price Tracking</Link>
+          <Link
+            href="/resources/expert-blog"
+            style={{
+              color: "#64748B",
+              fontWeight: 500,
+              textDecoration: "none",
+            }}
+          >
+            Price Tracking
+          </Link>
           <span>›</span>
-          <span style={{ color:"#94A3B8" }}>Manual vs Automated Competitor Tracking</span>
+          <span style={{ color: "#94A3B8" }}>
+            Manual vs Automated Competitor Tracking
+          </span>
         </div>
       </div>
 
       {/* HERO */}
       <div className="article-hero">
-        <div style={{ display:"inline-flex", alignItems:"center", gap:6, background:"#FFF7ED", color:"#F4500A", fontSize:"clamp(10px,2vw,11.5px)", fontWeight:700, letterSpacing:.6, textTransform:"uppercase" as const, padding:"4px 12px", borderRadius:20, marginBottom:14, border:"1px solid rgba(244,80,10,.2)", fontFamily:"'Sora',sans-serif" }}>
+        <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            background: "#FFF7ED",
+            color: "#F4500A",
+            fontSize: "clamp(10px,2vw,11.5px)",
+            fontWeight: 700,
+            letterSpacing: 0.6,
+            textTransform: "uppercase" as const,
+            padding: "4px 12px",
+            borderRadius: 20,
+            marginBottom: 14,
+            border: "1px solid rgba(244,80,10,.2)",
+            fontFamily: "'Sora',sans-serif",
+          }}
+        >
           ◆ Seller Tools &amp; Strategy
         </div>
-        <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(32px, 4.5vw, 52px)", fontWeight: 800, color: "#0D1B2A", lineHeight: 1.1, letterSpacing: "-0.03em" }} className="dark:text-white">
-          <span style={{ color:"#F4500A" }}>Manual vs Automated</span>{" "} Competitor Tracking:{" "}
-          <span style={{ color:"#0ABFA4" }}>What Works in 2026?</span>
+        <h1
+          style={{
+            fontFamily: "'Sora',sans-serif",
+            fontSize: "clamp(32px, 4.5vw, 52px)",
+            fontWeight: 800,
+            color: "#0D1B2A",
+            lineHeight: 1.1,
+            letterSpacing: "-0.03em",
+          }}
+          className="dark:text-white"
+        >
+          <span style={{ color: "#F4500A" }}>Manual vs Automated</span>{" "}
+          Competitor Tracking:{" "}
+          <span style={{ color: "#0ABFA4" }}>What Works in 2026?</span>
         </h1>
-        <p style={{ fontFamily:"'Lora',serif", fontSize:"clamp(14px,2vw,16px)", color:"#4B5568", lineHeight:1.75, maxWidth:620, marginBottom:18 }}>
-          Indian ecommerce sellers spend 3–5 hours daily tracking competitor prices in Excel and still react 24 hours too late. Here's an honest, data-backed comparison of manual price tracking versus AI-powered automated competitor tracking, and exactly which approach works for Indian sellers at every growth stage.
+        <p
+          style={{
+            fontFamily: "'Lora',serif",
+            fontSize: "clamp(14px,2vw,16px)",
+            color: "#4B5568",
+            lineHeight: 1.75,
+            maxWidth: 620,
+            marginBottom: 18,
+          }}
+        >
+          Indian ecommerce sellers spend 3–5 hours daily tracking competitor
+          prices in Excel and still react 24 hours too late. Here's an honest,
+          data-backed comparison of manual price tracking versus AI-powered
+          automated competitor tracking, and exactly which approach works for
+          Indian sellers at every growth stage.
         </p>
-        <div style={{ display:"flex", alignItems:"center", flexWrap:"wrap" as const, gap:"4px 14px", marginBottom:20 }}>
-          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>👤 <strong className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer" onClick={() => router.push("/author/vikrant-singh")}>Vikrant Singh</strong></div>
-          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>🕐 January 2026</div>
-          <div style={{ display:"flex", alignItems:"center", gap:5, fontSize:"clamp(11px,2vw,13px)", color:"#64748B" }}>📖 <strong>12 min read</strong></div>
-          <span style={{ background:"rgba(244,80,10,.12)", color:"#F4500A", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"3px 10px", borderRadius:20 }}>Updated for 2026</span>
-          <span style={{ background:"rgba(10,191,164,.12)", color:"#0ABFA4", fontSize:"clamp(9px,2vw,11px)", fontWeight:700, padding:"3px 10px", borderRadius:20 }}>Seller Strategy Guide</span>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            flexWrap: "wrap" as const,
+            gap: "4px 14px",
+            marginBottom: 20,
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 5,
+              fontSize: "clamp(11px,2vw,13px)",
+              color: "#64748B",
+            }}
+          >
+            👤{" "}
+            <strong
+              className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer"
+              onClick={() => router.push("/author/vikrant-singh")}
+            >
+              Vikrant Singh
+            </strong>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 5,
+              fontSize: "clamp(11px,2vw,13px)",
+              color: "#64748B",
+            }}
+          >
+            🕐 January 2026
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 5,
+              fontSize: "clamp(11px,2vw,13px)",
+              color: "#64748B",
+            }}
+          >
+            📖 <strong>12 min read</strong>
+          </div>
+          <span
+            style={{
+              background: "rgba(244,80,10,.12)",
+              color: "#F4500A",
+              fontSize: "clamp(9px,2vw,11px)",
+              fontWeight: 700,
+              padding: "3px 10px",
+              borderRadius: 20,
+            }}
+          >
+            Updated for 2026
+          </span>
+          <span
+            style={{
+              background: "rgba(10,191,164,.12)",
+              color: "#0ABFA4",
+              fontSize: "clamp(9px,2vw,11px)",
+              fontWeight: 700,
+              padding: "3px 10px",
+              borderRadius: 20,
+            }}
+          >
+            Seller Strategy Guide
+          </span>
         </div>
 
         {/* Stats bar */}
-        <div className="stat-strip" style={{ marginBottom:24 }}>
+        <div className="stat-strip" style={{ marginBottom: 24 }}>
           {[
-            { val:"3–5 hrs",  col:"#F4500A", lbl:"Daily Time Indian Sellers Spend on Manual Price Tracking" },
-            { val:"24–48 hrs",col:"#E74C3C", lbl:"Average Delay Before Manual Tracking Detects a Price Change" },
-            { val:"< 1 hr",   col:"#0ABFA4", lbl:"AI Response Time to Competitor Price Drop with Automated Alerts" },
-            { val:"₹45K",     col:"#0A0F1A", lbl:"Avg. Monthly Revenue Recovered After Switching to Automation" },
-          ].map(s => (
+            {
+              val: "3–5 hrs",
+              col: "#F4500A",
+              lbl: "Daily Time Indian Sellers Spend on Manual Price Tracking",
+            },
+            {
+              val: "24–48 hrs",
+              col: "#E74C3C",
+              lbl: "Average Delay Before Manual Tracking Detects a Price Change",
+            },
+            {
+              val: "< 1 hr",
+              col: "#0ABFA4",
+              lbl: "AI Response Time to Competitor Price Drop with Automated Alerts",
+            },
+            {
+              val: "₹45K",
+              col: "#0A0F1A",
+              lbl: "Avg. Monthly Revenue Recovered After Switching to Automation",
+            },
+          ].map((s) => (
             <div className="stat-item" key={s.val}>
-              <span style={{ display:"block", fontSize:"clamp(20px,4vw,26px)", fontWeight:900, color:s.col, fontFamily:"'Sora',sans-serif", lineHeight:1 }}>{s.val}</span>
-              <span style={{ display:"block", fontSize:"clamp(10px,2vw,11.5px)", color:"#64748B", marginTop:4, lineHeight:1.4, fontWeight:500, fontFamily:"'Sora',sans-serif" }}>{s.lbl}</span>
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "clamp(20px,4vw,26px)",
+                  fontWeight: 900,
+                  color: s.col,
+                  fontFamily: "'Sora',sans-serif",
+                  lineHeight: 1,
+                }}
+              >
+                {s.val}
+              </span>
+              <span
+                style={{
+                  display: "block",
+                  fontSize: "clamp(10px,2vw,11.5px)",
+                  color: "#64748B",
+                  marginTop: 4,
+                  lineHeight: 1.4,
+                  fontWeight: 500,
+                  fontFamily: "'Sora',sans-serif",
+                }}
+              >
+                {s.lbl}
+              </span>
             </div>
           ))}
         </div>
 
         {/* Hero image */}
         <img
-          src="/manual-vs-automated-hero.png"
+          src="/Manual-vs-Automated.png"
           alt="Manual Excel tracking vs AI-powered automated competitor tracking — Indian ecommerce seller comparison 2026"
-          style={{ width:"100%", borderRadius:16, marginBottom:10, display:"block" }}
+          style={{
+            width: "100%",
+            borderRadius: 16,
+            marginBottom: 10,
+            display: "block",
+          }}
         />
-        <p className="hero-img-cap">Indian e-commerce sellers who switch from manual Excel tracking to AI-powered automated competitor tracking recover an average of ₹45,000/month in revenue previously lost to slow reaction times.</p>
+        <p className="hero-img-cap">
+          Indian e-commerce sellers who switch from manual Excel tracking to
+          AI-powered automated competitor tracking recover an average of
+          ₹45,000/month in revenue previously lost to slow reaction times.
+        </p>
       </div>
 
       {/* TAKEAWAYS */}
-      <div style={{ maxWidth:1240, margin:"0 auto", padding:"0 16px 28px" }} className="sm:px-5 lg:px-6">
+      <div
+        style={{ maxWidth: 1240, margin: "0 auto", padding: "0 16px 28px" }}
+        className="sm:px-5 lg:px-6"
+      >
         <div className="takeaway-box">
           <h3>Key Takeaways</h3>
           {[
@@ -709,7 +1284,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
             "AI intelligence doesn't just surface price data it recommends the minimum price adjustment needed to recover the Buy Box while protecting your margin.",
             "Manual tracking scales linearly with SKU count. At 50+ SKUs, Excel price monitoring becomes operationally impossible without a full-time team.",
             "The real cost of manual tracking is not the hours spent it's the revenue lost during every hour you're unaware of a competitor's move.",
-          ].map(t => (
+          ].map((t) => (
             <div className="takeaway-item" key={t}>
               <div className="takeaway-dot">✓</div>
               <div className="takeaway-text">{t}</div>
@@ -720,67 +1295,102 @@ export default function ManualVsAutomatedCompetitorTracking() {
 
       {/* ARTICLE LAYOUT */}
       <div className="article-layout">
-
         {/* SIDEBAR */}
         <aside className="toc-sidebar">
-          <h4 style={{ fontFamily:"'Sora',sans-serif", fontSize:10, fontWeight:700, textTransform:"uppercase" as const, letterSpacing:1, color:"#94A3B8", marginBottom:12 }}>Table of Contents</h4>
-          <ul style={{ listStyle:"none", padding:0, margin:0 }}>
-            {TOC.map(t => (
+          <h4
+            style={{
+              fontFamily: "'Sora',sans-serif",
+              fontSize: 10,
+              fontWeight: 700,
+              textTransform: "uppercase" as const,
+              letterSpacing: 1,
+              color: "#94A3B8",
+              marginBottom: 12,
+            }}
+          >
+            Table of Contents
+          </h4>
+          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            {TOC.map((t) => (
               <li key={t.id}>
-                <button className={`toc-link${activeSection === t.id ? " active" : ""}`} onClick={() => go(t.id)}>{t.label}</button>
+                <button
+                  className={`toc-link${activeSection === t.id ? " active" : ""}`}
+                  onClick={() => go(t.id)}
+                >
+                  {t.label}
+                </button>
               </li>
             ))}
           </ul>
-          <div style={{ background:"linear-gradient(160deg,#0A0F1A 0%,#0D1E3A 100%)", borderRadius:10, padding:18, marginTop:16 }}>
-            <h4 className="sidebar-cta-title">Stop Tracking Manually Start Free</h4>
-            <p className="sidebar-cta-body">Real-time price alerts on WhatsApp. Amazon.in, Flipkart &amp; Meesho covered.</p>
-            <ul style={{ listStyle:"none", padding:0, margin:"0 0 14px" }}>
-              {["Prices monitored every 15–60 min","WhatsApp alerts within 60 min of change","AI margin-preserving recommendations","From ₹1,999/mo or free forever"].map(f => (
-                <li key={f} style={{ fontSize:11.5, color:"#CBD5E1", marginBottom:7, display:"flex", alignItems:"flex-start", gap:6, lineHeight:1.4, fontFamily:"'Sora',sans-serif" }}>
-                  <span style={{ color:"#0ABFA4", fontWeight:800, flexShrink:0 }}>✓</span>{f}
-                </li>
-              ))}
-            </ul>
-            <Link href="/login" style={{ display:"block", background:"#F4500A", color:"white", textAlign:"center" as const, padding:10, borderRadius:8, fontWeight:700, fontSize:12.5, width:"100%", textDecoration:"none", fontFamily:"'Sora',sans-serif" }}>
-              Start Free No Card Needed
-            </Link>
-          </div>
-          {/* <div style={{ background:"#F5F8FF", border:"1px solid #E5E7EB", borderRadius:10, padding:14, marginTop:14 }}>
-            <h4 style={{ fontFamily:"'Sora',sans-serif", fontSize:10, fontWeight:700, textTransform:"uppercase" as const, letterSpacing:1, color:"#94A3B8", marginBottom:10 }}>Share This Guide</h4>
-            <div style={{ display:"flex", gap:6 }}>
-              {[{ l:"WhatsApp", bg:"#25D366" },{ l:"LinkedIn", bg:"#0A66C2" },{ l:"Twitter", bg:"#1DA1F2" }].map(s => (
-                <div key={s.l} style={{ flex:1, textAlign:"center" as const, padding:"7px 4px", borderRadius:7, fontSize:11, fontWeight:700, color:"white", background:s.bg, cursor:"pointer", fontFamily:"'Sora',sans-serif" }}>{s.l}</div>
-              ))}
-            </div>
-          </div> */}
         </aside>
 
         {/* MAIN */}
-        <main style={{ minWidth:0 }}>
-          <button className="mobile-toc-btn" onClick={() => setTocOpen(!tocOpen)}>
+        <main style={{ minWidth: 0 }}>
+          <button
+            className="mobile-toc-btn"
+            onClick={() => setTocOpen(!tocOpen)}
+          >
             Table of Contents <span>{tocOpen ? "▲" : "▼"}</span>
           </button>
           <div className={`mobile-toc-panel${tocOpen ? " open" : ""}`}>
-            {TOC.map(t => (
-              <button key={t.id} className="toc-link" style={{ display:"block", marginBottom:3 }} onClick={() => go(t.id)}>{t.label}</button>
+            {TOC.map((t) => (
+              <button
+                key={t.id}
+                className="toc-link"
+                style={{ display: "block", marginBottom: 3 }}
+                onClick={() => go(t.id)}
+              >
+                {t.label}
+              </button>
             ))}
           </div>
 
           <article className="article-body">
-
             {/* In simple terms */}
-            <div className="box box-blue" style={{ margin:"0 0 28px" }}>
+            <div className="box box-blue" style={{ margin: "0 0 28px" }}>
               <div className="box-label">In Simple Terms</div>
-              <p>Manual tracking is like checking the weather by looking out the window every few hours. Automated competitor tracking is like having a real-time weather station that alerts you the moment conditions change and tells you exactly what to wear before you leave the house. <strong>Both tell you about the weather. Only one helps you actually respond to it in time.</strong></p>
+              <p>
+                Manual tracking is like checking the weather by looking out the
+                window every few hours. Automated competitor tracking is like
+                having a real-time weather station that alerts you the moment
+                conditions change and tells you exactly what to wear before you
+                leave the house.{" "}
+                <strong>
+                  Both tell you about the weather. Only one helps you actually
+                  respond to it in time.
+                </strong>
+              </p>
             </div>
 
             {/* S1: Core Diff */}
-            <h2 id="core-diff">Manual vs Automated Competitor Tracking: The Core Difference</h2>
+            <h2 id="core-diff">
+              Manual vs Automated Competitor Tracking: The Core Difference
+            </h2>
             <p>
-              At its simplest: <strong>manual price tracking gives you a snapshot of where prices were when you checked. Automated competitor tracking tells you where prices are right now and what to do about it.</strong>
+              At its simplest:{" "}
+              <strong>
+                manual price tracking gives you a snapshot of where prices were
+                when you checked. Automated competitor tracking tells you where
+                prices are right now and what to do about it.
+              </strong>
             </p>
             <p>
-              For Indian ecommerce sellers on Amazon.in and Flipkart, that distinction is the difference between winning and losing the Buy Box on any given day. <a href="https://en.wikipedia.org/wiki/Dynamic_pricing" target="_blank" rel="noopener noreferrer" className="al" title="Dynamic pricing explained">Dynamic pricing in e-commerce</a> means India's market moves faster than any other — a ₹50 price change at 11 PM can shift the Buy Box overnight, and you won't know it happened until the next morning when you open your spreadsheet.
+              For Indian ecommerce sellers on Amazon.in and Flipkart, that
+              distinction is the difference between winning and losing the Buy
+              Box on any given day.{" "}
+              <a
+                href="https://en.wikipedia.org/wiki/Dynamic_pricing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="al"
+                title="Dynamic pricing explained"
+              >
+                Dynamic pricing in e-commerce
+              </a>{" "}
+              means India's market moves faster than any other — a ₹50 price
+              change at 11 PM can shift the Buy Box overnight, and you won't
+              know it happened until the next morning when you open your
+              spreadsheet.
             </p>
 
             {/* Compare visual */}
@@ -789,60 +1399,112 @@ export default function ManualVsAutomatedCompetitorTracking() {
                 <div className="cv-badge m">Manual / Excel</div>
                 <h4>Manual Price Tracking</h4>
                 <ul className="cv-list">
-                  <li><span>❌</span> Detection delay: 24–48 hours</li>
-                  <li><span>❌</span> Data accuracy: 82–88% (human error)</li>
-                  <li><span>❌</span> Requires 3–5 hrs daily effort</li>
-                  <li><span>❌</span> Breaks down at 10+ SKUs</li>
-                  <li><span>❌</span> No overnight coverage</li>
-                  <li><span>✅</span> Zero tool cost</li>
+                  <li>
+                    <span>❌</span> Detection delay: 24–48 hours
+                  </li>
+                  <li>
+                    <span>❌</span> Data accuracy: 82–88% (human error)
+                  </li>
+                  <li>
+                    <span>❌</span> Requires 3–5 hrs daily effort
+                  </li>
+                  <li>
+                    <span>❌</span> Breaks down at 10+ SKUs
+                  </li>
+                  <li>
+                    <span>❌</span> No overnight coverage
+                  </li>
+                  <li>
+                    <span>✅</span> Zero tool cost
+                  </li>
                 </ul>
                 <div className="cv-score">
                   <span className="cv-score-lbl">Seller Efficiency</span>
                   <span className="cv-score-val">2.4</span>
-                  <span style={{ color:"#94A3B8", fontFamily:"'Sora',sans-serif" }}>/10</span>
+                  <span
+                    style={{
+                      color: "#94A3B8",
+                      fontFamily: "'Sora',sans-serif",
+                    }}
+                  >
+                    /10
+                  </span>
                 </div>
               </div>
               <div className="cv-card auto-card">
                 <div className="cv-badge a">AI-Powered Automation</div>
                 <h4>Automated Competitor Tracking</h4>
                 <ul className="cv-list">
-                  <li><span>✅</span> Detection: &lt;60 min, 24/7</li>
-                  <li><span>✅</span> Data accuracy: 99.9% (API crawl)</li>
-                  <li><span>✅</span> Zero daily effort required</li>
-                  <li><span>✅</span> Scales to unlimited SKUs</li>
-                  <li><span>✅</span> Overnight &amp; weekend coverage</li>
-                  <li><span>✅</span> AI margin-preserving recommendations</li>
+                  <li>
+                    <span>✅</span> Detection: &lt;60 min, 24/7
+                  </li>
+                  <li>
+                    <span>✅</span> Data accuracy: 99.9% (API crawl)
+                  </li>
+                  <li>
+                    <span>✅</span> Zero daily effort required
+                  </li>
+                  <li>
+                    <span>✅</span> Scales to unlimited SKUs
+                  </li>
+                  <li>
+                    <span>✅</span> Overnight &amp; weekend coverage
+                  </li>
+                  <li>
+                    <span>✅</span> AI margin-preserving recommendations
+                  </li>
                 </ul>
                 <div className="cv-score">
                   <span className="cv-score-lbl">Seller Efficiency</span>
                   <span className="cv-score-val orange">9.2</span>
-                  <span style={{ color:"#94A3B8", fontFamily:"'Sora',sans-serif" }}>/10</span>
+                  <span
+                    style={{
+                      color: "#94A3B8",
+                      fontFamily: "'Sora',sans-serif",
+                    }}
+                  >
+                    /10
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* S2: Full compare table */}
             <h2 id="full-compare">Manual vs Automated Full Breakdown</h2>
-            
+
             <div className="tbl-wrap">
               <table className="dt">
                 <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
                   <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Factor</th>
-                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Manual Excel</th>
-                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">AI-Powered Automation</th>
-                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Winner</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">
+                      Factor
+                    </th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">
+                      Manual Excel
+                    </th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">
+                      AI-Powered Automation
+                    </th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">
+                      Winner
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {compareRows.map((r, i) => (
-                    <tr key={i} className={r.factor === "True Monthly Cost" ? "hl" : ""}>
-                      <td style={{ fontWeight:600 }}>{r.factor}</td>
-                      <td style={{ color:"#64748B" }}>{r.manual}</td>
-                      <td style={{ color:"#374151" }}>{r.auto}</td>
+                    <tr
+                      key={i}
+                      className={r.factor === "True Monthly Cost" ? "hl" : ""}
+                    >
+                      <td style={{ fontWeight: 600 }}>{r.factor}</td>
+                      <td style={{ color: "#64748B" }}>{r.manual}</td>
+                      <td style={{ color: "#374151" }}>{r.auto}</td>
                       <td>
-                        {r.winner === "AI"     ? <span className="bg">AI Automation</span>
-                        : <span className="by">Manual (barely)</span>}
+                        {r.winner === "AI" ? (
+                          <span className="bg">AI Automation</span>
+                        ) : (
+                          <span className="by">Manual (barely)</span>
+                        )}
                       </td>
                     </tr>
                   ))}
@@ -853,94 +1515,242 @@ export default function ManualVsAutomatedCompetitorTracking() {
             {/* S3: Manual full picture */}
             <h2 id="manual">Manual Price Tracking: The Full Picture</h2>
             <p>
-              <Link href="/resources/expert-blog/amazon-competitor-price-tracking-tool" className="al" title="Amazon competitor price tracking tool India">Manual price tracking</Link> — opening competitor listings on Amazon.in and Flipkart every morning, copying prices into a spreadsheet, and trying to spot patterns — is how the majority of Indian ecommerce sellers still manage competitor intelligence today.
+              <Link
+                href="/resources/expert-blog/amazon-competitor-price-tracking-tool"
+                className="al"
+                title="Amazon competitor price tracking tool India"
+              >
+                Manual price tracking
+              </Link>{" "}
+              — opening competitor listings on Amazon.in and Flipkart every
+              morning, copying prices into a spreadsheet, and trying to spot
+              patterns — is how the majority of Indian ecommerce sellers still
+              manage competitor intelligence today.
             </p>
             <p>
-              It works. At very small scale. For sellers with 1–5 SKUs and a handful of competitors who are just starting out, a daily Excel check is a legitimate, zero-cost method of staying roughly informed. <strong>The problem isn't that manual tracking is wrong. The problem is that it stops working exactly when your business starts getting serious.</strong>
+              It works. At very small scale. For sellers with 1–5 SKUs and a
+              handful of competitors who are just starting out, a daily Excel
+              check is a legitimate, zero-cost method of staying roughly
+              informed.{" "}
+              <strong>
+                The problem isn't that manual tracking is wrong. The problem is
+                that it stops working exactly when your business starts getting
+                serious.
+              </strong>
             </p>
 
             <h3>The Hidden Time Cost Most Sellers Never Calculate</h3>
             <p>
-              A typical Indian Amazon seller managing 20 SKUs with 5 competitors each spends an average of 3.4 hours per day on manual price checks. At a conservative opportunity cost of ₹500/hour, that's <strong>₹51,000/month in productive time spent on a task that AI can perform in seconds.</strong> Most sellers have never run this calculation.
+              A typical Indian Amazon seller managing 20 SKUs with 5 competitors
+              each spends an average of 3.4 hours per day on manual price
+              checks. At a conservative opportunity cost of ₹500/hour, that's{" "}
+              <strong>
+                ₹51,000/month in productive time spent on a task that AI can
+                perform in seconds.
+              </strong>{" "}
+              Most sellers have never run this calculation.
             </p>
 
             <div className="box box-amber">
               <div className="box-label">Real Seller Example</div>
-              <p>A Delhi-based electronics accessories seller was doing ₹3.2 lakh/month on Amazon. A new competitor entered with a ₹30 lower price. Sales dropped to ₹1.8 lakh within 6 weeks. The seller found out via a customer message not a tool. Had they tracked prices in real time, they could have matched the competitor within an hour and retained the Buy Box.</p>
+              <p>
+                A Delhi-based electronics accessories seller was doing ₹3.2
+                lakh/month on Amazon. A new competitor entered with a ₹30 lower
+                price. Sales dropped to ₹1.8 lakh within 6 weeks. The seller
+                found out via a customer message not a tool. Had they tracked
+                prices in real time, they could have matched the competitor
+                within an hour and retained the Buy Box.
+              </p>
             </div>
 
             <h3>Data Accuracy: The Problem Nobody Talks About</h3>
             <p>
-              Manual data entry into Excel introduces errors at an average rate of 12–18% meaning roughly 1 in 6 price entries in your spreadsheet is wrong. You're making pricing decisions based on a data set that is both <strong>24 hours stale AND 15% inaccurate.</strong> The combination of delay and inaccuracy is far more damaging to your competitive positioning than either problem alone.
+              Manual data entry into Excel introduces errors at an average rate
+              of 12–18% meaning roughly 1 in 6 price entries in your spreadsheet
+              is wrong. You're making pricing decisions based on a data set that
+              is both <strong>24 hours stale AND 15% inaccurate.</strong> The
+              combination of delay and inaccuracy is far more damaging to your
+              competitive positioning than either problem alone.
             </p>
 
             <div className="box box-purple">
               <div className="box-label">AI Overview Summary</div>
-              <p>Manual price tracking was the only viable option for Indian sellers before 2020. In 2026, AI-powered workflow automation has made it not just obsolete but <strong>actively harmful</strong> the hours spent on manual tracking are hours not spent on product development, listing optimisation, or customer acquisition. The opportunity cost of manual tracking now significantly exceeds the cost of automation.</p>
+              <p>
+                Manual price tracking was the only viable option for Indian
+                sellers before 2020. In 2026, AI-powered workflow automation has
+                made it not just obsolete but <strong>actively harmful</strong>{" "}
+                the hours spent on manual tracking are hours not spent on
+                product development, listing optimisation, or customer
+                acquisition. The opportunity cost of manual tracking now
+                significantly exceeds the cost of automation.
+              </p>
             </div>
 
             {/* S4: Automated full picture */}
-            <h2 id="automated">Automated Competitor Tracking: The Full Picture</h2>
+            <h2 id="automated">
+              Automated Competitor Tracking: The Full Picture
+            </h2>
             <p>
-              <Link href="/use-cases/track-competitor-prices" className="al" title="Track competitor prices with automated ecommerce tools">Automated competitor tracking in ecommerce</Link> tools crawl competitor prices on Amazon.in, Flipkart, and Meesho continuously — typically every 15–60 minutes — and surface changes the moment they happen, with AI-generated recommendations for exactly how to respond.
+              <Link
+                href="/use-cases/track-competitor-prices"
+                className="al"
+                title="Track competitor prices with automated ecommerce tools"
+              >
+                Automated competitor tracking in ecommerce
+              </Link>{" "}
+              tools crawl competitor prices on Amazon.in, Flipkart, and Meesho
+              continuously — typically every 15–60 minutes — and surface changes
+              the moment they happen, with AI-generated recommendations for
+              exactly how to respond.
             </p>
             <p>
-              The key distinction between basic price alert tools and a genuine <Link href="/resources/expert-blog/amazon-seo-tool-india" className="al" title="AI price tracking tool for Amazon India sellers">AI price tracking tool</Link> is the intelligence layer. A basic free tool tells you 'Competitor A changed their price.' An AI-powered platform tells you: 'Competitor A dropped to ₹899. You're currently at ₹949. Recommend: Adjust to ₹919 to recover the Buy Box while protecting ₹42 more margin than a direct price match.'
+              The key distinction between basic price alert tools and a genuine{" "}
+              <Link
+                href="/resources/expert-blog/amazon-seo-tool-india"
+                className="al"
+                title="AI price tracking tool for Amazon India sellers"
+              >
+                AI price tracking tool
+              </Link>{" "}
+              is the intelligence layer. A basic free tool tells you 'Competitor
+              A changed their price.' An AI-powered platform tells you:
+              'Competitor A dropped to ₹899. You're currently at ₹949.
+              Recommend: Adjust to ₹919 to recover the Buy Box while protecting
+              ₹42 more margin than a direct price match.'
             </p>
 
-           
             <div className="steps">
               {[
-                { n:1, t:"Automated Live Data Crawling",          d:"The tool's crawler or API pulls live price data from product listings at frequent intervals every 15–60 minutes for AI-powered tools like Insydz. No human checking, no delays, no errors." },
-                { n:2, t:"AI Engine Analysis",                    d:"The AI compares your price against the category benchmark and competitor prices, factoring in ratings, delivery speed, Buy Box eligibility criteria, and stock levels in real time." },
-                { n:3, t:"WhatsApp Alert Not Email",            d:"You receive a WhatsApp alert the moment a competitor changes price beyond your defined threshold. Indian SMB sellers check WhatsApp 50+ times daily. Email is checked 2–3 times. The channel matters as much as the alert itself." },
-                { n:4, t:"Actionable AI Recommendation",          d:"The platform gives a decision, not just data: 'Competitor A dropped to ₹899. Recommend adjusting to ₹919 to stay competitive while protecting ₹42 more margin.' Not a data dump — a decision engine." },
-                { n:5, t:"One-Tap Price Update",                  d:"For sellers using integrated platforms, the recommended price can be applied directly from the alert from competitor price drop to your updated listing in under 5 minutes, end to end." },
-              ].map(s => (
+                {
+                  n: 1,
+                  t: "Automated Live Data Crawling",
+                  d: "The tool's crawler or API pulls live price data from product listings at frequent intervals every 15–60 minutes for AI-powered tools like Insydz. No human checking, no delays, no errors.",
+                },
+                {
+                  n: 2,
+                  t: "AI Engine Analysis",
+                  d: "The AI compares your price against the category benchmark and competitor prices, factoring in ratings, delivery speed, Buy Box eligibility criteria, and stock levels in real time.",
+                },
+                {
+                  n: 3,
+                  t: "WhatsApp Alert Not Email",
+                  d: "You receive a WhatsApp alert the moment a competitor changes price beyond your defined threshold. Indian SMB sellers check WhatsApp 50+ times daily. Email is checked 2–3 times. The channel matters as much as the alert itself.",
+                },
+                {
+                  n: 4,
+                  t: "Actionable AI Recommendation",
+                  d: "The platform gives a decision, not just data: 'Competitor A dropped to ₹899. Recommend adjusting to ₹919 to stay competitive while protecting ₹42 more margin.' Not a data dump — a decision engine.",
+                },
+                {
+                  n: 5,
+                  t: "One-Tap Price Update",
+                  d: "For sellers using integrated platforms, the recommended price can be applied directly from the alert from competitor price drop to your updated listing in under 5 minutes, end to end.",
+                },
+              ].map((s) => (
                 <div className="step" key={s.n}>
                   <div className="step-n">{s.n}</div>
-                  <div className="step-body"><h4>{s.t}</h4><p>{s.d}</p></div>
+                  <div className="step-body">
+                    <h4>{s.t}</h4>
+                    <p>{s.d}</p>
+                  </div>
                 </div>
               ))}
             </div>
 
             <div className="box box-teal">
               <div className="box-label">Key Insight</div>
-              <p>Manual tracking gives you data points. AI-powered intelligence gives you decisions. That gap is the difference between reacting tomorrow and winning today. The sellers gaining market share in 2026 are not necessarily the ones with better products they're the ones with faster, more accurate competitive intelligence.</p>
+              <p>
+                Manual tracking gives you data points. AI-powered intelligence
+                gives you decisions. That gap is the difference between reacting
+                tomorrow and winning today. The sellers gaining market share in
+                2026 are not necessarily the ones with better products they're
+                the ones with faster, more accurate competitive intelligence.
+              </p>
             </div>
 
             {/* S5: Real Cost */}
-            <h2 id="real-cost">The Real Cost Comparison: Manual vs Automated</h2>
+            <h2 id="real-cost">
+              The Real Cost Comparison: Manual vs Automated
+            </h2>
             <p>
-              Most sellers evaluate manual tracking as 'free' because there's no tool invoice. This is the single most expensive misconception in Indian ecommerce. Manual tracking has three real costs that are rarely calculated together.
+              Most sellers evaluate manual tracking as 'free' because there's no
+              tool invoice. This is the single most expensive misconception in
+              Indian ecommerce. Manual tracking has three real costs that are
+              rarely calculated together.
             </p>
 
             <img
               src="/manual-vs-automated-cost-breakdown.png"
               alt="When labour time, delayed-reaction revenue loss, and data accuracy errors are combined — manual tracking costs 8–12× more per month than the AI tool that replaces it"
-              style={{ width:"100%", borderRadius:12, marginBottom:8, display:"block" }}
+              style={{
+                width: "100%",
+                borderRadius: 12,
+                marginBottom: 8,
+                display: "block",
+              }}
             />
-            <p style={{ fontFamily:"'Sora',sans-serif", fontSize:12, color:"#94A3B8", fontStyle:"italic", textAlign:"center", marginBottom:24 }}>When labour time, delayed-reaction revenue loss, and data accuracy errors are combined manual tracking costs 8–12× more per month than the AI tool that replaces it entirely.</p>
+            <p
+              style={{
+                fontFamily: "'Sora',sans-serif",
+                fontSize: 12,
+                color: "#94A3B8",
+                fontStyle: "italic",
+                textAlign: "center",
+                marginBottom: 24,
+              }}
+            >
+              When labour time, delayed-reaction revenue loss, and data accuracy
+              errors are combined manual tracking costs 8–12× more per month
+              than the AI tool that replaces it entirely.
+            </p>
 
             <div className="tbl-wrap">
               <table className="dt">
                 <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
                   <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Method</th>
-                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Speed</th>
-                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Accuracy</th>
-                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Actionability</th>
-                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">True Cost/Month</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">
+                      Method
+                    </th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">
+                      Speed
+                    </th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">
+                      Accuracy
+                    </th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">
+                      Actionability
+                    </th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">
+                      True Cost/Month
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {costRows.map((r, i) => (
-                    <tr key={i} className={r.method.includes("Insydz") ? "hl" : ""}>
-                      <td style={{ fontWeight: r.method.includes("Insydz") ? 700 : 600 }}>{r.method}</td>
-                      <td style={{ color:"#64748B" }}>{r.speed}</td>
-                      <td style={{ color:"#64748B" }}>{r.accuracy}</td>
-                      <td style={{ color:"#64748B" }}>{r.action}</td>
-                      <td style={{ fontWeight: r.method.includes("Insydz") ? 700 : 400, color: r.method.includes("Insydz") ? "#F4500A" : "inherit" }}>{r.cost}</td>
+                    <tr
+                      key={i}
+                      className={r.method.includes("Insydz") ? "hl" : ""}
+                    >
+                      <td
+                        style={{
+                          fontWeight: r.method.includes("Insydz") ? 700 : 600,
+                        }}
+                      >
+                        {r.method}
+                      </td>
+                      <td style={{ color: "#64748B" }}>{r.speed}</td>
+                      <td style={{ color: "#64748B" }}>{r.accuracy}</td>
+                      <td style={{ color: "#64748B" }}>{r.action}</td>
+                      <td
+                        style={{
+                          fontWeight: r.method.includes("Insydz") ? 700 : 400,
+                          color: r.method.includes("Insydz")
+                            ? "#F4500A"
+                            : "inherit",
+                        }}
+                      >
+                        {r.cost}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -951,24 +1761,58 @@ export default function ManualVsAutomatedCompetitorTracking() {
             <div className="mid-cta">
               <div>
                 <h3>Replace Manual Tracking with AI Free</h3>
-                <p>Real-time competitor price alerts on WhatsApp. Amazon.in, Flipkart &amp; Meesho. Setup in under 30 minutes.</p>
+                <p>
+                  Real-time competitor price alerts on WhatsApp. Amazon.in,
+                  Flipkart &amp; Meesho. Setup in under 30 minutes.
+                </p>
               </div>
-              <Link href="/login" style={{ flexShrink:0, background:"white", color:"#F4500A", padding:"11px 22px", borderRadius:8, fontWeight:700, fontSize:"clamp(13px,2vw,14.5px)", whiteSpace:"nowrap" as const, textDecoration:"none", fontFamily:"'Sora',sans-serif" }} className="sm:w-auto w-full text-center">Try Insydz Free →</Link>
+              <Link
+                href="/login"
+                style={{
+                  flexShrink: 0,
+                  background: "white",
+                  color: "#F4500A",
+                  padding: "11px 22px",
+                  borderRadius: 8,
+                  fontWeight: 700,
+                  fontSize: "clamp(13px,2vw,14.5px)",
+                  whiteSpace: "nowrap" as const,
+                  textDecoration: "none",
+                  fontFamily: "'Sora',sans-serif",
+                }}
+                className="sm:w-auto w-full text-center"
+              >
+                Try Insydz Free →
+              </Link>
             </div>
 
             {/* S6: When manual */}
             <h2 id="when-manual">When Manual Tracking Still Makes Sense</h2>
             <p>
-              This is an honest guide, not a sales pitch. There are specific scenarios where manual price tracking is a reasonable choice for Indian sellers in 2026:
+              This is an honest guide, not a sales pitch. There are specific
+              scenarios where manual price tracking is a reasonable choice for
+              Indian sellers in 2026:
             </p>
 
             <div className="when-grid">
               {[
-                { t:"Very Early Stage (1–5 SKUs)",    d:"If you're testing your first products, a daily manual check takes 20–30 minutes and is a reasonable starting point before committing to tools." },
-                { t:"Low-Competition Niche",            d:"If your category has 2–3 competitors who rarely change pricing, automation ROI is lower. Quarterly manual checks may suffice." },
-                { t:"Pre-Revenue Validation",           d:"Use manual tracking for 30–60 days to understand your competitive landscape before investing in tools." },
-                { t:"Tool Evaluation Period",           d:"Before committing to any paid tool, run a 2-week parallel test: manual tracking alongside a free trial to verify the tool's value." },
-              ].map(w => (
+                {
+                  t: "Very Early Stage (1–5 SKUs)",
+                  d: "If you're testing your first products, a daily manual check takes 20–30 minutes and is a reasonable starting point before committing to tools.",
+                },
+                {
+                  t: "Low-Competition Niche",
+                  d: "If your category has 2–3 competitors who rarely change pricing, automation ROI is lower. Quarterly manual checks may suffice.",
+                },
+                {
+                  t: "Pre-Revenue Validation",
+                  d: "Use manual tracking for 30–60 days to understand your competitive landscape before investing in tools.",
+                },
+                {
+                  t: "Tool Evaluation Period",
+                  d: "Before committing to any paid tool, run a 2-week parallel test: manual tracking alongside a free trial to verify the tool's value.",
+                },
+              ].map((w) => (
                 <div className="when-card" key={w.t}>
                   <p>{w.d}</p>
                 </div>
@@ -977,61 +1821,112 @@ export default function ManualVsAutomatedCompetitorTracking() {
 
             <div className="box box-teal">
               <div className="box-label">Key Insight</div>
-              <p>The right question isn't 'manual or automated?' it's 'at what SKU count and revenue level does the ROI of automation exceed its cost?' For most Indian sellers, that threshold is <strong>10+ SKUs generating ₹1 lakh/month.</strong> Below that threshold, the free Insydz plan bridges the gap.</p>
+              <p>
+                The right question isn't 'manual or automated?' it's 'at what
+                SKU count and revenue level does the ROI of automation exceed
+                its cost?' For most Indian sellers, that threshold is{" "}
+                <strong>10+ SKUs generating ₹1 lakh/month.</strong> Below that
+                threshold, the free Insydz plan bridges the gap.
+              </p>
             </div>
 
             {/* S7: 5 Signs */}
-            <h2 id="signs">5 Signs You've Already Waited Too Long to Automate</h2>
+            <h2 id="signs">
+              5 Signs You've Already Waited Too Long to Automate
+            </h2>
 
-          
             <div className="mistakes">
               {signs.map((s, i) => (
                 <div className="mistake" key={i}>
                   <div className="mistake-n">{i + 1}</div>
-                  <div className="mistake-body"><strong>{s.t}</strong><p>{s.d}</p></div>
+                  <div className="mistake-body">
+                    <strong>{s.t}</strong>
+                    <p>{s.d}</p>
+                  </div>
                 </div>
               ))}
             </div>
 
             {/* S8: Execution model */}
-            <h2 id="execution">Best Practices: Weekly Execution Model for Automated Tracking</h2>
+            <h2 id="execution">
+              Best Practices: Weekly Execution Model for Automated Tracking
+            </h2>
             <p>
-              The most successful Indian sellers don't react to pricing changes — they run a structured weekly rhythm that keeps them consistently competitive without manual effort. The foundation is <a href="/" className="al" title="Insydz - real-time ecommerce intelligence">real-time alerts and data accuracy</a> — two capabilities that manual tracking simply cannot provide at scale. Daily automated digests, weekly 30-minute reviews, and monthly strategic audits keep your ecommerce automation strategy compounding.
+              The most successful Indian sellers don't react to pricing changes
+              — they run a structured weekly rhythm that keeps them consistently
+              competitive without manual effort. The foundation is{" "}
+              <a
+                href="/"
+                className="al"
+                title="Insydz - real-time ecommerce intelligence"
+              >
+                real-time alerts and data accuracy
+              </a>{" "}
+              — two capabilities that manual tracking simply cannot provide at
+              scale. Daily automated digests, weekly 30-minute reviews, and
+              monthly strategic audits keep your ecommerce automation strategy
+              compounding.
             </p>
             <p>
-              For Flipkart sellers, our <Link href="/resources/expert-blog/flipkart-keyword-research-tool" className="al" title="Flipkart keyword research and SEO guide">Flipkart keyword research and SEO optimization guide</Link> details the specific rank tracking workflow that complements automated price monitoring.
+              For Flipkart sellers, our{" "}
+              <Link
+                href="/resources/expert-blog/flipkart-keyword-research-tool"
+                className="al"
+                title="Flipkart keyword research and SEO guide"
+              >
+                Flipkart keyword research and SEO optimization guide
+              </Link>{" "}
+              details the specific rank tracking workflow that complements
+              automated price monitoring.
             </p>
-            
 
             <div className="weekly-grid">
               <div className="weekly-col">
                 <div className="weekly-col-head wh-daily">DAILY AUTOMATED</div>
                 <div className="weekly-col-body">
                   <ul>
-                    <li>Morning WhatsApp: top 3 competitor price movements overnight</li>
+                    <li>
+                      Morning WhatsApp: top 3 competitor price movements
+                      overnight
+                    </li>
                     <li>Review Buy Box status for top 10 SKUs</li>
-                    <li>Act on any 'Critical Alert' (competitor dropped &gt;10%)</li>
+                    <li>
+                      Act on any 'Critical Alert' (competitor dropped &gt;10%)
+                    </li>
                   </ul>
                 </div>
               </div>
               <div className="weekly-col">
-                <div className="weekly-col-head wh-weekly">WEEKLY 30 MIN REVIEW</div>
+                <div className="weekly-col-head wh-weekly">
+                  WEEKLY 30 MIN REVIEW
+                </div>
                 <div className="weekly-col-body">
                   <ul>
-                    <li>Review competitor review sentiment recurring pain points?</li>
+                    <li>
+                      Review competitor review sentiment recurring pain points?
+                    </li>
                     <li>Check keyword rank movements for top 5 keywords</li>
                     <li>Identify competitors that went OOS (opportunity)</li>
-                    <li>Adjust 1–2 product prices based on AI recommendations</li>
+                    <li>
+                      Adjust 1–2 product prices based on AI recommendations
+                    </li>
                   </ul>
                 </div>
               </div>
               <div className="weekly-col">
-                <div className="weekly-col-head wh-monthly">MONTHLY STRATEGIC</div>
+                <div className="weekly-col-head wh-monthly">
+                  MONTHLY STRATEGIC
+                </div>
                 <div className="weekly-col-body">
                   <ul>
-                    <li>Audit pricing for upcoming festive season or sale events</li>
+                    <li>
+                      Audit pricing for upcoming festive season or sale events
+                    </li>
                     <li>Identify 1 new product from AI gap analysis report</li>
-                    <li>Review revenue impact of pricing changes (before vs. after)</li>
+                    <li>
+                      Review revenue impact of pricing changes (before vs.
+                      after)
+                    </li>
                   </ul>
                 </div>
               </div>
@@ -1041,11 +1936,23 @@ export default function ManualVsAutomatedCompetitorTracking() {
             <h2 id="metrics">Key Metrics to Track</h2>
             <div className="metrics-grid">
               {[
-                { t:"Buy Box Win Rate",            d:"Target: >70% for top SKUs. The single most important pricing health metric. Drops here signal a price or seller performance issue." },
-                { t:"Price Competitiveness Index", d:"Are you within 5% of the category median price at all times? Automated tracking makes this visible — manual tracking makes it invisible." },
-                { t:"Revenue per SKU (Monthly Trend)", d:"Track individual SKU revenue to catch silent revenue leakage early before a 20% drop becomes visible in monthly totals." },
-                { t:"Competitor Stock-Out Capture", d:"Did you gain sales when a rival went OOS? Often a 3–5× revenue opportunity. Only possible with automated tracking that monitors stock levels." },
-              ].map(m => (
+                {
+                  t: "Buy Box Win Rate",
+                  d: "Target: >70% for top SKUs. The single most important pricing health metric. Drops here signal a price or seller performance issue.",
+                },
+                {
+                  t: "Price Competitiveness Index",
+                  d: "Are you within 5% of the category median price at all times? Automated tracking makes this visible — manual tracking makes it invisible.",
+                },
+                {
+                  t: "Revenue per SKU (Monthly Trend)",
+                  d: "Track individual SKU revenue to catch silent revenue leakage early before a 20% drop becomes visible in monthly totals.",
+                },
+                {
+                  t: "Competitor Stock-Out Capture",
+                  d: "Did you gain sales when a rival went OOS? Often a 3–5× revenue opportunity. Only possible with automated tracking that monitors stock levels.",
+                },
+              ].map((m) => (
                 <div className="metric-card" key={m.t}>
                   <div>
                     <h4>{m.t}</h4>
@@ -1056,41 +1963,116 @@ export default function ManualVsAutomatedCompetitorTracking() {
             </div>
 
             {/* S10: Tools */}
-            <h2 id="tools">Best Tools for Automated Competitor Tracking in India (2026)</h2>
+            <h2 id="tools">
+              Best Tools for Automated Competitor Tracking in India (2026)
+            </h2>
             <p>
-              Not all tools are built equally and for Indian sellers, the platform choice is critical. Global tools like Helium 10 and Jungle Scout are built for Amazon.com. Their keyword databases, search volume data, and intent models are calibrated for US buyers making them fundamentally mismatched for Indian marketplace price dynamics. See our{" "}
-              <Link href="/compare/insydzvshelium" className="al" title="Insydz vs Helium 10 for Indian sellers">Insydz vs Helium 10 comparison</Link>{" "}
+              Not all tools are built equally and for Indian sellers, the
+              platform choice is critical. Global tools like Helium 10 and
+              Jungle Scout are built for Amazon.com. Their keyword databases,
+              search volume data, and intent models are calibrated for US buyers
+              making them fundamentally mismatched for Indian marketplace price
+              dynamics. See our{" "}
+              <Link
+                href="/compare/insydzvshelium"
+                className="al"
+                title="Insydz vs Helium 10 for Indian sellers"
+              >
+                Insydz vs Helium 10 comparison
+              </Link>{" "}
               for a detailed breakdown.
             </p>
 
             <img
               src="/manual-vs-automated-execution-model.png"
               alt="India-first platforms cover Amazon.in, Flipkart simultaneously with WhatsApp alerts global tools cover none of these India-specific requirements"
-              style={{ width:"100%", borderRadius:12, marginBottom:8, display:"block" }}
+              style={{
+                width: "100%",
+                borderRadius: 12,
+                marginBottom: 8,
+                display: "block",
+              }}
             />
-            <p style={{ fontFamily:"'Sora',sans-serif", fontSize:12, color:"#94A3B8", fontStyle:"italic", textAlign:"center", marginBottom:24 }}>India-first platforms cover Amazon.in, Flipkart simultaneously with WhatsApp alerts and AI-powered buy intent data global tools cover none of these India-specific requirements.</p>
+            <p
+              style={{
+                fontFamily: "'Sora',sans-serif",
+                fontSize: 12,
+                color: "#94A3B8",
+                fontStyle: "italic",
+                textAlign: "center",
+                marginBottom: 24,
+              }}
+            >
+              India-first platforms cover Amazon.in, Flipkart simultaneously
+              with WhatsApp alerts and AI-powered buy intent data global tools
+              cover none of these India-specific requirements.
+            </p>
 
             <div className="tbl-wrap">
               <table className="dt">
                 <thead className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-white">
                   <tr className="bg-gradient-to-r from-purple-600 to-pink-600 text-white">
-                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Tool</th>
-                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Amazon.in</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">
+                      Tool
+                    </th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">
+                      Amazon.in
+                    </th>
                     <th className="fk-head">Flipkart</th>
-                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">WhatsApp Alerts</th>
-                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">Buy Intent Data</th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">
+                      WhatsApp Alerts
+                    </th>
+                    <th className="bg-gradient-to-r from-[#0b0f1a] to-[#111827] text-left px-4 sm:px-6 py-3 sm:py-4 font-bold text-xs sm:text-base leading-relaxed">
+                      Buy Intent Data
+                    </th>
                     <th className="ai-head">Price (INR/mo)</th>
                   </tr>
                 </thead>
                 <tbody>
                   {toolRows.map((r, i) => (
-                    <tr key={i} className={r.tool.includes("Insydz") ? "hl" : ""}>
-                      <td style={{ fontWeight: r.tool.includes("Insydz") ? 800 : 600 }}>{r.tool}</td>
-                      <td>{r.amz === "Yes" ? <span className="bg">Yes</span> : <span className="by">{r.amz}</span>}</td>
-                      <td>{r.fk === "Yes" ? <span className="bg">Yes</span> : <span className="br">No</span>}</td>
-                      <td>{r.wa === "Yes" ? <span className="bg">Yes</span> : <span className="br">No</span>}</td>
-                      <td style={{ color:"#475569" }}>{r.intent}</td>
-                      <td style={{ fontWeight: r.tool.includes("Insydz") ? 700 : 400, color: r.tool.includes("Insydz") ? "#F4500A" : "inherit" }}>{r.price}</td>
+                    <tr
+                      key={i}
+                      className={r.tool.includes("Insydz") ? "hl" : ""}
+                    >
+                      <td
+                        style={{
+                          fontWeight: r.tool.includes("Insydz") ? 800 : 600,
+                        }}
+                      >
+                        {r.tool}
+                      </td>
+                      <td>
+                        {r.amz === "Yes" ? (
+                          <span className="bg">Yes</span>
+                        ) : (
+                          <span className="by">{r.amz}</span>
+                        )}
+                      </td>
+                      <td>
+                        {r.fk === "Yes" ? (
+                          <span className="bg">Yes</span>
+                        ) : (
+                          <span className="br">No</span>
+                        )}
+                      </td>
+                      <td>
+                        {r.wa === "Yes" ? (
+                          <span className="bg">Yes</span>
+                        ) : (
+                          <span className="br">No</span>
+                        )}
+                      </td>
+                      <td style={{ color: "#475569" }}>{r.intent}</td>
+                      <td
+                        style={{
+                          fontWeight: r.tool.includes("Insydz") ? 700 : 400,
+                          color: r.tool.includes("Insydz")
+                            ? "#F4500A"
+                            : "inherit",
+                        }}
+                      >
+                        {r.price}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -1099,7 +2081,14 @@ export default function ManualVsAutomatedCompetitorTracking() {
 
             <div className="box box-green">
               <div className="box-label">No Aggressive Pitch</div>
-              <p>If you're an Indian seller on Amazon.in or Flipkart and you're not tracking competitor prices with AI, you're operating on guesswork. The question isn't whether you need a tool it's which one fits your budget and platforms. For most Indian SMB sellers, that answer is clearly an India-first platform. The free plan removes every barrier to starting.</p>
+              <p>
+                If you're an Indian seller on Amazon.in or Flipkart and you're
+                not tracking competitor prices with AI, you're operating on
+                guesswork. The question isn't whether you need a tool it's which
+                one fits your budget and platforms. For most Indian SMB sellers,
+                that answer is clearly an India-first platform. The free plan
+                removes every barrier to starting.
+              </p>
             </div>
 
             {/* S11: Verdict */}
@@ -1108,27 +2097,53 @@ export default function ManualVsAutomatedCompetitorTracking() {
               <div className="verdict-card v-manual">
                 <div className="verdict-label">Manual Tracking</div>
                 <h4>Excel / Manual Monitoring</h4>
-                <p>Appropriate only for sellers with &lt;5 SKUs, low-competition categories, or at the validation stage. Becomes operationally unsustainable at 10+ SKUs.</p>
-                <span className="verdict-tag vtag-red">Verdict for 2026: Avoid</span>
+                <p>
+                  Appropriate only for sellers with &lt;5 SKUs, low-competition
+                  categories, or at the validation stage. Becomes operationally
+                  unsustainable at 10+ SKUs.
+                </p>
+                <span className="verdict-tag vtag-red">
+                  Verdict for 2026: Avoid
+                </span>
               </div>
               <div className="verdict-card v-auto">
-                <div className="verdict-label win">◆ Automated Tracking Winner</div>
+                <div className="verdict-label win">
+                  ◆ Automated Tracking Winner
+                </div>
                 <h4>AI-Powered Competitor Tracking</h4>
-                <p>Appropriate for all sellers at 10+ SKUs or ₹1 lakh+/month revenue. ROI typically exceeds tool cost in the first month. Free plan available with zero commitment.</p>
-                <span className="verdict-tag vtag-green">Verdict for 2026: Recommended</span>
+                <p>
+                  Appropriate for all sellers at 10+ SKUs or ₹1 lakh+/month
+                  revenue. ROI typically exceeds tool cost in the first month.
+                  Free plan available with zero commitment.
+                </p>
+                <span className="verdict-tag vtag-green">
+                  Verdict for 2026: Recommended
+                </span>
               </div>
             </div>
 
             {/* S12: FAQ */}
             <h2 id="faq">Frequently Asked Questions</h2>
-            <div style={{ marginTop:16 }}>
+            <div style={{ marginTop: 16 }}>
               {FAQS.map((faq, i) => (
-                <div key={i} className={`faq-item${openFaq === i ? " open" : ""}`}>
-                  <div className="faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                <div
+                  key={i}
+                  className={`faq-item${openFaq === i ? " open" : ""}`}
+                >
+                  <div
+                    className="faq-q"
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  >
                     <span>{faq.q}</span>
-                    <span className={`faq-icon${openFaq === i ? " open" : ""}`}>+</span>
+                    <span className={`faq-icon${openFaq === i ? " open" : ""}`}>
+                      +
+                    </span>
                   </div>
-                  {openFaq === i && <div className="faq-a"><p>{faq.a}</p></div>}
+                  {openFaq === i && (
+                    <div className="faq-a">
+                      <p>{faq.a}</p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -1136,74 +2151,179 @@ export default function ManualVsAutomatedCompetitorTracking() {
             {/* S13: Final */}
             <h2 id="final">Final Thoughts</h2>
             <p>
-              The manual vs automated debate was genuinely close in 2020. In 2026, it isn't a debate anymore.
+              The manual vs automated debate was genuinely close in 2020. In
+              2026, it isn't a debate anymore.
             </p>
             <p>
-              Manual price tracking made sense when the only alternative was expensive US-built software that didn't understand Indian marketplaces, didn't support Flipkart, and sent alerts by email that nobody read in time. That world no longer exists.
+              Manual price tracking made sense when the only alternative was
+              expensive US-built software that didn't understand Indian
+              marketplaces, didn't support Flipkart, and sent alerts by email
+              that nobody read in time. That world no longer exists.
             </p>
             <p>
-              India-first AI platforms now offer <strong>real-time alerts on WhatsApp, AI-powered margin-preserving recommendations, and full Amazon.in + Flipkart coverage starting at ₹1,999/month or completely free.</strong> The cost of automation is now lower than the cost of one hour of manual tracking per day.
+              India-first AI platforms now offer{" "}
+              <strong>
+                real-time alerts on WhatsApp, AI-powered margin-preserving
+                recommendations, and full Amazon.in + Flipkart coverage starting
+                at ₹1,999/month or completely free.
+              </strong>{" "}
+              The cost of automation is now lower than the cost of one hour of
+              manual tracking per day.
             </p>
 
             <div className="box box-orange">
               <div className="box-label">Final Thought</div>
-              <p><strong>Every hour you spend manually checking competitor prices is an hour a competitor with automation is acting on intelligence you haven't seen yet.</strong></p>
+              <p>
+                <strong>
+                  Every hour you spend manually checking competitor prices is an
+                  hour a competitor with automation is acting on intelligence
+                  you haven't seen yet.
+                </strong>
+              </p>
             </div>
 
             {/* Related Guides */}
-            <div style={{ marginTop:48, paddingTop:28, borderTop:"2px solid #E5E7EB" }}>
-              <h2 style={{ fontSize:"clamp(16px,3vw,20px)", fontWeight:800, color:"#0A0F1A", margin:"0 0 18px", border:"none", padding:0, fontFamily:"'Sora',sans-serif" }} className="dark:text-white">Related Guides</h2>
+            <div
+              style={{
+                marginTop: 48,
+                paddingTop: 28,
+                borderTop: "2px solid #E5E7EB",
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: "clamp(16px,3vw,20px)",
+                  fontWeight: 800,
+                  color: "#0A0F1A",
+                  margin: "0 0 18px",
+                  border: "none",
+                  padding: 0,
+                  fontFamily: "'Sora',sans-serif",
+                }}
+                className="dark:text-white"
+              >
+                Related Guides
+              </h2>
               <div className="related-grid">
-                <Link href="/resources/expert-blog/amazon-vs-flipkart-india-sellers" className="rel-card" title="Amazon vs Flipkart India sellers guide 2026">
+                <Link
+                  href="/resources/expert-blog/amazon-vs-flipkart-india-sellers"
+                  className="rel-card"
+                  title="Amazon vs Flipkart India sellers guide 2026"
+                >
                   <div className="rel-thumb">
-                    <img src="/amazon-vs-flipkart-hero-metrics.png" alt="Amazon vs Flipkart India sellers 2026" />
+                    <img
+                      src="/amazon-vs-flipkart-hero-metrics.png"
+                      alt="Amazon vs Flipkart India sellers 2026"
+                    />
                   </div>
                   <div className="rel-body">
                     <div className="rel-tag">Marketplace Strategy</div>
-                    <div className="rel-title">Amazon vs Flipkart: Which Marketplace is Better in India? (2026)</div>
+                    <div className="rel-title">
+                      Amazon vs Flipkart: Which Marketplace is Better in India?
+                      (2026)
+                    </div>
                   </div>
                 </Link>
-                <Link href="/resources/expert-blog/flipkart-keyword-research-tool" className="rel-card" title="Flipkart keyword research tool guide 2026">
+                <Link
+                  href="/resources/expert-blog/flipkart-keyword-research-tool"
+                  className="rel-card"
+                  title="Flipkart keyword research tool guide 2026"
+                >
                   <div className="rel-thumb">
-                    <img src="/01_hero_banner.png" alt="Flipkart Keyword Research Tool guide" />
+                    <img
+                      src="/01_hero_banner.png"
+                      alt="Flipkart Keyword Research Tool guide"
+                    />
                   </div>
                   <div className="rel-body">
-                    <div className="rel-tag" style={{ color:"#2874F0" }}>Flipkart SEO</div>
-                    <div className="rel-title">Flipkart Keyword Research Tool &amp; SEO Optimization Guide for Sellers (2026)</div>
+                    <div className="rel-tag" style={{ color: "#2874F0" }}>
+                      Flipkart SEO
+                    </div>
+                    <div className="rel-title">
+                      Flipkart Keyword Research Tool &amp; SEO Optimization
+                      Guide for Sellers (2026)
+                    </div>
                   </div>
                 </Link>
-                <Link href="/compare/insydzvshelium" className="rel-card" title="Insydz vs Helium 10 for Indian sellers">
+                <Link
+                  href="/compare/insydzvshelium"
+                  className="rel-card"
+                  title="Insydz vs Helium 10 for Indian sellers"
+                >
                   <div className="rel-thumb">
-                    <img src="/thirteen.png" alt="Insydz vs Helium 10 comparison for Indian sellers" />
+                    <img
+                      src="/thirteen.png"
+                      alt="Insydz vs Helium 10 comparison for Indian sellers"
+                    />
                   </div>
                   <div className="rel-body">
                     <div className="rel-tag">Compare</div>
-                    <div className="rel-title">Insydz vs Helium 10: Which Is the Right Tool for Indian Sellers?</div>
+                    <div className="rel-title">
+                      Insydz vs Helium 10: Which Is the Right Tool for Indian
+                      Sellers?
+                    </div>
                   </div>
                 </Link>
               </div>
             </div>
-
           </article>
         </main>
       </div>
 
       {/* Final CTA */}
       <div className="final-cta-block">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+        <h2
+          className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-3"
+          style={{ fontFamily: "'Sora',sans-serif" }}
+        >
           Manual Price Tracking Is Costing You the Buy Box.
         </h2>
-        <p className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 24px" }}>
-          Insydz automates price monitoring across Amazon.in, Flipkart, and Meesho — and pushes the exact adjustment to protect your margin straight to your WhatsApp in 60 minutes.
+        <p
+          className="text-blue-100 mb-6 text-sm sm:text-base md:text-lg"
+          style={{
+            fontFamily: "'Lora', serif",
+            maxWidth: 520,
+            margin: "0 auto 24px",
+          }}
+        >
+          Insydz automates price monitoring across Amazon.in, Flipkart, and
+          Meesho — and pushes the exact adjustment to protect your margin
+          straight to your WhatsApp in 60 minutes.
         </p>
-        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px 20px", marginBottom: 20 }}>
-          {["Free plan", "Amazon.in + Flipkart + Meesho", "WhatsApp alerts in 60 min"].map(t => (
-            <div key={t} className="text-blue-100" style={{ fontSize:"clamp(11px,2vw,13.5px)", display:"flex", alignItems:"center", gap:6, fontFamily:"'Sora',sans-serif" }}>
-              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            gap: "6px 20px",
+            marginBottom: 20,
+          }}
+        >
+          {[
+            "Free plan",
+            "Amazon.in + Flipkart + Meesho",
+            "WhatsApp alerts in 60 min",
+          ].map((t) => (
+            <div
+              key={t}
+              className="text-blue-100"
+              style={{
+                fontSize: "clamp(11px,2vw,13.5px)",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                fontFamily: "'Sora',sans-serif",
+              }}
+            >
+              <span className="text-white" style={{ fontWeight: 800 }}>
+                ✓
+              </span>{" "}
+              {t}
             </div>
           ))}
         </div>
-        <Link href="/login"
+        <Link
+          href="/login"
           className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm sm:text-base px-8 sm:px-10 py-3 sm:py-4 rounded-full shadow-xl transition-all transform hover:scale-105 inline-block text-decoration-none"
         >
           Automate Price Tracking Free →
@@ -1214,7 +2334,6 @@ export default function ManualVsAutomatedCompetitorTracking() {
       </div>
 
       {/* Footer */}
-      
     </div>
   );
 }
