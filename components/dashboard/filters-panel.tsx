@@ -230,8 +230,8 @@ export default function FiltersPanel() {
                   <SelectValue placeholder={t('filters.selectData', 'Select data source')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="flipkart" data-track-id="filters_datasource_option" data-filter-value="flipkart">Flipkart</SelectItem>
-                  <SelectItem value="amazon" data-track-id="filters_datasource_option" data-filter-value="amazon">Amazon</SelectItem>
+                  <SelectItem value="flipkart" data-track-id="filters_datasource_option" data-filter-value="flipkart">Flipkart India</SelectItem>
+                  <SelectItem value="amazon" data-track-id="filters_datasource_option" data-filter-value="amazon">Amazon India</SelectItem>
                 </SelectContent>
               </Select>
             </div>

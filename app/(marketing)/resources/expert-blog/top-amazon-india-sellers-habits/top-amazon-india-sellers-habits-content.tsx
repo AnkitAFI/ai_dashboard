@@ -596,13 +596,13 @@ export default function TopAmazonIndiaSellersHabitsContent() {
         @media(min-width:640px){.read-progress{top:72px}}
         @media(min-width:1024px){.read-progress{top:80px}}
 
-        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0}
-        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px}}
-        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px}}
-        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px}}
+        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0;align-items:start}
+        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px;align-items:start}}
+        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px;align-items:start}}
+        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px;align-items:start}}
 
         .toc-sidebar{display:none}
-        @media(min-width:768px){.toc-sidebar{display:block;position:sticky;top:76px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);max-height:calc(100vh - 96px);overflow-y:auto}}
+        @media(min-width:768px){.toc-sidebar{display:block;position:sticky;top:76px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);max-height:calc(100vh - 96px);overflow-y:auto;align-self:start;height:fit-content}}
         @media(min-width:1024px){.toc-sidebar{top:80px;padding:22px}}
         .dark .toc-sidebar{background:#111827;border-color:#1f2937}
 
@@ -859,10 +859,8 @@ export default function TopAmazonIndiaSellersHabitsContent() {
         badgeText="Data Story · Seller Benchmarking"
         title={
           <>
-            We Studied{" "}
-            <span style={{ color: "#6366F1" }}>100 Amazon India</span> <br />{" "}
-            Seller Accounts. Here's Exactly <br />
-            What the Top 10% Do Differently.
+            5 Habits of Top{" "}
+            <span style={{ color: "#6366F1" }}>10% Amazon India </span> Sellers
           </>
         }
         description={
@@ -880,17 +878,16 @@ export default function TopAmazonIndiaSellersHabitsContent() {
           light: "#F1F2FF",
           dark: "#0f1120",
         }}
-        tags={[" Data Story", "Trending"]}
-      />
-
-      {/* Blog Image Section */}
-      <BlogImageSection
-        imageSrc="/top-amazon-india-sellers-habits_blogbanner.png"
-        altText="Top Amazon India Sellers Habits"
-        caption="Insydz seller benchmark data across 100 Amazon India accounts. Each habit shows the percentage of top 10% sellers who practised it versus the bottom 50%. The gap is not marginal. It is structural."
       />
 
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 16px 0" }}>
+        {/* Blog Image Section */}
+        <BlogImageSection
+          imageSrc="/Habits of Top Amazon India Sellers.png"
+          altText="Top Amazon India Sellers Habits"
+          caption="Insydz seller benchmark data across 100 Amazon India accounts. Each habit shows the percentage of top 10% sellers who practised it versus the bottom 50%. The gap is not marginal. It is structural."
+        />
+
         <InfoBanner
           accentColor="#6366F1"
           backgroundColor="#DCE2FF"

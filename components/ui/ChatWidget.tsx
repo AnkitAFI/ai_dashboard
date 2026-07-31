@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { MessageCircle, X, Send, Bot, User, Sparkles } from "lucide-react";
+import { useRef, useEffect, useState } from "react";
+import { X, Send, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -32,6 +32,7 @@ export function ChatWidget() {
     }
   }, [messages, isOpen]);
 
+
   const handleSend = async () => {
     if (!inputValue.trim()) return;
 
@@ -44,7 +45,6 @@ export function ChatWidget() {
     setIsLoading(true);
 
     try {
-      // Send to our Next.js API route, which forwards to a local model
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -69,8 +69,9 @@ export function ChatWidget() {
     }
   };
 
+
   return (
-    <div className={`fixed z-50 transition-all duration-200 ${isOpen ? "inset-0 sm:inset-auto sm:bottom-4 sm:right-4" : "bottom-4 right-4"}`}>
+    <div className={`fixed z-50 transition-all duration-200 ${isOpen ? "inset-0 sm:inset-auto sm:bottom-6 sm:right-6" : "bottom-6 right-6"}`}>
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -80,22 +81,22 @@ export function ChatWidget() {
             transition={{ duration: 0.2 }}
             className="w-full h-[100dvh] sm:h-[500px] sm:mb-4"
           >
-            <Card className="w-full h-full sm:w-[350px] shadow-2xl shadow-orange-900/10 border-primary/10 rounded-none sm:rounded-2xl border-0 sm:border flex flex-col overflow-hidden bg-white/95 backdrop-blur-md dark:bg-gray-950/95">
-              <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white p-4 flex flex-row justify-between items-center space-y-0 shrink-0">
+            <Card className="w-full h-full sm:w-[350px] shadow-2xl shadow-violet-900/15 border-primary/10 rounded-none sm:rounded-2xl border-0 sm:border flex flex-col overflow-hidden bg-white/95 backdrop-blur-md dark:bg-gray-950/95">
+              <CardHeader className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white p-4 flex flex-row justify-between items-center space-y-0 shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm shadow-inner overflow-hidden border border-white/20">
-                    <Image src="/chatbot_owl_v2.png" alt="Apex Owl" width={40} height={40} className="object-cover" />
+                  <div className="w-10 h-10 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center shadow-inner overflow-hidden border border-slate-200 dark:border-slate-700 p-0.5">
+                    <Image src="/owl2.png" alt="Apex Owl" width={36} height={32} className="object-contain" />
                   </div>
                   <div className="flex flex-col">
-                    <CardTitle className="text-lg font-bold">Apex</CardTitle>
-                    <span className="text-xs text-orange-100 font-medium opacity-90">Powered by Insydz</span>
+                    <CardTitle className="text-lg font-bold text-slate-900 dark:text-white">Apex</CardTitle>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Powered by Insydz</span>
                   </div>
                 </div>
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={() => setIsOpen(false)}
-                  className="text-white hover:bg-white/20 hover:text-white rounded-full transition-colors"
+                  className="text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white rounded-full transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </Button>
@@ -111,13 +112,13 @@ export function ChatWidget() {
                     <div
                       className={`max-w-[85%] p-3.5 rounded-2xl flex items-start gap-3 shadow-sm ${
                         msg.role === "user"
-                          ? "bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-tr-sm"
+                          ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-tr-sm"
                           : "bg-white border border-slate-100 text-slate-800 dark:bg-slate-900 dark:border-slate-800 dark:text-slate-200 rounded-tl-sm"
                       }`}
                     >
                       {msg.role === "bot" && (
-                        <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 shadow-sm border border-slate-200 dark:border-slate-800">
-                          <Image src="/chatbot_owl_v2.png" alt="Apex Owl" width={24} height={24} className="object-cover" />
+                        <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 shadow-sm border border-slate-200 dark:border-slate-800 bg-white flex items-center justify-center p-0.5">
+                          <Image src="/owl2.png" alt="Apex Owl" width={20} height={20} className="object-contain" />
                         </div>
                       )}
                       <span className="text-sm whitespace-pre-wrap break-words w-full leading-relaxed">
@@ -133,11 +134,11 @@ export function ChatWidget() {
                 {isLoading && (
                   <div className="flex justify-start">
                     <div className="max-w-[85%] p-3.5 rounded-2xl rounded-tl-sm bg-white border border-slate-100 dark:bg-slate-900 dark:border-slate-800 shadow-sm flex items-center gap-3">
-                       <Sparkles className="w-4 h-4 shrink-0 text-orange-500 animate-pulse" />
+                       <Sparkles className="w-4 h-4 shrink-0 text-violet-500 animate-pulse" />
                        <div className="flex space-x-1.5">
-                          <div className="w-2 h-2 bg-orange-500/50 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-                          <div className="w-2 h-2 bg-orange-500/50 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-                          <div className="w-2 h-2 bg-orange-500/50 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                          <div className="w-2 h-2 bg-violet-500/50 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                          <div className="w-2 h-2 bg-violet-500/50 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                          <div className="w-2 h-2 bg-violet-500/50 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                        </div>
                     </div>
                   </div>
@@ -157,9 +158,9 @@ export function ChatWidget() {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     disabled={isLoading}
-                    className="flex-1 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus-visible:ring-orange-500 rounded-full px-4 h-11"
+                    className="flex-1 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800 focus-visible:ring-violet-500 rounded-full px-4 h-11"
                   />
-                  <Button type="submit" size="icon" disabled={isLoading || !inputValue.trim()} className="rounded-full w-11 h-11 bg-orange-500 hover:bg-orange-600 text-white shadow-md transition-transform active:scale-95">
+                  <Button type="submit" size="icon" disabled={isLoading || !inputValue.trim()} className="rounded-full w-11 h-11 bg-violet-600 hover:bg-violet-700 text-white shadow-md transition-transform active:scale-95">
                     <Send className="w-4 h-4 ml-0.5" />
                   </Button>
                 </form>
@@ -174,16 +175,18 @@ export function ChatWidget() {
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
+            exit={{ opacity: 0, scale: 0.8, x: 200, y: 200 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            transition={{ duration: 0.3 }}
           >
             <Button
               onClick={() => setIsOpen(true)}
               size="icon"
-              className="w-14 h-14 rounded-full shadow-2xl shadow-orange-500/30 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 border-2 border-white/20 transition-all hover:scale-105 p-0 overflow-hidden relative"
+              id="chat-widget-trigger-btn"
+              className="w-16 h-16 rounded-full shadow-2xl shadow-slate-500/20 dark:shadow-black/40 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 border-2 border-slate-100 dark:border-slate-800 transition-all hover:scale-105 flex items-center justify-center p-1.5 relative"
             >
-              <Image src="/chatbot_owl_v2.png" alt="Chat with Apex" fill sizes="56px" className="object-cover" />
+              <Image src="/owl2.png" alt="Chat with Apex" width={52} height={46} className="object-contain" />
             </Button>
           </motion.div>
         )}

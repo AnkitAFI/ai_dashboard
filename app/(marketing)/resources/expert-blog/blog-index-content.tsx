@@ -4,43 +4,17 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Search,
   Clock,
   ArrowRight,
   TrendingUp,
   Target,
   DollarSign,
   BarChart3,
-  MessageCircle,
-  Package,
   Trophy,
   Zap,
-  BookOpen,
-  Video,
-  FileText,
   CheckCircle2,
-  Menu,
-  X,
-  Sun,
-  Moon,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ShoppingBag,
-  Store,
-  Briefcase,
-  Users,
-  Bell,
-  Code,
-  Globe,
-  ArrowLeft,
-  Facebook,
-  Twitter,
-  Linkedin,
-  Instagram,
-  LayoutGrid,
-  Flame,
-  Presentation,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -82,36 +56,58 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
-    id: "26",
-    title: "Prime Day India 2026: Seller Questions Answered",
+    id: "28",
+    title: "Amazon India Repricing Strategy 2026",
     excerpt:
-      "Prime Day 2026 lasts 48 hours. The sellers who win it spend 6 to 8 weeks preparing. The sellers who lose it start the week before. This guide covers everything you need to do right now.",
-    category: "Festive Trends",
-    readTime: "13 min read",
-    image: "/amazon-prime-day-india-2026-seller-questions-blogbanner.png",
-    route: "/resources/expert-blog/prime-day-india-2026-seller-questions",
+      "In competitive categories on Amazon India, your Buy Box is won or lost multiple times a day. Sellers who reprice manually, or not at all, are giving it away. This is the 2026 playbook for margin-safe, rule-based repricing that holds your position without racing to the bottom.",
+    category: "Pricing Strategy",
+    readTime: "12 min read",
+    image: "/amazon-repricing-strategy-india-image0.png",
+    route: "/resources/expert-blog/amazon-repricing-strategy-india-2026",
     popular: true,
   },
   {
-    id: "25",
+    id: "27",
+    title: "Analyze Amazon Reviews India Content",
+    excerpt:
+      "Amazon reviews are goldmines of information. Discover how to analyze Amazon reviews in India to find hidden patterns and improve your product. Learn the best practices for sentiment analysis, theme extraction, and product improvement.",
+    category: "Review Intelligence Pillar",
+    readTime: "12 min read",
+    image: "/Analyze 500+ Reviews for Product Opportunities.png",
+    route: "/resources/expert-blog/analyze-amazon-reviews-india-content",
+    popular: true,
+  },
+  {
+    id: "26",
     title: "Switch From Excel to SellerApp",
     excerpt:
       "Use this step-by-step template to migrate from Excel to SellerApp in under 30 minutes. Automate keyword tracking, competitor monitoring, and listing analytics.",
     category: "Seller Tools & Strategy",
     readTime: "10 min read",
-    image: "/switch-excel-BlogBanner.png",
+    image: "/Excel to AI Competitor Tracker on Amazon India_ 30 Days.png",
     route: "/resources/expert-blog/switch-excel-ai-amazon-india",
     popular: true,
   },
   {
-    id: "24",
+    id: "25",
     title: "Top Amazon India Sellers Habits",
     excerpt:
       "Discover the habits, strategies, and daily practices followed by top Amazon India sellers to increase rankings, improve conversions, and build sustainable ecommerce businesses.",
     category: "Seller Tools & Strategy",
     readTime: "11 min read",
-    image: "/top-amazon-india-sellers-habits_blogbanner.png",
+    image: "/Habits of Top Amazon India Sellers.png",
     route: "/resources/expert-blog/top-amazon-india-sellers-habits",
+    popular: true,
+  },
+  {
+    id: "24",
+    title: "Prime Day India 2026: Seller Questions Answered",
+    excerpt:
+      "Prime Day 2026 lasts 48 hours. The sellers who win it spend 6 to 8 weeks preparing. The sellers who lose it start the week before. This guide covers everything you need to do right now.",
+    category: "Festive Trends",
+    readTime: "13 min read",
+    image: "/prime-day-india-2026-seller-questions.png",
+    route: "/resources/expert-blog/prime-day-india-2026-seller-questions",
     popular: true,
   },
   {
@@ -121,7 +117,7 @@ const articles: Article[] = [
       "Negative Amazon reviews are killing your sales—and you’re probably responding the wrong way. Learn how to convert 1-star complaints into more revenue.",
     category: "Review Intelligence",
     readTime: "11 min read",
-    image: "/Negative Reviews Blog_Banner.png",
+    image: "/How Negative Reviews Are Killing Your Amazon India Sales.png",
     route: "/resources/expert-blog/negative-reviews-amazon-india",
     popular: true,
   },
@@ -132,7 +128,7 @@ const articles: Article[] = [
       "Your Amazon India listing is live but not ranking? Learn the real reasons products fail to rank and the practical fixes that improve visibility in 2026.",
     category: "SEO & Keyword Intelligence",
     readTime: "12 min read",
-    image: "/amazon_listing.png",
+    image: "/Amazon India Listing Not Ranking.png",
     route: "/resources/expert-blog/amazon-listing-not-ranking-india",
     popular: true,
   },
@@ -143,7 +139,7 @@ const articles: Article[] = [
       "Discover exactly which keywords your Amazon India competitors rank for and use that gap to outrank them in 2026. Reverse ASIN research made practical.",
     category: "Seller Tools & Strategy",
     readTime: "12 min read",
-    image: "/image_1691x942.png",
+    image: "/How to Find Competitor Keywords.png",
     route: "/resources/expert-blog/find-competitor-keywords-amazon-india",
     popular: true,
   },
@@ -154,7 +150,7 @@ const articles: Article[] = [
       "Learn how zero-fee on Amazon India can help sellers save up to ₹50,000/month, improve profitability, increase visibility, and maintain competitive pricing—and if it’s the right move for your brand.",
     category: "Pricing Strategy",
     readTime: "12 min read",
-    image: "/amazon-zero-referral-fee-india_Image2.png",
+    image: "/Amazon India Zero Referral Fee.png",
     route: "/resources/expert-blog/amazon-zero-referral-fee",
     popular: true,
   },
@@ -165,7 +161,7 @@ const articles: Article[] = [
       "Learn why your Amazon sales might drop and how to recover them in 2026. From product research to sourcing and building a D2C brand.",
     category: "Seller Tools & Strategy",
     readTime: "12 min read",
-    image: "/Competitor Undercutting Your Amazon India Price_1.png",
+    image: "/Detect Competitor Price Undercutting on Amazon India.png",
     route: "/resources/expert-blog/competitor-undercutting-amazon-india",
     popular: true,
   },
@@ -176,7 +172,7 @@ const articles: Article[] = [
       "Learn why your Amazon sales might drop and how to recover them in 2026. From product research to sourcing and building a D2C brand.",
     category: "Seller Tools & Strategy",
     readTime: "12 min read",
-    image: "/Banner image.png",
+    image: "/Amazon India Sales Drop.png",
     route: "/resources/expert-blog/amazon-sales-drop",
     popular: true,
   },
@@ -187,7 +183,7 @@ const articles: Article[] = [
       "Learn how to use Flipkart Seller Analytics Tools in India to grow your business, track competitors, and improve your ranking in 2026.",
     category: "Flipkart Seller Tools & Strategy",
     readTime: "12 min read",
-    image: "/Flip_image_1.png",
+    image: "/Flipkart Analytics Tool.png",
     route: "/resources/expert-blog/flipkart-seller-analytics-tool-india",
     popular: true,
   },
@@ -199,7 +195,7 @@ const articles: Article[] = [
       "Learn how to start and scale an Amazon Private Label business in India in 2026. From product research to sourcing and building a D2C brand.",
     category: "Seller Tools & Strategy",
     readTime: "12 min read",
-    image: "/build-your-brand.png",
+    image: "/private label on amazon india.png",
     route: "/resources/expert-blog/amazon-private-label-india-2026",
     popular: true,
   },
@@ -211,7 +207,7 @@ const articles: Article[] = [
       "Learn the flat fee per ASIN, enrollment criteria, and strategic benefits of Amazon Vine India in 2026. Get 30 verified reviews and boost your launch velocity.",
     category: "Seller Tools & Strategy",
     readTime: "11 min read",
-    image: "/Amazon Vine Program India 2026.png",
+    image: "/Amazon Vine Program India.png",
     route: "/resources/expert-blog/amazon-vine-program-india-2026",
     popular: true,
   },
@@ -223,8 +219,7 @@ const articles: Article[] = [
       "A practitioner's comparison for ₹5L–50L/month Indian sellers — INR pricing vs USD billing, Flipkart-native vs Amazon-only. Read before you commit.",
     category: "Tool Comparison & Reviews",
     readTime: "10 min read",
-    image: "/insydz_960x760(1).png",
-    // image: "/Insydz vs SellerApp.png",
+    image: "/Insydz-vs-SellerApp.png",
     route: "/resources/expert-blog/insydz-vs-sellerapp-india",
     featured: true,
     popular: true,
@@ -237,7 +232,7 @@ const articles: Article[] = [
       "AI-powered Amazon review analysis for Indian D2C sellers — sentiment clustering, Hinglish support, RTO signals, and WhatsApp alerts.",
     category: "Review Intelligence",
     readTime: "12 min read",
-    image: "/Analyze Amazon Reviews Tool India.png",
+    image: "/Analyze Amazon Reviews.png",
     route: "/resources/expert-blog/amazon-review-analysis-guide-india",
     popular: true,
   },
@@ -248,7 +243,7 @@ const articles: Article[] = [
       "Indian ecommerce sellers spend 3–5 hours daily tracking competitor prices in Excel — and still react 24 hours too late.",
     category: "Seller Tools & Strategy",
     readTime: "8 min read",
-    image: "/Manual vs Automated Competitor Tracking.png",
+    image: "/Manual-vs-Automated.png",
     route:
       "/resources/expert-blog/manual-vs-automated-competitor-tracking-tool",
     popular: true,
@@ -283,19 +278,8 @@ const articles: Article[] = [
       "Stop flying blind on Flipkart. The right analytics tool surfaces which competitor keywords are stealing your rank, which SKUs are losing the Buy Box.",
     category: "Flipkart Seller Tools & Strategy",
     readTime: "9 min read",
-    image: "/Best Flipkart Analytics Tools India (2026) 1.png",
+    image: "/Best-Flipkart-Analytics-Tool.png",
     route: "/resources/expert-blog/best-flipkart-analytics-tool",
-  },
-  {
-    id: "7",
-    title:
-      "Best Review Analysis Tools for Indian Sellers: Complete Guide (2026)",
-    excerpt:
-      "Your customers are telling you exactly what to fix and why they're switching to a competitor inside every review.",
-    category: "D2C Growth & Brand Intelligence",
-    readTime: "14 min read",
-    image: "/Best Review Analysis Tools India.png",
-    route: "/resources/expert-blog/review-analysis-guide-india",
   },
   {
     id: "8",
@@ -305,11 +289,22 @@ const articles: Article[] = [
       "Find buyer-intent keywords your competitors are ranking for on Amazon.in and win the search result before they know you're there.",
     category: "Seller Tools & Strategy",
     readTime: "6 min read",
-    image: "/Amazon Keyword Research Tools India.png",
+    image: "/Amazon-SEO-Tool-India.png",
     route: "/resources/expert-blog/best-amazon-keyword-research-tool-india",
   },
   {
-    id: "1",
+    id: "7",
+    title:
+      "Best Review Analysis Tools for Indian Sellers: Complete Guide (2026)",
+    excerpt:
+      "Your customers are telling you exactly what to fix and why they're switching to a competitor inside every review.",
+    category: "D2C Growth & Brand Intelligence",
+    readTime: "14 min read",
+    image: "/Best-Review-Analysis-Tools.png",
+    route: "/resources/expert-blog/review-analysis-guide-india",
+  },
+  {
+    id: "6",
     title:
       "Amazon Competitor Price Tracking Tool India: Complete Guide for Sellers (2026)",
     excerpt:
@@ -322,54 +317,54 @@ const articles: Article[] = [
     popular: true,
   },
   {
-    id: "2",
+    id: "5",
     title:
       "Amazon SEO Tool India: Keyword Research & Rank Tracking Guide for Sellers (2026)",
     excerpt:
       "Discover how an Amazon SEO tool built for India helps sellers rank higher, find buying keywords, and grow sales on Amazon.in.",
     category: "SEO & Keyword Intelligence",
     readTime: "12 min read",
-    image: "/Amazon SEO Tool India.png",
+    image: "/Amazon-SEO-Tool-India.png",
     route: "/resources/expert-blog/amazon-seo-tool-india",
     popular: true,
   },
   {
-    id: "3",
+    id: "4",
     title:
       "How to Rank on Page 1 of Amazon India: The Complete Guide for Sellers (2026)",
     excerpt:
       "Learn exactly how to rank on page 1 of Amazon India using the A9 algorithm, keyword optimization & competitor intelligence.",
     category: "The Complete Guide for Sellers (2026)",
     readTime: "15 min read",
-    image: "/How to Rank on Page 1.png",
+    image: "/How-to-Rank-on-Page-1.png",
     route: "/resources/expert-blog/how-to-rank-page-1-amazon-india",
     popular: true,
   },
   {
-    id: "4",
+    id: "3",
     title:
       "Best Competitor Price Tracking Tools for Indian Sellers: The 2026 Guide",
     excerpt:
       "Your competitors are repricing in real time while you're still checking prices manually — and losing the Buy Box because of it. See how India's smartest marketplace sellers use automated price intelligence across Amazon, Flipkart, and Meesho to protect margin and win more sales.",
     category: "Tool Comparison & Reviews",
     readTime: "10 min read",
-    image: "/Best Price Tracking Tools India.png",
+    image: "/Best-Competitor-Price-Tracking-Tools.png",
     route: "/resources/expert-blog/best-competitor-price-tracking-tools-india",
     popular: true,
   },
   {
-    id: "5",
+    id: "2",
     title:
       "Insydz vs Helium 10: Which is the Right Amazon Intelligence Tool for Indian Sellers?",
     excerpt:
       "Helium 10 was built for Amazon US — not for the way Indian marketplaces actually work. Find out why thousands of Indian sellers are switching to a tool built specifically for Amazon India, Flipkart, and Meesho.",
     category: "Pricing + Compare",
     readTime: "7 min read",
-    image: "/Insydz vs Helium 10.png",
+    image: "/Insydz-vs-Helium-10.png",
     route: "/resources/expert-blog/insydz-vs-helium-10-india",
   },
   {
-    id: "6",
+    id: "1",
     title:
       "AI Review Intelligence Tool for Amazon & Flipkart Sellers: The Complete Guide (2026)",
     excerpt:
@@ -380,15 +375,6 @@ const articles: Article[] = [
     route:
       "/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers",
   },
-  // {
-  //   id: "9",
-  //   title: "Competitor Price Tracking: Advanced Tactics for Market Leaders",
-  //   excerpt: "Go beyond basic monitoring. Learn how to predict competitor moves and automate pricing responses in real-time.",
-  //   category: "Competitor Tracking",
-  //   readTime: "9 min read",
-  //   image: "",
-  //   route: "/resources/blog/amazon-buy-box"
-  // }
 ];
 
 // Problem blocks data
@@ -529,11 +515,6 @@ export default function ExpertBlog() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="max-w-4xl mx-auto text-center">
-            {/* <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold mb-6 shadow-lg">
-              <Zap className="w-4 h-4" />
-              <span>E-commerce Intelligence Hub</span>
-            </div> */}
-
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
               <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent">
                 E-commerce Intelligence
@@ -569,22 +550,7 @@ export default function ExpertBlog() {
       {/* Category Filter Bar */}
       <section className="sticky top-0 z-40 bg-background opacity-100 dark:bg-gray-950/95 backdrop-blur-none border-b border-gray-200 dark:border-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="overflow-x-auto scrollbar-hide">
-            {/* <div className="flex gap-2 py-4 min-w-max">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => handleCategoryClick(category)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${selectedCategory === category
-                    ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg'
-                    : 'bg-gray-100 dark:bg-gray-900 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800'
-                    }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div> */}
-          </div>
+          <div className="overflow-x-auto scrollbar-hide"></div>
         </div>
       </section>
 
@@ -980,7 +946,7 @@ export default function ExpertBlog() {
         .delay-1000 {
           animation-delay: 1s;
         }
-        .blog-card-thumb { position: relative; width:100%; aspect-ratio:16 / 9; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+        .blog-card-thumb { position: relative; width:100%; aspect-ratio:1978 / 795; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
         .blog-card-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
       `}</style>
     </div>

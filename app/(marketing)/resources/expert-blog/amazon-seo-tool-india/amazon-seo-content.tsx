@@ -1,23 +1,37 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Search, Clock, TrendingUp, Target, DollarSign, BarChart3,
-  MessageCircle, Package, Trophy, Zap, BookOpen, Video, FileText,
-  Menu, X, Sun, Moon, ChevronDown, ShoppingBag, Store, Briefcase,
-  Users, Bell, Code, Globe, ArrowLeft, Facebook, Twitter, Linkedin,
-  Instagram, Flame, Presentation
+  Search,
+  Clock,
+  TrendingUp,
+  Target,
+  DollarSign,
+  BarChart3,
+  MessageCircle,
+  Package,
+  Trophy,
+  Zap,
+  BookOpen,
+  Menu,
+  X,
+  Sun,
+  Moon,
+  ChevronDown,
+  ShoppingBag,
+  Store,
+  Briefcase,
+  Users,
+  Bell,
+  Code,
+  Globe,
+  ArrowLeft,
+  Flame,
+  Presentation,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-
-
-
-
-
-
+import BlogImageSection from "../components/BlogImageSection";
 
 type MenuItemWithBadge = {
   name: string;
@@ -38,38 +52,137 @@ type NavigationMenu = {
 
 const navigationMenu: NavigationMenu = {
   Solutions: [
-    { name: "All Solutions (Overview)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions" },
-    { name: "For Amazon Sellers (India)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions/amazon-sellers" },
-    { name: "For Flipkart Sellers", icon: <Store className="w-4 h-4" />, route: "/solutions/flipkart-sellers" },
-    { name: "For E-commerce Agencies", icon: <Briefcase className="w-4 h-4" />, route: "/solutions/ecommerce-agencies" },
-    { name: "For Brand Managers", icon: <Users className="w-4 h-4" />, route: "/solutions/brand-managers" },
+    {
+      name: "All Solutions (Overview)",
+      icon: <ShoppingBag className="w-4 h-4" />,
+      route: "/solutions",
+    },
+    {
+      name: "For Amazon Sellers (India)",
+      icon: <ShoppingBag className="w-4 h-4" />,
+      route: "/solutions/amazon-sellers",
+    },
+    {
+      name: "For Flipkart Sellers",
+      icon: <Store className="w-4 h-4" />,
+      route: "/solutions/flipkart-sellers",
+    },
+    {
+      name: "For E-commerce Agencies",
+      icon: <Briefcase className="w-4 h-4" />,
+      route: "/solutions/ecommerce-agencies",
+    },
+    {
+      name: "For Brand Managers",
+      icon: <Users className="w-4 h-4" />,
+      route: "/solutions/brand-managers",
+    },
   ],
   "Use Cases": [
-    { name: "All Use Cases", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases" },
-    { name: "Track Competitor Prices", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases/track-competitor-prices" },
-    { name: "Find Profitable Products", icon: <Target className="w-4 h-4" />, route: "/use-cases/find-profitable-products" },
-    { name: "Analyze Customer Reviews", icon: <MessageCircle className="w-4 h-4" />, route: "/use-cases/analyze-customer-reviews" },
-    { name: "Improve Amazon & Flipkart SEO", icon: <Search className="w-4 h-4" />, route: "/use-cases/improve-seo" },
-    { name: "Avoid Stockouts & Missed Sales", icon: <Package className="w-4 h-4" />, route: "/use-cases/avoid-stockouts" },
+    {
+      name: "All Use Cases",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/use-cases",
+    },
+    {
+      name: "Track Competitor Prices",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/use-cases/track-competitor-prices",
+    },
+    {
+      name: "Find Profitable Products",
+      icon: <Target className="w-4 h-4" />,
+      route: "/use-cases/find-profitable-products",
+    },
+    {
+      name: "Analyze Customer Reviews",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/use-cases/analyze-customer-reviews",
+    },
+    {
+      name: "Improve Amazon & Flipkart SEO",
+      icon: <Search className="w-4 h-4" />,
+      route: "/use-cases/improve-seo",
+    },
+    {
+      name: "Avoid Stockouts & Missed Sales",
+      icon: <Package className="w-4 h-4" />,
+      route: "/use-cases/avoid-stockouts",
+    },
   ],
   Features: [
-    { name: "Competitor Price Tracking", icon: <DollarSign className="w-4 h-4" />, route: "/features/competitor-price-tracking-feature" },
-    { name: "Review Analytics", icon: <MessageCircle className="w-4 h-4" />, route: "/features/review-analytics-feature" },
-    { name: "Price Optimization", icon: <TrendingUp className="w-4 h-4" />, route: "/features/price-optimization-feature" },
-    { name: "Keyword & Rank Tracking", icon: <Search className="w-4 h-4" />, route: "/features/keyword-rank-tracking-feature" },
-    { name: "Product Research", icon: <Package className="w-4 h-4" />, route: "/features/product-research-feature" },
-    { name: "AI Recommendations", icon: <Zap className="w-4 h-4" />, route: "/features/ai-recommendations-feature" },
-    { name: "WhatsApp Alerts", icon: <Bell className="w-4 h-4" />, badge: "NEW", route: "/features/whatsapp-alerts-feature" },
-    { name: "Festive Trend Intelligence", icon: <Flame className="w-4 h-4" />, badge: "UPCOMING", route: "/features/festive-trend-feature" },
+    {
+      name: "Competitor Price Tracking",
+      icon: <DollarSign className="w-4 h-4" />,
+      route: "/features/competitor-price-tracking-feature",
+    },
+    {
+      name: "Review Analytics",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/features/review-analytics-feature",
+    },
+    {
+      name: "Price Optimization",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/features/price-optimization-feature",
+    },
+    {
+      name: "Keyword & Rank Tracking",
+      icon: <Search className="w-4 h-4" />,
+      route: "/features/keyword-rank-tracking-feature",
+    },
+    {
+      name: "Product Research",
+      icon: <Package className="w-4 h-4" />,
+      route: "/features/product-research-feature",
+    },
+    {
+      name: "AI Recommendations",
+      icon: <Zap className="w-4 h-4" />,
+      route: "/features/ai-recommendations-feature",
+    },
+    {
+      name: "WhatsApp Alerts",
+      icon: <Bell className="w-4 h-4" />,
+      badge: "NEW",
+      route: "/features/whatsapp-alerts-feature",
+    },
+    {
+      name: "Festive Trend Intelligence",
+      icon: <Flame className="w-4 h-4" />,
+      badge: "UPCOMING",
+      route: "/features/festive-trend-feature",
+    },
   ],
   "Free Tools": [
-    { name: "Free Amazon Product Analyzer", icon: <BarChart3 className="w-4 h-4" />, route: "/free-tools/free-amazon-product-analyzer" },
-    { name: "Free Review Sentiment Checker", icon: <MessageCircle className="w-4 h-4" />, route: "/free-tools/free-review-sentiment-checker" },
-    { name: "Free Competitor Price Checker", icon: <DollarSign className="w-4 h-4" />, route: "/free-tools/free-competitor-price-checker" },
-    { name: "Free Keyword Rank Checker", icon: <Search className="w-4 h-4" />, badge: "NEW", route: "/free-tools/free-keyword-rank-checker" },
+    {
+      name: "Free Amazon Product Analyzer",
+      icon: <BarChart3 className="w-4 h-4" />,
+      route: "/free-tools/free-amazon-product-analyzer",
+    },
+    {
+      name: "Free Review Sentiment Checker",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/free-tools/free-review-sentiment-checker",
+    },
+    {
+      name: "Free Competitor Price Checker",
+      icon: <DollarSign className="w-4 h-4" />,
+      route: "/free-tools/free-competitor-price-checker",
+    },
+    {
+      name: "Free Keyword Rank Checker",
+      icon: <Search className="w-4 h-4" />,
+      badge: "NEW",
+      route: "/free-tools/free-keyword-rank-checker",
+    },
   ],
   Resources: [
-    { name: "Expert Blog", icon: <BookOpen className="w-4 h-4" />, route: "/resources/expert-blog" },
+    {
+      name: "Expert Blog",
+      icon: <BookOpen className="w-4 h-4" />,
+      route: "/resources/expert-blog",
+    },
   ],
   Integrations: [
     { name: "Amazon", icon: <ShoppingBag className="w-4 h-4" /> },
@@ -78,14 +191,38 @@ const navigationMenu: NavigationMenu = {
     { name: "API Documentation", icon: <Code className="w-4 h-4" /> },
   ],
   Compare: [
-    { name: "Insydz vs Helium 10", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvshelium" },
-    { name: "Insydz vs Jungle Scout", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsjunglescout" },
-    { name: "Insydz vs Viral Launch", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsvirallaunch" },
+    {
+      name: "Insydz vs Helium 10",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvshelium",
+    },
+    {
+      name: "Insydz vs Jungle Scout",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvsjunglescout",
+    },
+    {
+      name: "Insydz vs Viral Launch",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvsvirallaunch",
+    },
   ],
   About: [
-    { name: "About Us", icon: <Presentation className="w-4 h-4" />, route: "/about/about-us" },
-    { name: "Our Vision", icon: <Globe className="w-4 h-4" />, route: "/about/our-vision" },
-    { name: "Careers", icon: <Users className="w-4 h-4" />, route: "/about/careers" },
+    {
+      name: "About Us",
+      icon: <Presentation className="w-4 h-4" />,
+      route: "/about/about-us",
+    },
+    {
+      name: "Our Vision",
+      icon: <Globe className="w-4 h-4" />,
+      route: "/about/our-vision",
+    },
+    {
+      name: "Careers",
+      icon: <Users className="w-4 h-4" />,
+      route: "/about/careers",
+    },
   ],
 };
 
@@ -102,12 +239,22 @@ const TOC = [
 ];
 
 // ─── Inline link helper ─────────────────────────────────────────────────────
-const InLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
+const InLink = ({
+  to,
+  children,
+}: {
+  to: string;
+  children: React.ReactNode;
+}) => {
   const router = useRouter();
   return (
     <a
       href={to}
-      onClick={(e) => { e.preventDefault(); router.push(to); window.scrollTo(0,0); }}
+      onClick={(e) => {
+        e.preventDefault();
+        router.push(to);
+        window.scrollTo(0, 0);
+      }}
       style={{
         color: "#ea580c",
         textDecoration: "underline",
@@ -132,11 +279,46 @@ const FAQS = [
   },
   {
     q: "How is Amazon SEO different from Google SEO?",
-    a: <>Google <a href="https://en.wikipedia.org/wiki/Search_engine_optimization" target="_blank" rel="noopener noreferrer" style={{ color: "#ea580c", textDecoration: "underline", fontWeight: 600 }}>search engine optimization (SEO)</a> is about ranking web pages for information queries. Amazon SEO is about ranking product listings for purchase queries. Amazon's A9 algorithm weighs keyword relevance, sales velocity, pricing competitiveness, reviews, and conversion rate not backlinks or domain authority. A standard website SEO tool is useless for Amazon you need a marketplace-specific tool that understands e-commerce ranking signals.</>,
+    a: (
+      <>
+        Google{" "}
+        <a
+          href="https://en.wikipedia.org/wiki/Search_engine_optimization"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            color: "#ea580c",
+            textDecoration: "underline",
+            fontWeight: 600,
+          }}
+        >
+          search engine optimization (SEO)
+        </a>{" "}
+        is about ranking web pages for information queries. Amazon SEO is about
+        ranking product listings for purchase queries. Amazon's A9 algorithm
+        weighs keyword relevance, sales velocity, pricing competitiveness,
+        reviews, and conversion rate not backlinks or domain authority. A
+        standard website SEO tool is useless for Amazon you need a
+        marketplace-specific tool that understands e-commerce ranking signals.
+      </>
+    ),
   },
   {
     q: "Which keywords should I prioritise first as an Indian seller?",
-    a: <>Start with high-intent, mid-competition keywords not the most popular terms in your category. For example, 'buy yoga mat online' has enormous competition. 'Anti-slip yoga mat 6mm for women' has lower competition and higher purchase intent. An <InLink to="/resources/expert-blog/best-amazon-keyword-research-tool-india">amazon keyword research tool india</InLink> will show you search volume, competition level, and estimated conversion rate so you can prioritise intelligently rather than going after the hardest keywords first.</>,
+    a: (
+      <>
+        Start with high-intent, mid-competition keywords not the most popular
+        terms in your category. For example, 'buy yoga mat online' has enormous
+        competition. 'Anti-slip yoga mat 6mm for women' has lower competition
+        and higher purchase intent. An{" "}
+        <InLink to="/resources/expert-blog/best-amazon-keyword-research-tool-india">
+          amazon keyword research tool india
+        </InLink>{" "}
+        will show you search volume, competition level, and estimated conversion
+        rate so you can prioritise intelligently rather than going after the
+        hardest keywords first.
+      </>
+    ),
   },
   {
     q: "How long does it take to see results from Amazon listing optimisation?",
@@ -152,7 +334,11 @@ const FAQS = [
   },
 ];
 
-interface ArticleImgProps { src: string; alt: string; caption?: string; }
+interface ArticleImgProps {
+  src: string;
+  alt: string;
+  caption?: string;
+}
 function ArticleImg({ src, alt, caption }: ArticleImgProps) {
   const [loaded, setLoaded] = useState(false);
   return (
@@ -162,14 +348,16 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
         src={src}
         alt={alt}
         onLoad={() => setLoaded(true)}
-        style={{ width: "100%", height: "auto", display: loaded ? "block" : "none" }}
+        style={{
+          width: "100%",
+          height: "auto",
+          display: loaded ? "block" : "none",
+        }}
       />
       {caption && <figcaption className="img-caption">{caption}</figcaption>}
     </figure>
   );
 }
-
-
 
 // Footer company links — stored as [label, route] string pairs to avoid TS union inference issues
 const FOOTER_COMPANY_LINKS: [string, string][] = [
@@ -192,9 +380,9 @@ export default function AmazonSeoToolIndia() {
   const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { document.documentElement.classList.toggle("dark", isDarkMode); }, [isDarkMode]);
-
-
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+  }, [isDarkMode]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -203,7 +391,10 @@ export default function AmazonSeoToolIndia() {
       setScrollPct(Math.min((window.scrollY / total) * 100, 100));
       for (let i = TOC.length - 1; i >= 0; i--) {
         const el = document.getElementById(TOC[i].id);
-        if (el && window.scrollY >= el.offsetTop - 130) { setActiveSection(TOC[i].id); break; }
+        if (el && window.scrollY >= el.offsetTop - 130) {
+          setActiveSection(TOC[i].id);
+          break;
+        }
       }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -212,33 +403,53 @@ export default function AmazonSeoToolIndia() {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setActiveDropdown(null);
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      )
+        setActiveDropdown(null);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   useEffect(() => {
-    const handleResize = () => { if (window.innerWidth >= 1024) setIsMenuOpen(false); };
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) setIsMenuOpen(false);
+    };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-  const scrollToSection = (id: string) => { document.getElementById(id)?.scrollIntoView({ behavior: "smooth" }); };
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
   const go = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
     setTocOpen(false);
   };
 
   const handleMenuItemClick = (item: MenuItemWithBadge) => {
-    if (item.route) { router.push(item.route); setActiveDropdown(null); setIsMenuOpen(false); }
+    if (item.route) {
+      router.push(item.route);
+      setActiveDropdown(null);
+      setIsMenuOpen(false);
+    }
   };
 
-  const toggleMobileMenu = (name: string) => setMobileActiveMenu(prev => prev === name ? null : name);
-
+  const toggleMobileMenu = (name: string) =>
+    setMobileActiveMenu((prev) => (prev === name ? null : name));
 
   const DesktopDropdown = ({
-    label, menuKey, accent = "purple",
-  }: { label: string; menuKey: keyof NavigationMenu; accent?: "purple" | "orange" }) => {
+    label,
+    menuKey,
+    accent = "purple",
+  }: {
+    label: string;
+    menuKey: keyof NavigationMenu;
+    accent?: "purple" | "orange";
+  }) => {
     const items = navigationMenu[menuKey];
     const isActive = activeDropdown === label;
     const ac = accent === "orange";
@@ -246,15 +457,20 @@ export default function AmazonSeoToolIndia() {
       <div className="relative">
         <button
           onMouseEnter={() => setActiveDropdown(label)}
-          className={`px-2 xl:px-3 py-2 text-xs xl:text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${isActive
-            ? ac ? "text-orange-600 font-semibold" : "text-purple-600 font-semibold"
-            : ac
-              ? "text-orange-600 dark:text-orange-500 hover:text-orange-700 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-              : "text-gray-700 dark:text-gray-300 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-            }`}
+          className={`px-2 xl:px-3 py-2 text-xs xl:text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${
+            isActive
+              ? ac
+                ? "text-orange-600 font-semibold"
+                : "text-purple-600 font-semibold"
+              : ac
+                ? "text-orange-600 dark:text-orange-500 hover:text-orange-700 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                : "text-gray-700 dark:text-gray-300 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+          }`}
         >
           {label}
-          <ChevronDown className={`w-3 h-3 xl:w-3.5 xl:h-3.5 transition-transform ${isActive ? "rotate-180" : ""}`} />
+          <ChevronDown
+            className={`w-3 h-3 xl:w-3.5 xl:h-3.5 transition-transform ${isActive ? "rotate-180" : ""}`}
+          />
         </button>
         {isActive && (
           <div
@@ -265,11 +481,20 @@ export default function AmazonSeoToolIndia() {
               <button
                 key={i}
                 onClick={() => handleMenuItemClick(item)}
-                className={`w-full px-4 py-2.5 text-left transition-colors flex items-center gap-3 group ${ac ? "hover:bg-orange-50 dark:hover:bg-orange-900/20" : "hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                  }`}
+                className={`w-full px-4 py-2.5 text-left transition-colors flex items-center gap-3 group ${
+                  ac
+                    ? "hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                    : "hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                }`}
               >
-                <span className={`flex-shrink-0 ${ac ? "text-orange-600 dark:text-orange-400" : "text-purple-600 dark:text-purple-400"}`}>{item.icon}</span>
-                <span className="text-xs xl:text-sm text-gray-700 dark:text-gray-300 flex-1 text-left">{item.name}</span>
+                <span
+                  className={`flex-shrink-0 ${ac ? "text-orange-600 dark:text-orange-400" : "text-purple-600 dark:text-purple-400"}`}
+                >
+                  {item.icon}
+                </span>
+                <span className="text-xs xl:text-sm text-gray-700 dark:text-gray-300 flex-1 text-left">
+                  {item.name}
+                </span>
                 {item.badge && (
                   <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-1.5 py-0.5 rounded-full font-semibold flex-shrink-0">
                     {item.badge}
@@ -285,8 +510,6 @@ export default function AmazonSeoToolIndia() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
-      
-
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
         *, *::before, *::after { box-sizing: border-box; }
@@ -299,15 +522,13 @@ export default function AmazonSeoToolIndia() {
         @media(min-width:640px){ .read-progress { top:72px; } }
         @media(min-width:1024px){ .read-progress { top:80px; } }
 
-        .article-layout { max-width:1200px; margin:0 auto; padding:24px 16px 60px; display:grid; grid-template-columns:1fr; gap:0; align-items: start; }
-        @media(min-width:768px){ .article-layout { padding:36px 20px 70px; grid-template-columns:200px 1fr; gap:28px; } }
-        @media(min-width:1024px){ .article-layout { padding:48px 24px 80px; grid-template-columns:220px 1fr; gap:36px; } }
-        @media(min-width:1280px){ .article-layout { grid-template-columns:240px 1fr; gap:48px; } }
+        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0;align-items:start}
+        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px;align-items:start}}
+        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px;align-items:start}}
+        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px;align-items:start}}
 
-        .toc-sidebar { display:none; }
-        @media(min-width:768px){
-          .toc-sidebar { display:block; position:sticky; top:80px; background:#fff; border:1px solid #e5e7eb; border-radius:16px; padding:18px; box-shadow:0 2px 12px rgba(0,0,0,.05); max-height:calc(100vh - 100px); overflow-y:auto; }
-        }
+        .toc-sidebar{display:none}
+        @media(min-width:768px){.toc-sidebar{display:block;position:sticky;top:76px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);max-height:calc(100vh - 96px);overflow-y:auto;align-self:start;height:fit-content}}
         @media(min-width:1024px){ .toc-sidebar { padding:24px; } }
         .dark .toc-sidebar { background:#111827; border-color:#1f2937; }
 
@@ -566,85 +787,30 @@ export default function AmazonSeoToolIndia() {
 
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
 
-      {/* ══ NAV ══ */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}>
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
-            <div className="flex items-center space-x-1 group cursor-pointer" onClick={() => router.push("/")}>
-              <div className="relative">
-                <img src="/logo.png" alt="Insydz Logo" className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-xl sm:rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain" />
-                <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
-              </div>
-              <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent ml-1 sm:ml-2">Insydz</span>
-            </div>
-
-            <div className="hidden lg:flex items-center space-x-0.5 xl:space-x-1" ref={dropdownRef}>
-              <DesktopDropdown label="Solutions" menuKey="Solutions" />
-              <DesktopDropdown label="Use Cases" menuKey="Use Cases" />
-              <DesktopDropdown label="Features" menuKey="Features" />
-              <button onClick={() => router.push("/pricing")} onMouseEnter={() => setActiveDropdown(null)} className="px-2 xl:px-3 py-2 text-xs xl:text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all">Pricing</button>
-              <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
-              <DesktopDropdown label="Compare" menuKey="Compare" />
-              <DesktopDropdown label="Resources" menuKey="Resources" accent="orange" />
-              <DesktopDropdown label="About" menuKey="About" />
-              <Button onClick={() => router.push("/login")} onMouseEnter={() => setActiveDropdown(null)} className="ml-1 text-xs xl:text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-4 xl:px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105">Login</Button>
-              <button className="ml-1 p-1.5 xl:p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex-shrink-0" onClick={() => setIsDarkMode(!isDarkMode)} aria-label="Toggle dark mode">
-                {isDarkMode ? <Sun className="w-4 h-4 xl:w-5 xl:h-5 text-yellow-400" /> : <Moon className="w-4 h-4 xl:w-5 xl:h-5 text-gray-800" />}
-              </button>
-            </div>
-
-            <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
-              <button className="p-1.5 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors" onClick={() => setIsDarkMode(!isDarkMode)} aria-label="Toggle dark mode">
-                {isDarkMode ? <Sun className="w-4 h-4 text-yellow-400" /> : <Moon className="w-4 h-4 text-gray-800 dark:text-gray-200" />}
-              </button>
-              <button className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
-                {isMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-gray-300" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-gray-300" />}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {isMenuOpen && (
-          <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100vh-4rem)] overflow-y-auto">
-            <div className="px-3 sm:px-4 py-3 sm:py-4 space-y-1.5">
-              <button onClick={() => { router.push("/resources/expert-blog"); setIsMenuOpen(false); }} className="flex items-center gap-2 w-full px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium text-sm">
-                <ArrowLeft className="w-4 h-4 flex-shrink-0" /> Back to Blog
-              </button>
-              {([["Solutions", "Solutions", "purple"], ["Use Cases", "Use Cases", "purple"], ["Features", "Features", "purple"], ["Free Tools", "Free Tools", "purple"], ["Compare", "Compare", "purple"], ["Resources", "Resources", "orange"], ["About", "About", "purple"]] as [string, keyof NavigationMenu, string][]).map(([label, key, accent]) => (
-                <div key={label}>
-                  <button onClick={() => toggleMobileMenu(label)} className={`flex items-center justify-between w-full px-3 sm:px-4 py-2 rounded-lg font-medium text-sm ${accent === "orange" ? "text-orange-600 dark:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20" : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"}`}>
-                    {label}<ChevronDown className={`w-4 h-4 transition-transform flex-shrink-0 ${mobileActiveMenu === label ? "rotate-180" : ""}`} />
-                  </button>
-                  {mobileActiveMenu === label && (
-                    <div className="ml-3 sm:ml-4 mt-0.5 space-y-0.5">
-                      {navigationMenu[key].map((item, i) => (
-                        <button key={i} onClick={() => handleMenuItemClick(item)} className="flex items-center gap-2 w-full px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg">
-                          <span className="flex-shrink-0">{item.icon}</span>
-                          <span className="text-left flex-1">{item.name}</span>
-                          {item.badge && <span className="ml-auto text-xs bg-purple-600 text-white px-1.5 py-0.5 rounded-full flex-shrink-0">{item.badge}</span>}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              <button onClick={() => { router.push("/pricing"); setIsMenuOpen(false); }} className="block w-full text-left px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium text-sm">Pricing</button>
-              <Button onClick={() => { router.push("/login"); setIsMenuOpen(false); }} className="w-full mt-2 bg-gradient-to-r from-pink-500 to-rose-500 text-sm py-2">Login</Button>
-            </div>
-          </div>
-        )}
-      </nav>
-
       {/* ══ HERO ══ */}
-      <section className="bg-white dark:bg-[#0f172a] border-b border-gray-200 dark:border-gray-800" style={{ paddingTop: "clamp(80px, 12vw, 100px)" }}>
+      <section
+        className="bg-white dark:bg-[#0f172a] border-b border-gray-200 dark:border-gray-800"
+        style={{ paddingTop: "clamp(80px, 12vw, 100px)" }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 sm:pb-10">
-
           <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-4 sm:mb-6 flex-wrap">
-            <button onClick={() => router.push("/")} className="hover:text-orange-500 transition-colors">Home</button>
+            <button
+              onClick={() => router.push("/")}
+              className="hover:text-orange-500 transition-colors"
+            >
+              Home
+            </button>
             <span>/</span>
-            <button onClick={() => router.push("/resources/expert-blog")} className="hover:text-orange-500 transition-colors">Expert Blog</button>
+            <button
+              onClick={() => router.push("/resources/expert-blog")}
+              className="hover:text-orange-500 transition-colors"
+            >
+              Expert Blog
+            </button>
             <span>/</span>
-            <span className="text-orange-500 font-medium">Amazon SEO Tool India</span>
+            <span className="text-orange-500 font-medium">
+              Amazon SEO Tool India
+            </span>
           </div>
 
           <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-400 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-4 sm:mb-5">
@@ -660,35 +826,67 @@ export default function AmazonSeoToolIndia() {
             Keyword Research &amp; Rank Tracking Guide for Sellers (2026)
           </h1>
 
-          <p className="text-base sm:text-sm md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mb-5 sm:mb-7" style={{ fontFamily: "'Lora', serif" }}>
-            Discover how an <InLink to="/solutions/amazon-sellers">amazon SEO tool india</InLink> built for India helps sellers improve search ranking and product visibility on Amazon.in with India-specific keyword
-            data, daily rank tracking, and AI-powered listing recommendations.
+          <p
+            className="text-base sm:text-sm md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mb-5 sm:mb-7"
+            style={{ fontFamily: "'Lora', serif" }}
+          >
+            Discover how an{" "}
+            <InLink to="/solutions/amazon-sellers">
+              amazon SEO tool india
+            </InLink>{" "}
+            built for India helps sellers improve search ranking and product
+            visibility on Amazon.in with India-specific keyword data, daily rank
+            tracking, and AI-powered listing recommendations.
           </p>
 
           <div className="flex flex-wrap items-center gap-2 sm:gap-4 pb-5 sm:pb-7 border-b border-gray-200 dark:border-gray-800 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
             <div className="flex items-center gap-1.5 sm:gap-2">
               <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-              <strong className="text-gray-800 dark:text-gray-200 hover:text-orange-500 transition-colors cursor-pointer" onClick={() => router.push("/author/vikrant-singh")}>Vikrant Singh</strong>
+              <strong
+                className="text-gray-800 dark:text-gray-200 hover:text-orange-500 transition-colors cursor-pointer"
+                onClick={() => router.push("/author/vikrant-singh")}
+              >
+                Vikrant Singh
+              </strong>
             </div>
-            <span className="text-gray-300 dark:text-gray-700 hidden sm:inline">·</span>
-            <span className="hidden sm:inline">Last updated: <strong className="text-gray-700 dark:text-gray-300">January 2026</strong></span>
+            <span className="text-gray-300 dark:text-gray-700 hidden sm:inline">
+              ·
+            </span>
+            <span className="hidden sm:inline">
+              <strong className="text-gray-700 dark:text-gray-300">
+                January 2026
+              </strong>
+            </span>
             <div className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-              <strong className="text-gray-700 dark:text-gray-300">13 min read</strong>
+              <strong className="text-gray-700 dark:text-gray-300">
+                13 min read
+              </strong>
             </div>
-            <span className="bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400 text-xs font-bold px-2 py-0.5 rounded">Updated 2026</span>
           </div>
 
           <div className="stat-strip">
-            {([
-              ["70%", "of Amazon.in buyers never scroll past page 1"],
-              ["72%", "revenue growth achieved by optimising one keyword gap"],
-              ["3–6 wks", "to see measurable rank improvement after optimisation"],
-              ["₹1999", "Insydz plans from — with a forever-free tier"],
-            ] as [string, string][]).map(([num, lbl]) => (
+            {(
+              [
+                ["70%", "of Amazon.in buyers never scroll past page 1"],
+                [
+                  "72%",
+                  "revenue growth achieved by optimising one keyword gap",
+                ],
+                [
+                  "3–6 wks",
+                  "to see measurable rank improvement after optimisation",
+                ],
+                ["₹1999", "Insydz plans from — with a forever-free tier"],
+              ] as [string, string][]
+            ).map(([num, lbl]) => (
               <div className="stat-item" key={num}>
-                <div className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">{num}</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium leading-tight">{lbl}</div>
+                <div className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+                  {num}
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium leading-tight">
+                  {lbl}
+                </div>
               </div>
             ))}
           </div>
@@ -696,9 +894,9 @@ export default function AmazonSeoToolIndia() {
 
         <div className="border-t border-gray-200 dark:border-gray-800 py-8">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <ArticleImg
-              src="/six.png"
-              alt="Insydz Keyword Tracker — real-time keyword ranking and AI-powered listing recommendations for Amazon."
+            <BlogImageSection
+              imageSrc="/Amazon-SEO-Tool-India.png"
+              altText="Insydz Keyword Tracker — real-time keyword ranking and AI-powered listing recommendations for Amazon."
               caption="Insydz Keyword Tracker real-time keyword ranking and AI-powered listing recommendations for Amazon."
             />
           </div>
@@ -706,17 +904,48 @@ export default function AmazonSeoToolIndia() {
       </section>
 
       {/* ══ KEY TAKEAWAYS ══ */}
-      <div style={{ maxWidth: 1250, margin: "0 auto", padding: "20px 16px 0" }} className="sm:px-5 lg:px-6">
+      <div
+        style={{ maxWidth: 1250, margin: "0 auto", padding: "20px 16px 0" }}
+        className="sm:px-5 lg:px-6"
+      >
         <div className="takeaway-box">
           <h3>Key Takeaways for Indian Amazon Sellers</h3>
           {[
-            <span key="t0">70% of Amazon.in buyers never scroll past page 1 if you're not ranking, you're invisible, regardless of your product quality.</span>,
-            <span key="t1">Amazon's A9 algorithm ranks products based on keyword relevance AND conversion performance poor SEO leads to wasted ad spend, not just low organic rank.</span>,
-            <span key="t2">Indian buyers use Hinglish and regional search patterns that US-centric tools miss India-specific keyword data is a fundamental competitive advantage.</span>,
-            <span key="t3">The biggest SEO opportunity for most Indian sellers is competitor keyword gap analysis ranking for terms your rivals use that you don't even have in your listing.</span>,
-            <span key="t4">Listing optimisation is a one-time effort that compounds over time unlike ad spend, which stops the moment you pause it.</span>,
-            <span key="t5">Running Sponsored Products without optimising organic SEO first is burning ad budget with one hand while blocking the other.</span>,
-            <span key="t6">Weekly use of an <InLink to="/use-cases/track-competitor-prices">amazon rank tracking tool</InLink> catches ranking drops before they become revenue drops the earlier you act, the less you lose.</span>,
+            <span key="t0">
+              70% of Amazon.in buyers never scroll past page 1 if you're not
+              ranking, you're invisible, regardless of your product quality.
+            </span>,
+            <span key="t1">
+              Amazon's A9 algorithm ranks products based on keyword relevance
+              AND conversion performance poor SEO leads to wasted ad spend, not
+              just low organic rank.
+            </span>,
+            <span key="t2">
+              Indian buyers use Hinglish and regional search patterns that
+              US-centric tools miss India-specific keyword data is a fundamental
+              competitive advantage.
+            </span>,
+            <span key="t3">
+              The biggest SEO opportunity for most Indian sellers is competitor
+              keyword gap analysis ranking for terms your rivals use that you
+              don't even have in your listing.
+            </span>,
+            <span key="t4">
+              Listing optimisation is a one-time effort that compounds over time
+              unlike ad spend, which stops the moment you pause it.
+            </span>,
+            <span key="t5">
+              Running Sponsored Products without optimising organic SEO first is
+              burning ad budget with one hand while blocking the other.
+            </span>,
+            <span key="t6">
+              Weekly use of an{" "}
+              <InLink to="/use-cases/track-competitor-prices">
+                amazon rank tracking tool
+              </InLink>{" "}
+              catches ranking drops before they become revenue drops the earlier
+              you act, the less you lose.
+            </span>,
           ].map((t, i) => (
             <div className="takeaway-item" key={i}>
               <div className="takeaway-dot">✓</div>
@@ -728,94 +957,154 @@ export default function AmazonSeoToolIndia() {
 
       {/* ══ ARTICLE LAYOUT ══ */}
       <div className="article-layout">
-
         <aside className="toc-sidebar">
           <div className="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-3 sm:mb-4">
             Table of Contents
           </div>
-          {TOC.map(t => (
-            <button key={t.id} className={`toc-link${activeSection === t.id ? " active" : ""}`} onClick={() => go(t.id)}>
+          {TOC.map((t) => (
+            <button
+              key={t.id}
+              className={`toc-link${activeSection === t.id ? " active" : ""}`}
+              onClick={() => go(t.id)}
+            >
               {t.label}
             </button>
           ))}
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800">
-            <button onClick={() => router.push("/login")} className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-xs sm:text-sm font-bold py-2.5 rounded-xl transition-all">
-             Start Free with Insydz
-            </button>
-          </div>
         </aside>
 
         <main style={{ minWidth: 0 }}>
-          <button className="mobile-toc-btn" onClick={() => setTocOpen(!tocOpen)}>
+          <button
+            className="mobile-toc-btn"
+            onClick={() => setTocOpen(!tocOpen)}
+          >
             Table of Contents <span>{tocOpen ? "▲" : "▼"}</span>
           </button>
           <div className={`mobile-toc-panel${tocOpen ? " open" : ""}`}>
-            {TOC.map(t => (
-              <button key={t.id} className="toc-link" style={{ display: "block", marginBottom: 3 }} onClick={() => go(t.id)}>{t.label}</button>
+            {TOC.map((t) => (
+              <button
+                key={t.id}
+                className="toc-link"
+                style={{ display: "block", marginBottom: 3 }}
+                onClick={() => go(t.id)}
+              >
+                {t.label}
+              </button>
             ))}
           </div>
 
           <article className="article-body">
-
             {/* ── S1: What Is ─────────────────────────────────────────── */}
-            <h2 id="s1">What is an Amazon SEO Tool for India? (And Why Most Sellers Don't Have One)</h2>
+            <h2 id="s1">
+              What is an Amazon SEO Tool for India? (And Why Most Sellers Don't
+              Have One)
+            </h2>
             <p>
-              An <InLink to="/">Amazon SEO tool</InLink> for India is a software platform that helps Indian sellers find the right keywords track their product rankings and optimise product listings to rank higher on Amazon.in so their products appear higher in search results and in front of buyers who are ready to purchase.
+              An <InLink to="/">Amazon SEO tool</InLink> for India is a software
+              platform that helps Indian sellers find the right keywords track
+              their product rankings and optimise product listings to rank
+              higher on Amazon.in so their products appear higher in search
+              results and in front of buyers who are ready to purchase.
             </p>
             <p>
-              Here's the reality check: <strong>70% of Amazon.in customers never scroll past the first page</strong> of search results. If your product isn't ranking for the keywords your buyers are actually using, you're essentially invisible regardless of how good your product is.
+              Here's the reality check:{" "}
+              <strong>
+                70% of Amazon.in customers never scroll past the first page
+              </strong>{" "}
+              of search results. If your product isn't ranking for the keywords
+              your buyers are actually using, you're essentially invisible
+              regardless of how good your product is.
             </p>
 
             <div className="callout teal">
               <div className="callout-label">In Simple Terms</div>
               <div className="callout-text">
-                Amazon SEO means making your product show up when buyers search on Amazon.in. An Amazon SEO tool tells
-                you exactly which words buyers are using, how well your product ranks for those words today, and what
-                you need to fix in your listing to rank higher and sell more tomorrow.
+                Amazon SEO means making your product show up when buyers search
+                on Amazon.in. An Amazon SEO tool tells you exactly which words
+                buyers are using, how well your product ranks for those words
+                today, and what you need to fix in your listing to rank higher
+                and sell more tomorrow.
               </div>
             </div>
 
             {/* ── S2: Why Critical ────────────────────────────────────── */}
-            <h2 id="s2">Why Does an Amazon SEO Tool Matter for Indian Sellers?</h2>
+            <h2 id="s2">
+              Why Does an Amazon SEO Tool Matter for Indian Sellers?
+            </h2>
             <h3>Search Visibility = Sales. No Visibility = No Sales.</h3>
             <p>
-              On Amazon.in, the search bar is where the purchase decision begins. If your listing isn't optimised for the exact phrases buyers use, Amazon's A9 algorithm will rank you below competitors who are. The gap between page 1 and page 3 isn't inconvenient it's a <strong>90% drop in potential clicks</strong>.
+              On Amazon.in, the search bar is where the purchase decision
+              begins. If your listing isn't optimised for the exact phrases
+              buyers use, Amazon's A9 algorithm will rank you below competitors
+              who are. The gap between page 1 and page 3 isn't inconvenient it's
+              a <strong>90% drop in potential clicks</strong>.
             </p>
 
             <h3>Indian Buyers Search Differently</h3>
             <p>
-              Indian buyers search in a mix of English and Hinglish "kitchen chimney under 5000", "best mobile under 15000", "cricket bat for beginners". A US-centric tool trained on American search behaviour will miss these patterns entirely. An Amazon SEO tool for India understands this language nuance and surfaces keywords that actually convert on Amazon.in.
+              Indian buyers search in a mix of English and Hinglish "kitchen
+              chimney under 5000", "best mobile under 15000", "cricket bat for
+              beginners". A US-centric tool trained on American search behaviour
+              will miss these patterns entirely. An Amazon SEO tool for India
+              understands this language nuance and surfaces keywords that
+              actually convert on Amazon.in.
             </p>
 
             <h3>The Algorithm Gap: Most Sellers Are Guessing</h3>
             <p>
-              Amazon's A9 algorithm ranks products based on keyword relevance and performance. Most Indian sellers write their product titles and descriptions based on gut feel missing high-volume keywords, stuffing irrelevant terms, or ignoring backend search terms entirely. The result: poor ranking, low conversions, wasted ad spend.
+              Amazon's A9 algorithm ranks products based on keyword relevance
+              and performance. Most Indian sellers write their product titles
+              and descriptions based on gut feel missing high-volume keywords,
+              stuffing irrelevant terms, or ignoring backend search terms
+              entirely. The result: poor ranking, low conversions, wasted ad
+              spend.
             </p>
 
             <div className="callout warn">
-              <div className="callout-label">Real Seller Example Pune Water Bottle Seller</div>
+              <div className="callout-label">
+                Real Seller Example Pune Water Bottle Seller
+              </div>
               <div className="callout-text">
-                A Pune-based seller of stainless steel water bottles was doing ₹1.8 lakh/month on Amazon. After an SEO
-                audit, they discovered their listing wasn't ranking for "leak proof water bottle office." They updated their listing and ran a small Sponsored Products campaign. Within 45 days,{" "}
-                <strong>revenue grew to ₹3.1 lakh/month — a 72% jump</strong> without changing their product or price.
+                A Pune-based seller of stainless steel water bottles was doing
+                ₹1.8 lakh/month on Amazon. After an SEO audit, they discovered
+                their listing wasn't ranking for "leak proof water bottle
+                office." They updated their listing and ran a small Sponsored
+                Products campaign. Within 45 days,{" "}
+                <strong>revenue grew to ₹3.1 lakh/month — a 72% jump</strong>{" "}
+                without changing their product or price.
               </div>
             </div>
 
             <div className="callout indigo">
               <div className="callout-label">AI Overview Summary</div>
               <div className="callout-text">
-                Amazon SEO tools for India help sellers identify high-converting keywords, track daily ranking positions, and optimise product listings to rank higher on Amazon.in's A9 algorithm. For Indian sellers, tools built specifically for the Indian market surface Hinglish search patterns and India-specific keyword data that global tools miss directly impacting product visibility and sales conversion.
+                Amazon SEO tools for India help sellers identify high-converting
+                keywords, track daily ranking positions, and optimise product
+                listings to rank higher on Amazon.in's A9 algorithm. For Indian
+                sellers, tools built specifically for the Indian market surface
+                Hinglish search patterns and India-specific keyword data that
+                global tools miss directly impacting product visibility and
+                sales conversion.
               </div>
             </div>
 
             {/* ── S3: How It Works ────────────────────────────────────── */}
             <h2 id="s3">How Does an Amazon SEO Tool Work? (Step-by-Step)</h2>
-            <p>Understanding what happens inside an Amazon SEO tool helps you use it more effectively. Here's the 5-step intelligence pipeline:</p>
+            <p>
+              Understanding what happens inside an Amazon SEO tool helps you use
+              it more effectively. Here's the 5-step intelligence pipeline:
+            </p>
 
             <div className="pipe-visual">
               <div className="pipe-left">
-                <h3>5 Steps.<br /><span>Rank #1.</span></h3>
-                <p>From keyword gap to page-one ranking automated, 24×7, on Amazon.in.</p>
+                <h3>
+                  5 Steps.
+                  <br />
+                  <span>Rank #1.</span>
+                </h3>
+                <p>
+                  From keyword gap to page-one ranking automated, 24×7, on
+                  Amazon.in.
+                </p>
               </div>
               <div className="pipe-card">
                 <div className="pipe-card-bar">
@@ -826,76 +1115,278 @@ export default function AmazonSeoToolIndia() {
                   <span className="live-badge">● Active</span>
                 </div>
                 {[
-                  { n: 1, color: "#EC4899", name: "Keyword Discovery", desc: "Pulls Amazon.in queries from your category", tag: "auto-tag", label: "Automated" },
-                  { n: 2, color: "#7C3AED", name: "Competitor Keyword Gap", desc: "Reveals what rivals rank for you don't", tag: "ai-tag", label: "AI-Powered" },
-                  { n: 3, color: "#2563EB", name: "Listing Health Audit", desc: "Scores title, bullets, backend 0–100", tag: "ai-tag", label: "AI-Powered" },
-                  { n: 4, color: "#0D9488", name: "Daily Rank Tracking", desc: "WhatsApp alert if you drop positions", tag: "auto-tag", label: "Automated" },
-                  { n: 5, color: "#16A34A", name: "AI Optimisation Recommendations", desc: '"Add this phrase 22K monthly searches"', tag: "green-tag", label: "AI Decision" },
-                ].map(s => (
+                  {
+                    n: 1,
+                    color: "#EC4899",
+                    name: "Keyword Discovery",
+                    desc: "Pulls Amazon.in queries from your category",
+                    tag: "auto-tag",
+                    label: "Automated",
+                  },
+                  {
+                    n: 2,
+                    color: "#7C3AED",
+                    name: "Competitor Keyword Gap",
+                    desc: "Reveals what rivals rank for you don't",
+                    tag: "ai-tag",
+                    label: "AI-Powered",
+                  },
+                  {
+                    n: 3,
+                    color: "#2563EB",
+                    name: "Listing Health Audit",
+                    desc: "Scores title, bullets, backend 0–100",
+                    tag: "ai-tag",
+                    label: "AI-Powered",
+                  },
+                  {
+                    n: 4,
+                    color: "#0D9488",
+                    name: "Daily Rank Tracking",
+                    desc: "WhatsApp alert if you drop positions",
+                    tag: "auto-tag",
+                    label: "Automated",
+                  },
+                  {
+                    n: 5,
+                    color: "#16A34A",
+                    name: "AI Optimisation Recommendations",
+                    desc: '"Add this phrase 22K monthly searches"',
+                    tag: "green-tag",
+                    label: "AI Decision",
+                  },
+                ].map((s) => (
                   <div className="pipe-step" key={s.n}>
-                    <div className="pipe-step-n" style={{ background: s.color }}>{s.n}</div>
+                    <div
+                      className="pipe-step-n"
+                      style={{ background: s.color }}
+                    >
+                      {s.n}
+                    </div>
                     <div>
                       <span className="pipe-step-name">{s.name}</span>
                       <span className="pipe-step-desc">{s.desc}</span>
-                      <span className={`pipe-step-tag ${s.tag}`}>{s.label}</span>
+                      <span className={`pipe-step-tag ${s.tag}`}>
+                        {s.label}
+                      </span>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
             <p className="img-caption" style={{ textAlign: "center" }}>
-              Insydz 5-step SEO intelligence pipeline from keyword discovery to actionable listing recommendations
+              Insydz 5-step SEO intelligence pipeline from keyword discovery to
+              actionable listing recommendations
             </p>
 
             <div className="callout pro">
               <div className="callout-label">Guesswork vs. Intelligence</div>
               <div className="callout-text">
-                Guesswork means writing your listing based on what sounds right to you.{" "}
-                Intelligence means writing it based on what 50,000 actual Amazon buyers searched for
-                last month. The difference is the gap between page 3 and page 1.
+                Guesswork means writing your listing based on what sounds right
+                to you. Intelligence means writing it based on what 50,000
+                actual Amazon buyers searched for last month. The difference is
+                the gap between page 3 and page 1.
               </div>
             </div>
 
             {/* ── S4: Core Components ─────────────────────────────────── */}
             <h2 id="s4">Core Components of Amazon SEO for Indian Sellers</h2>
-            <p>A complete Amazon SEO strategy covers six interconnected components. Missing any one of them leaves a gap your competitors will exploit.</p>
+            <p>
+              A complete Amazon SEO strategy covers six interconnected
+              components. Missing any one of them leaves a gap your competitors
+              will exploit.
+            </p>
 
-            <div className="seo-graphic" style={{ background: "linear-gradient(135deg,#0f172a 0%,#1e1b4b 42%,#4c1d95 100%)", padding: "clamp(16px,4vw,28px)" }}>
-              <div style={{ display: "flex", gap: "clamp(14px,3vw,24px)", alignItems: "flex-start", flexWrap: "wrap" }}>
+            <div
+              className="seo-graphic"
+              style={{
+                background:
+                  "linear-gradient(135deg,#0f172a 0%,#1e1b4b 42%,#4c1d95 100%)",
+                padding: "clamp(16px,4vw,28px)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  gap: "clamp(14px,3vw,24px)",
+                  alignItems: "flex-start",
+                  flexWrap: "wrap",
+                }}
+              >
                 <div style={{ maxWidth: 220, flexShrink: 0 }}>
-                  <div style={{ display: "inline-block", background: "rgba(124,58,237,.2)", border: "1px solid rgba(124,58,237,.3)", color: "#C4B5FD", fontSize: "clamp(9px,1.5vw,11px)", fontWeight: 700, letterSpacing: ".7px", textTransform: "uppercase", padding: "4px 10px", borderRadius: 20, marginBottom: 12 }}>Six Pillars</div>
-                  <div style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(18px,3vw,26px)", fontWeight: 900, color: "white", lineHeight: 1.18, letterSpacing: -1, marginBottom: 10 }}>Complete<br />Amazon<br /><span style={{ color: "#FDE68A" }}>SEO System</span></div>
-                  <p style={{ fontSize: "clamp(10px,1.5vw,12.5px)", color: "rgba(255,255,255,.5)", lineHeight: 1.6, margin: 0 }}>Every SEO component tracked in one dashboard gaps, rank, health score, all live.</p>
+                  <div
+                    style={{
+                      display: "inline-block",
+                      background: "rgba(124,58,237,.2)",
+                      border: "1px solid rgba(124,58,237,.3)",
+                      color: "#C4B5FD",
+                      fontSize: "clamp(9px,1.5vw,11px)",
+                      fontWeight: 700,
+                      letterSpacing: ".7px",
+                      textTransform: "uppercase",
+                      padding: "4px 10px",
+                      borderRadius: 20,
+                      marginBottom: 12,
+                    }}
+                  >
+                    Six Pillars
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: "'Sora',sans-serif",
+                      fontSize: "clamp(18px,3vw,26px)",
+                      fontWeight: 900,
+                      color: "white",
+                      lineHeight: 1.18,
+                      letterSpacing: -1,
+                      marginBottom: 10,
+                    }}
+                  >
+                    Complete
+                    <br />
+                    Amazon
+                    <br />
+                    <span style={{ color: "#FDE68A" }}>SEO System</span>
+                  </div>
+                  <p
+                    style={{
+                      fontSize: "clamp(10px,1.5vw,12.5px)",
+                      color: "rgba(255,255,255,.5)",
+                      lineHeight: 1.6,
+                      margin: 0,
+                    }}
+                  >
+                    Every SEO component tracked in one dashboard gaps, rank,
+                    health score, all live.
+                  </p>
                 </div>
                 <div className="dash-dark" style={{ flex: 1, minWidth: 0 }}>
                   <div className="dash-bar">
-                    <div className="pip-dot" style={{ background: "#ff5f57" }} />
-                    <div className="pip-dot" style={{ background: "#febc2e" }} />
-                    <div className="pip-dot" style={{ background: "#28c840" }} />
-                    <span className="dash-title">Keyword Intelligence — Amazon.in</span>
+                    <div
+                      className="pip-dot"
+                      style={{ background: "#ff5f57" }}
+                    />
+                    <div
+                      className="pip-dot"
+                      style={{ background: "#febc2e" }}
+                    />
+                    <div
+                      className="pip-dot"
+                      style={{ background: "#28c840" }}
+                    />
+                    <span className="dash-title">
+                      Keyword Intelligence — Amazon.in
+                    </span>
                     <span className="dash-live">● Live</span>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", borderBottom: "1px solid rgba(255,255,255,.06)" }}>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(4,1fr)",
+                      borderBottom: "1px solid rgba(255,255,255,.06)",
+                    }}
+                  >
                     {[
-                      { lbl: "Keywords", val: "248", color: "#f9a8d4", delta: "↑ 34 this week", dc: "#4ade80" },
-                      { lbl: "Avg Rank", val: "#8.4", color: "#c4b5fd", delta: "↑ from #12", dc: "#4ade80" },
-                      { lbl: "Health", val: "84", color: "#4ade80", delta: "↑ from 61", dc: "#4ade80" },
-                      { lbl: "KW Gaps", val: "17", color: "#fb923c", delta: "⚠ Fix now", dc: "#f87171" },
-                    ].map(m => (
-                      <div key={m.lbl} style={{ padding: "clamp(7px,1.5vw,11px) clamp(4px,1vw,8px)", borderRight: "1px solid rgba(255,255,255,.05)", textAlign: "center" }}>
-                        <div style={{ fontSize: "clamp(7px,1vw,8px)", fontWeight: 700, color: "rgba(255,255,255,.3)", textTransform: "uppercase", letterSpacing: .4, marginBottom: 3 }}>{m.lbl}</div>
-                        <div style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(13px,2.5vw,18px)", fontWeight: 900, color: m.color, lineHeight: 1 }}>{m.val}</div>
-                        <div style={{ fontSize: "clamp(7px,1vw,8.5px)", fontWeight: 600, marginTop: 2, color: m.dc }}>{m.delta}</div>
+                      {
+                        lbl: "Keywords",
+                        val: "248",
+                        color: "#f9a8d4",
+                        delta: "↑ 34 this week",
+                        dc: "#4ade80",
+                      },
+                      {
+                        lbl: "Avg Rank",
+                        val: "#8.4",
+                        color: "#c4b5fd",
+                        delta: "↑ from #12",
+                        dc: "#4ade80",
+                      },
+                      {
+                        lbl: "Health",
+                        val: "84",
+                        color: "#4ade80",
+                        delta: "↑ from 61",
+                        dc: "#4ade80",
+                      },
+                      {
+                        lbl: "KW Gaps",
+                        val: "17",
+                        color: "#fb923c",
+                        delta: "⚠ Fix now",
+                        dc: "#f87171",
+                      },
+                    ].map((m) => (
+                      <div
+                        key={m.lbl}
+                        style={{
+                          padding: "clamp(7px,1.5vw,11px) clamp(4px,1vw,8px)",
+                          borderRight: "1px solid rgba(255,255,255,.05)",
+                          textAlign: "center",
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontSize: "clamp(7px,1vw,8px)",
+                            fontWeight: 700,
+                            color: "rgba(255,255,255,.3)",
+                            textTransform: "uppercase",
+                            letterSpacing: 0.4,
+                            marginBottom: 3,
+                          }}
+                        >
+                          {m.lbl}
+                        </div>
+                        <div
+                          style={{
+                            fontFamily: "'Sora',sans-serif",
+                            fontSize: "clamp(13px,2.5vw,18px)",
+                            fontWeight: 900,
+                            color: m.color,
+                            lineHeight: 1,
+                          }}
+                        >
+                          {m.val}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "clamp(7px,1vw,8.5px)",
+                            fontWeight: 600,
+                            marginTop: 2,
+                            color: m.dc,
+                          }}
+                        >
+                          {m.delta}
+                        </div>
                       </div>
                     ))}
                   </div>
                   <div style={{ padding: "8px 10px" }}>
                     {[
-                      { term: "mixer grinder 750 watt induction", vol: "31.2K/mo", pos: "#4", cls: "kp-g" },
-                      { term: "juicer mixer grinder 3 jar", vol: "28.7K/mo", pos: "#9", cls: "kp-a" },
-                      { term: "best mixer under 3000", vol: "19.4K/mo", pos: "#6", cls: "kp-g" },
-                      { term: "mixer grinder for home use", vol: "14.1K/mo", pos: "#19", cls: "kp-r" },
-                    ].map(k => (
+                      {
+                        term: "mixer grinder 750 watt induction",
+                        vol: "31.2K/mo",
+                        pos: "#4",
+                        cls: "kp-g",
+                      },
+                      {
+                        term: "juicer mixer grinder 3 jar",
+                        vol: "28.7K/mo",
+                        pos: "#9",
+                        cls: "kp-a",
+                      },
+                      {
+                        term: "best mixer under 3000",
+                        vol: "19.4K/mo",
+                        pos: "#6",
+                        cls: "kp-g",
+                      },
+                      {
+                        term: "mixer grinder for home use",
+                        vol: "14.1K/mo",
+                        pos: "#19",
+                        cls: "kp-r",
+                      },
+                    ].map((k) => (
                       <div className="kw-row-dark" key={k.term}>
                         <span className="kw-term">{k.term}</span>
                         <span className="kw-vol">{k.vol}</span>
@@ -905,13 +1396,19 @@ export default function AmazonSeoToolIndia() {
                   </div>
                   <div className="alert-bar">
                     <div className="alert-dot" />
-                    <span className="alert-txt">Gap: "chapati maker electric 1500w" — 26K searches, 0 ranking</span>
+                    <span className="alert-txt">
+                      Gap: "chapati maker electric 1500w" — 26K searches, 0
+                      ranking
+                    </span>
                     <span className="alert-act">Fix ›</span>
                   </div>
                 </div>
               </div>
             </div>
-            <p className="img-caption">Insydz Keyword Intelligence Dashboard tracking 248 keywords with live gap detection and rank movement alerts</p>
+            <p className="img-caption">
+              Insydz Keyword Intelligence Dashboard tracking 248 keywords with
+              live gap detection and rank movement alerts
+            </p>
 
             <div className="dt-wrap">
               <table className="dt">
@@ -924,83 +1421,100 @@ export default function AmazonSeoToolIndia() {
                   </tr>
                 </thead>
                 <tbody>
-                  {([
-                    {
-                      comp: "Keyword Research",
-                      compLink: null,
-                      what: "Finding search terms buyers actually use",
-                      why: "Wrong keywords = zero visibility",
-                      whyLink: null,
-                      vs: "Manual: 3–5 hrs, incomplete",
-                      tag: "bg",
-                      vt: "Tool: minutes, data-backed",
-                    },
-                    {
-                      comp: "Title Optimisation",
-                      compLink: null,
-                      what: "Structuring product title with primary keywords",
-                      why: "Title has highest SEO weight in A9",
-                      whyLink: null,
-                      vs: "Manual: guesswork",
-                      tag: "bg",
-                      vt: "Tool: scored suggestions",
-                    },
-                    {
-                      comp: "Backend Keywords",
-                      compLink: null,
-                      what: "Hidden keywords in Seller Central",
-                      why: "Extra ranking signals without cluttering listing",
-                      whyLink: null,
-                      vs: "Manual: often forgotten",
-                      tag: "bb",
-                      vt: "Tool: AI-generated list",
-                    },
-                    {
-                      comp: "Rank Tracking",
-                      compLink: null,
-                      what: "Daily ranking position for target keywords",
-                      why: "Catch ranking drops before they become revenue drops",
-                      whyLink: null,
-                      vs: "Manual: impossible at scale",
-                      tag: "bg",
-                      vt: "Tool: automated daily",
-                    },
-                    {
-                      comp: "Competitor Keyword Gap",
-                      compLink: null,
-                      what: "Keywords rivals rank for that you don't",
-                      why: "Biggest source of untapped traffic",
-                      whyLink: null,
-                      vs: "Manual: hours per competitor",
-                      tag: "bg",
-                      vt: "Tool: instant audit",
-                    },
-                    {
-                      comp: "Listing Health Score",
-                      compLink: null,
-                      what: "Overall SEO quality of your listing",
-                      why: "Identifies weakest link in your ranking",
-                      whyLink: null,
-                      vs: "Manual: no benchmark",
-                      tag: "bb",
-                      vt: "Tool: 0–100 score with fixes",
-                    },
-                  ] as { comp: string; compLink: string | null; what: string; why: string; whyLink: string | null; vs: string; tag: string; vt: string; }[]).map((r, i) => (
+                  {(
+                    [
+                      {
+                        comp: "Keyword Research",
+                        compLink: null,
+                        what: "Finding search terms buyers actually use",
+                        why: "Wrong keywords = zero visibility",
+                        whyLink: null,
+                        vs: "Manual: 3–5 hrs, incomplete",
+                        tag: "bg",
+                        vt: "Tool: minutes, data-backed",
+                      },
+                      {
+                        comp: "Title Optimisation",
+                        compLink: null,
+                        what: "Structuring product title with primary keywords",
+                        why: "Title has highest SEO weight in A9",
+                        whyLink: null,
+                        vs: "Manual: guesswork",
+                        tag: "bg",
+                        vt: "Tool: scored suggestions",
+                      },
+                      {
+                        comp: "Backend Keywords",
+                        compLink: null,
+                        what: "Hidden keywords in Seller Central",
+                        why: "Extra ranking signals without cluttering listing",
+                        whyLink: null,
+                        vs: "Manual: often forgotten",
+                        tag: "bb",
+                        vt: "Tool: AI-generated list",
+                      },
+                      {
+                        comp: "Rank Tracking",
+                        compLink: null,
+                        what: "Daily ranking position for target keywords",
+                        why: "Catch ranking drops before they become revenue drops",
+                        whyLink: null,
+                        vs: "Manual: impossible at scale",
+                        tag: "bg",
+                        vt: "Tool: automated daily",
+                      },
+                      {
+                        comp: "Competitor Keyword Gap",
+                        compLink: null,
+                        what: "Keywords rivals rank for that you don't",
+                        why: "Biggest source of untapped traffic",
+                        whyLink: null,
+                        vs: "Manual: hours per competitor",
+                        tag: "bg",
+                        vt: "Tool: instant audit",
+                      },
+                      {
+                        comp: "Listing Health Score",
+                        compLink: null,
+                        what: "Overall SEO quality of your listing",
+                        why: "Identifies weakest link in your ranking",
+                        whyLink: null,
+                        vs: "Manual: no benchmark",
+                        tag: "bb",
+                        vt: "Tool: 0–100 score with fixes",
+                      },
+                    ] as {
+                      comp: string;
+                      compLink: string | null;
+                      what: string;
+                      why: string;
+                      whyLink: string | null;
+                      vs: string;
+                      tag: string;
+                      vt: string;
+                    }[]
+                  ).map((r, i) => (
                     <tr key={i}>
                       <td>
                         <strong>
-                          {r.compLink
-                            ? <InLink to={r.compLink}>{r.comp}</InLink>
-                            : r.comp}
+                          {r.compLink ? (
+                            <InLink to={r.compLink}>{r.comp}</InLink>
+                          ) : (
+                            r.comp
+                          )}
                         </strong>
                       </td>
                       <td>{r.what}</td>
                       <td>
-                        {r.whyLink
-                          ? <InLink to={r.whyLink}>{r.why}</InLink>
-                          : r.why}
+                        {r.whyLink ? (
+                          <InLink to={r.whyLink}>{r.why}</InLink>
+                        ) : (
+                          r.why
+                        )}
                       </td>
-                      <td>{r.vs} | <span className={r.tag}>{r.vt}</span></td>
+                      <td>
+                        {r.vs} | <span className={r.tag}>{r.vt}</span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -1009,14 +1523,24 @@ export default function AmazonSeoToolIndia() {
 
             {/* ── S5: Mistakes ────────────────────────────────────────── */}
             <h2 id="s5">5 Critical Amazon SEO Mistakes Indian Sellers Make</h2>
-            <p>These five mistakes are costing Indian sellers ranking positions, organic traffic, and sales often without them realising it.</p>
+            <p>
+              These five mistakes are costing Indian sellers ranking positions,
+              organic traffic, and sales often without them realising it.
+            </p>
 
             {/* Mistake 1 */}
             <div className="mistake-card">
               <div className="mistake-num">1</div>
               <div className="mistake-body">
                 <strong>Writing Listings for Themselves, Not for Buyers</strong>
-                <p>A seller who makes 'premium handcrafted artisanal wooden phone stand' when buyers are searching 'wooden mobile stand for desk' has a listing that will never rank. The vocabulary you use to describe your product and the vocabulary your buyers use to find it are often completely different. An Amazon SEO tool bridges this gap with actual search data.</p>
+                <p>
+                  A seller who makes 'premium handcrafted artisanal wooden phone
+                  stand' when buyers are searching 'wooden mobile stand for
+                  desk' has a listing that will never rank. The vocabulary you
+                  use to describe your product and the vocabulary your buyers
+                  use to find it are often completely different. An Amazon SEO
+                  tool bridges this gap with actual search data.
+                </p>
               </div>
             </div>
 
@@ -1024,10 +1548,15 @@ export default function AmazonSeoToolIndia() {
             <div className="mistake-card">
               <div className="mistake-num">2</div>
               <div className="mistake-body">
-                <strong>
-                  Ignoring Hinglish and Regional Search Patterns
-                </strong>
-                <p>Buyers in smaller cities search differently from metro buyers. 'Mixer grinder' vs 'juicer mixer grinder', 'chapati maker' vs 'roti maker', 'pressure cooker induction' vs 'induction pressure cooker'. Missing regional search variants costs sellers in tier-2 and tier-3 cities the fastest-growing e-commerce segments in India right now.</p>
+                <strong>Ignoring Hinglish and Regional Search Patterns</strong>
+                <p>
+                  Buyers in smaller cities search differently from metro buyers.
+                  'Mixer grinder' vs 'juicer mixer grinder', 'chapati maker' vs
+                  'roti maker', 'pressure cooker induction' vs 'induction
+                  pressure cooker'. Missing regional search variants costs
+                  sellers in tier-2 and tier-3 cities the fastest-growing
+                  e-commerce segments in India right now.
+                </p>
               </div>
             </div>
 
@@ -1035,10 +1564,16 @@ export default function AmazonSeoToolIndia() {
             <div className="mistake-card">
               <div className="mistake-num">3</div>
               <div className="mistake-body">
-                <strong>Keyword Stuffing (The Old Way That Now Hurts You)</strong>
+                <strong>
+                  Keyword Stuffing (The Old Way That Now Hurts You)
+                </strong>
                 <p>
-                  Amazon's A9 algorithm has gotten smarter. Stuffing 15 keywords into your title doesn't improve ranking it reduces click-through rate because the title reads like gibberish.{" "}
-                  Amazon penalises poor conversion rates, which feeds back into lower ranking. Smart keyword placement in title, bullets, and backend is more effective than volume stuffing.
+                  Amazon's A9 algorithm has gotten smarter. Stuffing 15 keywords
+                  into your title doesn't improve ranking it reduces
+                  click-through rate because the title reads like gibberish.{" "}
+                  Amazon penalises poor conversion rates, which feeds back into
+                  lower ranking. Smart keyword placement in title, bullets, and
+                  backend is more effective than volume stuffing.
                 </p>
               </div>
             </div>
@@ -1049,7 +1584,12 @@ export default function AmazonSeoToolIndia() {
               <div className="mistake-body">
                 <strong>Running Ads Without an Organic SEO Foundation</strong>
                 <p>
-                  Many Indian sellers jump straight to Sponsored Products without fixing their listing first. If your listing isn't converting organically, your ad spend will also convert poorly and Amazon's ad algorithm will throttle your ad visibility as a result. Every rupee spent on ads performs better when the underlying listing is SEO-optimised.
+                  Many Indian sellers jump straight to Sponsored Products
+                  without fixing their listing first. If your listing isn't
+                  converting organically, your ad spend will also convert poorly
+                  and Amazon's ad algorithm will throttle your ad visibility as
+                  a result. Every rupee spent on ads performs better when the
+                  underlying listing is SEO-optimised.
                 </p>
               </div>
             </div>
@@ -1058,10 +1598,15 @@ export default function AmazonSeoToolIndia() {
             <div className="mistake-card">
               <div className="mistake-num">5</div>
               <div className="mistake-body">
-                <strong>Setting Up a Listing Once and Never Revisiting It</strong>
+                <strong>
+                  Setting Up a Listing Once and Never Revisiting It
+                </strong>
                 <p>
-                  Amazon search trends shift. New competitors enter. Seasonal keywords spike.
-                  A listing optimised in January may be significantly underperforming by July if you haven't tracked and updated it. Rank tracking tools catch this drift early before it becomes a revenue problem.
+                  Amazon search trends shift. New competitors enter. Seasonal
+                  keywords spike. A listing optimised in January may be
+                  significantly underperforming by July if you haven't tracked
+                  and updated it. Rank tracking tools catch this drift early
+                  before it becomes a revenue problem.
                 </p>
               </div>
             </div>
@@ -1070,31 +1615,60 @@ export default function AmazonSeoToolIndia() {
             <div className="inline-cta">
               <div>
                 <h4>See Your Keyword Gaps in Minutes</h4>
-                <p>Free forever plan. No credit card. No jargon. Just clearer decisions for your Amazon.in listings.</p>
+                <p>
+                  Free forever plan. No credit card. No jargon. Just clearer
+                  decisions for your Amazon.in listings.
+                </p>
               </div>
-              <button onClick={() => router.push("/login")} className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm px-5 sm:px-6 py-3 rounded-xl transition-all whitespace-nowrap w-full sm:w-auto">
+              <button
+                onClick={() => router.push("/login")}
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold text-sm px-5 sm:px-6 py-3 rounded-xl transition-all whitespace-nowrap w-full sm:w-auto"
+              >
                 Start Free at insydz.com →
               </button>
             </div>
 
             {/* ── S6: Best Practices ──────────────────────────────────── */}
             <h2 id="s6">Best Practices: Weekly Amazon SEO Execution Model</h2>
-            <p>The most effective Amazon SEO isn't a one-time project it's a repeatable weekly workflow. Here's the model that high-performing Indian sellers follow to maintain and grow organic rank consistently.</p>
+            <p>
+              The most effective Amazon SEO isn't a one-time project it's a
+              repeatable weekly workflow. Here's the model that high-performing
+              Indian sellers follow to maintain and grow organic rank
+              consistently.
+            </p>
 
-            <ArticleImg
-              src="/eight.png"
-              alt="Weekly Amazon SEO execution model for Indian sellers"
+            <BlogImageSection
+              imageSrc="/eight.png"
+              altText="Weekly Amazon SEO execution model for Indian sellers"
               caption="Insydz weekly SEO execution model — a structured workflow for sustained organic rank growth on Amazon.in"
             />
 
             <h3>Key Metrics to Track</h3>
             <div className="metrics-grid">
-              {([
-                { num: "Top 10", lbl: "Organic rank for target keywords (track daily)", link: "/features/keyword-rank-tracking-feature" },
-                { num: "CTR", lbl: "Click-through rate low CTR signals poor title or image", link: null },
-                { num: "CVR", lbl: "Conversion rate low CVR means listing isn't convincing buyers", link: null },
-                { num: "Organic Split", lbl: "Keyword-level organic vs. paid sales breakdown", link: null },
-              ] as { num: string; lbl: string; link: string | null }[]).map((m, i) => (
+              {(
+                [
+                  {
+                    num: "Top 10",
+                    lbl: "Organic rank for target keywords (track daily)",
+                    link: "/features/keyword-rank-tracking-feature",
+                  },
+                  {
+                    num: "CTR",
+                    lbl: "Click-through rate low CTR signals poor title or image",
+                    link: null,
+                  },
+                  {
+                    num: "CVR",
+                    lbl: "Conversion rate low CVR means listing isn't convincing buyers",
+                    link: null,
+                  },
+                  {
+                    num: "Organic Split",
+                    lbl: "Keyword-level organic vs. paid sales breakdown",
+                    link: null,
+                  },
+                ] as { num: string; lbl: string; link: string | null }[]
+              ).map((m, i) => (
                 <div className="metric-card" key={i}>
                   <span className="metric-num">
                     {m.link ? <InLink to={m.link}>{m.num}</InLink> : m.num}
@@ -1107,33 +1681,54 @@ export default function AmazonSeoToolIndia() {
             {/* ── S7: Best Tools ──────────────────────────────────────── */}
             <h2 id="s7">Best Amazon SEO Tools for Indian Sellers</h2>
             <h3>Global Tools: Powerful, But Built for a Different Market</h3>
-            <p>Cerebro and Jungle Scout's keyword tools are the industry standard for Amazon sellers in the US and UK. But for Indian sellers, three gaps make them a poor fit:
+            <p>
+              Cerebro and Jungle Scout's keyword tools are the industry standard
+              for Amazon sellers in the US and UK. But for Indian sellers, three
+              gaps make them a poor fit:
             </p>
             <ul>
-              <li><strong>Price:</strong> Helium 10's plans start at $39–99/month (₹3,300–8,300). For a seller doing ₹3–5 lakh/month, this is a significant cost for one tool out of many you need.</li>
-              <li><strong>Data:</strong> Their keyword databases are built primarily on Amazon.com (US). Amazon.in search volumes, Hinglish patterns, and Indian buying intent keywords are significantly underrepresented.</li>
               <li>
-                <strong>Platform:</strong> None of these tools support Flipkart SEO which matters enormously for sellers who run multi-platform businesses.
+                <strong>Price:</strong> Helium 10's plans start at $39–99/month
+                (₹3,300–8,300). For a seller doing ₹3–5 lakh/month, this is a
+                significant cost for one tool out of many you need.
+              </li>
+              <li>
+                <strong>Data:</strong> Their keyword databases are built
+                primarily on Amazon.com (US). Amazon.in search volumes, Hinglish
+                patterns, and Indian buying intent keywords are significantly
+                underrepresented.
+              </li>
+              <li>
+                <strong>Platform:</strong> None of these tools support Flipkart
+                SEO which matters enormously for sellers who run multi-platform
+                businesses.
               </li>
             </ul>
 
-            <h3><strong>Insydz: Amazon SEO Intelligence Built for India</strong></h3>
+            <h3>
+              <strong>Insydz: Amazon SEO Intelligence Built for India</strong>
+            </h3>
             <p>
-              Insydz approaches Amazon SEO differently not as a standalone keyword tool, but as a connected intelligence layer that ties SEO to competitor pricing, review sentiment, and market trends simultaneously.
+              Insydz approaches Amazon SEO differently not as a standalone
+              keyword tool, but as a connected intelligence layer that ties SEO
+              to competitor pricing, review sentiment, and market trends
+              simultaneously.
             </p>
 
-            <ArticleImg
-              src="/nine.png"
-              alt="Tool comparison: Insydz vs global SEO tools for Indian sellers"
+            <BlogImageSection
+              imageSrc="/nine.png"
+              altText="Tool comparison: Insydz vs global SEO tools for Indian sellers"
               caption="Tool comparison: Insydz vs. global SEO tools — India-specific keyword data, Flipkart coverage, and WhatsApp alerts make the difference"
             />
 
             <div className="callout pink">
               <div className="callout-label">The India Advantage</div>
               <div className="callout-text">
-                The real advantage of an India-first tool isn't just affordability it's that the data actually
-                reflects how Indian buyers search. A keyword tool that doesn't understand "best laptop under 40000" or
-                "mixer grinder 750 watt" as high-intent queries on Amazon.in is only giving you half the picture.
+                The real advantage of an India-first tool isn't just
+                affordability it's that the data actually reflects how Indian
+                buyers search. A keyword tool that doesn't understand "best
+                laptop under 40000" or "mixer grinder 750 watt" as high-intent
+                queries on Amazon.in is only giving you half the picture.
               </div>
             </div>
 
@@ -1142,97 +1737,161 @@ export default function AmazonSeoToolIndia() {
 
             {/* FAQ 0 */}
             <div className={`faq-item${openFaq === 0 ? " open" : ""}`}>
-              <div className="faq-q" onClick={() => setOpenFaq(openFaq === 0 ? null : 0)}>
+              <div
+                className="faq-q"
+                onClick={() => setOpenFaq(openFaq === 0 ? null : 0)}
+              >
                 <span>{FAQS[0].q}</span>
-                <div className={`faq-icon${openFaq === 0 ? " open" : ""}`}>+</div>
+                <div className={`faq-icon${openFaq === 0 ? " open" : ""}`}>
+                  +
+                </div>
               </div>
               {openFaq === 0 && <div className="faq-a">{FAQS[0].a}</div>}
             </div>
 
             {/* FAQ 1 */}
             <div className={`faq-item${openFaq === 1 ? " open" : ""}`}>
-              <div className="faq-q" onClick={() => setOpenFaq(openFaq === 1 ? null : 1)}>
+              <div
+                className="faq-q"
+                onClick={() => setOpenFaq(openFaq === 1 ? null : 1)}
+              >
                 <span>{FAQS[1].q}</span>
-                <div className={`faq-icon${openFaq === 1 ? " open" : ""}`}>+</div>
+                <div className={`faq-icon${openFaq === 1 ? " open" : ""}`}>
+                  +
+                </div>
               </div>
               {openFaq === 1 && (
                 <div className="faq-a">
-                  Google SEO is about ranking web pages for information queries. Amazon SEO is about ranking product listings for purchase queries.{" "}
-                  <InLink to="/features">Amazon's A9 algorithm</InLink>{" "}
-                  weighs keyword relevance, sales velocity, pricing competitiveness, reviews, and conversion rate not backlinks or domain authority. A standard website SEO tool is useless for Amazon you need a marketplace-specific tool that understands e-commerce ranking signals.
+                  Google SEO is about ranking web pages for information queries.
+                  Amazon SEO is about ranking product listings for purchase
+                  queries. <InLink to="/features">Amazon's A9 algorithm</InLink>{" "}
+                  weighs keyword relevance, sales velocity, pricing
+                  competitiveness, reviews, and conversion rate not backlinks or
+                  domain authority. A standard website SEO tool is useless for
+                  Amazon you need a marketplace-specific tool that understands
+                  e-commerce ranking signals.
                 </div>
               )}
             </div>
 
             {/* FAQ 2 */}
             <div className={`faq-item${openFaq === 2 ? " open" : ""}`}>
-              <div className="faq-q" onClick={() => setOpenFaq(openFaq === 2 ? null : 2)}>
+              <div
+                className="faq-q"
+                onClick={() => setOpenFaq(openFaq === 2 ? null : 2)}
+              >
                 <span>{FAQS[2].q}</span>
-                <div className={`faq-icon${openFaq === 2 ? " open" : ""}`}>+</div>
+                <div className={`faq-icon${openFaq === 2 ? " open" : ""}`}>
+                  +
+                </div>
               </div>
               {openFaq === 2 && (
                 <div className="faq-a">
-                  Start with high-intent, mid-competition keywords not the most popular terms in your category. For example, 'buy yoga mat online' has enormous competition. 'Anti-slip yoga mat 6mm for women' has lower competition and higher purchase intent. An{" "}
+                  Start with high-intent, mid-competition keywords not the most
+                  popular terms in your category. For example, 'buy yoga mat
+                  online' has enormous competition. 'Anti-slip yoga mat 6mm for
+                  women' has lower competition and higher purchase intent. An{" "}
                   <InLink to="/resources/expert-blog/amazon-seo-tool-india">
                     Amazon Keyword Research India
                   </InLink>{" "}
-                  tool will show you search volume, competition level, and estimated conversion rate so you can prioritise intelligently rather than going after the hardest keywords first.
+                  tool will show you search volume, competition level, and
+                  estimated conversion rate so you can prioritise intelligently
+                  rather than going after the hardest keywords first.
                 </div>
               )}
             </div>
 
             {/* FAQ 3 */}
             <div className={`faq-item${openFaq === 3 ? " open" : ""}`}>
-              <div className="faq-q" onClick={() => setOpenFaq(openFaq === 3 ? null : 3)}>
+              <div
+                className="faq-q"
+                onClick={() => setOpenFaq(openFaq === 3 ? null : 3)}
+              >
                 <span>{FAQS[3].q}</span>
-                <div className={`faq-icon${openFaq === 3 ? " open" : ""}`}>+</div>
+                <div className={`faq-icon${openFaq === 3 ? " open" : ""}`}>
+                  +
+                </div>
               </div>
               {openFaq === 3 && (
                 <div className="faq-a">
-                  Most sellers see measurable ranking improvement within 3–6 weeks of a well-executed listing optimisation. Organic ranking changes aren't instant Amazon needs time to index changes and measure their impact on conversion rate. Combining listing optimisation with a targeted{" "}
-                  <InLink to="/resources/expert-blog">Sponsored Products</InLink>{" "}
-                  campaign on your new keywords accelerates the timeline significantly. Use{" "}
-                  <InLink to="/features/keyword-rank-tracking-feature">daily rank tracking</InLink>{" "}
+                  Most sellers see measurable ranking improvement within 3–6
+                  weeks of a well-executed listing optimisation. Organic ranking
+                  changes aren't instant Amazon needs time to index changes and
+                  measure their impact on conversion rate. Combining listing
+                  optimisation with a targeted{" "}
+                  <InLink to="/resources/expert-blog">
+                    Sponsored Products
+                  </InLink>{" "}
+                  campaign on your new keywords accelerates the timeline
+                  significantly. Use{" "}
+                  <InLink to="/features/keyword-rank-tracking-feature">
+                    daily rank tracking
+                  </InLink>{" "}
                   weekly (not daily) for accurate progress assessment.
                 </div>
               )}
             </div>
 
             {/* FAQs 4 & 5 */}
-            {([4, 5] as const).map(i => (
-              <div className={`faq-item${openFaq === i ? " open" : ""}`} key={i}>
-                <div className="faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+            {([4, 5] as const).map((i) => (
+              <div
+                className={`faq-item${openFaq === i ? " open" : ""}`}
+                key={i}
+              >
+                <div
+                  className="faq-q"
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                >
                   <span>{FAQS[i].q}</span>
-                  <div className={`faq-icon${openFaq === i ? " open" : ""}`}>+</div>
+                  <div className={`faq-icon${openFaq === i ? " open" : ""}`}>
+                    +
+                  </div>
                 </div>
                 {openFaq === i && <div className="faq-a">{FAQS[i].a}</div>}
               </div>
             ))}
 
             {/* ── Related Guides ──────────────────────────────────────── */}
-            <h2 style={{ marginTop: "clamp(36px,6vw,56px)" }}>Related Guides</h2>
+            <h2 style={{ marginTop: "clamp(36px,6vw,56px)" }}>
+              Related Guides
+            </h2>
             <div className="related-grid">
-              {([
-                {
-                  cardTitle: "Amazon Competitor Price Tracking Tool India: Complete Guide (2026)",
-                  tag: "Price Tracking",
-                  imgSrc: "/one.png",
-                  route: "/resources/expert-blog/amazon-competitor-price-tracking-tool",
-                },
-                {
-                  cardTitle: "Best Competitor Price Tracking Tools for Indian Sellers: 2026 Guide",
-                  tag: "Tool Comparison",
-                  imgSrc: "/thirteen.png",
-                  route: "/compare/insydzvshelium",
-                },
-                {
-                  cardTitle: "How to Win the Amazon Buy Box in India: Seller's Pricing Guide",
-                  tag: "Buy Box Strategy",
-                  imgSrc: "/three.png",
-                  route: "/use-cases/track-competitor-prices",
-                },
-              ] as { cardTitle: string; tag: string; imgSrc: string; route: string }[]).map(r => (
-                <div key={r.cardTitle} className="related-card" onClick={() => router.push(r.route)}>
+              {(
+                [
+                  {
+                    cardTitle:
+                      "Amazon Competitor Price Tracking Tool India: Complete Guide (2026)",
+                    tag: "Price Tracking",
+                    imgSrc: "/one.png",
+                    route:
+                      "/resources/expert-blog/amazon-competitor-price-tracking-tool",
+                  },
+                  {
+                    cardTitle:
+                      "Best Competitor Price Tracking Tools for Indian Sellers: 2026 Guide",
+                    tag: "Tool Comparison",
+                    imgSrc: "/thirteen.png",
+                    route: "/compare/insydzvshelium",
+                  },
+                  {
+                    cardTitle:
+                      "How to Win the Amazon Buy Box in India: Seller's Pricing Guide",
+                    tag: "Buy Box Strategy",
+                    imgSrc: "/three.png",
+                    route: "/use-cases/track-competitor-prices",
+                  },
+                ] as {
+                  cardTitle: string;
+                  tag: string;
+                  imgSrc: string;
+                  route: string;
+                }[]
+              ).map((r) => (
+                <div
+                  key={r.cardTitle}
+                  className="related-card"
+                  onClick={() => router.push(r.route)}
+                >
                   <div className="related-thumb">
                     <img src={r.imgSrc} alt={r.cardTitle} />
                   </div>
@@ -1243,23 +1902,59 @@ export default function AmazonSeoToolIndia() {
                 </div>
               ))}
             </div>
-
           </article>
         </main>
       </div>
 
       {/* Final CTA */}
       <div className="final-cta-block">
-        <h2 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-2 sm:mb-3" style={{ fontFamily: "'Sora',sans-serif" }}>
+        <h2
+          className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white mb-2 sm:mb-3"
+          style={{ fontFamily: "'Sora',sans-serif" }}
+        >
           The Amazon SEO Tool Built for India.
         </h2>
-        <p className="text-blue-100 text-sm sm:text-base md:text-lg" style={{ fontFamily: "'Lora', serif", maxWidth: 520, margin: "0 auto 20px" }}>
-          Optimise your Amazon.in listings with AI-powered keyword data, real-time rank tracking, and WhatsApp alerts — all in one dashboard.
+        <p
+          className="text-blue-100 text-sm sm:text-base md:text-lg"
+          style={{
+            fontFamily: "'Lora', serif",
+            maxWidth: 520,
+            margin: "0 auto 20px",
+          }}
+        >
+          Optimise your Amazon.in listings with AI-powered keyword data,
+          real-time rank tracking, and WhatsApp alerts — all in one dashboard.
         </p>
-        <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "6px 20px", marginBottom: 20 }}>
-          {["AI listing optimisation", "Real-time rank tracking", "WhatsApp SEO alerts", "Free to start"].map(t => (
-            <div key={t} className="text-blue-100" style={{ fontSize: "clamp(11px,2vw,13.5px)", display: "flex", alignItems: "center", gap: 6, fontFamily: "'Sora',sans-serif" }}>
-              <span className="text-white" style={{ fontWeight: 800 }}>✓</span> {t}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            gap: "6px 20px",
+            marginBottom: 20,
+          }}
+        >
+          {[
+            "AI listing optimisation",
+            "Real-time rank tracking",
+            "WhatsApp SEO alerts",
+            "Free to start",
+          ].map((t) => (
+            <div
+              key={t}
+              className="text-blue-100"
+              style={{
+                fontSize: "clamp(11px,2vw,13.5px)",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                fontFamily: "'Sora',sans-serif",
+              }}
+            >
+              <span className="text-white" style={{ fontWeight: 800 }}>
+                ✓
+              </span>{" "}
+              {t}
             </div>
           ))}
         </div>
@@ -1270,10 +1965,11 @@ export default function AmazonSeoToolIndia() {
           <Zap className="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
           Optimise My Listings Free →
         </button>
-        <p className="text-blue-200 text-xs mt-3 sm:mt-4">Amazon.in + Flipkart · Hinglish keywords · No card needed</p>
+        <p className="text-blue-200 text-xs mt-3 sm:mt-4">
+          Amazon.in + Flipkart · Hinglish keywords · No card needed
+        </p>
       </div>
       {/* Footer */}
-      
 
       <style>{`
         @keyframes fade-in {
@@ -1296,6 +1992,3 @@ export default function AmazonSeoToolIndia() {
     </div>
   );
 }
-
-
-

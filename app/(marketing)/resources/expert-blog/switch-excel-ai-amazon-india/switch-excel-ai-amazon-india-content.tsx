@@ -383,13 +383,13 @@ export default function SwitchExcelAiAmazonIndiaContent() {
         @media(min-width:640px){.read-progress{top:72px}}
         @media(min-width:1024px){.read-progress{top:80px}}
 
-        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0}
-        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px}}
-        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px}}
-        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px}}
+        .article-layout{max-width:1240px;margin:0 auto;padding:32px 16px 60px;display:grid;grid-template-columns:1fr;gap:0;align-items:start}
+        @media(min-width:768px){.article-layout{padding:40px 20px 70px;grid-template-columns:220px 1fr;gap:28px;align-items:start}}
+        @media(min-width:1024px){.article-layout{padding:48px 24px 80px;grid-template-columns:280px 1fr;gap:40px;align-items:start}}
+        @media(min-width:1280px){.article-layout{grid-template-columns:308px 1fr;gap:52px;align-items:start}}
 
         .toc-sidebar{display:none}
-        @media(min-width:768px){.toc-sidebar{display:block;position:sticky;top:76px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);max-height:calc(100vh - 96px);overflow-y:auto}}
+        @media(min-width:768px){.toc-sidebar{display:block;position:sticky;top:76px;background:#fff;border:1px solid #E5E7EB;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.07),0 4px 12px rgba(0,0,0,.05);max-height:calc(100vh - 96px);overflow-y:auto;align-self:start;height:fit-content}}
         @media(min-width:1024px){.toc-sidebar{top:80px;padding:22px}}
         .dark .toc-sidebar{background:#111827;border-color:#1f2937}
 
@@ -510,8 +510,10 @@ export default function SwitchExcelAiAmazonIndiaContent() {
         badgeText="BOFU · Tool Comparison · Narrative"
         title={
           <>
-            I Ditched <span style={{ color: "#F97316" }}>Excel</span> for an AI
-            Competitor Tracker on Amazon India. Here Is What Changed in 30 Days.
+            <span style={{ color: "#F97316" }}>Excel</span> to{" "}
+            <span style={{ color: "#F97316" }}>AI Competitor Tracker</span> on{" "}
+            <br />
+            Amazon India: 30 Days
           </>
         }
         description={
@@ -527,7 +529,6 @@ export default function SwitchExcelAiAmazonIndiaContent() {
         publishDate="June 2026"
         readTime="10 min read"
         bgColor={{ light: "#FFF7ED", dark: "#1c0900" }}
-        tags={["BOFU · Convert", "30 Day Results"]}
       />
 
       <div style={{ maxWidth: 1240, margin: "16px auto", padding: "0 16px" }}>
@@ -609,7 +610,7 @@ export default function SwitchExcelAiAmazonIndiaContent() {
 
         {/* Blog Image Section */}
         <BlogImageSection
-          imageSrc="/switch-excel-BlogBanner.png"
+          imageSrc="/Excel to AI Competitor Tracker on Amazon India_ 30 Days.png"
           altText="Switch Excel AI Amazon India"
           caption="A WhatsApp alert from Insydz at 11:34 PM when a competitor dropped price below the seller's Buy Box threshold. In a manual Excel workflow this would not have been visible until the next scheduled update, potentially 48 hours later."
         />

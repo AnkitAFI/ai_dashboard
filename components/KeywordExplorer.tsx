@@ -575,7 +575,7 @@ export default function KeywordExplorer({
                   </SelectItem>
                   <SelectItem value="flipkart">
                     <div className="flex items-center gap-2">
-                      <ShoppingBag className="h-4 w-4 text-yellow-600" /> Flipkart
+                      <ShoppingBag className="h-4 w-4 text-yellow-600" /> Flipkart India
                     </div>
                   </SelectItem>
                 </SelectContent>
@@ -613,7 +613,9 @@ export default function KeywordExplorer({
                 Retrieving Marketplace Intel
               </h4>
               <p className="text-xs text-purple-700 mt-1 max-w-md">
-                We are scanning local search index data, calculating product demand, classifying search intentions, and compiling search recommendations. This process operates 100% free of charge.
+                {platform === "flipkart"
+                  ? "Scanning live Flipkart India search index data, calculating real-time buyer demand velocity, and classifying purchase intent to compile high-converting keyword intelligence."
+                  : "Scanning live Amazon India search index data, calculating real-time buyer demand velocity, and classifying purchase intent to compile high-converting keyword intelligence."}
               </p>
             </div>
           </CardContent>

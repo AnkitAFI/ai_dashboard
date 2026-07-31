@@ -4,57 +4,199 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  Search, Clock, TrendingUp, Target, DollarSign, BarChart3,
-  MessageCircle, Package, Trophy, Zap, BookOpen, Video, FileText,
-  Menu, X, Sun, Moon, ChevronDown, ShoppingBag, Store, Briefcase,
-  Users, Bell, Code, Globe, ArrowLeft, Facebook, Twitter, Linkedin,
-  Instagram, Flame, Presentation, LayoutGrid
+  Search,
+  Clock,
+  TrendingUp,
+  Target,
+  DollarSign,
+  BarChart3,
+  MessageCircle,
+  Package,
+  Trophy,
+  Zap,
+  BookOpen,
+  Video,
+  FileText,
+  Menu,
+  X,
+  Sun,
+  Moon,
+  ChevronDown,
+  ShoppingBag,
+  Store,
+  Briefcase,
+  Users,
+  Bell,
+  Code,
+  Globe,
+  ArrowLeft,
+  Facebook,
+  Twitter,
+  Linkedin,
+  Instagram,
+  Flame,
+  Presentation,
+  LayoutGrid,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BlogImageSection from "../components/BlogImageSection";
 
 // ── Nav Types ─────────────────────────────────────────────────────────────────
-type MenuItemWithBadge = { name: string; icon: JSX.Element; badge?: string; route?: string; };
+type MenuItemWithBadge = {
+  name: string;
+  icon: JSX.Element;
+  badge?: string;
+  route?: string;
+};
 type NavigationMenu = {
-  Solutions: MenuItemWithBadge[]; "Use Cases": MenuItemWithBadge[]; Features: MenuItemWithBadge[];
-  "Free Tools": MenuItemWithBadge[]; Resources: MenuItemWithBadge[]; Integrations: MenuItemWithBadge[];
-  Compare: MenuItemWithBadge[]; About: MenuItemWithBadge[];
+  Solutions: MenuItemWithBadge[];
+  "Use Cases": MenuItemWithBadge[];
+  Features: MenuItemWithBadge[];
+  "Free Tools": MenuItemWithBadge[];
+  Resources: MenuItemWithBadge[];
+  Integrations: MenuItemWithBadge[];
+  Compare: MenuItemWithBadge[];
+  About: MenuItemWithBadge[];
 };
 
 const navigationMenu: NavigationMenu = {
   Solutions: [
-    { name: "All Solutions (Overview)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions" },
-    { name: "For Amazon Sellers (India)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions/amazon-sellers" },
-    { name: "For Flipkart Sellers", icon: <Store className="w-4 h-4" />, route: "/solutions/flipkart-sellers" },
-    { name: "For E-commerce Agencies", icon: <Briefcase className="w-4 h-4" />, route: "/solutions/ecommerce-agencies" },
-    { name: "For Brand Managers", icon: <Users className="w-4 h-4" />, route: "/solutions/brand-managers" },
+    {
+      name: "All Solutions (Overview)",
+      icon: <ShoppingBag className="w-4 h-4" />,
+      route: "/solutions",
+    },
+    {
+      name: "For Amazon Sellers (India)",
+      icon: <ShoppingBag className="w-4 h-4" />,
+      route: "/solutions/amazon-sellers",
+    },
+    {
+      name: "For Flipkart Sellers",
+      icon: <Store className="w-4 h-4" />,
+      route: "/solutions/flipkart-sellers",
+    },
+    {
+      name: "For E-commerce Agencies",
+      icon: <Briefcase className="w-4 h-4" />,
+      route: "/solutions/ecommerce-agencies",
+    },
+    {
+      name: "For Brand Managers",
+      icon: <Users className="w-4 h-4" />,
+      route: "/solutions/brand-managers",
+    },
   ],
   "Use Cases": [
-    { name: "All Use Cases", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases" },
-    { name: "Track Competitor Prices", icon: <TrendingUp className="w-4 h-4" />, route: "/use-cases/track-competitor-prices" },
-    { name: "Find Profitable Products", icon: <Target className="w-4 h-4" />, route: "/use-cases/find-profitable-products" },
-    { name: "Analyze Customer Reviews", icon: <MessageCircle className="w-4 h-4" />, route: "/use-cases/analyze-customer-reviews" },
-    { name: "Improve Amazon & Flipkart SEO", icon: <Search className="w-4 h-4" />, route: "/use-cases/improve-seo" },
-    { name: "Avoid Stockouts & Missed Sales", icon: <Package className="w-4 h-4" />, route: "/use-cases/avoid-stockouts" },
+    {
+      name: "All Use Cases",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/use-cases",
+    },
+    {
+      name: "Track Competitor Prices",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/use-cases/track-competitor-prices",
+    },
+    {
+      name: "Find Profitable Products",
+      icon: <Target className="w-4 h-4" />,
+      route: "/use-cases/find-profitable-products",
+    },
+    {
+      name: "Analyze Customer Reviews",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/use-cases/analyze-customer-reviews",
+    },
+    {
+      name: "Improve Amazon & Flipkart SEO",
+      icon: <Search className="w-4 h-4" />,
+      route: "/use-cases/improve-seo",
+    },
+    {
+      name: "Avoid Stockouts & Missed Sales",
+      icon: <Package className="w-4 h-4" />,
+      route: "/use-cases/avoid-stockouts",
+    },
   ],
   Features: [
-    { name: "All Features", icon: <LayoutGrid className="w-4 h-4" />, route: "/features" },
-    { name: "Competitor Price Tracking", icon: <DollarSign className="w-4 h-4" />, route: "/features/competitor-price-tracking-feature" },
-    { name: "Review Analytics", icon: <MessageCircle className="w-4 h-4" />, route: "/features/review-analytics-feature" },
-    { name: "Price Optimization", icon: <TrendingUp className="w-4 h-4" />, route: "/features/price-optimization-feature" },
-    { name: "Keyword & Rank Tracking", icon: <Search className="w-4 h-4" />, route: "/features/keyword-rank-tracking-feature" },
-    { name: "Product Research", icon: <Package className="w-4 h-4" />, route: "/features/product-research-feature" },
-    { name: "AI Recommendations", icon: <Zap className="w-4 h-4" />, route: "/features/ai-recommendations-feature" },
-    { name: "WhatsApp Alerts", icon: <Bell className="w-4 h-4" />, badge: "NEW", route: "/features/whatsapp-alerts-feature" },
-    { name: "Festive Trend Intelligence", icon: <Flame className="w-4 h-4" />, badge: "UPCOMING", route: "/features/festive-trend-feature" },
+    {
+      name: "All Features",
+      icon: <LayoutGrid className="w-4 h-4" />,
+      route: "/features",
+    },
+    {
+      name: "Competitor Price Tracking",
+      icon: <DollarSign className="w-4 h-4" />,
+      route: "/features/competitor-price-tracking-feature",
+    },
+    {
+      name: "Review Analytics",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/features/review-analytics-feature",
+    },
+    {
+      name: "Price Optimization",
+      icon: <TrendingUp className="w-4 h-4" />,
+      route: "/features/price-optimization-feature",
+    },
+    {
+      name: "Keyword & Rank Tracking",
+      icon: <Search className="w-4 h-4" />,
+      route: "/features/keyword-rank-tracking-feature",
+    },
+    {
+      name: "Product Research",
+      icon: <Package className="w-4 h-4" />,
+      route: "/features/product-research-feature",
+    },
+    {
+      name: "AI Recommendations",
+      icon: <Zap className="w-4 h-4" />,
+      route: "/features/ai-recommendations-feature",
+    },
+    {
+      name: "WhatsApp Alerts",
+      icon: <Bell className="w-4 h-4" />,
+      badge: "NEW",
+      route: "/features/whatsapp-alerts-feature",
+    },
+    {
+      name: "Festive Trend Intelligence",
+      icon: <Flame className="w-4 h-4" />,
+      badge: "UPCOMING",
+      route: "/features/festive-trend-feature",
+    },
   ],
   "Free Tools": [
-    { name: "Free Amazon Product Analyzer", icon: <BarChart3 className="w-4 h-4" />, route: "/free-tools/free-amazon-product-analyzer" },
-    { name: "Free Review Sentiment Checker", icon: <MessageCircle className="w-4 h-4" />, route: "/free-tools/free-review-sentiment-checker" },
-    { name: "Free Competitor Price Checker", icon: <DollarSign className="w-4 h-4" />, route: "/free-tools/free-competitor-price-checker" },
-    { name: "Free Keyword Rank Checker", icon: <Search className="w-4 h-4" />, badge: "NEW", route: "/free-tools/free-keyword-rank-checker" },
+    {
+      name: "Free Amazon Product Analyzer",
+      icon: <BarChart3 className="w-4 h-4" />,
+      route: "/free-tools/free-amazon-product-analyzer",
+    },
+    {
+      name: "Free Review Sentiment Checker",
+      icon: <MessageCircle className="w-4 h-4" />,
+      route: "/free-tools/free-review-sentiment-checker",
+    },
+    {
+      name: "Free Competitor Price Checker",
+      icon: <DollarSign className="w-4 h-4" />,
+      route: "/free-tools/free-competitor-price-checker",
+    },
+    {
+      name: "Free Keyword Rank Checker",
+      icon: <Search className="w-4 h-4" />,
+      badge: "NEW",
+      route: "/free-tools/free-keyword-rank-checker",
+    },
   ],
   Resources: [
-    { name: "Expert Blog", icon: <BookOpen className="w-4 h-4" />, route: "/resources/expert-blog" },
+    {
+      name: "Expert Blog",
+      icon: <BookOpen className="w-4 h-4" />,
+      route: "/resources/expert-blog",
+    },
   ],
   Integrations: [
     { name: "Amazon", icon: <ShoppingBag className="w-4 h-4" /> },
@@ -63,14 +205,38 @@ const navigationMenu: NavigationMenu = {
     { name: "API Documentation", icon: <Code className="w-4 h-4" /> },
   ],
   Compare: [
-    { name: "Insydz vs Helium 10", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvshelium" },
-    { name: "Insydz vs Jungle Scout", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsjunglescout" },
-    { name: "Insydz vs Viral Launch", icon: <Trophy className="w-4 h-4" />, route: "/compare/insydzvsvirallaunch" },
+    {
+      name: "Insydz vs Helium 10",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvshelium",
+    },
+    {
+      name: "Insydz vs Jungle Scout",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvsjunglescout",
+    },
+    {
+      name: "Insydz vs Viral Launch",
+      icon: <Trophy className="w-4 h-4" />,
+      route: "/compare/insydzvsvirallaunch",
+    },
   ],
   About: [
-    { name: "Our Vision", icon: <Globe className="w-4 h-4" />, route: "/about/our-vision" },
-    { name: "Careers", icon: <Users className="w-4 h-4" />, route: "/about/careers" },
-    { name: "Contact Us", icon: <Users className="w-4 h-4" />, route: "/about/contact-us" },
+    {
+      name: "Our Vision",
+      icon: <Globe className="w-4 h-4" />,
+      route: "/about/our-vision",
+    },
+    {
+      name: "Careers",
+      icon: <Users className="w-4 h-4" />,
+      route: "/about/careers",
+    },
+    {
+      name: "Contact Us",
+      icon: <Users className="w-4 h-4" />,
+      route: "/about/contact-us",
+    },
   ],
 };
 
@@ -88,31 +254,35 @@ const TOC = [
 const FAQS = [
   {
     q: "What is the best Flipkart keyword research tool for Indian sellers?",
-    a: "Insydz is the only India-first platform providing simultaneous Flipkart and Amazon.in keyword tracking with real-time rank monitoring, WhatsApp alerts, and AI-powered listing optimisation at Rs 1,999/month with a free plan."
+    a: "Insydz is the only India-first platform providing simultaneous Flipkart and Amazon.in keyword tracking with real-time rank monitoring, WhatsApp alerts, and AI-powered listing optimisation at Rs 1,999/month with a free plan.",
   },
   {
     q: "How does Flipkart SEO optimization differ from Amazon SEO?",
-    a: "Flipkart places significantly more weight on product attribute completeness than Amazon A10 and has unique signals including F-Assured status and a Product Discovery AI."
+    a: "Flipkart places significantly more weight on product attribute completeness than Amazon A10 and has unique signals including F-Assured status and a Product Discovery AI.",
   },
   {
     q: "How does Flipkart's search algorithm rank products?",
-    a: "Flipkart scores listings across: keyword relevance 35%, attribute completeness 28%, seller performance 22%, buyer engagement 10%, and price competitiveness 5%."
+    a: "Flipkart scores listings across: keyword relevance 35%, attribute completeness 28%, seller performance 22%, buyer engagement 10%, and price competitiveness 5%.",
   },
   {
     q: "Can I track my Flipkart keyword rank positions in real time?",
-    a: "Yes with India-first tools like Insydz. Flipkart Seller Hub provides no organic keyword rank data and no global tool tracks Flipkart positions."
+    a: "Yes with India-first tools like Insydz. Flipkart Seller Hub provides no organic keyword rank data and no global tool tracks Flipkart positions.",
   },
   {
     q: "What are the most important keywords for Flipkart listings?",
-    a: "F-Assured terms 18-24% conversion, attribute-specific queries 22-30%, and price-bracket terms 12-18% are the highest-converting Flipkart keyword categories."
+    a: "F-Assured terms 18-24% conversion, attribute-specific queries 22-30%, and price-bracket terms 12-18% are the highest-converting Flipkart keyword categories.",
   },
   {
     q: "How early should I optimise keywords for Flipkart Big Billion Days?",
-    a: "Start 6-8 weeks before the event — early September for an October BBD. Flipkart pre-ranks category pages 3-4 weeks before the event goes live."
-  }
+    a: "Start 6-8 weeks before the event — early September for an October BBD. Flipkart pre-ranks category pages 3-4 weeks before the event goes live.",
+  },
 ];
 
-interface ArticleImgProps { src: string; alt: string; caption?: string; }
+interface ArticleImgProps {
+  src: string;
+  alt: string;
+  caption?: string;
+}
 function ArticleImg({ src, alt, caption }: ArticleImgProps) {
   const [loaded, setLoaded] = useState(false);
   return (
@@ -122,22 +292,41 @@ function ArticleImg({ src, alt, caption }: ArticleImgProps) {
         src={src}
         alt={alt}
         onLoad={() => setLoaded(true)}
-        style={{ width: "100%", height: "auto", display: loaded ? "block" : "none" }}
+        style={{
+          width: "100%",
+          height: "auto",
+          display: loaded ? "block" : "none",
+        }}
       />
       {caption && <figcaption className="img-caption">{caption}</figcaption>}
     </figure>
   );
 }
 
-const InLink = ({ to, children }: { to: string; children: React.ReactNode }) => {
+const InLink = ({
+  to,
+  children,
+}: {
+  to: string;
+  children: React.ReactNode;
+}) => {
   const router = useRouter();
   return (
     <a
       href={to}
-      onClick={(e) => { e.preventDefault(); router.push(to); window.scrollTo(0, 0); }}
+      onClick={(e) => {
+        e.preventDefault();
+        router.push(to);
+        window.scrollTo(0, 0);
+      }}
       style={{
-        color: "#ea580c", textDecoration: "underline", textDecorationColor: "#fed7aa",
-        textUnderlineOffset: "3px", fontWeight: 600, cursor: "pointer", transition: "color 0.15s",
+        color: "#ea580c",
+        textDecoration: "underline",
+        textDecorationColor: "#fed7aa",
+        textUnderlineOffset: "3px",
+        fontWeight: 600,
+        cursor: "pointer",
+        transition: "color 0.15s",
       }}
       onMouseEnter={(e) => (e.currentTarget.style.color = "#c2410c")}
       onMouseLeave={(e) => (e.currentTarget.style.color = "#ea580c")}
@@ -160,7 +349,9 @@ export default function FlipkartKeywordContent() {
   const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { document.documentElement.classList.toggle("dark", isDarkMode); }, [isDarkMode]);
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", isDarkMode);
+  }, [isDarkMode]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -169,7 +360,10 @@ export default function FlipkartKeywordContent() {
       setScrollPct(Math.min((window.scrollY / total) * 100, 100));
       for (let i = TOC.length - 1; i >= 0; i--) {
         const el = document.getElementById(TOC[i].id);
-        if (el && window.scrollY >= el.offsetTop - 130) { setActiveSection(TOC[i].id); break; }
+        if (el && window.scrollY >= el.offsetTop - 130) {
+          setActiveSection(TOC[i].id);
+          break;
+        }
       }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -178,24 +372,43 @@ export default function FlipkartKeywordContent() {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setActiveDropdown(null);
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      )
+        setActiveDropdown(null);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   const go = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document
+      .getElementById(id)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
     setTocOpen(false);
   };
 
   const handleMenuItemClick = (item: MenuItemWithBadge) => {
-    if (item.route) { router.push(item.route); setActiveDropdown(null); setIsMenuOpen(false); }
+    if (item.route) {
+      router.push(item.route);
+      setActiveDropdown(null);
+      setIsMenuOpen(false);
+    }
   };
 
-  const toggleMobileMenu = (name: string) => setMobileActiveMenu(prev => prev === name ? null : name);
+  const toggleMobileMenu = (name: string) =>
+    setMobileActiveMenu((prev) => (prev === name ? null : name));
 
-  const DesktopDropdown = ({ label, menuKey, accent = "purple" }: { label: string; menuKey: keyof NavigationMenu; accent?: "purple" | "orange" }) => {
+  const DesktopDropdown = ({
+    label,
+    menuKey,
+    accent = "purple",
+  }: {
+    label: string;
+    menuKey: keyof NavigationMenu;
+    accent?: "purple" | "orange";
+  }) => {
     const items = navigationMenu[menuKey];
     const isActive = activeDropdown === label;
     const ac = accent === "orange";
@@ -203,15 +416,20 @@ export default function FlipkartKeywordContent() {
       <div className="relative">
         <button
           onMouseEnter={() => setActiveDropdown(label)}
-          className={`px-3 py-2 text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${isActive
-            ? ac ? "text-orange-600 font-semibold" : "text-purple-600 font-semibold"
-            : ac
-              ? "text-orange-600 dark:text-orange-500 hover:text-orange-700 hover:bg-orange-50 dark:hover:bg-orange-900/20"
-              : "text-gray-700 dark:text-gray-300 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
-            }`}
+          className={`px-3 py-2 text-sm font-medium rounded-lg transition-all flex items-center gap-1 ${
+            isActive
+              ? ac
+                ? "text-orange-600 font-semibold"
+                : "text-purple-600 font-semibold"
+              : ac
+                ? "text-orange-600 dark:text-orange-500 hover:text-orange-700 hover:bg-orange-50 dark:hover:bg-orange-900/20"
+                : "text-gray-700 dark:text-gray-300 hover:text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20"
+          }`}
         >
           {label}
-          <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isActive ? "rotate-180" : ""}`} />
+          <ChevronDown
+            className={`w-3.5 h-3.5 transition-transform ${isActive ? "rotate-180" : ""}`}
+          />
         </button>
         {isActive && (
           <div
@@ -224,9 +442,19 @@ export default function FlipkartKeywordContent() {
                 onClick={() => handleMenuItemClick(item)}
                 className={`w-full px-4 py-2.5 text-left transition-colors flex items-center gap-3 group ${ac ? "hover:bg-orange-50 dark:hover:bg-orange-900/20" : "hover:bg-purple-50 dark:hover:bg-purple-900/20"}`}
               >
-                <span className={`flex-shrink-0 ${ac ? "text-orange-600 dark:text-orange-400" : "text-purple-600 dark:text-purple-400"}`}>{item.icon}</span>
-                <span className="text-sm text-gray-700 dark:text-gray-300 flex-1 text-left">{item.name}</span>
-                {item.badge && <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold flex-shrink-0">{item.badge}</span>}
+                <span
+                  className={`flex-shrink-0 ${ac ? "text-orange-600 dark:text-orange-400" : "text-purple-600 dark:text-purple-400"}`}
+                >
+                  {item.icon}
+                </span>
+                <span className="text-sm text-gray-700 dark:text-gray-300 flex-1 text-left">
+                  {item.name}
+                </span>
+                {item.badge && (
+                  <span className="text-xs bg-gradient-to-r from-purple-600 to-pink-600 text-white px-2 py-0.5 rounded-full font-semibold flex-shrink-0">
+                    {item.badge}
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -403,78 +631,147 @@ export default function FlipkartKeywordContent() {
         .alert-act { font-size:10px; font-weight:700; color:#fb923c; white-space:nowrap; }
       `}</style>
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
-      
+
       <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent"></span>
       {/* ══ HERO ══ */}
       <section className="bg-white dark:bg-[#0f172a] pt-24 border-b border-gray-200 dark:border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-6">
-            <button onClick={() => router.push("/")} className="hover:text-orange-500 transition-colors">Home</button>
+            <button
+              onClick={() => router.push("/")}
+              className="hover:text-orange-500 transition-colors"
+            >
+              Home
+            </button>
             <span>/</span>
-            <button onClick={() => router.push("/resources/expert-blog")} className="hover:text-orange-500 transition-colors">Expert Blog</button>
+            <button
+              onClick={() => router.push("/resources/expert-blog")}
+              className="hover:text-orange-500 transition-colors"
+            >
+              Expert Blog
+            </button>
             <span>/</span>
-            <span className="text-orange-500 font-medium">Flipkart Keyword Research Tool</span>
+            <span className="text-orange-500 font-medium">
+              Flipkart Keyword Research Tool
+            </span>
           </div>
           <div className="inline-flex items-center gap-2 bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-400 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-5">
             <div className="w-2 h-2 bg-orange-500 rounded-full" />
             Flipkart SEO & Seller Strategy
           </div>
-          <h1 style={{ fontFamily: "'Sora',sans-serif", fontSize: "clamp(32px, 4.5vw, 52px)", fontWeight: 800, color: "#0D1B2A", lineHeight: 1.1, letterSpacing: "-0.03em" }}>
-            Flipkart <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Keyword Research Tool</span> <br /> & <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">SEO Optimization</span> <br />Guide for Sellers (2026)
+          <h1
+            style={{
+              fontFamily: "'Sora',sans-serif",
+              fontSize: "clamp(32px, 4.5vw, 52px)",
+              fontWeight: 800,
+              color: "#0D1B2A",
+              lineHeight: 1.1,
+              letterSpacing: "-0.03em",
+            }}
+          >
+            Flipkart{" "}
+            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+              Keyword Research Tool
+            </span>{" "}
+            <br /> &{" "}
+            <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+              SEO Optimization
+            </span>{" "}
+            <br />
+            Guide for Sellers (2026)
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mb-8" style={{ fontFamily: "'Lora', serif" }}>
-            Master Flipkart keyword research and SEO optimization. Discover how India's top Flipkart sellers use AI-powered keyword tracking and search visibility tools to dominate search results and grow revenue.
+          <p
+            className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-2xl mb-8"
+            style={{ fontFamily: "'Lora', serif" }}
+          >
+            Master Flipkart keyword research and SEO optimization. Discover how
+            India's top Flipkart sellers use AI-powered keyword tracking and
+            search visibility tools to dominate search results and grow revenue.
           </p>
           <div className="flex flex-wrap items-center gap-6 pb-8 border-b border-gray-200 dark:border-gray-800 text-sm text-gray-500 dark:text-gray-400">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-950 flex items-center justify-center text-orange-600 font-bold">VS</div>
+              <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-950 flex items-center justify-center text-orange-600 font-bold">
+                VS
+              </div>
               <div>
-                <div className="text-gray-900 dark:text-gray-100 font-bold hover:text-orange-500 transition-colors cursor-pointer" onClick={() => router.push("/author/vikrant-singh")}>Vikrant Singh</div>
+                <div
+                  className="text-gray-900 dark:text-gray-100 font-bold hover:text-orange-500 transition-colors cursor-pointer"
+                  onClick={() => router.push("/author/vikrant-singh")}
+                >
+                  Vikrant Singh
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              <span>Published: <strong className="text-gray-700 dark:text-gray-300">Jan 20, 2026</strong></span>
+              <span>
+                Published:{" "}
+                <strong className="text-gray-700 dark:text-gray-300">
+                  Jan 20, 2026
+                </strong>
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
-              <strong className="text-gray-700 dark:text-gray-300">14 min read</strong>
+              <strong className="text-gray-700 dark:text-gray-300">
+                14 min read
+              </strong>
             </div>
           </div>
-          <div className="stat-strip" style={{ marginBottom:2 }}>
-          {[
-            ["35%",  "Algorithm weight on keywords"],
-            ["28%",  "Weight on attribute completeness"],
-            ["₹1,999",   "Starting price for professional tools"],
-            ["100%", "India-focused data sources"],
-          ].map(([num, lbl]) => (
-            <div className="stat-item" key={num}>
-            <span
-              className="block bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent font-black leading-none"
-              style={{fontSize: "clamp(20px,4vw,26px)", fontFamily: "'Sora',sans-serif" }}>{num}</span>
+          <div className="stat-strip" style={{ marginBottom: 2 }}>
+            {[
+              ["35%", "Algorithm weight on keywords"],
+              ["28%", "Weight on attribute completeness"],
+              ["₹1,999", "Starting price for professional tools"],
+              ["100%", "India-focused data sources"],
+            ].map(([num, lbl]) => (
+              <div className="stat-item" key={num}>
+                <span
+                  className="block bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent font-black leading-none"
+                  style={{
+                    fontSize: "clamp(20px,4vw,26px)",
+                    fontFamily: "'Sora',sans-serif",
+                  }}
+                >
+                  {num}
+                </span>
 
-            <span style={{display: "block", fontSize: "clamp(10px,2vw,11.5px)", color: "#64748B", marginTop: 4, lineHeight: 1.4, fontWeight: 500, fontFamily: "'Sora',sans-serif" }} >{lbl}</span>
+                <span
+                  style={{
+                    display: "block",
+                    fontSize: "clamp(10px,2vw,11.5px)",
+                    color: "#64748B",
+                    marginTop: 4,
+                    lineHeight: 1.4,
+                    fontWeight: 500,
+                    fontFamily: "'Sora',sans-serif",
+                  }}
+                >
+                  {lbl}
+                </span>
+              </div>
+            ))}
           </div>
-          ))}
         </div>
-        </div>
-        <div className="border-gray-200 dark:border-gray-800 py-2">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <ArticleImg
-              src="/01_hero_banner.png"
-              alt="Flipkart Keyword Research Tool dashboard showing search volume, keyword ranking, and AI-powered SEO suggestions."
-              caption="The Insydz Flipkart Keyword Tool: Real-time search volume and organic rank tracking for Indian sellers."
-            />
-          </div>
+        <div
+          style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 16px 0" }}
+        >
+          <BlogImageSection
+            imageSrc="/Flipkart Keyword Research Tool.png"
+            altText="Flipkart Keyword Research Tool dashboard showing search volume, keyword ranking, and AI-powered SEO suggestions."
+            caption="The Insydz Flipkart Keyword Tool: Real-time search volume and organic rank tracking for Indian sellers."
+          />
         </div>
       </section>
 
       {/* ══ ARTICLE LAYOUT ══ */}
       <main className="article-layout">
         <aside className="toc-sidebar">
-          <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Table of Contents</div>
+          <div className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
+            Table of Contents
+          </div>
           <nav className="space-y-1">
-            {TOC.map(item => (
+            {TOC.map((item) => (
               <button
                 key={item.id}
                 onClick={() => go(item.id)}
@@ -484,23 +781,21 @@ export default function FlipkartKeywordContent() {
               </button>
             ))}
           </nav>
-          <div className="mt-8 pt-8 border-gray-100 dark:border-gray-800">
-            <div className="bg-orange-50 dark:bg-orange-950/30 rounded-xl p-5 border border-orange-100 dark:border-orange-900/50">
-              <h5 className="font-bold text-orange-700 dark:text-orange-400 text-sm mb-2">Free SEO Audit</h5>
-              <p className="text-xs text-orange-600 dark:text-orange-500/80 leading-relaxed mb-4">Check your Flipkart rank for any keyword instantly with our free tool.</p>
-              <button onClick={() => router.push("/free-tools/free-keyword-rank-checker")} className="w-full bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold py-2 rounded-lg transition-colors">Audit My Listing</button>
-            </div>
-          </div>
         </aside>
 
         <article className="article-body">
-          <button className="mobile-toc-btn" onClick={() => setTocOpen(!tocOpen)}>
+          <button
+            className="mobile-toc-btn"
+            onClick={() => setTocOpen(!tocOpen)}
+          >
             <span>Table of Contents</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${tocOpen ? "rotate-180" : ""}`} />
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${tocOpen ? "rotate-180" : ""}`}
+            />
           </button>
           <div className={`mobile-toc-panel ${tocOpen ? "open" : ""}`}>
             <nav className="space-y-2">
-              {TOC.map(item => (
+              {TOC.map((item) => (
                 <button
                   key={item.id}
                   onClick={() => go(item.id)}
@@ -512,28 +807,51 @@ export default function FlipkartKeywordContent() {
             </nav>
           </div>
 
-          <p className="lead" style={{ fontSize: "1.2em", color: "#4b5563", marginBottom: 32 }}>
-            Most Flipkart sellers operate in the dark. They choose keywords based on intuition, list their products, and wonder why their daily orders are stuck in single digits while competitors are clearing thousands of units. The difference isn't always product quality — it's <strong>discoverability</strong>.
+          <p
+            className="lead"
+            style={{ fontSize: "1.2em", color: "#4b5563", marginBottom: 32 }}
+          >
+            Most Flipkart sellers operate in the dark. They choose keywords
+            based on intuition, list their products, and wonder why their daily
+            orders are stuck in single digits while competitors are clearing
+            thousands of units. The difference isn't always product quality —
+            it's <strong>discoverability</strong>.
           </p>
 
           <h2 id="s1">Why Flipkart Keywords are the Lifeblood of Your Sales</h2>
           <p>
-            Flipkart is no longer a simple search engine; it's a sophisticated <strong>Product Discovery Platform</strong>. With over 150 million active shoppers, the competition for the top 5 spots is brutal. If you aren't ranking on page 1 for your primary keywords, you are effectively invisible.
+            Flipkart is no longer a simple search engine; it's a sophisticated{" "}
+            <strong>Product Discovery Platform</strong>. With over 150 million
+            active shoppers, the competition for the top 5 spots is brutal. If
+            you aren't ranking on page 1 for your primary keywords, you are
+            effectively invisible.
           </p>
           <p>
-            Unlike Amazon, where SEO is heavily weighted towards sales velocity, Flipkart's search algorithm — often referred to as the <strong>Product Discovery AI</strong> — places massive importance on how well your listing matches the specific linguistic and attribute-based search patterns of Indian buyers.
+            Unlike Amazon, where SEO is heavily weighted towards sales velocity,
+            Flipkart's search algorithm — often referred to as the{" "}
+            <strong>Product Discovery AI</strong> — places massive importance on
+            how well your listing matches the specific linguistic and
+            attribute-based search patterns of Indian buyers.
           </p>
 
           <div className="callout warn">
-            <div className="callout-label"><Zap className="w-4 h-4" /> The "Hidden" SEO Cost</div>
+            <div className="callout-label">
+              <Zap className="w-4 h-4" /> The "Hidden" SEO Cost
+            </div>
             <div className="callout-text">
-              Running Flipkart Ads (PLA) without organic SEO is a "money leak." If your listing isn't organically relevant to a keyword, your Ad rank will be lower and your Cost Per Click (CPC) will be significantly higher than a competitor whose listing is SEO-optimised.
+              Running Flipkart Ads (PLA) without organic SEO is a "money leak."
+              If your listing isn't organically relevant to a keyword, your Ad
+              rank will be lower and your Cost Per Click (CPC) will be
+              significantly higher than a competitor whose listing is
+              SEO-optimised.
             </div>
           </div>
 
           <h2 id="s2">Flipkart Algorithm Unpacked: The 2026 Ranking Signals</h2>
           <p>
-            To win on Flipkart, you must understand what the algorithm wants. Based on our data at Insydz, we've mapped the primary signals that determine your organic position:
+            To win on Flipkart, you must understand what the algorithm wants.
+            Based on our data at Insydz, we've mapped the primary signals that
+            determine your organic position:
           </p>
 
           <div className="dt-wrap">
@@ -548,22 +866,30 @@ export default function FlipkartKeywordContent() {
               <tbody>
                 <tr>
                   <td>Keyword Relevance</td>
-                  <td><span className="bg">35%</span></td>
+                  <td>
+                    <span className="bg">35%</span>
+                  </td>
                   <td>Title, Search Terms, Product Highlights</td>
                 </tr>
                 <tr>
                   <td>Attribute Completeness</td>
-                  <td><span className="bo">28%</span></td>
+                  <td>
+                    <span className="bo">28%</span>
+                  </td>
                   <td>Specific Attributes (Material, Size, Occasion)</td>
                 </tr>
                 <tr>
                   <td>Seller Performance</td>
-                  <td><span className="br">22%</span></td>
+                  <td>
+                    <span className="br">22%</span>
+                  </td>
                   <td>RTD (Ready to Dispatch), Returns, Ratings</td>
                 </tr>
                 <tr>
                   <td>Buyer Engagement</td>
-                  <td><span className="bb">15%</span></td>
+                  <td>
+                    <span className="bb">15%</span>
+                  </td>
                   <td>Click-Through Rate (CTR) and Conversion (CVR)</td>
                 </tr>
               </tbody>
@@ -572,38 +898,78 @@ export default function FlipkartKeywordContent() {
 
           <h2 id="s3">The Secret Weapon: Attribute-Based SEO</h2>
           <p>
-            Flipkart buyers rely heavily on filters. If you are selling "Cotton T-shirts" but haven't filled in the <strong>"Neck Type"</strong> or <strong>"Sleeve Length"</strong> attribute fields, your product will vanish the moment a buyer clicks the "Round Neck" or "Full Sleeve" filter — even if your product is exactly what they want.
+            Flipkart buyers rely heavily on filters. If you are selling "Cotton
+            T-shirts" but haven't filled in the <strong>"Neck Type"</strong> or{" "}
+            <strong>"Sleeve Length"</strong> attribute fields, your product will
+            vanish the moment a buyer clicks the "Round Neck" or "Full Sleeve"
+            filter — even if your product is exactly what they want.
           </p>
           <p>
-            A professional <strong>Flipkart Keyword Research Tool</strong> doesn't just give you words; it tells you which attributes are being searched for. Indian buyers often search for "Material + Product" (e.g., <em>Pure Cotton Kurtis</em>) or "Occasion + Product" (e.g., <em>Diwali Decoration Lights</em>).
+            A professional <strong>Flipkart Keyword Research Tool</strong>{" "}
+            doesn't just give you words; it tells you which attributes are being
+            searched for. Indian buyers often search for "Material + Product"
+            (e.g., <em>Pure Cotton Kurtis</em>) or "Occasion + Product" (e.g.,{" "}
+            <em>Diwali Decoration Lights</em>).
           </p>
 
           <div className="inline-cta">
             <div>
               <h4>Dominate Flipkart Search Results</h4>
-              <p>Stop guessing. Start using real Flipkart keyword data today.</p>
+              <p>
+                Stop guessing. Start using real Flipkart keyword data today.
+              </p>
             </div>
-            <button onClick={() => router.push("/login")} className="bg-white text-gray-900 font-bold px-8 py-3 rounded-xl hover:bg-gray-100 transition-colors shadow-xl">Get Started Free</button>
+            <button
+              onClick={() => router.push("/login")}
+              className="bg-white text-gray-900 font-bold px-8 py-3 rounded-xl hover:bg-gray-100 transition-colors shadow-xl"
+            >
+              Get Started Free
+            </button>
           </div>
 
           <h2 id="s4">The Problem with "Global" Tools</h2>
           <p>
-            Most ecommerce tools (like Helium 10 or Jungle Scout) were built for the US market. They have zero visibility into Flipkart's unique search ecosystem. Using Amazon US keyword data to optimize a Flipkart India listing is like using a map of New York to navigate New Delhi — you'll end up in the wrong place.
+            Most ecommerce tools (like Helium 10 or Jungle Scout) were built for
+            the US market. They have zero visibility into Flipkart's unique
+            search ecosystem. Using Amazon US keyword data to optimize a
+            Flipkart India listing is like using a map of New York to navigate
+            New Delhi — you'll end up in the wrong place.
           </p>
           <p>
-            Insydz is the first platform to provide <strong>Flipkart-specific rank tracking</strong>. We monitor your organic position across thousands of pincodes in India to give you a true picture of your visibility.
+            Insydz is the first platform to provide{" "}
+            <strong>Flipkart-specific rank tracking</strong>. We monitor your
+            organic position across thousands of pincodes in India to give you a
+            true picture of your visibility.
           </p>
 
           <h2 id="s5">Big Billion Days (BBD) SEO Strategy</h2>
           <p>
-            Winning the Big Billion Days starts two months before the sale. Flipkart's algorithm begins "pre-ranking" category pages based on historical relevance and performance.
+            Winning the Big Billion Days starts two months before the sale.
+            Flipkart's algorithm begins "pre-ranking" category pages based on
+            historical relevance and performance.
           </p>
 
           <div className="metrics-grid">
-            <div className="metric-card"><span className="metric-num">6-8wks</span><span className="metric-lbl">Lead time for BBD SEO</span></div>
-            <div className="metric-card"><span className="metric-num">2.4x</span><span className="metric-lbl">Avg CTR boost for F-Assured</span></div>
-            <div className="metric-card"><span className="metric-num">18%</span><span className="metric-lbl">Higher conversion for attribute-rich listings</span></div>
-            <div className="metric-card"><span className="metric-num">4-5h</span><span className="metric-lbl">Daily time saved with automation</span></div>
+            <div className="metric-card">
+              <span className="metric-num">6-8wks</span>
+              <span className="metric-lbl">Lead time for BBD SEO</span>
+            </div>
+            <div className="metric-card">
+              <span className="metric-num">2.4x</span>
+              <span className="metric-lbl">Avg CTR boost for F-Assured</span>
+            </div>
+            <div className="metric-card">
+              <span className="metric-num">18%</span>
+              <span className="metric-lbl">
+                Higher conversion for attribute-rich listings
+              </span>
+            </div>
+            <div className="metric-card">
+              <span className="metric-num">4-5h</span>
+              <span className="metric-lbl">
+                Daily time saved with automation
+              </span>
+            </div>
           </div>
 
           <h2 id="s6">Your Weekly Flipkart Growth Checklist</h2>
@@ -611,21 +977,34 @@ export default function FlipkartKeywordContent() {
             <div className="step-num">1</div>
             <div className="step-content">
               <h4>Monitor Top 10 Keywords</h4>
-              <p>Check your organic rank daily for your highest-converting terms. A drop from pos #2 to #8 can cost you 40% of your daily sales.</p>
+              <p>
+                Check your organic rank daily for your highest-converting terms.
+                A drop from pos #2 to #8 can cost you 40% of your daily sales.
+              </p>
             </div>
           </div>
           <div className="step">
             <div className="step-num">2</div>
             <div className="step-content">
               <h4>Analyze Competitor Listings</h4>
-              <p>Use the <InLink to="/features/competitor-price-tracking-feature">Flipkart competitor price tracker</InLink> to see when rivals change their titles or attributes to capture new trends.</p>
+              <p>
+                Use the{" "}
+                <InLink to="/features/competitor-price-tracking-feature">
+                  Flipkart competitor price tracker
+                </InLink>{" "}
+                to see when rivals change their titles or attributes to capture
+                new trends.
+              </p>
             </div>
           </div>
           <div className="step">
             <div className="step-num">3</div>
             <div className="step-content">
               <h4>Audit Attribute Gaps</h4>
-              <p>Flipkart frequently adds new attribute fields to categories. Ensure your listings are 100% complete every Friday.</p>
+              <p>
+                Flipkart frequently adds new attribute fields to categories.
+                Ensure your listings are 100% complete every Friday.
+              </p>
             </div>
           </div>
 
@@ -637,7 +1016,7 @@ export default function FlipkartKeywordContent() {
               "Attributes are the 'silent' ranking factor — fill every single field.",
               "Local context matters — Indian buyers search differently than US buyers.",
               "F-Assured status and RTD performance are critical for SEO visibility.",
-              "BBD success is built on SEO ground-work done months in advance."
+              "BBD success is built on SEO ground-work done months in advance.",
             ].map((text, i) => (
               <div className="takeaway-item" key={i}>
                 <div className="takeaway-dot">✓</div>
@@ -649,10 +1028,18 @@ export default function FlipkartKeywordContent() {
           <h2 id="s8">Frequently Asked Questions</h2>
           <div className="faq-wrap">
             {FAQS.map((faq, i) => (
-              <div key={i} className={`faq-item ${openFaq === i ? "open" : ""}`}>
-                <div className="faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+              <div
+                key={i}
+                className={`faq-item ${openFaq === i ? "open" : ""}`}
+              >
+                <div
+                  className="faq-q"
+                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                >
                   <span>{faq.q}</span>
-                  <div className={`faq-icon ${openFaq === i ? "open" : ""}`}>+</div>
+                  <div className={`faq-icon ${openFaq === i ? "open" : ""}`}>
+                    +
+                  </div>
                 </div>
                 {openFaq === i && <div className="faq-a">{faq.a}</div>}
               </div>
@@ -660,34 +1047,80 @@ export default function FlipkartKeywordContent() {
           </div>
 
           <div className="final-cta-block rounded-3xl text-white">
-            <h3 className="text-3xl font-extrabold mb-4">Start Dominating Flipkart Today</h3>
-            <p className="text-blue-100 mb-8 max-w-xl mx-auto">Join thousands of Indian sellers using Insydz to track ranks, find keywords, and grow their marketplace revenue.</p>
+            <h3 className="text-3xl font-extrabold mb-4">
+              Start Dominating Flipkart Today
+            </h3>
+            <p className="text-blue-100 mb-8 max-w-xl mx-auto">
+              Join thousands of Indian sellers using Insydz to track ranks, find
+              keywords, and grow their marketplace revenue.
+            </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button onClick={() => router.push("/login")} className="bg-white text-blue-600 font-bold px-10 py-4 rounded-xl shadow-xl hover:bg-gray-100 transition-all">Get Started Free</button>
-              <button onClick={() => router.push("/pricing")} className="bg-blue-700 text-white font-bold px-10 py-4 rounded-xl border border-blue-500 hover:bg-blue-800 transition-all">View Pricing</button>
+              <button
+                onClick={() => router.push("/login")}
+                className="bg-white text-blue-600 font-bold px-10 py-4 rounded-xl shadow-xl hover:bg-gray-100 transition-all"
+              >
+                Get Started Free
+              </button>
+              <button
+                onClick={() => router.push("/pricing")}
+                className="bg-blue-700 text-white font-bold px-10 py-4 rounded-xl border border-blue-500 hover:bg-blue-800 transition-all"
+              >
+                View Pricing
+              </button>
             </div>
           </div>
 
           <div className="related-grid">
-            <div className="related-card" onClick={() => router.push("/resources/expert-blog/amazon-seo-tool-india")}>
-              <div className="related-thumb"><Search className="text-orange-500 w-12 h-12" /></div>
+            <div
+              className="related-card"
+              onClick={() =>
+                router.push("/resources/expert-blog/amazon-seo-tool-india")
+              }
+            >
+              <div className="related-thumb">
+                <Search className="text-orange-500 w-12 h-12" />
+              </div>
               <div className="related-body">
                 <div className="related-tag">SEO Guide</div>
-                <div className="related-title">Amazon SEO Tool India: Rank Tracking Guide</div>
+                <div className="related-title">
+                  Amazon SEO Tool India: Rank Tracking Guide
+                </div>
               </div>
             </div>
-            <div className="related-card" onClick={() => router.push("/resources/expert-blog/amazon-vs-flipkart-india-seller")}>
-              <div className="related-thumb"><Store className="text-purple-500 w-12 h-12" /></div>
+            <div
+              className="related-card"
+              onClick={() =>
+                router.push(
+                  "/resources/expert-blog/amazon-vs-flipkart-india-seller",
+                )
+              }
+            >
+              <div className="related-thumb">
+                <Store className="text-purple-500 w-12 h-12" />
+              </div>
               <div className="related-body">
                 <div className="related-tag">Marketplace</div>
-                <div className="related-title">Amazon vs Flipkart: Which is Better for Sellers?</div>
+                <div className="related-title">
+                  Amazon vs Flipkart: Which is Better for Sellers?
+                </div>
               </div>
             </div>
-            <div className="related-card" onClick={() => router.push("/resources/expert-blog/manual-vs-automated-competitor-tracking-tool")}>
-              <div className="related-thumb"><Zap className="text-blue-500 w-12 h-12" /></div>
+            <div
+              className="related-card"
+              onClick={() =>
+                router.push(
+                  "/resources/expert-blog/manual-vs-automated-competitor-tracking-tool",
+                )
+              }
+            >
+              <div className="related-thumb">
+                <Zap className="text-blue-500 w-12 h-12" />
+              </div>
               <div className="related-body">
                 <div className="related-tag">Strategy</div>
-                <div className="related-title">Manual vs Automated Competitor Tracking</div>
+                <div className="related-title">
+                  Manual vs Automated Competitor Tracking
+                </div>
               </div>
             </div>
           </div>
@@ -698,10 +1131,17 @@ export default function FlipkartKeywordContent() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="col-span-1 md:col-span-1">
             <Link href="/" className="flex items-center space-x-2 mb-6">
-              <img src="/logo.png" alt="Insydz Logo" className="w-10 h-10 object-contain" />
+              <img
+                src="/logo.png"
+                alt="Insydz Logo"
+                className="w-10 h-10 object-contain"
+              />
               <span className="text-xl font-bold text-white">Insydz</span>
             </Link>
-            <p className="text-sm leading-relaxed mb-6">AI-powered ecommerce intelligence for the next generation of marketplace leaders in India.</p>
+            <p className="text-sm leading-relaxed mb-6">
+              AI-powered ecommerce intelligence for the next generation of
+              marketplace leaders in India.
+            </p>
             <div className="flex space-x-4">
               <Facebook className="w-5 h-5 cursor-pointer hover:text-orange-500 transition-colors" />
               <Twitter className="w-5 h-5 cursor-pointer hover:text-orange-500 transition-colors" />
@@ -710,23 +1150,71 @@ export default function FlipkartKeywordContent() {
             </div>
           </div>
           <div>
-            <h4 className="text-white font-bold mb-6 uppercase text-xs tracking-widest">Solutions</h4>
+            <h4 className="text-white font-bold mb-6 uppercase text-xs tracking-widest">
+              Solutions
+            </h4>
             <ul className="space-y-4 text-sm">
-              <li><Link href="/solutions/amazon-sellers" className="hover:text-orange-500 transition-colors">Amazon Sellers</Link></li>
-              <li><Link href="/solutions/flipkart-sellers" className="hover:text-orange-500 transition-colors">Flipkart Sellers</Link></li>
-              <li><Link href="/solutions/ecommerce-agencies" className="hover:text-orange-500 transition-colors">E-commerce Agencies</Link></li>
+              <li>
+                <Link
+                  href="/solutions/amazon-sellers"
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  Amazon Sellers
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/solutions/flipkart-sellers"
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  Flipkart Sellers
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/solutions/ecommerce-agencies"
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  E-commerce Agencies
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-bold mb-6 uppercase text-xs tracking-widest">Resources</h4>
+            <h4 className="text-white font-bold mb-6 uppercase text-xs tracking-widest">
+              Resources
+            </h4>
             <ul className="space-y-4 text-sm">
-              <li><Link href="/resources/expert-blog" className="hover:text-orange-500 transition-colors">Expert Blog</Link></li>
-              <li><Link href="/free-tools" className="hover:text-orange-500 transition-colors">Free Tools</Link></li>
-              <li><Link href="/pricing" className="hover:text-orange-500 transition-colors">Pricing</Link></li>
+              <li>
+                <Link
+                  href="/resources/expert-blog"
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  Expert Blog
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/free-tools"
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  Free Tools
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/pricing"
+                  className="hover:text-orange-500 transition-colors"
+                >
+                  Pricing
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-bold mb-6 uppercase text-xs tracking-widest">Contact</h4>
+            <h4 className="text-white font-bold mb-6 uppercase text-xs tracking-widest">
+              Contact
+            </h4>
             <ul className="space-y-4 text-sm">
               <li>support@insydz.com</li>
               <li>Mumbai, India</li>
@@ -734,7 +1222,9 @@ export default function FlipkartKeywordContent() {
           </div>
         </div>
         <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-gray-800 text-center text-xs">
-          <p>© 2026 Insydz (A brand of AFI Digital Lab). All rights reserved.</p>
+          <p>
+            © 2026 Insydz (A brand of AFI Digital Lab). All rights reserved.
+          </p>
         </div>
       </footer>
     </div>

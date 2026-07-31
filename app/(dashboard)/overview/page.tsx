@@ -49,8 +49,8 @@ export default function Overview() {
           onChange={(e) => setSource(e.target.value as "flipkart" | "amazon" | "all")}
           className="border border-border rounded-lg px-3 py-2 text-sm bg-background focus:ring-2 focus:ring-primary"
         >
-          <option value="flipkart">Flipkart</option>
-          <option value="amazon">Amazon</option>
+          <option value="flipkart">Flipkart India</option>
+          <option value="amazon">Amazon India</option>
           <option value="all">All</option>
         </select>
       </div>

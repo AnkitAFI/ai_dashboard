@@ -136,9 +136,15 @@ function SuggestionChip({ text, onClick }: { text: string; onClick: () => void }
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-350 hover:border-sky-300 dark:hover:border-slate-800 hover:bg-sky-50 dark:hover:bg-slate-900 hover:text-sky-700 dark:hover:text-sky-400 transition-all text-left"
+      className="group flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-medium text-left transition-all duration-200
+        bg-white/60 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/60
+        hover:border-sky-400/60 dark:hover:border-sky-500/50 hover:bg-sky-50/80 dark:hover:bg-sky-950/30
+        hover:text-sky-700 dark:hover:text-sky-300 hover:shadow-sm
+        text-slate-600 dark:text-slate-400 backdrop-blur-sm"
     >
-      <ChevronRight className="w-3 h-3 shrink-0 text-slate-400 dark:text-slate-505" />
+      <span className="w-5 h-5 rounded-lg bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center shrink-0 shadow-sm group-hover:shadow-sky-200 dark:group-hover:shadow-sky-900 transition-shadow">
+        <ChevronRight className="w-3 h-3 text-white" />
+      </span>
       {text}
     </button>
   );
@@ -158,29 +164,34 @@ function MessageBubble({
 
   if (isUser) {
     return (
-      <div className="flex items-end justify-end gap-2">
-        <div className="max-w-[75%] bg-sky-600 dark:bg-sky-750 text-white rounded-2xl rounded-br-md px-4 py-3 text-sm leading-relaxed shadow-sm">
+      <div className="flex items-end justify-end gap-2.5">
+        <div className="max-w-[78%] bg-gradient-to-br from-sky-500 to-blue-600 text-white rounded-2xl rounded-br-sm px-4 py-3 text-sm leading-relaxed shadow-md shadow-sky-200/50 dark:shadow-sky-900/30">
           {message.content}
         </div>
-        <div className="w-7 h-7 rounded-full bg-sky-100 dark:bg-sky-950/40 flex items-center justify-center flex-shrink-0 mb-1">
-          <User className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" />
+        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-sky-100 to-blue-100 dark:from-sky-950/60 dark:to-blue-950/60 border border-sky-200/60 dark:border-sky-800/40 flex items-center justify-center flex-shrink-0 mb-1 shadow-sm">
+          <User className="w-4 h-4 text-sky-600 dark:text-sky-400" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex items-end gap-2">
-      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center flex-shrink-0 mb-1 shadow-sm">
-        <Bot className="w-3.5 h-3.5 text-white" />
+    <div className="flex items-end gap-2.5">
+      {/* AI orb avatar */}
+      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 via-cyan-400 to-emerald-400 flex items-center justify-center flex-shrink-0 mb-1 shadow-md shadow-blue-200/60 dark:shadow-blue-900/40 ring-2 ring-white/80 dark:ring-slate-900/80">
+        <Bot className="w-4 h-4 text-white" />
       </div>
-      <div className="max-w-[80%] group">
-        <div className={`bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl rounded-bl-md px-4 py-3 shadow-sm ${message.loading ? "min-w-[80px]" : ""}`}>
+      <div className="max-w-[82%] group">
+        <div className={cn(
+          "rounded-2xl rounded-bl-sm px-4 py-3 shadow-sm",
+          "bg-white dark:bg-slate-800/80 border border-slate-100/80 dark:border-slate-700/60 backdrop-blur-sm",
+          message.loading ? "min-w-[72px]" : ""
+        )}>
           {message.loading ? (
-            <div className="flex items-center gap-1.5 py-0.5">
-              <span className="w-2 h-2 bg-slate-300 dark:bg-slate-700 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-              <span className="w-2 h-2 bg-slate-300 dark:bg-slate-700 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-              <span className="w-2 h-2 bg-slate-300 dark:bg-slate-700 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+            <div className="flex items-center gap-1.5 py-1">
+              <span className="w-2 h-2 bg-sky-300 dark:bg-sky-600 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="w-2 h-2 bg-blue-300 dark:bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="w-2 h-2 bg-cyan-300 dark:bg-cyan-600 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
           ) : (
             <div className="prose prose-sm dark:prose-invert max-w-none text-slate-800 dark:text-slate-200 leading-relaxed text-sm
@@ -192,26 +203,26 @@ function MessageBubble({
             </div>
           )}
         </div>
-        {/* Actions — only for non-loading assistant messages */}
+        {/* Actions */}
         {!message.loading && (
           <div className="flex items-center gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={() => onCopy(message.content)}
-              className="p-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/60 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
               title="Copy"
             >
               <Copy className="w-3 h-3" />
             </button>
             <button
               onClick={() => onFeedback(message.id, "up")}
-              className="p-1 rounded-md hover:bg-emerald-50 dark:hover:bg-emerald-950/20 text-slate-400 dark:text-slate-505 hover:text-emerald-600 dark:hover:text-emerald-450 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
               title="Helpful"
             >
               <ThumbsUp className="w-3 h-3" />
             </button>
             <button
               onClick={() => onFeedback(message.id, "down")}
-              className="p-1 rounded-md hover:bg-red-50 dark:hover:bg-red-950/20 text-slate-400 dark:text-slate-505 hover:text-red-500 dark:hover:text-red-400 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"
               title="Not helpful"
             >
               <ThumbsDown className="w-3 h-3" />
@@ -234,36 +245,53 @@ function ContextPanel({ context, selectedAsin, onSelectProduct, t }: {
 
   return (
     <div className="w-64 shrink-0 space-y-3 hidden lg:block">
-      {/* Store summary */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4">
-        <p className="text-xs font-bold text-slate-505 dark:text-slate-400 uppercase tracking-wide mb-3">{t('sellerPages.yourStore', 'YOUR STORE')}</p>
-        <div className="space-y-2">
-          {[
-            { label: t('sellerPages.products', "Products"), value: String(context.total_products), icon: Package, color: "text-sky-600 dark:text-sky-400" },
-            { label: t('sellerPages.avgRating', "Avg Rating"), value: `${context.avg_rating?.toFixed(1) || "—"}★`, icon: Star, color: "text-amber-500 dark:text-amber-400" },
-          ].map((s) => (
-            <div key={s.label} className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
-                <s.icon className="w-3 h-3" />
-                {s.label}
-              </div>
-              <span className={`text-xs font-bold ${s.color}`}>{s.value}</span>
+      {/* Store summary card */}
+      <div className="relative overflow-hidden rounded-2xl border border-slate-200/60 dark:border-slate-700/40 shadow-sm">
+        {/* Gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-sky-50 via-blue-50/50 to-white dark:from-slate-800 dark:via-slate-800/80 dark:to-slate-900" />
+        <div className="relative p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center shadow-sm">
+              <BarChart2 className="w-3.5 h-3.5 text-white" />
             </div>
-          ))}
+            <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('sellerPages.yourStore', 'YOUR STORE')}</p>
+          </div>
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                <Package className="w-3 h-3" />
+                {t('sellerPages.products', "Products")}
+              </div>
+              <span className="text-sm font-black text-sky-600 dark:text-sky-400">{context.total_products}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+                <Star className="w-3 h-3" />
+                {t('sellerPages.avgRating', "Avg Rating")}
+              </div>
+              <span className="text-sm font-black text-amber-500">{context.avg_rating?.toFixed(1) || "—"}★</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Product selector */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm p-4">
-        <p className="text-xs font-bold text-slate-505 dark:text-slate-400 uppercase tracking-wide mb-3">Ask about a product</p>
-        <div className="space-y-1.5 max-h-72 overflow-y-auto">
+      <div className="bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-slate-200/60 dark:border-slate-700/40 shadow-sm p-4 backdrop-blur-sm">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center shadow-sm">
+            <MessageSquare className="w-3.5 h-3.5 text-white" />
+          </div>
+          <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Ask about a product</p>
+        </div>
+        <div className="space-y-1 max-h-64 overflow-y-auto pr-1 scrollbar-thin">
           <button
             onClick={() => onSelectProduct("", "All products")}
-            className={`w-full text-left px-2.5 py-2 rounded-xl text-xs transition-all ${
+            className={cn(
+              "w-full text-left px-3 py-2 rounded-xl text-xs transition-all",
               selectedAsin === ""
-                ? "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 font-bold border border-sky-200 dark:border-sky-900"
-                : "text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent"
-            }`}
+                ? "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 font-bold border border-sky-200 dark:border-sky-800/60 shadow-sm"
+                : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 border border-transparent"
+            )}
           >
             All products
           </button>
@@ -271,28 +299,32 @@ function ContextPanel({ context, selectedAsin, onSelectProduct, t }: {
             <button
               key={`${p.asin}-${i}`}
               onClick={() => onSelectProduct(p.asin, p.title)}
-              className={`w-full text-left px-2.5 py-2 rounded-xl text-xs transition-all ${
+              className={cn(
+                "w-full text-left px-3 py-2 rounded-xl text-xs transition-all",
                 selectedAsin === p.asin
-                  ? "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 font-bold border border-sky-200 dark:border-sky-900"
-                  : "text-slate-600 dark:text-slate-350 hover:bg-slate-50 dark:hover:bg-slate-800 border border-transparent"
-              }`}
+                  ? "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-400 font-bold border border-sky-200 dark:border-sky-800/60 shadow-sm"
+                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 border border-transparent"
+              )}
             >
               <span className="line-clamp-2 leading-relaxed">{p.title}</span>
-              <span className="text-[10px] text-slate-400 dark:text-slate-550 font-mono mt-0.5 block">{p.asin}</span>
+              <span className="text-[10px] text-slate-400 dark:text-slate-500 font-mono mt-0.5 block">{p.asin}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Tips */}
-      <div className="bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900/50 rounded-2xl p-4">
-        <p className="text-xs font-bold text-sky-800 dark:text-sky-400 flex items-center gap-1.5 mb-2">
-          <Lightbulb className="w-3.5 h-3.5" /> {t('sellerPages.tips', 'Tips')}
-        </p>
-        <div className="space-y-1.5 text-[11px] text-sky-700 dark:text-sky-450">
-          <p>• {t('sellerPages.tip1', 'Select a product to ask specific questions')}</p>
-          <p>• {t('sellerPages.tip2', 'Ask about pricing, reviews, or keywords')}</p>
-          <p>• {t('sellerPages.tip3', 'Compare your performance vs competitors')}</p>
+      {/* Tips card */}
+      <div className="relative overflow-hidden rounded-2xl border border-amber-200/60 dark:border-amber-800/30 shadow-sm">
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-50 to-orange-50/60 dark:from-amber-950/30 dark:to-orange-950/20" />
+        <div className="relative p-4">
+          <p className="text-xs font-bold text-amber-700 dark:text-amber-400 flex items-center gap-1.5 mb-2.5">
+            <Lightbulb className="w-3.5 h-3.5" /> {t('sellerPages.tips', 'Tips')}
+          </p>
+          <div className="space-y-1.5 text-[11px] text-amber-700/80 dark:text-amber-400/70">
+            <p className="flex items-start gap-1.5"><span className="shrink-0 mt-0.5 w-1 h-1 rounded-full bg-amber-400 dark:bg-amber-600" />• {t('sellerPages.tip1', 'Select a product to ask specific questions')}</p>
+            <p className="flex items-start gap-1.5"><span className="shrink-0 mt-0.5 w-1 h-1 rounded-full bg-amber-400 dark:bg-amber-600" />• {t('sellerPages.tip2', 'Ask about pricing, reviews, or keywords')}</p>
+            <p className="flex items-start gap-1.5"><span className="shrink-0 mt-0.5 w-1 h-1 rounded-full bg-amber-400 dark:bg-amber-600" />• {t('sellerPages.tip3', 'Compare your performance vs competitors')}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -535,20 +567,25 @@ function AIAdvisorContent() {
   return (
     <div className="min-h-screen flex flex-col bg-transparent">
       {/* Header */}
-      <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-sky-100 dark:border-slate-800 shadow-sm px-4 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-20 -mx-4 sm:-mx-6 lg:-mx-8">
+      <header className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60 shadow-sm px-4 sm:px-8 py-4 flex items-center justify-between sticky top-0 z-20 -mx-4 sm:-mx-6 lg:-mx-8">
         <div className="flex items-center gap-3">
           <button onClick={toggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100 dark:hover:bg-slate-800">
             <Menu className="w-5 h-5 text-sky-900 dark:text-sky-100" />
           </button>
-          <div className="w-px h-5 bg-slate-200 dark:bg-slate-800" />
-          <div>
-            <h2 className="text-lg sm:text-xl font-bold text-sky-900 dark:text-sky-100 flex items-center gap-2">
-              <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
-                <Bot className="w-3.5 h-3.5 text-white" />
-              </div>
-              {t('sellerPages.aiAdvisorTitle', 'AI Advisor')}
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">{t('sellerPages.aiAdvisorSubtitle', 'Your personal store intelligence, powered by your data')}</p>
+          <div className="w-px h-5 bg-slate-200 dark:bg-slate-700" />
+          <div className="flex items-center gap-3">
+            {/* Animated AI orb */}
+            <div className="relative w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 via-cyan-400 to-emerald-400 flex items-center justify-center shadow-lg shadow-blue-200/60 dark:shadow-blue-900/40">
+              <Bot className="w-5 h-5 text-white" />
+              <span className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-white dark:border-slate-900 animate-pulse" />
+            </div>
+            <div>
+              <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+                {t('sellerPages.aiAdvisorTitle', 'AI Advisor')}
+                <span className="hidden sm:inline text-xs font-semibold px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-sm">LIVE</span>
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">{t('sellerPages.aiAdvisorSubtitle', 'Your personal store intelligence, powered by your data')}</p>
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -643,8 +680,15 @@ function AIAdvisorContent() {
             {isBasic && (
               <>
                 {/* Messages */}
-                <div className="flex-1 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col" style={{ minHeight: 500, maxHeight: "calc(100vh - 280px)" }}>
-                  <div className="flex-1 overflow-y-auto p-5 space-y-4">
+                <div
+                  className="flex-1 rounded-2xl border border-slate-200/60 dark:border-slate-700/40 shadow-md overflow-hidden flex flex-col"
+                  style={{ minHeight: 500, maxHeight: "calc(100vh - 280px)",
+                    background: isDark
+                      ? "linear-gradient(145deg, #0f172a 0%, #111827 60%, #0c1525 100%)"
+                      : "linear-gradient(145deg, #f8fafc 0%, #f0f6ff 60%, #f5f9ff 100%)"
+                  }}
+                >
+                  <div className="flex-1 overflow-y-auto p-5 space-y-5">
                     {messages.map((msg) => (
                       <MessageBubble
                         key={msg.id}
@@ -657,8 +701,8 @@ function AIAdvisorContent() {
                     {/* Starter suggestions */}
                     {showSuggestions && (
                       <div className="pt-2">
-                        <p className="text-xs text-slate-400 dark:text-slate-500 font-semibold mb-2 flex items-center gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5" /> {t('sellerPages.tryAsking', 'Try asking')}
+                        <p className="text-xs text-slate-400 dark:text-slate-500 font-semibold mb-3 flex items-center gap-1.5">
+                          <Sparkles className="w-3.5 h-3.5 text-sky-400" /> {t('sellerPages.tryAsking', 'Try asking')}
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           {suggestions.slice(0, 4).map((s, i) => (
@@ -672,17 +716,17 @@ function AIAdvisorContent() {
                   </div>
 
                   {/* Input */}
-                  <div className="border-t border-slate-100 dark:border-slate-800 p-4">
+                  <div className="border-t border-slate-200/60 dark:border-slate-700/40 p-4 bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm">
                     {/* Selected product context bar */}
                     {selectedAsin && (
-                      <div className="flex items-center gap-2 mb-2 px-1">
-                        <span className="text-[10px] text-sky-600 dark:text-sky-400 font-semibold bg-sky-50 dark:bg-sky-955/45 border border-sky-200 dark:border-sky-900 px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="text-[10px] text-sky-600 dark:text-sky-400 font-semibold bg-sky-50 dark:bg-sky-950/50 border border-sky-200/80 dark:border-sky-800/50 px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
                           <Package className="w-2.5 h-2.5" />
                           Asking about: {selectedTitle ? selectedTitle.substring(0, 40) + "…" : selectedAsin}
                         </span>
                         <button
                           onClick={() => handleSelectProduct("", "")}
-                          className="text-[10px] text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-305"
+                          className="text-[10px] text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                         >
                           × Clear
                         </button>
@@ -690,30 +734,32 @@ function AIAdvisorContent() {
                     )}
 
                     <div className="flex gap-3 items-end">
-                      <textarea
-                        ref={inputRef}
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        placeholder={
-                          selectedAsin
-                            ? `Ask about ${selectedTitle ? selectedTitle.substring(0, 25) + "…" : selectedAsin}…`
-                            : t('sellerPages.askPlaceholder', "Ask anything about your store…")
-                        }
-                        rows={1}
-                        disabled={streaming}
-                        className="flex-1 resize-none bg-slate-50 dark:bg-slate-950/30 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-300 dark:focus:ring-sky-800 focus:border-sky-300 dark:focus:border-sky-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed max-h-32 dark:text-slate-100"
-                        style={{ overflowY: "auto" }}
-                        onInput={(e) => {
-                          const el = e.currentTarget;
-                          el.style.height = "auto";
-                          el.style.height = Math.min(el.scrollHeight, 128) + "px";
-                        }}
-                      />
+                      <div className="flex-1 relative">
+                        <textarea
+                          ref={inputRef}
+                          value={input}
+                          onChange={(e) => setInput(e.target.value)}
+                          onKeyDown={handleKeyDown}
+                          placeholder={
+                            selectedAsin
+                              ? `Ask about ${selectedTitle ? selectedTitle.substring(0, 25) + "…" : selectedAsin}…`
+                              : t('sellerPages.askPlaceholder', "Ask anything about your store…")
+                          }
+                          rows={1}
+                          disabled={streaming}
+                          className="w-full resize-none bg-white dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-600/60 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400/40 dark:focus:ring-sky-700/50 focus:border-sky-400/60 dark:focus:border-sky-600/60 transition-all disabled:opacity-50 disabled:cursor-not-allowed max-h-32 dark:text-slate-100 shadow-sm"
+                          style={{ overflowY: "auto" }}
+                          onInput={(e) => {
+                            const el = e.currentTarget;
+                            el.style.height = "auto";
+                            el.style.height = Math.min(el.scrollHeight, 128) + "px";
+                          }}
+                        />
+                      </div>
                       <button
                         onClick={() => sendMessage(input)}
                         disabled={streaming || !input.trim()}
-                        className="flex items-center gap-1.5 px-4 py-3 bg-sky-600 hover:bg-sky-500 disabled:bg-slate-200 disabled:text-slate-400 dark:disabled:bg-slate-800 dark:disabled:text-slate-600 text-white font-bold rounded-xl transition-all shrink-0 border-none"
+                        className="flex items-center justify-center w-11 h-11 bg-gradient-to-br from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 disabled:from-slate-200 disabled:to-slate-200 dark:disabled:from-slate-700 dark:disabled:to-slate-700 disabled:text-slate-400 dark:disabled:text-slate-500 text-white font-bold rounded-xl transition-all shadow-md shadow-sky-200/50 dark:shadow-sky-900/30 disabled:shadow-none hover:shadow-sky-300/60 hover:scale-105 shrink-0 border-none"
                       >
                         {streaming
                           ? <RefreshCw className="w-4 h-4 animate-spin" />

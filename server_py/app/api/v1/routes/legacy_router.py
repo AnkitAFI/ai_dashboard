@@ -14,7 +14,7 @@ import uvicorn, hashlib
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 from sklearn.preprocessing import MinMaxScaler
-import re, random
+import re, random, html
 import redis
 from urllib.parse import unquote
 from decimal import Decimal
@@ -53,13 +53,15 @@ IS_LOCAL = True
 # app.include_router(payment_router, prefix="/api/payments", tags=["payments"]) # Migrated to main.py
 
 def sanitize_data(data):
-    """Recursively convert Decimal objects to floats for JSON serialization."""
+    """Recursively convert Decimal objects to floats and unescape HTML entities for JSON serialization."""
     if isinstance(data, list):
         return [sanitize_data(v) for v in data]
     if isinstance(data, dict):
         return {k: sanitize_data(v) for k, v in data.items()}
     if isinstance(data, Decimal):
         return float(data)
+    if isinstance(data, str):
+        return html.unescape(data)
     return data
 
 class AIQuery(BaseModel):
@@ -2366,6 +2368,7 @@ def get_top_items(
                 product_url,
                 product_photo,
                 product_price,
+                product_price AS price,
                 product_mrp,
                 product_star_rating AS rating,
                 product_rating_count,
@@ -2373,6 +2376,9 @@ def get_top_items(
                 sales_volume,
                 estimated_sales,
                 stock_status,
+                product_subtitle,
+                product_subtitle AS description,
+                highlights,
                 avg_price,
                 min_price,
                 max_price,
@@ -2394,8 +2400,13 @@ def get_top_items(
                 m = merged[key]
                 m["rating"] = (m["rating"] + row["rating"]) / 2 if row["rating"] else m["rating"]
                 m["product_price"] = (m["product_price"] + row["product_price"]) / 2 if row["product_price"] else m["product_price"]
+                m["price"] = m["product_price"]
                 m["reviews"] = (m["reviews"] or 0) + (row["reviews"] or 0)
+                m["product_subtitle"] = m.get("product_subtitle") or row.get("product_subtitle")
+                m["description"] = m.get("description") or row.get("description")
+                m["highlights"] = m.get("highlights") or row.get("highlights")
             else:
+                row["price"] = row["product_price"]
                 merged[key] = row
         
         top_items = list(merged.values())[:n]
@@ -4013,7 +4024,7 @@ def get_amazon_top_sales(
             SELECT 
                 product_title, category_name, product_url, product_photo,
                 product_price_numeric, product_star_rating_numeric, product_num_ratings,
-                sales_volume, country,
+                sales_volume, country, asin,
                 CASE 
                     WHEN sales_volume LIKE '%M+%' THEN (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000000) / 30
                     WHEN sales_volume LIKE '%K+%' THEN (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000) / 30
@@ -4027,6 +4038,9 @@ def get_amazon_top_sales(
             STRING_AGG(DISTINCT category_name, ', ') as categories,
             MAX(product_url) as product_url,
             MAX(product_photo) as product_photo,
+            MAX(asin) as asin,
+            MAX(asin) as id,
+            ROUND(CAST(MIN(product_price_numeric) AS NUMERIC), 2) as price,
             ROUND(CAST(AVG(product_price_numeric) AS NUMERIC), 2) as avg_price,
             ROUND(CAST(AVG(product_star_rating_numeric) AS NUMERIC), 2) as avg_rating,
             SUM(product_num_ratings) as total_ratings,
@@ -4111,7 +4125,7 @@ def get_flipkart_top_sales_products(
             SELECT 
                 product_title, category_name, product_url, product_photo,
                 product_price, product_mrp, product_star_rating, product_review_count,
-                sales_volume, estimated_sales, brand,
+                sales_volume, estimated_sales, brand, product_subtitle, highlights, pid,
                 CASE 
                     WHEN sales_volume LIKE '%M+%' THEN (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000000) / 30
                     WHEN sales_volume LIKE '%K+%' THEN (CAST(REGEXP_REPLACE(sales_volume, '[^0-9.]', '', 'g') AS FLOAT) * 1000) / 30
@@ -4126,6 +4140,11 @@ def get_flipkart_top_sales_products(
             MAX(product_url) as product_url,
             MAX(product_photo) as product_photo,
             MAX(brand) as brand,
+            MAX(product_subtitle) as product_subtitle,
+            MAX(product_subtitle) as description,
+            MAX(highlights::text) as highlights,
+            MAX(pid) as pid,
+            ROUND(CAST(MIN(product_price) AS NUMERIC), 2) as price,
             ROUND(CAST(AVG(product_price) AS NUMERIC), 2) as avg_price,
             ROUND(CAST(AVG(product_mrp) AS NUMERIC), 2) as avg_mrp,
             ROUND(CAST(AVG(product_star_rating) AS NUMERIC), 2) as avg_rating,
@@ -8056,20 +8075,22 @@ class ProductTrackerRequest(BaseModel):
     product_name: str
     category:     str
     source:       str
-    base_cost:    float
+    base_cost:    Optional[float] = 0.0
     user_email:   Optional[str] = None
- 
+
     @validator("product_name", "category")
     def not_empty(cls, v: str) -> str:
         if not v.strip():
             raise ValueError("must not be blank")
         return v.strip()
- 
-    @validator("base_cost")
-    def positive_cost(cls, v: float) -> float:
-        if v < 0:
-            raise ValueError("base_cost must be >= 0")
-        return v
+
+    @validator("base_cost", pre=True, always=True)
+    def positive_cost(cls, v) -> float:
+        try:
+            val = float(v) if v is not None and v != "" else 0.0
+            return max(0.0, val)
+        except (ValueError, TypeError):
+            return 0.0
  
  
 class PricingInsights(BaseModel):
@@ -9473,9 +9494,19 @@ async def analyze_product_opportunity(
             detail=(f"No products found for '{request_body.product_name}' in '{request_body.category}' "
                     f"on {request_body.source}. Try a simpler product name or different category."),
         )
- 
+
     log.info("products_matched", count=len(similar_products), tier=tier_used.value)
- 
+
+    # If user did not input a cost price (or passed <= 0), estimate from lowest and average market prices
+    if not request_body.base_cost or request_body.base_cost <= 0:
+        prices = [float(p.get("price", 0) or 0) for p in similar_products if p.get("price", 0) > 0]
+        if prices:
+            lowest_p = float(np.min(prices))
+            avg_p = float(np.mean(prices))
+            request_body.base_cost = round((lowest_p + avg_p) / 2.0, 2)
+        else:
+            request_body.base_cost = 500.0
+
     keywords = extract_keywords(request_body.product_name)
  
     # ── Analytics ────────────────────────────────────────────────────────────

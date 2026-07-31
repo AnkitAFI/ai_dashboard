@@ -5,6 +5,7 @@ import logging
 import math
 import os
 import re
+import html
 import threading
 from datetime import datetime, timedelta, timezone
 from typing import AsyncGenerator, Optional
@@ -88,7 +89,7 @@ def _get_user_tier(db: Session, user_email: Optional[str]) -> str:
     if not user_email:
         return "free"
     try:
-        user = db.query(User).filter(User.email == user_email).first()
+        user = db.query(User).filter(User.email == user_email).order_by(User.id.desc()).first()
         if user and user.subscription_tier:
             return user.subscription_tier.lower().strip()
     except Exception as exc:
@@ -549,7 +550,7 @@ def _build_profile_response(
  
     return {
         "asin":               tracked.asin,
-        "product_title":      tracked.product_title or "",
+        "product_title":      html.unescape(tracked.product_title or ""),
         "product_photo":      tracked.product_photo,
         "is_prime":           bool(tracked.is_prime),
         "is_best_seller":     bool(tracked.is_best_seller),
@@ -644,7 +645,7 @@ def get_rank_profile(
     current_user: User        = Depends(get_current_user),
 ) -> dict:
     """Load rank tracker profile for a given ASIN + seller."""
-    tier = _get_user_tier(db, current_user.email)
+    tier = (current_user.subscription_tier or "free").lower().strip()
  
     tracked = (
         db.query(TrackedProduct)
@@ -681,7 +682,7 @@ def add_keyword(
     Triggers an immediate background rank check via RapidAPI.
     Returns updated profile.
     """
-    tier    = _get_user_tier(db, current_user.email)
+    tier    = (current_user.subscription_tier or "free").lower().strip()
     limit   = _keyword_limit(tier)
     keyword = _clean_keyword(body.keyword)
  
@@ -762,7 +763,7 @@ def remove_keyword(
 ) -> dict:
     """Remove a tracked keyword and all its snapshot history."""
     keyword = _clean_keyword(body.keyword)
-    tier    = _get_user_tier(db, current_user.email)
+    tier    = (current_user.subscription_tier or _get_user_tier(db, current_user.email)).lower().strip()
  
     tracked = (
         db.query(TrackedProduct)
@@ -810,7 +811,7 @@ def refresh_ranks(
     Rate-limited to once per REFRESH_COOLDOWN_MINUTES.
     Background thread does the actual checking — returns profile immediately.
     """
-    tier = _get_user_tier(db, current_user.email)
+    tier = (current_user.subscription_tier or _get_user_tier(db, current_user.email)).lower().strip()
  
     tracked = (
         db.query(TrackedProduct)
@@ -949,9 +950,9 @@ async def ai_rank_insight(
     current_user: User = Depends(get_current_user),
 ) -> StreamingResponse:
     """Premium-only SSE endpoint. Streams AI analysis of rank trends."""
-    tier = _get_user_tier(db, current_user.email)
+    tier = (current_user.subscription_tier or _get_user_tier(db, current_user.email)).lower().strip()
  
-    if tier != "premium":
+    if tier not in ("premium", "enterprise"):
         async def _gate() -> AsyncGenerator[str, None]:
             yield f"data: {json.dumps('upgrade_required')}\n\n"
             yield "data: [DONE]\n\n"

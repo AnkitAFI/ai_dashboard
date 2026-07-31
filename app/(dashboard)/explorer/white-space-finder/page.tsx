@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect, Suspense } from "react";
+import { createPortal } from "react-dom";
 import { API_BASE_URL } from "@/lib/config";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import axios from "axios";
@@ -76,6 +77,291 @@ const CHART_STYLE = {
   boxShadow: "0 4px 16px rgba(0,0,0,0.08)",
   fontSize: 12,
   padding: "8px 14px",
+};
+
+const INFO_MODALS: Record<
+  string,
+  { title: string; subtitle: string; content: React.ReactNode }
+> = {
+  "score-distribution": {
+    title: "Score Distribution — Opportunity Tiers",
+    subtitle: "How our algorithm categorizes market viability",
+    content: (
+      <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+        <p>
+          This bar chart groups all discovered product niches from your keyword search into four distinct quality tiers based on our 100-point algorithmic score.
+        </p>
+        <div className="space-y-2.5">
+          <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40">
+            <div className="font-semibold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5 mb-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+              Hot (80–100 points)
+            </div>
+            <p className="text-xs text-emerald-700 dark:text-emerald-400">
+              High buyer demand combined with weak competitor star ratings (&lt;4.0★) or low review counts. These are prime white spaces ripe for immediate entry.
+            </p>
+          </div>
+          <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-900/40">
+            <div className="font-semibold text-blue-800 dark:text-blue-300 flex items-center gap-1.5 mb-1">
+              <span className="w-2 h-2 rounded-full bg-blue-500 inline-block" />
+              Good (65–79 points)
+            </div>
+            <p className="text-xs text-blue-700 dark:text-blue-400">
+              Healthy monthly demand and beatable competition. Highly profitable if you launch with better product quality or improved features.
+            </p>
+          </div>
+          <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40">
+            <div className="font-semibold text-amber-800 dark:text-amber-300 flex items-center gap-1.5 mb-1">
+              <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
+              Moderate (50–64 points)
+            </div>
+            <p className="text-xs text-amber-700 dark:text-amber-400">
+              Competitors are entrenched with solid review counts. You will need aggressive pricing or unique branding to win market share.
+            </p>
+          </div>
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+            <div className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 mb-1">
+              <span className="w-2 h-2 rounded-full bg-slate-400 inline-block" />
+              Skip (&lt;50 points)
+            </div>
+            <p className="text-xs text-slate-600 dark:text-slate-400">
+              Saturated category dominated by major brands or price wars. High risk of ad-spend burnout; recommended to skip.
+            </p>
+          </div>
+        </div>
+        <div className="p-3 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900/40 text-xs text-violet-800 dark:text-violet-300">
+          <strong>Consultant Tip:</strong> Focus your product development on niches in the &quot;Hot&quot; and &quot;Good&quot; tiers to keep customer acquisition costs low and achieve organic page 1 rankings faster.
+        </div>
+      </div>
+    ),
+  },
+  "score-anatomy": {
+    title: "Top Pick Score Anatomy — 4 Opportunity Pillars",
+    subtitle: "Radar analysis of your #1 highest-rated niche",
+    content: (
+      <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+        <p>
+          This radar chart visualizes exactly where your #1 ranked opportunity earns its points across the four foundational pillars of marketplace competition.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div className="font-semibold text-blue-600 dark:text-blue-400 mb-1">
+              1. Rating Gap (up to +32 pts)
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Awarded when average competitor ratings are below 4.1★. Signals unhappy buyers with quality problems you can fix.
+            </p>
+          </div>
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div className="font-semibold text-violet-600 dark:text-violet-400 mb-1">
+              2. Review Thinness (up to +32 pts)
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Awarded when competitors have fewer than 150 average reviews. Means listings are young and easy to outrank.
+            </p>
+          </div>
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div className="font-semibold text-emerald-600 dark:text-emerald-400 mb-1">
+              3. Demand Signal (up to +24 pts)
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Awarded for strong monthly unit sales velocity across active listings, proving high customer search intent.
+            </p>
+          </div>
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div className="font-semibold text-amber-600 dark:text-amber-400 mb-1">
+              4. Price Gap (up to +12 pts)
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Awarded when the spread between MRP and selling price gives sellers healthy profit margin headroom (15–65%).
+            </p>
+          </div>
+        </div>
+        <div className="p-3 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900/40 text-xs text-violet-800 dark:text-violet-300">
+          <strong>Consultant Tip:</strong> A radar shape stretching wide toward &quot;Rating gap&quot; and &quot;Review thin.&quot; indicates a market where sellers can win on product quality alone without expensive price cuts.
+        </div>
+      </div>
+    ),
+  },
+  "demand-signals": {
+    title: "Demand Signals — Top Niche Comparison",
+    subtitle: "Side-by-side score comparison of leading niches",
+    content: (
+      <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+        <p>
+          This panel provides a direct visual comparison of the overall algorithmic scores for the top 6 product niches identified in your search.
+        </p>
+        <ul className="list-disc pl-4 space-y-1.5 text-xs text-slate-500 dark:text-slate-400">
+          <li>
+            <strong>Color-Coded Bars:</strong> Quickly distinguish between high-conviction opportunities (Green for 80+, Blue for 65–79) and moderate opportunities (Orange).
+          </li>
+          <li>
+            <strong>Relative Viability:</strong> Helps you evaluate whether the #1 pick is a standalone winner or if multiple sub-niches share similarly strong potential.
+          </li>
+        </ul>
+        <div className="p-3 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900/40 text-xs text-violet-800 dark:text-violet-300">
+          <strong>Consultant Tip:</strong> Always compare the #2 and #3 niches on this chart against #1. Often a slightly lower-scoring niche has half the ad competition while still generating excellent monthly revenue.
+        </div>
+      </div>
+    ),
+  },
+  "scoring-works": {
+    title: "How Scoring Works — 100-Point Algorithm",
+    subtitle: "The mathematical formula behind White-Space Finder",
+    content: (
+      <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+        <p>
+          Every product niche is evaluated on a strict 100-point scale designed specifically for Indian marketplaces (Amazon India and Flipkart India).
+        </p>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+            <span className="font-semibold text-slate-700 dark:text-slate-200">Rating Gap Pillar</span>
+            <span className="font-bold text-blue-600 dark:text-blue-400">+32 Max Pts</span>
+          </div>
+          <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+            <span className="font-semibold text-slate-700 dark:text-slate-200">Review Thinness Pillar</span>
+            <span className="font-bold text-violet-600 dark:text-violet-400">+32 Max Pts</span>
+          </div>
+          <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+            <span className="font-semibold text-slate-700 dark:text-slate-200">Demand Velocity Pillar</span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400">+24 Max Pts</span>
+          </div>
+          <div className="flex items-center justify-between p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/50">
+            <span className="font-semibold text-slate-700 dark:text-slate-200">Price Margin Gap Pillar</span>
+            <span className="font-bold text-amber-600 dark:text-amber-400">+12 Max Pts</span>
+          </div>
+          <div className="flex items-center justify-between p-2.5 rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30">
+            <span className="font-semibold text-red-700 dark:text-red-300">Crowded Top Penalty</span>
+            <span className="font-bold text-red-600 dark:text-red-400">-6 Pts</span>
+          </div>
+        </div>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          A penalty of -6 points is applied if a niche is already dominated by both an Amazon Best Seller and an Amazon&apos;s Choice brand.
+        </p>
+        <div className="p-3 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900/40 text-xs text-violet-800 dark:text-violet-300">
+          <strong>Consultant Tip:</strong> Any score above 75 indicates a statistically favorable market where new sellers have a high probability of profitability within 60 days of launch.
+        </div>
+      </div>
+    ),
+  },
+  watchlist: {
+    title: "Watchlist — Saved Opportunities",
+    subtitle: "Track your shortlisted product niches over time",
+    content: (
+      <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+        <p>
+          The Watchlist panel stores your saved product niches so you can monitor their algorithmic scores and competition over time.
+        </p>
+        <ul className="list-disc pl-4 space-y-1.5 text-xs text-slate-500 dark:text-slate-400">
+          <li>
+            <strong>Quick Reference:</strong> Displays your most recently bookmarked niches with their current score and category.
+          </li>
+          <li>
+            <strong>One-Click Management:</strong> Click the bookmark icon on any opportunity card to add or remove it from your list.
+          </li>
+        </ul>
+        <div className="p-3 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900/40 text-xs text-violet-800 dark:text-violet-300">
+          <strong>Consultant Tip:</strong> Add 5–10 candidate niches to your Watchlist and observe them over a 2-week period before committing your inventory budget!
+        </div>
+      </div>
+    ),
+  },
+  "est-revenue": {
+    title: "Estimated Seller Revenue / Month",
+    subtitle: "What a typical listing earns in this product category",
+    content: (
+      <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+        <p>
+          This is the approximate monthly sales revenue (in Indian Rupees) that an active seller generates in this product category on Amazon India or Flipkart India.
+        </p>
+        <div className="space-y-2.5">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div className="font-semibold text-emerald-600 dark:text-emerald-400 mb-1">
+              Why This Matters for You
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              It tells you the size of the business opportunity. The lower number represents what a newly launched listing typically makes, while the higher number represents what an established Top 5 seller earns in a month.
+            </p>
+          </div>
+        </div>
+        <div className="p-3 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900/40 text-xs text-violet-800 dark:text-violet-300">
+          <strong>Seller Advice:</strong> Look for categories that generate enough monthly sales so your profit margins easily cover product manufacturing and shipping costs.
+        </div>
+      </div>
+    ),
+  },
+  "avg-price": {
+    title: "Average Selling Price",
+    subtitle: "The typical price customers pay in this category",
+    content: (
+      <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+        <p>
+          This is the average selling price (in Indian Rupees) across the top-selling listings in this product category.
+        </p>
+        <div className="space-y-2.5">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div className="font-semibold text-blue-600 dark:text-blue-400 mb-1">
+              How to Price Your Product
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              It gives you a clear target for pricing your own product. When you launch a new listing, pricing your product around or slightly below this market average is an effective way to attract initial buyers and build quick sales velocity.
+            </p>
+          </div>
+        </div>
+        <div className="p-3 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900/40 text-xs text-violet-800 dark:text-violet-300">
+          <strong>Seller Advice:</strong> Higher average prices (above ₹1,000) mean customers expect premium packaging and good customer support.
+        </div>
+      </div>
+    ),
+  },
+  "avg-rating": {
+    title: "Average Customer Star Rating",
+    subtitle: "How satisfied customers are with current products",
+    content: (
+      <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+        <p>
+          This is the average star rating given by verified buyers to products currently selling in this category.
+        </p>
+        <div className="space-y-2.5">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div className="font-semibold text-amber-600 dark:text-amber-400 mb-1">
+              Why Low Ratings Are a Golden Opportunity
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              If the average rating is below 4.0★, it means customers are unhappy with existing products on the market. This creates a prime opportunity for you to launch a better-quality product that solves their complaints and quickly win them over.
+            </p>
+          </div>
+        </div>
+        <div className="p-3 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900/40 text-xs text-violet-800 dark:text-violet-300">
+          <strong>Seller Advice:</strong> Read the negative reviews of existing products to see what breaks or disappoints buyers, then fix those issues in your product!
+        </div>
+      </div>
+    ),
+  },
+  "competitor-count": {
+    title: "Total Active Competitors",
+    subtitle: "How many sellers you are competing against",
+    content: (
+      <div className="space-y-4 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+        <p>
+          This is the total number of competing product listings currently active in this category on Amazon India and Flipkart India.
+        </p>
+        <div className="space-y-2.5">
+          <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+            <div className="font-semibold text-purple-600 dark:text-purple-400 mb-1">
+              What This Means for Entry
+            </div>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              A smaller competitor count means the market is uncrowded and much easier to enter. A larger competitor count means the category is popular, so having strong product images and good customer reviews will help you stand out.
+            </p>
+          </div>
+        </div>
+        <div className="p-3 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900/40 text-xs text-violet-800 dark:text-violet-300">
+          <strong>Seller Advice:</strong> Categories with fewer competitors give new products a much faster path to ranking on Page 1!
+        </div>
+      </div>
+    ),
+  },
 };
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -172,6 +458,7 @@ interface Toast {
 function inr(n: number | null | undefined): string {
   const num = Number(n);
   if (n === undefined || n === null || isNaN(num)) return "—";
+  if (num >= 10000000) return "₹" + (num / 10000000).toFixed(2) + "Cr";
   if (num >= 100000) return "₹" + (num / 100000).toFixed(1) + "L";
   if (num >= 1000) return "₹" + Math.round(num).toLocaleString("en-IN");
   return "₹" + Math.round(num);
@@ -305,15 +592,15 @@ function CompetitorRow({ comp, index }: { comp: Competitor; index: number }) {
         {index + 1}
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-xs font-medium text-slate-700 dark:text-slate-250 truncate mb-1">
+        <p className="text-xs sm:text-[13px] font-semibold text-slate-800 dark:text-slate-200 break-words leading-snug mb-1.5">
           {comp.title}
         </p>
-        <div className="flex items-center gap-3 flex-wrap mb-1">
+        <div className="flex items-center gap-3 flex-wrap mb-1.5">
           <span className="text-[10px] text-slate-500 dark:text-slate-400">★ {comp.rating.toFixed(1)}</span>
           <span className="text-[10px] text-slate-500 dark:text-slate-400">{comp.review_count.toLocaleString()} {t("whiteSpaceFinder.reviews", "reviews")}</span>
           <span className="text-[10px] text-slate-500 dark:text-slate-400">₹{comp.price.toLocaleString("en-IN")}</span>
           <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${comp.platform === "amazon" ? "bg-amber-100 dark:bg-amber-950/35 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40" : "bg-blue-100 dark:bg-blue-950/35 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-900/40"}`}>
-            {comp.platform === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon.in") : t("whiteSpaceFinder.flipkart", "Flipkart")}
+            {comp.platform === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon India") : t("whiteSpaceFinder.flipkart", "Flipkart India")}
           </span>
           {comp.is_best_seller && (
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-950/35 text-yellow-750 dark:text-yellow-400 border border-yellow-250 dark:border-yellow-900/40">{t("whiteSpaceFinder.bestSeller", "Best Seller")}</span>
@@ -322,8 +609,9 @@ function CompetitorRow({ comp, index }: { comp: Competitor; index: number }) {
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-teal-100 dark:bg-teal-950/35 text-teal-705 dark:text-teal-400 border border-teal-250 dark:border-teal-900/40">{t("whiteSpaceFinder.asChoice", "A's Choice")}</span>
           )}
         </div>
-        <p className="text-[10px] text-red-650 dark:text-red-400 font-medium">
-          ⚠ {comp.weakness}
+        <p className="text-xs sm:text-[12.5px] text-slate-700 dark:text-slate-250 font-medium leading-relaxed mt-1.5">
+          <span className="text-amber-600 dark:text-amber-400 font-semibold mr-1.5">⚠</span>
+          {comp.weakness}
         </p>
       </div>
     </div>
@@ -378,6 +666,7 @@ function OpportunityCard({
   onWatchlist,
   watchlistItems,
   watchlistLoading,
+  onOpenInfoModal,
 }: {
   opp: Opportunity;
   tier: string;
@@ -385,6 +674,7 @@ function OpportunityCard({
   onWatchlist: (opp: Opportunity) => void;
   watchlistItems: WatchlistItem[];
   watchlistLoading: boolean;
+  onOpenInfoModal?: (key: string) => void;
 }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
@@ -424,24 +714,35 @@ function OpportunityCard({
               <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100 leading-tight">
                 {opp.product_niche}
               </h3>
-              <span
-                className={`shrink-0 text-[10px] font-semibold px-2.5 py-1 rounded-full ${sl.color}`}
-              >
-                {sl.label}
-              </span>
+              <div className="flex items-center gap-1.5 shrink-0">
+                {trendEl}
+                <button
+                  type="button"
+                  onClick={() => onWatchlist(opp)}
+                  disabled={watchlistLoading}
+                  className={`p-1.5 rounded-lg border transition-colors ${alreadyWatched ? "bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800 text-amber-600 dark:text-amber-400" : "bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"}`}
+                  title={alreadyWatched ? t("whiteSpaceFinder.inWatchlist", "In Watchlist") : t("whiteSpaceFinder.addToWatchlist", "Add to Watchlist")}
+                >
+                  <Bookmark className="w-3.5 h-3.5" fill={alreadyWatched ? "currentColor" : "none"} />
+                </button>
+              </div>
             </div>
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-[10px] text-slate-400 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full">{opp.category}</span>
-              <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${opp.platform === "both" ? "bg-purple-100 dark:bg-purple-950/35 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800/40" : opp.platform === "amazon" ? "bg-amber-100 dark:bg-amber-950/35 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40" : "bg-blue-100 dark:bg-blue-950/35 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40"}`}>
-                {opp.platform === "both" ? t("whiteSpaceFinder.amazonFlipkart", "Amazon + Flipkart") : opp.platform === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon.in") : t("whiteSpaceFinder.flipkart", "Flipkart")}
+              <span className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full">
+                {opp.category}
+              </span>
+              <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${sl.color}`}>
+                {sl.label}
+              </span>
+              <span className={`text-[10px] font-medium px-2.5 py-0.5 rounded-full ${opp.platform === "both" ? "bg-purple-100 dark:bg-purple-950/35 text-purple-700 dark:text-purple-400 border border-purple-200 dark:border-purple-800/40" : opp.platform === "amazon" ? "bg-amber-100 dark:bg-amber-950/35 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40" : "bg-blue-100 dark:bg-blue-950/35 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40"}`}>
+                {opp.platform === "both" ? t("whiteSpaceFinder.amazonFlipkart", "Amazon India + Flipkart India") : opp.platform === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon India") : t("whiteSpaceFinder.flipkart", "Flipkart India")}
               </span>
               {opp.has_best_seller_gap && (
-                <span className="text-[10px] bg-yellow-100 dark:bg-yellow-950/35 text-yellow-750 dark:text-yellow-400 px-2 py-0.5 rounded-full font-medium border border-yellow-200/50 dark:border-yellow-900/30">{t("whiteSpaceFinder.noBestSellerYet", "No Best Seller yet")}</span>
+                <span className="text-[10px] bg-yellow-100 dark:bg-yellow-950/35 text-yellow-750 dark:text-yellow-400 px-2.5 py-0.5 rounded-full font-medium border border-yellow-200/50 dark:border-yellow-900/30">{t("whiteSpaceFinder.noBestSellerYet", "No Best Seller yet")}</span>
               )}
               {opp.has_amazon_choice_gap && (
-                <span className="text-[10px] bg-teal-100 dark:bg-teal-950/35 text-teal-705 dark:text-teal-400 px-2 py-0.5 rounded-full font-medium border border-teal-200/50 dark:border-teal-900/30">{t("whiteSpaceFinder.noAsChoice", "No A's Choice")}</span>
+                <span className="text-[10px] bg-teal-100 dark:bg-teal-950/35 text-teal-705 dark:text-teal-400 px-2.5 py-0.5 rounded-full font-medium border border-teal-200/50 dark:border-teal-900/30">{t("whiteSpaceFinder.noAsChoice", "No A's Choice")}</span>
               )}
-              {trendEl}
             </div>
           </div>
         </div>
@@ -457,18 +758,52 @@ function OpportunityCard({
         {/* Stats grid */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
           {[
-            { label: t("whiteSpaceFinder.estRevenueMo", "Est. revenue / mo"), value: `${inr(opp.est_revenue_min)}–${inr(opp.est_revenue_max)}` },
-            { label: t("whiteSpaceFinder.avgPrice", "Avg price"),         value: `₹${opp.avg_price.toLocaleString("en-IN")}` },
-            { label: t("whiteSpaceFinder.avgRating", "Avg rating"),        value: `★ ${opp.avg_rating.toFixed(1)}` },
-            { label: t("whiteSpaceFinder.competitors", "Competitors"),       value: String(opp.competitor_count) },
+            { 
+              label: t("whiteSpaceFinder.estRevenueMo", "Est. Seller Rev / mo"), 
+              value: `${inr(opp.est_revenue_min)}–${inr(opp.est_revenue_max)}`,
+              tooltip: "Expected monthly earnings range for a single active seller in this niche",
+              modalKey: "est-revenue"
+            },
+            { 
+              label: t("whiteSpaceFinder.avgPrice", "Avg price"),
+              value: `₹${opp.avg_price.toLocaleString("en-IN")}`, 
+              tooltip: "Typical selling price across top competitors",
+              modalKey: "avg-price" 
+            },
+            { 
+              label: t("whiteSpaceFinder.avgRating", "Avg rating"),
+              value: `★ ${opp.avg_rating.toFixed(1)}`, 
+              tooltip: "Average customer rating in this niche",
+              modalKey: "avg-rating"
+            },
+            { 
+              label: t("whiteSpaceFinder.competitors", "Competitors"),
+              value: String(opp.competitor_count), 
+              tooltip: "Total active competing listings found",
+              modalKey: "competitor-count" 
+            },
           ].map((s) => (
             <div
               key={s.label}
-              className="bg-slate-50 dark:bg-slate-900/40 rounded-lg p-2.5 border border-slate-100 dark:border-slate-850/60 text-center"
+              onClick={() => onOpenInfoModal?.(s.modalKey)}
+              title={s.tooltip}
+              className="bg-slate-50 dark:bg-slate-900/40 rounded-lg p-2.5 border border-slate-100 dark:border-slate-850/60 text-center cursor-pointer transition-all hover:bg-violet-50/50 dark:hover:bg-slate-800/60 hover:border-violet-300 dark:hover:border-violet-700/60 group"
             >
-              <p className="text-[9px] text-slate-450 dark:text-slate-400 mb-0.5 uppercase tracking-wide">
-                {s.label}
-              </p>
+              <div className="flex items-center justify-center gap-1 mb-0.5">
+                <p className="text-[9px] text-slate-450 dark:text-slate-400 uppercase tracking-wide">
+                  {s.label}
+                </p>
+                <span
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onOpenInfoModal?.(s.modalKey);
+                  }}
+                  className="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-[9px] font-bold group-hover:bg-violet-600 group-hover:text-white transition-colors shrink-0 cursor-pointer"
+                  title="Click for detailed explanation"
+                >
+                  !
+                </span>
+              </div>
               <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
                 {s.value}
               </p>
@@ -685,6 +1020,32 @@ function WhiteSpaceFinderContent() {
     model?: string;
     setup_hint?: string;
   }>({ status: "checking" });
+  const [activeInfoModal, setActiveInfoModal] = useState<string | null>(null);
+  const [liveSuggestions, setLiveSuggestions] = useState<string[]>([]);
+
+  useEffect(() => {
+    const q = query.trim();
+    if (!q) {
+      setLiveSuggestions([]);
+      return;
+    }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/white-space/suggestions`, {
+          params: { query: q },
+        });
+        if (res.data?.suggestions && Array.isArray(res.data.suggestions)) {
+          setLiveSuggestions(res.data.suggestions);
+        } else {
+          setLiveSuggestions([]);
+        }
+      } catch (err) {
+        setLiveSuggestions([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query]);
 
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -997,7 +1358,7 @@ function WhiteSpaceFinderContent() {
                 {t("whiteSpaceFinder.opportunityFinder", "Opportunity Finder")}
               </h1>
               <p className="text-slate-500 text-sm font-medium">
-                {t("whiteSpaceFinder.discoverUntapped", "Discover untapped product gaps and find hidden opportunities across Amazon and Flipkart.")}
+                {t("whiteSpaceFinder.discoverUntapped", "Discover untapped product gaps and find hidden opportunities across Amazon India and Flipkart India.")}
               </p>
             </div>
           </div>
@@ -1229,7 +1590,7 @@ function WhiteSpaceFinderContent() {
                       data-track-id="platform_filter_btn"
                       data-filter-value={p}
                     >
-                      {p === "both" ? t("whiteSpaceFinder.both", "Both") : p === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon.in") : t("whiteSpaceFinder.flipkart", "Flipkart")}
+                      {p === "both" ? t("whiteSpaceFinder.both", "Both") : p === "amazon" ? t("whiteSpaceFinder.amazonIn", "Amazon India") : t("whiteSpaceFinder.flipkart", "Flipkart India")}
                     </button>
                   ))}
                 </div>
@@ -1407,6 +1768,38 @@ function WhiteSpaceFinderContent() {
                   </div>
                 )}
 
+                {/* Related Product Search Suggestions (100% Live DB Only) */}
+                {query.trim() && liveSuggestions.length > 0 && (
+                  <div className="p-4 bg-gradient-to-r from-violet-50/90 via-indigo-50/60 to-purple-50/90 dark:from-slate-900/80 dark:via-indigo-950/25 dark:to-violet-950/35 border border-violet-200/80 dark:border-violet-900/50 rounded-2xl shadow-xs">
+                    <div className="flex items-center gap-2 mb-2.5">
+                      <Sparkles className="w-4 h-4 text-violet-600 dark:text-violet-400 shrink-0" />
+                      <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                        Related high-gap niches to explore for &ldquo;{query}&rdquo;
+                      </p>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">
+                        (Click any suggestion to scan instantly)
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {liveSuggestions.map((sugg) => (
+                        <button
+                          key={sugg}
+                          onClick={() => {
+                            setQuery(sugg);
+                            setTimeout(() => {
+                              document.getElementById("ws-scan-btn")?.click();
+                            }, 50);
+                          }}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-full text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-violet-600 hover:text-white hover:border-violet-600 dark:hover:bg-violet-600 dark:hover:border-violet-600 transition-all shadow-2xs group cursor-pointer"
+                        >
+                          <span>{sugg}</span>
+                          <ChevronRight className="w-3 h-3 text-slate-400 group-hover:text-white transition-colors" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {/* Opportunity cards */}
                 {sortedOpps.length > 0 ? (
                   sortedOpps.map((opp) => (
@@ -1424,6 +1817,7 @@ function WhiteSpaceFinderContent() {
                       onWatchlist={handleWatchlist}
                       watchlistItems={watchlistItems}
                       watchlistLoading={watchlistLoading}
+                      onOpenInfoModal={(key) => setActiveInfoModal(key)}
                     />
                   ))
                 ) : result.opportunities.length > 0 ? (
@@ -1568,10 +1962,20 @@ function WhiteSpaceFinderContent() {
                 {result.total_found > 0 && (
                   <Card className="shadow-sm border border-slate-200 dark:border-slate-850 rounded-2xl bg-background">
                     <CardHeader className="pb-2">
-                      <CardTitle className="text-sm font-semibold text-slate-705 dark:text-slate-200 flex items-center gap-2">
-                        <BarChart3 className="w-4 h-4 text-violet-500" /> Score
-                        distribution
-                      </CardTitle>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-sm font-semibold text-slate-705 dark:text-slate-200 flex items-center gap-2">
+                          <BarChart3 className="w-4 h-4 text-violet-500" /> Score
+                          distribution
+                        </CardTitle>
+                        <button
+                          type="button"
+                          onClick={() => setActiveInfoModal("score-distribution")}
+                          className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-violet-100 dark:hover:bg-violet-900/50 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors shrink-0 shadow-sm cursor-pointer"
+                          title="Click to learn what this card shows"
+                        >
+                          !
+                        </button>
+                      </div>
                       <CardDescription className="text-slate-400 dark:text-slate-500">
                         Opportunity quality breakdown
                       </CardDescription>
@@ -1635,10 +2039,20 @@ function WhiteSpaceFinderContent() {
                   sortedOpps.length > 0 && (
                     <Card className="shadow-sm border border-slate-200 dark:border-slate-850 rounded-2xl bg-background">
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-semibold text-slate-705 dark:text-slate-200 flex items-center gap-2">
-                          <Target className="w-4 h-4 text-blue-500" /> Top pick
-                          — score anatomy
-                        </CardTitle>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-sm font-semibold text-slate-705 dark:text-slate-200 flex items-center gap-2">
+                            <Target className="w-4 h-4 text-blue-500" /> Top pick
+                            — score anatomy
+                          </CardTitle>
+                          <button
+                            type="button"
+                            onClick={() => setActiveInfoModal("score-anatomy")}
+                            className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-violet-100 dark:hover:bg-violet-900/50 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors shrink-0 shadow-sm cursor-pointer"
+                            title="Click to learn what this card shows"
+                          >
+                            !
+                          </button>
+                        </div>
                         <CardDescription className="text-slate-450 dark:text-slate-400 truncate">
                           {sortedOpps[0]?.product_niche}
                         </CardDescription>
@@ -1690,10 +2104,20 @@ function WhiteSpaceFinderContent() {
                   isBasicPlus ? (
                     <Card className="shadow-sm border border-slate-200 dark:border-slate-850 rounded-2xl bg-background">
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-semibold text-slate-705 dark:text-slate-200 flex items-center gap-2">
-                          <Flame className="w-4 h-4 text-orange-500" /> Demand
-                          signals
-                        </CardTitle>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-sm font-semibold text-slate-705 dark:text-slate-200 flex items-center gap-2">
+                            <Flame className="w-4 h-4 text-orange-500" /> Demand
+                            signals
+                          </CardTitle>
+                          <button
+                            type="button"
+                            onClick={() => setActiveInfoModal("demand-signals")}
+                            className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-violet-100 dark:hover:bg-violet-900/50 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors shrink-0 shadow-sm cursor-pointer"
+                            title="Click to learn what this card shows"
+                          >
+                            !
+                          </button>
+                        </div>
                       </CardHeader>
                       <CardContent className="space-y-2.5">
                         {sortedOpps.slice(0, 6).map((o) => (
@@ -1727,10 +2151,20 @@ function WhiteSpaceFinderContent() {
                   ) : (
                     <Card className="shadow-sm border border-slate-200 dark:border-slate-850 rounded-2xl bg-background">
                       <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-semibold text-slate-705 dark:text-slate-200 flex items-center gap-2">
-                          <Flame className="w-4 h-4 text-orange-500" /> Demand
-                          signals
-                        </CardTitle>
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-sm font-semibold text-slate-705 dark:text-slate-200 flex items-center gap-2">
+                            <Flame className="w-4 h-4 text-orange-500" /> Demand
+                            signals
+                          </CardTitle>
+                          <button
+                            type="button"
+                            onClick={() => setActiveInfoModal("demand-signals")}
+                            className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-violet-100 dark:hover:bg-violet-900/50 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors shrink-0 shadow-sm cursor-pointer"
+                            title="Click to learn what this card shows"
+                          >
+                            !
+                          </button>
+                        </div>
                       </CardHeader>
                       <CardContent>
                         <div className="relative">
@@ -1767,10 +2201,20 @@ function WhiteSpaceFinderContent() {
                   <Card className="shadow-sm border border-violet-200 dark:border-violet-850/45 rounded-2xl bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-violet-950/20 dark:to-indigo-950/20">
                     <CardHeader className="pb-2">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-sm font-semibold text-violet-700 dark:text-violet-400 flex items-center gap-2">
-                          <Bookmark className="w-4 h-4 fill-violet-600 dark:fill-violet-500" />{" "}
-                          Watchlist ({watchlistItems.length})
-                        </CardTitle>
+                        <div className="flex items-center gap-1.5">
+                          <CardTitle className="text-sm font-semibold text-violet-700 dark:text-violet-400 flex items-center gap-2">
+                            <Bookmark className="w-4 h-4 fill-violet-600 dark:fill-violet-500" />{" "}
+                            Watchlist ({watchlistItems.length})
+                          </CardTitle>
+                          <button
+                            type="button"
+                            onClick={() => setActiveInfoModal("watchlist")}
+                            className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-violet-100 dark:bg-violet-900/40 hover:bg-violet-200 dark:hover:bg-violet-800 text-[11px] font-bold text-violet-600 dark:text-violet-400 transition-colors shrink-0 shadow-sm cursor-pointer"
+                            title="Click to learn what this card shows"
+                          >
+                            !
+                          </button>
+                        </div>
                         <button
                           onClick={() => router.push("/explorer/my-watchlist")}
                           className="text-[10px] text-violet-600 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-300 font-medium flex items-center gap-1"
@@ -1816,10 +2260,20 @@ function WhiteSpaceFinderContent() {
                 {/* How scoring works */}
                 <Card className="shadow-sm border border-slate-200 dark:border-slate-850 rounded-2xl bg-background">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm font-semibold text-slate-705 dark:text-slate-200 flex items-center gap-2">
-                      <Shield className="w-4 h-4 text-slate-500 dark:text-slate-400" />{" "}
-                      How scoring works
-                    </CardTitle>
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-sm font-semibold text-slate-705 dark:text-slate-200 flex items-center gap-2">
+                        <Shield className="w-4 h-4 text-slate-500 dark:text-slate-400" />{" "}
+                        How scoring works
+                      </CardTitle>
+                      <button
+                        type="button"
+                        onClick={() => setActiveInfoModal("scoring-works")}
+                        className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-violet-100 dark:hover:bg-violet-900/50 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 transition-colors shrink-0 shadow-sm cursor-pointer"
+                        title="Click to learn what this card shows"
+                      >
+                        !
+                      </button>
+                    </div>
                   </CardHeader>
                   <CardContent className="space-y-2">
                     {[
@@ -1883,7 +2337,7 @@ function WhiteSpaceFinderContent() {
               </h3>
               <p className="text-sm text-slate-400 dark:text-slate-500 max-w-md leading-relaxed mb-4">
                 Scan any product to surface real white spaces — niches with high
-                demand and weak competition on Amazon.in and Flipkart.
+                demand and weak competition on Amazon India and Flipkart India.
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6 w-full max-w-xl">
                 {[
@@ -1946,6 +2400,63 @@ function WhiteSpaceFinderContent() {
             </div>
           )}
         </div>
+
+        {/* ── Interactive Info Modal (Clickable for Mobile & Desktop) ── */}
+        {activeInfoModal &&
+          INFO_MODALS[activeInfoModal] &&
+          typeof document !== "undefined" &&
+          createPortal(
+            <div
+              className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md animate-in fade-in duration-200"
+              onClick={() => setActiveInfoModal(null)}
+            >
+              <div
+                className="relative w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl p-6 sm:p-7 overflow-hidden my-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-violet-50 dark:bg-violet-950/40 border border-violet-100 dark:border-violet-900/50 flex items-center justify-center text-violet-600 dark:text-violet-400">
+                      <Shield className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-slate-800 dark:text-slate-100 leading-tight">
+                        {INFO_MODALS[activeInfoModal].title}
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        {INFO_MODALS[activeInfoModal].subtitle}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setActiveInfoModal(null)}
+                    className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Detailed Explanatory Content */}
+                <div className="max-h-[65vh] overflow-y-auto pr-1">
+                  {INFO_MODALS[activeInfoModal].content}
+                </div>
+
+                {/* Footer Action */}
+                <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setActiveInfoModal(null)}
+                    className="px-6 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-semibold text-xs sm:text-sm rounded-xl shadow-sm transition-colors cursor-pointer"
+                  >
+                    Got it, thanks!
+                  </button>
+                </div>
+              </div>
+            </div>,
+            document.body,
+          )}
       </div>
     </div>
   );

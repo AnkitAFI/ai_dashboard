@@ -157,6 +157,45 @@ export const getCategoryIconComponent = (categoryName: string): LucideIcon => {
   return Tag;
 };
 
+export function decodeHTMLEntities(str?: string | null): string {
+  if (!str) return "";
+  const s = String(str);
+  if (!s.includes("&")) return s;
+
+  if (typeof window !== "undefined" && typeof document !== "undefined") {
+    try {
+      const textarea = document.createElement("textarea");
+      textarea.innerHTML = s;
+      return textarea.value;
+    } catch {
+      // fallback to regex below
+    }
+  }
+
+  return s
+    .replace(/&#x([0-9a-fA-F]+);/gi, (_, hex) => {
+      try { return String.fromCodePoint(parseInt(hex, 16)); } catch { return _; }
+    })
+    .replace(/&#(\d+);/g, (_, dec) => {
+      try { return String.fromCodePoint(Number(dec)); } catch { return _; }
+    })
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
+    .replace(/&#x27;/gi, "'")
+    .replace(/&#39;/gi, "'")
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&mdash;/gi, '—')
+    .replace(/&ndash;/gi, '–')
+    .replace(/&bull;/gi, '•')
+    .replace(/&copy;/gi, '©')
+    .replace(/&reg;/gi, '®')
+    .replace(/&trade;/gi, '™')
+    .replace(/&hellip;/gi, '…');
+}
+
 
 
 

@@ -174,11 +174,24 @@ export default function ProductTrackerHistory() {
       ? "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-950/30 dark:text-orange-400 dark:border-orange-900/80"
       : "bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-950/30 dark:text-yellow-400 dark:border-yellow-900/80";
 
+  const formatSource = (src: string) =>
+    src?.toLowerCase() === "amazon" ? "Amazon India" : src?.toLowerCase() === "flipkart" ? "Flipkart India" : src || "";
+
   const getDemandColor = (demand: string) => {
     switch (demand?.toLowerCase()) {
-      case "high": return "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/30 dark:text-emerald-400";
-      case "medium": return "bg-blue-100 text-blue-800 dark:bg-blue-950/30 dark:text-blue-400";
-      default: return "bg-slate-105 text-slate-800 dark:bg-slate-800 dark:text-slate-300";
+      case "high": return "bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800";
+      case "medium": return "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800";
+      case "low": return "bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800";
+      default: return "bg-slate-100 text-slate-800 border-slate-300 dark:bg-slate-800 dark:text-slate-300";
+    }
+  };
+
+  const getDemandExplanation = (demand: string) => {
+    switch (demand?.toLowerCase()) {
+      case "high": return "🔥 High customer demand & active buying interest in this category. Excellent market opportunity.";
+      case "medium": return "⚖️ Moderate customer demand & steady search volume in this category. Balanced market.";
+      case "low": return "🌱 Niche market with specialized customer demand. Lower competition, ideal for targeted audiences.";
+      default: return "📊 Overall market demand estimate based on category activity.";
     }
   };
 
@@ -330,7 +343,7 @@ export default function ProductTrackerHistory() {
                             </h3>
                             <div className="flex flex-wrap gap-2 mb-2">
                               <Badge className={getSourceColor(item.source)}>
-                                {item.source}
+                                {formatSource(item.source)}
                               </Badge>
                               <Badge variant="outline" className="text-xs border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400">
                                 {item.category}
@@ -414,7 +427,7 @@ export default function ProductTrackerHistory() {
                               <CardTitle className="text-xl mb-2 text-slate-900 dark:text-slate-100">{selectedAnalysis.product_name}</CardTitle>
                               <div className="flex gap-2">
                                 <Badge className={getSourceColor(selectedAnalysis.source)}>
-                                  {selectedAnalysis.source}
+                                  {formatSource(selectedAnalysis.source)}
                                 </Badge>
                                 <Badge variant="outline" className="border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400">{selectedAnalysis.category}</Badge>
                               </div>
@@ -476,9 +489,14 @@ export default function ProductTrackerHistory() {
                               <p className="text-sm text-slate-605 dark:text-slate-400">Daily Average</p>
                               <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{selectedAnalysis.sales.estimated_daily_sales.toFixed(0)} units/day</p>
                             </div>
-                            <Badge className={getDemandColor(selectedAnalysis.sales.market_demand)}>
-                              {selectedAnalysis.sales.market_demand} Demand
-                            </Badge>
+                            <div className="space-y-1.5">
+                              <Badge className={getDemandColor(selectedAnalysis.sales.market_demand)}>
+                                {selectedAnalysis.sales.market_demand} Demand
+                              </Badge>
+                              <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                                {getDemandExplanation(selectedAnalysis.sales.market_demand)}
+                              </p>
+                            </div>
                           </CardContent>
                         </Card>
 
