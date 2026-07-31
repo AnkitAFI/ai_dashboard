@@ -1072,30 +1072,6 @@ export default function AmazonVsFlipkartIndiaSellers() {
           >
             📖 <strong>12 min read</strong>
           </div>
-          <span
-            style={{
-              background: "#ECFDF5",
-              color: "#10B981",
-              fontSize: "clamp(9px,2vw,11px)",
-              fontWeight: 700,
-              padding: "2px 7px",
-              borderRadius: 4,
-            }}
-          >
-            Updated for 2026
-          </span>
-          <span
-            style={{
-              background: "#FFF7ED",
-              color: "#FF9900",
-              fontSize: "clamp(9px,2vw,11px)",
-              fontWeight: 700,
-              padding: "2px 7px",
-              borderRadius: 4,
-            }}
-          >
-            Marketplace Comparison
-          </span>
         </div>
 
         <div className="stat-strip" style={{ marginBottom: 24 }}>

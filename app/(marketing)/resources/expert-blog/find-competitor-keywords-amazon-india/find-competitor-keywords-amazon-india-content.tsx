@@ -935,17 +935,16 @@ export default function FindCompetitorKeywordsAmazonIndiaContent() {
           light: "#F1F2FF",
           dark: "#0f1120",
         }}
-        tags={["Keyword Intelligence", "SEO Organic"]}
-      />
-
-      {/* Blog Image Section */}
-      <BlogImageSection
-        imageSrc="/How to Find Competitor Keywords.png"
-        altText="Competitor Keywords Amazon India"
-        caption="Insydz keyword gap analysis. Your ASIN ranks for 63 keywords while the category leader ranks for 110. The 47 keyword gap contains the highest priority ranking opportunities, including 19 high intent and 8 Hindi terms you are missing entirely."
       />
 
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 16px 0" }}>
+        {/* Blog Image Section */}
+        <BlogImageSection
+          imageSrc="/How to Find Competitor Keywords.png"
+          altText="Competitor Keywords Amazon India"
+          caption="Insydz keyword gap analysis. Your ASIN ranks for 63 keywords while the category leader ranks for 110. The 47 keyword gap contains the highest priority ranking opportunities, including 19 high intent and 8 Hindi terms you are missing entirely."
+        />
+
         {/* Quick Answer Box */}
         <div
           style={{

@@ -670,59 +670,6 @@ export default function InsydzVsSellerAppContent() {
 
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
 
-      <nav
-        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 shadow-lg h-16 sm:h-18 lg:h-20" : "bg-background dark:bg-gray-900/80 h-16 sm:h-18 lg:h-20"}`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
-          <div className="flex items-center justify-between h-full">
-            <div
-              className="flex items-center space-x-1 group cursor-pointer"
-              onClick={() => router.push("/")}
-            >
-              <img
-                src="/logo.png"
-                alt="Insydz Logo"
-                className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3"
-              />
-              <span className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent ml-2">
-                Insydz
-              </span>
-            </div>
-            <div className="hidden lg:flex items-center space-x-2">
-              <DesktopDropdown label="Solutions" menuKey="Solutions" />
-              <DesktopDropdown label="Use Cases" menuKey="Use Cases" />
-              <DesktopDropdown label="Features" menuKey="Features" />
-              <button
-                onClick={() => router.push("/pricing")}
-                className="px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-orange-600 font-medium transition-colors"
-              >
-                Pricing
-              </button>
-              <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
-              <DesktopDropdown label="Compare" menuKey="Compare" />
-              <DesktopDropdown
-                label="Resources"
-                menuKey="Resources"
-                accent="orange"
-              />
-              <DesktopDropdown label="About" menuKey="About" />
-              <Button
-                onClick={() => router.push("/login")}
-                className="ml-4 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold px-6 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-              >
-                Login
-              </Button>
-            </div>
-            <button
-              className="lg:hidden p-2 text-gray-600 dark:text-gray-300"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X /> : <Menu />}
-            </button>
-          </div>
-        </div>
-      </nav>
-
       {/* BREADCRUMB */}
       <div className="breadcrumb">
         <div className="breadcrumb-inner">
@@ -878,30 +825,6 @@ export default function InsydzVsSellerAppContent() {
             <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
             <strong>11 min read</strong>
           </div>
-          <span
-            style={{
-              background: "#FFEDD5",
-              color: "#F97316",
-              fontSize: "clamp(9px,2vw,11px)",
-              fontWeight: 700,
-              padding: "2px 7px",
-              borderRadius: 4,
-            }}
-          >
-            Updated for 2026
-          </span>
-          <span
-            style={{
-              background: "#F5F3FF",
-              color: "#7C3AED",
-              fontSize: "clamp(9px,2vw,11px)",
-              fontWeight: 700,
-              padding: "2px 7px",
-              borderRadius: 4,
-            }}
-          >
-            Tool Comparison
-          </span>
         </div>
 
         <div className="stat-strip">
@@ -953,9 +876,6 @@ export default function InsydzVsSellerAppContent() {
         </div>
 
         {/* Blog Image Section */}
-
-        {/* Blog Image Section */}
-
         <BlogImageSection
           imageSrc="/Insydz-vs-SellerApp.png"
           altText="Insydz vs SellerApp India Hero Guide"

@@ -878,17 +878,16 @@ export default function TopAmazonIndiaSellersHabitsContent() {
           light: "#F1F2FF",
           dark: "#0f1120",
         }}
-        tags={[" Data Story", "Trending"]}
-      />
-
-      {/* Blog Image Section */}
-      <BlogImageSection
-        imageSrc="/Habits of Top Amazon India Sellers.png"
-        altText="Top Amazon India Sellers Habits"
-        caption="Insydz seller benchmark data across 100 Amazon India accounts. Each habit shows the percentage of top 10% sellers who practised it versus the bottom 50%. The gap is not marginal. It is structural."
       />
 
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 16px 0" }}>
+        {/* Blog Image Section */}
+        <BlogImageSection
+          imageSrc="/Habits of Top Amazon India Sellers.png"
+          altText="Top Amazon India Sellers Habits"
+          caption="Insydz seller benchmark data across 100 Amazon India accounts. Each habit shows the percentage of top 10% sellers who practised it versus the bottom 50%. The gap is not marginal. It is structural."
+        />
+
         <InfoBanner
           accentColor="#6366F1"
           backgroundColor="#DCE2FF"

@@ -32,6 +32,7 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import BlogImageSection from "../components/BlogImageSection";
 
 export const dynamic = "force-static";
 
@@ -693,51 +694,6 @@ export default function BestAmazonKeywordResearchToolIndia() {
     );
   };
 
-  const keywordTypes = [
-    {
-      icon: "🛒",
-      type: "Buy Intent Terms",
-      example: '"buy wireless earbuds under 1500"',
-      conv: "High (12–18%)",
-      priority: "Critical",
-    },
-    {
-      icon: "📦",
-      type: "Category Head Terms",
-      example: '"wireless earbuds"',
-      conv: "Medium (4–7%)",
-      priority: "Important",
-    },
-    {
-      icon: "🔍",
-      type: "Long-Tail Specific",
-      example: '"earbuds noise cancelling gym"',
-      conv: "Very High (20–28%)",
-      priority: "Critical",
-    },
-    {
-      icon: "💰",
-      type: "Price Bracket Terms",
-      example: '"earbuds 500 to 1000 rupees"',
-      conv: "High (10–16%)",
-      priority: "Critical",
-    },
-    {
-      icon: "🏷️",
-      type: "Competitor Brand",
-      example: '"boAt airdopes alternative"',
-      conv: "Medium (8–12%)",
-      priority: "Important",
-    },
-    {
-      icon: "🗣️",
-      type: "Regional Language",
-      example: '"earbuds kam daam mein"',
-      conv: "Very High (15–22%)",
-      priority: "Opportunity",
-    },
-  ];
-
   const compRows = [
     {
       cap: "Amazon.in Keyword Data",
@@ -1079,178 +1035,7 @@ export default function BestAmazonKeywordResearchToolIndia() {
 
         body{overflow-x:hidden}
       `}</style>
-
       <div className="read-progress" style={{ width: `${scrollPct}%` }} />
-
-      {/* ═══ NAV ════════════════════════════════════════════════════════════ */}
-      <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background opacity-100 dark:bg-gray-900/95 backdrop-blur-none shadow-lg" : "bg-background dark:bg-gray-900/80 backdrop-blur-none"}`}
-      >
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-          <div className="flex items-center justify-between h-16 sm:h-18 lg:h-20">
-            <div
-              className="flex items-center space-x-1 group cursor-pointer"
-              onClick={() => router.push("/")}
-            >
-              <div className="relative">
-                <img
-                  src="/logo.png"
-                  alt="Insydz Logo"
-                  className="w-9 h-9 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-xl sm:rounded-2xl shadow-lg transform transition-transform group-hover:scale-110 group-hover:rotate-3 object-contain"
-                />
-                <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900 animate-pulse" />
-              </div>
-              <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent ml-1 sm:ml-2">
-                Insydz
-              </span>
-            </div>
-
-            <div
-              className="hidden lg:flex items-center space-x-0.5 xl:space-x-1"
-              ref={dropdownRef}
-            >
-              <DesktopDropdown label="Solutions" menuKey="Solutions" />
-              <DesktopDropdown label="Use Cases" menuKey="Use Cases" />
-              <DesktopDropdown label="Features" menuKey="Features" />
-              <button
-                onClick={() => router.push("/pricing")}
-                onMouseEnter={() => setActiveDropdown(null)}
-                className="px-2 xl:px-3 py-2 text-xs xl:text-sm text-gray-700 dark:text-gray-300 hover:text-purple-600 font-medium rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all"
-              >
-                Pricing
-              </button>
-              <DesktopDropdown label="Free Tools" menuKey="Free Tools" />
-              <DesktopDropdown label="Compare" menuKey="Compare" />
-              <DesktopDropdown
-                label="Resources"
-                menuKey="Resources"
-                accent="orange"
-              />
-              <DesktopDropdown label="About" menuKey="About" />
-              <Button
-                onClick={() => router.push("/login")}
-                onMouseEnter={() => setActiveDropdown(null)}
-                className="ml-1 text-xs xl:text-sm bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold px-4 xl:px-5 py-2 rounded-full shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
-              >
-                Login
-              </Button>
-              <button
-                className="ml-1 p-1.5 xl:p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex-shrink-0"
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                aria-label="Toggle dark mode"
-              >
-                {isDarkMode ? (
-                  <Sun className="w-4 h-4 xl:w-5 xl:h-5 text-yellow-400" />
-                ) : (
-                  <Moon className="w-4 h-4 xl:w-5 xl:h-5 text-gray-800" />
-                )}
-              </button>
-            </div>
-
-            <div className="flex lg:hidden items-center gap-1.5 sm:gap-2">
-              <button
-                className="p-1.5 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                aria-label="Toggle dark mode"
-              >
-                {isDarkMode ? (
-                  <Sun className="w-4 h-4 text-yellow-400" />
-                ) : (
-                  <Moon className="w-4 h-4 text-gray-800 dark:text-gray-200" />
-                )}
-              </button>
-              <button
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                aria-label="Toggle menu"
-              >
-                {isMenuOpen ? (
-                  <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-gray-300" />
-                ) : (
-                  <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 dark:text-gray-300" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {isMenuOpen && (
-          <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 max-h-[calc(100vh-4rem)] overflow-y-auto">
-            <div className="px-3 sm:px-4 py-3 sm:py-4 space-y-1.5">
-              <button
-                onClick={() => {
-                  router.push("/resources/expert-blog");
-                  setIsMenuOpen(false);
-                }}
-                className="flex items-center gap-2 w-full px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium text-sm"
-              >
-                <ArrowLeft className="w-4 h-4 flex-shrink-0" /> Back to Blog
-              </button>
-              {(
-                [
-                  ["Solutions", "Solutions", "purple"],
-                  ["Use Cases", "Use Cases", "purple"],
-                  ["Features", "Features", "purple"],
-                  ["Free Tools", "Free Tools", "purple"],
-                  ["Compare", "Compare", "purple"],
-                  ["Resources", "Resources", "orange"],
-                  ["About", "About", "purple"],
-                ] as [string, keyof NavigationMenu, string][]
-              ).map(([label, key, accent]) => (
-                <div key={label}>
-                  <button
-                    onClick={() => toggleMobileMenu(label)}
-                    className={`flex items-center justify-between w-full px-3 sm:px-4 py-2 rounded-lg font-medium text-sm ${accent === "orange" ? "text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-900/20" : "text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20"}`}
-                  >
-                    {label}
-                    <ChevronDown
-                      className={`w-4 h-4 transition-transform flex-shrink-0 ${mobileActiveMenu === label ? "rotate-180" : ""}`}
-                    />
-                  </button>
-                  {mobileActiveMenu === label && (
-                    <div className="ml-3 sm:ml-4 mt-1 space-y-0.5">
-                      {navigationMenu[key].map((item, i) => (
-                        <button
-                          key={i}
-                          onClick={() => handleMenuItemClick(item)}
-                          className="flex items-center gap-2 w-full px-3 sm:px-4 py-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg"
-                        >
-                          <span className="flex-shrink-0">{item.icon}</span>
-                          <span className="text-left flex-1">{item.name}</span>
-                          {item.badge && (
-                            <span className="ml-auto text-xs bg-purple-600 text-white px-1.5 py-0.5 rounded-full flex-shrink-0">
-                              {item.badge}
-                            </span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-              <button
-                onClick={() => {
-                  router.push("/pricing");
-                  setIsMenuOpen(false);
-                }}
-                className="block w-full text-left px-3 sm:px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded-lg font-medium text-sm"
-              >
-                Pricing
-              </button>
-              <Button
-                onClick={() => {
-                  router.push("/login");
-                  setIsMenuOpen(false);
-                }}
-                className="w-full mt-2 bg-gradient-to-r from-pink-500 to-rose-500 text-sm py-2"
-              >
-                Login
-              </Button>
-            </div>
-          </div>
-        )}
-      </nav>
-
       {/* BREADCRUMB */}
       <div className="pt-[64px] sm:pt-[72px] lg:pt-[80px]">
         <div className="breadcrumb-inner">
@@ -1287,7 +1072,6 @@ export default function BestAmazonKeywordResearchToolIndia() {
           </span>
         </div>
       </div>
-
       {/* HERO */}
       <div className="article-hero">
         <div
@@ -1392,30 +1176,6 @@ export default function BestAmazonKeywordResearchToolIndia() {
             <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0" />
             <strong>13 min read</strong>
           </div>
-          <span
-            style={{
-              background: "#FFEDD5",
-              color: "#F97316",
-              fontSize: "clamp(9px,2vw,11px)",
-              fontWeight: 700,
-              padding: "2px 7px",
-              borderRadius: 4,
-            }}
-          >
-            Updated for 2026
-          </span>
-          <span
-            style={{
-              background: "#F5F3FF",
-              color: "#7C3AED",
-              fontSize: "clamp(9px,2vw,11px)",
-              fontWeight: 700,
-              padding: "2px 7px",
-              borderRadius: 4,
-            }}
-          >
-            Seller Strategy Guide
-          </span>
         </div>
 
         <div className="stat-strip" style={{ marginBottom: 24 }}>
@@ -1454,19 +1214,17 @@ export default function BestAmazonKeywordResearchToolIndia() {
           ))}
         </div>
       </div>
-
       {/* Hero Image */}
       <div
         style={{ maxWidth: 1240, margin: "0 auto", padding: "0 16px" }}
         className="sm:px-5 lg:px-6"
       >
-        <ArticleImg
-          src="/keyword-research-hero.png"
-          alt="Best Amazon keyword research tool India keyword gap analysis dashboard for Amazon.in and Flipkart sellers"
+        <BlogImageSection
+          imageSrc="/keyword-research-hero.png"
+          altText="Best Amazon keyword research tool India keyword gap analysis dashboard for Amazon.in and Flipkart sellers"
           caption="Insydz AI keyword intelligence surfaces competitor keyword gaps, rank positions, and backend optimisation opportunities across Amazon.in, Flipkart"
         />
       </div>
-
       {/* KEY TAKEAWAYS */}
       <div
         style={{ maxWidth: 1240, margin: "0 auto", padding: "0 16px 28px" }}
@@ -1489,7 +1247,6 @@ export default function BestAmazonKeywordResearchToolIndia() {
           ))}
         </div>
       </div>
-
       {/* ARTICLE LAYOUT */}
       <div className="article-layout">
         {/* SIDEBAR */}
@@ -2372,7 +2129,6 @@ export default function BestAmazonKeywordResearchToolIndia() {
           </article>
         </main>
       </div>
-
       {/* Final CTA */}
       <div className="final-cta-block">
         <h2
@@ -2436,9 +2192,7 @@ export default function BestAmazonKeywordResearchToolIndia() {
           No setup · Results in 5 min · Amazon.in + Flipkart covered
         </p>
       </div>
-
       {/* Footer */}
-
       <style>{`
         @keyframes fade-in {
           from {

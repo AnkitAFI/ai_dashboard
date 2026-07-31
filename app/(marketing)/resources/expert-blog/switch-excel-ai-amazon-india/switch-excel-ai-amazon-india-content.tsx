@@ -529,7 +529,6 @@ export default function SwitchExcelAiAmazonIndiaContent() {
         publishDate="June 2026"
         readTime="10 min read"
         bgColor={{ light: "#FFF7ED", dark: "#1c0900" }}
-        tags={["BOFU · Convert", "30 Day Results"]}
       />
 
       <div style={{ maxWidth: 1240, margin: "16px auto", padding: "0 16px" }}>

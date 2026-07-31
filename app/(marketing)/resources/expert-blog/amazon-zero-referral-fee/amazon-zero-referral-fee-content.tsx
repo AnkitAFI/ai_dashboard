@@ -621,39 +621,12 @@ export default function AmazonZeroReferralFeeContent() {
               >
                 📖 <strong>11 min read</strong>
               </div>
-              <span
-                style={{
-                  background: "rgba(244,80,10,.12)",
-                  color: "#F4500A",
-                  fontSize: "clamp(9px,2vw,11px)",
-                  fontWeight: 700,
-                  padding: "3px 10px",
-                  borderRadius: 20,
-                }}
-              >
-                Updated for 2026
-              </span>
-              <span
-                style={{
-                  background: "rgba(10,191,164,.12)",
-                  color: "#0ABFA4",
-                  fontSize: "clamp(9px,2vw,11px)",
-                  fontWeight: 700,
-                  padding: "3px 10px",
-                  borderRadius: 20,
-                }}
-              >
-                Competitor Intelligence
-              </span>
             </div>
           </div>
         </div>
       </div>
 
-      <div
-        className="my-10"
-        style={{ maxWidth: 1040, margin: "20px auto 0", padding: "0 16px" }}
-      >
+      <div style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 16px 0" }}>
         <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
           <img
             src="/Amazon India Zero Referral Fee.png"
@@ -671,7 +644,6 @@ export default function AmazonZeroReferralFeeContent() {
 
       {/* QUICK SUMMARY & TAKEAWAYS - MATCHING IMAGE */}
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 16px 0" }}>
-        {/* Quick Answer Box */}
         <div
           style={{
             background: resolvedTheme === "dark" ? "#111827" : "#F8F9FF",

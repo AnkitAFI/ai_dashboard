@@ -583,36 +583,45 @@ export default function AmazonPrivateLabelContent() {
                 fontFamily: "'Sora', sans-serif",
               }}
             >
-              <span className="flex items-center gap-1">
-                Insydz Research Team
-              </span>
-              <span>·</span>
-              <span>May 2026</span>
-              <span>·</span>
-              <span>13 min read</span>
-              <span>·</span>
-              <span
+              <div
                 style={{
-                  background: "#E0E2FF",
-                  color: "#6366F1",
-                  fontWeight: 700,
-                  padding: "2px 10px",
-                  borderRadius: 4,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  fontSize: "clamp(11px,2vw,13px)",
+                  color: "#64748B",
                 }}
               >
-                TOFU · New & D2C Sellers
-              </span>
-              <span
+                👤{" "}
+                <strong
+                  className="text-[#0A0F1A] hover:text-orange-500 transition-colors cursor-pointer"
+                  onClick={() => router.push("/author/vikrant-singh")}
+                >
+                  Vikrant Singh
+                </strong>
+              </div>
+              <div
                 style={{
-                  background: "#DCFCE7",
-                  color: "#059669",
-                  fontWeight: 700,
-                  padding: "2px 10px",
-                  borderRadius: 4,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  fontSize: "clamp(11px,2vw,13px)",
+                  color: "#64748B",
                 }}
               >
-                Marketplace Pillar
-              </span>
+                🕐 May 2026
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  fontSize: "clamp(11px,2vw,13px)",
+                  color: "#64748B",
+                }}
+              >
+                📖 <strong>13 min read</strong>
+              </div>
             </div>
 
             <div className="flex flex-wrap gap-4">
@@ -787,7 +796,6 @@ export default function AmazonPrivateLabelContent() {
 
       {/* QUICK SUMMARY & TAKEAWAYS - MATCHING IMAGE */}
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "40px 16px 0" }}>
-        {/* Quick Answer Box */}
         <div
           style={{
             background: resolvedTheme === "dark" ? "#111827" : "#F8F9FF",

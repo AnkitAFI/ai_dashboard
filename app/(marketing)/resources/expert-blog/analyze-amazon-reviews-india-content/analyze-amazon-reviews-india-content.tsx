@@ -469,7 +469,6 @@ export default function AnalyzeAmazonReviewsIndiaContent() {
         readTime="12 min read"
         bgColor={{ light: "#F5F3FF", dark: "#1a0a2e" }}
         highlightColor="#7C3AED"
-        // tags={["BOFU · Review Intelligence", "SEO Organic"]}
       />
 
       <div style={{ maxWidth: 1240, margin: "16px auto", padding: "0 16px" }}>

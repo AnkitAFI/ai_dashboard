@@ -613,30 +613,6 @@ export default function AmazonSalesDropContent() {
               >
                 📖 <strong>11 min read</strong>
               </div>
-              <span
-                style={{
-                  background: "rgba(244,80,10,.12)",
-                  color: "#F4500A",
-                  fontSize: "clamp(9px,2vw,11px)",
-                  fontWeight: 700,
-                  padding: "3px 10px",
-                  borderRadius: 20,
-                }}
-              >
-                Updated for 2026
-              </span>
-              <span
-                style={{
-                  background: "rgba(10,191,164,.12)",
-                  color: "#0ABFA4",
-                  fontSize: "clamp(9px,2vw,11px)",
-                  fontWeight: 700,
-                  padding: "3px 10px",
-                  borderRadius: 20,
-                }}
-              >
-                Competitor Intelligence
-              </span>
             </div>
 
             <div className="mt-12 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-0 bg-white dark:bg-[#1f2937] border border-gray-200 dark:border-gray-800 rounded-lg shadow-sm w-full">

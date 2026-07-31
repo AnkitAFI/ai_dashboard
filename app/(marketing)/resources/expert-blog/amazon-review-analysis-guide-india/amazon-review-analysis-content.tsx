@@ -691,30 +691,6 @@ export default function AmazonReviewAnalysisContent() {
           >
             📖 <strong>12 min read</strong>
           </div>
-          <span
-            style={{
-              background: "rgba(244,80,10,.12)",
-              color: "#F4500A",
-              fontSize: "clamp(9px,2vw,11px)",
-              fontWeight: 700,
-              padding: "3px 10px",
-              borderRadius: 20,
-            }}
-          >
-            Updated for 2026
-          </span>
-          <span
-            style={{
-              background: "rgba(10,191,164,.12)",
-              color: "#0ABFA4",
-              fontSize: "clamp(9px,2vw,11px)",
-              fontWeight: 700,
-              padding: "3px 10px",
-              borderRadius: 20,
-            }}
-          >
-            Seller Strategy Guide
-          </span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-12 mb-14">
