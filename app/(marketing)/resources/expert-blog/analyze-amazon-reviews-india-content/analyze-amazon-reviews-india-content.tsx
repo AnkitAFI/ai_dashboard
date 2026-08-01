@@ -474,7 +474,7 @@ export default function AnalyzeAmazonReviewsIndiaContent() {
       <div style={{ maxWidth: 1240, margin: "16px auto", padding: "0 16px" }}>
         {/* Blog Image Section */}
         <BlogImageSection
-          imageSrc="/Analyze 500+ Reviews for Product Opportunities.png"
+          imageSrc="/analyze-amazon-reviews-opportunities.png"
           altText="Analyze Amazon India Reviews"
           caption="Insydz AI review mining. 512 competitor reviews reduced to a ranked list of recurring themes. The top request, fragrance free, appears 47 times while no listing in the category offers it. That is not a complaint. It is a product launch signal."
         />
