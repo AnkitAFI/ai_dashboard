@@ -53,6 +53,7 @@ export function Footer() {
             <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Solutions</h4>
             <ul className="space-y-3">
               <li><Link href="/solutions/amazon-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Amazon Sellers</Link></li>
+              <li><Link href="/solutions/amazon-advertising" className="text-sm text-gray-400 hover:text-white transition-colors">Amazon Advertising</Link></li>
               <li><Link href="/solutions/flipkart-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Flipkart Sellers</Link></li>
               <li><Link href="/solutions/ecommerce-agencies" className="text-sm text-gray-400 hover:text-white transition-colors">Agencies</Link></li>
               <li><Link href="/solutions/brand-managers" className="text-sm text-gray-400 hover:text-white transition-colors">Brand Managers</Link></li>

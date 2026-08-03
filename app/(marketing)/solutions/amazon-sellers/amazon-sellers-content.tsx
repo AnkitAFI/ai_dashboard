@@ -147,17 +147,17 @@ export default function AmazonSellersContent() {
   const handleGetStarted = () => router.push("/signup");
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 pt-20">
+    <div className="min-h-screen bg-white dark:bg-gray-950 pt-12">
       {/* ── SECTION 1: HERO ──────────────────────────────────────────────────── */}
-      <section className="relative pt-32 pb-20 px-4 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-red-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
+      <section className="relative pt-12 pb-16 px-4 overflow-hidden bg-gradient-to-br from-orange-50 via-white to-red-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
         <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-orange-400 rounded-full blur-3xl"></div>
-          <div className="absolute top-40 right-10 w-96 h-96 bg-red-400 rounded-full blur-3xl"></div>
+          <div className="absolute top-10 left-10 w-72 h-72 bg-orange-400 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 right-10 w-96 h-96 bg-red-400 rounded-full blur-3xl"></div>
         </div>
 
         <div className="relative max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
+            <div className="space-y-6">
               <div className="inline-flex items-center gap-2 bg-orange-100 border border-orange-300 rounded-full px-4 py-2">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75"></span>

@@ -184,6 +184,24 @@ export default function SolutionsPage() {
       outcome: 'Better strategic decisions with data.',
       link: '/solutions/brand-managers',
       color: 'from-yellow-500 to-orange-500'
+    },
+    {
+      id: 'amazon-advertising',
+      icon: <BarChart3 className="w-10 h-10" />,
+      title: 'Amazon Advertising & PPC (COMING SOON)',
+      subtitle: 'For Amazon Advertisers & PPC Teams',
+      whoItsFor: 'Sellers, agencies & brands scaling Amazon Ads',
+      pain: 'High ACOS and bleeding search terms wasting 30%+ of ad spend every day.',
+      problems: [
+        'Automated search term harvesting & negative keyword rules',
+        'Target-ACOS deterministic bid optimization engine',
+        'Multi-marketplace TACoS & campaign profitability tracking',
+        '1-click Suggestions checklist or Auto-Pilot execution'
+      ],
+      microScenario: null,
+      outcome: 'Lower ACOS, harvest winners, scale profit.',
+      link: '/solutions/amazon-advertising',
+      color: 'from-purple-500 to-pink-500'
     }
   ];
 
@@ -217,6 +235,7 @@ export default function SolutionsPage() {
     { condition: 'Selling on Flipkart', solution: 'Flipkart Seller Solution', link: '/solutions/flipkart-sellers' },
     { condition: 'Managing multiple client accounts', solution: 'Agency Solution', link: '/solutions/ecommerce-agencies' },
     { condition: 'Category manager or brand team', solution: 'Brand Manager Solution', link: '/solutions/brand-managers' },
+    { condition: 'Optimizing Amazon PPC & Ad spend', solution: 'Amazon Advertising & PPC Solution', link: '/solutions/amazon-advertising' },
   ];
 
   const faqs: FAQItem[] = [
