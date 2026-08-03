@@ -1925,11 +1925,11 @@ export default function ShareOfVoice() {
                               <tbody>
                                 {aiInsights.product_gaps.map((g: any, idx: number) => (
                                   <tr key={idx} className="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                                    <td className="p-3 font-semibold text-slate-800 dark:text-slate-100">{g.format}</td>
+                                    <td className="p-3 font-semibold text-slate-800 dark:text-slate-100">{g.product_type || g.format || "-"}</td>
                                     <td className="p-3 text-right text-slate-600 dark:text-slate-300">{g.competitors_offering}</td>
                                     <td className="p-3 text-right text-slate-600 dark:text-slate-300">{g.avg_price}</td>
                                     <td className="p-3 text-right"><span className="text-yellow-600 dark:text-yellow-400 font-semibold">⭐ {g.avg_rating}</span></td>
-                                    <td className="p-3 text-right font-bold text-slate-700 dark:text-slate-300">{g.est_demand}</td>
+                                    <td className="p-3 text-right font-bold text-slate-700 dark:text-slate-300">{g.total_demand ?? g.est_demand ?? 0}</td>
                                     <td className="p-3 text-center"><OppBadge opp={g.opportunity} /></td>
                                   </tr>
                                 ))}
