@@ -534,8 +534,8 @@ export default function AmazonRepricingStrategyIndia2026Content() {
             bottom.
           </>
         }
-        authorName="Insydz Research Team"
-        authorUrl="/resources/expert-blog"
+        authorName="Vikrant Singh"
+        authorUrl="/author/vikrant-singh"
         publishDate="July 2026"
         readTime="11 min read"
         bgColor={{ light: "#EFF6FF", dark: "#0a1628" }}
