@@ -523,8 +523,8 @@ export default function PrimeDayIndia2026SellerQuestionsContent() {
             actually asking right now.
           </>
         }
-        authorName="Insydz Research Team"
-        authorUrl="/resources/expert-blog"
+        authorName="Vikrant Singh"
+        authorUrl="/author/vikrant-singh"
         publishDate="July 2026"
         readTime="13 min read"
         bgColor={{ light: "#FFF7ED", dark: "#1c0900" }}

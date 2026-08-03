@@ -13174,10 +13174,12 @@ def get_ai_insights(
                 demand = safe_int(gr[4])
                 product_gaps.append({
                     "product_type":         (str(gr[0]) or "")[:100],
+                    "format":               (str(gr[0]) or "")[:100],
                     "competitors_offering": safe_int(gr[1]),
                     "avg_price":            round(safe_float(gr[2]), 2),
                     "avg_rating":           round(safe_float(gr[3]), 2),
                     "total_demand":         demand,
+                    "est_demand":           demand,
                     "opportunity":          "High" if demand > 1000 else ("Medium" if demand > 500 else "Low"),
                 })
         except Exception as e:

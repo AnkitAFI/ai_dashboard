@@ -449,9 +449,9 @@ export default function AnalyzeAmazonReviewsIndiaContent() {
         badgeText="Review Intelligence · Data Story"
         title={
           <>
-            How to Analyze 500+{" "}
-            <span style={{ color: "#7C3AED" }}>Amazon India Reviews</span> in
-            Minutes and Find Your Biggest Product Opportunity
+            How to Analyze{" "}
+            <span style={{ color: "#7C3AED" }}>500+ Reviews</span> for Product
+            Opportunities
           </>
         }
         description={
@@ -463,8 +463,8 @@ export default function AnalyzeAmazonReviewsIndiaContent() {
             by hand, then in minutes.
           </>
         }
-        authorName="Insydz Research Team"
-        authorUrl="/resources/expert-blog"
+        authorName="Vikrant Singh"
+        authorUrl="/author/vikrant-singh"
         publishDate="July 2026"
         readTime="12 min read"
         bgColor={{ light: "#F5F3FF", dark: "#1a0a2e" }}
