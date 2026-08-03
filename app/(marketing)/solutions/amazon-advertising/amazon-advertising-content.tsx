@@ -155,8 +155,8 @@ const faqs: FAQItem[] = [
   },
   {
     id: "faq-7",
-    q: "Can I try Insydz for free?",
-    a: "Yes! You can sign up on our Free Plan with no credit card required. Connect your store in 2 minutes to inspect your seller metrics and track competitor prices.",
+    q: "Can I join the early access waitlist for Insydz Amazon Ads software?",
+    a: "Yes! You can sign up now with no credit card required to get notified on launch. Our upcoming Amazon Advertising & PPC optimization software connects directly to your advertising campaigns to help you scale profitably.",
   },
 ];
 
@@ -166,17 +166,17 @@ export default function AmazonAdvertisingContent() {
   const handleGetStarted = () => router.push("/signup");
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950 pt-20">
+    <div className="min-h-screen bg-white dark:bg-gray-950 pt-12">
       {/* ── SECTION 1: HERO ──────────────────────────────────────────────────── */}
-      <section className="relative pt-32 pb-20 px-4 overflow-hidden bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
+      <section className="relative pt-12 pb-16 px-4 overflow-hidden bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-950 dark:to-gray-900">
         <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-purple-400 rounded-full blur-3xl"></div>
-          <div className="absolute top-40 right-10 w-96 h-96 bg-pink-400 rounded-full blur-3xl"></div>
+          <div className="absolute top-10 left-10 w-72 h-72 bg-purple-400 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 right-10 w-96 h-96 bg-pink-400 rounded-full blur-3xl"></div>
         </div>
 
         <div className="relative max-w-7xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
+            <div className="space-y-6">
               <div className="inline-flex items-center gap-2 bg-purple-100 dark:bg-purple-900/40 border border-purple-300 dark:border-purple-700 rounded-full px-4 py-2">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-500 opacity-75"></span>
@@ -428,7 +428,7 @@ export default function AmazonAdvertisingContent() {
 
           <div className="grid lg:grid-cols-3 gap-12">
             {[
-              { step: "1", title: "Connect Your Store", desc: "Connect your Amazon seller store securely. No passwords are shared.", icon: <ShoppingBag className="w-10 h-10" />, color: "bg-purple-100 text-purple-600" },
+              { step: "1", title: "Connect Amazon Ads", desc: "Connect your Amazon Advertising account securely. We only request advertising campaign permissions—never store passwords.", icon: <BarChart3 className="w-10 h-10" />, color: "bg-purple-100 text-purple-600" },
               { step: "2", title: "Automated Daily Analysis", desc: "Every night, our engine scans your search term reports and checks your keyword profitability.", icon: <BarChart3 className="w-10 h-10" />, color: "bg-pink-100 text-pink-600" },
               { step: "3", title: "1-Click Approve", desc: "Review your daily checklist and click Approve in 1-click — you stay in 100% control of every bid change.", icon: <Zap className="w-10 h-10" />, color: "bg-green-100 text-green-600" },
             ].map((item, i) => (
