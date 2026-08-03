@@ -524,8 +524,8 @@ export default function SwitchExcelAiAmazonIndiaContent() {
             data that was 12 to 48 hours stale.
           </>
         }
-        authorName="Insydz Research Team"
-        authorUrl="/resources/expert-blog"
+        authorName="Vikrant Singh"
+        authorUrl="/author/vikrant-singh"
         publishDate="June 2026"
         readTime="10 min read"
         bgColor={{ light: "#FFF7ED", dark: "#1c0900" }}

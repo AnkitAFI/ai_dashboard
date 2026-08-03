@@ -56,6 +56,17 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "29",
+    title: " Agency Client Reporting Automation",
+    excerpt:
+      "Automate client reporting in under 5 minutes per client. Stop creating manual slides every week. This is the plug-and-play template agencies are using in 2026.",
+    category: "Seller Tools & Strategy",
+    readTime: "9 min read",
+    image: "/Report Less, Retain More.png",
+    route: "/resources/expert-blog/agency-client-reporting-automation",
+    popular: true,
+  },
+  {
     id: "28",
     title: "Amazon India Repricing Strategy 2026",
     excerpt:
@@ -184,7 +195,7 @@ const articles: Article[] = [
     category: "Flipkart Seller Tools & Strategy",
     readTime: "12 min read",
     image: "/Flipkart Analytics Tool.png",
-    route: "/resources/expert-blog/flipkart-seller-analytics-tool-india",
+    route: "/resources/expert-blog/best-flipkart-analytics-tool",
     popular: true,
   },
   {
