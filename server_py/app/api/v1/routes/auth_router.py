@@ -221,7 +221,7 @@ def mfa_verify_login(req: MFALoginRequest, request: Request, response: Response,
     # Helper to finish login
     def finish_login(user_obj):
         from app.api.v1.routes.legacy_router import (
-            create_session, delete_all_user_sessions, 
+            create_session, delete_all_user_sessions, enforce_device_limit,
             SESSION_EXPIRE_DAYS_NO_REMEMBER, SESSION_COOKIE_SECURE
         )
         from datetime import datetime
@@ -234,7 +234,7 @@ def mfa_verify_login(req: MFALoginRequest, request: Request, response: Response,
             
         user_agent = request.headers.get("user-agent")
 
-        delete_all_user_sessions(user_obj.id)
+        enforce_device_limit(user_obj.id, getattr(user_obj, "subscription_tier", "free"))
 
         session_token = create_session(
             user_id=user_obj.id,

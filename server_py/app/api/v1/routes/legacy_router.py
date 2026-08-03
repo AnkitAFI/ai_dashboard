@@ -6385,9 +6385,22 @@ def create_session(user_id: int, remember_me: bool = False, ip_address: str = No
             json.dumps(session_data)
         )
         
-        # Track session token under the user's set of active sessions
+        # Track session token under the user's sorted set of active sessions scored by timestamp
         user_sessions_key = f"user:sessions:{user_id}"
-        r.sadd(user_sessions_key, session_token)
+        now_ts = datetime.now().timestamp()
+        try:
+            r.zadd(user_sessions_key, {session_token: now_ts})
+        except redis.exceptions.ResponseError:
+            # Auto-migrate legacy plain Set to Sorted Set (ZSET)
+            try:
+                old_tokens = r.smembers(user_sessions_key)
+                r.delete(user_sessions_key)
+                mapping = {t.decode('utf-8') if isinstance(t, bytes) else t: now_ts for t in old_tokens}
+                mapping[session_token] = now_ts
+                r.zadd(user_sessions_key, mapping)
+            except Exception:
+                r.delete(user_sessions_key)
+                r.zadd(user_sessions_key, {session_token: now_ts})
         r.expire(user_sessions_key, expires_days * 24 * 60 * 60)
         
         return session_token
@@ -6419,23 +6432,96 @@ def delete_session(session_token: str):
             session_data = json.loads(data)
             user_id = session_data.get("user_id")
             if user_id:
-                r.srem(f"user:sessions:{user_id}", session_token)
+                try:
+                    r.zrem(f"user:sessions:{user_id}", session_token)
+                except Exception:
+                    r.srem(f"user:sessions:{user_id}", session_token)
         r.delete(key)
     except Exception as e:
         print(f"❌ Redis delete session error: {e}")
+
+def _get_user_session_tokens(user_id: int) -> list:
+    """
+    Retrieve user's session tokens ordered by oldest first.
+    Works natively with Sorted Set (ZSET) and falls back for legacy plain Sets.
+    """
+    user_sessions_key = f"user:sessions:{user_id}"
+    try:
+        tokens = r.zrange(user_sessions_key, 0, -1)
+        return [t.decode('utf-8') if isinstance(t, bytes) else t for t in tokens]
+    except redis.exceptions.ResponseError:
+        try:
+            tokens = r.smembers(user_sessions_key)
+            return [t.decode('utf-8') if isinstance(t, bytes) else t for t in tokens]
+        except Exception:
+            return []
+    except Exception:
+        return []
 
 def delete_all_user_sessions(user_id: int):
     """Delete all sessions for a specific user in O(1) without scanning"""
     try:
         user_sessions_key = f"user:sessions:{user_id}"
-        session_tokens = r.smembers(user_sessions_key)
+        session_tokens = _get_user_session_tokens(user_id)
         if session_tokens:
-            for token_bytes in session_tokens:
-                token = token_bytes.decode('utf-8') if isinstance(token_bytes, bytes) else token_bytes
+            for token in session_tokens:
                 r.delete(f"{SESSION_PREFIX}{token}")
         r.delete(user_sessions_key)
     except Exception as e:
         print(f"❌ Redis delete user sessions error: {e}")
+
+def get_user_device_limit(subscription_tier: str) -> int:
+    """
+    Returns the maximum concurrent device sessions allowed for a subscription tier.
+    - free: 1 device
+    - basic: 2 devices
+    - premium: 3 devices
+    - enterprise: 5 devices
+    """
+    tier = (subscription_tier or "free").lower().strip()
+    tier_limits = {
+        "free": 1,
+        "basic": 2,
+        "premium": 3,
+        "enterprise": 5
+    }
+    return tier_limits.get(tier, 1)
+
+def enforce_device_limit(user_id: int, subscription_tier: str = "free"):
+    """
+    Enforce concurrent device limit per subscription tier using Redis Sorted Set (ZSET) FIFO/LRU eviction.
+    Evicts oldest session(s) only when active sessions >= tier limit.
+    """
+    try:
+        max_devices = get_user_device_limit(subscription_tier)
+        user_sessions_key = f"user:sessions:{user_id}"
+        session_tokens = _get_user_session_tokens(user_id)
+        if not session_tokens:
+            return
+
+        valid_tokens = []
+        for token in session_tokens:
+            key = f"{SESSION_PREFIX}{token}"
+            if not r.exists(key):
+                try:
+                    r.zrem(user_sessions_key, token)
+                except Exception:
+                    r.srem(user_sessions_key, token)
+            else:
+                valid_tokens.append(token)
+
+        if len(valid_tokens) >= max_devices:
+            num_to_evict = len(valid_tokens) - max_devices + 1
+            oldest_tokens = valid_tokens[:num_to_evict]
+            for old_token in oldest_tokens:
+                r.delete(f"{SESSION_PREFIX}{old_token}")
+                try:
+                    r.zrem(user_sessions_key, old_token)
+                except Exception:
+                    r.srem(user_sessions_key, old_token)
+                print(f"🔄 Evicted oldest session {old_token[:8]}... for user {user_id} (Tier: {subscription_tier}, Limit: {max_devices})")
+    except Exception as e:
+        print(f"❌ Redis enforce_device_limit error: {e}")
 
 def get_current_user(session_id: str = Cookie(None), db: Session = Depends(get_db)):
     """Dependency to get current authenticated user"""
@@ -6864,9 +6950,8 @@ def login_user(login_data: UserLogin, response: Response, request: Request, db: 
             
         user_agent = request.headers.get("user-agent")
 
-        # Clear all old sessions before creating a new one
-        # This prevents duplicate device entries in Settings
-        delete_all_user_sessions(user.id)
+        # Enforce tier-based concurrent device limit (Free: 1, Basic: 2, Premium: 3, Enterprise: 5+)
+        enforce_device_limit(user.id, getattr(user, "subscription_tier", "free"))
 
         # Create session in Redis
         session_token = create_session(
@@ -7170,8 +7255,8 @@ def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Req
             
         user_agent = raw_request.headers.get("user-agent")
 
-        # Clear all old sessions before creating a new one
-        delete_all_user_sessions(user.id)
+        # Enforce tier-based concurrent device limit (Free: 1, Basic: 2, Premium: 3, Enterprise: 5+)
+        enforce_device_limit(user.id, getattr(user, "subscription_tier", "free"))
 
         # Create session
         session_token = create_session(
