@@ -1,15 +1,34 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  ChevronDown, ChevronRight, Users, Store, TrendingUp,
-  ShoppingBag, Briefcase, Target, Zap, ArrowRight,
-  CheckCircle2, Package, BarChart3, Globe,
-  MessageCircle, Bell, Search, TrendingDown,
-  Flame, Play, BellRing, Brain, Layers, RefreshCw
-} from 'lucide-react';
+  ChevronDown,
+  ChevronRight,
+  Users,
+  Store,
+  TrendingUp,
+  ShoppingBag,
+  Briefcase,
+  Target,
+  Zap,
+  ArrowRight,
+  CheckCircle2,
+  Package,
+  BarChart3,
+  Globe,
+  MessageCircle,
+  Bell,
+  Search,
+  TrendingDown,
+  Flame,
+  Play,
+  BellRing,
+  Brain,
+  Layers,
+  RefreshCw,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-static";
@@ -17,31 +36,69 @@ export const dynamic = "force-static";
 // ── Feature Mock UI Components ─────────────────────────────────────────────────
 function PriceTrackingMock() {
   const [pulse, setPulse] = useState(false);
-  useEffect(() => { const t = setInterval(() => setPulse(p => !p), 1600); return () => clearInterval(t); }, []);
+  useEffect(() => {
+    const t = setInterval(() => setPulse((p) => !p), 1600);
+    return () => clearInterval(t);
+  }, []);
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl border-2 border-gray-100 dark:border-gray-700 p-4 sm:p-5 shadow-lg">
       <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Live Price Monitor</span>
-        <span className={`flex items-center gap-1.5 text-xs font-semibold px-2 py-1 rounded-full ${pulse ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${pulse ? "bg-green-500" : "bg-orange-500"} animate-pulse`} />
+        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          Live Price Monitor
+        </span>
+        <span
+          className={`flex items-center gap-1.5 text-xs font-semibold px-2 py-1 rounded-full ${pulse ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`}
+        >
+          <span
+            className={`w-1.5 h-1.5 rounded-full ${pulse ? "bg-green-500" : "bg-orange-500"} animate-pulse`}
+          />
           {pulse ? "Monitoring" : "Alert Sent"}
         </span>
       </div>
       {[
-        { name: "Competitor A", price: "₹1,249", change: "-₹150", color: "text-red-600", bg: "bg-red-50" },
-        { name: "Your Product", price: "₹1,399", change: "₹0", color: "text-gray-500", bg: "bg-gray-50" },
-        { name: "Competitor B", price: "₹1,299", change: "-₹80", color: "text-orange-600", bg: "bg-orange-50" },
+        {
+          name: "Competitor A",
+          price: "₹1,249",
+          change: "-₹150",
+          color: "text-red-600",
+          bg: "bg-red-50",
+        },
+        {
+          name: "Your Product",
+          price: "₹1,399",
+          change: "₹0",
+          color: "text-gray-500",
+          bg: "bg-gray-50",
+        },
+        {
+          name: "Competitor B",
+          price: "₹1,299",
+          change: "-₹80",
+          color: "text-orange-600",
+          bg: "bg-orange-50",
+        },
       ].map((r, i) => (
-        <div key={i} className={`flex items-center justify-between p-2.5 sm:p-3 rounded-xl mb-2 ${r.bg} dark:bg-opacity-10`}>
-          <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">{r.name}</span>
+        <div
+          key={i}
+          className={`flex items-center justify-between p-2.5 sm:p-3 rounded-xl mb-2 ${r.bg} dark:bg-opacity-10`}
+        >
+          <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+            {r.name}
+          </span>
           <div className="flex items-center gap-2 sm:gap-3">
-            <span className={`text-xs font-semibold ${r.color}`}>{r.change}</span>
-            <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">{r.price}</span>
+            <span className={`text-xs font-semibold ${r.color}`}>
+              {r.change}
+            </span>
+            <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">
+              {r.price}
+            </span>
           </div>
         </div>
       ))}
       <div className="mt-2 sm:mt-3 p-2.5 sm:p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-xl flex items-center gap-2">
-        <span className="text-xs text-green-700 dark:text-green-400 font-medium">WhatsApp: Competitor A dropped ₹150. React now.</span>
+        <span className="text-xs text-green-700 dark:text-green-400 font-medium">
+          WhatsApp: Competitor A dropped ₹150. React now.
+        </span>
       </div>
     </div>
   );
@@ -58,23 +115,34 @@ function ReviewAnalyticsMock() {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl border-2 border-gray-100 dark:border-gray-700 p-4 sm:p-5 shadow-lg">
       <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Review Intelligence</span>
-        <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-full">2,841 reviews</span>
+        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          Review Intelligence
+        </span>
+        <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
+          2,841 reviews
+        </span>
       </div>
       <div className="space-y-1.5 sm:space-y-2 mb-3 sm:mb-4">
         {bars.map((b, i) => (
           <div key={i} className="flex items-center gap-2">
             <span className="text-xs w-6 text-gray-500">{b.label}</span>
             <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full h-1.5 sm:h-2">
-              <div className={`${b.color} h-1.5 sm:h-2 rounded-full transition-all`} style={{ width: `${b.pct}%` }} />
+              <div
+                className={`${b.color} h-1.5 sm:h-2 rounded-full transition-all`}
+                style={{ width: `${b.pct}%` }}
+              />
             </div>
             <span className="text-xs text-gray-500 w-7">{b.pct}%</span>
           </div>
         ))}
       </div>
       <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl p-2.5 sm:p-3">
-        <p className="text-xs font-semibold text-red-700 dark:text-red-400 mb-1">⚠ Top complaint (23 mentions)</p>
-        <p className="text-xs text-red-600 dark:text-red-300">"Packaging damaged during delivery" fix to improve rating</p>
+        <p className="text-xs font-semibold text-red-700 dark:text-red-400 mb-1">
+          ⚠ Top complaint (23 mentions)
+        </p>
+        <p className="text-xs text-red-600 dark:text-red-300">
+          "Packaging damaged during delivery" fix to improve rating
+        </p>
       </div>
     </div>
   );
@@ -84,24 +152,51 @@ function PriceOptMock() {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl border-2 border-gray-100 dark:border-gray-700 p-4 sm:p-5 shadow-lg">
       <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">AI Price Suggestion</span>
-        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">Updated 2m ago</span>
+        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          AI Price Suggestion
+        </span>
+        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+          Updated 2m ago
+        </span>
       </div>
       <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-3 sm:mb-4">
         {[
-          { label: "Current", value: "₹1,399", note: "Your price", color: "border-gray-200" },
-          { label: "Suggested", value: "₹1,279", note: "+12% sales", color: "border-orange-400 bg-orange-50 dark:bg-orange-900/20" },
-          { label: "Floor", value: "₹1,180", note: "Min margin", color: "border-gray-200" },
+          {
+            label: "Current",
+            value: "₹1,399",
+            note: "Your price",
+            color: "border-gray-200",
+          },
+          {
+            label: "Suggested",
+            value: "₹1,279",
+            note: "+12% sales",
+            color: "border-orange-400 bg-orange-50 dark:bg-orange-900/20",
+          },
+          {
+            label: "Floor",
+            value: "₹1,180",
+            note: "Min margin",
+            color: "border-gray-200",
+          },
         ].map((c, i) => (
-          <div key={i} className={`rounded-xl border-2 p-2 sm:p-3 text-center ${c.color}`}>
+          <div
+            key={i}
+            className={`rounded-xl border-2 p-2 sm:p-3 text-center ${c.color}`}
+          >
             <p className="text-xs text-gray-500 mb-0.5 sm:mb-1">{c.label}</p>
-            <p className="text-sm sm:text-base font-black text-gray-900 dark:text-white">{c.value}</p>
+            <p className="text-sm sm:text-base font-black text-gray-900 dark:text-white">
+              {c.value}
+            </p>
             <p className="text-xs text-gray-400">{c.note}</p>
           </div>
         ))}
       </div>
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl p-2.5 sm:p-3">
-        <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">AI: Drop ₹120 now — competitors are ₹1,249. Win more Buy Box without hurting margins.</p>
+        <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+          AI: Drop ₹120 now — competitors are ₹1,249. Win more Buy Box without
+          hurting margins.
+        </p>
       </div>
     </div>
   );
@@ -109,24 +204,57 @@ function PriceOptMock() {
 
 function KeywordMock() {
   const kws = [
-    { kw: "wireless earbuds india", rank: 3, change: +2, color: "text-green-600" },
-    { kw: "bluetooth earphones under 1500", rank: 7, change: -1, color: "text-red-500" },
-    { kw: "boat earbuds amazon", rank: 12, change: +5, color: "text-green-600" },
-    { kw: "noise cancelling earbuds", rank: 18, change: 0, color: "text-gray-400" },
+    {
+      kw: "wireless earbuds india",
+      rank: 3,
+      change: +2,
+      color: "text-green-600",
+    },
+    {
+      kw: "bluetooth earphones under 1500",
+      rank: 7,
+      change: -1,
+      color: "text-red-500",
+    },
+    {
+      kw: "boat earbuds amazon",
+      rank: 12,
+      change: +5,
+      color: "text-green-600",
+    },
+    {
+      kw: "noise cancelling earbuds",
+      rank: 18,
+      change: 0,
+      color: "text-gray-400",
+    },
   ];
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl border-2 border-gray-100 dark:border-gray-700 p-4 sm:p-5 shadow-lg">
       <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Keyword Rankings</span>
-        <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">Daily update</span>
+        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          Keyword Rankings
+        </span>
+        <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">
+          Daily update
+        </span>
       </div>
       <div className="space-y-1.5 sm:space-y-2">
         {kws.map((k, i) => (
-          <div key={i} className="flex items-center gap-2 p-2 sm:p-2.5 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <div
+            key={i}
+            className="flex items-center gap-2 p-2 sm:p-2.5 bg-gray-50 dark:bg-gray-800 rounded-xl"
+          >
             <span className="text-xs text-gray-400 w-5">#{k.rank}</span>
-            <span className="text-xs flex-1 text-gray-700 dark:text-gray-300 truncate">{k.kw}</span>
+            <span className="text-xs flex-1 text-gray-700 dark:text-gray-300 truncate">
+              {k.kw}
+            </span>
             <span className={`text-xs font-bold ${k.color}`}>
-              {k.change > 0 ? `↑${k.change}` : k.change < 0 ? `↓${Math.abs(k.change)}` : "–"}
+              {k.change > 0
+                ? `↑${k.change}`
+                : k.change < 0
+                  ? `↓${Math.abs(k.change)}`
+                  : "–"}
             </span>
           </div>
         ))}
@@ -139,12 +267,18 @@ function ProductResearchMock() {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl border-2 border-gray-100 dark:border-gray-700 p-4 sm:p-5 shadow-lg">
       <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Opportunity Score</span>
-        <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-full">High Demand</span>
+        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          Opportunity Score
+        </span>
+        <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-full">
+          High Demand
+        </span>
       </div>
       <div className="text-center mb-3 sm:mb-4">
         <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-4 border-orange-400 flex items-center justify-center mx-auto mb-2">
-          <span className="text-xl sm:text-2xl font-black text-orange-600">87</span>
+          <span className="text-xl sm:text-2xl font-black text-orange-600">
+            87
+          </span>
         </div>
         <p className="text-xs text-gray-500">out of 100</p>
       </div>
@@ -155,11 +289,18 @@ function ProductResearchMock() {
           { label: "Margin Potential", val: 78, color: "bg-blue-500" },
         ].map((m, i) => (
           <div key={i} className="flex items-center gap-2">
-            <span className="text-xs text-gray-500 w-24 sm:w-28">{m.label}</span>
+            <span className="text-xs text-gray-500 w-24 sm:w-28">
+              {m.label}
+            </span>
             <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full h-1.5 sm:h-2">
-              <div className={`${m.color} h-1.5 sm:h-2 rounded-full`} style={{ width: `${m.val}%` }} />
+              <div
+                className={`${m.color} h-1.5 sm:h-2 rounded-full`}
+                style={{ width: `${m.val}%` }}
+              />
             </div>
-            <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 w-7 sm:w-8">{m.val}%</span>
+            <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 w-7 sm:w-8">
+              {m.val}%
+            </span>
           </div>
         ))}
       </div>
@@ -169,23 +310,48 @@ function ProductResearchMock() {
 
 function AIMock() {
   const insights = [
-    {  text: "Reduce price by ₹80 to recapture Buy Box 3 competitors below you", tag: "Pricing", tagColor: "bg-orange-100 text-orange-700" },
-    {  text: "Improve packaging: 31 reviews mention damage in transit this month", tag: "Product", tagColor: "bg-red-100 text-red-700" },
-    {  text: "You lost rank for 'wireless earbuds' add keyword to title", tag: "SEO", tagColor: "bg-blue-100 text-blue-700" },
+    {
+      text: "Reduce price by ₹80 to recapture Buy Box 3 competitors below you",
+      tag: "Pricing",
+      tagColor: "bg-orange-100 text-orange-700",
+    },
+    {
+      text: "Improve packaging: 31 reviews mention damage in transit this month",
+      tag: "Product",
+      tagColor: "bg-red-100 text-red-700",
+    },
+    {
+      text: "You lost rank for 'wireless earbuds' add keyword to title",
+      tag: "SEO",
+      tagColor: "bg-blue-100 text-blue-700",
+    },
   ];
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl border-2 border-gray-100 dark:border-gray-700 p-4 sm:p-5 shadow-lg">
       <div className="flex items-center gap-2 mb-3 sm:mb-4">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">AI Recommendations</span>
-        <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-full">3 new today</span>
+        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          AI Recommendations
+        </span>
+        <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-1 rounded-full">
+          3 new today
+        </span>
       </div>
       <div className="space-y-2 sm:space-y-3">
         {insights.map((ins, i) => (
-          <div key={i} className="p-2.5 sm:p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+          <div
+            key={i}
+            className="p-2.5 sm:p-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700"
+          >
             <div className="flex items-start gap-2">
               <div className="flex-1">
-                <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">{ins.text}</p>
-                <span className={`inline-block mt-1 sm:mt-1.5 text-xs font-semibold px-2 py-0.5 rounded-full ${ins.tagColor}`}>{ins.tag}</span>
+                <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {ins.text}
+                </p>
+                <span
+                  className={`inline-block mt-1 sm:mt-1.5 text-xs font-semibold px-2 py-0.5 rounded-full ${ins.tagColor}`}
+                >
+                  {ins.tag}
+                </span>
               </div>
             </div>
           </div>
@@ -198,7 +364,7 @@ function AIMock() {
 function WhatsAppMock() {
   const [visible, setVisible] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setVisible(v => Math.min(v + 1, 3)), 900);
+    const t = setInterval(() => setVisible((v) => Math.min(v + 1, 3)), 900);
     return () => clearInterval(t);
   }, []);
   const msgs = [
@@ -219,12 +385,21 @@ function WhatsAppMock() {
       </div>
       <div className="space-y-1.5 sm:space-y-2">
         {msgs.slice(0, visible).map((m, i) => (
-          <div key={i} className="bg-[#1f2c34] rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 max-w-[90%]">
+          <div
+            key={i}
+            className="bg-[#1f2c34] rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 max-w-[90%]"
+          >
             <p className="text-xs text-gray-200 leading-relaxed">{m}</p>
-            <p className="text-xs text-gray-500 mt-0.5 sm:mt-1 text-right">✓✓</p>
+            <p className="text-xs text-gray-500 mt-0.5 sm:mt-1 text-right">
+              ✓✓
+            </p>
           </div>
         ))}
-        {visible === 0 && <p className="text-xs text-gray-600 text-center pt-3 sm:pt-4">Simulating alerts...</p>}
+        {visible === 0 && (
+          <p className="text-xs text-gray-600 text-center pt-3 sm:pt-4">
+            Simulating alerts...
+          </p>
+        )}
       </div>
     </div>
   );
@@ -239,27 +414,44 @@ function FestiveTrendMock() {
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl border-2 border-gray-100 dark:border-gray-700 p-4 sm:p-5 shadow-lg">
       <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Festive Demand Forecast</span>
-        <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-full">🔥 Upcoming</span>
+        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          Festive Demand Forecast
+        </span>
+        <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2 py-1 rounded-full">
+          🔥 Upcoming
+        </span>
       </div>
       <div className="space-y-2 sm:space-y-3 mb-3 sm:mb-4">
         {festivals.map((f, i) => (
-          <div key={i} className="p-2.5 sm:p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
+          <div
+            key={i}
+            className="p-2.5 sm:p-3 bg-gray-50 dark:bg-gray-800 rounded-xl"
+          >
             <div className="flex items-center justify-between mb-1.5 sm:mb-2">
-              <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">{f.name}</span>
+              <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white">
+                {f.name}
+              </span>
               <span className="text-xs text-gray-500">in {f.days} days</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 sm:h-2">
-                <div className={`${f.color} h-1.5 sm:h-2 rounded-full`} style={{ width: `${f.demand}%` }} />
+                <div
+                  className={`${f.color} h-1.5 sm:h-2 rounded-full`}
+                  style={{ width: `${f.demand}%` }}
+                />
               </div>
-              <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 w-7 sm:w-8">{f.demand}%</span>
+              <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 w-7 sm:w-8">
+                {f.demand}%
+              </span>
             </div>
           </div>
         ))}
       </div>
       <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-xl p-2.5 sm:p-3">
-        <p className="text-xs text-orange-700 dark:text-orange-300 font-medium">Stock up on earbuds now — Diwali demand peaks 12 days out. Competitors already raising prices.</p>
+        <p className="text-xs text-orange-700 dark:text-orange-300 font-medium">
+          Stock up on earbuds now — Diwali demand peaks 12 days out. Competitors
+          already raising prices.
+        </p>
       </div>
     </div>
   );
@@ -283,35 +475,67 @@ interface FeatureSectionProps {
   bg?: string;
 }
 
-function FeatureSection({ id, tag, tagColor, h2, desc, outcomes, howItWorks, scenario, route, mock, flip, gradient, icon, bg }: FeatureSectionProps) {
+function FeatureSection({
+  id,
+  tag,
+  tagColor,
+  h2,
+  desc,
+  outcomes,
+  howItWorks,
+  scenario,
+  route,
+  mock,
+  flip,
+  gradient,
+  icon,
+  bg,
+}: FeatureSectionProps) {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <section id={id} className={`py-12 sm:py-14 md:py-16 px-4 ${bg || "bg-white dark:bg-gray-950"}`}>
+    <section
+      id={id}
+      className={`py-12 sm:py-14 md:py-16 px-4 ${bg || "bg-white dark:bg-gray-950"}`}
+    >
       <div className="max-w-6xl mx-auto">
-        <div className={`grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 items-center ${flip ? "lg:grid-flow-col" : ""}`}>
+        <div
+          className={`grid lg:grid-cols-2 gap-8 sm:gap-10 md:gap-12 items-center ${flip ? "lg:grid-flow-col" : ""}`}
+        >
           {/* Text Side */}
           <div className={flip ? "lg:order-2" : ""}>
             <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-              <div className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center text-white flex-shrink-0`}>
+              <div
+                className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center text-white flex-shrink-0`}
+              >
                 {icon}
               </div>
               {tag && (
-                <span className={`text-xs font-bold px-2 sm:px-3 py-1 rounded-full ${tagColor || "bg-orange-100 text-orange-700"}`}>
+                <span
+                  className={`text-xs font-bold px-2 sm:px-3 py-1 rounded-full ${tagColor || "bg-orange-100 text-orange-700"}`}
+                >
                   {tag}
                 </span>
               )}
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-2 sm:mb-3 leading-tight">{h2}</h2>
-            <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm md:text-base leading-relaxed mb-4 sm:mb-5">{desc}</p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-2 sm:mb-3 leading-tight">
+              {h2}
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm md:text-base leading-relaxed mb-4 sm:mb-5">
+              {desc}
+            </p>
 
             <div className="space-y-1.5 sm:space-y-2 mb-4 sm:mb-6">
               {outcomes.map((o, i) => (
                 <div key={i} className="flex items-center gap-2 sm:gap-3">
-                  <div className={`w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br ${gradient} rounded-full flex items-center justify-center flex-shrink-0`}>
+                  <div
+                    className={`w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br ${gradient} rounded-full flex items-center justify-center flex-shrink-0`}
+                  >
                     <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white" />
                   </div>
-                  <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 font-medium">{o}</span>
+                  <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 font-medium">
+                    {o}
+                  </span>
                 </div>
               ))}
             </div>
@@ -320,30 +544,44 @@ function FeatureSection({ id, tag, tagColor, h2, desc, outcomes, howItWorks, sce
               onClick={() => setExpanded(!expanded)}
               className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-orange-600 hover:text-orange-700 mb-3 sm:mb-4 group"
             >
-              <Play className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform ${expanded ? "rotate-90" : ""}`} />
+              <Play
+                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform ${expanded ? "rotate-90" : ""}`}
+              />
               {expanded ? "Hide details" : "See how this works"}
             </button>
 
             {expanded && (
               <div className="mb-4 sm:mb-5 space-y-2 sm:space-y-3">
                 <div className="p-3 sm:p-4 bg-orange-50 dark:bg-orange-900/20 border-l-4 border-orange-500 rounded-r-xl">
-                  <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{howItWorks}</p>
+                  <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {howItWorks}
+                  </p>
                 </div>
                 {scenario && (
                   <div className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl">
-                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1 sm:mb-2">📌 Real Scenario</p>
-                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed italic">{scenario}</p>
+                    <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1 sm:mb-2">
+                      📌 Real Scenario
+                    </p>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed italic">
+                      {scenario}
+                    </p>
                   </div>
                 )}
               </div>
             )}
 
             <div className="flex flex-wrap gap-2 sm:gap-3">
-              <Link href={route} className={`bg-gradient-to-r ${gradient} text-white font-bold px-5 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-lg hover:shadow-xl transition-all inline-flex items-center text-xs sm:text-sm`}>
+              <Link
+                href={route}
+                className={`bg-gradient-to-r ${gradient} text-white font-bold px-5 sm:px-6 py-2 sm:py-2.5 rounded-full shadow-lg hover:shadow-xl transition-all inline-flex items-center text-xs sm:text-sm`}
+              >
                 View Feature
                 <ArrowRight className="ml-1 w-3.5 h-3.5 sm:w-4 sm:h-4" />
               </Link>
-              <Link href="/signup" className="border-2 border-orange-300 text-orange-600 hover:bg-orange-50 font-semibold px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm inline-block transition-all">
+              <Link
+                href="/signup"
+                className="border-2 border-orange-300 text-orange-600 hover:bg-orange-50 font-semibold px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm inline-block transition-all"
+              >
                 Try free
               </Link>
             </div>
@@ -368,9 +606,16 @@ export default function AllFeaturesPage() {
       id: "price-tracking",
       h2: "Competitor Price Tracking React Before You Lose the Buy Box",
       desc: "Track every competitor price movement across Amazon India and Flipkart in real time. Not once a day. Continuously. When a competitor drops their price by ₹150 at 11 PM, Insydz catches it, calculates the impact on your Buy Box position, and pings you on WhatsApp before you wake up and before you lose sales.",
-      outcomes: ["Real-time price change detection across unlimited competitors", "Floor price alerts so you never discount below your margin", "Buy Box win/loss tracking with actionable guidance", "Price history graphs to spot seasonal patterns"],
-      howItWorks: "Insydz monitors every competitor listing linked to your products 24/7. The moment a price drops beyond your threshold, you get an instant WhatsApp alert with the competitor name, ASIN, price change, and a recommended response so you can act in minutes, not hours.",
-      scenario: "A Bluetooth earbuds seller in Chennai tracks 8 competitors. When one drops to ₹1,249, Insydz sends a WhatsApp alert: 'Competitor A dropped ₹150. Your Buy Box is at risk. Suggested response: ₹1,279 (+12% sales, above floor price).' He acts in 8 minutes. Buy Box secured.",
+      outcomes: [
+        "Real-time price change detection across unlimited competitors",
+        "Floor price alerts so you never discount below your margin",
+        "Buy Box win/loss tracking with actionable guidance",
+        "Price history graphs to spot seasonal patterns",
+      ],
+      howItWorks:
+        "Insydz monitors every competitor listing linked to your products 24/7. The moment a price drops beyond your threshold, you get an instant WhatsApp alert with the competitor name, ASIN, price change, and a recommended response so you can act in minutes, not hours.",
+      scenario:
+        "A Bluetooth earbuds seller in Chennai tracks 8 competitors. When one drops to ₹1,249, Insydz sends a WhatsApp alert: 'Competitor A dropped ₹150. Your Buy Box is at risk. Suggested response: ₹1,279 (+12% sales, above floor price).' He acts in 8 minutes. Buy Box secured.",
       route: "/features/competitor-price-tracking-feature",
       mock: <PriceTrackingMock />,
       gradient: "from-orange-500 to-red-500",
@@ -381,9 +626,16 @@ export default function AllFeaturesPage() {
       id: "review-analytics",
       h2: "Review Analytics Analyze Amazon Reviews Automatically",
       desc: "Most Indian sellers read reviews only when something goes wrong. By then, 30+ customers have already seen the complaints and chosen a competitor. Insydz automatically analyzes thousands of customer reviews across your listings to surface patterns, complaint clusters, and product improvement opportunities before they tank your rating.",
-      outcomes: ["Automated theme detection: packaging complaints, size issues, delivery damage", "Sentiment tracking over time are ratings improving or declining?", "Competitor review gaps: what customers love about rivals that you're missing", "Actionable fix suggestions tied to review patterns"],
-      howItWorks: "Insydz ingests all reviews for your products and competitors, runs sentiment analysis, clusters repeated complaints, and surfaces the top 3 things customers hate and love. You get a weekly digest and real-time flag when a new complaint pattern emerges.",
-      scenario: "A kitchenware seller in Delhi notices her 4-star product keeps getting reviews mentioning 'handle broke after 2 weeks.' She didn't catch it for 6 weeks 23 mentions went unaddressed. With Insydz review analytics, the complaint cluster surfaces in day 3, tagged and prioritized. She sources a better handle. Rating goes from 4.1 to 4.6 in 8 weeks.",
+      outcomes: [
+        "Automated theme detection: packaging complaints, size issues, delivery damage",
+        "Sentiment tracking over time are ratings improving or declining?",
+        "Competitor review gaps: what customers love about rivals that you're missing",
+        "Actionable fix suggestions tied to review patterns",
+      ],
+      howItWorks:
+        "Insydz ingests all reviews for your products and competitors, runs sentiment analysis, clusters repeated complaints, and surfaces the top 3 things customers hate and love. You get a weekly digest and real-time flag when a new complaint pattern emerges.",
+      scenario:
+        "A kitchenware seller in Delhi notices her 4-star product keeps getting reviews mentioning 'handle broke after 2 weeks.' She didn't catch it for 6 weeks 23 mentions went unaddressed. With Insydz review analytics, the complaint cluster surfaces in day 3, tagged and prioritized. She sources a better handle. Rating goes from 4.1 to 4.6 in 8 weeks.",
       route: "/features/review-analytics-feature",
       mock: <ReviewAnalyticsMock />,
       flip: true,
@@ -395,9 +647,16 @@ export default function AllFeaturesPage() {
       id: "price-optimization",
       h2: "AI Price Optimization Stop Guessing, Start Winning",
       desc: "Pricing on Amazon India isn't about being the cheapest. It's about pricing at the exact point where you win the most sales without destroying your margin. Insydz uses competitor data, demand signals, and market trends to generate AI-backed pricing suggestions specific to your product, your category, and your margin structure.",
-      outcomes: ["AI price suggestions updated in real time based on live competitor pricing", "Demand-adjusted recommendations during festive seasons and sales events", "Clear 'suggested vs floor' breakdowns in INR", "No more manual spreadsheet repricing"],
-      howItWorks: "The AI analyses your current price, floor price, competitor landscape, and historical demand patterns to recommend an optimal price point. It factors in festive periods, competitor gaps, and Buy Box velocity — giving you one clear number with a reason.",
-      scenario: "A fashion accessories seller in Mumbai is pricing at ₹1,399. Insydz's AI price engine shows: Suggested ₹1,279 (+12% projected sales), Floor ₹1,180 (minimum margin). It flags: 'Drop ₹120 now — 3 competitors are at ₹1,249. Win more Buy Box without hurting margins.' She makes the change. Sales jump 18% in 3 days.",
+      outcomes: [
+        "AI price suggestions updated in real time based on live competitor pricing",
+        "Demand-adjusted recommendations during festive seasons and sales events",
+        "Clear 'suggested vs floor' breakdowns in INR",
+        "No more manual spreadsheet repricing",
+      ],
+      howItWorks:
+        "The AI analyses your current price, floor price, competitor landscape, and historical demand patterns to recommend an optimal price point. It factors in festive periods, competitor gaps, and Buy Box velocity — giving you one clear number with a reason.",
+      scenario:
+        "A fashion accessories seller in Mumbai is pricing at ₹1,399. Insydz's AI price engine shows: Suggested ₹1,279 (+12% projected sales), Floor ₹1,180 (minimum margin). It flags: 'Drop ₹120 now — 3 competitors are at ₹1,249. Win more Buy Box without hurting margins.' She makes the change. Sales jump 18% in 3 days.",
       route: "/features/price-optimization-feature",
       mock: <PriceOptMock />,
       gradient: "from-blue-500 to-cyan-500",
@@ -408,9 +667,16 @@ export default function AllFeaturesPage() {
       id: "keyword-tracking",
       h2: "Keyword & Rank Tracking Own the Search Results on Amazon & Flipkart",
       desc: "If customers can't find your product, price and quality don't matter. Keyword rank on Amazon India and Flipkart is the invisible lever that controls your visibility and most sellers have no idea where they stand. Insydz tracks your daily keyword rankings, shows you exactly what your competitors rank for, and recommends the actions that will improve your organic visibility.",
-      outcomes: ["Daily rank tracking for all target keywords on Amazon India & Flipkart", "Competitor keyword gap analysis keywords they rank for that you don't", "Rank movement alerts: when you drop, Insydz tells you why and what to fix", "SEO action recommendations: title updates, backend keyword fixes, A+ content suggestions"],
-      howItWorks: "Enter your target keywords and competitor ASINs. Insydz tracks rank positions daily, shows movement trends, identifies keyword gaps your competitors exploit, and alerts you when you drop significantly so you can update listings before traffic drops.",
-      scenario: "An electronics reseller in Hyderabad is losing rank for 'noise cancelling earbuds under 2000.' Insydz shows: Rank #12 → dropped 5 spots this week. Competitor A added this exact keyword to their title. Insydz recommends: 'Add to product title. Expected rank improvement: +4–6 positions.' He updates the title. Rank recovers in 11 days.",
+      outcomes: [
+        "Daily rank tracking for all target keywords on Amazon India & Flipkart",
+        "Competitor keyword gap analysis keywords they rank for that you don't",
+        "Rank movement alerts: when you drop, Insydz tells you why and what to fix",
+        "SEO action recommendations: title updates, backend keyword fixes, A+ content suggestions",
+      ],
+      howItWorks:
+        "Enter your target keywords and competitor ASINs. Insydz tracks rank positions daily, shows movement trends, identifies keyword gaps your competitors exploit, and alerts you when you drop significantly so you can update listings before traffic drops.",
+      scenario:
+        "An electronics reseller in Hyderabad is losing rank for 'noise cancelling earbuds under 2000.' Insydz shows: Rank #12 → dropped 5 spots this week. Competitor A added this exact keyword to their title. Insydz recommends: 'Add to product title. Expected rank improvement: +4–6 positions.' He updates the title. Rank recovers in 11 days.",
       route: "/features/keyword-rank-tracking-feature",
       mock: <KeywordMock />,
       flip: true,
@@ -422,9 +688,16 @@ export default function AllFeaturesPage() {
       id: "product-research",
       h2: "Product Research — Find What Sells Before You Invest a Rupee",
       desc: "The most expensive mistake in Indian e-commerce is sourcing the wrong product. A product that looks promising in a marketplace browse can have crushing competition, thin margins, and a 2.8-star review average all invisible until after you've paid a manufacturer. Insydz's product research tool gives you an Opportunity Score for any product before you launch.",
-      outcomes: ["Opportunity Score out of 100 combining demand, competition, and margin potential", "Search demand data: how many buyers are actively looking", "Competition level: how hard is it to rank and win sales in this category?", "Margin potential: can this product actually make money at current market prices?"],
-      howItWorks: "Search any category or keyword. Insydz scores each opportunity on demand volume, competition density, average margins, and review sentiment giving you an Opportunity Score so you can compare and prioritize before committing inventory.",
-      scenario: "A new seller in Coimbatore is deciding between two product ideas. Product A: Score 87/100 Search Demand 92%, Competition 34%, Margin Potential 78%. Product B: Score 41/100 flooded category, thin margins. He goes with Product A. Sells ₹1.2L in the first month without any paid ads.",
+      outcomes: [
+        "Opportunity Score out of 100 combining demand, competition, and margin potential",
+        "Search demand data: how many buyers are actively looking",
+        "Competition level: how hard is it to rank and win sales in this category?",
+        "Margin potential: can this product actually make money at current market prices?",
+      ],
+      howItWorks:
+        "Search any category or keyword. Insydz scores each opportunity on demand volume, competition density, average margins, and review sentiment giving you an Opportunity Score so you can compare and prioritize before committing inventory.",
+      scenario:
+        "A new seller in Coimbatore is deciding between two product ideas. Product A: Score 87/100 Search Demand 92%, Competition 34%, Margin Potential 78%. Product B: Score 41/100 flooded category, thin margins. He goes with Product A. Sells ₹1.2L in the first month without any paid ads.",
       route: "/features/product-research-feature",
       mock: <ProductResearchMock />,
       gradient: "from-yellow-500 to-orange-500",
@@ -435,9 +708,16 @@ export default function AllFeaturesPage() {
       id: "ai-recommendations",
       h2: "AI Recommendations Know Exactly What to Do Next",
       desc: "Data without direction is noise. Most Amazon seller tools give you charts and leave you to figure out what to do. Insydz gives you a clear, prioritized action list every day so you always know your next move. No dashboard fatigue. No missed alerts buried in a report. Just three things that will move your business forward today.",
-      outcomes: ["Daily AI-generated action recommendations across pricing, SEO, and product quality", "Priority-ranked actions: highest-impact tasks surface first", "Cross-feature intelligence: one recommendation combines insights from price, review, and keyword data", "Clear next steps tied to specific products and listings"],
-      howItWorks: "Every morning, Insydz's AI synthesizes your price data, reviews, keyword movements, and competitor actions into a prioritized recommendation list. Each card explains what changed, why it matters, and exactly what you should do in plain language.",
-      scenario: "A D2C skincare brand in Pune logs into Insydz. Three recommendations waiting: (1) Pricing 'Reduce price by ₹80 to recapture Buy Box 3 competitors are below you.' (2) Product 'Improve packaging: 31 reviews mention damage in transit this month.' (3) SEO 'You lost rank for wireless earbuds add keyword to title.' Three actions. Twenty minutes. Done.",
+      outcomes: [
+        "Daily AI-generated action recommendations across pricing, SEO, and product quality",
+        "Priority-ranked actions: highest-impact tasks surface first",
+        "Cross-feature intelligence: one recommendation combines insights from price, review, and keyword data",
+        "Clear next steps tied to specific products and listings",
+      ],
+      howItWorks:
+        "Every morning, Insydz's AI synthesizes your price data, reviews, keyword movements, and competitor actions into a prioritized recommendation list. Each card explains what changed, why it matters, and exactly what you should do in plain language.",
+      scenario:
+        "A D2C skincare brand in Pune logs into Insydz. Three recommendations waiting: (1) Pricing 'Reduce price by ₹80 to recapture Buy Box 3 competitors are below you.' (2) Product 'Improve packaging: 31 reviews mention damage in transit this month.' (3) SEO 'You lost rank for wireless earbuds add keyword to title.' Three actions. Twenty minutes. Done.",
       route: "/features/ai-recommendations-feature",
       mock: <AIMock />,
       flip: true,
@@ -451,9 +731,16 @@ export default function AllFeaturesPage() {
       tagColor: "bg-green-100 text-green-700",
       h2: "WhatsApp Alerts Critical Seller Alerts, Delivered Where You Actually Are",
       desc: "Indian sellers don't sit at a desktop refreshing dashboards. You're at a factory, at a warehouse, on a call, or managing a family business from a phone. That's why Insydz delivers all critical alerts directly to WhatsApp. When something changes that needs your attention price drop, rank fall, review spike you hear about it in seconds, not hours.",
-      outcomes: ["Instant WhatsApp notifications for price changes, Buy Box loss, and rank drops", "Formatted alerts with context: what happened, what's at risk, and what to do", "No more missed emails, ignored push notifications, or skipped dashboards", "Configurable alert types: choose what you want to be notified about"],
-      howItWorks: "Connect your WhatsApp number in one click. You choose which events trigger alerts competitor price drops, Buy Box loss, ranking falls, review spikes. Each alert includes the context and a recommended action. No login required to act.",
-      scenario: "It's 9:30 PM. A kitchenware seller from Rajkot is done for the day. His phone buzzes on WhatsApp: 'Insydz Alert: Competitor A dropped to ₹1,249 (−₹150). Buy Box at risk for ASIN B08X7GH21K act within 2 hours.' He adjusts price from his phone. WhatsApp confirms: 'You updated to ₹1,269. Buy Box secured.' Total time: 4 minutes.",
+      outcomes: [
+        "Instant WhatsApp notifications for price changes, Buy Box loss, and rank drops",
+        "Formatted alerts with context: what happened, what's at risk, and what to do",
+        "No more missed emails, ignored push notifications, or skipped dashboards",
+        "Configurable alert types: choose what you want to be notified about",
+      ],
+      howItWorks:
+        "Connect your WhatsApp number in one click. You choose which events trigger alerts competitor price drops, Buy Box loss, ranking falls, review spikes. Each alert includes the context and a recommended action. No login required to act.",
+      scenario:
+        "It's 9:30 PM. A kitchenware seller from Rajkot is done for the day. His phone buzzes on WhatsApp: 'Insydz Alert: Competitor A dropped to ₹1,249 (−₹150). Buy Box at risk for ASIN B08X7GH21K act within 2 hours.' He adjusts price from his phone. WhatsApp confirms: 'You updated to ₹1,269. Buy Box secured.' Total time: 4 minutes.",
       route: "/features/whatsapp-alerts-feature",
       mock: <WhatsAppMock />,
       gradient: "from-green-500 to-emerald-600",
@@ -466,9 +753,16 @@ export default function AllFeaturesPage() {
       tagColor: "bg-orange-100 text-orange-700",
       h2: "Festive Trend Intelligence Win Diwali Before It Starts",
       desc: "Diwali, Big Billion Day, Navratri, and Republic Day Sale are the biggest revenue opportunities of the year for Indian sellers. Most miss them not because they don't try, but because they start preparing too late. Insydz Festive Trend Intelligence gives you demand forecasts 12–15 days ahead of major festive events, so you can stock, price, and rank before the rush hits.",
-      outcomes: ["Festive demand forecast timelines: Diwali in 12 days demand at 94%", "Category-specific product recommendations for pre-festive stocking", "Festive keyword identification: which search terms spike before each event", "Competitor festive pricing alerts: when rivals start raising prices pre-event"],
-      howItWorks: "Insydz tracks historical festive demand patterns across Amazon India and Flipkart, then forecasts demand curves for your category 30 days in advance. You get a countdown dashboard with recommended actions stock levels, pricing moves, and keyword priorities timed for maximum impact.",
-      scenario: "It's October 10th. Insydz alerts a home décor seller: 'Diwali demand peaks in 12 days. Earbuds and lighting accessories trending. 4 competitors already raising prices. Stock up. Update festive keywords now.' The seller acts immediately, optimizes listings, and captures early festive traffic while competitors are still reacting.",
+      outcomes: [
+        "Festive demand forecast timelines: Diwali in 12 days demand at 94%",
+        "Category-specific product recommendations for pre-festive stocking",
+        "Festive keyword identification: which search terms spike before each event",
+        "Competitor festive pricing alerts: when rivals start raising prices pre-event",
+      ],
+      howItWorks:
+        "Insydz tracks historical festive demand patterns across Amazon India and Flipkart, then forecasts demand curves for your category 30 days in advance. You get a countdown dashboard with recommended actions stock levels, pricing moves, and keyword priorities timed for maximum impact.",
+      scenario:
+        "It's October 10th. Insydz alerts a home décor seller: 'Diwali demand peaks in 12 days. Earbuds and lighting accessories trending. 4 competitors already raising prices. Stock up. Update festive keywords now.' The seller acts immediately, optimizes listings, and captures early festive traffic while competitors are still reacting.",
       route: "/features/festive-trend-feature",
       mock: <FestiveTrendMock />,
       flip: true,
@@ -479,16 +773,46 @@ export default function AllFeaturesPage() {
   ];
 
   const faqs = [
-    { q: "Do I get access to all features on the free plan?", a: "Yes. When you start free on Insydz, you get access to all core features including competitor price tracking, review analytics, keyword rank tracking, and AI recommendations with usage limits. You can start tracking your first products immediately with no credit card required. Upgrade when you need more products, more competitors, or more alerts." },
-    { q: "Is Insydz available for both Amazon India and Flipkart?", a: "Yes. Insydz is one of the only all-in-one seller tools built specifically for both Amazon India and Flipkart. You can track competitor prices, keyword rankings, and review analytics across both platforms from a single dashboard." },
-    { q: "How does Insydz's competitor price tracking work for Indian sellers?", a: "Insydz continuously monitors competitor product listings on Amazon India and Flipkart. When a price change is detected, Insydz calculates the impact on your Buy Box position, compares it against your floor price, and sends you a WhatsApp alert in real time so you can act before you lose sales." },
-    { q: "Can Insydz analyze Amazon reviews automatically?", a: "Yes. Insydz automatically analyzes customer reviews across your Amazon India and Flipkart listings. It identifies complaint clusters, recurring themes, and sentiment trends surfacing patterns like packaging damage, sizing issues, or quality complaints before they compound. You don't need to read every review manually." },
-    { q: "Is this an amazon repricing software for Indian sellers?", a: "Insydz includes AI-powered price optimization that suggests the right price based on competitor data, demand signals, and market trends to generate AI-backed pricing suggestions specific to your product, your category, and your margin structure." },
-    { q: "Do I need technical knowledge to use Insydz?", a: "No. Insydz is built for Indian sellers not developers. Setup takes 2 minutes. You connect your seller account, add your products, and Insydz starts surfacing insights and recommendations immediately. No spreadsheets, no complex configurations, no technical skills required." },
-    { q: "How often is data updated across features?", a: "Price tracking and competitor monitoring run continuously. Keyword rankings are updated daily. Review analytics are refreshed every 24–48 hours depending on your plan. WhatsApp alerts are sent in real time the moment a critical change is detected." },
-    { q: "Can I upgrade only for specific features?", a: "Insydz is one integrated platform all features work together and are included in each plan tier. You cannot purchase features individually, because the intelligence value comes from features connecting with each other. You can start free and upgrade to a higher plan as your seller business scales." },
-    { q: "How is Insydz different from SellerApp, Helium 10, or similar tools?", a: "SellerApp and Helium 10 are primarily built for global (US-centric) Amazon markets. They don't natively support Flipkart, don't send WhatsApp alerts, and aren't optimized for Indian seller economics (INR pricing, Indian festive seasons, Indian competition patterns). Insydz is built from the ground up for Amazon India and Flipkart sellers not adapted from a foreign tool." },
-    { q: "What is the best all-in-one seller tool for Amazon India?", a: "For Indian sellers who need competitor price tracking, review analytics, keyword ranking, AI pricing, and WhatsApp alerts in one platform Insydz is built specifically for Amazon India and Flipkart. It's the only all-in-one seller tool India that combines all these features with native support for both marketplaces and WhatsApp-first alerts." },
+    {
+      q: "Do I get access to all features on the free plan?",
+      a: "Yes. When you start free on Insydz, you get access to all core features including competitor price tracking, review analytics, keyword rank tracking, and AI recommendations with usage limits. You can start tracking your first products immediately with no credit card required. Upgrade when you need more products, more competitors, or more alerts.",
+    },
+    {
+      q: "Is Insydz available for both Amazon India and Flipkart?",
+      a: "Yes. Insydz is one of the only all-in-one seller tools built specifically for both Amazon India and Flipkart. You can track competitor prices, keyword rankings, and review analytics across both platforms from a single dashboard.",
+    },
+    {
+      q: "How does Insydz's competitor price tracking work for Indian sellers?",
+      a: "Insydz continuously monitors competitor product listings on Amazon India and Flipkart. When a price change is detected, Insydz calculates the impact on your Buy Box position, compares it against your floor price, and sends you a WhatsApp alert in real time so you can act before you lose sales.",
+    },
+    {
+      q: "Can Insydz analyze Amazon reviews automatically?",
+      a: "Yes. Insydz automatically analyzes customer reviews across your Amazon India and Flipkart listings. It identifies complaint clusters, recurring themes, and sentiment trends surfacing patterns like packaging damage, sizing issues, or quality complaints before they compound. You don't need to read every review manually.",
+    },
+    {
+      q: "Is this an amazon repricing software for Indian sellers?",
+      a: "Insydz includes AI-powered price optimization that suggests the right price based on competitor data, demand signals, and market trends to generate AI-backed pricing suggestions specific to your product, your category, and your margin structure.",
+    },
+    {
+      q: "Do I need technical knowledge to use Insydz?",
+      a: "No. Insydz is built for Indian sellers not developers. Setup takes 2 minutes. You connect your seller account, add your products, and Insydz starts surfacing insights and recommendations immediately. No spreadsheets, no complex configurations, no technical skills required.",
+    },
+    {
+      q: "How often is data updated across features?",
+      a: "Price tracking and competitor monitoring run continuously. Keyword rankings are updated daily. Review analytics are refreshed every 24–48 hours depending on your plan. WhatsApp alerts are sent in real time the moment a critical change is detected.",
+    },
+    {
+      q: "Can I upgrade only for specific features?",
+      a: "Insydz is one integrated platform all features work together and are included in each plan tier. You cannot purchase features individually, because the intelligence value comes from features connecting with each other. You can start free and upgrade to a higher plan as your seller business scales.",
+    },
+    {
+      q: "How is Insydz different from SellerApp, Helium 10, or similar tools?",
+      a: "SellerApp and Helium 10 are primarily built for global (US-centric) Amazon markets. They don't natively support Flipkart, don't send WhatsApp alerts, and aren't optimized for Indian seller economics (INR pricing, Indian festive seasons, Indian competition patterns). Insydz is built from the ground up for Amazon India and Flipkart sellers not adapted from a foreign tool.",
+    },
+    {
+      q: "What is the best all-in-one seller tool for Amazon India?",
+      a: "For Indian sellers who need competitor price tracking, review analytics, keyword ranking, AI pricing, and WhatsApp alerts in one platform Insydz is built specifically for Amazon India and Flipkart. It's the only all-in-one seller tool India that combines all these features with native support for both marketplaces and WhatsApp-first alerts.",
+    },
   ];
 
   return (
@@ -508,7 +832,9 @@ export default function AllFeaturesPage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-500 opacity-75" />
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-600" />
                 </span>
-                <h1 className="text-xs sm:text-sm font-medium text-orange-700">All In One Seller Tool India</h1>
+                <h1 className="text-xs sm:text-sm font-medium text-orange-700">
+                  All In One Seller Tool India
+                </h1>
               </div>
 
               <div className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-gray-900 dark:text-white leading-relaxed">
@@ -520,23 +846,47 @@ export default function AllFeaturesPage() {
               </div>
 
               <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 dark:text-gray-300 leading-relaxed max-w-xl">
-                Stop juggling 5 different dashboards to run your Amazon or Flipkart business. Insydz combines competitor tracking, review intelligence, keyword ranking, AI pricing, and WhatsApp alerts
-                <span className="text-orange-700 font-semibold"> one connected platform for India's growing sellers.</span>
+                Stop juggling 5 different dashboards to run your Amazon or
+                Flipkart business. Insydz combines competitor tracking, review
+                intelligence, keyword ranking, AI pricing, and WhatsApp alerts
+                <span className="text-orange-700 font-semibold">
+                  {" "}
+                  one connected platform for India's growing sellers.
+                </span>
               </p>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full">
-                <Link href="/signup" className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-16 sm:px-8 py-5 sm:py-6 text-sm sm:text-base md:text-lg rounded-full shadow-2xl transition-all inline-flex items-center justify-center group">
+                <Link
+                  href="/signup"
+                  className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold px-16 sm:px-8 py-5 sm:py-6 text-sm sm:text-base md:text-lg rounded-full shadow-2xl transition-all inline-flex items-center justify-center group"
+                >
                   Start Free
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
-                <Button onClick={() => document.getElementById("price-tracking")?.scrollIntoView({ behavior: "smooth" })} size="lg" variant="outline" className="w-full sm:w-auto border-2 border-orange-600 text-orange-700 dark:text-orange-500 hover:bg-orange-50 font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base md:text-lg rounded-full transition-all">
+                <Button
+                  onClick={() =>
+                    document
+                      .getElementById("price-tracking")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto border-2 border-orange-600 text-orange-700 dark:text-orange-500 hover:bg-orange-50 font-semibold px-6 sm:px-8 py-5 sm:py-6 text-sm sm:text-base md:text-lg rounded-full transition-all"
+                >
                   See How It Works →
                 </Button>
               </div>
 
               <div className="flex flex-wrap items-center gap-3 sm:gap-6 pt-1 sm:pt-2">
-                {["Built for Amazon India & Flipkart 🇮🇳", "No credit card required", "Setup in 2 minutes"].map((t, i) => (
-                  <div key={i} className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                {[
+                  "Built for Amazon India & Flipkart 🇮🇳",
+                  "No credit card required",
+                  "Setup in 2 minutes",
+                ].map((t, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400"
+                  >
                     <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0" />
                     <span>{t}</span>
                   </div>
@@ -549,25 +899,66 @@ export default function AllFeaturesPage() {
               <div className="bg-white dark:bg-gray-900 border-2 border-orange-200 dark:border-orange-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl transition-all hover:shadow-orange-500/10">
                 <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-2 sm:mb-3">
                   {[
-                    { icon: <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5" />, label: "Price Tracking", grad: "from-orange-500 to-red-500" },
-                    { icon: <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />, label: "Review Analytics", grad: "from-purple-500 to-pink-500" },
-                    { icon: <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />, label: "Price Optimization", grad: "from-blue-500 to-cyan-500" },
-                    { icon: <Search className="w-4 h-4 sm:w-5 sm:h-5" />, label: "Keyword Tracking", grad: "from-green-500 to-emerald-500" },
-                    { icon: <Package className="w-4 h-4 sm:w-5 sm:h-5" />, label: "Product Research", grad: "from-yellow-500 to-orange-500" },
-                    { icon: <Zap className="w-4 h-4 sm:w-5 sm:h-5" />, label: "AI Recommendations", grad: "from-violet-500 to-purple-600" },
-                    { icon: <BellRing  className="w-4 h-4 sm:w-5 sm:h-5" />, label: "Whatsapp Alerts", grad: "from-green-500 to-emerald-500" },
-                    { icon: <Brain className="w-4 h-4 sm:w-5 sm:h-5" />, label: "Festive Trends", grad: "from-yellow-500 to-orange-600" },
+                    {
+                      icon: <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5" />,
+                      label: "Price Tracking",
+                      grad: "from-orange-500 to-red-500",
+                    },
+                    {
+                      icon: <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5" />,
+                      label: "Review Analytics",
+                      grad: "from-purple-500 to-pink-500",
+                    },
+                    {
+                      icon: <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />,
+                      label: "Price Optimization",
+                      grad: "from-blue-500 to-cyan-500",
+                    },
+                    {
+                      icon: <Search className="w-4 h-4 sm:w-5 sm:h-5" />,
+                      label: "Keyword Tracking",
+                      grad: "from-green-500 to-emerald-500",
+                    },
+                    {
+                      icon: <Package className="w-4 h-4 sm:w-5 sm:h-5" />,
+                      label: "Product Research",
+                      grad: "from-yellow-500 to-orange-500",
+                    },
+                    {
+                      icon: <Zap className="w-4 h-4 sm:w-5 sm:h-5" />,
+                      label: "AI Recommendations",
+                      grad: "from-violet-500 to-purple-600",
+                    },
+                    {
+                      icon: <BellRing className="w-4 h-4 sm:w-5 sm:h-5" />,
+                      label: "Whatsapp Alerts",
+                      grad: "from-green-500 to-emerald-500",
+                    },
+                    {
+                      icon: <Brain className="w-4 h-4 sm:w-5 sm:h-5" />,
+                      label: "Festive Trends",
+                      grad: "from-yellow-500 to-orange-600",
+                    },
                   ].map((tile, i) => (
-                    <div key={i} className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-2 sm:p-3 hover:border-orange-300 transition-all group cursor-default">
-                      <div className={`w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br ${tile.grad} rounded-lg flex items-center justify-center text-white flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                    <div
+                      key={i}
+                      className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-2 sm:p-3 hover:border-orange-300 transition-all group cursor-default"
+                    >
+                      <div
+                        className={`w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br ${tile.grad} rounded-lg flex items-center justify-center text-white flex-shrink-0 group-hover:scale-110 transition-transform`}
+                      >
                         {tile.icon}
                       </div>
-                      <span className="text-[10px] sm:text-xs font-semibold text-gray-700 dark:text-gray-300 leading-relaxed">{tile.label}</span>
+                      <span className="text-[10px] sm:text-xs font-semibold text-gray-700 dark:text-gray-300 leading-relaxed">
+                        {tile.label}
+                      </span>
                     </div>
                   ))}
                 </div>
                 <div className="absolute -top-3 sm:-top-4 -right-3 sm:-right-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-1.5 sm:py-2 shadow-xl">
-                  <p className="text-white font-bold text-xs sm:text-sm leading-relaxed">8 Features</p>
+                  <p className="text-white font-bold text-xs sm:text-sm leading-relaxed">
+                    8 Features
+                  </p>
                 </div>
               </div>
             </div>
@@ -584,33 +975,58 @@ export default function AllFeaturesPage() {
               <span className="text-orange-600">And Don't Know Why</span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-400 leading-relaxed max-w-3xl mx-auto">
-              Most Amazon and Flipkart sellers in India are running blind. You check your sales, see a drop, and have no idea if a competitor undercut you by ₹80 last night or if 23 customers complained about your packaging this month without you noticing.
+              Most Amazon and Flipkart sellers in India are running blind. You
+              check your sales, see a drop, and have no idea if a competitor
+              undercut you by ₹80 last night or if 23 customers complained about
+              your packaging this month without you noticing.
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
             <div className="bg-white dark:bg-gray-800 border-2 border-red-100 dark:border-red-900/30 rounded-2xl p-5 sm:p-6 shadow-sm">
-              <h3 className="font-black text-gray-900 dark:text-white text-sm sm:text-base md:text-lg mb-3 sm:mb-4 leading-relaxed">Typical Indian seller's day:</h3>
+              <h3 className="font-black text-gray-900 dark:text-white text-sm sm:text-base md:text-lg mb-3 sm:mb-4 leading-relaxed">
+                Typical Indian seller's day:
+              </h3>
               <div className="space-y-3">
-                {["Manually checking competitor prices on different tabs", "Finding out your keyword ranking dropped after your sales already fell", "Getting no alert when a rival steals your Buy Box", "Importing a product that already has 400 sellers and a 2.8-star rating", "Guessing festive season pricing instead of knowing demand 12 days out"].map((item, i) => (
+                {[
+                  "Manually checking competitor prices on different tabs",
+                  "Finding out your keyword ranking dropped after your sales already fell",
+                  "Getting no alert when a rival steals your Buy Box",
+                  "Importing a product that already has 400 sellers and a 2.8-star rating",
+                  "Guessing festive season pricing instead of knowing demand 12 days out",
+                ].map((item, i) => (
                   <div key={i} className="flex items-start gap-3">
-                    <span className="text-red-500 font-bold text-lg mt-0.5 flex-shrink-0">✗</span>
-                    <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item}</span>
+                    <span className="text-red-500 font-bold text-lg mt-0.5 flex-shrink-0">
+                      ✗
+                    </span>
+                    <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                      {item}
+                    </span>
                   </div>
                 ))}
               </div>
-              <p className="text-xs sm:text-sm font-bold text-red-600 mt-4 pt-4 border-t border-red-100 dark:border-red-900/30 leading-relaxed">This is not a strategy. It's firefighting.</p>
+              <p className="text-xs sm:text-sm font-bold text-red-600 mt-4 pt-4 border-t border-red-100 dark:border-red-900/30 leading-relaxed">
+                This is not a strategy. It's firefighting.
+              </p>
             </div>
 
             <div className="bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-200 dark:border-orange-700 rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-sm">
               <div>
-                <p className="text-xs font-bold text-orange-600 uppercase tracking-wide mb-3 leading-relaxed">Real Scenario</p>
+                <p className="text-xs font-bold text-orange-600 uppercase tracking-wide mb-3 leading-relaxed">
+                  Real Scenario
+                </p>
                 <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed italic">
-                  A home goods seller in Jaipur was pricing at ₹1,399 while two competitors had dropped to ₹1,249. He didn't know for 4 days. He lost the Buy Box, 60+ sales, and ₹7,200 in revenue because he had no price tracking in place.
+                  A home goods seller in Jaipur was pricing at ₹1,399 while two
+                  competitors had dropped to ₹1,249. He didn't know for 4 days.
+                  He lost the Buy Box, 60+ sales, and ₹7,200 in revenue because
+                  he had no price tracking in place.
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-orange-200 dark:border-orange-700">
-                <p className="text-xs sm:text-sm font-bold text-orange-700 dark:text-orange-400 leading-relaxed">With Insydz: He would have known in seconds and reacted in minutes.</p>
+                <p className="text-xs sm:text-sm font-bold text-orange-700 dark:text-orange-400 leading-relaxed">
+                  With Insydz: He would have known in seconds and reacted in
+                  minutes.
+                </p>
               </div>
             </div>
           </div>
@@ -623,29 +1039,56 @@ export default function AllFeaturesPage() {
           <div className="text-center mb-8 sm:mb-10">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-white mb-3 sm:mb-4 leading-relaxed">
               How Insydz Is Different:{" "}
-              <span className="text-orange-600">The India-First Intelligence Platform</span>
+              <span className="text-orange-600">
+                The India-First Intelligence Platform
+              </span>
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-8">
             {[
-              { trigger: "A competitor drops their price", result: "Insydz flags it, calculates your margin floor, and sends a WhatsApp alert in seconds" },
-              { trigger: "Your keyword rank slips", result: "Insydz recommends the exact SEO fix, not just a chart"},
-              { trigger: "A review spike hits your listing", result: "Insydz identifies the complaint pattern before it hits your rating" },
-              { trigger: "Diwali is 12 days away", result: "Insydz shows you which products to stock, price, and rank for festive keywords now" },
+              {
+                trigger: "A competitor drops their price",
+                result:
+                  "Insydz flags it, calculates your margin floor, and sends a WhatsApp alert in seconds",
+              },
+              {
+                trigger: "Your keyword rank slips",
+                result: "Insydz recommends the exact SEO fix, not just a chart",
+              },
+              {
+                trigger: "A review spike hits your listing",
+                result:
+                  "Insydz identifies the complaint pattern before it hits your rating",
+              },
+              {
+                trigger: "Diwali is 12 days away",
+                result:
+                  "Insydz shows you which products to stock, price, and rank for festive keywords now",
+              },
             ].map((item, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-xl sm:rounded-2xl p-4 sm:p-5 hover:border-orange-400 hover:shadow-md transition-all group">
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1 leading-relaxed">When</p>
-                <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white mb-2 leading-relaxed group-hover:text-orange-600 transition-colors">{item.trigger}</p>
+              <div
+                key={i}
+                className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-xl sm:rounded-2xl p-4 sm:p-5 hover:border-orange-400 hover:shadow-md transition-all group"
+              >
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1 leading-relaxed">
+                  When
+                </p>
+                <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white mb-2 leading-relaxed group-hover:text-orange-600 transition-colors">
+                  {item.trigger}
+                </p>
                 <div className="flex items-start gap-2">
                   <ArrowRight className="w-4 h-4 text-orange-500 mt-0.5 flex-shrink-0" />
-                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item.result}</p>
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                    {item.result}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
           <div className="bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-700 rounded-xl sm:rounded-2xl p-5 sm:p-6 text-center shadow-sm">
             <p className="text-green-700 dark:text-green-400 font-bold text-sm sm:text-base md:text-lg leading-relaxed">
-              Sellers using Insydz report reacting to competitor price drops 4x faster protecting Buy Box without panic-discounting.
+              Sellers using Insydz report reacting to competitor price drops 4x
+              faster protecting Buy Box without panic-discounting.
             </p>
           </div>
         </div>
@@ -660,26 +1103,49 @@ export default function AllFeaturesPage() {
               <span className="text-orange-600">One Intelligence System.</span>
             </h2>
             <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
-              Each feature works together so you make faster, better decisions without juggling multiple dashboards.
+              Each feature works together so you make faster, better decisions
+              without juggling multiple dashboards.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { from: "Competitor drops price", to: "Pricing insight triggered", icon: <TrendingDown className="w-4 h-4" /> },
-              { from: "Review complaint spike", to: "Product improvement flagged", icon: <MessageCircle className="w-4 h-4" /> },
-              { from: "Keyword rank drops", to: "SEO action recommended", icon: <Search className="w-4 h-4" /> },
-              { from: "All critical events", to: "WhatsApp alert in seconds", icon: <Bell className="w-4 h-4" /> },
+              {
+                from: "Competitor drops price",
+                to: "Pricing insight triggered",
+                icon: <TrendingDown className="w-4 h-4" />,
+              },
+              {
+                from: "Review complaint spike",
+                to: "Product improvement flagged",
+                icon: <MessageCircle className="w-4 h-4" />,
+              },
+              {
+                from: "Keyword rank drops",
+                to: "SEO action recommended",
+                icon: <Search className="w-4 h-4" />,
+              },
+              {
+                from: "All critical events",
+                to: "WhatsApp alert in seconds",
+                icon: <Bell className="w-4 h-4" />,
+              },
             ].map((step, i) => (
               <div key={i} className="relative">
                 <div className="bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 rounded-xl sm:rounded-2xl p-5 sm:p-6 hover:border-orange-400 hover:shadow-lg transition-all group h-full flex flex-col">
                   <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform shadow-md">
                     {step.icon}
                   </div>
-                  <p className="text-xs text-gray-500 font-medium mb-1 leading-relaxed">Trigger</p>
-                  <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white mb-3 leading-relaxed flex-grow">{step.from}</p>
+                  <p className="text-xs text-gray-500 font-medium mb-1 leading-relaxed">
+                    Trigger
+                  </p>
+                  <p className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white mb-3 leading-relaxed flex-grow">
+                    {step.from}
+                  </p>
                   <div className="flex items-center gap-1.5 text-orange-600 mt-auto pt-3 border-t border-gray-100 dark:border-gray-800">
                     <ArrowRight className="w-3.5 h-3.5" />
-                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">{step.to}</p>
+                    <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+                      {step.to}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -687,25 +1153,6 @@ export default function AllFeaturesPage() {
           </div>
         </div>
       </section>
-
-      {/* ═══ FEATURE SECTIONS ═══ */}
-      {features.map((feat, i) => (
-        <React.Fragment key={feat.id}>
-          <FeatureSection {...feat} />
-          {(i === 1 || i === 3 || i === 5) && (
-            <div className="py-10 sm:py-14 px-4 bg-gradient-to-r from-orange-500 to-red-500 relative overflow-hidden">
-              <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
-              <div className="relative max-w-2xl mx-auto text-center">
-                <p className="text-white font-black text-xl sm:text-2xl md:text-3xl mb-2 leading-relaxed">Try all features free</p>
-                <p className="text-orange-100 text-sm sm:text-base mb-6 leading-relaxed">No credit card required. Experience real insights on your own products.</p>
-                <Link href="/signup" className="w-full sm:w-auto bg-white hover:bg-gray-100 text-orange-700 font-bold px-10 py-4 rounded-full shadow-xl text-sm sm:text-base inline-block transition-all hover:scale-105">
-                  Start Free Today
-                </Link>
-              </div>
-            </div>
-          )}
-        </React.Fragment>
-      ))}
 
       {/* ═══ ROI SECTION ═══ */}
       <section className="py-12 sm:py-14 md:py-16 px-4 bg-white dark:bg-gray-950">
@@ -720,18 +1167,44 @@ export default function AllFeaturesPage() {
             <div className="overflow-x-auto">
               <div className="min-w-[480px]">
                 <div className="grid grid-cols-2 bg-gradient-to-r from-orange-500 to-red-500 p-4">
-                  <p className="text-white font-bold text-sm leading-relaxed">Situation</p>
-                  <p className="text-white font-bold text-sm leading-relaxed">Impact (Monthly)</p>
+                  <p className="text-white font-bold text-sm leading-relaxed">
+                    Situation
+                  </p>
+                  <p className="text-white font-bold text-sm leading-relaxed">
+                    Impact (Monthly)
+                  </p>
                 </div>
                 {[
-                  { situation: "Missed Buy Box for 4 days (competitor undercut by ₹100)", impact: "~₹8,000–15,000 in lost sales" },
-                  { situation: "Unaddressed review complaint pattern drops rating from 4.4 to 4.0", impact: "~15–20% drop in conversion rate" },
-                  { situation: "Keyword rank drops 6 positions without notice", impact: "~30–40% reduction in organic impressions" },
-                  { situation: "Wrong product launch (low demand, high competition)", impact: "₹30,000–₹1,50,000 in stranded inventory" },
+                  {
+                    situation:
+                      "Missed Buy Box for 4 days (competitor undercut by ₹100)",
+                    impact: "~₹8,000–15,000 in lost sales",
+                  },
+                  {
+                    situation:
+                      "Unaddressed review complaint pattern drops rating from 4.4 to 4.0",
+                    impact: "~15–20% drop in conversion rate",
+                  },
+                  {
+                    situation: "Keyword rank drops 6 positions without notice",
+                    impact: "~30–40% reduction in organic impressions",
+                  },
+                  {
+                    situation:
+                      "Wrong product launch (low demand, high competition)",
+                    impact: "₹30,000–₹1,50,000 in stranded inventory",
+                  },
                 ].map((row, i) => (
-                  <div key={i} className={`grid grid-cols-2 p-4 gap-4 ${i % 2 === 0 ? "bg-gray-50 dark:bg-gray-800" : "bg-white dark:bg-gray-900"} border-b border-gray-100 dark:border-gray-700 last:border-0`}>
-                    <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{row.situation}</p>
-                    <p className="text-xs sm:text-sm font-bold text-red-600 dark:text-red-400 leading-relaxed">{row.impact}</p>
+                  <div
+                    key={i}
+                    className={`grid grid-cols-2 p-4 gap-4 ${i % 2 === 0 ? "bg-gray-50 dark:bg-gray-800" : "bg-white dark:bg-gray-900"} border-b border-gray-100 dark:border-gray-700 last:border-0`}
+                  >
+                    <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                      {row.situation}
+                    </p>
+                    <p className="text-xs sm:text-sm font-bold text-red-600 dark:text-red-400 leading-relaxed">
+                      {row.impact}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -747,22 +1220,47 @@ export default function AllFeaturesPage() {
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 dark:text-white mb-4 leading-relaxed">
               Why Sellers Prefer an
               <br />
-              <span className="text-orange-600">All-in-One Intelligence Platform</span>
+              <span className="text-orange-600">
+                All-in-One Intelligence Platform
+              </span>
             </h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: <Layers className="w-6 h-6" />, title: "No tool switching", desc: "Tool switching costs you time you're spending 90 minutes a day managing dashboards instead of your business. All intelligence in one place." },
-              { icon: <RefreshCw className="w-6 h-6" />, title: "No data overload", desc: "Isolated tools don't talk to each other. Insydz surfaces actions, not raw numbers. You see what to do not just what happened." },
-              { icon: <Target className="w-6 h-6" />, title: "Clear actions always", desc: "A chart showing keyword rank is not a recommendation. Every Insydz insight comes with an exact next step, not a chart to interpret." },
-              { icon: <Globe className="w-6 h-6" />, title: "Built for India", desc: "Amazon India and Flipkart not a global tool retrofitted for Indian markets. INR pricing, Indian festive seasons, Indian competition patterns." },
+              {
+                icon: <Layers className="w-6 h-6" />,
+                title: "No tool switching",
+                desc: "Tool switching costs you time you're spending 90 minutes a day managing dashboards instead of your business. All intelligence in one place.",
+              },
+              {
+                icon: <RefreshCw className="w-6 h-6" />,
+                title: "No data overload",
+                desc: "Isolated tools don't talk to each other. Insydz surfaces actions, not raw numbers. You see what to do not just what happened.",
+              },
+              {
+                icon: <Target className="w-6 h-6" />,
+                title: "Clear actions always",
+                desc: "A chart showing keyword rank is not a recommendation. Every Insydz insight comes with an exact next step, not a chart to interpret.",
+              },
+              {
+                icon: <Globe className="w-6 h-6" />,
+                title: "Built for India",
+                desc: "Amazon India and Flipkart not a global tool retrofitted for Indian markets. INR pricing, Indian festive seasons, Indian competition patterns.",
+              },
             ].map((p, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl p-6 sm:p-8 hover:border-orange-400 hover:shadow-xl transition-all group hover:-translate-y-1 flex flex-col h-full shadow-sm">
+              <div
+                key={i}
+                className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl p-6 sm:p-8 hover:border-orange-400 hover:shadow-xl transition-all group hover:-translate-y-1 flex flex-col h-full shadow-sm"
+              >
                 <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl flex items-center justify-center text-white mb-5 group-hover:scale-110 transition-transform shadow-md">
                   {p.icon}
                 </div>
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2 text-lg leading-relaxed">{p.title}</h3>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed flex-grow">{p.desc}</p>
+                <h3 className="font-bold text-gray-900 dark:text-white mb-2 text-lg leading-relaxed">
+                  {p.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed flex-grow">
+                  {p.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -780,15 +1278,49 @@ export default function AllFeaturesPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              {  title: "New Sellers", desc: "Starting on Amazon or Flipkart and not sure what products to sell or how to price them? Use Insydz's product research tool to identify high-demand, low-competition opportunities before you spend a rupee on inventory.", cta: "Start Free →", ctaRoute: "/signup", gradient: "from-green-500 to-emerald-500" },
-              {  title: "Growing Sellers", desc: "Already selling but feeling like competitors are always one step ahead? Insydz's competitor price tracking, WhatsApp alerts, and AI recommendations keep you ahead of price drops, rank changes, and review crises automatically.", cta: "Try Growth Plan →", ctaRoute: "/pricing", gradient: "from-blue-500 to-cyan-500" },
-              {  title: "D2C Brands", desc: "Building a brand on Amazon India or Flipkart? Review analytics helps you understand how customers actually experience your product. AI recommendations surface the product quality improvements and pricing adjustments that protect your brand rating.", cta: "Start Free →", ctaRoute: "/signup", gradient: "from-purple-500 to-pink-500" },
-              {  title: "Agencies & Brand Managers", desc: "Managing multiple seller accounts? Insydz gives you a single intelligence layer across all your clients — with daily AI recommendations, automated alerts, and clear reporting that makes client reviews faster and decisions sharper.", cta: "Book a Demo →", ctaRoute: "/about/contact-us", gradient: "from-orange-500 to-red-500" },
+              {
+                title: "New Sellers",
+                desc: "Starting on Amazon or Flipkart and not sure what products to sell or how to price them? Use Insydz's product research tool to identify high-demand, low-competition opportunities before you spend a rupee on inventory.",
+                cta: "Start Free →",
+                ctaRoute: "/signup",
+                gradient: "from-green-500 to-emerald-500",
+              },
+              {
+                title: "Growing Sellers",
+                desc: "Already selling but feeling like competitors are always one step ahead? Insydz's competitor price tracking, WhatsApp alerts, and AI recommendations keep you ahead of price drops, rank changes, and review crises automatically.",
+                cta: "Try Growth Plan →",
+                ctaRoute: "/pricing",
+                gradient: "from-blue-500 to-cyan-500",
+              },
+              {
+                title: "D2C Brands",
+                desc: "Building a brand on Amazon India or Flipkart? Review analytics helps you understand how customers actually experience your product. AI recommendations surface the product quality improvements and pricing adjustments that protect your brand rating.",
+                cta: "Start Free →",
+                ctaRoute: "/signup",
+                gradient: "from-purple-500 to-pink-500",
+              },
+              {
+                title: "Agencies & Brand Managers",
+                desc: "Managing multiple seller accounts? Insydz gives you a single intelligence layer across all your clients — with daily AI recommendations, automated alerts, and clear reporting that makes client reviews faster and decisions sharper.",
+                cta: "Book a Demo →",
+                ctaRoute: "/about/contact-us",
+                gradient: "from-orange-500 to-red-500",
+              },
             ].map((stage, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl p-6 sm:p-8 hover:border-orange-400 hover:shadow-xl transition-all group flex flex-col h-full shadow-sm">
-                <h3 className="font-black text-gray-900 dark:text-white text-lg sm:text-xl mb-3 leading-relaxed">{stage.title}</h3>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6 flex-1">{stage.desc}</p>
-                <Link href={stage.ctaRoute} className={`w-full bg-gradient-to-r ${stage.gradient} text-white font-bold py-3 rounded-full shadow-md hover:shadow-lg transition-all text-xs sm:text-sm block text-center`}>
+              <div
+                key={i}
+                className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl p-6 sm:p-8 hover:border-orange-400 hover:shadow-xl transition-all group flex flex-col h-full shadow-sm"
+              >
+                <h3 className="font-black text-gray-900 dark:text-white text-lg sm:text-xl mb-3 leading-relaxed">
+                  {stage.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed mb-6 flex-1">
+                  {stage.desc}
+                </p>
+                <Link
+                  href={stage.ctaRoute}
+                  className={`w-full bg-gradient-to-r ${stage.gradient} text-white font-bold py-3 rounded-full shadow-md hover:shadow-lg transition-all text-xs sm:text-sm block text-center`}
+                >
                   {stage.cta}
                 </Link>
               </div>
@@ -805,19 +1337,28 @@ export default function AllFeaturesPage() {
           </h2>
           <div className="space-y-4">
             {faqs.map((faq, i) => (
-              <div key={i} className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-orange-300 dark:hover:border-orange-600 transition-all shadow-sm">
+              <div
+                key={i}
+                className="bg-white dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden hover:border-orange-300 dark:hover:border-orange-600 transition-all shadow-sm"
+              >
                 <button
                   onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
                   className="w-full px-5 sm:px-8 py-5 sm:py-6 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors gap-4"
                 >
-                  <span className="font-bold text-gray-900 dark:text-white text-sm sm:text-base md:text-lg leading-relaxed">{faq.q}</span>
-                  {expandedFaq === i
-                    ? <ChevronDown className="w-5 h-5 text-orange-500 flex-shrink-0" />
-                    : <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />}
+                  <span className="font-bold text-gray-900 dark:text-white text-sm sm:text-base md:text-lg leading-relaxed">
+                    {faq.q}
+                  </span>
+                  {expandedFaq === i ? (
+                    <ChevronDown className="w-5 h-5 text-orange-500 flex-shrink-0" />
+                  ) : (
+                    <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                  )}
                 </button>
                 {expandedFaq === i && (
                   <div className="px-5 sm:px-8 pb-6 bg-orange-50/30 dark:bg-orange-900/10 border-t border-gray-50 dark:border-gray-800">
-                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed pt-5">{faq.a}</p>
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 leading-relaxed pt-5">
+                      {faq.a}
+                    </p>
                   </div>
                 )}
               </div>
@@ -836,23 +1377,38 @@ export default function AllFeaturesPage() {
             <span className="text-orange-100">Start Selling Smarter.</span>
           </h2>
           <p className="text-white/90 text-lg sm:text-xl mb-10 leading-relaxed max-w-2xl mx-auto">
-            Get all your marketplace intelligence in one place. Built for Amazon India and Flipkart sellers.
+            Get all your marketplace intelligence in one place. Built for Amazon
+            India and Flipkart sellers.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/signup" className="bg-white hover:bg-gray-100 text-orange-700 font-bold px-12 py-5 rounded-full shadow-2xl text-lg transition-all hover:scale-105 inline-flex items-center justify-center group">
+            <Link
+              href="/signup"
+              className="bg-white hover:bg-gray-100 text-orange-700 font-bold px-12 py-5 rounded-full shadow-2xl text-lg transition-all hover:scale-105 inline-flex items-center justify-center group"
+            >
               Start Free
               <ArrowRight className="ml-2 w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <Link href="/pricing" className="bg-orange-700 hover:bg-orange-800 text-white font-bold px-12 py-5 rounded-full border-2 border-orange-400 shadow-xl text-lg transition-all inline-flex items-center justify-center">
+            <Link
+              href="/pricing"
+              className="bg-orange-700 hover:bg-orange-800 text-white font-bold px-12 py-5 rounded-full border-2 border-orange-400 shadow-xl text-lg transition-all inline-flex items-center justify-center"
+            >
               View Pricing →
             </Link>
           </div>
-          <p className="text-white/80 mt-8 text-sm leading-relaxed">✓ No credit card required &nbsp;·&nbsp; ✓ Setup in 2 minutes &nbsp;·&nbsp; ✓ Cancel anytime</p>
+          <p className="text-white/80 mt-8 text-sm leading-relaxed">
+            ✓ No credit card required &nbsp;·&nbsp; ✓ Setup in 2 minutes
+            &nbsp;·&nbsp; ✓ Cancel anytime
+          </p>
         </div>
       </section>
 
       {/* STICKY MOBILE CTA */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-orange-300 dark:border-orange-700 p-3 sm:p-4 shadow-2xl z-40" style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}>
+      <div
+        className="lg:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 border-t-2 border-orange-300 dark:border-orange-700 p-3 sm:p-4 shadow-2xl z-40"
+        style={{
+          paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))",
+        }}
+      >
         <Link href="/signup" className="block w-full">
           <Button className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-4 rounded-full shadow-xl text-base transition-all">
             Start Free

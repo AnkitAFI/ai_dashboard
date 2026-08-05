@@ -1058,7 +1058,7 @@ export default function LandingContent() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white mb-6">
-              Our trusted{" "}
+              Our Trusted{" "}
               <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                 Clients
               </span>
@@ -1295,7 +1295,7 @@ export default function LandingContent() {
                 {[
                   "All Premium plan features",
                   "White-label options",
-                  "Premium support"
+                  "Premium support",
                 ].map((item, i) => (
                   <li
                     key={i}
