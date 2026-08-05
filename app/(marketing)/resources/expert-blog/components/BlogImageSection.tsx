@@ -21,7 +21,7 @@ export default function BlogImageSection({
       }}
     >
       <div className="rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 shadow-sm">
-        <img src={imageSrc} alt={altText} className="w-full h-auto block" />
+        <img src={encodeURI(imageSrc).replace(/\+/g, "%2B")} alt={altText} className="w-full h-auto block" />
       </div>
 
       {caption && (

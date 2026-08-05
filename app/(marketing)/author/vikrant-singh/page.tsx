@@ -439,7 +439,7 @@ export default function VikrantSinghAuthorPage() {
                   <div className="blog-card-thumb relative">
                     {article.image ? (
                       <img
-                        src={article.image}
+                        src={encodeURI(article.image).replace(/\+/g, "%2B")}
                         alt={article.title}
                         className="w-full h-full object-cover block"
                       />

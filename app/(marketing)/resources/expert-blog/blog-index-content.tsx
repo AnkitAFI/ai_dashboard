@@ -582,7 +582,7 @@ export default function ExpertBlog() {
                   {featuredArticle.featuredImage || featuredArticle.image ? (
                     <img
                       src={
-                        featuredArticle.featuredImage || featuredArticle.image
+                        encodeURI(featuredArticle.featuredImage || featuredArticle.image).replace(/\+/g, "%2B")
                       }
                       alt={featuredArticle.title}
                       className="featured-blog-img"
@@ -652,7 +652,7 @@ export default function ExpertBlog() {
                     {/* Popular card image — standardized ratio */}
                     <div className="blog-card-thumb relative">
                       {article.image ? (
-                        <img src={article.image} alt={article.title} />
+                        <img src={encodeURI(article.image).replace(/\+/g, "%2B")} alt={article.title} />
                       ) : (
                         <div className="flex items-center justify-center p-4">
                           <BarChart3 className="w-20 h-20 text-orange-200 dark:text-orange-900 opacity-30" />
@@ -707,7 +707,7 @@ export default function ExpertBlog() {
                   {/* Latest grid image — standardized ratio */}
                   <div className="blog-card-thumb relative">
                     {article.image ? (
-                      <img src={article.image} alt={article.title} />
+                      <img src={encodeURI(article.image).replace(/\+/g, "%2B")} alt={article.title} />
                     ) : (
                       <div className="flex items-center justify-center p-4">
                         <BarChart3 className="w-24 h-24 text-orange-200 dark:text-orange-900 opacity-30" />

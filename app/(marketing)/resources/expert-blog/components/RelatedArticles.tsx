@@ -92,7 +92,7 @@ export default function RelatedArticles({
                 }}
               >
                 <img
-                  src={card.image}
+                  src={encodeURI(card.image).replace(/\+/g, "%2B")}
                   alt={card.title}
                   style={{
                     width: "100%",
