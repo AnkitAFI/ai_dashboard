@@ -66,7 +66,7 @@ const articles: Article[] = [
       "Amazon reviews are goldmines of information. Discover how to analyze Amazon reviews in India to find hidden patterns and improve your product. Learn the best practices for sentiment analysis, theme extraction, and product improvement.",
     category: "Review Intelligence Pillar",
     readTime: "12 min read",
-    image: "/Analyze 500+ Reviews for Product Opportunities.png",
+    image: "/analyze-500-reviews-product-opportunities.png",
     route: "/resources/expert-blog/analyze-amazon-reviews-india-content",
     popular: true,
   },

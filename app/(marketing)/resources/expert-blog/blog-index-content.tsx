@@ -63,7 +63,7 @@ const articles: Article[] = [
       "Automate client reporting in under 5 minutes per client. Stop creating manual slides every week. This is the plug-and-play template agencies are using in 2026.",
     category: "Seller Tools & Strategy",
     readTime: "9 min read",
-    image: "/Report Less, Retain More.png",
+    image: "/report-less-retain-more.png",
     featuredImage: "/image.png",
     route: "/resources/expert-blog/agency-client-reporting-automation",
     popular: true,

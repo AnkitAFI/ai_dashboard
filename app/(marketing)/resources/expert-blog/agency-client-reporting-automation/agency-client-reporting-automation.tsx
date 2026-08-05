@@ -431,7 +431,7 @@ export default function AgencyClientReportingAutomationContent() {
       <div style={{ maxWidth: 1240, margin: "16px auto", padding: "0 16px" }}>
         {/* Blog Image Section */}
         <BlogImageSection
-          imageSrc="/Report Less, Retain More.png"
+          imageSrc="/report-less-retain-more.png"
           altText="Automate Client Reporting for Ecommerce Agencies"
           caption="Insydz multi-client agency dashboard showing automated report delivery and real-time WhatsApp alerts across four client accounts. Zero manual assembly required once the automation is configured."
         />
