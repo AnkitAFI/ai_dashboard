@@ -15,10 +15,6 @@ import {
   Trophy,
   Zap,
   BookOpen,
-  Menu,
-  X,
-  Sun,
-  Moon,
   ChevronDown,
   ShoppingBag,
   Store,
@@ -27,12 +23,9 @@ import {
   Bell,
   Code,
   Globe,
-  ArrowLeft,
   Flame,
   Presentation,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-
 export const dynamic = "force-static";
 
 const schemaBlogPriceTools = {
