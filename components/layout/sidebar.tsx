@@ -223,6 +223,12 @@ const SELLER_SECTIONS: NavSection[] = [
         icon: Sparkles,
         badge: "AI",
       },
+      {
+        href: "/seller/ppc-optimizer",
+        label: "PPC Optimizer",
+        icon: Zap,
+        badge: "AI",
+      },
     ],
   },
   {

@@ -150,10 +150,7 @@ export function OldListingStudioPage() {
       return;
     }
 
-    // === SANDBOX TESTING === 
-    // Bypassing credit check for testing
-    // if ((user.aiCreditsBalance || 0) <= 0) {
-    if (false) {
+    if ((user.aiCreditsBalance || 0) <= 0) {
       setIsTopUpOpen(true);
       return;
     }
@@ -414,9 +411,7 @@ export function OldListingStudioPage() {
   if (authLoading) return <div className="p-8 text-center text-slate-500 dark:text-slate-400 flex justify-center items-center h-[50vh]"><Clock className="animate-spin w-8 h-8 text-blue-500 dark:text-blue-400" /></div>;
 
   const isNonEnterprise = user?.subscriptionTier !== "enterprise";
-  // === SANDBOX TESTING ===
-  // Forcing 999 credits for testing UI
-  const credits = 999; // user?.aiCreditsBalance || 0;
+  const credits = user?.aiCreditsBalance || 0;
 
   if (isNonEnterprise) {
     return (

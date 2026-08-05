@@ -28,6 +28,7 @@ def _create_all_tables():
     from app.models import legacy_models  # noqa: F401 — registers legacy Base tables
     from app.models import schema_v2      # noqa: F401 — registers schema_v2 Base tables
     from app.models import listing_models # noqa: F401 — registers listing_models Base tables
+    from app.models import ad_models      # noqa: F401 — registers ad_models Base tables
     from app.db.models import user_model  # noqa: F401 — registers user_model Base tables
 
     from app.models.legacy_models import Base as LegacyBase

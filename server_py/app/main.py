@@ -29,12 +29,31 @@ from app.db.session import engine
 from app.models import legacy_models as models
 from app.db_setup import run_startup_setup
 
-# ── Database startup: creates all tables, the `users` VIEW, and both
-# ── INSTEAD OF triggers. Safe to run on every restart (idempotent).
-run_startup_setup()
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # ── Database startup: creates all tables, the `users` VIEW, and both
+    # ── INSTEAD OF triggers. Safe to run on every restart (idempotent).
+    run_startup_setup()
+    
+    # ── Start Background Workers
+    try:
+        from app.services.amazon_ads.dayparting_scheduler import start_dayparting_engine, stop_dayparting_engine
+        start_dayparting_engine()
+    except Exception as e:
+        logger.error(f"Failed to start Dayparting Engine: {e}")
+        
+    yield
+    
+    # ── Stop Background Workers
+    try:
+        stop_dayparting_engine()
+    except Exception as e:
+        pass
 
 # Initialize FastAPI App
-app = FastAPI(title="AI Dashboard API", version="1.0.0")
+app = FastAPI(title="AI Dashboard API", version="1.0.0", lifespan=lifespan)
 
 # Setup CORS
 app.add_middleware(

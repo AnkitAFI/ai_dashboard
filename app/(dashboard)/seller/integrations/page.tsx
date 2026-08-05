@@ -88,13 +88,13 @@ export function OldIntegrationsPage() {
       if (res.ok && data.status === "success") {
         toast({
           title: "✅ Connection Successful",
-          description: "Amazon recognized your Developer Sandbox Keys!",
+          description: "Amazon recognized your Production API Credentials!",
           variant: "default",
         });
       } else {
         toast({
           title: "❌ Connection Failed",
-          description: sanitizeApiError(data.detail, "Invalid Sandbox Keys. Please check your credentials."),
+          description: sanitizeApiError(data.detail, "Invalid API Credentials. Please check your production credentials."),
           variant: "destructive",
         });
       }
@@ -121,13 +121,13 @@ export function OldIntegrationsPage() {
       if (res.ok && data.status === "success") {
         toast({
           title: "✅ Connection Successful",
-          description: "Flipkart recognized your Developer Sandbox Keys!",
+          description: "Flipkart recognized your Production API Credentials!",
           variant: "default",
         });
       } else {
         toast({
           title: "❌ Connection Failed",
-          description: sanitizeApiError(data.detail, "Invalid Sandbox Keys. Please check your credentials."),
+          description: sanitizeApiError(data.detail, "Invalid API Credentials. Please check your production credentials."),
           variant: "destructive",
         });
       }
@@ -219,7 +219,7 @@ export function OldIntegrationsPage() {
               </Button>
               <Button onClick={handleTestAmazonSandbox} disabled={testingAmazon} variant="outline" className="w-full h-12 text-base font-bold mt-3 border-[#FF9900]/30 text-[#FF9900] hover:bg-[#FF9900]/10">
                 {testingAmazon ? <Loader2 className="h-5 w-5 mr-2 animate-spin" /> : <Sparkles className="h-5 w-5 mr-2" />}
-                Test Sandbox Keys
+                Verify Production Connection
               </Button>
             </CardFooter>
           )}
@@ -267,7 +267,7 @@ export function OldIntegrationsPage() {
               </Button>
               <Button onClick={handleTestFlipkartSandbox} disabled={testingFlipkart} variant="outline" className="w-full h-12 text-base font-bold border-[#2874F0]/30 text-[#2874F0] hover:bg-[#2874F0]/10">
                 {testingFlipkart ? <Loader2 className="h-5 w-5 mr-2 animate-spin" /> : <Sparkles className="h-5 w-5 mr-2" />}
-                Test Sandbox Keys
+                Verify Production Connection
               </Button>
             </CardFooter>
           )}

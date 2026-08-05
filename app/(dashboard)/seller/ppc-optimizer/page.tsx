@@ -1,0 +1,2057 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { API_BASE_URL } from "@/lib/config";
+import { useAuth } from "@/lib/auth-context";
+import { useSidebar } from "@/components/layout/sidebar-context";
+import {
+  ShieldCheck, Crown, RefreshCw, Menu, Zap, Target, BarChart2,
+  AlertTriangle, CheckCircle, RotateCcw, ArrowUp, ArrowDown,
+  DollarSign, TrendingUp, Filter, Sliders, Lock, Sparkles, Check, X,
+  EyeOff, Clock, Search, Edit3, CheckSquare, Square, Layers, Unplug, LineChart as LineChartIcon
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
+
+const BASE_URL = API_BASE_URL;
+
+interface AdProfile {
+  profile_id: string;
+  country_code: string;
+  currency_code: string;
+  account_type: string;
+}
+
+interface Scorecard {
+  profile_id: string;
+  currency: string;
+  total_spend: number;
+  total_sales: number;
+  total_orders: number;
+  total_clicks: number;
+  total_impressions: number;
+  acos: number;
+  roas: number;
+  cpc?: number;
+  ctr?: number;
+  cvr?: number;
+  tacos?: number;
+  organic_sales?: number;
+}
+
+interface Recommendation {
+  id: number;
+  rule_type: "BLEEDER" | "WINNER" | "BID_OPTIMIZE" | "BUDGET";
+  target_id: string;
+  campaign_id: string;
+  ad_group_id: string;
+  recommended_action: string;
+  current_value: string;
+  recommended_value: string;
+  evidence: any;
+  status: string;
+  created_at: string;
+}
+
+interface Entitlements {
+  user_tier: string;
+  monthly_applies_used: number;
+  monthly_applies_limit: number;
+  can_apply_recommendations: boolean;
+  can_customize_target_acos: boolean;
+  upsell_message: string | null;
+}
+
+interface Campaign {
+  campaign_id: string;
+  name: string;
+  campaign_type: string;
+  state: string;
+  daily_budget: number;
+  objective?: "LAUNCH" | "SCALE" | "LIQUIDATE";
+  automation_mode?: "MANUAL" | "AUTOPILOT";
+  min_bid?: number;
+  max_bid?: number;
+  dayparting_enabled?: boolean;
+  ad_groups: {
+    ad_group_id: string;
+    name: string;
+    default_bid: number;
+    state: string;
+  }[];
+}
+
+interface ChangeLogItem {
+  id: number;
+  recommendation_id: number;
+  action_type: string;
+  target_id: string;
+  old_value: string;
+  new_value: string;
+  created_at: string;
+}
+
+export default function PpcOptimizerPage() {
+  const { user } = useAuth();
+  const { toggle: openSidebar } = useSidebar();
+
+  const [profiles, setProfiles] = useState<AdProfile[]>([]);
+  const [selectedProfileId, setSelectedProfileId] = useState<string>("");
+  const [scorecard, setScorecard] = useState<Scorecard | null>(null);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+  const [entitlements, setEntitlements] = useState<Entitlements | null>(null);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [changeLogs, setChangeLogs] = useState<ChangeLogItem[]>([]);
+  const [mainTab, setMainTab] = useState<"SUGGESTIONS" | "AD_MANAGER" | "CHANGE_LOG" | "ANALYTICS" | "CUSTOM_RULES">("SUGGESTIONS");
+  const [activeTab, setActiveTab] = useState<"BLEEDER" | "WINNER" | "BID_OPTIMIZE">("BLEEDER");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [applyingId, setApplyingId] = useState<number | null>(null);
+  const [rollbackId, setRollbackId] = useState<number | null>(null);
+  const [targetAcos, setTargetAcos] = useState<number>(25);
+  const [showAcosModal, setShowAcosModal] = useState<boolean>(false);
+  const [notification, setNotification] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [selectedRecIds, setSelectedRecIds] = useState<number[]>([]);
+  const [filterActionType, setFilterActionType] = useState<string>("ALL");
+  const [searchChangeLog, setSearchChangeLog] = useState<string>("");
+  const [editingBudgetId, setEditingBudgetId] = useState<string | null>(null);
+  const [tempBudget, setTempBudget] = useState<string>("");
+  const [showDaypartingModal, setShowDaypartingModal] = useState<string | null>(null);
+  const [autoIsolateEnabled, setAutoIsolateEnabled] = useState<boolean>(true);
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [showDisconnectModal, setShowDisconnectModal] = useState<boolean>(false);
+  
+  // Analytics State
+  const [analyticsTargetId, setAnalyticsTargetId] = useState<string | null>(null);
+  const [analyticsTargetName, setAnalyticsTargetName] = useState<string>("");
+  const [analyticsData, setAnalyticsData] = useState<any[]>([]);
+  const [isAnalyticsLoading, setIsAnalyticsLoading] = useState<boolean>(false);
+
+  // Custom Rules State
+  const [customRules, setCustomRules] = useState<any[]>([]);
+  const [newRule, setNewRule] = useState({
+    rule_name: "",
+    condition_acos_gt: 40,
+    condition_clicks_gt: 15,
+    action_type: "DECREASE_BID",
+    action_value: 15
+  });
+  const [isCreatingRule, setIsCreatingRule] = useState<boolean>(false);
+
+  const showToast = (type: "success" | "error", text: string) => setNotification({ type, text });
+
+  const toggleObjective = (campaignId: string, currentObj: string = "SCALE") => {
+    const next = currentObj === "SCALE" ? "LAUNCH" : currentObj === "LAUNCH" ? "LIQUIDATE" : "SCALE";
+    setCampaigns((prev) =>
+      prev.map((c) => (c.campaign_id === campaignId ? { ...c, objective: next as any } : c))
+    );
+    showToast("success", `Campaign strategy objective updated to ${next}`);
+  };
+
+  const toggleAutomationMode = (campaignId: string, currentMode: string = "MANUAL") => {
+    const next = currentMode === "MANUAL" ? "AUTOPILOT" : "MANUAL";
+    setCampaigns((prev) =>
+      prev.map((c) => (c.campaign_id === campaignId ? { ...c, automation_mode: next as any } : c))
+    );
+    showToast("success", `Automation mode set to ${next === "AUTOPILOT" ? "Autopilot 24/7" : "Manual Review"}`);
+  };
+
+  const toggleDayparting = async (campaignId: string) => {
+    const campaign = campaigns.find(c => c.campaign_id === campaignId);
+    if (!campaign) return;
+    
+    const newEnabledState = !campaign.dayparting_enabled;
+
+    // Optimistic UI Update
+    setCampaigns((prev) =>
+      prev.map((c) => (c.campaign_id === campaignId ? { ...c, dayparting_enabled: newEnabledState } : c))
+    );
+
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/campaigns/dayparting`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ campaign_id: campaignId, enabled: newEnabledState })
+      });
+      if (!res.ok) throw new Error("Failed to update dayparting");
+      
+      showToast("success", `Hourly Dayparting Engine ${newEnabledState ? 'Enabled' : 'Disabled'} for this campaign.`);
+    } catch (e) {
+      console.error(e);
+      // Revert UI if failed
+      setCampaigns((prev) =>
+        prev.map((c) => (c.campaign_id === campaignId ? { ...c, dayparting_enabled: !newEnabledState } : c))
+      );
+      showToast("error", "Failed to update Dayparting Engine.");
+    }
+  };
+
+  const openAnalytics = async (targetId: string, name: string) => {
+    setAnalyticsTargetId(targetId);
+    setAnalyticsTargetName(name);
+    setIsAnalyticsLoading(true);
+    setAnalyticsData([]);
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/analytics/trend?target_id=${targetId}&profile_id=${profiles[0]?.profile_id}`, {
+        credentials: "include"
+      });
+      const data = await res.json();
+      if (data.trend) {
+        setAnalyticsData(data.trend);
+      }
+    } catch (e) {
+      console.error(e);
+      showToast("error", "Failed to load trend data.");
+    } finally {
+      setIsAnalyticsLoading(false);
+    }
+  };
+
+  const formatCurrency = (amount: number, currency: string = "INR") => {
+    const sym = currency === "INR" ? "₹" : currency === "USD" ? "$" : currency === "GBP" ? "£" : currency + " ";
+    return `${sym}${amount.toLocaleString()}`;
+  };
+
+  const handleDisconnect = async () => {
+    setShowDisconnectModal(false);
+    setLoading(true);
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/oauth/disconnect`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+      if (res.ok) {
+        setProfiles([]);
+        setSelectedProfileId("");
+        setIsConnected(false);
+        showToast("success", "Amazon Advertising disconnected successfully.");
+      } else {
+        const err = await res.json();
+        showToast("error", err.detail || "Failed to disconnect account.");
+      }
+    } catch (e) {
+      console.error(e);
+      showToast("error", "Network error while disconnecting.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAllData = async (profId?: string) => {
+    setLoading(true);
+    try {
+      // 0. Check connection status
+      const statusRes = await fetch(`${BASE_URL}/api/v1/ads/oauth/status`, { credentials: "include" });
+      if (statusRes.ok) {
+        const { is_connected } = await statusRes.json();
+        setIsConnected(is_connected);
+      }
+
+      // 1. Fetch Entitlements
+      const entRes = await fetch(`${BASE_URL}/api/v1/ads/entitlements`, {
+        credentials: "include"
+      });
+      if (entRes.ok) {
+        const entData = await entRes.json();
+        setEntitlements(entData);
+      }
+
+      // 2. Fetch Profiles (Production API)
+      const profRes = await fetch(`${BASE_URL}/api/v1/ads/profiles`, {
+        credentials: "include"
+      });
+      let profList: AdProfile[] = [];
+      if (profRes.ok) {
+        profList = await profRes.json();
+        setProfiles(profList);
+      }
+
+      const currentProfId = profId || (profList.length > 0 ? profList[0].profile_id : "");
+      if (currentProfId) {
+        setSelectedProfileId(currentProfId);
+
+        // 3. Fetch Scorecard
+        try {
+          const scRes = await fetch(`${BASE_URL}/api/v1/ads/scorecard?profile_id=${encodeURIComponent(currentProfId)}`, {
+            credentials: "include"
+          });
+          if (scRes.ok) {
+            const scData = await scRes.json();
+            setScorecard(scData);
+          }
+        } catch (e) {
+          console.error("Scorecard fetch error:", e);
+        }
+
+        // 4. Fetch Recommendations
+        try {
+          const recRes = await fetch(`${BASE_URL}/api/v1/ads/recommendations?profile_id=${encodeURIComponent(currentProfId)}`, {
+            credentials: "include"
+          });
+          if (recRes.ok) {
+            const recData = await recRes.json();
+            setRecommendations(recData.recommendations || []);
+          }
+        } catch (e) {
+          console.error("Recommendations fetch error:", e);
+        }
+
+        // 5. Fetch Campaigns (Ad Manager)
+        try {
+          const campRes = await fetch(`${BASE_URL}/api/v1/ads/campaigns/${encodeURIComponent(currentProfId)}`, {
+            credentials: "include"
+          });
+          if (campRes.ok) {
+            const campData = await campRes.json();
+            setCampaigns(campData);
+          }
+        } catch (e) {
+          console.error("Campaigns fetch error:", e);
+        }
+
+        // 6. Fetch Change Logs (WORM Audit Trail)
+        try {
+          const logRes = await fetch(`${BASE_URL}/api/v1/ads/change-logs/${encodeURIComponent(currentProfId)}`, {
+            credentials: "include"
+          });
+          if (logRes.ok) {
+            const logData = await logRes.json();
+            setChangeLogs(logData);
+          }
+        } catch (e) {
+          console.error("Change logs fetch error:", e);
+        }
+
+        // 7. Fetch Custom Rules
+        try {
+          const ruleRes = await fetch(`${BASE_URL}/api/v1/ads/custom-rules/${encodeURIComponent(currentProfId)}`, {
+            credentials: "include"
+          });
+          if (ruleRes.ok) {
+            const ruleData = await ruleRes.json();
+            setCustomRules(ruleData);
+          }
+        } catch (e) {
+          console.error("Custom rules fetch error:", e);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load PPC Optimizer data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllData();
+  }, []);
+
+  const handleProfileChange = (profId: string) => {
+    setSelectedProfileId(profId);
+    fetchAllData(profId);
+  };
+
+  const handleApply = async (recId: number) => {
+    setApplyingId(recId);
+    setNotification(null);
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/recommendations/apply`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ recommendation_id: recId })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setNotification({ type: "success", text: `Recommendation applied successfully! Audit Log ID: #${data.audit_log_id}` });
+        setRecommendations((prev) =>
+          prev.map((r) => (r.id === recId ? { ...r, status: "APPLIED" } : r))
+        );
+        if (entitlements) {
+          setEntitlements({
+            ...entitlements,
+            monthly_applies_used: entitlements.monthly_applies_used + 1
+          });
+        }
+      } else {
+        setNotification({ type: "error", text: data.detail || "Failed to apply recommendation." });
+      }
+    } catch (err) {
+      setNotification({ type: "error", text: "Network error applying recommendation." });
+    } finally {
+      setApplyingId(null);
+    }
+  };
+
+  const handleRollback = async (recId: number) => {
+    setRollbackId(recId);
+    setNotification(null);
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/recommendations/rollback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ recommendation_id: recId })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setNotification({ type: "success", text: "Change undone successfully! Your bid has been restored." });
+        setRecommendations((prev) =>
+          prev.map((r) => (r.id === recId ? { ...r, status: "ROLLED_BACK" } : r))
+        );
+      } else {
+        setNotification({ type: "error", text: data.detail || "Failed to rollback recommendation." });
+      }
+    } catch (err) {
+      setNotification({ type: "error", text: "Network error reverting recommendation." });
+    } finally {
+      setRollbackId(null);
+    }
+  };
+
+  const handleDismiss = async (recId: number, days: number = 7) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/recommendations/dismiss`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ recommendation_id: recId, snooze_days: days })
+      });
+      if (res.ok) {
+        setRecommendations((prev) =>
+          prev.map((r) => (r.id === recId ? { ...r, status: "DISMISSED" } : r))
+        );
+        showToast("success", `Recommendation snoozed for ${days} days.`);
+      } else {
+        showToast("error", "Failed to snooze recommendation.");
+      }
+    } catch (e) {
+      showToast("error", "Error snoozing recommendation.");
+    }
+  };
+
+  const handleBulkApply = async () => {
+    if (selectedRecIds.length === 0) return;
+    setLoading(true);
+    let count = 0;
+    for (const id of selectedRecIds) {
+      try {
+        const res = await fetch(`${BASE_URL}/api/v1/ads/recommendations/apply`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ recommendation_id: id })
+        });
+        if (res.ok) {
+          count++;
+          setRecommendations((prev) =>
+            prev.map((r) => (r.id === id ? { ...r, status: "APPLIED" } : r))
+          );
+        }
+      } catch (e) {
+        console.error("Bulk apply error for id", id, e);
+      }
+    }
+    setSelectedRecIds([]);
+    setLoading(false);
+    showToast("success", `Successfully applied ${count} selected recommendations in bulk!`);
+    if (selectedProfileId) {
+      await fetchAllData(selectedProfileId);
+    }
+  };
+
+  const handleToggleCampaignState = async (campaignId: string, currentState: string) => {
+    const nextState = currentState === "ENABLED" ? "PAUSED" : "ENABLED";
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/campaigns/update-status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ campaign_id: campaignId, state: nextState })
+      });
+      if (res.ok) {
+        setCampaigns((prev) =>
+          prev.map((c) => (c.campaign_id === campaignId ? { ...c, state: nextState } : c))
+        );
+        showToast("success", `Campaign status updated to ${nextState}`);
+      } else {
+        showToast("error", "Failed to update campaign status.");
+      }
+    } catch (e) {
+      showToast("error", "Error updating campaign status.");
+    }
+  };
+
+  const handleSaveBudget = async (campaignId: string) => {
+    const bVal = parseFloat(tempBudget);
+    if (isNaN(bVal) || bVal <= 0) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/campaigns/update-budget`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ campaign_id: campaignId, daily_budget: bVal })
+      });
+      if (res.ok) {
+        setCampaigns((prev) =>
+          prev.map((c) => (c.campaign_id === campaignId ? { ...c, daily_budget: bVal } : c))
+        );
+        setEditingBudgetId(null);
+        showToast("success", `Budget updated to ₹${bVal.toLocaleString()}`);
+      } else {
+        showToast("error", "Failed to update budget.");
+      }
+    } catch (e) {
+      showToast("error", "Error updating budget.");
+    }
+  };
+
+  const toggleSelectRec = (recId: number) => {
+    setSelectedRecIds((prev) =>
+      prev.includes(recId) ? prev.filter((id) => id !== recId) : [...prev, recId]
+    );
+  };
+
+  const toggleSelectAll = (recs: Recommendation[]) => {
+    const activeIds = recs.filter((r) => r.status === "PENDING").map((r) => r.id);
+    if (activeIds.every((id) => selectedRecIds.includes(id))) {
+      setSelectedRecIds((prev) => prev.filter((id) => !activeIds.includes(id)));
+    } else {
+      setSelectedRecIds((prev) => Array.from(new Set([...prev, ...activeIds])));
+    }
+  };
+
+  const filteredRecs = recommendations.filter((r) => r.rule_type === activeTab && r.status !== "DISMISSED");
+  const filteredChangeLogs = changeLogs.filter((log) => {
+    const matchesAction = filterActionType === "ALL" || log.action_type === filterActionType;
+    const matchesSearch = !searchChangeLog || 
+      log.target_id.toLowerCase().includes(searchChangeLog.toLowerCase()) ||
+      (log.old_value && log.old_value.toLowerCase().includes(searchChangeLog.toLowerCase())) ||
+      (log.new_value && log.new_value.toLowerCase().includes(searchChangeLog.toLowerCase()));
+    return matchesAction && matchesSearch;
+  });
+  const activeProfile = profiles.find((p) => p.profile_id === selectedProfileId);
+  const currSym = activeProfile?.currency_code || "INR";
+
+  const handleCreateRule = async () => {
+    if (!newRule.rule_name.trim()) return showToast("error", "Rule Name is required");
+    setIsCreatingRule(true);
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/custom-rules`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          profile_id: selectedProfileId,
+          ...newRule
+        })
+      });
+      if (!res.ok) throw new Error("Failed to create rule");
+      showToast("success", "Custom Rule created successfully!");
+      setNewRule({ rule_name: "", condition_acos_gt: 40, condition_clicks_gt: 15, action_type: "DECREASE_BID", action_value: 15 });
+      // Refetch
+      fetchAllData(selectedProfileId);
+    } catch (e) {
+      console.error(e);
+      showToast("error", "Failed to create rule.");
+    } finally {
+      setIsCreatingRule(false);
+    }
+  };
+
+  const handleDeleteRule = async (ruleId: number) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/custom-rules/${ruleId}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+      if (!res.ok) throw new Error("Failed to delete rule");
+      setCustomRules(prev => prev.filter(r => r.id !== ruleId));
+      showToast("success", "Custom Rule deleted.");
+    } catch (e) {
+      console.error(e);
+      showToast("error", "Failed to delete rule.");
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 pb-16">
+      {/* ── Top Bar ───────────────────────────────────────────────────────────── */}
+      <div className="sticky top-0 z-40 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-4 py-3 sm:px-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 max-w-7xl mx-auto">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={openSidebar}
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400"
+              aria-label="Open sidebar"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Amazon Ads Optimizer (India)
+                </h1>
+                {profiles.length > 0 ? (
+                  <Badge className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 border border-green-300 dark:border-green-700 flex items-center gap-1 px-2 py-0.5 text-xs font-semibold">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    Live Account Connected
+                  </Badge>
+                ) : (
+                  <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-300 dark:border-amber-700 flex items-center gap-1 px-2 py-0.5 text-xs font-semibold">
+                    <Lock className="w-3.5 h-3.5" />
+                    Account Not Connected
+                  </Badge>
+                )}
+              </div>
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                Smart 24/7 Campaign Optimization • Real-time Profit & Spend Analytics • 1-Click Bid Adjustments
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            {/* Marketplace Profile Selector */}
+            {profiles.length > 0 && (
+              <select
+                value={selectedProfileId}
+                onChange={(e) => handleProfileChange(e.target.value)}
+                className="bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-1.5 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                {profiles.map((p) => (
+                  <option key={p.profile_id} value={p.profile_id}>
+                    {p.country_code} ({p.currency_code}) — {p.account_type.toUpperCase()}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* Target ACOS & Refresh Buttons (Only show when connected) */}
+            {profiles.length > 0 && (
+              <>
+                <button
+                  onClick={() => setShowAcosModal(true)}
+                  className="inline-flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 rounded-lg px-3 py-1.5 text-sm font-medium transition-all"
+                >
+                  <Sliders className="w-4 h-4" />
+                  Target ACOS: {targetAcos}%
+                </button>
+
+                <button
+                  onClick={() => fetchAllData(selectedProfileId)}
+                  disabled={loading}
+                  className="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-all disabled:opacity-50"
+                  title="Refresh Data"
+                >
+                  <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
+                </button>
+
+                <button
+                  onClick={() => setShowDisconnectModal(true)}
+                  disabled={loading}
+                  className="p-2 rounded-lg bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-900/50 transition-all disabled:opacity-50"
+                  title="Disconnect Account"
+                >
+                  <Unplug className="w-4 h-4" />
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
+        {/* Notification Alert */}
+        {notification && (
+          <div
+            className={`mb-6 p-4 rounded-xl border flex items-center justify-between ${
+              notification.type === "success"
+                ? "bg-green-50 dark:bg-green-950/40 border-green-300 dark:border-green-800 text-green-800 dark:text-green-200"
+                : "bg-red-50 dark:bg-red-950/40 border-red-300 dark:border-red-800 text-red-800 dark:text-red-200"
+            }`}
+          >
+            <div className="flex items-center gap-2 text-sm font-medium">
+              {notification.type === "success" ? (
+                <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+              ) : (
+                <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
+              )}
+              {notification.text}
+            </div>
+            <button
+              onClick={() => setNotification(null)}
+              className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+
+        {/* ── Entitlement Upsell Banner (Free Tier / Limit Warning) ───────────── */}
+        {entitlements && !entitlements.can_apply_recommendations && (
+          <div className="mb-6 p-4 rounded-xl bg-gradient-to-r from-purple-900/90 via-indigo-900/90 to-pink-900/90 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 border border-purple-500/30">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-lg bg-white/10 backdrop-blur-md">
+                <Crown className="w-6 h-6 text-yellow-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-base sm:text-lg">
+                  Free Tier Preview Mode
+                </h3>
+                <p className="text-xs sm:text-sm text-purple-200">
+                  {entitlements.upsell_message || "Upgrade to unlock 1-Click Bleeder Blocking & Winner Keyword Launching!"}
+                </p>
+              </div>
+            </div>
+            <a
+              href="/pricing"
+              className="px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 text-gray-950 font-bold text-sm shadow-md transition-transform hover:scale-105 whitespace-nowrap"
+            >
+              Upgrade to Premium
+            </a>
+          </div>
+        )}
+
+        {/* ── Production Onboarding Card (When No Amazon Ads Account is Connected) ── */}
+        {!loading && !isConnected && (
+          <div className="mb-8 p-8 sm:p-12 rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm text-center max-w-4xl mx-auto flex flex-col items-center justify-center">
+            
+            <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white mb-4">
+              Connect Your Amazon Advertising Account
+            </h2>
+
+            <p className="text-gray-600 dark:text-gray-300 text-base sm:text-lg leading-relaxed max-w-2xl mb-10">
+              Insydz automatically stops loss-making search terms, scales your profitable keywords, and manages your CPC bids 24/7. Connect your Amazon Seller account securely to unlock the PPC Optimizer.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10 text-left w-full">
+              <div className="p-5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-2 font-bold text-gray-900 dark:text-white mb-2 text-sm">
+                  <ShieldCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                  1-Click Undo Protection
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Easily undo any bid change or keyword action anytime with a single click.
+                </p>
+              </div>
+
+              <div className="p-5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-2 font-bold text-gray-900 dark:text-white mb-2 text-sm">
+                  <Zap className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+                  Stop Wasted Ad Spend
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Automatically pause keywords that spend money without generating orders.
+                </p>
+              </div>
+
+              <div className="p-5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-2 font-bold text-gray-900 dark:text-white mb-2 text-sm">
+                  <Lock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  100% Secure & Private
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Official Amazon Ads connection. No access to your bank account or payouts.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center gap-3 w-full">
+              <a
+                href={`${BASE_URL}/api/v1/ads/oauth/authorize?user_id=${user?.id || 1}`}
+                className="inline-flex items-center justify-center gap-3 px-8 py-4 w-full sm:w-auto rounded-xl bg-[#F3A847] hover:bg-[#f3a847]/90 text-gray-900 font-bold text-base shadow-sm transition-all"
+              >
+                <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                  <path d="M13.95 14.28c-.4-.36-1.12-.24-1.57.17-.5.45-.63 1.13-.27 1.62.83 1.15 2.27 1.58 3.52 1.48 1.45-.11 2.82-.93 3.4-2.29.35-.83.35-1.9-.11-2.67-.84-1.42-2.82-1.77-4.2-1.02-1.08.6-1.63 1.77-1.34 2.89.17.65.75 1.14 1.41 1.25.75.13 1.44-.35 1.64-1.05.15-.53-.13-.97-.56-1.1-.34-.1-.7.12-.81.44-.12.37.12.72.47.81.2.06.41-.05.47-.23.05-.16-.04-.33-.2-.37-.09-.02-.18.03-.2.11-.03.11.05.21.16.24.06.01.12-.03.14-.08.01-.06-.03-.12-.09-.13-.03 0-.07.02-.07.06 0 .03.03.06.06.07.02 0 .04-.01.05-.03.01-.02 0-.04-.02-.04-.01 0-.02.01-.02.02 0 .01.01.02.02.02.01 0 .01-.01.01-.01 0 0 0 0 0 0z" />
+                </svg>
+                Connect Amazon Advertising Account
+              </a>
+              <span className="text-xs text-gray-500 font-medium">
+                Takes less than 30 seconds • Instant secure data sync
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* ── Zero Profiles Found Card ── */}
+        {!loading && isConnected && profiles.length === 0 && (
+          <div className="mb-8 p-8 sm:p-12 rounded-2xl bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 shadow-sm text-center max-w-3xl mx-auto flex flex-col items-center justify-center">
+            <AlertTriangle className="w-12 h-12 text-yellow-500 mb-6" />
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white mb-4">
+              Amazon Connected, But No Profiles Found
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 text-base leading-relaxed mb-8">
+              Your Amazon Seller account was successfully linked, but the Amazon API returned exactly 0 advertising profiles. 
+              This usually means that the account you logged into has not actively registered for Amazon Advertising, or does not have any active ad campaigns.
+            </p>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => fetchAllData()}
+                className="px-6 py-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl font-semibold shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-all"
+              >
+                Refresh Connection
+              </button>
+              <button
+                onClick={() => setShowDisconnectModal(true)}
+                className="px-6 py-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 rounded-xl font-semibold hover:bg-red-200 transition-all"
+              >
+                Disconnect Account
+              </button>
+            </div>
+          </div>
+        )}
+
+        {profiles.length > 0 && (
+          /* ── LIVE DATA WORKSPACE (When Connected) ── */
+          <>
+            {/* ── Top KPI Scorecard ───────────────────────────────── */}
+            {scorecard && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between text-gray-500 dark:text-gray-400 text-xs font-medium mb-1">
+                <span>Total Ad Spend</span>
+                <DollarSign className="w-4 h-4 text-indigo-500" />
+              </div>
+              <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                {formatCurrency(scorecard.total_spend, currSym)}
+              </div>
+              <div className="text-xs text-gray-400 mt-1">Last 30 Days</div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between text-gray-500 dark:text-gray-400 text-xs font-medium mb-1">
+                <span>Total Ad Sales</span>
+                <TrendingUp className="w-4 h-4 text-green-500" />
+              </div>
+              <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                {formatCurrency(scorecard.total_sales, currSym)}
+              </div>
+              <div className="text-xs text-green-600 dark:text-green-400 font-medium mt-1">
+                +18.4% vs prev
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between text-gray-500 dark:text-gray-400 text-xs font-medium mb-1">
+                <span>Total Orders</span>
+                <Target className="w-4 h-4 text-purple-500" />
+              </div>
+              <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                {scorecard.total_orders.toLocaleString()}
+              </div>
+              <div className="text-xs text-gray-400 mt-1">
+                CVR: {((scorecard.total_orders / (scorecard.total_clicks || 1)) * 100).toFixed(1)}%
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow">
+              <div className="flex items-center justify-between text-gray-500 dark:text-gray-400 text-xs font-medium mb-1">
+                <span>ACOS</span>
+                <BarChart2 className="w-4 h-4 text-amber-500" />
+              </div>
+              <div
+                className={`text-xl sm:text-2xl font-bold ${
+                  scorecard.acos <= targetAcos
+                    ? "text-green-600 dark:text-green-400"
+                    : "text-amber-600 dark:text-amber-400"
+                }`}
+              >
+                {scorecard.acos}%
+              </div>
+              <div className="text-xs text-gray-400 mt-1">Target: {targetAcos}%</div>
+            </div>
+
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow col-span-2 sm:col-span-1">
+              <div className="flex items-center justify-between text-gray-500 dark:text-gray-400 text-xs font-medium mb-1">
+                <span>ROAS</span>
+                <Sparkles className="w-4 h-4 text-pink-500" />
+              </div>
+              <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                {scorecard.roas}x
+              </div>
+              <div className="text-xs text-green-600 dark:text-green-400 font-medium mt-1">
+                Profitable
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Top-Level Navigation Tabs ─────────── */}
+        <div className="flex border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 rounded-t-2xl px-4 pt-2 gap-4">
+          <button
+            onClick={() => setMainTab("SUGGESTIONS")}
+            className={`py-3 px-4 font-bold text-sm border-b-2 flex items-center gap-2 transition-all ${
+              mainTab === "SUGGESTIONS"
+                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            }`}
+          >
+            <Sparkles className="w-4 h-4" />
+            Action Items (Suggestions)
+            <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300">
+              {recommendations.length}
+            </Badge>
+          </button>
+
+          <button
+            onClick={() => setMainTab("AD_MANAGER")}
+            className={`py-3 px-4 font-bold text-sm border-b-2 flex items-center gap-2 transition-all ${
+              mainTab === "AD_MANAGER"
+                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            }`}
+          >
+            <Target className="w-4 h-4" />
+            All Campaigns
+            <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
+              {campaigns.length}
+            </Badge>
+          </button>
+
+          <button
+            onClick={() => setMainTab("CHANGE_LOG")}
+            className={`py-3 px-4 font-bold text-sm border-b-2 flex items-center gap-2 transition-all ${
+              mainTab === "CHANGE_LOG"
+                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            }`}
+          >
+            <RotateCcw className="w-4 h-4" />
+            History & Undo
+            <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300">
+              {changeLogs.length}
+            </Badge>
+          </button>
+
+          <button
+            onClick={() => setMainTab("ANALYTICS")}
+            className={`py-3 px-4 font-bold text-sm border-b-2 flex items-center gap-2 transition-all ${
+              mainTab === "ANALYTICS"
+                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            }`}
+          >
+            <BarChart2 className="w-4 h-4" />
+            Profit & Ad Spend Analytics
+          </button>
+
+          <button
+            onClick={() => setMainTab("CUSTOM_RULES")}
+            className={`py-3 px-4 font-bold text-sm border-b-2 flex items-center gap-2 transition-all ${
+              mainTab === "CUSTOM_RULES"
+                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            }`}
+          >
+            <Sliders className="w-4 h-4" />
+            Custom Rules
+            <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300">
+              {customRules.length}
+            </Badge>
+          </button>
+        </div>
+
+        {/* ── 1. SUGGESTIONS TAB ───────────────────── */}
+        {mainTab === "SUGGESTIONS" && (
+          <div className="bg-white dark:bg-gray-900 border-x border-b border-gray-200 dark:border-gray-800 rounded-b-2xl shadow-sm overflow-hidden">
+            {/* Sub-Tabs Navigation */}
+            <div className="flex border-b border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
+              <button
+                onClick={() => setActiveTab("BLEEDER")}
+                className={`flex-1 py-4 px-4 text-sm font-semibold flex items-center justify-center gap-2 border-b-2 transition-all ${
+                  activeTab === "BLEEDER"
+                    ? "border-red-500 text-red-600 dark:text-red-400 bg-red-50/30 dark:bg-red-950/10"
+                    : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                }`}
+              >
+                <AlertTriangle className="w-4 h-4" />
+                Loss-Making Keywords (Zero Orders)
+                <Badge className="bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300 ml-1">
+                  {recommendations.filter((r) => r.rule_type === "BLEEDER").length}
+                </Badge>
+              </button>
+
+              <button
+                onClick={() => setActiveTab("WINNER")}
+                className={`flex-1 py-4 px-4 text-sm font-semibold flex items-center justify-center gap-2 border-b-2 transition-all ${
+                  activeTab === "WINNER"
+                    ? "border-green-500 text-green-600 dark:text-green-400 bg-green-50/30 dark:bg-green-950/10"
+                    : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                }`}
+              >
+                <Sparkles className="w-4 h-4" />
+                Profitable Search Terms
+                <Badge className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 ml-1">
+                  {recommendations.filter((r) => r.rule_type === "WINNER").length}
+                </Badge>
+              </button>
+
+              <button
+                onClick={() => setActiveTab("BID_OPTIMIZE")}
+                className={`flex-1 py-4 px-4 text-sm font-semibold flex items-center justify-center gap-2 border-b-2 transition-all ${
+                  activeTab === "BID_OPTIMIZE"
+                    ? "border-indigo-500 text-indigo-600 dark:text-indigo-400 bg-indigo-50/30 dark:bg-indigo-950/10"
+                    : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+                }`}
+              >
+                <Sliders className="w-4 h-4" />
+                Smart Bid Adjustments
+                <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300 ml-1">
+                  {recommendations.filter((r) => r.rule_type === "BID_OPTIMIZE").length}
+                </Badge>
+              </button>
+            </div>
+
+            {/* Recommendations Cards List */}
+            <div className="p-4 sm:p-6">
+              {loading ? (
+                <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+                  <RefreshCw className="w-8 h-8 animate-spin text-indigo-500 mb-3" />
+                  <p className="text-sm">Scanning your campaigns for savings and profit opportunities...</p>
+                </div>
+              ) : filteredRecs.length === 0 ? (
+                <div className="text-center py-16 text-gray-500 dark:text-gray-400">
+                  <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3 opacity-80" />
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    No active {activeTab.toLowerCase()} recommendations right now
+                  </h3>
+                  <p className="text-sm max-w-md mx-auto mt-1">
+                    Your campaigns are currently performing within your {targetAcos}% Target ACOS threshold. We scan 24/7 for new optimization opportunities.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Bulk Select Bar */}
+                  <div className="flex items-center justify-between bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/60 px-4 py-2.5 rounded-xl">
+                    <button
+                      onClick={() => toggleSelectAll(filteredRecs)}
+                      className="flex items-center gap-2 text-xs font-bold text-indigo-700 dark:text-indigo-300 hover:text-indigo-900 dark:hover:text-white transition-colors"
+                    >
+                      {filteredRecs.filter((r) => r.status === "PENDING").length > 0 &&
+                      filteredRecs
+                        .filter((r) => r.status === "PENDING")
+                        .every((r) => selectedRecIds.includes(r.id)) ? (
+                        <CheckSquare className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                      ) : (
+                        <Square className="w-4 h-4 text-gray-400" />
+                      )}
+                      Select All Pending ({filteredRecs.filter((r) => r.status === "PENDING").length})
+                    </button>
+
+                    {selectedRecIds.length > 0 && (
+                      <button
+                        onClick={handleBulkApply}
+                        disabled={loading}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-lg text-xs font-bold shadow-sm transition-all"
+                      >
+                        <Zap className="w-3.5 h-3.5" />
+                        Apply Selected ({selectedRecIds.length}) in Bulk
+                      </button>
+                    )}
+                  </div>
+
+                  {filteredRecs.map((rec) => {
+                    const ev = rec.evidence || {};
+                    const isApplied = rec.status === "APPLIED";
+                    const isRolledBack = rec.status === "ROLLED_BACK";
+                    const canApply = entitlements?.can_apply_recommendations;
+                    const isSelected = selectedRecIds.includes(rec.id);
+
+                    return (
+                      <div
+                        key={rec.id}
+                        className={`border rounded-xl p-4 sm:p-5 transition-all ${
+                          isApplied
+                            ? "bg-green-50/20 dark:bg-green-950/10 border-green-200 dark:border-green-900/40"
+                            : isRolledBack
+                            ? "bg-gray-50 dark:bg-gray-800/40 border-gray-200 dark:border-gray-800 opacity-70"
+                            : "bg-white dark:bg-gray-900/80 border-gray-200 dark:border-gray-800 hover:border-indigo-400 dark:hover:border-indigo-600 shadow-sm"
+                        }`}
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          {/* Left Info */}
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {rec.status === "PENDING" && (
+                                <button
+                                  onClick={() => toggleSelectRec(rec.id)}
+                                  className="text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                                >
+                                  {isSelected ? (
+                                    <CheckSquare className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                                  ) : (
+                                    <Square className="w-4 h-4" />
+                                  )}
+                                </button>
+                              )}
+                              <span className="font-bold text-gray-900 dark:text-white text-base">
+                                {ev.search_term || ev.keyword || rec.target_id}
+                              </span>
+                              <button
+                                onClick={() => openAnalytics(rec.target_id, ev.search_term || ev.keyword || rec.target_id)}
+                                className="p-1 hover:bg-gray-200 dark:hover:bg-gray-700 rounded text-indigo-500 transition-colors"
+                                title="View 60-Day Trend"
+                              >
+                                <LineChartIcon className="w-4 h-4" />
+                              </button>
+                              <Badge className="bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-xs">
+                                {rec.rule_type}
+                              </Badge>
+                              {ev.match_type && (
+                                <Badge className="bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800 text-xs">
+                                  {ev.match_type}
+                                </Badge>
+                              )}
+                            </div>
+
+                            {/* Key Evidence Stats */}
+                            <div className="flex items-center gap-4 text-xs sm:text-sm text-gray-500 dark:text-gray-400 flex-wrap">
+                              {ev.clicks !== undefined && (
+                                <span>
+                                  Clicks: <strong className="text-gray-700 dark:text-gray-300">{ev.clicks}</strong>
+                                </span>
+                              )}
+                              {ev.spend !== undefined && (
+                                <span>
+                                  Spend:{" "}
+                                  <strong className="text-gray-700 dark:text-gray-300">
+                                    {formatCurrency(ev.spend, currSym)}
+                                  </strong>
+                                </span>
+                              )}
+                              {ev.acos !== undefined && (
+                                <span>
+                                  ACOS:{" "}
+                                  <strong className={ev.acos > targetAcos ? "text-red-500" : "text-green-600 dark:text-green-400"}>
+                                    {ev.acos.toFixed(1)}%
+                                  </strong>
+                                </span>
+                              )}
+                              {ev.sales !== undefined && (
+                                <span>
+                                  Sales:{" "}
+                                  <strong className="text-gray-700 dark:text-gray-300">
+                                    {formatCurrency(ev.sales, currSym)}
+                                  </strong>
+                                </span>
+                              )}
+                              {ev.orders !== undefined && (
+                                <span>
+                                  Orders: <strong className="text-gray-700 dark:text-gray-300">{ev.orders}</strong>
+                                </span>
+                              )}
+                              {ev.current_bid !== undefined && (
+                                <span>
+                                  Bid: {formatCurrency(ev.current_bid, currSym)} ➔{" "}
+                                  <strong className="text-indigo-600 dark:text-indigo-400">
+                                    {formatCurrency(ev.suggested_bid, currSym)}
+                                  </strong>
+                                </span>
+                              )}
+                            </div>
+
+                            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                              {ev.reason || "Deterministic mathematical optimization recommendation."}
+                            </p>
+
+                            {rec.rule_type === "WINNER" && (
+                              <div className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-lg text-xs font-medium text-amber-800 dark:text-amber-300">
+                                <input
+                                  type="checkbox"
+                                  checked={autoIsolateEnabled}
+                                  onChange={(e) => setAutoIsolateEnabled(e.target.checked)}
+                                  className="rounded border-amber-400 text-amber-600 focus:ring-amber-500"
+                                />
+                                <span>
+                                  <strong>Prevent Waste:</strong> Automatically add this as a negative keyword in your discovery campaign so you don't pay twice.
+                                </span>
+                              </div>
+                            )}
+
+                            {rec.rule_type === "BID_OPTIMIZE" && (
+                              <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800/40 rounded-lg text-xs font-semibold text-indigo-700 dark:text-indigo-300">
+                                <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
+                                <span>Bid Safety Limit: Safely limited between Min ₹2.00 and Max ₹150.00</span>
+                              </div>
+                            )}
+
+                            <div className="flex items-center gap-4 text-xs text-gray-400">
+                              <span>Rule Version: v1.0</span>
+                              <span>•</span>
+                              <span>Status: {rec.status}</span>
+                            </div>
+                          </div>
+
+                          {/* Right Actions (1-Click Apply, Snooze, or Undo) */}
+                          <div className="flex items-center gap-2 self-end sm:self-center">
+                            {isApplied ? (
+                              <div className="flex items-center gap-2">
+                                <span className="inline-flex items-center gap-1 text-xs font-bold text-green-600 dark:text-green-400 px-3 py-1.5 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                                  <Check className="w-3.5 h-3.5" /> Applied
+                                </span>
+                                <button
+                                  onClick={() => handleRollback(rec.id)}
+                                  disabled={rollbackId === rec.id}
+                                  className="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all text-gray-700 dark:text-gray-300"
+                                >
+                                  <RotateCcw className={`w-3.5 h-3.5 ${rollbackId === rec.id ? "animate-spin" : ""}`} />
+                                  Undo (1-Click Restore)
+                                </button>
+                              </div>
+                            ) : isRolledBack ? (
+                              <span className="text-xs font-medium text-gray-500 dark:text-gray-400 italic">
+                                Undone / Restored
+                              </span>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => handleDismiss(rec.id, 7)}
+                                  className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+                                  title="Snooze for 7 days"
+                                >
+                                  <Clock className="w-3.5 h-3.5" />
+                                  Snooze 7d
+                                </button>
+
+                                <button
+                                  onClick={() => handleApply(rec.id)}
+                                  disabled={applyingId === rec.id || !canApply}
+                                  className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-lg font-bold text-sm shadow-md transition-all ${
+                                    !canApply
+                                      ? "bg-gray-200 dark:bg-gray-800 text-gray-400 cursor-not-allowed"
+                                      : rec.rule_type === "BLEEDER"
+                                      ? "bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white hover:scale-105"
+                                      : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white hover:scale-105"
+                                  }`}
+                                >
+                                  {!canApply ? (
+                                    <>
+                                      <Lock className="w-4 h-4" />
+                                      Unlock in Premium
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Zap className="w-4 h-4" />
+                                      {rec.rule_type === "BLEEDER"
+                                        ? "Block Bleeder"
+                                        : rec.rule_type === "WINNER"
+                                        ? "Launch Keyword"
+                                        : "Apply Bid"}
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+        )}
+
+        {/* ── 2. ALL CAMPAIGNS TAB ──────────── */}
+        {mainTab === "AD_MANAGER" && (
+          <div className="bg-white dark:bg-gray-900 border-x border-b border-gray-200 dark:border-gray-800 rounded-b-2xl shadow-sm p-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Target className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  All Campaigns — Manage Bids & Strategy
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Real-time sync with your Amazon India Sponsored Products & Brands campaigns.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Badge className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">
+                  {campaigns.length} Active Campaigns
+                </Badge>
+              </div>
+            </div>
+
+            {campaigns.length === 0 ? (
+              <div className="text-center py-16 bg-gray-50/50 dark:bg-gray-800/20 rounded-xl border border-dashed border-gray-200 dark:border-gray-800">
+                <Target className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300">
+                  No campaigns found in this profile.
+                </h4>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Connect your active Amazon Advertising account to view and manage your live campaigns.
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto border border-gray-200 dark:border-gray-800 rounded-xl shadow-inner bg-white dark:bg-gray-950">
+                <table className="w-full text-left border-collapse min-w-[1100px]">
+                  <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-gray-800/95 backdrop-blur text-gray-700 dark:text-gray-200 border-b-2 border-gray-300 dark:border-gray-700 font-extrabold">
+                    <tr className="text-xs uppercase tracking-wider">
+                      <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800">Campaign Name & Type</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800">Status</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800">Strategy Objective</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800">Automation Mode</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800 text-right">Daily Budget</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800">Ad Groups & Default Bid</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800">Dayparting</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-800 text-sm font-medium">
+                    {campaigns.map((camp) => {
+                      const obj = camp.objective || "SCALE";
+                      const autoMode = camp.automation_mode || "MANUAL";
+                      const isDayparting = !!camp.dayparting_enabled;
+
+                      return (
+                        <tr key={camp.campaign_id} className="hover:bg-indigo-50/40 dark:hover:bg-indigo-950/20 transition-colors border-b border-gray-200 dark:border-gray-800">
+                          <td className="py-4 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800 align-middle">
+                            <div className="font-bold text-gray-900 dark:text-white">
+                              {camp.name}
+                            </div>
+                            <span className="inline-block mt-1 text-xs font-semibold px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300">
+                              {camp.campaign_type}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800 align-middle">
+                            <button
+                              onClick={() => handleToggleCampaignState(camp.campaign_id, camp.state)}
+                              className="focus:outline-none"
+                              title="Click to toggle Enabled/Paused"
+                            >
+                              <Badge
+                                className={`font-semibold cursor-pointer hover:opacity-80 transition-opacity ${
+                                  camp.state === "ENABLED"
+                                    ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
+                                    : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                                }`}
+                              >
+                                <span
+                                  className={`w-1.5 h-1.5 rounded-full mr-1.5 inline-block ${
+                                    camp.state === "ENABLED" ? "bg-green-500" : "bg-gray-400"
+                                  }`}
+                                />
+                                {camp.state}
+                              </Badge>
+                            </button>
+                          </td>
+                          <td className="py-4 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800 align-middle">
+                            <button
+                              onClick={() => toggleObjective(camp.campaign_id, obj)}
+                              className="focus:outline-none"
+                              title="Click to rotate objective: LAUNCH -> SCALE -> LIQUIDATE"
+                            >
+                              <Badge
+                                className={`font-bold cursor-pointer transition-all hover:scale-105 ${
+                                  obj === "LAUNCH"
+                                    ? "bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300"
+                                    : obj === "LIQUIDATE"
+                                    ? "bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300"
+                                    : "bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300"
+                                }`}
+                              >
+                                {obj === "LAUNCH" ? "🚀 Launch (40% ACOS)" : obj === "LIQUIDATE" ? "💰 Liquidate (15% ACOS)" : "📈 Scale (25% ACOS)"}
+                              </Badge>
+                            </button>
+                          </td>
+                          <td className="py-4 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800 align-middle">
+                            <button
+                              onClick={() => toggleAutomationMode(camp.campaign_id, autoMode)}
+                              className="focus:outline-none"
+                              title="Click to toggle Manual vs Autopilot 24/7"
+                            >
+                              <Badge
+                                className={`font-bold cursor-pointer transition-all hover:scale-105 ${
+                                  autoMode === "AUTOPILOT"
+                                    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-300"
+                                    : "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                                }`}
+                              >
+                                {autoMode === "AUTOPILOT" ? "🤖 Autopilot 24/7" : "👤 Manual Review"}
+                              </Badge>
+                            </button>
+                          </td>
+                          <td className="py-4 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800 align-middle text-right font-mono">
+                            {editingBudgetId === camp.campaign_id ? (
+                              <div className="flex items-center justify-end gap-1.5">
+                                <span className="text-gray-500 text-xs">₹</span>
+                                <input
+                                  type="number"
+                                  value={tempBudget}
+                                  onChange={(e) => setTempBudget(e.target.value)}
+                                  className="w-20 px-2 py-1 text-xs border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                />
+                                <button
+                                  onClick={() => handleSaveBudget(camp.campaign_id)}
+                                  className="px-2 py-1 text-xs bg-green-600 hover:bg-green-500 text-white rounded font-semibold"
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  onClick={() => setEditingBudgetId(null)}
+                                  className="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  setEditingBudgetId(camp.campaign_id);
+                                  setTempBudget(camp.daily_budget.toString());
+                                }}
+                                className="font-semibold text-gray-800 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 inline-flex items-center justify-end gap-1"
+                                title="Click to edit budget inline"
+                              >
+                                ₹{camp.daily_budget.toLocaleString()} <span className="text-xs text-gray-400 font-normal">/ day</span>
+                                <Edit3 className="w-3 h-3 text-gray-400" />
+                              </button>
+                            )}
+                          </td>
+                          <td className="py-4 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800 align-middle">
+                            <div className="space-y-1">
+                              {camp.ad_groups.map((ag) => (
+                                <div key={ag.ad_group_id} className="flex items-center justify-between bg-gray-50 dark:bg-gray-800/50 px-3 py-1.5 rounded text-xs gap-4">
+                                  <span className="font-medium text-gray-700 dark:text-gray-300">{ag.name}</span>
+                                  <span className="font-bold text-indigo-600 dark:text-indigo-400 font-mono">
+                                    Default Bid: ₹{ag.default_bid.toFixed(2)}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800 align-middle">
+                            <button
+                              onClick={() => setShowDaypartingModal(camp.campaign_id)}
+                              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                                isDayparting
+                                  ? "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500"
+                                  : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200"
+                              }`}
+                              title="Click to configure hourly Dayparting Ad Schedule"
+                            >
+                              <Clock className="w-3 h-3" />
+                              {isDayparting ? "Dayparting ON (Overnight Paused)" : "Dayparting OFF (24/7)"}
+                            </button>
+                          </td>
+                          <td className="py-4 px-4 whitespace-nowrap text-right align-middle">
+                            <button
+                              onClick={() => setMainTab("SUGGESTIONS")}
+                              className="px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 rounded-lg transition-colors"
+                            >
+                              Optimize
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── 3. HISTORY & UNDO TAB ── */}
+        {mainTab === "CHANGE_LOG" && (
+          <div className="bg-white dark:bg-gray-900 border-x border-b border-gray-200 dark:border-gray-800 rounded-b-2xl shadow-sm p-6">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <RotateCcw className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  Change History & 1-Click Undo
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Complete history of all automatic and manual bid changes applied to your campaigns.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300">
+                  {changeLogs.length} Logged Actions
+                </Badge>
+              </div>
+            </div>
+
+            {/* Filter & Search Toolbar */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6 bg-gray-50 dark:bg-gray-800/40 p-3 rounded-xl border border-gray-200 dark:border-gray-800">
+              <div className="relative flex-1 max-w-sm">
+                <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Search by keyword, target ID, or value..."
+                  value={searchChangeLog}
+                  onChange={(e) => setSearchChangeLog(e.target.value)}
+                  className="w-full pl-9 pr-3 py-1.5 text-xs bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-gray-400" />
+                <select
+                  value={filterActionType}
+                  onChange={(e) => setFilterActionType(e.target.value)}
+                  className="px-3 py-1.5 text-xs bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-700 dark:text-gray-300 font-semibold focus:outline-none"
+                >
+                  <option value="ALL">All Action Types ({changeLogs.length})</option>
+                  <option value="ADD_NEGATIVE_KEYWORD">Bleeders / Negative Keywords</option>
+                  <option value="ADD_KEYWORD">Winners / New Keywords</option>
+                  <option value="UPDATE_BID">Bid Adjustments</option>
+                </select>
+              </div>
+            </div>
+
+            {filteredChangeLogs.length === 0 ? (
+              <div className="text-center py-16 bg-gray-50/50 dark:bg-gray-800/20 rounded-xl border border-dashed border-gray-200 dark:border-gray-800">
+                <RotateCcw className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300">
+                  No audit logs matching filters.
+                </h4>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Try selecting a different action filter or clearing your search term.
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto border border-gray-200 dark:border-gray-800 rounded-xl shadow-inner bg-white dark:bg-gray-950">
+                <table className="w-full text-left border-collapse min-w-[900px]">
+                  <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-gray-800/95 backdrop-blur text-gray-700 dark:text-gray-200 border-b-2 border-gray-300 dark:border-gray-700 font-extrabold">
+                    <tr className="text-xs uppercase tracking-wider">
+                      <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800">Timestamp</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800">Action Type</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800">Target Keyword / ID</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800">Old ➔ New Value</th>
+                      <th className="py-3.5 px-4 whitespace-nowrap text-right">1-Click Undo</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-800 text-sm font-medium">
+                    {filteredChangeLogs.map((log) => (
+                      <tr key={log.id} className="hover:bg-indigo-50/40 dark:hover:bg-indigo-950/20 transition-colors border-b border-gray-200 dark:border-gray-800">
+                        <td className="py-4 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800 align-middle text-gray-600 dark:text-gray-300 font-medium">
+                          {log.created_at ? new Date(log.created_at).toLocaleString() : "Just now"}
+                        </td>
+                        <td className="py-4 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800 align-middle">
+                          <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300 font-semibold">
+                            {log.action_type}
+                          </Badge>
+                        </td>
+                        <td className="py-4 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800 align-middle font-mono text-xs font-semibold text-gray-800 dark:text-gray-200">
+                          {log.target_id}
+                        </td>
+                        <td className="py-4 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800 align-middle">
+                          <div className="flex items-center gap-2 text-xs font-semibold">
+                            <span className="text-gray-500 dark:text-gray-400 line-through">{log.old_value}</span>
+                            <span className="text-gray-400">➔</span>
+                            <span className="text-green-600 dark:text-green-400">{log.new_value}</span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 whitespace-nowrap text-right align-middle">
+                          {log.recommendation_id ? (
+                            <button
+                              onClick={() => handleRollback(log.recommendation_id)}
+                              disabled={rollbackId === log.recommendation_id}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg transition-colors disabled:opacity-50"
+                            >
+                              <RotateCcw className={`w-3.5 h-3.5 ${rollbackId === log.recommendation_id ? "animate-spin" : ""}`} />
+                              {rollbackId === log.recommendation_id ? "Reverting..." : "Undo Change"}
+                            </button>
+                          ) : (
+                            <span className="text-xs text-gray-400 italic">Audit only</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── 4. PROFIT & AD SPEND ANALYTICS TAB ─────── */}
+        {mainTab === "ANALYTICS" && (
+          <div className="bg-white dark:bg-gray-900 border-x border-b border-gray-200 dark:border-gray-800 rounded-b-2xl shadow-sm p-6">
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <BarChart2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                Total Profitability & Ad Spend Breakdown
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                See how your total advertising spend impacts overall business profit and organic sales.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+              <div className="bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-200 dark:border-indigo-800 rounded-2xl p-5">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-1">
+                  TACoS (Total ACOS)
+                </div>
+                <div className="text-2xl font-extrabold text-gray-900 dark:text-white">
+                  {scorecard && scorecard.total_sales > 0 ? ((scorecard.total_spend / scorecard.total_sales) * 100).toFixed(1) : "0.0"}%
+                </div>
+                <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-2 flex items-center gap-1">
+                  <CheckCircle className="w-3 h-3 text-green-500" />
+                  Healthy (&lt; 20%)
+                </div>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                  Target ACOS
+                </div>
+                <div className="text-2xl font-extrabold text-gray-900 dark:text-white">
+                  {scorecard ? scorecard.acos.toFixed(1) : "0.0"}%
+                </div>
+                <div className="text-[11px] text-green-600 dark:text-green-400 mt-2 font-semibold">
+                  {scorecard && scorecard.acos <= targetAcos
+                    ? `Below ${targetAcos}% Target`
+                    : `Above ${targetAcos}% Target`}
+                </div>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                  ROAS Multiplier
+                </div>
+                <div className="text-2xl font-extrabold text-gray-900 dark:text-white">
+                  {scorecard ? `${scorecard.roas.toFixed(2)}x` : "0.00x"}
+                </div>
+                <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
+                  ₹{scorecard ? scorecard.total_sales.toLocaleString() : "0"} / ₹spend
+                </div>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                  CTR (Click-Through)
+                </div>
+                <div className="text-2xl font-extrabold text-gray-900 dark:text-white">
+                  {scorecard && scorecard.total_impressions > 0 ? ((scorecard.total_clicks / scorecard.total_impressions) * 100).toFixed(2) : "0.00"}%
+                </div>
+                <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
+                  {scorecard ? scorecard.total_clicks.toLocaleString() : "0"} Clicks
+                </div>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                  CPC (Cost Per Click)
+                </div>
+                <div className="text-2xl font-extrabold text-gray-900 dark:text-white">
+                  ₹{scorecard && scorecard.total_clicks > 0 ? (scorecard.total_spend / scorecard.total_clicks).toFixed(2) : "0.00"}
+                </div>
+                <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
+                  Average Bid Efficiency
+                </div>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-800/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-5">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">
+                  CVR (Conversion Rate)
+                </div>
+                <div className="text-2xl font-extrabold text-gray-900 dark:text-white">
+                  {scorecard && scorecard.total_clicks > 0 ? ((scorecard.total_orders / scorecard.total_clicks) * 100).toFixed(1) : "0.0"}%
+                </div>
+                <div className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
+                  {scorecard ? scorecard.total_orders : "0"} Total Orders
+                </div>
+              </div>
+            </div>
+
+            {/* Organic vs PPC Sales Revenue Breakdown Bar */}
+            <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-2xl">
+              {(() => {
+                const totSales = scorecard ? scorecard.total_sales : 0;
+                const ppcSales = scorecard ? Math.min(totSales, scorecard.total_spend * (scorecard.roas || 1)) : 0;
+                const orgSales = Math.max(0, totSales - ppcSales);
+                const orgShare = totSales > 0 ? ((orgSales / totSales) * 100).toFixed(1) : "0.0";
+                const ppcShare = totSales > 0 ? ((ppcSales / totSales) * 100).toFixed(1) : "0.0";
+                return (
+                  <>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                      <div className="text-sm font-bold text-gray-900 dark:text-white">
+                        Organic Sales vs. PPC Advertising Revenue Breakdown
+                      </div>
+                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                        Total Revenue: ₹{totSales.toLocaleString()} • Organic Share: {orgShare}%
+                      </div>
+                    </div>
+                    <div className="w-full h-4 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex">
+                      <div
+                        className="h-full bg-emerald-500 transition-all"
+                        style={{ width: `${orgShare}%` }}
+                        title={`Organic Sales: ₹${orgSales.toLocaleString()} (${orgShare}%)`}
+                      />
+                      <div
+                        className="h-full bg-indigo-600 transition-all"
+                        style={{ width: `${ppcShare}%` }}
+                        title={`PPC Sales: ₹${ppcSales.toLocaleString()} (${ppcShare}%)`}
+                      />
+                    </div>
+                    <div className="flex items-center justify-between mt-2 text-xs">
+                      <span className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300 font-semibold">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+                        Organic Sales: ₹{orgSales.toLocaleString(undefined, { maximumFractionDigits: 0 })} ({orgShare}%)
+                      </span>
+                      <span className="flex items-center gap-1.5 text-indigo-700 dark:text-indigo-300 font-semibold">
+                        <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block" />
+                        PPC Sales: ₹{ppcSales.toLocaleString(undefined, { maximumFractionDigits: 0 })} ({ppcShare}%)
+                      </span>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+
+            <div className="p-6 bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/50 rounded-xl">
+              <h4 className="text-sm font-bold text-indigo-900 dark:text-indigo-200 mb-2">
+                💡 Automated Profit Protection
+              </h4>
+              <p className="text-xs text-indigo-700 dark:text-indigo-300 leading-relaxed">
+                Insydz monitors your keyword ranking against your advertising spend. When your product reaches Page 1 organically on Amazon India, we automatically suggest lower bids to preserve your profit margin without sacrificing sales.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* ── 6. CUSTOM RULES TAB ───────────────────── */}
+        {mainTab === "CUSTOM_RULES" && (
+          <div className="bg-white dark:bg-gray-900 border-x border-b border-gray-200 dark:border-gray-800 rounded-b-2xl shadow-sm p-6">
+            <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-8">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Sliders className="w-6 h-6 text-orange-500" />
+                  Visual If/Then Rule Builder
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 max-w-2xl">
+                  Take complete control of your PPC automation. Create custom "If/Then" mathematical rules that run 24/7. When conditions are met, Insydz will execute the action automatically.
+                </p>
+              </div>
+            </div>
+
+            {/* Rule Builder Form */}
+            <div className="bg-orange-50/50 dark:bg-orange-900/10 border border-orange-200 dark:border-orange-800/30 rounded-xl p-5 mb-8">
+              <h4 className="text-base font-bold text-gray-900 dark:text-white mb-4">Create New Rule</h4>
+              
+              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                <div className="md:col-span-3">
+                  <label className="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Rule Name</label>
+                  <input
+                    type="text"
+                    value={newRule.rule_name}
+                    onChange={(e) => setNewRule({ ...newRule, rule_name: e.target.value })}
+                    placeholder="e.g. Bleeder Block"
+                    className="w-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  />
+                </div>
+
+                <div className="md:col-span-4 p-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg">
+                  <span className="text-xs font-bold text-gray-500 block mb-2">IF CONDITION</span>
+                  <div className="flex items-center gap-2 text-sm">
+                    ACOS &gt;
+                    <input
+                      type="number"
+                      value={newRule.condition_acos_gt}
+                      onChange={(e) => setNewRule({ ...newRule, condition_acos_gt: parseFloat(e.target.value) })}
+                      className="w-16 border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-gray-50 dark:bg-gray-900 text-center"
+                    />
+                    % AND Clicks &gt;
+                    <input
+                      type="number"
+                      value={newRule.condition_clicks_gt}
+                      onChange={(e) => setNewRule({ ...newRule, condition_clicks_gt: parseInt(e.target.value) })}
+                      className="w-16 border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-gray-50 dark:bg-gray-900 text-center"
+                    />
+                  </div>
+                </div>
+
+                <div className="md:col-span-3 p-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg">
+                  <span className="text-xs font-bold text-gray-500 block mb-2">THEN ACTION</span>
+                  <div className="flex items-center gap-2 text-sm">
+                    <select
+                      value={newRule.action_type}
+                      onChange={(e) => setNewRule({ ...newRule, action_type: e.target.value })}
+                      className="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-gray-50 dark:bg-gray-900"
+                    >
+                      <option value="DECREASE_BID">Decrease Bid by</option>
+                      <option value="INCREASE_BID">Increase Bid by</option>
+                    </select>
+                    <input
+                      type="number"
+                      value={newRule.action_value}
+                      onChange={(e) => setNewRule({ ...newRule, action_value: parseFloat(e.target.value) })}
+                      className="w-16 border border-gray-300 dark:border-gray-700 rounded px-2 py-1 bg-gray-50 dark:bg-gray-900 text-center"
+                    />
+                    %
+                  </div>
+                </div>
+
+                <div className="md:col-span-2 flex justify-end">
+                  <button
+                    onClick={handleCreateRule}
+                    disabled={isCreatingRule}
+                    className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center justify-center gap-2 text-sm"
+                  >
+                    {isCreatingRule ? <RefreshCw className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                    Save Rule
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* List of Saved Rules */}
+            <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-4 border-b border-gray-200 dark:border-gray-800 pb-2">Active Rules ({customRules.length})</h4>
+            {customRules.length === 0 ? (
+              <div className="text-center py-12 bg-gray-50 dark:bg-gray-900 rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
+                <p className="text-gray-500 dark:text-gray-400">You haven't created any custom rules yet.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {customRules.map((rule) => (
+                  <div key={rule.id} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm">
+                    <div>
+                      <h5 className="font-bold text-gray-900 dark:text-white mb-1">{rule.rule_name}</h5>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 font-medium">
+                        <span className="text-orange-600 dark:text-orange-400">IF</span> ACOS &gt; {rule.condition_acos_gt}% AND Clicks &gt; {rule.condition_clicks_gt} 
+                        <span className="text-orange-600 dark:text-orange-400 mx-2">THEN</span> 
+                        {rule.action_type === "DECREASE_BID" ? "Decrease Bid" : "Increase Bid"} by {rule.action_value}%
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleDeleteRule(rule.id)}
+                      className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors"
+                      title="Delete Rule"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </>
+      )}
+      </div>
+
+      {/* ── Custom Target ACOS Slider Modal ────────────────────────────────────── */}
+      {showAcosModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <Sliders className="w-5 h-5 text-indigo-500" />
+                Custom Target ACOS
+              </h3>
+              <button
+                onClick={() => setShowAcosModal(false)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+              Adjusting your Target ACOS dynamically updates bid optimization recommendations across all ad groups.
+            </p>
+
+            <div className="space-y-4 mb-6">
+              <div className="flex justify-between items-center text-sm font-semibold">
+                <span>Target Profitability Ratio</span>
+                <span className="text-indigo-600 dark:text-indigo-400 text-lg">{targetAcos}%</span>
+              </div>
+              <input
+                type="range"
+                min="10"
+                max="50"
+                step="1"
+                value={targetAcos}
+                onChange={(e) => setTargetAcos(parseInt(e.target.value))}
+                className="w-full h-2 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+              />
+              <div className="flex justify-between text-xs text-gray-400">
+                <span>10% (Conservative / High Margin)</span>
+                <span>50% (Aggressive Launch)</span>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowAcosModal(false)}
+                className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium transition-all"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  setShowAcosModal(false);
+                  fetchAllData(selectedProfileId);
+                }}
+                className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md transition-all"
+              >
+                Apply Target ACOS
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Hourly Ad Scheduling (Dayparting) Modal ── */}
+      {showDaypartingModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <Clock className="w-5 h-5 text-indigo-500" />
+                Hourly Ad Schedule (Dayparting)
+              </h3>
+              <button
+                onClick={() => setShowDaypartingModal(null)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+              Automatically pause ads or lower CPC bids during late-night or low-converting hours to save your daily budget.
+            </p>
+
+            <div className="grid grid-cols-4 gap-2 mb-6">
+              {[
+                "12 AM - 6 AM (Overnight - Paused)",
+                "6 AM - 12 PM (Morning - Enabled)",
+                "12 PM - 6 PM (Afternoon - Peak 1.2x Bid)",
+                "6 PM - 12 AM (Evening - Peak 1.2x Bid)"
+              ].map((slot, i) => (
+                <div
+                  key={slot}
+                  className={`p-3 rounded-xl border text-center text-xs font-semibold ${
+                    i === 0
+                      ? "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-500"
+                      : "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300"
+                  }`}
+                >
+                  {slot}
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl text-xs text-gray-600 dark:text-gray-300 mb-6">
+              <span>Selected Rule: <strong>Overnight Budget Protection (0% spend 12am-6am)</strong></span>
+              <Badge className="bg-green-100 text-green-800">Active</Badge>
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowDaypartingModal(null)}
+                className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => {
+                  toggleDayparting(showDaypartingModal);
+                  setShowDaypartingModal(null);
+                }}
+                className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md"
+              >
+                Apply Dayparting Schedule
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Custom Disconnect Confirmation Modal ── */}
+      {showDisconnectModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-gray-900 border border-red-200 dark:border-red-900/50 rounded-2xl p-6 max-w-md w-full shadow-2xl relative">
+            
+            <div className="flex flex-col items-center text-center">
+              <div className="w-14 h-14 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-4">
+                <Unplug className="w-7 h-7 text-red-600 dark:text-red-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                Disconnect Amazon Account?
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+                Insydz will immediately lose access to your Amazon Advertising account. Automated optimizations and data syncing will stop. <br/><br/>
+                <strong>Note:</strong> Your Amazon campaigns will continue running normally on Amazon.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handleDisconnect}
+                className="w-full px-5 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm shadow-md transition-all"
+              >
+                Yes, Disconnect Account
+              </button>
+              <button
+                onClick={() => setShowDisconnectModal(false)}
+                className="w-full px-5 py-3 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold text-sm transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 60-Day Visual Analytics Modal ── */}
+      {analyticsTargetId && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 max-w-4xl w-full shadow-2xl relative">
+            <div className="flex items-center justify-between mb-6 border-b border-gray-100 dark:border-gray-800 pb-4">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <LineChartIcon className="w-6 h-6 text-indigo-500" />
+                  Keyword Analytics: <span className="text-indigo-600 dark:text-indigo-400">{analyticsTargetName}</span>
+                </h3>
+                <p className="text-sm text-gray-500 mt-1">60-Day historical trend for Spend, Sales, and ACOS</p>
+              </div>
+              <button
+                onClick={() => setAnalyticsTargetId(null)}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-full transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {isAnalyticsLoading ? (
+              <div className="h-[350px] w-full flex items-center justify-center">
+                <RefreshCw className="w-8 h-8 animate-spin text-indigo-500" />
+              </div>
+            ) : analyticsData.length === 0 ? (
+              <div className="h-[350px] w-full flex flex-col items-center justify-center text-gray-400">
+                <BarChart2 className="w-12 h-12 mb-3 opacity-20" />
+                <p>No historical data available for this target yet.</p>
+              </div>
+            ) : (
+              <div className="h-[350px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={analyticsData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} opacity={0.2} />
+                    <XAxis dataKey="date" stroke="#6B7280" fontSize={12} tickMargin={10} />
+                    <YAxis yAxisId="left" stroke="#8B5CF6" fontSize={12} tickFormatter={(val) => `₹${val}`} />
+                    <YAxis yAxisId="right" orientation="right" stroke="#F59E0B" fontSize={12} tickFormatter={(val) => `${val}%`} />
+                    <RechartsTooltip 
+                      contentStyle={{ backgroundColor: '#111827', borderColor: '#374151', borderRadius: '8px', color: '#fff' }}
+                      itemStyle={{ color: '#E5E7EB' }}
+                      formatter={(value: any, name: string) => [name === 'acos' ? `${value}%` : `₹${value}`, name.toUpperCase()]}
+                    />
+                    <Line yAxisId="left" type="monotone" dataKey="sales" stroke="#10B981" strokeWidth={3} dot={false} activeDot={{ r: 6 }} name="Sales" />
+                    <Line yAxisId="left" type="monotone" dataKey="spend" stroke="#8B5CF6" strokeWidth={3} dot={false} activeDot={{ r: 6 }} name="Spend" />
+                    <Line yAxisId="right" type="monotone" dataKey="acos" stroke="#F59E0B" strokeWidth={3} strokeDasharray="5 5" dot={false} name="ACOS %" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
