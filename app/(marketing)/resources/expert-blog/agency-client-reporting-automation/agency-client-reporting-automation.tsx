@@ -422,7 +422,7 @@ export default function AgencyClientReportingAutomationContent() {
         }
         authorName="Vikrant Singh"
         authorUrl="/author/vikrant-singh"
-        publishDate="July 2026"
+        publishDate="August 2026"
         readTime="9 min read"
         bgColor={{ light: "#EFF6FF", dark: "#0a1628" }}
         highlightColor="#2563EB"

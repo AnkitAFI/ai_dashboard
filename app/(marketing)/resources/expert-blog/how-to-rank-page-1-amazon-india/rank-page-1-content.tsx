@@ -1490,53 +1490,88 @@ export default function HowToRankPage1AmazonIndia() {
             ))}
 
             {/* Related Guides */}
-            <h2 style={{ marginTop: 56 }}>Related Guides for Indian Sellers</h2>
-            <div className="related-grid">
-              {[
-                {
-                  title:
-                    "Amazon SEO Tool India: Keyword Research & Rank Tracking Guide (2026)",
-                  tag: "SEO Tools",
-                  image: "/Amazon_SEO_Tool-Blog3_image1.png",
-                  route: "/features/keyword-rank-tracking-feature",
-                },
-                {
-                  title:
-                    "Best Competitor Price Tracking Tools for Indian Amazon & Flipkart Sellers (2026)",
-                  tag: "Pricing Strategy",
-                  image: "/Best_Price_Tracer-blog2_image1.png?v=1",
-                  route: "/features/competitor-price-tracking-feature",
-                },
-                {
-                  title:
-                    "How to Analyse Competitor Listings on Amazon India: A Data-Driven Framework",
-                  tag: "Competitor Intelligence",
-                  image: "/thirteen.png",
-                  route: "/compare/insydzvshelium",
-                },
-              ].map((r) => (
-                <div
-                  key={r.title}
-                  className="related-card"
-                  onClick={() => router.push(r.route)}
+            <div
+              style={{
+                marginTop: 48,
+                paddingTop: 28,
+                borderTop: "2px solid #E5E7EB",
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: "clamp(16px,3vw,20px)",
+                  fontWeight: 800,
+                  color: "#0A0F1A",
+                  margin: "0 0 18px",
+                  border: "none",
+                  padding: 0,
+                  fontFamily: "'Sora',sans-serif",
+                }}
+                className="dark:text-white"
+              >
+                Related Guides
+              </h2>
+              <div className="related-grid">
+                <Link
+                  href="/resources/expert-blog/amazon-vs-flipkart-india-sellers"
+                  className="rel-card"
+                  title="Amazon vs Flipkart India sellers guide 2026"
                 >
-                  <div className="related-thumb">
+                  <div className="rel-thumb">
                     <img
-                      src={r.image}
-                      alt={r.title}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
+                      src="/Amazon vs Flipkart India Sellers.png"
+                      alt="Amazon vs Flipkart India sellers 2026"
                     />
                   </div>
-                  <div className="related-body">
-                    <div className="related-tag">{r.tag}</div>
-                    <div className="related-title">{r.title}</div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Marketplace Strategy</div>
+                    <div className="rel-title">
+                      Amazon vs Flipkart: Which Marketplace is Better in India?
+                      (2026)
+                    </div>
                   </div>
-                </div>
-              ))}
+                </Link>
+                <Link
+                  href="/resources/expert-blog/flipkart-keyword-research-tool"
+                  className="rel-card"
+                  title="Flipkart keyword research tool guide 2026"
+                >
+                  <div className="rel-thumb">
+                    <img
+                      src="/Flipkart Keyword Research Tool.png"
+                      alt="Flipkart Keyword Research Tool guide"
+                    />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag" style={{ color: "#2874F0" }}>
+                      Flipkart SEO
+                    </div>
+                    <div className="rel-title">
+                      Flipkart Keyword Research Tool &amp; SEO Optimization
+                      Guide for Sellers (2026)
+                    </div>
+                  </div>
+                </Link>
+                <Link
+                  href="/compare/insydzvshelium"
+                  className="rel-card"
+                  title="Insydz vs Helium 10 for Indian sellers"
+                >
+                  <div className="rel-thumb">
+                    <img
+                      src="/Insydz-vs-Helium-10.png"
+                      alt="Insydz vs Helium 10 comparison for Indian sellers"
+                    />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Compare</div>
+                    <div className="rel-title">
+                      Insydz vs Helium 10: Which Is the Right Tool for Indian
+                      Sellers?
+                    </div>
+                  </div>
+                </Link>
+              </div>
             </div>
           </article>
         </main>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Search,
   Clock,
@@ -1851,56 +1852,89 @@ export default function AmazonSeoToolIndia() {
               </div>
             ))}
 
-            {/* ── Related Guides ──────────────────────────────────────── */}
-            <h2 style={{ marginTop: "clamp(36px,6vw,56px)" }}>
-              Related Guides
-            </h2>
-            <div className="related-grid">
-              {(
-                [
-                  {
-                    cardTitle:
-                      "Amazon Competitor Price Tracking Tool India: Complete Guide (2026)",
-                    tag: "Price Tracking",
-                    imgSrc: "/one.png",
-                    route:
-                      "/resources/expert-blog/amazon-competitor-price-tracking-tool",
-                  },
-                  {
-                    cardTitle:
-                      "Best Competitor Price Tracking Tools for Indian Sellers: 2026 Guide",
-                    tag: "Tool Comparison",
-                    imgSrc: "/thirteen.png",
-                    route: "/compare/insydzvshelium",
-                  },
-                  {
-                    cardTitle:
-                      "How to Win the Amazon Buy Box in India: Seller's Pricing Guide",
-                    tag: "Buy Box Strategy",
-                    imgSrc: "/three.png",
-                    route: "/use-cases/track-competitor-prices",
-                  },
-                ] as {
-                  cardTitle: string;
-                  tag: string;
-                  imgSrc: string;
-                  route: string;
-                }[]
-              ).map((r) => (
-                <div
-                  key={r.cardTitle}
-                  className="related-card"
-                  onClick={() => router.push(r.route)}
+            {/* Related Guides */}
+            <div
+              style={{
+                marginTop: 48,
+                paddingTop: 28,
+                borderTop: "2px solid #E5E7EB",
+              }}
+            >
+              <h2
+                style={{
+                  fontSize: "clamp(16px,3vw,20px)",
+                  fontWeight: 800,
+                  color: "#0A0F1A",
+                  margin: "0 0 18px",
+                  border: "none",
+                  padding: 0,
+                  fontFamily: "'Sora',sans-serif",
+                }}
+                className="dark:text-white"
+              >
+                Related Guides
+              </h2>
+              <div className="related-grid">
+                <Link
+                  href="/resources/expert-blog/amazon-vs-flipkart-india-sellers"
+                  className="rel-card"
+                  title="Amazon vs Flipkart India sellers guide 2026"
                 >
-                  <div className="related-thumb">
-                    <img src={r.imgSrc} alt={r.cardTitle} />
+                  <div className="rel-thumb">
+                    <img
+                      src="/Amazon vs Flipkart India Sellers.png"
+                      alt="Amazon vs Flipkart India sellers 2026"
+                    />
                   </div>
-                  <div className="related-body">
-                    <div className="related-tag">{r.tag}</div>
-                    <div className="related-title">{r.cardTitle}</div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Marketplace Strategy</div>
+                    <div className="rel-title">
+                      Amazon vs Flipkart: Which Marketplace is Better in India?
+                      (2026)
+                    </div>
                   </div>
-                </div>
-              ))}
+                </Link>
+                <Link
+                  href="/resources/expert-blog/flipkart-keyword-research-tool"
+                  className="rel-card"
+                  title="Flipkart keyword research tool guide 2026"
+                >
+                  <div className="rel-thumb">
+                    <img
+                      src="/Flipkart Keyword Research Tool.png"
+                      alt="Flipkart Keyword Research Tool guide"
+                    />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag" style={{ color: "#2874F0" }}>
+                      Flipkart SEO
+                    </div>
+                    <div className="rel-title">
+                      Flipkart Keyword Research Tool &amp; SEO Optimization
+                      Guide for Sellers (2026)
+                    </div>
+                  </div>
+                </Link>
+                <Link
+                  href="/compare/insydzvshelium"
+                  className="rel-card"
+                  title="Insydz vs Helium 10 for Indian sellers"
+                >
+                  <div className="rel-thumb">
+                    <img
+                      src="/Insydz-vs-Helium-10.png"
+                      alt="Insydz vs Helium 10 comparison for Indian sellers"
+                    />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Compare</div>
+                    <div className="rel-title">
+                      Insydz vs Helium 10: Which Is the Right Tool for Indian
+                      Sellers?
+                    </div>
+                  </div>
+                </Link>
+              </div>
             </div>
           </article>
         </main>

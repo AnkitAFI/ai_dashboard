@@ -377,8 +377,7 @@ const repricingRelatedCards = [
     tag: "Prime Day Strategy",
     title:
       "Amazon Prime Day India 2026: Every Question Indian Sellers Are Asking Right Now, All Answered",
-    route:
-      "/resources/expert-blog/amazon-prime-day-india-2026-seller-questions",
+    route: "/resources/expert-blog/prime-day-india-2026-seller-questions",
     image: "/prime-day-india-2026-seller-questions.png",
   },
 ];

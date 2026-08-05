@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Search,
   Clock,
@@ -14,10 +15,6 @@ import {
   Trophy,
   Zap,
   BookOpen,
-  Menu,
-  X,
-  Sun,
-  Moon,
   ChevronDown,
   ShoppingBag,
   Store,
@@ -26,12 +23,10 @@ import {
   Bell,
   Code,
   Globe,
-  ArrowLeft,
   Flame,
   Presentation,
   LayoutGrid,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import BlogImageSection from "../components/BlogImageSection";
 
 export const dynamic = "force-static";
@@ -2076,19 +2071,19 @@ export default function AmazonReviewAnalysisToolIndia() {
               ))}
             </div>
 
-            {/* Related */}
+            {/* Related Guides */}
             <div
               style={{
                 marginTop: 48,
                 paddingTop: 28,
-                borderTop: "2px solid #E2E8F0",
+                borderTop: "2px solid #E5E7EB",
               }}
             >
               <h2
                 style={{
                   fontSize: "clamp(16px,3vw,20px)",
                   fontWeight: 800,
-                  color: "#0D1B2A",
+                  color: "#0A0F1A",
                   margin: "0 0 18px",
                   border: "none",
                   padding: 0,
@@ -2099,40 +2094,65 @@ export default function AmazonReviewAnalysisToolIndia() {
                 Related Guides
               </h2>
               <div className="related-grid">
-                {[
-                  {
-                    t: "Best Competitor Price Tracking Tools for Indian Sellers: The 2026 Guide",
-                    tag: "Price Tracking",
-                    image: "/Best_Price_Tracer-blog2_image1.png?v=1",
-                    r: "/resources/expert-blog/best-competitor-price-tracking-tools-india",
-                  },
-                  {
-                    t: "Insydz vs Helium 10: Which is the Right Tool for Indian Sellers?",
-                    tag: "Compare",
-                    image: "/thirteen.png",
-                    r: "/resources/expert-blog/insydz-vs-helium-10-india",
-                  },
-                  {
-                    t: "Amazon SEO Tool India: The Complete 2026 Guide for Indian Sellers",
-                    tag: "SEO Guide",
-                    image: "/Amazon_SEO_Tool-Blog3_image1.png",
-                    r: "/resources/expert-blog/amazon-seo-tool-india",
-                  },
-                ].map((rc) => (
-                  <div
-                    key={rc.t}
-                    className="rel-card"
-                    onClick={() => router.push(rc.r)}
-                  >
-                    <div className="rel-thumb">
-                      <img src={rc.image} alt={rc.t} />
-                    </div>
-                    <div className="rel-body">
-                      <div className="rel-tag">{rc.tag}</div>
-                      <div className="rel-title">{rc.t}</div>
+                <Link
+                  href="/resources/expert-blog/amazon-vs-flipkart-india-sellers"
+                  className="rel-card"
+                  title="Amazon vs Flipkart India sellers guide 2026"
+                >
+                  <div className="rel-thumb">
+                    <img
+                      src="/Amazon vs Flipkart India Sellers.png"
+                      alt="Amazon vs Flipkart India sellers 2026"
+                    />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Marketplace Strategy</div>
+                    <div className="rel-title">
+                      Amazon vs Flipkart: Which Marketplace is Better in India?
+                      (2026)
                     </div>
                   </div>
-                ))}
+                </Link>
+                <Link
+                  href="/resources/expert-blog/flipkart-keyword-research-tool"
+                  className="rel-card"
+                  title="Flipkart keyword research tool guide 2026"
+                >
+                  <div className="rel-thumb">
+                    <img
+                      src="/Flipkart Keyword Research Tool.png"
+                      alt="Flipkart Keyword Research Tool guide"
+                    />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag" style={{ color: "#2874F0" }}>
+                      Flipkart SEO
+                    </div>
+                    <div className="rel-title">
+                      Flipkart Keyword Research Tool &amp; SEO Optimization
+                      Guide for Sellers (2026)
+                    </div>
+                  </div>
+                </Link>
+                <Link
+                  href="/compare/insydzvshelium"
+                  className="rel-card"
+                  title="Insydz vs Helium 10 for Indian sellers"
+                >
+                  <div className="rel-thumb">
+                    <img
+                      src="/Insydz-vs-Helium-10.png"
+                      alt="Insydz vs Helium 10 comparison for Indian sellers"
+                    />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Compare</div>
+                    <div className="rel-title">
+                      Insydz vs Helium 10: Which Is the Right Tool for Indian
+                      Sellers?
+                    </div>
+                  </div>
+                </Link>
               </div>
             </div>
           </article>

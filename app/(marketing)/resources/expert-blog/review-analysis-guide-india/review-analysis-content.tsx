@@ -1936,19 +1936,19 @@ export default function BestReviewAnalysisToolIndia() {
               ))}
             </div>
 
-            {/* Related */}
+            {/* Related Guides */}
             <div
               style={{
                 marginTop: 48,
                 paddingTop: 28,
-                borderTop: "2px solid #E2E8F0",
+                borderTop: "2px solid #E5E7EB",
               }}
             >
               <h2
                 style={{
                   fontSize: "clamp(16px,3vw,20px)",
                   fontWeight: 800,
-                  color: "#0D1B2A",
+                  color: "#0A0F1A",
                   margin: "0 0 18px",
                   border: "none",
                   padding: 0,
@@ -1959,40 +1959,65 @@ export default function BestReviewAnalysisToolIndia() {
                 Related Guides
               </h2>
               <div className="related-grid">
-                {[
-                  {
-                    t: "AI Review Intelligence Tool for Amazon & Flipkart Sellers: Complete Guide",
-                    tag: "Review Intelligence",
-                    imgSrc: "/eighteen.png",
-                    r: "/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers",
-                  },
-                  {
-                    t: "Insydz vs Helium 10: Which is the Right Tool for Indian Sellers?",
-                    tag: "Compare",
-                    imgSrc: "/thirteen.png",
-                    r: "/compare/insydzvshelium",
-                  },
-                  {
-                    t: "Amazon SEO Tool India: The Complete 2026 Guide for Indian Sellers",
-                    tag: "SEO Guide",
-                    imgSrc: "/one.png",
-                    r: "/use-cases/improve-seo",
-                  },
-                ].map((rc) => (
-                  <div
-                    key={rc.t}
-                    className="rel-card"
-                    onClick={() => router.push(rc.r)}
-                  >
-                    <div className="rel-thumb">
-                      <img src={rc.imgSrc} alt={rc.t} />
-                    </div>
-                    <div className="rel-body">
-                      <div className="rel-tag">{rc.tag}</div>
-                      <div className="rel-title">{rc.t}</div>
+                <Link
+                  href="/resources/expert-blog/amazon-vs-flipkart-india-sellers"
+                  className="rel-card"
+                  title="Amazon vs Flipkart India sellers guide 2026"
+                >
+                  <div className="rel-thumb">
+                    <img
+                      src="/Amazon vs Flipkart India Sellers.png"
+                      alt="Amazon vs Flipkart India sellers 2026"
+                    />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Marketplace Strategy</div>
+                    <div className="rel-title">
+                      Amazon vs Flipkart: Which Marketplace is Better in India?
+                      (2026)
                     </div>
                   </div>
-                ))}
+                </Link>
+                <Link
+                  href="/resources/expert-blog/flipkart-keyword-research-tool"
+                  className="rel-card"
+                  title="Flipkart keyword research tool guide 2026"
+                >
+                  <div className="rel-thumb">
+                    <img
+                      src="/Flipkart Keyword Research Tool.png"
+                      alt="Flipkart Keyword Research Tool guide"
+                    />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag" style={{ color: "#2874F0" }}>
+                      Flipkart SEO
+                    </div>
+                    <div className="rel-title">
+                      Flipkart Keyword Research Tool &amp; SEO Optimization
+                      Guide for Sellers (2026)
+                    </div>
+                  </div>
+                </Link>
+                <Link
+                  href="/compare/insydzvshelium"
+                  className="rel-card"
+                  title="Insydz vs Helium 10 for Indian sellers"
+                >
+                  <div className="rel-thumb">
+                    <img
+                      src="/Insydz-vs-Helium-10.png"
+                      alt="Insydz vs Helium 10 comparison for Indian sellers"
+                    />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Compare</div>
+                    <div className="rel-title">
+                      Insydz vs Helium 10: Which Is the Right Tool for Indian
+                      Sellers?
+                    </div>
+                  </div>
+                </Link>
               </div>
             </div>
           </article>

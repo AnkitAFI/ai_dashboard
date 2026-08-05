@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
   Search,
   Clock,
@@ -1518,48 +1519,6 @@ export default function BestAmazonKeywordResearchToolIndia() {
               caption="Six keyword categories Indian sellers must track ranked by conversion rate and competitive opportunity"
             />
 
-            {/* <div className="tbl-wrap">
-              <table className="dt">
-                <thead>
-                  <tr>
-                    <th>Keyword Type</th>
-                    <th>Example (India)</th>
-                    <th>Conversion Rate</th>
-                    <th>Priority</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {keywordTypes.map((r, i) => (
-                    <tr key={i}>
-                      <td style={{ fontWeight:700, whiteSpace:"nowrap" as const }}><span style={{ marginRight:5 }}>{r.icon}</span>{r.type}</td>
-                      <td style={{ color:"#475569", fontStyle:"italic" }}>{r.example}</td>
-                      <td><span className="bg">{r.conv}</span></td>
-                      <td>
-                        {r.priority === "Critical"    && <span className="bp">Critical</span>}
-                        {r.priority === "Important"   && <span className="bo">Important</span>}
-                        {r.priority === "Opportunity" && <span style={{ background:"#F0FDF4", color:"#15803D", fontWeight:700, padding:"1px 6px", borderRadius:20, fontSize:"10.5px", display:"inline-block" }}>Opportunity</span>}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div> */}
-
-            {/* <h3>Method Comparison — Speed vs Actionability vs Cost</h3>
-            <div className="tbl-wrap">
-              <table className="dt">
-                <thead>
-                  <tr><th>Method</th><th>Speed</th><th>India Data Quality</th><th>Actionability</th><th style={{ background:"#7C3AED" }}>Cost</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td style={{ fontWeight:600 }}>Manual Search Bar Research</td><td style={{ color:"#94A3B8" }}>2–4 days</td><td style={{ color:"#94A3B8" }}>Partial</td><td style={{ color:"#94A3B8" }}>None</td><td style={{ color:"#94A3B8" }}>3–4 hrs/day</td></tr>
-                  <tr><td style={{ fontWeight:600 }}>Basic Free Tools (Sonar)</td><td style={{ color:"#94A3B8" }}>Same day</td><td style={{ color:"#94A3B8" }}>Limited</td><td style={{ color:"#94A3B8" }}>Low</td><td style={{ color:"#94A3B8" }}>Free – ₹500/mo</td></tr>
-                  <tr><td style={{ fontWeight:600 }}>Global SaaS (Helium 10)</td><td style={{ color:"#94A3B8" }}>1–2 hours</td><td style={{ color:"#94A3B8" }}>No Flipkart</td><td style={{ color:"#94A3B8" }}>Medium</td><td style={{ color:"#94A3B8" }}>₹4,000–8,000/mo</td></tr>
-                  <tr className="hl"><td>India-First AI (Insydz) ★</td><td style={{ color:"#6D28D9", fontWeight:700 }}>&lt; 1 hour</td><td style={{ color:"#6D28D9", fontWeight:700 }}>Amazon.in + Flipkart</td><td style={{ color:"#6D28D9", fontWeight:700 }}>High — Actionable AI</td><td style={{ color:"#6D28D9", fontWeight:700 }}>₹1,999–2,999/mo</td></tr>
-                </tbody>
-              </table>
-            </div> */}
-
             <h2 id="mistakes">
               5 Common Mistakes Indian Sellers Make with Keyword Research
             </h2>
@@ -1640,12 +1599,6 @@ export default function BestAmazonKeywordResearchToolIndia() {
               strategic audits keep your keyword strategy compounding without
               requiring a full-time SEO analyst.
             </p>
-
-            {/* <ArticleImg
-              src="/keyword-weekly-execution.png"
-              alt="Weekly keyword research execution model for Indian Amazon sellers — daily, weekly, monthly cadence"
-              caption="The three-tier keyword intelligence cadence that keeps Indian sellers consistently ahead of category rank shifts"
-            /> */}
 
             <div
               style={{
@@ -2067,19 +2020,19 @@ export default function BestAmazonKeywordResearchToolIndia() {
               ))}
             </div>
 
-            {/* Related */}
+            {/* Related Guides */}
             <div
               style={{
                 marginTop: 48,
                 paddingTop: 28,
-                borderTop: "2px solid #E2E8F0",
+                borderTop: "2px solid #E5E7EB",
               }}
             >
               <h2
                 style={{
                   fontSize: "clamp(16px,3vw,20px)",
                   fontWeight: 800,
-                  color: "#0D1B2A",
+                  color: "#0A0F1A",
                   margin: "0 0 18px",
                   border: "none",
                   padding: 0,
@@ -2090,40 +2043,65 @@ export default function BestAmazonKeywordResearchToolIndia() {
                 Related Guides
               </h2>
               <div className="related-grid">
-                {[
-                  {
-                    t: "Best Review Analysis Tools for Indian Sellers: Complete Guide 2026",
-                    tag: "Review Intelligence",
-                    imgSrc: "/eighteen.png",
-                    r: "/resources/expert-blog/best-review-analysis-tool-india",
-                  },
-                  {
-                    t: "Insydz vs Helium 10: Which is the Right Tool for Indian Sellers?",
-                    tag: "Compare",
-                    imgSrc: "/thirteen.png",
-                    r: "/compare/insydzvshelium",
-                  },
-                  {
-                    t: "Best Competitor Price Tracking Tools for Indian Sellers: The 2026 Guide",
-                    tag: "Price Tracking",
-                    imgSrc: "/one.png",
-                    r: "/features/competitor-price-tracking-feature",
-                  },
-                ].map((rc) => (
-                  <div
-                    key={rc.t}
-                    className="rel-card"
-                    onClick={() => router.push(rc.r)}
-                  >
-                    <div className="rel-thumb">
-                      <img src={rc.imgSrc} alt={rc.t} />
-                    </div>
-                    <div className="rel-body">
-                      <div className="rel-tag">{rc.tag}</div>
-                      <div className="rel-title">{rc.t}</div>
+                <Link
+                  href="/resources/expert-blog/amazon-vs-flipkart-india-sellers"
+                  className="rel-card"
+                  title="Amazon vs Flipkart India sellers guide 2026"
+                >
+                  <div className="rel-thumb">
+                    <img
+                      src="/Amazon vs Flipkart India Sellers.png"
+                      alt="Amazon vs Flipkart India sellers 2026"
+                    />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Marketplace Strategy</div>
+                    <div className="rel-title">
+                      Amazon vs Flipkart: Which Marketplace is Better in India?
+                      (2026)
                     </div>
                   </div>
-                ))}
+                </Link>
+                <Link
+                  href="/resources/expert-blog/flipkart-keyword-research-tool"
+                  className="rel-card"
+                  title="Flipkart keyword research tool guide 2026"
+                >
+                  <div className="rel-thumb">
+                    <img
+                      src="/Flipkart Keyword Research Tool.png"
+                      alt="Flipkart Keyword Research Tool guide"
+                    />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag" style={{ color: "#2874F0" }}>
+                      Flipkart SEO
+                    </div>
+                    <div className="rel-title">
+                      Flipkart Keyword Research Tool &amp; SEO Optimization
+                      Guide for Sellers (2026)
+                    </div>
+                  </div>
+                </Link>
+                <Link
+                  href="/compare/insydzvshelium"
+                  className="rel-card"
+                  title="Insydz vs Helium 10 for Indian sellers"
+                >
+                  <div className="rel-thumb">
+                    <img
+                      src="/Insydz-vs-Helium-10.png"
+                      alt="Insydz vs Helium 10 comparison for Indian sellers"
+                    />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Compare</div>
+                    <div className="rel-title">
+                      Insydz vs Helium 10: Which Is the Right Tool for Indian
+                      Sellers?
+                    </div>
+                  </div>
+                </Link>
               </div>
             </div>
           </article>

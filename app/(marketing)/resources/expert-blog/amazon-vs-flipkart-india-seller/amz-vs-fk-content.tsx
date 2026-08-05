@@ -1952,18 +1952,39 @@ export default function AmazonVsFlipkartIndiaSellers() {
               </h2>
               <div className="related-grid">
                 <Link
-                  href="/resources/expert-blog/flipkart-keyword-research-tool"
+                  href="/resources/expert-blog/amazon-vs-flipkart-india-sellers"
                   className="rel-card"
-                  title="Flipkart keyword research tool — 2026 guide"
+                  title="Amazon vs Flipkart India sellers guide 2026"
                 >
                   <div className="rel-thumb">
                     <img
-                      src="/01_hero_banner.png"
+                      src="/Amazon vs Flipkart India Sellers.png"
+                      alt="Amazon vs Flipkart India sellers 2026"
+                    />
+                  </div>
+                  <div className="rel-body">
+                    <div className="rel-tag">Marketplace Strategy</div>
+                    <div className="rel-title">
+                      Amazon vs Flipkart: Which Marketplace is Better in India?
+                      (2026)
+                    </div>
+                  </div>
+                </Link>
+                <Link
+                  href="/resources/expert-blog/flipkart-keyword-research-tool"
+                  className="rel-card"
+                  title="Flipkart keyword research tool guide 2026"
+                >
+                  <div className="rel-thumb">
+                    <img
+                      src="/Flipkart Keyword Research Tool.png"
                       alt="Flipkart Keyword Research Tool guide"
                     />
                   </div>
                   <div className="rel-body">
-                    <div className="rel-tag">Flipkart SEO</div>
+                    <div className="rel-tag" style={{ color: "#2874F0" }}>
+                      Flipkart SEO
+                    </div>
                     <div className="rel-title">
                       Flipkart Keyword Research Tool &amp; SEO Optimization
                       Guide for Sellers (2026)
@@ -1971,32 +1992,13 @@ export default function AmazonVsFlipkartIndiaSellers() {
                   </div>
                 </Link>
                 <Link
-                  href="/resources/expert-blog/ai-review-intelligence-tool-for-amazon-and-flipkart-sellers"
-                  className="rel-card"
-                  title="Review analysis tools for Indian sellers"
-                >
-                  <div className="rel-thumb">
-                    <img
-                      src="/eighteen.png"
-                      alt="AI Review Intelligence Tool for Amazon and Flipkart"
-                    />
-                  </div>
-                  <div className="rel-body">
-                    <div className="rel-tag">Review Intelligence</div>
-                    <div className="rel-title">
-                      AI Review Intelligence Tool for Amazon &amp; Flipkart
-                      Sellers: The Complete Guide
-                    </div>
-                  </div>
-                </Link>
-                <Link
-                  href="/resources/expert-blog/insydz-vs-helium-10-india"
+                  href="/compare/insydzvshelium"
                   className="rel-card"
                   title="Insydz vs Helium 10 for Indian sellers"
                 >
                   <div className="rel-thumb">
                     <img
-                      src="/thirteen.png"
+                      src="/Insydz-vs-Helium-10.png"
                       alt="Insydz vs Helium 10 comparison for Indian sellers"
                     />
                   </div>

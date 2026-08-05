@@ -593,8 +593,6 @@ export default function BestFlipkartAnalyticsTool() {
       setIsMenuOpen(false);
     }
   };
-  const toggleMobileMenu = (name: string) =>
-    setMobileActiveMenu((p) => (p === name ? null : name));
 
   const DesktopDropdown = ({
     label,
@@ -650,188 +648,6 @@ export default function BestFlipkartAnalyticsTool() {
       </div>
     );
   };
-
-  const keywordRows = [
-    {
-      type: "Buy Intent Terms",
-      example: '"buy mixer grinder online"',
-      vol: "Medium",
-      cvr: "High (14–20%)",
-      tag: "Critical",
-      tagClass: "tag-critical",
-    },
-    {
-      type: "Price Bracket Terms",
-      example: '"laptop under 40000 rupees"',
-      vol: "Medium–High",
-      cvr: "High (11–17%)",
-      tag: "Critical",
-      tagClass: "tag-critical",
-    },
-    {
-      type: "Category Head Terms",
-      example: '"wireless earphones"',
-      vol: "Very High",
-      cvr: "Medium (3–6%)",
-      tag: "Important",
-      tagClass: "tag-important",
-    },
-    {
-      type: "Long-Tail Specific",
-      example: '"tws earbuds noise cancel gym use"',
-      vol: "Low",
-      cvr: "Very High (22–30%)",
-      tag: "Critical",
-      tagClass: "tag-critical",
-    },
-    {
-      type: "Competitor Brand Terms",
-      example: '"boAt airdopes alternative under 2000"',
-      vol: "Medium",
-      cvr: "Medium (7–13%)",
-      tag: "Important",
-      tagClass: "tag-important",
-    },
-    {
-      type: "Regional Language",
-      example: '"earphones sasta wala" / Hindi variants',
-      vol: "Growing",
-      cvr: "Very High (16–24%)",
-      tag: "Opportunity",
-      tagClass: "tag-opportunity",
-    },
-    {
-      type: "Festive & Seasonal",
-      example: '"Big Billion Days deals electronics"',
-      vol: "High (seasonal)",
-      cvr: "Very High (event)",
-      tag: "Critical",
-      tagClass: "tag-critical",
-    },
-  ];
-
-  const toolRows = [
-    {
-      tool: "Helium 10",
-      fk: false,
-      az: "Partial",
-      wa: false,
-      intent: "US Only",
-      price: "₹4,000–8,000",
-      hl: false,
-    },
-    {
-      tool: "Jungle Scout",
-      fk: false,
-      az: "Partial",
-      wa: false,
-      intent: "US Only",
-      price: "₹4,500–7,000",
-      hl: false,
-    },
-    {
-      tool: "Sonar (Free)",
-      fk: false,
-      az: "Yes",
-      wa: false,
-      intent: "Basic",
-      price: "Free",
-      hl: false,
-    },
-    {
-      tool: "Insydz+",
-      fk: true,
-      az: "Yes",
-      wa: true,
-      intent: "AI-Powered",
-      price: "₹1,999–2,999",
-      hl: true,
-    },
-  ];
-
-  const capRows = [
-    {
-      cap: "Flipkart Keyword Data",
-      manual: "Manual only",
-      global: "Not supported",
-      insydz: "Native Flipkart",
-    },
-    {
-      cap: "Flipkart Rank Tracking",
-      manual: "Manual only",
-      global: "Not supported",
-      insydz: "Full coverage",
-    },
-    {
-      cap: "Competitor Keyword Gap Analysis",
-      manual: "3–5 days/FSN",
-      global: "Amazon.com focused",
-      insydz: "Automated, <1 hour",
-    },
-    {
-      cap: "Buy Intent & Price Bracket Terms",
-      manual: "No systematic detection",
-      global: "US intent data",
-      insydz: "India-calibrated AI",
-    },
-    {
-      cap: "Regional Language Keywords",
-      manual: "No",
-      global: "English only",
-      insydz: "Hindi + Hinglish",
-    },
-    {
-      cap: "Pricing Automation (SmartBuy)",
-      manual: "Manual guesswork",
-      global: "Not available",
-      insydz: "Real-time rules",
-    },
-    {
-      cap: "WhatsApp Rank Drop Alerts",
-      manual: "Not available",
-      global: "Email only",
-      insydz: "Within 60 min",
-    },
-    {
-      cap: "Festive Keyword Intelligence",
-      manual: "Not available",
-      global: "Not available",
-      insydz: "BBD, GIF, Diwali",
-    },
-    {
-      cap: "Cost",
-      manual: "4–5 hrs/day",
-      global: "₹4,000–8,000/mo",
-      insydz: "Free–₹2,999/mo",
-    },
-  ];
-
-  const features = [
-    {
-      title: "Full Flipkart Keyword Database",
-      body: "Rank positions tracked natively on Flipkart not estimated from Amazon.in data. Flipkart keyword coverage is unique to India-first tools and is the foundational capability everything else is built on.",
-    },
-    {
-      title: "Hindi and Hinglish Keyword Detection",
-      body: "Regional search terms, transliterated Hindi queries, and Hinglish product descriptors are surfaced and scored by conversion intent not filtered out as noise the way global tools treat them.",
-    },
-    {
-      title: "Price-Bracket Keyword Intelligence",
-      body: "'Under 999', 'below 5000', 'best budget' modifiers are detected and scored for India-specific purchase intent on Flipkart the highest-conversion keyword category most sellers miss entirely.",
-    },
-    {
-      title: "WhatsApp Rank Drop Alerts in 60 Min",
-      body: "Any rank drop of 3+ positions on a tracked Flipkart buy-intent keyword triggers a WhatsApp alert — with the affected FSN, the term, and a recommended listing fix.",
-    },
-    {
-      title: "AI Listing Optimisation",
-      body: "For each keyword gap identified on Flipkart, the platform generates the exact text to add to your listing title, bullets, and description no guesswork, no duplication.",
-    },
-    {
-      title: "Festive Keyword Intelligence",
-      body: "Pre-festive keyword audits surface seasonal search terms specific to Big Billion Days, Great Indian Festival, and Diwali 3 weeks before the revenue window opens.",
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950 transition-colors">
@@ -1513,7 +1329,7 @@ export default function BestFlipkartAnalyticsTool() {
                 >
                   <div className="rel-thumb">
                     <img
-                      src="/01_hero_banner.png"
+                      src="/Flipkart Keyword Research Tool.png"
                       alt="Flipkart Keyword Research Guide"
                     />
                   </div>
@@ -1532,7 +1348,7 @@ export default function BestFlipkartAnalyticsTool() {
                 >
                   <div className="rel-thumb">
                     <img
-                      src="/thirteen.png"
+                      src="/Insydz-vs-Helium-10.png"
                       alt="Insydz vs Helium 10 comparison"
                     />
                   </div>
@@ -1551,7 +1367,7 @@ export default function BestFlipkartAnalyticsTool() {
                 >
                   <div className="rel-thumb">
                     <img
-                      src="/one.png"
+                      src="/Amazon Competitor Price Tracking Tool India.png"
                       alt="Flipkart Pricing Automation Strategy"
                     />
                   </div>
