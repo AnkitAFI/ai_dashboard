@@ -312,7 +312,7 @@ const switchExcelAiRelatedCards = [
     tag: "Competitor Intelligence",
     title: "Competitor Undercutting Your Amazon India Price? Act Within 1 Hour",
     route: "/resources/expert-blog/competitor-undercutting-amazon-india",
-    image: "/Competitor Undercutting Your Amazon India Price_1.png",
+    image: "/Detect Competitor Price Undercutting on Amazon India.png",
   },
   {
     tag: "Data Story",
@@ -324,7 +324,7 @@ const switchExcelAiRelatedCards = [
     tag: "Keyword Intelligence",
     title: "How to Find Every Keyword Your Competitor Ranks For",
     route: "/resources/expert-blog/find-competitor-keywords-amazon-india",
-    image: "/image_1691x942.png",
+    image: "/How to Find Competitor Keywords.png",
   },
 ];
 

@@ -2733,10 +2733,11 @@ export default function AmazonPrivateLabelContent() {
                   {
                     tag: "REVIEW STRATEGY",
                     tagColor: "#059669",
-                    title: "Amazon Vine India 2026: Cost, Worth & How to Enrol",
+                    title:
+                      "Amazon Vine India 2026: Cost, Worth and How to Enrol",
                     route:
                       "/resources/expert-blog/amazon-vine-program-india-2026",
-                    image: "/Amazon-Vine-India-image1.png",
+                    image: "/Amazon Vine Program India.png",
                   },
                   {
                     tag: "SEO STRATEGY",
@@ -2745,7 +2746,7 @@ export default function AmazonPrivateLabelContent() {
                       "Amazon India Keyword Ranking: How to Track and Improve in 2026",
                     route:
                       "/resources/expert-blog/how-to-rank-page-1-amazon-india",
-                    image: "/twenty three.png",
+                    image: "/How-to-Rank-on-Page-1.png",
                   },
                   {
                     tag: "REVIEW INTELLIGENCE",
@@ -2754,7 +2755,7 @@ export default function AmazonPrivateLabelContent() {
                       "AI Review Analysis Tool for Amazon India & Flipkart: Complete Guide",
                     route:
                       "/resources/expert-blog/amazon-review-analysis-guide-india",
-                    image: "/01_hero_review_intelligence_banner.png",
+                    image: "/Amazon Review Analysis Guide Banner.png",
                   },
                 ].map((card, i) => (
                   <Link

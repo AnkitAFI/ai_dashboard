@@ -2177,7 +2177,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
                 >
                   <div className="rel-thumb">
                     <img
-                      src="/amazon-vs-flipkart-hero-metrics.png"
+                      src="/Amazon vs Flipkart India Sellers.png"
                       alt="Amazon vs Flipkart India sellers 2026"
                     />
                   </div>
@@ -2196,7 +2196,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
                 >
                   <div className="rel-thumb">
                     <img
-                      src="/01_hero_banner.png"
+                      src="/Flipkart Keyword Research Tool.png"
                       alt="Flipkart Keyword Research Tool guide"
                     />
                   </div>
@@ -2217,7 +2217,7 @@ export default function ManualVsAutomatedCompetitorTracking() {
                 >
                   <div className="rel-thumb">
                     <img
-                      src="/thirteen.png"
+                      src="/Insydz-vs-Helium-10.png"
                       alt="Insydz vs Helium 10 comparison for Indian sellers"
                     />
                   </div>

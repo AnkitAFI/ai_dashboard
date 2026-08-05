@@ -745,7 +745,7 @@ export default function AmazonReviewAnalysisContent() {
       <div style={{ maxWidth: 1240, margin: "0 auto", padding: "0 24px" }}>
         {/* Blog Image Section */}
         <BlogImageSection
-          imageSrc="/Analyze Amazon Reviews.png"
+          imageSrc="/Amazon Review Analysis Guide Banner.png"
           altText="Amazon Review Analysis Dashboard"
           caption="Insydz AI review intelligence — clusters sentiment, flags RTO-driving themes, and benchmarks against competitor weaknesses across Amazon.in and Flipkart."
         />
@@ -1883,15 +1883,14 @@ export default function AmazonReviewAnalysisContent() {
               >
                 <div className="rel-thumb">
                   <img
-                    src="/01_hero_banner.png"
+                    src="/Flipkart Keyword Research Tool.png"
                     alt="Flipkart Keyword Research Guide"
                   />
                 </div>
                 <div className="rel-body">
                   <div className="rel-tag">Keyword Research</div>
                   <div className="rel-title">
-                    Flipkart Keyword Research for Indian Sellers: Complete 2026
-                    Guide
+                    Flipkart Keyword Research for Indian Sellers: Complete Guide
                   </div>
                 </div>
               </Link>
@@ -1902,7 +1901,7 @@ export default function AmazonReviewAnalysisContent() {
               >
                 <div className="rel-thumb">
                   <img
-                    src="/thirteen.png"
+                    src="/Insydz-vs-Helium-10.png"
                     alt="Insydz vs Helium 10 comparison"
                   />
                 </div>
@@ -1921,15 +1920,14 @@ export default function AmazonReviewAnalysisContent() {
               >
                 <div className="rel-thumb">
                   <img
-                    src="/one.png"
-                    alt="Flipkart Pricing Automation Strategy"
+                    src="/Amazon Competitor Price Tracking Tool India.png"
+                    alt="Amazon Competitor Price Tracking Tool India"
                   />
                 </div>
                 <div className="rel-body">
                   <div className="rel-tag">Pricing Strategy</div>
                   <div className="rel-title">
-                    Flipkart Pricing Automation: How to Win the SmartBuy Badge
-                    in 2026
+                    Amazon Competitor Price Tracking Tool India: Complete Guide
                   </div>
                 </div>
               </Link>

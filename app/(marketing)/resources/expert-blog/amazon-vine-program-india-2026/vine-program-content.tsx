@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MarketingHeader } from "@/components/layout/MarketingHeader";
+import RelatedArticles from "../components/RelatedArticles";
 
 export const dynamic = "force-static";
 
@@ -346,6 +347,28 @@ const TOC = [
   { id: "real-results", label: "D2C Brand Case Study" },
   { id: "after-vine", label: "Post-Review Strategy" },
   { id: "faq", label: "Frequently Asked Questions" },
+];
+
+const agencyRelatedCards = [
+  {
+    tag: "Amazon India",
+    title:
+      "Amazon India Repricing Strategy: Stop Losing the Buy Box to Smarter Sellers",
+    route: "/resources/expert-blog/amazon-repricing-strategy-india-2026",
+    image: "/amazon-repricing-strategy-india-image0.png",
+  },
+  {
+    tag: "Flipkart Analytics",
+    title: "Best Flipkart Analytics Tool for Indian Sellers (2026)",
+    route: "/resources/expert-blog/best-flipkart-analytics-tool",
+    image: "/best-flipkart-analytics-tool.png",
+  },
+  {
+    tag: "Keyword Research",
+    title: "Flipkart Keyword Research Tool for Indian Sellers (2026)",
+    route: "/resources/expert-blog/flipkart-keyword-research-tool",
+    image: "/Flipkart Keyword Research Tool.png",
+  },
 ];
 
 // ── FAQ ───────────────────────────────────────────────────────────────────────
@@ -2674,82 +2697,12 @@ export default function AmazonVineProgramContent() {
               </div>
             </div>
 
-            {/* Related Guides */}
-            <div
-              style={{
-                marginTop: 48,
-                paddingTop: 28,
-                borderTop: "2px solid #E5E7EB",
-              }}
-            >
-              <h2
-                style={{
-                  fontSize: "clamp(16px,3vw,20px)",
-                  fontWeight: 800,
-                  color: "#0A0F1A",
-                  margin: "0 0 18px",
-                  border: "none",
-                  padding: 0,
-                  fontFamily: "'Sora',sans-serif",
-                }}
-                className="dark:text-white"
-              >
-                More on Amazon India Launch Strategy
-              </h2>
-              <div className="related-grid" style={{ marginBottom: 60 }}>
-                <Link
-                  href="/resources/expert-blog/amazon-review-analysis-guide-india"
-                  className="rel-card"
-                >
-                  <div className="rel-thumb">
-                    <img
-                      src="/amazon-review-analysis-hero.png"
-                      alt="AI Review Analysis Tool"
-                    />
-                  </div>
-                  <div className="rel-body">
-                    <div className="rel-tag">REVIEW INTELLIGENCE</div>
-                    <div className="rel-title">
-                      AI Review Analysis Tool for Amazon India & Flipkart:
-                      Complete Guide (2026)
-                    </div>
-                  </div>
-                </Link>
-                <Link
-                  href="/resources/expert-blog/how-to-rank-page-1-amazon-india"
-                  className="rel-card"
-                >
-                  <div className="rel-thumb">
-                    <img src="/twenty three.png" alt="Amazon Keyword Ranking" />
-                  </div>
-                  <div className="rel-body">
-                    <div className="rel-tag">SEO STRATEGY</div>
-                    <div className="rel-title">
-                      Amazon Keyword Ranking in India: How to Track and Improve
-                      Position in 2026
-                    </div>
-                  </div>
-                </Link>
-                <Link
-                  href="/resources/expert-blog/flipkart-keyword-research-tool"
-                  className="rel-card"
-                >
-                  <div className="rel-thumb">
-                    <img
-                      src="/01_hero_banner.png"
-                      alt="Big Billion Days Prep"
-                    />
-                  </div>
-                  <div className="rel-body">
-                    <div className="rel-tag">LAUNCH STRATEGY</div>
-                    <div className="rel-title">
-                      Big Billion Days Prep for D2C Brands: 8-Week Launch
-                      Checklist
-                    </div>
-                  </div>
-                </Link>
-              </div>
-            </div>
+            {/* More Agency and Analytics Guides */}
+            <RelatedArticles
+              title="More Agency and Analytics Guides"
+              cards={agencyRelatedCards}
+              // resolvedTheme={resolvedTheme}
+            />
           </article>
         </main>
       </div>

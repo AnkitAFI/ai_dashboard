@@ -357,19 +357,19 @@ const primeDayRelatedCards = [
     tag: "Competitor Intelligence",
     title: "Competitor Undercutting Your Amazon India Price? Act Within 1 Hour",
     route: "/resources/expert-blog/competitor-undercutting-amazon-india",
-    image: "/Competitor Undercutting Your Amazon India Price_1.png",
+    image: "/Detect Competitor Price Undercutting on Amazon India.png",
   },
   {
     tag: "Review Strategy",
     title: "Amazon Vine Program India 2026: Cost, Worth and How to Enrol",
     route: "/resources/expert-blog/amazon-vine-program-india-2026",
-    image: "/Amazon Vine Program India 2026.png",
+    image: "/Amazon Vine Program India.png",
   },
   {
     tag: "Keyword Intelligence",
     title: "How to Find Every Keyword Your Amazon India Competitor Ranks For",
     route: "/resources/expert-blog/find-competitor-keywords-amazon-india",
-    image: "/image_1691x942.png",
+    image: "/How to Find Competitor Keywords.png",
   },
 ];
 

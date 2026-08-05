@@ -48,6 +48,7 @@ type Article = {
   category: BlogCategory;
   readTime: string;
   image: string;
+  featuredImage?: string;
   route: string;
   featured?: boolean;
   popular?: boolean;
@@ -57,18 +58,19 @@ type Article = {
 const articles: Article[] = [
   {
     id: "29",
-    title: " Agency Client Reporting Automation",
+    title: "Automate Client Reporting for Ecommerce Agencies (2026)",
     excerpt:
       "Automate client reporting in under 5 minutes per client. Stop creating manual slides every week. This is the plug-and-play template agencies are using in 2026.",
     category: "Seller Tools & Strategy",
     readTime: "9 min read",
     image: "/Report Less, Retain More.png",
+    featuredImage: "/image.png",
     route: "/resources/expert-blog/agency-client-reporting-automation",
     popular: true,
   },
   {
     id: "28",
-    title: "Amazon India Repricing Strategy 2026",
+    title: "Amazon India Repricing Strategy 2026: Stop Losing the Buy Box",
     excerpt:
       "In competitive categories on Amazon India, your Buy Box is won or lost multiple times a day. Sellers who reprice manually, or not at all, are giving it away. This is the 2026 playbook for margin-safe, rule-based repricing that holds your position without racing to the bottom.",
     category: "Pricing Strategy",
@@ -79,7 +81,7 @@ const articles: Article[] = [
   },
   {
     id: "27",
-    title: "Analyze Amazon Reviews India Content",
+    title: "How to Analyze 500+ Reviews for Product Opportunities",
     excerpt:
       "Amazon reviews are goldmines of information. Discover how to analyze Amazon reviews in India to find hidden patterns and improve your product. Learn the best practices for sentiment analysis, theme extraction, and product improvement.",
     category: "Review Intelligence Pillar",
@@ -90,7 +92,7 @@ const articles: Article[] = [
   },
   {
     id: "26",
-    title: "Switch From Excel to SellerApp",
+    title: "Excel to AI Competitor Tracker on Amazon India: 30 Days",
     excerpt:
       "Use this step-by-step template to migrate from Excel to SellerApp in under 30 minutes. Automate keyword tracking, competitor monitoring, and listing analytics.",
     category: "Seller Tools & Strategy",
@@ -101,7 +103,7 @@ const articles: Article[] = [
   },
   {
     id: "25",
-    title: "Top Amazon India Sellers Habits",
+    title: "5 Habits of Top 10% Amazon India Sellers",
     excerpt:
       "Discover the habits, strategies, and daily practices followed by top Amazon India sellers to increase rankings, improve conversions, and build sustainable ecommerce businesses.",
     category: "Seller Tools & Strategy",
@@ -112,7 +114,7 @@ const articles: Article[] = [
   },
   {
     id: "24",
-    title: "Prime Day India 2026: Seller Questions Answered",
+    title: "Amazon Prime Day India: Questions Sellers Are Asking",
     excerpt:
       "Prime Day 2026 lasts 48 hours. The sellers who win it spend 6 to 8 weeks preparing. The sellers who lose it start the week before. This guide covers everything you need to do right now.",
     category: "Festive Trends",
@@ -123,7 +125,7 @@ const articles: Article[] = [
   },
   {
     id: "23",
-    title: "Negative Reviews Impact Amazon India Sales",
+    title: "How Negative Reviews Are Killing Your Amazon India Sales",
     excerpt:
       "Negative Amazon reviews are killing your sales—and you’re probably responding the wrong way. Learn how to convert 1-star complaints into more revenue.",
     category: "Review Intelligence",
@@ -134,7 +136,7 @@ const articles: Article[] = [
   },
   {
     id: "22",
-    title: "Amazon Listing Not Ranking in India? Fix It in 2026",
+    title: "Amazon India Listing Not Ranking? 7 Reasons and Fixes",
     excerpt:
       "Your Amazon India listing is live but not ranking? Learn the real reasons products fail to rank and the practical fixes that improve visibility in 2026.",
     category: "SEO & Keyword Intelligence",
@@ -145,7 +147,7 @@ const articles: Article[] = [
   },
   {
     id: "21",
-    title: "Find Competitor Keywords Amazon India",
+    title: "How to Find Competitor Keywords on Amazon India (2026)",
     excerpt:
       "Discover exactly which keywords your Amazon India competitors rank for and use that gap to outrank them in 2026. Reverse ASIN research made practical.",
     category: "Seller Tools & Strategy",
@@ -156,7 +158,7 @@ const articles: Article[] = [
   },
   {
     id: "20",
-    title: "Amazon Zero Referral Fee India",
+    title: "Amazon India Zero Referral Fee 2026: Pricing Strategy Guide",
     excerpt:
       "Learn how zero-fee on Amazon India can help sellers save up to ₹50,000/month, improve profitability, increase visibility, and maintain competitive pricing—and if it’s the right move for your brand.",
     category: "Pricing Strategy",
@@ -167,7 +169,7 @@ const articles: Article[] = [
   },
   {
     id: "19",
-    title: "Competitor Undercutting on Amazon India",
+    title: "How to Detect Competitor Price Undercutting on Amazon India",
     excerpt:
       "Learn why your Amazon sales might drop and how to recover them in 2026. From product research to sourcing and building a D2C brand.",
     category: "Seller Tools & Strategy",
@@ -178,7 +180,7 @@ const articles: Article[] = [
   },
   {
     id: "18",
-    title: "Amazon Sales Drop in 2026: The Complete Guide",
+    title: "Why Did My Amazon India Sales Drop? Diagnosis Guide",
     excerpt:
       "Learn why your Amazon sales might drop and how to recover them in 2026. From product research to sourcing and building a D2C brand.",
     category: "Seller Tools & Strategy",
@@ -189,7 +191,7 @@ const articles: Article[] = [
   },
   {
     id: "17",
-    title: "Flipkart Seller Analytics Tool India: The Complete Guide (2026)",
+    title: "Best Flipkart Analytics Tool for Indian Sellers (2026)",
     excerpt:
       "Learn how to use Flipkart Seller Analytics Tools in India to grow your business, track competitors, and improve your ranking in 2026.",
     category: "Flipkart Seller Tools & Strategy",
@@ -200,8 +202,7 @@ const articles: Article[] = [
   },
   {
     id: "16",
-    title:
-      "Amazon Private Label Guide for Indian Sellers in 2026: The Complete Guide",
+    title: "How to Launch a Private Label on Amazon India (2026 Guide)",
     excerpt:
       "Learn how to start and scale an Amazon Private Label business in India in 2026. From product research to sourcing and building a D2C brand.",
     category: "Seller Tools & Strategy",
@@ -212,8 +213,7 @@ const articles: Article[] = [
   },
   {
     id: "15",
-    title:
-      "Amazon Vine Program for Indian Sellers in 2026: Is It Worth the Cost?",
+    title: "Amazon Vine Program India 2026: Is It Worth the Cost?",
     excerpt:
       "Learn the flat fee per ASIN, enrollment criteria, and strategic benefits of Amazon Vine India in 2026. Get 30 verified reviews and boost your launch velocity.",
     category: "Seller Tools & Strategy",
@@ -224,8 +224,7 @@ const articles: Article[] = [
   },
   {
     id: "14",
-    title:
-      "Insydz vs SellerApp: Which Amazon Seller Tool Actually Works for the Indian Market?",
+    title: "Insydz vs SellerApp: Best Tool for Indian Sellers (2026)",
     excerpt:
       "A practitioner's comparison for ₹5L–50L/month Indian sellers — INR pricing vs USD billing, Flipkart-native vs Amazon-only. Read before you commit.",
     category: "Tool Comparison & Reviews",
@@ -237,8 +236,7 @@ const articles: Article[] = [
   },
   {
     id: "13",
-    title:
-      "Analyze Amazon Reviews Tool: The Complete Guide for Indian Sellers (2026)",
+    title: "How to Analyze Amazon Reviews Fast (2026 Guide)",
     excerpt:
       "AI-powered Amazon review analysis for Indian D2C sellers — sentiment clustering, Hinglish support, RTO signals, and WhatsApp alerts.",
     category: "Review Intelligence",
@@ -272,8 +270,7 @@ const articles: Article[] = [
   },
   {
     id: "10",
-    title:
-      "Flipkart Keyword Research Tool & SEO Optimization Guide for Sellers (2026)",
+    title: "Flipkart Keyword Research Tool for Indian Sellers (2026)",
     excerpt:
       "Your listings are invisible to lakhs of Flipkart shoppers because you're targeting the wrong keywords. Discover how India's top Flipkart sellers use AI-powered keyword research to dominate search rankings and multiply their organic traffic.",
     category: "Flipkart SEO & Seller Strategy",
@@ -283,8 +280,7 @@ const articles: Article[] = [
   },
   {
     id: "9",
-    title:
-      "Best Flipkart Analytics Tool India: Complete Guide for Sellers (2026)",
+    title: "Best Flipkart Analytics Tool for Indian Sellers (2026)",
     excerpt:
       "Stop flying blind on Flipkart. The right analytics tool surfaces which competitor keywords are stealing your rank, which SKUs are losing the Buy Box.",
     category: "Flipkart Seller Tools & Strategy",
@@ -366,7 +362,7 @@ const articles: Article[] = [
   {
     id: "2",
     title:
-      "Insydz vs Helium 10: Which is the Right Amazon Intelligence Tool for Indian Sellers?",
+      "Insydz vs Helium 10 comparison for Indian sellers: Which is the Right Amazon Intelligence Tool?",
     excerpt:
       "Helium 10 was built for Amazon US — not for the way Indian marketplaces actually work. Find out why thousands of Indian sellers are switching to a tool built specifically for Amazon India, Flipkart, and Meesho.",
     category: "Pricing + Compare",
@@ -461,7 +457,8 @@ export default function ExpertBlog() {
       ? articles
       : articles.filter((article) => article.category === selectedCategory);
 
-  const featuredArticle = articles.find((a) => a.featured);
+  // const featuredArticle = articles.find((a) => a.featured);
+  const featuredArticle = articles[0];
   const popularArticles = articles.filter((a) => a.popular).slice(0, 4);
 
   // Pagination logic
@@ -581,12 +578,14 @@ export default function ExpertBlog() {
             >
               <div className="grid md:grid-cols-2 md:min-h-[320px] lg:min-h-[380px]">
                 {/* Featured Image */}
-                <div className="blog-card-thumb h-full">
-                  {featuredArticle.image ? (
+                <div className="featured-blog-thumb h-full">
+                  {featuredArticle.featuredImage || featuredArticle.image ? (
                     <img
-                      src={featuredArticle.image}
+                      src={
+                        featuredArticle.featuredImage || featuredArticle.image
+                      }
                       alt={featuredArticle.title}
-                      className="w-full h-full object-fit"
+                      className="featured-blog-img"
                     />
                   ) : (
                     <div className="flex items-center justify-center h-full p-6">
@@ -957,8 +956,50 @@ export default function ExpertBlog() {
         .delay-1000 {
           animation-delay: 1s;
         }
-        .blog-card-thumb { position: relative; width:100%; aspect-ratio:1978 / 795; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
-        .blog-card-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+//         .blog-card-thumb { position: relative; width:100%; aspect-ratio:1978 / 795; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+//         .blog-card-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+//         /* Featured insight — no forced wide aspect-ratio, fills the grid row height instead */
+// .featured-blog-thumb {
+//   position: relative;
+//   width: 100%;
+//   height: 100%;
+//   min-height: 260px;
+//   overflow: hidden;
+//   background: #0A0F1A;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// }
+// .featured-blog-thumb img {
+//   width: 100%;
+//   height: 100%;
+//   object-fit: cover;
+//   object-position: center;
+//   display: block;
+// }
+
+.blog-card-thumb { position: relative; width:100%; aspect-ratio:1978 / 795; overflow:hidden; background:#0A0F1A; display:flex; align-items:center; justify-content:center; }
+.blog-card-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+
+/* Featured insight — dedicated sizing so it never crops */
+.featured-blog-thumb {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  overflow: hidden;
+  background: #FDEEDB; /* matches the cream tone in the source image so any letterbox edge blends in */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.featured-blog-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;   /* shows the full image, no cropping */
+  object-position: center;
+  display: block;
+}
       `}</style>
     </div>
   );

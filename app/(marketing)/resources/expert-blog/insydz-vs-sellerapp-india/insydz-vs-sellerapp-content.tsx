@@ -1612,7 +1612,7 @@ export default function InsydzVsSellerAppContent() {
               >
                 <div className="rel-thumb">
                   <img
-                    src="/01_hero_banner.png"
+                    src="/Flipkart Keyword Research Tool.png"
                     alt="Flipkart Keyword Research Guide"
                   />
                 </div>
@@ -1631,7 +1631,7 @@ export default function InsydzVsSellerAppContent() {
               >
                 <div className="rel-thumb">
                   <img
-                    src="/thirteen.png"
+                    src="/Insydz-vs-Helium-10.png"
                     alt="Insydz vs Helium 10 comparison"
                   />
                 </div>
@@ -1650,7 +1650,7 @@ export default function InsydzVsSellerAppContent() {
               >
                 <div className="rel-thumb">
                   <img
-                    src="/one.png"
+                    src="/Amazon Competitor Price Tracking Tool India.png"
                     alt="Flipkart Pricing Automation Strategy"
                   />
                 </div>
