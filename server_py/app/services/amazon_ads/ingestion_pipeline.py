@@ -55,13 +55,28 @@ class AmazonAdsIngestionPipeline:
                 target_metrics[tid]["sales"] += st.sales
                 target_metrics[tid]["orders"] += st.orders
 
+        from app.models.ad_models import AmazonAdPromotionPipeline, AmazonAdHarvestHistory
+        
+        workflows = db.execute(
+            select(AmazonAdPromotionPipeline).where(
+                AmazonAdPromotionPipeline.profile_id == profile_id,
+                AmazonAdPromotionPipeline.is_active == True
+            )
+        ).scalars().all()
+        
+        harvest_history = db.execute(
+            select(AmazonAdHarvestHistory).where(AmazonAdHarvestHistory.profile_id == profile_id)
+        ).scalars().all()
+
         # Generate new immutable recommendations
         recs = AdPulseRulesEngine.evaluate_profile(
             profile_id=profile_id,
             search_terms=search_terms,
             targets=targets,
             target_metrics=target_metrics,
-            settings=settings
+            settings=settings,
+            workflows=workflows,
+            harvest_history=harvest_history
         )
 
         for r in recs:

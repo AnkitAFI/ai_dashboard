@@ -61,6 +61,9 @@ class AmazonAdAccountSetting(Base):
     # Rule Evaluation Thresholds
     bleeder_click_threshold = Column(Integer, default=15) # Clicks with 0 orders = Bleeder
     winner_order_threshold = Column(Integer, default=3)   # Orders with <= Target ACOS = Winner
+
+    # Campaign Builder Guardrails
+    confirmation_budget_threshold = Column(Float, default=20000.0) # E.g., 20k INR default for explicit confirmation
     
     # Automation & Notifications
     automation_mode = Column(String(20), default="manual") # manual, semi_auto, full_auto
@@ -106,6 +109,7 @@ class AmazonAdCampaign(Base):
     profile_id = Column(String(100), ForeignKey("amazon_ad_profiles.profile_id", ondelete="CASCADE"), nullable=False, index=True)
     
     campaign_id = Column(String(100), unique=True, nullable=False, index=True)
+    portfolio_id = Column(String(100), nullable=True, index=True) # Maps to AmazonAdPortfolio
     name = Column(String(255), nullable=False)
     campaign_type = Column(String(50), default="sponsoredProducts") # sponsoredProducts, sponsoredBrands
     targeting_type = Column(String(20), default="MANUAL")           # MANUAL, AUTO
@@ -330,3 +334,160 @@ class AmazonAdCustomRule(Base):
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class AmazonAdPromotionPipeline(Base):
+    """
+    13. amazon_ad_promotion_pipelines
+    Stores Multi-Stage Promotion Pipelines (e.g. Auto -> Broad -> Phrase -> Exact).
+    """
+    __tablename__ = "amazon_ad_promotion_pipelines"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    profile_id = Column(String(100), ForeignKey("amazon_ad_profiles.profile_id", ondelete="CASCADE"), nullable=False, index=True)
+    
+    # 4 Stages of the Pipeline
+    discovery_campaign_id = Column(String(100), nullable=True)
+    discovery_ad_group_id = Column(String(100), nullable=True)
+    
+    testing_campaign_id = Column(String(100), nullable=True)
+    testing_ad_group_id = Column(String(100), nullable=True)
+    
+    refining_campaign_id = Column(String(100), nullable=True)
+    refining_ad_group_id = Column(String(100), nullable=True)
+    
+    scaling_campaign_id = Column(String(100), nullable=True)
+    scaling_ad_group_id = Column(String(100), nullable=True)
+    
+    # Graduation Thresholds
+    testing_min_orders = Column(Integer, default=2)
+    refining_min_orders = Column(Integer, default=4)
+    scaling_min_orders = Column(Integer, default=6)
+    
+    # Optional constraints for moving between stages
+    min_clicks = Column(Integer, default=5)
+    target_acos = Column(Float, default=0.25)
+    
+    # Feature Flags
+    enable_auto_negative = Column(Boolean, default=True)
+    is_active = Column(Boolean, default=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+
+class AmazonAdHarvestHistory(Base):
+    """
+    14. amazon_ad_harvest_history
+    WORM ledger to prevent re-harvesting the same search term in a pipeline stage.
+    """
+    __tablename__ = "amazon_ad_harvest_history"
+    __table_args__ = (
+        UniqueConstraint("profile_id", "search_term", "pipeline_id", "dest_ad_group_id", name="uq_harvest_history"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    profile_id = Column(String(100), ForeignKey("amazon_ad_profiles.profile_id", ondelete="CASCADE"), nullable=False, index=True)
+    pipeline_id = Column(Integer, ForeignKey("amazon_ad_promotion_pipelines.id", ondelete="CASCADE"), nullable=False)
+    
+    search_term = Column(String(255), nullable=False, index=True)
+    source_ad_group_id = Column(String(100), nullable=False)
+    dest_ad_group_id = Column(String(100), nullable=False)
+    
+    harvested_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class CampaignTemplate(Base):
+    """
+    11. campaign_templates
+    Data-driven template definitions for Campaign Builder. (e.g. Proven Pipeline)
+    """
+    __tablename__ = "campaign_templates"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    template_id = Column(String(100), index=True, nullable=False)   # e.g., "proven_pipeline"
+    template_version = Column(String(50), nullable=False)           # e.g., "v2.3"
+    name = Column(String(255), nullable=False)
+    description = Column(Text)
+    
+    # JSON structure detailing what campaigns/adgroups/pipelines to create
+    definition = Column(JSONB, nullable=False) 
+    
+    is_active = Column(Boolean, default=True) # Soft-delete mechanism
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    
+    __table_args__ = (UniqueConstraint('template_id', 'template_version', name='uq_template_id_version'),)
+
+
+class CampaignBuilderJob(Base):
+    """
+    12. campaign_builder_jobs
+    Crash-resilient state machine queue for orchestrating multi-campaign creation.
+    Utilizes PostgreSQL FOR UPDATE SKIP LOCKED for distributed workers.
+    """
+    __tablename__ = "campaign_builder_jobs"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    profile_id = Column(String(100), index=True, nullable=False)
+    
+    # Queue Management & Concurrency
+    priority = Column(String(20), default="NORMAL", index=True) # HIGH, NORMAL, LOW
+    status = Column(String(50), default="QUEUED", index=True) # QUEUED, RUNNING, COMPLETED, FAILED, ROLLED_BACK, CANCELLED
+    lease_until = Column(DateTime(timezone=True), nullable=True)
+    last_heartbeat = Column(DateTime(timezone=True), nullable=True)
+    
+    # State Machine & Recovery
+    current_step = Column(String(100), nullable=False)
+    completed_steps = Column(Integer, default=0)
+    total_steps = Column(Integer, default=0)
+    retry_count = Column(Integer, default=0)
+    max_retries = Column(Integer, default=3)
+    error_message = Column(Text, nullable=True)
+    
+    # Audit & Idempotency
+    idempotency_key = Column(String(255), unique=True, index=True, nullable=False)
+    builder_version = Column(String(50), nullable=False)
+    template_id = Column(String(100), nullable=False)
+    template_version = Column(String(50), nullable=False)
+    api_version = Column(String(50), nullable=False)
+    
+    # Payloads
+    input_payload = Column(JSONB, nullable=False) # e.g. sku, base_bid, global_budget
+    
+    # Created Resource State (Saved instantly to prevent orphans)
+    auto_campaign_id = Column(String(255), nullable=True)
+    broad_campaign_id = Column(String(255), nullable=True)
+    exact_campaign_id = Column(String(255), nullable=True)
+    auto_ad_group_id = Column(String(255), nullable=True)
+    broad_ad_group_id = Column(String(255), nullable=True)
+    exact_ad_group_id = Column(String(255), nullable=True)
+    pipeline_id = Column(Integer, nullable=True)
+    
+    # Analytics Metrics
+    amazon_api_calls = Column(Integer, default=0)
+    amazon_retry_count = Column(Integer, default=0)
+    execution_time_ms = Column(Integer, default=0)
+
+    # Timestamps
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), index=True)
+    started_at = Column(DateTime(timezone=True), nullable=True)
+    completed_at = Column(DateTime(timezone=True), nullable=True)
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class AmazonAdPortfolio(Base):
+    """
+    12. amazon_ad_portfolios
+    Tracks Portfolios to group campaigns and manage high-level budgets.
+    """
+    __tablename__ = "amazon_ad_portfolios"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    profile_id = Column(String(100), ForeignKey("amazon_ad_profiles.profile_id", ondelete="CASCADE"), nullable=False, index=True)
+    
+    portfolio_id = Column(String(100), unique=True, nullable=False, index=True)
+    name = Column(String(255), nullable=False)
+    budget_amount = Column(Float, nullable=True)
+    state = Column(String(20), default="ENABLED")

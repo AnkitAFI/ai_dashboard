@@ -11,7 +11,8 @@ import uuid
 from typing import List, Dict, Any
 from app.models.ad_models import (
     AmazonAdSearchTerm, AmazonAdTarget, AmazonAdCampaign, 
-    AmazonAdAccountSetting, AmazonAdRecommendation
+    AmazonAdAccountSetting, AmazonAdRecommendation,
+    AmazonAdPromotionPipeline, AmazonAdHarvestHistory
 )
 
 
@@ -58,56 +59,112 @@ class BleederDetectorRule:
         return recs
 
 
-class WinnerDetectorRule:
+class SearchTermHarvesterRule:
     """
-    Winner Keyword Launcher:
-    Finds high-converting customer search terms that aren't yet exact-matched.
+    Enterprise-Grade Search Term Harvester (Multi-Stage Pipeline):
+    Isolates highly profitable search terms based on user-defined Promotion Pipelines.
+    Graduates keywords through: Auto (Discovery) -> Broad (Testing) -> Phrase (Refining) -> Exact (Scaling).
     """
     @staticmethod
     def evaluate(
         profile_id: str,
         batch_id: str,
         search_terms: List[AmazonAdSearchTerm],
-        existing_targets: List[AmazonAdTarget],
-        settings: AmazonAdAccountSetting
+        targets: List[AmazonAdTarget],
+        pipelines: List[Any], # List[AmazonAdPromotionPipeline]
+        harvest_history: List[AmazonAdHarvestHistory]
     ) -> List[AmazonAdRecommendation]:
         recs = []
-        target_acos = settings.target_acos if settings else 0.25
-        order_threshold = settings.winner_order_threshold if settings else 3
         
-        existing_exacts = {
-            t.expression.lower() for t in existing_targets 
-            if t.match_type == "EXACT" and t.state == "ENABLED"
+        # Build lookup for existing targets: (ad_group_id, match_type, expression)
+        existing_targets_set = {
+            (t.ad_group_id, t.match_type, t.expression.lower()) for t in targets 
         }
         
-        for st in search_terms:
-            if st.orders >= order_threshold and st.sales > 0:
-                actual_acos = st.spend / st.sales
-                if actual_acos <= target_acos and st.query_text.lower() not in existing_exacts:
-                    suggested_bid = round((st.spend / st.clicks) * 1.15, 2) if st.clicks > 0 else 5.0
-                    evidence = {
-                        "rule": "WinnerDetectorRule",
-                        "orders": st.orders,
-                        "sales": round(st.sales, 2),
-                        "actual_acos": round(actual_acos * 100, 2),
-                        "target_acos": round(target_acos * 100, 2),
-                        "reason": f"Search term '{st.query_text}' achieved {st.orders} orders at {actual_acos*100:.1f}% ACOS (<= {target_acos*100:.1f}% Target ACOS)."
-                    }
-                    rec = AmazonAdRecommendation(
-                        batch_id=batch_id,
-                        profile_id=profile_id,
-                        rule_type="WINNER",
-                        target_id=st.target_id or "new_keyword",
-                        campaign_id=st.campaign_id,
-                        ad_group_id=st.ad_group_id,
-                        recommended_action="ADD_KEYWORD_EXACT",
-                        current_value="UNMANAGED_QUERY",
-                        recommended_value=f"{st.query_text}:{suggested_bid}",
-                        evidence_payload=json.dumps(evidence),
-                        rule_version="v1.0",
-                        status="GENERATED"
-                    )
-                    recs.append(rec)
+        # Build lookup for harvest history: (pipeline_id, dest_ad_group_id, search_term)
+        harvested_set = { 
+            (h.pipeline_id, h.dest_ad_group_id, h.search_term.lower()) 
+            for h in harvest_history 
+        }
+        
+        for pl in pipelines:
+            if not pl.is_active:
+                continue
+                
+            # Define the stages in order
+            stages = [
+                {"name": "Discovery", "ad_group": pl.discovery_ad_group_id, "next_ad_group": pl.testing_ad_group_id, "min_orders": pl.testing_min_orders, "match_type": "BROAD"},
+                {"name": "Testing", "ad_group": pl.testing_ad_group_id, "next_ad_group": pl.refining_ad_group_id, "min_orders": pl.refining_min_orders, "match_type": "PHRASE"},
+                {"name": "Refining", "ad_group": pl.refining_ad_group_id, "next_ad_group": pl.scaling_ad_group_id, "min_orders": pl.scaling_min_orders, "match_type": "EXACT"}
+            ]
+            
+            for stage in stages:
+                if not stage["ad_group"] or not stage["next_ad_group"]:
+                    continue # Skip if this pipeline jump isn't configured
+                    
+                # Find search terms originating from the current stage's ad group
+                stage_search_terms = [st for st in search_terms if st.ad_group_id == stage["ad_group"]]
+                
+                for st in stage_search_terms:
+                    term_lower = st.query_text.lower()
+                    
+                    # 1. Did we already promote this term from this stage to the next?
+                    if (pl.id, stage["next_ad_group"], term_lower) in harvested_set:
+                        continue
+                        
+                    actual_acos = (st.spend / st.sales) if st.sales > 0 else float('inf')
+                    
+                    # 2. Did it hit the thresholds for the next stage?
+                    if st.orders >= stage["min_orders"] and st.clicks >= pl.min_clicks and actual_acos <= pl.target_acos:
+                        
+                        # 3. Does it already exist in the DESTINATION as the correct match type?
+                        if (stage["next_ad_group"], stage["match_type"], term_lower) in existing_targets_set:
+                            continue
+                            
+                        # 4. If configured, does it already exist in the SOURCE as a NEGATIVE EXACT?
+                        if pl.enable_auto_negative and (stage["ad_group"], "NEGATIVE_EXACT", term_lower) in existing_targets_set:
+                            # Strict protection, skip if it's already negated here
+                            pass
+                            
+                        suggested_bid = round((st.spend / st.clicks) * 1.15, 2) if st.clicks > 0 else 5.0
+                        
+                        evidence = {
+                            "rule": "SearchTermHarvesterRule",
+                            "pipeline_id": pl.id,
+                            "stage_name": stage["name"],
+                            "source_ad_group_id": stage["ad_group"],
+                            "dest_ad_group_id": stage["next_ad_group"],
+                            "dest_match_type": stage["match_type"],
+                            "enable_auto_negative": pl.enable_auto_negative,
+                            "orders": st.orders,
+                            "clicks": st.clicks,
+                            "sales": round(st.sales, 2),
+                            "spend": round(st.spend, 2),
+                            "actual_acos": round(actual_acos * 100, 2),
+                            "target_acos": round(pl.target_acos * 100, 2),
+                            "suggested_bid": suggested_bid,
+                            "reason": f"Pipeline {pl.id} ({stage['name']}): '{st.query_text}' graduated to {stage['match_type']} (Orders={st.orders}, ACOS={actual_acos*100:.1f}%)."
+                        }
+                        
+                        rec = AmazonAdRecommendation(
+                            batch_id=batch_id,
+                            profile_id=profile_id,
+                            rule_type="HARVESTER",
+                            target_id="multi_stage_promotion",
+                            campaign_id=st.campaign_id,
+                            ad_group_id=stage["ad_group"],
+                            recommended_action="PROMOTE_SEARCH_TERM",
+                            current_value="CURRENT_STAGE",
+                            recommended_value=st.query_text,
+                            evidence_payload=json.dumps(evidence),
+                            rule_version="v3.0",
+                            status="GENERATED"
+                        )
+                        recs.append(rec)
+                        
+                        # Temporarily mark harvested in memory
+                        harvested_set.add((pl.id, stage["next_ad_group"], term_lower))
+                    
         return recs
 
 
@@ -212,15 +269,17 @@ class AdPulseRulesEngine:
         search_terms: List[AmazonAdSearchTerm],
         targets: List[AmazonAdTarget],
         target_metrics: Dict[str, Dict[str, float]],
-        settings: AmazonAdAccountSetting
+        settings: AmazonAdAccountSetting,
+        workflows: List[AmazonAdPromotionPipeline],
+        harvest_history: List[AmazonAdHarvestHistory]
     ) -> List[AmazonAdRecommendation]:
         batch_id = f"batch_{uuid.uuid4().hex[:12]}"
         all_recs = []
         
         # 1. Bleeders
         all_recs.extend(BleederDetectorRule.evaluate(profile_id, batch_id, search_terms, settings))
-        # 2. Winners
-        all_recs.extend(WinnerDetectorRule.evaluate(profile_id, batch_id, search_terms, targets, settings))
+        # 2. Harvester (replaces WinnerDetectorRule)
+        all_recs.extend(SearchTermHarvesterRule.evaluate(profile_id, batch_id, search_terms, targets, workflows, harvest_history))
         # 3. Bid Optimizations
         all_recs.extend(BidOptimizerRule.evaluate(profile_id, batch_id, targets, target_metrics, settings))
         

@@ -52,6 +52,22 @@ async def amazon_ads_oauth_callback(
             "AMAZON_ADS_CLIENT_ID or AMAZON_ADS_CLIENT_SECRET is missing from your .env file."
         ), status_code=500)
 
+    # ── Step 0: Validate CSRF State Token ──────────────────────────────────────
+    from jose import jwt, JWTError
+    try:
+        if not state:
+            raise JWTError("Missing state token")
+        payload = jwt.decode(state, settings.SECRET_KEY, algorithms=["HS256"])
+        target_user_id = payload.get("user_id")
+        if not target_user_id:
+            raise JWTError("Invalid token payload")
+    except JWTError as e:
+        logger.warning(f"OAuth CSRF validation failed: {e}")
+        return HTMLResponse(content=_error_page(
+            "Security Validation Failed",
+            "The authorization request could not be verified or has expired. Please try connecting your account again."
+        ), status_code=403)
+
     # ── Step 1: Exchange authorization code for tokens ─────────────────────────
     payload = {
         "grant_type": "authorization_code",
@@ -94,7 +110,6 @@ async def amazon_ads_oauth_callback(
     # ── Step 2: Save to database for target seller ──────────────────────────────
     now = datetime.now(timezone.utc)
     expires_at = now + timedelta(seconds=expires_in)
-    target_user_id = int(state) if (state and state.isdigit()) else 1
 
     existing = db.execute(
         select(AmazonAdOAuthAccount).where(

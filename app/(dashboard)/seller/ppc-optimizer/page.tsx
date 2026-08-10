@@ -8,7 +8,7 @@ import {
   ShieldCheck, Crown, RefreshCw, Menu, Zap, Target, BarChart2,
   AlertTriangle, CheckCircle, RotateCcw, ArrowUp, ArrowDown,
   DollarSign, TrendingUp, Filter, Sliders, Lock, Sparkles, Check, X,
-  EyeOff, Clock, Search, Edit3, CheckSquare, Square, Layers, Unplug, LineChart as LineChartIcon
+  EyeOff, Clock, Search, Edit3, CheckSquare, Square, Layers, Unplug, LineChart as LineChartIcon, Trash2, Plus, Rocket, List
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from "recharts";
@@ -20,6 +20,32 @@ interface AdProfile {
   country_code: string;
   currency_code: string;
   account_type: string;
+}
+
+
+interface SearchTermData {
+  query_text: string;
+  campaign_id: string;
+  ad_group_id: string;
+  spend: number;
+  sales: number;
+  clicks: number;
+  impressions: number;
+  orders: number;
+  acos: number;
+  roas: number;
+  cvr: number;
+}
+
+interface KeywordTarget {
+  target_id: string;
+  ad_group_id: string;
+  campaign_id: string;
+  target_type: string;
+  match_type: string;
+  expression: string;
+  bid: number;
+  state: string;
 }
 
 interface Scorecard {
@@ -41,7 +67,7 @@ interface Scorecard {
 
 interface Recommendation {
   id: number;
-  rule_type: "BLEEDER" | "WINNER" | "BID_OPTIMIZE" | "BUDGET";
+  rule_type: "BLEEDER" | "HARVESTER" | "BID_OPTIMIZE" | "BUDGET";
   target_id: string;
   campaign_id: string;
   ad_group_id: string;
@@ -59,6 +85,12 @@ interface Entitlements {
   monthly_applies_limit: number;
   can_apply_recommendations: boolean;
   can_customize_target_acos: boolean;
+  can_use_granular_keywords: boolean;
+  max_granular_keywords: number;
+  can_use_search_terms: boolean;
+  max_search_terms: number;
+  can_use_bulk_ops: boolean;
+  can_use_portfolios: boolean;
   upsell_message: string | null;
 }
 
@@ -73,6 +105,7 @@ interface Campaign {
   min_bid?: number;
   max_bid?: number;
   dayparting_enabled?: boolean;
+  dayparting_schedule?: any;
   ad_groups: {
     ad_group_id: string;
     name: string;
@@ -102,8 +135,8 @@ export default function PpcOptimizerPage() {
   const [entitlements, setEntitlements] = useState<Entitlements | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [changeLogs, setChangeLogs] = useState<ChangeLogItem[]>([]);
-  const [mainTab, setMainTab] = useState<"SUGGESTIONS" | "AD_MANAGER" | "CHANGE_LOG" | "ANALYTICS" | "CUSTOM_RULES">("SUGGESTIONS");
-  const [activeTab, setActiveTab] = useState<"BLEEDER" | "WINNER" | "BID_OPTIMIZE">("BLEEDER");
+  const [mainTab, setMainTab] = useState<"SUGGESTIONS" | "AD_MANAGER" | "CHANGE_LOG" | "ANALYTICS" | "CUSTOM_RULES" | "KEYWORDS" | "SEARCH_TERMS" | "BULK_OPS" | "PORTFOLIOS">("SUGGESTIONS");
+  const [activeTab, setActiveTab] = useState<"BLEEDER" | "HARVESTER" | "BID_OPTIMIZE">("BLEEDER");
   const [loading, setLoading] = useState<boolean>(true);
   const [applyingId, setApplyingId] = useState<number | null>(null);
   const [rollbackId, setRollbackId] = useState<number | null>(null);
@@ -116,6 +149,12 @@ export default function PpcOptimizerPage() {
   const [editingBudgetId, setEditingBudgetId] = useState<string | null>(null);
   const [tempBudget, setTempBudget] = useState<string>("");
   const [showDaypartingModal, setShowDaypartingModal] = useState<string | null>(null);
+  
+  type DaypartingSchedule = Record<string, number[]>;
+  const defaultSchedule: DaypartingSchedule = {
+    monday: [], tuesday: [], wednesday: [], thursday: [], friday: [], saturday: [], sunday: []
+  };
+  const [daypartingSchedule, setDaypartingSchedule] = useState<DaypartingSchedule>(defaultSchedule);
   const [autoIsolateEnabled, setAutoIsolateEnabled] = useState<boolean>(true);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [showDisconnectModal, setShowDisconnectModal] = useState<boolean>(false);
@@ -136,6 +175,250 @@ export default function PpcOptimizerPage() {
     action_value: 15
   });
   const [isCreatingRule, setIsCreatingRule] = useState<boolean>(false);
+  
+  // Promotion Pipelines State
+  const [promotionPipelines, setPromotionPipelines] = useState<any[]>([]);
+  
+  // Keyword Manager State
+  const [keywordTargets, setKeywordTargets] = useState<KeywordTarget[]>([]);
+  const [isTargetsLoading, setIsTargetsLoading] = useState<boolean>(false);
+  const [editingTargetId, setEditingTargetId] = useState<string | null>(null);
+  const [tempTargetBid, setTempTargetBid] = useState<string>("");
+  const [targetSearchQuery, setTargetSearchQuery] = useState<string>("");
+  
+  // Search Term Explorer State
+  const [searchTerms, setSearchTerms] = useState<SearchTermData[]>([]);
+  const [isSearchTermsLoading, setIsSearchTermsLoading] = useState<boolean>(false);
+  const [stSearchQuery, setStSearchQuery] = useState<string>("");
+
+  const loadSearchTerms = async () => {
+    if (!selectedProfileId) return;
+    setIsSearchTermsLoading(true);
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/search-terms?profile_id=${selectedProfileId}`, { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        setSearchTerms(data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setIsSearchTermsLoading(false);
+  };
+
+  const handleNegateSearchTerm = async (query_text: string, ad_group_id: string) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/search-terms/negate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ profile_id: selectedProfileId, ad_group_id, query_text })
+      });
+      if (res.ok) {
+        setNotification({ type: "success", text: `Successfully negated '${query_text}'!` });
+        // Optionally refresh
+        loadSearchTerms();
+      } else {
+        const err = await res.json();
+        setNotification({ type: "error", text: err.detail || "Failed to negate search term." });
+      }
+    } catch (e) {
+      setNotification({ type: "error", text: "Network error negating search term." });
+    }
+  };
+  
+  // Bulk Operations State
+  const [bulkFile, setBulkFile] = useState<File | null>(null);
+  const [isBulkUploading, setIsBulkUploading] = useState<boolean>(false);
+  const [bulkResult, setBulkResult] = useState<any>(null);
+
+  const handleBulkDownload = () => {
+    if (!selectedProfileId) return;
+    window.location.href = `${BASE_URL}/api/v1/ads/bulk-operations/download?profile_id=${selectedProfileId}`;
+  };
+
+  const handleBulkUpload = async () => {
+    if (!bulkFile || !selectedProfileId) return;
+    setIsBulkUploading(true);
+    setBulkResult(null);
+    setNotification(null);
+    
+    const formData = new FormData();
+    formData.append("profile_id", selectedProfileId);
+    formData.append("file", bulkFile);
+    
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/bulk-operations/upload`, {
+        method: "POST",
+        credentials: "include",
+        body: formData
+      });
+      const data = await res.json();
+      
+      if (res.ok) {
+        setBulkResult(data);
+        if (data.error_count > 0) {
+           setNotification({ type: "error", text: `Partial Success: Updated ${data.success_count} rows, but encountered ${data.error_count} errors.` });
+        } else {
+           setNotification({ type: "success", text: `Success! Updated ${data.success_count} bids from CSV.` });
+        }
+        setBulkFile(null); // Clear file input on success
+      } else {
+        setNotification({ type: "error", text: data.detail || "Upload failed." });
+      }
+    } catch (e) {
+      setNotification({ type: "error", text: "Network error during upload." });
+    }
+    setIsBulkUploading(false);
+  };
+  
+  // Portfolios State
+  interface Portfolio {
+    portfolio_id: string;
+    name: string;
+    budget_amount: number;
+    state: string;
+    campaign_count: number;
+    total_spend: number;
+  }
+  const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
+  const [editingPortfolio, setEditingPortfolio] = useState<string | null>(null);
+  const [newBudget, setNewBudget] = useState<string>("");
+
+  const loadPortfolios = async () => {
+    if (!selectedProfileId || !entitlements?.can_use_portfolios) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/portfolios?profile_id=${selectedProfileId}`, { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        setPortfolios(data.portfolios || []);
+      }
+    } catch (e) {
+      console.error("Error loading portfolios", e);
+    }
+  };
+
+  useEffect(() => {
+    if (mainTab === "PORTFOLIOS") {
+      loadPortfolios();
+    }
+  }, [mainTab, selectedProfileId, entitlements]);
+
+  const handleUpdateBudget = async (portfolio_id: string) => {
+    if (!selectedProfileId) return;
+    const amount = parseFloat(newBudget);
+    if (isNaN(amount) || amount <= 0) {
+      setNotification({ type: "error", text: "Invalid budget amount." });
+      return;
+    }
+    
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/portfolios/${portfolio_id}/budget?profile_id=${selectedProfileId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ new_budget: amount })
+      });
+      if (res.ok) {
+        setNotification({ type: "success", text: `Budget updated to $${amount.toFixed(2)}` });
+        setEditingPortfolio(null);
+        setNewBudget("");
+        loadPortfolios();
+      } else {
+        const data = await res.json();
+        setNotification({ type: "error", text: data.detail || "Failed to update budget." });
+      }
+    } catch (e) {
+      setNotification({ type: "error", text: "Network error updating budget." });
+    }
+  };
+
+  const loadKeywordTargets = async () => {
+    if (!selectedProfileId) return;
+    setIsTargetsLoading(true);
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/targets?profile_id=${selectedProfileId}&limit=500`, { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        setKeywordTargets(data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    setIsTargetsLoading(false);
+  };
+
+  useEffect(() => {
+    if (mainTab === "KEYWORDS") {
+      loadKeywordTargets();
+    }
+    if (mainTab === "SEARCH_TERMS") {
+      loadSearchTerms();
+    }
+  }, [mainTab, selectedProfileId]);
+
+  const handleSaveTargetBid = async (targetId: string, newState?: string) => {
+    try {
+      const payload: any = {};
+      if (newState) payload.state = newState;
+      if (tempTargetBid && editingTargetId === targetId) payload.bid = parseFloat(tempTargetBid);
+      
+      const res = await fetch(`${BASE_URL}/api/v1/ads/targets/${targetId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        setNotification({ type: "success", text: "Target updated successfully!" });
+        setEditingTargetId(null);
+        loadKeywordTargets();
+      } else {
+        setNotification({ type: "error", text: "Failed to update target." });
+      }
+    } catch (e) {
+      setNotification({ type: "error", text: "Error updating target." });
+    }
+  };
+
+  const [newPipeline, setNewPipeline] = useState({
+    discovery_campaign_id: "", discovery_ad_group_id: "",
+    testing_campaign_id: "", testing_ad_group_id: "",
+    refining_campaign_id: "", refining_ad_group_id: "",
+    scaling_campaign_id: "", scaling_ad_group_id: "",
+    testing_min_orders: 2, refining_min_orders: 4, scaling_min_orders: 6,
+    min_clicks: 5, target_acos: 0.25, enable_auto_negative: true
+  });
+  const [isCreatingPipeline, setIsCreatingPipeline] = useState<boolean>(false);
+  
+  // Campaign Builder State
+  const [isBuilderOpen, setIsBuilderOpen] = useState(false);
+  const [builderStep, setBuilderStep] = useState(1);
+  const [builderSku, setBuilderSku] = useState("");
+  const [builderBudget, setBuilderBudget] = useState(50);
+  const [builderPreview, setBuilderPreview] = useState<any>(null);
+  const [builderJobId, setBuilderJobId] = useState<number | null>(null);
+  const [builderJobStatus, setBuilderJobStatus] = useState<any>(null);
+  const [isPollingJob, setIsPollingJob] = useState(false);
+  
+  // Existing Campaigns detected
+  const [existingCampaigns, setExistingCampaigns] = useState<any[]>([]);
+  const [showExistingWarning, setShowExistingWarning] = useState(false);
+  // Harvesting Workflows State
+  const [harvestingWorkflows, setHarvestingWorkflows] = useState<any[]>([]);
+  const [newWorkflow, setNewWorkflow] = useState({
+    source_campaign_id: "",
+    source_ad_group_id: "",
+    dest_campaign_id: "",
+    dest_ad_group_id: "",
+    min_orders: 3,
+    min_clicks: 10,
+    min_spend: 0.0,
+    target_acos: 25.0,
+    enable_auto_negative: true,
+    enable_auto_exact: true
+  });
+  const [isCreatingWorkflow, setIsCreatingWorkflow] = useState<boolean>(false);
 
   const showToast = (type: "success" | "error", text: string) => setNotification({ type, text });
 
@@ -155,15 +438,17 @@ export default function PpcOptimizerPage() {
     showToast("success", `Automation mode set to ${next === "AUTOPILOT" ? "Autopilot 24/7" : "Manual Review"}`);
   };
 
-  const toggleDayparting = async (campaignId: string) => {
+  const toggleDayparting = async (campaignId: string, scheduleToSave?: DaypartingSchedule) => {
     const campaign = campaigns.find(c => c.campaign_id === campaignId);
     if (!campaign) return;
     
-    const newEnabledState = !campaign.dayparting_enabled;
+    // If they are just clicking the toggle directly on the row, we flip the state.
+    // If they are saving from the modal, we force it to true and save the schedule.
+    const newEnabledState = scheduleToSave ? true : !campaign.dayparting_enabled;
 
     // Optimistic UI Update
     setCampaigns((prev) =>
-      prev.map((c) => (c.campaign_id === campaignId ? { ...c, dayparting_enabled: newEnabledState } : c))
+      prev.map((c) => (c.campaign_id === campaignId ? { ...c, dayparting_enabled: newEnabledState, dayparting_schedule: scheduleToSave || c.dayparting_schedule } : c))
     );
 
     try {
@@ -171,7 +456,11 @@ export default function PpcOptimizerPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ campaign_id: campaignId, enabled: newEnabledState })
+        body: JSON.stringify({ 
+          campaign_id: campaignId, 
+          enabled: newEnabledState,
+          schedule: scheduleToSave 
+        })
       });
       if (!res.ok) throw new Error("Failed to update dayparting");
       
@@ -334,6 +623,31 @@ export default function PpcOptimizerPage() {
         } catch (e) {
           console.error("Custom rules fetch error:", e);
         }
+        // 8. Fetch Promotion Pipelines
+        try {
+          const plRes = await fetch(`${BASE_URL}/api/v1/ads/promotion-pipelines/${encodeURIComponent(currentProfId)}`, {
+            headers: { "Content-Type": "application/json" },
+            credentials: "include"
+          });
+          if (plRes.ok) {
+            const plData = await plRes.json();
+            setPromotionPipelines(plData);
+          }
+        } catch (e) {
+          console.error("Promotion pipelines fetch error:", e);
+        }
+        // 9. Fetch Harvesting Workflows
+        try {
+          const wfRes = await fetch(`${BASE_URL}/api/v1/ads/harvesting-workflows?profile_id=${encodeURIComponent(currentProfId)}`, {
+            credentials: "include"
+          });
+          if (wfRes.ok) {
+            const wfData = await wfRes.json();
+            setHarvestingWorkflows(wfData);
+          }
+        } catch (e) {
+          console.error("Harvesting workflows fetch error:", e);
+        }
       }
     } catch (err) {
       console.error("Failed to load PPC Optimizer data:", err);
@@ -346,9 +660,128 @@ export default function PpcOptimizerPage() {
     fetchAllData();
   }, []);
 
+  // Poll Campaign Builder Job
+  useEffect(() => {
+    let interval: any;
+    if (builderJobId && isPollingJob) {
+      interval = setInterval(async () => {
+        try {
+          const res = await fetch(`${BASE_URL}/api/v1/ads/campaign-builder/jobs/${builderJobId}`, {
+            credentials: "include"
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setBuilderJobStatus(data);
+            if (["COMPLETED", "FAILED", "ROLLED_BACK", "CANCELLED"].includes(data.status)) {
+              setIsPollingJob(false);
+              clearInterval(interval);
+              fetchAllData(selectedProfileId || undefined); // Refresh pipelines
+            }
+          }
+        } catch (e) {
+          console.error("Job polling error", e);
+        }
+      }, 2000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [builderJobId, isPollingJob]);
+
   const handleProfileChange = (profId: string) => {
     setSelectedProfileId(profId);
     fetchAllData(profId);
+  };
+
+  const handleCheckSku = async () => {
+    if (!builderSku) return;
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/campaigns/check-sku?sku=${encodeURIComponent(builderSku)}`, {
+        credentials: "include"
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setExistingCampaigns(data.existing_campaigns || []);
+        if (data.existing_campaigns?.length > 0) setShowExistingWarning(true);
+        else setShowExistingWarning(false);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handlePreviewBuilder = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/campaign-builder/preview`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ sku: builderSku, global_budget: builderBudget })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setBuilderPreview(data.preview);
+        setBuilderStep(2);
+      } else {
+        const err = await res.json();
+        showToast("error", err.detail || "Validation failed.");
+      }
+    } catch (e) {
+      showToast("error", "Failed to fetch preview.");
+    }
+  };
+
+  const handleLaunchBuilder = async () => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/campaign-builder/launch`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ 
+          profile_id: selectedProfileId,
+          sku: builderSku, 
+          global_budget: builderBudget,
+          template_id: "proven_pipeline"
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setBuilderJobId(data.job_id);
+        setIsPollingJob(true);
+        setBuilderStep(3); // Progress view
+      }
+    } catch (e) {
+      showToast("error", "Launch failed.");
+    }
+  };
+
+  const handleCancelJob = async () => {
+    if (!builderJobId) return;
+    try {
+      await fetch(`${BASE_URL}/api/v1/ads/campaign-builder/jobs/${builderJobId}/cancel`, {
+        method: "POST",
+        credentials: "include"
+      });
+      showToast("success", "Cancellation requested.");
+    } catch (e) {
+      showToast("error", "Cancel failed.");
+    }
+  };
+  
+  const handleResolveJob = async (resolution: string) => {
+    if (!builderJobId) return;
+    try {
+      await fetch(`${BASE_URL}/api/v1/ads/campaign-builder/jobs/${builderJobId}/resolve`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ resolution })
+      });
+      showToast("success", `Resolution applied: ${resolution}`);
+      setIsPollingJob(true); // resume polling
+    } catch (e) {
+      showToast("error", "Resolve failed.");
+    }
   };
 
   const handleApply = async (recId: number) => {
@@ -571,6 +1004,103 @@ export default function PpcOptimizerPage() {
     } catch (e) {
       console.error(e);
       showToast("error", "Failed to delete rule.");
+    }
+  };
+
+  const handleCreatePipeline = async () => {
+    if (!newPipeline.discovery_ad_group_id || !newPipeline.testing_ad_group_id) {
+      showToast("error", "At minimum, Discovery and Testing Ad Groups are required.");
+      return;
+    }
+    setIsCreatingPipeline(true);
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/promotion-pipelines`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          profile_id: selectedProfileId,
+          ...newPipeline
+        })
+      });
+      if (!res.ok) throw new Error("Failed to create pipeline");
+      showToast("success", "Promotion Pipeline created successfully!");
+      setNewPipeline({
+        discovery_campaign_id: "", discovery_ad_group_id: "",
+        testing_campaign_id: "", testing_ad_group_id: "",
+        refining_campaign_id: "", refining_ad_group_id: "",
+        scaling_campaign_id: "", scaling_ad_group_id: "",
+        testing_min_orders: 2, refining_min_orders: 4, scaling_min_orders: 6,
+        min_clicks: 5, target_acos: 0.25, enable_auto_negative: true
+      });
+      fetchAllData(selectedProfileId); // Refresh list
+    } catch (e) {
+      console.error(e);
+      showToast("error", "Failed to create pipeline.");
+    } finally {
+      setIsCreatingPipeline(false);
+    }
+  };
+
+  const handleDeletePipeline = async (pipelineId: number) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/promotion-pipelines/${pipelineId}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+      if (!res.ok) throw new Error("Failed to delete pipeline");
+      setPromotionPipelines(prev => prev.filter(p => p.id !== pipelineId));
+      showToast("success", "Pipeline deleted.");
+    } catch (e) {
+      console.error(e);
+      showToast("error", "Failed to delete pipeline.");
+    }
+  };
+
+  const handleCreateWorkflow = async () => {
+    if (!newWorkflow.source_campaign_id || !newWorkflow.source_ad_group_id || !newWorkflow.dest_campaign_id || !newWorkflow.dest_ad_group_id) {
+      return showToast("error", "Source and Destination mappings are required");
+    }
+    setIsCreatingWorkflow(true);
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/harvesting-workflows`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          profile_id: selectedProfileId,
+          ...newWorkflow
+        })
+      });
+      if (!res.ok) throw new Error("Failed to create workflow");
+      showToast("success", "Harvester Workflow created successfully!");
+      setNewWorkflow({
+        source_campaign_id: "", source_ad_group_id: "",
+        dest_campaign_id: "", dest_ad_group_id: "",
+        min_orders: 3, min_clicks: 10, min_spend: 0.0, target_acos: 25.0,
+        enable_auto_negative: true, enable_auto_exact: true
+      });
+      fetchAllData(selectedProfileId);
+    } catch (e) {
+      console.error(e);
+      showToast("error", "Failed to create workflow.");
+    } finally {
+      setIsCreatingWorkflow(false);
+    }
+  };
+
+  const handleDeleteWorkflow = async (workflowId: number) => {
+    try {
+      const res = await fetch(`${BASE_URL}/api/v1/ads/harvesting-workflows/${workflowId}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+      if (!res.ok) throw new Error("Failed to delete workflow");
+      setHarvestingWorkflows(prev => prev.filter(w => w.id !== workflowId));
+      showToast("success", "Workflow deleted.");
+    } catch (e) {
+      console.error(e);
+      showToast("error", "Failed to delete workflow.");
     }
   };
 
@@ -887,7 +1417,7 @@ export default function PpcOptimizerPage() {
             }`}
           >
             <Sparkles className="w-4 h-4" />
-            Action Items (Suggestions)
+            AI RoAS Recommendations
             <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300">
               {recommendations.length}
             </Badge>
@@ -902,7 +1432,7 @@ export default function PpcOptimizerPage() {
             }`}
           >
             <Target className="w-4 h-4" />
-            All Campaigns
+            Campaign Manager
             <Badge className="bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300">
               {campaigns.length}
             </Badge>
@@ -917,7 +1447,7 @@ export default function PpcOptimizerPage() {
             }`}
           >
             <RotateCcw className="w-4 h-4" />
-            History & Undo
+            Audit Trail & Undo
             <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-900/40 dark:text-purple-300">
               {changeLogs.length}
             </Badge>
@@ -932,7 +1462,7 @@ export default function PpcOptimizerPage() {
             }`}
           >
             <BarChart2 className="w-4 h-4" />
-            Profit & Ad Spend Analytics
+            Ad Spends & Profitability
           </button>
 
           <button
@@ -944,11 +1474,23 @@ export default function PpcOptimizerPage() {
             }`}
           >
             <Sliders className="w-4 h-4" />
-            Custom Rules
+            Ad Automation Rules
             <Badge className="bg-orange-100 text-orange-800 dark:bg-orange-900/40 dark:text-orange-300">
               {customRules.length}
             </Badge>
           </button>
+          <button
+            onClick={() => setMainTab("KEYWORDS")}
+            className={`py-3 px-4 font-bold text-sm border-b-2 flex items-center gap-2 transition-all ${
+              mainTab === "KEYWORDS"
+                ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
+                : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
+            }`}
+          >
+            <List className="w-4 h-4" />
+            Keyword Bid Manager
+          </button>
+
         </div>
 
         {/* ── 1. SUGGESTIONS TAB ───────────────────── */}
@@ -965,24 +1507,24 @@ export default function PpcOptimizerPage() {
                 }`}
               >
                 <AlertTriangle className="w-4 h-4" />
-                Loss-Making Keywords (Zero Orders)
+                High Spend, Zero Sales (Money Wasters)
                 <Badge className="bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300 ml-1">
                   {recommendations.filter((r) => r.rule_type === "BLEEDER").length}
                 </Badge>
               </button>
 
               <button
-                onClick={() => setActiveTab("WINNER")}
+                onClick={() => setActiveTab("HARVESTER")}
                 className={`flex-1 py-4 px-4 text-sm font-semibold flex items-center justify-center gap-2 border-b-2 transition-all ${
-                  activeTab === "WINNER"
+                  activeTab === "HARVESTER"
                     ? "border-green-500 text-green-600 dark:text-green-400 bg-green-50/30 dark:bg-green-950/10"
                     : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
                 }`}
               >
                 <Sparkles className="w-4 h-4" />
-                Profitable Search Terms
+                Profitable Search Terms (Harvesting)
                 <Badge className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 ml-1">
-                  {recommendations.filter((r) => r.rule_type === "WINNER").length}
+                  {recommendations.filter((r) => r.rule_type === "HARVESTER").length}
                 </Badge>
               </button>
 
@@ -995,7 +1537,7 @@ export default function PpcOptimizerPage() {
                 }`}
               >
                 <Sliders className="w-4 h-4" />
-                Smart Bid Adjustments
+                RoAS-Based Bid Adjustments
                 <Badge className="bg-indigo-100 text-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-300 ml-1">
                   {recommendations.filter((r) => r.rule_type === "BID_OPTIMIZE").length}
                 </Badge>
@@ -1004,6 +1546,106 @@ export default function PpcOptimizerPage() {
 
             {/* Recommendations Cards List */}
             <div className="p-4 sm:p-6">
+              
+              {/* HARVESTER WORKFLOW BUILDER */}
+              {activeTab === "HARVESTER" && (
+                <div className="mb-8 p-5 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-900/10 border border-green-200 dark:border-green-800/40 rounded-2xl shadow-sm">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-bold text-green-900 dark:text-green-400 flex items-center gap-2">
+                      <Sparkles className="w-5 h-5" />
+                      Automated Campaign Funnels
+                    </h3>
+                  </div>
+                  
+                  {/* Active Pipelines List */}
+                  {promotionPipelines.length > 0 && (
+                    <div className="mb-6 space-y-3">
+                      <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Active Pipelines</h4>
+                      {promotionPipelines.map(p => (
+                        <div key={p.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-3 bg-white dark:bg-gray-900 border border-green-100 dark:border-green-900/40 rounded-xl">
+                          <div className="flex items-center gap-2 text-sm overflow-x-auto whitespace-nowrap">
+                            <span className="font-mono bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-xs">#{p.id}</span>
+                            <span className="font-medium text-blue-600 dark:text-blue-400">Discovery: {p.discovery_ad_group_id || 'N/A'}</span>
+                            <span className="text-gray-400">➔</span>
+                            <span className="font-medium text-indigo-600 dark:text-indigo-400">Testing: {p.testing_ad_group_id || 'N/A'}</span>
+                            <span className="text-gray-400">➔</span>
+                            <span className="font-medium text-purple-600 dark:text-purple-400">Refining: {p.refining_ad_group_id || 'N/A'}</span>
+                            <span className="text-gray-400">➔</span>
+                            <span className="font-medium text-green-600 dark:text-green-400">Scaling: {p.scaling_ad_group_id || 'N/A'}</span>
+                          </div>
+                          <div className="flex items-center gap-4 mt-2 sm:mt-0">
+                            <button onClick={() => handleDeletePipeline(p.id)} className="text-red-500 hover:text-red-700">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Create New Pipeline */}
+                  <div className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-green-200 dark:border-green-800/40">
+                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Create New Promotion Pipeline</h4>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                      {/* Discovery -> Testing */}
+                      <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-100 dark:border-blue-800/40">
+                        <label className="block text-xs font-bold text-blue-800 dark:text-blue-400 mb-2">Stage 1: Discovery (Auto)</label>
+                        <input type="text" value={newPipeline.discovery_ad_group_id} onChange={e => setNewPipeline({...newPipeline, discovery_ad_group_id: e.target.value})} className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-sm mb-2" placeholder="Ad Group ID" />
+                        <label className="block text-xs text-gray-500">Graduates at {newPipeline.testing_min_orders} orders</label>
+                        <input type="range" min="1" max="10" value={newPipeline.testing_min_orders} onChange={e => setNewPipeline({...newPipeline, testing_min_orders: parseInt(e.target.value)})} className="w-full" />
+                      </div>
+                      
+                      {/* Testing -> Refining */}
+                      <div className="p-3 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800/40">
+                        <label className="block text-xs font-bold text-indigo-800 dark:text-indigo-400 mb-2">Stage 2: Testing (Broad)</label>
+                        <input type="text" value={newPipeline.testing_ad_group_id} onChange={e => setNewPipeline({...newPipeline, testing_ad_group_id: e.target.value})} className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-sm mb-2" placeholder="Ad Group ID" />
+                        <label className="block text-xs text-gray-500">Graduates at {newPipeline.refining_min_orders} orders</label>
+                        <input type="range" min="1" max="10" value={newPipeline.refining_min_orders} onChange={e => setNewPipeline({...newPipeline, refining_min_orders: parseInt(e.target.value)})} className="w-full" />
+                      </div>
+                      
+                      {/* Refining -> Scaling */}
+                      <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-100 dark:border-purple-800/40">
+                        <label className="block text-xs font-bold text-purple-800 dark:text-purple-400 mb-2">Stage 3: Refining (Phrase)</label>
+                        <input type="text" value={newPipeline.refining_ad_group_id} onChange={e => setNewPipeline({...newPipeline, refining_ad_group_id: e.target.value})} className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-sm mb-2" placeholder="Ad Group ID" />
+                        <label className="block text-xs text-gray-500">Graduates at {newPipeline.scaling_min_orders} orders</label>
+                        <input type="range" min="1" max="10" value={newPipeline.scaling_min_orders} onChange={e => setNewPipeline({...newPipeline, scaling_min_orders: parseInt(e.target.value)})} className="w-full" />
+                      </div>
+
+                      {/* Scaling */}
+                      <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-100 dark:border-green-800/40">
+                        <label className="block text-xs font-bold text-green-800 dark:text-green-400 mb-2">Stage 4: Scaling (Exact)</label>
+                        <input type="text" value={newPipeline.scaling_ad_group_id} onChange={e => setNewPipeline({...newPipeline, scaling_ad_group_id: e.target.value})} className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2 py-1 text-sm mb-2" placeholder="Ad Group ID" />
+                        <label className="block text-xs text-gray-500 mt-2">Final destination.</label>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 border-t border-gray-100 dark:border-gray-800 pt-4">
+                      <div>
+                        <label className="block text-xs font-medium text-gray-500 mb-1">Global Target ACOS {"(<=)"}</label>
+                        <input type="number" step="0.01" value={newPipeline.target_acos} onChange={e => setNewPipeline({...newPipeline, target_acos: parseFloat(e.target.value)})} className="w-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 text-sm" />
+                      </div>
+                      <div className="flex flex-col justify-end">
+                        <label className="flex items-center gap-2 text-sm cursor-pointer mb-2">
+                          <input type="checkbox" checked={newPipeline.enable_auto_negative} onChange={e => setNewPipeline({...newPipeline, enable_auto_negative: e.target.checked})} className="rounded text-green-600 focus:ring-green-500" />
+                          Auto-Negate in Previous Stage
+                        </label>
+                      </div>
+                      <div className="flex justify-end items-end">
+                        <button
+                          onClick={handleCreatePipeline}
+                          disabled={isCreatingPipeline}
+                          className="inline-flex items-center justify-center w-full gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg text-sm shadow-md transition-colors"
+                        >
+                          {isCreatingPipeline ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                          Create Pipeline
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {loading ? (
                 <div className="flex flex-col items-center justify-center py-16 text-gray-400">
                   <RefreshCw className="w-8 h-8 animate-spin text-indigo-500 mb-3" />
@@ -1154,17 +1796,32 @@ export default function PpcOptimizerPage() {
                               {ev.reason || "Deterministic mathematical optimization recommendation."}
                             </p>
 
-                            {rec.rule_type === "WINNER" && (
-                              <div className="mt-2 flex items-center gap-2 px-3 py-1.5 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 rounded-lg text-xs font-medium text-amber-800 dark:text-amber-300">
-                                <input
-                                  type="checkbox"
-                                  checked={autoIsolateEnabled}
-                                  onChange={(e) => setAutoIsolateEnabled(e.target.checked)}
-                                  className="rounded border-amber-400 text-amber-600 focus:ring-amber-500"
-                                />
-                                <span>
-                                  <strong>Prevent Waste:</strong> Automatically add this as a negative keyword in your discovery campaign so you don't pay twice.
-                                </span>
+                            {rec.rule_type === "HARVESTER" && (
+                              <div className="mt-3 flex flex-col gap-2 p-3 bg-green-50/50 dark:bg-green-950/20 border border-green-200 dark:border-green-900/50 rounded-lg text-sm text-green-900 dark:text-green-300 shadow-sm">
+                                <div className="font-semibold flex items-center gap-2 mb-1 border-b border-green-200 dark:border-green-800/40 pb-2">
+                                  <Sparkles className="w-4 h-4 text-green-600 dark:text-green-400" />
+                                  1-Click Isolation Actions
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {ev.enable_auto_exact ? (
+                                    <Check className="w-4 h-4 text-green-600 dark:text-green-400" />
+                                  ) : (
+                                    <div className="w-4 h-4" />
+                                  )}
+                                  <span className={!ev.enable_auto_exact ? "text-gray-400 line-through" : ""}>
+                                    Add as EXACT Keyword in Destination Ad Group
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  {ev.enable_auto_negative ? (
+                                    <Check className="w-4 h-4 text-green-600 dark:text-green-400" />
+                                  ) : (
+                                    <div className="w-4 h-4" />
+                                  )}
+                                  <span className={!ev.enable_auto_negative ? "text-gray-400 line-through" : ""}>
+                                    Add as NEGATIVE EXACT in Source Ad Group
+                                  </span>
+                                </div>
                               </div>
                             )}
 
@@ -1234,8 +1891,8 @@ export default function PpcOptimizerPage() {
                                       <Zap className="w-4 h-4" />
                                       {rec.rule_type === "BLEEDER"
                                         ? "Block Bleeder"
-                                        : rec.rule_type === "WINNER"
-                                        ? "Launch Keyword"
+                                        : rec.rule_type === "HARVESTER"
+                                        ? "Isolate Search Term"
                                         : "Apply Bid"}
                                     </>
                                   )}
@@ -1267,7 +1924,14 @@ export default function PpcOptimizerPage() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setIsBuilderOpen(true)}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-sm flex items-center gap-2 transition-colors"
+                >
+                  <Rocket className="w-4 h-4" />
+                  Launch New Campaigns
+                </button>
                 <Badge className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">
                   {campaigns.length} Active Campaigns
                 </Badge>
@@ -1424,7 +2088,10 @@ export default function PpcOptimizerPage() {
                           </td>
                           <td className="py-4 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800 align-middle">
                             <button
-                              onClick={() => setShowDaypartingModal(camp.campaign_id)}
+                              onClick={() => {
+                                setShowDaypartingModal(camp.campaign_id);
+                                setDaypartingSchedule(camp.dayparting_schedule || defaultSchedule);
+                              }}
                               className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
                                 isDayparting
                                   ? "bg-indigo-600 text-white shadow-sm hover:bg-indigo-500"
@@ -1433,7 +2100,7 @@ export default function PpcOptimizerPage() {
                               title="Click to configure hourly Dayparting Ad Schedule"
                             >
                               <Clock className="w-3 h-3" />
-                              {isDayparting ? "Dayparting ON (Overnight Paused)" : "Dayparting OFF (24/7)"}
+                              {isDayparting ? "Dayparting ON (Custom)" : "Dayparting OFF (24/7)"}
                             </button>
                           </td>
                           <td className="py-4 px-4 whitespace-nowrap text-right align-middle">
@@ -1659,63 +2326,188 @@ export default function PpcOptimizerPage() {
               </div>
             </div>
 
-            {/* Organic vs PPC Sales Revenue Breakdown Bar */}
-            <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 rounded-2xl">
-              {(() => {
-                const totSales = scorecard ? scorecard.total_sales : 0;
-                const ppcSales = scorecard ? Math.min(totSales, scorecard.total_spend * (scorecard.roas || 1)) : 0;
-                const orgSales = Math.max(0, totSales - ppcSales);
-                const orgShare = totSales > 0 ? ((orgSales / totSales) * 100).toFixed(1) : "0.0";
-                const ppcShare = totSales > 0 ? ((ppcSales / totSales) * 100).toFixed(1) : "0.0";
-                return (
-                  <>
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-                      <div className="text-sm font-bold text-gray-900 dark:text-white">
-                        Organic Sales vs. PPC Advertising Revenue Breakdown
-                      </div>
-                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">
-                        Total Revenue: ₹{totSales.toLocaleString()} • Organic Share: {orgShare}%
-                      </div>
-                    </div>
-                    <div className="w-full h-4 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex">
-                      <div
-                        className="h-full bg-emerald-500 transition-all"
-                        style={{ width: `${orgShare}%` }}
-                        title={`Organic Sales: ₹${orgSales.toLocaleString()} (${orgShare}%)`}
-                      />
-                      <div
-                        className="h-full bg-indigo-600 transition-all"
-                        style={{ width: `${ppcShare}%` }}
-                        title={`PPC Sales: ₹${ppcSales.toLocaleString()} (${ppcShare}%)`}
-                      />
-                    </div>
-                    <div className="flex items-center justify-between mt-2 text-xs">
-                      <span className="flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300 font-semibold">
-                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-                        Organic Sales: ₹{orgSales.toLocaleString(undefined, { maximumFractionDigits: 0 })} ({orgShare}%)
-                      </span>
-                      <span className="flex items-center gap-1.5 text-indigo-700 dark:text-indigo-300 font-semibold">
-                        <span className="w-2.5 h-2.5 rounded-full bg-indigo-600 inline-block" />
-                        PPC Sales: ₹{ppcSales.toLocaleString(undefined, { maximumFractionDigits: 0 })} ({ppcShare}%)
-                      </span>
-                    </div>
-                  </>
-                );
-              })()}
-            </div>
 
-            <div className="p-6 bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/50 rounded-xl">
-              <h4 className="text-sm font-bold text-indigo-900 dark:text-indigo-200 mb-2">
-                💡 Automated Profit Protection
-              </h4>
-              <p className="text-xs text-indigo-700 dark:text-indigo-300 leading-relaxed">
-                Insydz monitors your keyword ranking against your advertising spend. When your product reaches Page 1 organically on Amazon India, we automatically suggest lower bids to preserve your profit margin without sacrificing sales.
-              </p>
-            </div>
+
+
           </div>
         )}
 
         {/* ── 6. CUSTOM RULES TAB ───────────────────── */}
+        
+        
+        {mainTab === "KEYWORDS" && !entitlements?.can_use_granular_keywords && (
+          <div className="bg-white dark:bg-gray-900 border-x border-b border-gray-200 dark:border-gray-800 rounded-b-2xl shadow-sm p-16 animate-in fade-in zoom-in-95 duration-200 flex flex-col items-center justify-center text-center">
+            <div className="w-20 h-20 bg-indigo-50 dark:bg-indigo-900/30 rounded-full flex items-center justify-center mb-6 ring-8 ring-indigo-50/50 dark:ring-indigo-900/10">
+              <Lock className="w-10 h-10 text-indigo-500" />
+            </div>
+            <h3 className="text-2xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight">
+              Unlock Granular Keyword Management
+            </h3>
+            <p className="text-gray-500 dark:text-gray-400 max-w-md mb-8 text-sm leading-relaxed">
+              Micromanage bids for every keyword and ASIN target across your entire account. Take full manual control of your ACOS with instant inline editing.
+            </p>
+            <button className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:shadow-indigo-500/20 transition-all flex items-center gap-2 transform hover:-translate-y-0.5">
+              <Crown className="w-5 h-5" />
+              Upgrade to Premium
+            </button>
+            <p className="mt-5 text-xs font-medium text-gray-400">
+              Premium also unlocks <span className="text-indigo-400">Custom Automation Rules</span> and <span className="text-indigo-400">Unlimited 1-Click Applies</span>.
+            </p>
+          </div>
+        )}
+
+        {mainTab === "KEYWORDS" && entitlements?.can_use_granular_keywords && (
+          <div className="bg-white dark:bg-gray-900 border-x border-b border-gray-200 dark:border-gray-800 rounded-b-2xl shadow-sm p-6 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+              <div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <List className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  Granular Keyword Management
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Manually review and edit bids for every keyword across your entire account.
+                </p>
+              </div>
+              <div className="flex items-center gap-3 w-full md:w-auto">
+                <div className="relative w-full md:w-64">
+                  <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search keywords..."
+                    className="w-full pl-9 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-sm focus:ring-2 focus:ring-indigo-500"
+                    value={targetSearchQuery}
+                    onChange={(e) => setTargetSearchQuery(e.target.value)}
+                  />
+                </div>
+                <button
+                  onClick={loadKeywordTargets}
+                  className="p-2 border border-gray-300 dark:border-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300 transition-colors"
+                >
+                  <RefreshCw className={`w-4 h-4 ${isTargetsLoading ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+            </div>
+
+            {entitlements && keywordTargets.length >= entitlements.max_granular_keywords && entitlements.max_granular_keywords > 0 && (
+              <div className="mb-4 p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg flex items-center justify-between">
+                <div className="flex items-center gap-3 text-purple-800 dark:text-purple-300">
+                  <Crown className="w-5 h-5" />
+                  <p className="text-sm font-medium">
+                    You've reached your Premium tier limit of <b>{entitlements.max_granular_keywords}</b> visible keywords.
+                  </p>
+                </div>
+                <button className="text-sm font-bold text-purple-700 dark:text-purple-400 hover:underline">
+                  Upgrade to Enterprise
+                </button>
+              </div>
+            )}
+
+            <div className="overflow-x-auto border border-gray-200 dark:border-gray-800 rounded-xl shadow-inner bg-white dark:bg-gray-950">
+              <table className="w-full text-left border-collapse min-w-[1000px]">
+                <thead className="sticky top-0 z-10 bg-gray-100 dark:bg-gray-800/95 backdrop-blur text-gray-700 dark:text-gray-200 border-b-2 border-gray-300 dark:border-gray-700 font-extrabold">
+                  <tr className="text-xs uppercase tracking-wider">
+                    <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800">Target Expression</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800">Type / Match</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800">Campaign / Ad Group</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap border-r border-gray-200 dark:border-gray-800">Status</th>
+                    <th className="py-3.5 px-4 whitespace-nowrap text-right">Current Bid</th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm">
+                  {keywordTargets
+                    .filter(t => t.expression.toLowerCase().includes(targetSearchQuery.toLowerCase()))
+                    .map((target) => (
+                    <tr key={target.target_id} className="border-b border-gray-100 dark:border-gray-800/50 hover:bg-gray-50/50 dark:hover:bg-gray-800/20 transition-colors">
+                      <td className="py-3 px-4 font-medium text-gray-900 dark:text-gray-100 border-r border-gray-100 dark:border-gray-800">
+                        {target.expression}
+                      </td>
+                      <td className="py-3 px-4 border-r border-gray-100 dark:border-gray-800">
+                        <div className="flex flex-col gap-1">
+                          <span className="text-xs font-semibold text-gray-500 uppercase">{target.target_type}</span>
+                          <span className="text-xs px-2 py-0.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 rounded inline-block w-max">
+                            {target.match_type}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-xs text-gray-500 border-r border-gray-100 dark:border-gray-800">
+                        <div className="truncate max-w-[200px]" title={target.campaign_id}>Camp: {target.campaign_id}</div>
+                        <div className="truncate max-w-[200px]" title={target.ad_group_id}>AdG: {target.ad_group_id}</div>
+                      </td>
+                      <td className="py-3 px-4 border-r border-gray-100 dark:border-gray-800">
+                        <select 
+                          className={`text-xs font-bold rounded px-2 py-1.5 border-0 focus:ring-2 cursor-pointer shadow-sm ${
+                            target.state === 'ENABLED' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'
+                          }`}
+                          value={target.state}
+                          onChange={(e) => handleSaveTargetBid(target.target_id, e.target.value)}
+                        >
+                          <option value="ENABLED">ENABLED</option>
+                          <option value="PAUSED">PAUSED</option>
+                          <option value="ARCHIVED">ARCHIVED</option>
+                        </select>
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        {editingTargetId === target.target_id ? (
+                          <div className="flex items-center justify-end gap-2">
+                            <span className="text-gray-500 font-bold">$</span>
+                            <input
+                              type="number"
+                              step="0.01"
+                              min="0.02"
+                              className="w-20 px-2 py-1.5 text-sm border-2 border-indigo-500 rounded focus:ring-4 focus:ring-indigo-500/20 shadow-inner"
+                              value={tempTargetBid}
+                              onChange={(e) => setTempTargetBid(e.target.value)}
+                              autoFocus
+                            />
+                            <button
+                              onClick={() => handleSaveTargetBid(target.target_id)}
+                              className="p-1.5 bg-indigo-600 text-white rounded hover:bg-indigo-700 shadow-sm"
+                            >
+                              <Check className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => setEditingTargetId(null)}
+                              className="p-1.5 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 shadow-sm"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-end gap-3 group">
+                            <span className="font-mono font-bold text-gray-800 dark:text-gray-200">${target.bid?.toFixed(2) || '0.00'}</span>
+                            <button
+                              onClick={() => {
+                                setEditingTargetId(target.target_id);
+                                setTempTargetBid(target.bid?.toString() || "");
+                              }}
+                              className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md opacity-0 group-hover:opacity-100 transition-all shadow-sm border border-transparent hover:border-indigo-100"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {keywordTargets.length === 0 && !isTargetsLoading && (
+                    <tr>
+                      <td colSpan={5} className="py-12 text-center">
+                        <List className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+                        <h4 className="text-base font-semibold text-gray-700 dark:text-gray-300">
+                          No keywords found.
+                        </h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          You don't have any active keywords or ASIN targets syncing.
+                        </p>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
         {mainTab === "CUSTOM_RULES" && (
           <div className="bg-white dark:bg-gray-900 border-x border-b border-gray-200 dark:border-gray-800 rounded-b-2xl shadow-sm p-6">
             <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-8">
@@ -1899,12 +2691,12 @@ export default function PpcOptimizerPage() {
 
       {/* ── Hourly Ad Scheduling (Dayparting) Modal ── */}
       {showDaypartingModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 max-w-lg w-full shadow-2xl">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 max-w-4xl w-full shadow-2xl my-8">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
                 <Clock className="w-5 h-5 text-indigo-500" />
-                Hourly Ad Schedule (Dayparting)
+                24/7 Ad Scheduling (Dayparting)
               </h3>
               <button
                 onClick={() => setShowDaypartingModal(null)}
@@ -1914,33 +2706,61 @@ export default function PpcOptimizerPage() {
               </button>
             </div>
 
-            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-              Automatically pause ads or lower CPC bids during late-night or low-converting hours to save your daily budget.
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
+              Select the specific hours you want your campaign to be <strong className="text-red-500">PAUSED</strong> to save budget during low-converting times. <br/>
+              <span className="text-xs text-gray-500">(Green = Running, Red = Paused)</span>
             </p>
 
-            <div className="grid grid-cols-4 gap-2 mb-6">
-              {[
-                "12 AM - 6 AM (Overnight - Paused)",
-                "6 AM - 12 PM (Morning - Enabled)",
-                "12 PM - 6 PM (Afternoon - Peak 1.2x Bid)",
-                "6 PM - 12 AM (Evening - Peak 1.2x Bid)"
-              ].map((slot, i) => (
-                <div
-                  key={slot}
-                  className={`p-3 rounded-xl border text-center text-xs font-semibold ${
-                    i === 0
-                      ? "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-500"
-                      : "bg-indigo-50 dark:bg-indigo-950/40 border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300"
-                  }`}
-                >
-                  {slot}
+            <div className="overflow-x-auto pb-4">
+              <div className="min-w-[800px]">
+                {/* Header Row */}
+                <div className="flex mb-1">
+                  <div className="w-24 shrink-0 text-xs font-bold text-gray-500">Day</div>
+                  <div className="flex-1 flex gap-1">
+                    {Array.from({ length: 24 }).map((_, h) => (
+                      <div key={h} className="flex-1 text-[10px] text-center font-semibold text-gray-400">
+                        {h}
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
+
+                {/* Grid Rows */}
+                {["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"].map(day => (
+                  <div key={day} className="flex mb-1 items-center">
+                    <div className="w-24 shrink-0 text-xs font-semibold text-gray-700 dark:text-gray-300 capitalize">{day}</div>
+                    <div className="flex-1 flex gap-1">
+                      {Array.from({ length: 24 }).map((_, h) => {
+                        const isPaused = (daypartingSchedule[day] || []).includes(h);
+                        return (
+                          <button
+                            key={h}
+                            onClick={() => {
+                              setDaypartingSchedule(prev => {
+                                const currentDayHours = prev[day] || [];
+                                const newDayHours = isPaused 
+                                  ? currentDayHours.filter(hour => hour !== h)
+                                  : [...currentDayHours, h];
+                                return { ...prev, [day]: newDayHours };
+                              });
+                            }}
+                            className={`flex-1 h-8 rounded-sm border transition-colors ${
+                              isPaused
+                                ? "bg-red-100 border-red-300 hover:bg-red-200 dark:bg-red-900/50 dark:border-red-800"
+                                : "bg-emerald-400 border-emerald-500 hover:bg-emerald-300 dark:bg-emerald-600 dark:border-emerald-500"
+                            }`}
+                            title={`${day} at ${h}:00 - ${isPaused ? 'Paused' : 'Running'}`}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl text-xs text-gray-600 dark:text-gray-300 mb-6">
-              <span>Selected Rule: <strong>Overnight Budget Protection (0% spend 12am-6am)</strong></span>
-              <Badge className="bg-green-100 text-green-800">Active</Badge>
+            <div className="flex justify-between items-center bg-gray-50 dark:bg-gray-800/50 p-3 rounded-xl text-xs text-gray-600 dark:text-gray-300 mb-6 mt-4">
+              <span><strong>Note:</strong> Times are relative to your Ad Profile's local timezone.</span>
             </div>
 
             <div className="flex justify-end gap-3">
@@ -1948,16 +2768,16 @@ export default function PpcOptimizerPage() {
                 onClick={() => setShowDaypartingModal(null)}
                 className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium"
               >
-                Close
+                Cancel
               </button>
               <button
                 onClick={() => {
-                  toggleDayparting(showDaypartingModal);
+                  toggleDayparting(showDaypartingModal, daypartingSchedule);
                   setShowDaypartingModal(null);
                 }}
                 className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm shadow-md"
               >
-                Apply Dayparting Schedule
+                Apply 7x24 Schedule
               </button>
             </div>
           </div>
@@ -2047,6 +2867,160 @@ export default function PpcOptimizerPage() {
                     <Line yAxisId="right" type="monotone" dataKey="acos" stroke="#F59E0B" strokeWidth={3} strokeDasharray="5 5" dot={false} name="ACOS %" />
                   </LineChart>
                 </ResponsiveContainer>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      
+      {/* ── Campaign Builder Modal ── */}
+      {isBuilderOpen && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl p-6 max-w-2xl w-full shadow-2xl relative">
+            <div className="flex items-center justify-between mb-4 border-b border-gray-100 dark:border-gray-800 pb-4">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Rocket className="w-6 h-6 text-indigo-500" />
+                  Campaign Preset Builder
+                </h3>
+                <p className="text-sm text-gray-500 mt-1">1-Click Multi-Stage Pipeline Creation</p>
+              </div>
+              <button
+                onClick={() => { setIsBuilderOpen(false); setBuilderStep(1); setBuilderJobStatus(null); setBuilderJobId(null); setIsPollingJob(false); }}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-full transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Step 1: Input */}
+            {builderStep === 1 && (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Target ASIN / SKU</label>
+                  <input
+                    type="text"
+                    value={builderSku}
+                    onChange={(e) => setBuilderSku(e.target.value)}
+                    onBlur={handleCheckSku}
+                    placeholder="e.g., B08N5M7S6K"
+                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-lg text-sm"
+                  />
+                </div>
+                {showExistingWarning && (
+                  <div className="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                    <div className="flex gap-2">
+                      <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-500" />
+                      <div>
+                        <h4 className="text-sm font-bold text-amber-800 dark:text-amber-400">Existing Campaigns Found</h4>
+                        <p className="text-xs text-amber-700 dark:text-amber-500 mt-1">
+                          We detected {existingCampaigns.length} existing campaigns for this SKU. Creating new ones might cause keyword overlap.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Global Daily Budget (INR)</label>
+                  <input
+                    type="number"
+                    value={builderBudget}
+                    onChange={(e) => setBuilderBudget(Number(e.target.value))}
+                    className="w-full px-4 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-700 rounded-lg text-sm"
+                  />
+                </div>
+                <div className="pt-4 flex justify-end">
+                  <button onClick={handlePreviewBuilder} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition-colors">
+                    Preview Generation
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 2: Preview */}
+            {builderStep === 2 && builderPreview && (
+              <div className="space-y-4">
+                <div className="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
+                  <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-3">Pre-Flight Summary</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-xs text-gray-500">Resource Blueprint</div>
+                      <div className="text-sm font-medium">{builderPreview.campaigns_to_create} Campaigns + {builderPreview.ad_groups_to_create} Ad Groups</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500">Pipeline Link</div>
+                      <div className="text-sm font-medium text-green-600">Will Link Automatically</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500">Est. Daily Budget</div>
+                      <div className="text-sm font-medium">₹{builderPreview.estimated_daily_spend}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500">Est. Monthly Spend</div>
+                      <div className="text-sm font-medium text-amber-600">≈ ₹{builderPreview.estimated_monthly_spend}</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="pt-4 flex justify-between">
+                  <button onClick={() => setBuilderStep(1)} className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">
+                    Back
+                  </button>
+                  <button onClick={handleLaunchBuilder} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg flex items-center gap-2">
+                    <Zap className="w-4 h-4" /> Launch Background Job
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Step 3: Progress & Result */}
+            {builderStep === 3 && (
+              <div className="space-y-6 text-center py-4">
+                {(!builderJobStatus || builderJobStatus.status === "QUEUED" || builderJobStatus.status === "RUNNING") ? (
+                  <>
+                    <RefreshCw className="w-12 h-12 text-indigo-500 animate-spin mx-auto mb-4" />
+                    <h3 className="text-lg font-bold">Building Campaign Bundle...</h3>
+                    <p className="text-sm text-gray-500 mb-6">You can safely close this window. The job is running in the background.</p>
+                    
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 mb-2 overflow-hidden">
+                      <div className="bg-indigo-600 h-3 rounded-full transition-all duration-500" style={{ width: `${builderJobStatus?.progress_percentage || 5}%` }}></div>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-500 font-medium">
+                      <span>{builderJobStatus?.current_step?.replace(/_/g, ' ') || 'Initializing...'}</span>
+                      <span>{builderJobStatus?.completed_steps || 0} / {builderJobStatus?.total_steps || 4} Steps</span>
+                    </div>
+
+                    <div className="mt-6">
+                      <button onClick={handleCancelJob} className="text-sm text-red-500 hover:text-red-600 underline">Cancel Job</button>
+                    </div>
+                  </>
+                ) : builderJobStatus.status === "COMPLETED" ? (
+                  <>
+                    <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Bundle Successfully Launched!</h3>
+                    <p className="text-sm text-gray-500 mt-2">All campaigns created and wired into a promotion pipeline.</p>
+                    <div className="mt-6">
+                      <button onClick={() => { setIsBuilderOpen(false); setBuilderStep(1); }} className="px-6 py-2 bg-gray-900 text-white rounded-lg">Close Dashboard</button>
+                    </div>
+                  </>
+                ) : builderJobStatus.status === "FAILED" ? (
+                  <>
+                    <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+                    <h3 className="text-xl font-bold text-red-600">Job Failed</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 bg-red-50 dark:bg-red-900/20 p-3 rounded-lg border border-red-200 dark:border-red-800">
+                      Error: {builderJobStatus.error_message}
+                    </p>
+                    <div className="mt-6 flex flex-col gap-3">
+                      <button onClick={() => handleResolveJob("RETRY")} className="px-6 py-2 bg-indigo-600 text-white font-bold rounded-lg">Retry Current Step</button>
+                      <button onClick={() => handleResolveJob("ARCHIVE")} className="px-6 py-2 bg-red-100 text-red-700 font-bold rounded-lg">Rollback & Archive Campaigns</button>
+                      <button onClick={() => handleResolveJob("KEEP")} className="px-6 py-2 bg-gray-100 text-gray-700 font-bold rounded-lg">Accept Orphaned State</button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <RotateCcw className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-bold">Job {builderJobStatus.status}</h3>
+                  </>
+                )}
               </div>
             )}
           </div>

@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import json
 from datetime import datetime
 import pytz
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -42,11 +43,19 @@ async def check_and_apply_dayparting():
                 tz = pytz.timezone(profile.timezone or "Asia/Kolkata")
                 local_now = datetime.now(tz)
                 current_hour = local_now.hour  # 0 to 23
+                current_day = local_now.strftime("%A").lower() # e.g., 'monday'
                 
-                # 2. Parse schedule (e.g. "12AM-6AM")
-                # For V1, we hardcode the logic for the "Overnight Paused" schedule (0 to 6 AM)
-                # Future: Parse camp.dayparting_schedule dynamically
-                is_off_hour = 0 <= current_hour < 6 
+                # 2. Parse schedule JSON
+                # Expected format: {"monday": [0,1,2,3], "tuesday": [], ...}
+                try:
+                    schedule_matrix = json.loads(camp.dayparting_schedule)
+                    paused_hours_today = schedule_matrix.get(current_day, [])
+                except (json.JSONDecodeError, TypeError):
+                    # Fallback if the database has the old string format "12AM-6AM" or invalid JSON
+                    logger.warning(f"🕒 [Dayparting Engine] Invalid JSON schedule for campaign {camp.campaign_id}. Falling back to default.")
+                    paused_hours_today = [0, 1, 2, 3, 4, 5] if current_hour < 6 else []
+
+                is_off_hour = current_hour in paused_hours_today
                 
                 target_state = "PAUSED" if is_off_hour else "ENABLED"
                 

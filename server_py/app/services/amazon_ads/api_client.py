@@ -43,7 +43,7 @@ class AmazonAdsRateLimiter:
 rate_limiter = AmazonAdsRateLimiter(rate_tps=8.0)
 
 
-class AmazonAdsApiClient:
+class AmazonAdsAPIClient:
     """
     Principal Architect-grade API Client for Amazon Advertising v3 / v2.
     """
@@ -194,5 +194,47 @@ class AmazonAdsApiClient:
             # If not GZIP compressed, return direct text
             return content.decode("utf-8", errors="ignore")
 
+    def update_portfolio_budget(self, db: Session, oauth_account: AmazonAdOAuthAccount, profile_id: str, portfolio_id: str, new_budget: float) -> Dict[str, Any]:
+        """
+        Updates a portfolio's master budget via the Amazon Ads API.
+        """
+        url = f"{self.api_url}/v2/portfolios"
+        
+        headers = {
+            "Authorization": f"Bearer {oauth_account.access_token}",
+            "Amazon-Advertising-API-ClientId": settings.AMAZON_ADS_CLIENT_ID,
+            "Amazon-Advertising-API-Scope": profile_id,
+            "Content-Type": "application/json"
+        }
+        
+        payload = [
+            {
+                "portfolioId": int(portfolio_id),
+                "budget": {
+                    "amount": new_budget,
+                    "currencyCode": "USD",
+                    "policy": "dateRange"
+                }
+            }
+        ]
 
-amazon_ads_client = AmazonAdsApiClient()
+        try:
+            # Execute real production request
+            response = self.session.put(url, headers=headers, json=payload, timeout=10)
+            response.raise_for_status()
+            
+            result = response.json()
+            if isinstance(result, list) and len(result) > 0:
+                if result[0].get("code") == "SUCCESS":
+                    return result[0]
+                else:
+                    logger.error(f"Amazon API returned failure for portfolio {portfolio_id}: {result[0]}")
+                    raise Exception(f"Amazon API Error: {result[0].get('description')}")
+            
+            return {"status": "unknown_response", "data": result}
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"HTTP Error updating portfolio budget: {str(e)}")
+            raise Exception(f"Failed to communicate with Amazon Ads API: {str(e)}")
+
+amazon_ads_client = AmazonAdsAPIClient()

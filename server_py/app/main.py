@@ -38,17 +38,30 @@ async def lifespan(app: FastAPI):
     run_startup_setup()
     
     # ── Start Background Workers
+    worker_tasks = []
     try:
         from app.services.amazon_ads.dayparting_scheduler import start_dayparting_engine, stop_dayparting_engine
         start_dayparting_engine()
+        
+        from app.services.amazon_ads.ingestion_scheduler import start_ingestion_scheduler, stop_ingestion_scheduler
+        start_ingestion_scheduler()
+        
+        # Start Campaign Builder Worker
+        from app.services.amazon_ads.campaign_builder_worker import campaign_builder_worker_loop
+        import asyncio
+        builder_task = asyncio.create_task(campaign_builder_worker_loop())
+        worker_tasks.append(builder_task)
     except Exception as e:
-        logger.error(f"Failed to start Dayparting Engine: {e}")
+        logger.error(f"Failed to start Background Workers: {e}")
         
     yield
     
     # ── Stop Background Workers
     try:
         stop_dayparting_engine()
+        stop_ingestion_scheduler()
+        for task in worker_tasks:
+            task.cancel()
     except Exception as e:
         pass
 
