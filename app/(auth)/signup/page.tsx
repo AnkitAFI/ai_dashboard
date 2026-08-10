@@ -473,15 +473,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { LOCATIONS } from "@/lib/locations";
 import { CheckCircle2, Moon, Sun, Eye, EyeOff } from "lucide-react";
 import { useTheme } from "next-themes";
 import { sanitizeApiError } from "@/lib/sanitize-error";
@@ -493,27 +485,8 @@ interface SignupFormData {
   lastName: string;
   email: string;
   password: string;
-  businessName: string;
-  location: string;
-  businessInterests: string[];
   mobileNumber: string;
 }
-
-const BUSINESS_INTERESTS = [
-  { id: "electronics", label: "Electronics & Technology" },
-  { id: "fashion", label: "Fashion & Apparel" },
-  { id: "home", label: "Home & Kitchen" },
-  { id: "beauty", label: "Beauty & Personal Care" },
-  { id: "sports", label: "Sports & Fitness" },
-  { id: "books", label: "Books & Media" },
-  { id: "automotive", label: "Automotive" },
-  { id: "health", label: "Health & Wellness" },
-  { id: "toys", label: "Toys & Games" },
-  { id: "grocery", label: "Grocery & Food" },
-  { id: "office", label: "Office Supplies" },
-  { id: "pet", label: "Pet Supplies" },
-];
-
 
 const evaluatePasswordStrength = (password: string) => {
   if (!password) return { score: 0, label: "", color: "bg-transparent", text: "text-transparent" };
@@ -568,9 +541,6 @@ export default function Signup() {
     lastName: "",
     email: "",
     password: "",
-    businessName: "",
-    location: "",
-    businessInterests: [],
     mobileNumber: "",
   });
   const [agreedToTerms, setAgreedToTerms] = useState(false);
@@ -607,19 +577,6 @@ export default function Signup() {
       setFormData((prev) => ({ ...prev, [field]: e.target.value }));
     };
 
-  const handleLocationChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, location: value }));
-  };
-
-  const handleInterestToggle = (interestId: string) => {
-    setFormData((prev) => {
-      const interests = prev.businessInterests.includes(interestId)
-        ? prev.businessInterests.filter((id) => id !== interestId)
-        : [...prev.businessInterests, interestId];
-      return { ...prev, businessInterests: interests };
-    });
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -640,22 +597,6 @@ export default function Signup() {
       toast({
         title: "Missing fields",
         description: "Fill all required fields.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (!formData.location) {
-      toast({
-        title: "Location required",
-        description: "Select your location.",
-        variant: "destructive",
-      });
-      return;
-    }
-    if (formData.businessInterests.length === 0) {
-      toast({
-        title: "Select interests",
-        description: "Select at least one.",
         variant: "destructive",
       });
       return;
@@ -715,9 +656,9 @@ export default function Signup() {
           last_name: formData.lastName,
           email: formData.email,
           password: formData.password,
-          business_name: formData.businessName || null,
-          location: formData.location,
-          business_interests: formData.businessInterests,
+          business_name: null,
+          location: null,
+          business_interests: [],
           mobile_number: cleanedMobile,
         }),
       });
@@ -1059,95 +1000,6 @@ export default function Signup() {
                       )}
                     </div>
                   </div>
-                </div>
-
-                {/* Business Name */}
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
-                    Business Name{" "}
-                    <span className="text-gray-400 dark:text-slate-500">
-                      (Optional)
-                    </span>
-                  </Label>
-                  <Input
-                    placeholder="Your Business"
-                    value={formData.businessName}
-                    onChange={handleInputChange("businessName")}
-                    disabled={isLoading}
-                    className="h-11 text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 focus-visible:ring-blue-500/20 focus-visible:border-blue-500 rounded-xl"
-                  />
-                </div>
-
-                {/* Location */}
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
-                    Location *
-                  </Label>
-                  <Select
-                    value={formData.location}
-                    onValueChange={handleLocationChange}
-                    disabled={isLoading}
-                  >
-                    <SelectTrigger className="h-11 text-sm bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white focus:ring-blue-500/20 focus:border-blue-500 rounded-xl data-[placeholder]:text-gray-400 dark:data-[placeholder]:text-slate-500">
-                      <SelectValue placeholder="Select state or city" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-900 dark:text-white max-h-64">
-                      {LOCATIONS.map((loc) => (
-                        <SelectItem
-                          key={loc.value}
-                          value={loc.value}
-                          className="text-gray-700 dark:text-slate-300 focus:bg-blue-50 dark:focus:bg-slate-800 focus:text-gray-900 dark:focus:text-white"
-                        >
-                          {loc.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                {/* Business Interests */}
-                <div className="space-y-2">
-                  <div>
-                    <Label className="text-xs font-semibold text-gray-700 dark:text-slate-300">
-                      Business Interests *
-                    </Label>
-                    <p className="text-[11px] text-gray-400 dark:text-slate-500 mt-0.5">
-                      Select at least one category
-                    </p>
-                  </div>
-                  <div className="rounded-xl p-3 max-h-[180px] overflow-y-auto bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-slate-800">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      {BUSINESS_INTERESTS.map((interest) => (
-                        <div
-                          key={interest.id}
-                          className="flex items-center gap-2"
-                        >
-                          <Checkbox
-                            id={interest.id}
-                            checked={formData.businessInterests.includes(
-                              interest.id,
-                            )}
-                            onCheckedChange={() =>
-                              handleInterestToggle(interest.id)
-                            }
-                            disabled={isLoading}
-                            className="border-gray-300 dark:border-slate-700 data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600"
-                          />
-                          <Label
-                            htmlFor={interest.id}
-                            className="text-xs text-gray-600 dark:text-slate-400 font-normal cursor-pointer"
-                          >
-                            {interest.label}
-                          </Label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  {formData.businessInterests.length > 0 && (
-                    <p className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                      ✓ {formData.businessInterests.length} selected
-                    </p>
-                  )}
                 </div>
 
                 {/* Terms */}

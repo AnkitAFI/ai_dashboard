@@ -7268,6 +7268,47 @@ def get_me(
         "welcome_card_dismissed": getattr(current_user, "welcome_card_dismissed", False)
     }
 
+class ProfileUpdateRequest(BaseModel):
+    business_name: Optional[str] = None
+    location: str
+    business_interests: List[str]
+
+@router.put("/users/profile")
+@router.put("/api/users/profile")
+def update_user_profile(
+    req: ProfileUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: models.User = Depends(get_current_user)
+):
+    if not req.location or not req.location.strip():
+        raise HTTPException(status_code=400, detail="Location is required.")
+    if not req.business_interests or len(req.business_interests) == 0:
+        raise HTTPException(status_code=400, detail="Select at least one business interest.")
+    
+    current_user.business_name = req.business_name
+    current_user.location = req.location.strip()
+    current_user.business_interests = [i.strip().lower() for i in req.business_interests if i.strip()]
+    
+    db.commit()
+    db.refresh(current_user)
+    
+    return {
+        "success": True,
+        "message": "Profile updated successfully.",
+        "user": {
+            "id": current_user.id,
+            "first_name": current_user.first_name,
+            "last_name": current_user.last_name,
+            "email": current_user.email,
+            "business_name": current_user.business_name,
+            "location": current_user.location,
+            "business_interests": current_user.business_interests,
+            "mobile_number": getattr(current_user, "mobile_number", None),
+            "subscription_tier": current_user.subscription_tier or 'free',
+            "created_at": str(current_user.created_at)
+        }
+    }
+
 @router.post("/api/auth/tour-completion")
 def update_tour_completion(
     request: dict,

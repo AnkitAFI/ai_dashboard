@@ -87,6 +87,9 @@ SELECT
     us.ai_listings_month,
     us.ai_credits_balance,
     ua.is_verified,
+    ua.mfa_enabled,
+    ua.mfa_secret,
+    ua.mfa_backup_codes,
     uas.onboarding_completed,
     ubi.onboarding_goal,
     ubi.onboarding_marketplace,
@@ -118,12 +121,15 @@ DECLARE
     new_user_id   INTEGER;
     new_created_at TIMESTAMPTZ;
 BEGIN
-    INSERT INTO users_auth (email_hash, password_hash, is_active, is_verified, role)
+    INSERT INTO users_auth (email_hash, password_hash, is_active, is_verified, mfa_enabled, mfa_secret, mfa_backup_codes, role)
     VALUES (
         NEW.email_hash,
         NEW.password_hash,
         COALESCE(NEW.is_active,   TRUE),
         COALESCE(NEW.is_verified, FALSE),
+        COALESCE(NEW.mfa_enabled, FALSE),
+        NEW.mfa_secret,
+        NEW.mfa_backup_codes,
         COALESCE(NEW.role,        'user')
     )
     RETURNING id, created_at INTO new_user_id, new_created_at;
@@ -216,6 +222,9 @@ BEGIN
         password_hash       = NEW.password_hash,
         is_active           = NEW.is_active,
         is_verified         = NEW.is_verified,
+        mfa_enabled         = NEW.mfa_enabled,
+        mfa_secret          = NEW.mfa_secret,
+        mfa_backup_codes    = NEW.mfa_backup_codes,
         role                = NEW.role,
         updated_at          = NOW()
     WHERE id = OLD.id;
@@ -304,6 +313,13 @@ ALTER TABLE users_auth
 ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ DEFAULT NULL;
 """
 
+_ADD_MFA_COLUMNS_SQL = """
+ALTER TABLE users_auth
+ADD COLUMN IF NOT EXISTS mfa_enabled BOOLEAN DEFAULT FALSE,
+ADD COLUMN IF NOT EXISTS mfa_secret TEXT,
+ADD COLUMN IF NOT EXISTS mfa_backup_codes TEXT[];
+"""
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Public entry point — called from main.py on startup
@@ -327,6 +343,7 @@ def run_startup_setup():
 
     # 2. Create view and triggers — each step is independent
     steps = [
+        ("ALTER TABLE: MFA columns", _ADD_MFA_COLUMNS_SQL),
         ("ALTER TABLE: deleted_at",  _ADD_DELETED_AT_SQL),
         ("users VIEW",               _USERS_VIEW_SQL),
         ("INSERT trigger fn",        _INSERT_TRIGGER_FN_SQL),
@@ -350,3 +367,4 @@ def run_startup_setup():
     logger.info("=" * 60)
     logger.info("✅ Database startup setup complete.")
     logger.info("=" * 60)
+

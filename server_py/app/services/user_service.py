@@ -36,6 +36,11 @@ class UserService:
             
         return new_user
 
+    def update_profile(self, db: Session, user_id: int, profile_data: dict):
+        if "business_interests" in profile_data and isinstance(profile_data["business_interests"], list):
+            profile_data["business_interests"] = self.format_business_interests(profile_data["business_interests"])
+        return user_repo.update_profile(db, user_id, profile_data)
+
     def update_onboarding(self, db: Session, user_id: int, onboarding_data: dict, background_tasks=None):
         user = user_repo.update_onboarding(db, user_id, onboarding_data)
         
