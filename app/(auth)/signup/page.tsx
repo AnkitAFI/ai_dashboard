@@ -731,9 +731,9 @@ export default function Signup() {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-[#2b52cd] dark:bg-slate-950 transition-colors duration-300 overflow-hidden">
+    <div className="min-h-[100dvh] relative flex flex-col bg-[#2b52cd] dark:bg-slate-950 transition-colors duration-300 overflow-y-auto">
       {/* ── Theme Toggle ── */}
-      <div className="absolute top-6 right-8 z-50">
+      <div className="absolute top-4 right-6 sm:top-6 sm:right-8 z-50">
         <button
           onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
           className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 dark:bg-slate-800/50 dark:hover:bg-slate-800 transition-colors shadow-sm cursor-pointer"
@@ -748,40 +748,40 @@ export default function Signup() {
         </button>
       </div>
 
-      <div className="flex-1 flex w-full max-w-[1400px] mx-auto justify-between gap-8 overflow-hidden min-h-0">
+      <div className="flex-1 flex flex-col lg:flex-row w-full max-w-[1400px] mx-auto justify-between items-center gap-8 lg:gap-12 px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 pb-20 sm:pb-24 lg:py-12">
         {/* ── Left Panel ── */}
-        <div className="hidden lg:flex flex-col flex-1 relative h-full min-h-0 items-center justify-center">
+        <div className="hidden lg:flex flex-col flex-1 relative items-center justify-center">
           {/* Main Content */}
-          <div className="flex flex-col px-12 lg:px-20 max-w-3xl w-full">
+          <div className="flex flex-col px-4 lg:px-12 xl:px-16 max-w-3xl w-full">
             {/* Logo */}
             <Link
               href="/"
-              className="flex items-center gap-3 w-fit mb-8 lg:mb-10 group"
+              className="flex items-center gap-3 w-fit mb-6 lg:mb-8 group"
             >
               <img
                 src="/logo.png"
                 alt="Insydz Logo"
-                className="w-12 h-12 object-contain transition-transform group-hover:scale-110"
+                className="w-10 h-10 lg:w-12 lg:h-12 object-contain transition-transform group-hover:scale-110"
               />
-              <span className="text-3xl font-bold text-white tracking-tight">
+              <span className="text-2xl lg:text-3xl font-bold text-white tracking-tight">
                 Insydz
               </span>
             </Link>
 
             {/* Heading */}
-            <h1 className="text-[44px] lg:text-[52px] font-extrabold text-white leading-[1.1] mb-6 tracking-tight">
+            <h1 className="text-3xl sm:text-4xl lg:text-[46px] xl:text-[52px] font-extrabold text-white leading-[1.1] mb-6 tracking-tight">
               Your AI analytics journey starts here
             </h1>
 
             {/* Subtext */}
-            <p className="text-white/80 dark:text-slate-300 text-lg leading-relaxed mb-12 max-w-2xl">
+            <p className="text-white/80 dark:text-slate-300 text-base lg:text-lg leading-relaxed mb-8 lg:mb-10 max-w-2xl">
               Join thousands of sellers unlocking the power of review
               intelligence, AI market gap analysis, and real-time pricing
               insights.
             </p>
 
             {/* Features Grid */}
-            <div className="grid grid-cols-2 gap-x-8 gap-y-5 mb-12">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-4 mb-8 lg:mb-10">
               {[
                 "Real-time dashboards",
                 "AI-generated insights",
@@ -799,18 +799,13 @@ export default function Signup() {
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex flex-wrap items-center gap-4 mb-8">
               <ExpertButton
                 label="Talk to our experts"
                 email="support@insydz.com"
                 subject="Support Request – Insydz"
                 body="Hi Insydz team,%0A%0AI have a question about..."
               />
-              {/* <ExpertButton
-                          label="Talk to our experts"
-                          href="/contact"
-                          newTab={false}
-                        /> */}
               <VideoButton
                 label="Watch video guide"
                 href="https://www.youtube.com/watch?v=zZSPU5niazQ"
@@ -821,19 +816,19 @@ export default function Signup() {
             <div className="w-full h-px bg-white/20 dark:bg-white/10 mb-8" />
 
             {/* Stats */}
-            <div className="flex items-center gap-10">
+            <div className="flex flex-wrap items-center gap-6 lg:gap-10">
               <div>
-                <div className="text-3xl font-extrabold text-white mb-1">2,400+</div>
+                <div className="text-2xl lg:text-3xl font-extrabold text-white mb-1">2,400+</div>
                 <div className="text-white/70 dark:text-slate-400 text-xs">Active sellers</div>
               </div>
               <div className="w-px h-10 bg-white/20 dark:bg-white/10" />
               <div>
-                <div className="text-3xl font-extrabold text-white mb-1">₹47Cr+</div>
+                <div className="text-2xl lg:text-3xl font-extrabold text-white mb-1">₹47Cr+</div>
                 <div className="text-white/70 dark:text-slate-400 text-xs">Opportunities found</div>
               </div>
               <div className="w-px h-10 bg-white/20 dark:bg-white/10" />
               <div>
-                <div className="text-3xl font-extrabold text-white mb-1">50+</div>
+                <div className="text-2xl lg:text-3xl font-extrabold text-white mb-1">50+</div>
                 <div className="text-white/70 dark:text-slate-400 text-xs">Intelligence tools</div>
               </div>
             </div>
@@ -841,7 +836,7 @@ export default function Signup() {
         </div>
 
         {/* ── Right Panel: Scrollable Form ── */}
-        <div className="w-full lg:w-[520px] h-full min-h-0 overflow-y-auto overscroll-contain flex justify-center p-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="w-full lg:w-[480px] xl:w-[520px] flex flex-col justify-center items-center">
           <div className="w-full max-w-[480px]">
             {/* Mobile logo */}
             <div className="flex lg:hidden flex-col items-center mb-8">
@@ -1070,8 +1065,8 @@ export default function Signup() {
               </div>
             </div>
 
-            {/* Spacer to ensure space at the bottom of the scroll container */}
-            <div className="h-8 w-full shrink-0" />
+            {/* Spacer to ensure plenty of scroll room at bottom of mobile viewports */}
+            <div className="h-16 lg:h-8 w-full shrink-0" />
           </div>
         </div>
       </div>
