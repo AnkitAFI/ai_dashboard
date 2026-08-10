@@ -47,14 +47,31 @@ const INTERNAL_ERROR_PATTERNS = [
  * @param fallback - A safe, generic message to show the user instead
  */
 export function sanitizeApiError(
-  detail: string | undefined | null,
+  detail: any,
   fallback: string
 ): string {
   if (!detail) return fallback;
 
+  let messageStr = "";
+
+  if (typeof detail === "string") {
+    messageStr = detail;
+  } else if (Array.isArray(detail)) {
+    messageStr = detail
+      .map((item) => (typeof item === "string" ? item : item?.msg || JSON.stringify(item)))
+      .filter(Boolean)
+      .join("; ");
+  } else if (typeof detail === "object") {
+    messageStr = detail.msg || detail.message || JSON.stringify(detail);
+  } else {
+    messageStr = String(detail);
+  }
+
+  if (!messageStr) return fallback;
+
   const isInternalError = INTERNAL_ERROR_PATTERNS.some((pattern) =>
-    detail.includes(pattern)
+    messageStr.includes(pattern)
   );
 
-  return isInternalError ? fallback : detail;
+  return isInternalError ? fallback : messageStr;
 }

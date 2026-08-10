@@ -19,6 +19,7 @@ class UserRepository:
             business_name=user_in.business_name,
             location=user_in.location,
             business_interests=business_interests,
+            mobile_number=user_in.mobile_number,
             is_active=True
         )
         db.add(db_user)
@@ -57,6 +58,19 @@ class UserRepository:
         db.commit()
         
         return db_user
+
+    def update_profile(self, db: Session, user_id: int, profile_data: dict):
+        user = db.query(User).filter(User.id == user_id).first()
+        if user:
+            if "business_name" in profile_data:
+                user.business_name = profile_data["business_name"]
+            if "location" in profile_data and profile_data["location"]:
+                user.location = profile_data["location"]
+            if "business_interests" in profile_data and profile_data["business_interests"]:
+                user.business_interests = profile_data["business_interests"]
+            db.commit()
+            db.refresh(user)
+        return user
 
     def update_onboarding(self, db: Session, user_id: int, onboarding_data: dict):
         user = db.query(User).filter(User.id == user_id).first()

@@ -14,11 +14,13 @@ import AlertDetailsDialog from "@/components/dashboard/alert-details-dialog";
 import { usePathname, useRouter } from "next/navigation";
 import { Menu } from "lucide-react";
 import SaaSTourGuide from "@/components/layout/saas-tour-guide";
+import CompleteProfileModal from "@/components/modals/complete-profile-modal";
 import { useAuth } from "@/lib/auth-context";
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { isOpen, setIsOpen, toggle } = useSidebar();
   const [showFilters, setShowFilters] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const pathname = usePathname();
   const { user, isLoading } = useAuth();
   const router = useRouter();
@@ -28,6 +30,12 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       router.replace("/login");
     }
   }, [user, isLoading, router]);
+
+  useEffect(() => {
+    if (user && (!user.location || !user.businessInterests || user.businessInterests.length === 0)) {
+      setShowProfileModal(true);
+    }
+  }, [user]);
 
   useEffect(() => {
     setIsOpen(false);
@@ -111,6 +119,10 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       </div>
       <AlertDetailsDialog />
       <SaaSTourGuide />
+      <CompleteProfileModal
+        isOpen={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+      />
     </div>
   );
 }

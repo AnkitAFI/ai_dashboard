@@ -147,8 +147,8 @@ class UserCreate(BaseModel):
     email: EmailStr = Field(..., example="john.doe@example.com")
     password: str = Field(..., min_length=6, example="password123")
     business_name: Optional[str] = Field(None, example="My Business")
-    location: str = Field(..., example="mumbai")
-    business_interests: List[str] = Field(..., example=["electronics", "books"])
+    location: Optional[str] = Field(None, example="mumbai")
+    business_interests: Optional[List[str]] = Field(default=[], example=["electronics", "books"])
     mobile_number: str 
 
 # -----------------------------
@@ -268,6 +268,6 @@ class UserCreate(BaseModel):
     email: EmailStr = Field(..., example="john.doe@example.com")
     password: str = Field(..., min_length=6, example="password123")
     business_name: Optional[str] = Field(None, example="My Business")
-    location: str = Field(..., example="mumbai")
-    business_interests: List[str] = Field(..., example=["electronics", "books"])
+    location: Optional[str] = Field(None, example="mumbai")
+    business_interests: Optional[List[str]] = Field(default=[], example=["electronics", "books"])
     mobile_number: str 

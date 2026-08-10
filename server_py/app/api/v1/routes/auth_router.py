@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from datetime import timedelta
 
 from app.db.session import get_db
-from app.schemas.user_schema import UserCreate, UserOut, OnboardingUpdate
+from app.schemas.user_schema import UserCreate, UserOut, OnboardingUpdate, UserProfileUpdate
 from app.services.user_service import UserService
 from app.core.security import create_access_token
 from app.api.deps import get_current_user, get_admin_user, log_admin_action
@@ -320,6 +320,23 @@ def update_onboarding(
         onboarding.model_dump(),
         background_tasks
     )
+
+@router.put("/users/profile", response_model=UserOut)
+@router.put("/api/users/profile", response_model=UserOut)
+def update_profile(
+    profile: UserProfileUpdate,
+    db: Session = Depends(get_db),
+    current_user = Depends(get_current_user)
+):
+    """
+    Update profile details (Business Name, Location, Business Interests) for the authenticated user.
+    """
+    if not profile.location or not profile.location.strip():
+        raise HTTPException(status_code=400, detail="Location is required.")
+    if not profile.business_interests or len(profile.business_interests) == 0:
+        raise HTTPException(status_code=400, detail="Select at least one business interest.")
+        
+    return user_service.update_profile(db, current_user.id, profile.model_dump())
 
 @router.get('/admin/test-access')
 def admin_only_access(
