@@ -2,6 +2,7 @@
 
 import { API_BASE_URL } from "@/lib/config";
 import { useState, useEffect, useMemo, Suspense } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
@@ -19,6 +20,7 @@ import {
   Badge as BadgeIcon,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { InfoTip } from "@/components/ui/info-tip";
 
 const BASE_URL = API_BASE_URL;
 
@@ -106,7 +108,7 @@ function ThreatRing({ score, size = "md", isDark }: { score: number; size?: "sm"
 }
 
 // ── Buy Box Risk Badge ────────────────────────────────────────────────────────
-function BuyBoxBadge({ level, isDark }: { level: "Safe" | "Watch" | "At Risk"; isDark: boolean }) {
+function BuyBoxBadge({ level, isDark, isPrivateLabel }: { level: "Safe" | "Watch" | "At Risk"; isDark: boolean; isPrivateLabel?: boolean }) {
   const styles = {
     "Safe":    { cls: isDark ? "bg-emerald-900/30 text-emerald-400 border-emerald-800/50" : "bg-emerald-50 text-emerald-700 border-emerald-200", icon: Shield },
     "Watch":   { cls: isDark ? "bg-amber-900/30 text-amber-400 border-amber-800/50" : "bg-amber-50 text-amber-700 border-amber-200",       icon: ShieldAlert },
@@ -114,9 +116,10 @@ function BuyBoxBadge({ level, isDark }: { level: "Safe" | "Watch" | "At Risk"; i
   };
   const s = styles[level] || styles["Safe"];
   const Icon = s.icon;
+  const displayText = isPrivateLabel ? "Sole Seller / Safe" : level;
   return (
     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs font-bold ${s.cls}`}>
-      <Icon className="w-3.5 h-3.5" /> {level}
+      <Icon className="w-3.5 h-3.5" /> {displayText}
     </span>
   );
 }
@@ -256,6 +259,8 @@ function CompetitorCard({
 function BuyBoxPanel({ data, isBasic, currency, isDark }: { data: any; isBasic: boolean; currency: string; isDark: boolean }) {
   const sym = currency === "INR" ? "₹" : "$";
   const riskLevel = data.buy_box_risk_level as "Safe" | "Watch" | "At Risk";
+  const numOffers = data.num_offers ?? 1;
+  const isPrivateLabel = numOffers === 1 && riskLevel === "Safe";
 
   return (
     <div className={`rounded-2xl border shadow-sm p-5 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
@@ -270,13 +275,13 @@ function BuyBoxPanel({ data, isBasic, currency, isDark }: { data: any; isBasic: 
       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
         <div className="flex flex-col gap-1">
           <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Buy Box Status</p>
-          <BuyBoxBadge level={riskLevel} isDark={isDark} />
+          <BuyBoxBadge level={riskLevel} isDark={isDark} isPrivateLabel={isPrivateLabel} />
         </div>
         <div className="flex flex-col gap-1">
           <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Offers on Listing</p>
           <span className={`text-lg font-black ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-            {data.num_offers ?? "—"}
-            {data.num_offers > 1 && (
+            {numOffers}
+            {numOffers > 1 && (
               <span className={`text-xs font-normal ml-1 ${isDark ? 'text-red-400' : 'text-red-500'}`}>⚠ Shared listing</span>
             )}
           </span>
@@ -320,7 +325,7 @@ function BuyBoxPanel({ data, isBasic, currency, isDark }: { data: any; isBasic: 
       <div className={`mt-4 pt-4 border-t ${isDark ? 'border-slate-800' : 'border-slate-50'}`}>
         <div className="flex items-center justify-between mb-1.5">
           <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Risk Level</span>
-          <BuyBoxBadge level={riskLevel} isDark={isDark} />
+          <BuyBoxBadge level={riskLevel} isDark={isDark} isPrivateLabel={isPrivateLabel} />
         </div>
         <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
           <div className="h-full rounded-full transition-all duration-700" style={{
@@ -331,7 +336,8 @@ function BuyBoxPanel({ data, isBasic, currency, isDark }: { data: any; isBasic: 
         <p className={`text-[10px] mt-1.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
           {riskLevel === "At Risk" && "Someone is actively undercutting you on your own listing."}
           {riskLevel === "Watch" && "Multiple sellers on your listing — monitor pricing closely."}
-          {riskLevel === "Safe" && "You hold the Buy Box. No undercutting detected."}
+          {riskLevel === "Safe" && isPrivateLabel && "You are the only seller on this listing. As a private label brand, your Buy Box is secure."}
+          {riskLevel === "Safe" && !isPrivateLabel && "You hold the Buy Box. No undercutting detected."}
         </p>
       </div>
     </div>
@@ -374,7 +380,10 @@ function MarketGapRow({ gap, currency, isDark }: { gap: any; currency: string; i
     <div className={`flex items-center gap-3 px-3 py-2.5 border rounded-xl ${isDark ? 'bg-emerald-900/10 border-emerald-900/30' : 'bg-emerald-50 border-emerald-100'}`}>
       <div className="flex-1 min-w-0">
         <p className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{sym}{gap.price_lo}–{sym}{gap.price_hi} band</p>
-        <p className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>{gap.demand_label} demand · {gap.competitor_count} rival{gap.competitor_count !== 1 ? "s" : ""}</p>
+        <p className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
+          {gap.demand_label === "Unknown" ? "" : `${gap.demand_label} demand · `}
+          {gap.competitor_count} rival{gap.competitor_count !== 1 ? "s" : ""}
+        </p>
       </div>
       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${isDark ? 'text-emerald-400 bg-emerald-900/30 border-emerald-800/50' : 'text-emerald-700 bg-emerald-100 border-emerald-200'}`}>
         Launch opportunity
@@ -397,7 +406,8 @@ function CompetitorAnalysisContent() {
   const asin     = searchParams.get("asin")      || selected?.asin     || "";
   const sellerId = searchParams.get("seller_id") || selected?.sellerId || user?.seller_id || "";
 
-  const [data, setData]           = useState<any>(null);
+  const [data, setData]           = useSessionState<any>("seller_comp_analysis_data", null);
+  const [lastFetchedAsin, setLastFetchedAsin] = useSessionState<string>("seller_comp_analysis_asin", "");
   const [loading, setLoading]     = useState(false);
   const [pinned, setPinned]       = useState<Set<string>>(new Set());
   const [pinLoading, setPinLoading] = useState<Set<string>>(new Set());
@@ -415,15 +425,22 @@ function CompetitorAnalysisContent() {
   // ── Fetch competitor data ─────────────────────────────────────────────────
   useEffect(() => {
     if (!asin || !sellerId) return;
+    if (data && lastFetchedAsin === asin) return; // Already have data for this ASIN
+
     setLoading(true);
     const params = new URLSearchParams({ asin, seller_id: sellerId });
     if (user?.email) params.append("user_email", user.email);
     fetch(`${BASE_URL}/api/comparison/competitors?${params}`, { credentials: "include" })
       .then((r) => r.ok ? r.json() : null)
-      .then((d) => d && setData(d))
+      .then((d) => {
+        if (d) {
+          setData(d);
+          setLastFetchedAsin(asin);
+        }
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [asin, sellerId, user?.email]);
+  }, [asin, sellerId, user?.email, data, lastFetchedAsin]);
 
   // ── Load persisted pins from Postgres on mount ────────────────────────────
   useEffect(() => {
@@ -636,28 +653,38 @@ function CompetitorAnalysisContent() {
                   value: data.current_price ? `${sym}${data.current_price.toFixed(2)}` : "—",
                   sub: data.price_position || "vs market",
                   color: isDark ? "text-slate-200" : "text-slate-800",
+                  tip: "Your current selling price on Amazon as seen by buyers right now.",
                 },
                 {
                   label: "Top Threat Score",
                   value: topThreat ? `${topThreat.threat_score}/10` : "—",
                   sub: topThreat?.title ? topThreat.title.slice(0, 22) + "…" : "No threats detected",
                   color: topThreat?.threat_score >= 7 ? (isDark ? "text-red-400" : "text-red-500") : (isDark ? "text-amber-400" : "text-amber-500"),
+                  tip: "A score from 1–10 showing how dangerous your biggest competitor is. Score 7+ means they are undercutting your price, have more reviews, AND a Prime badge.",
                 },
                 {
                   label: "Buy Box Risk",
                   value: buyBox.buy_box_risk_level || "—",
                   sub: buyBox.num_offers > 1 ? `${buyBox.num_offers} sellers on listing` : "You own the Buy Box",
                   color: buyBox.buy_box_risk_level === "At Risk" ? (isDark ? "text-red-400" : "text-red-500") : buyBox.buy_box_risk_level === "Watch" ? (isDark ? "text-amber-400" : "text-amber-500") : (isDark ? "text-emerald-400" : "text-emerald-600"),
+                  tip: buyBox.buy_box_risk_level === "At Risk" 
+                    ? "At Risk: Another seller on your exact ASIN is offering a better price and stealing your 'Add to Cart' sales."
+                    : buyBox.buy_box_risk_level === "Watch"
+                    ? "Watch: Another seller has joined your exact ASIN. Keep your price low so they don't steal your 'Add to Cart' button."
+                    : "Safe: You are the only seller on this exact ASIN, so nobody can steal your 'Add to Cart' button (even if other brands are cheaper).",
                 },
                 {
                   label: "Rivals Tracked",
                   value: String(competitors.length || "—"),
                   sub: isPremium ? `${pinned.size} saved to audit` : "Upgrade to pin rivals",
                   color: isDark ? "text-sky-400" : "text-sky-600",
+                  tip: "The total number of similar competing products our system has detected in your category for this product.",
                 },
-              ].map((s) => (
+              ].map((s: any) => (
                 <div key={s.label} className={`rounded-2xl p-4 border shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
-                  <p className={`text-xs font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{s.label}</p>
+                  <div className={`text-xs font-medium mb-1 flex items-center ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
+                    {s.label}<InfoTip text={s.tip} isDark={isDark} />
+                  </div>
                   <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
                   <p className={`text-xs mt-0.5 truncate ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{s.sub}</p>
                 </div>

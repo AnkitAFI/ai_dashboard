@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, Suspense, useRef, useCallback } from "react";
+import { useState, useEffect, Suspense, useRef, useCallback, useMemo } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { API_BASE_URL } from "@/lib/config";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
@@ -17,6 +18,7 @@ import {
   ShieldCheck, Eye, Flame, Trophy,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { InfoTip } from "@/components/ui/info-tip";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import {
@@ -414,13 +416,15 @@ function KeywordRow({
           {/* Stats row */}
           <div className="grid grid-cols-3 gap-3">
             {[
-              { label: "Best Rank", value: kw.best_rank ? `#${kw.best_rank}` : "—", color: "text-emerald-600 dark:text-emerald-400" },
-              { label: "Worst Rank", value: kw.worst_rank ? `#${kw.worst_rank}` : "—", color: "text-red-500 dark:text-red-400" },
-              { label: "Volatility", value: kw.volatility_score != null ? `${kw.volatility_score}/10` : "—", color: "text-amber-600 dark:text-amber-400" },
-            ].map((s) => (
+              { label: "Best Rank", value: kw.best_rank ? `#${kw.best_rank}` : "—", color: "text-emerald-600 dark:text-emerald-400", tip: "The highest (best) position this keyword ever reached in Amazon search results. Lower number = better rank." },
+              { label: "Worst Rank", value: kw.worst_rank ? `#${kw.worst_rank}` : "—", color: "text-red-500 dark:text-red-400", tip: "The lowest position this keyword dropped to. A high number means the keyword was hard to find in search at that time." },
+              { label: "Volatility", value: kw.volatility_score != null ? `${kw.volatility_score}/10` : "—", color: "text-amber-600 dark:text-amber-400", tip: "How much this keyword's rank jumps up and down. Score 1-3 = stable. Score 7-10 = very unpredictable, check more often." },
+            ].map((s: any) => (
               <div key={s.label} className="bg-slate-50 dark:bg-slate-950/40 rounded-xl p-3 text-center border border-slate-100 dark:border-slate-800">
                 <p className={`text-lg font-black ${s.color}`}>{s.value}</p>
-                <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{s.label}</p>
+                <div className="flex items-center justify-center gap-0.5 text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">
+                  {s.label}<InfoTip text={s.tip} />
+                </div>
               </div>
             ))}
           </div>
@@ -666,12 +670,13 @@ function RankTrackerContent() {
   const userId = user?.id?.toString() || "";
   const userEmail = user?.email || "";
 
-  const [profile, setProfile] = useState<RankProfile | null>(null);
+  const [profile, setProfile] = useSessionState<RankProfile | null>("seller_rank_tracker_profile", null);
+  const [lastFetchedAsin, setLastFetchedAsin] = useSessionState<string>("seller_rank_tracker_asin", "");
   const [loading, setLoading] = useState(false);
   const [adding, setAdding] = useState(false);
   const [removing, setRemoving] = useState<string | null>(null);
-  const [expandedKw, setExpandedKw] = useState<string | null>(null);
-  const [filterStatus, setFilterStatus] = useState<"all" | "top10" | "up" | "down" | "lost">("all");
+  const [expandedKw, setExpandedKw] = useSessionState<string | null>("seller_rank_tracker_expandedKw", null);
+  const [filterStatus, setFilterStatus] = useSessionState<"all" | "top10" | "up" | "down" | "lost">("seller_rank_tracker_filter", "all");
   const [refreshing, setRefreshing] = useState(false);
 
   const aiStream = useStream();
@@ -686,13 +691,20 @@ function RankTrackerContent() {
   // Load profile
   useEffect(() => {
     if (!asin || !sellerId) return;
+    if (profile && lastFetchedAsin === asin) return; // Already have data for this ASIN
+
     setLoading(true);
     fetch(`${API}/profile?${qs()}`, { credentials: "include" })
       .then((r) => r.ok ? r.json() : null)
-      .then((d) => d && setProfile(d))
+      .then((d) => {
+        if (d) {
+          setProfile(d);
+          setLastFetchedAsin(asin);
+        }
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [asin, sellerId]);
+  }, [asin, sellerId, profile, lastFetchedAsin]);
 
   const handleAddKeyword = async (keyword: string) => {
     if (!profile) return;
@@ -869,13 +881,15 @@ function RankTrackerContent() {
             {/* Stat cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { label: "Tracked Keywords", value: String(profile.total_tracked), sub: `of ${profile.keyword_limit} limit`, color: "text-slate-800 dark:text-slate-100" },
-                { label: "In Top 10", value: String(profile.keywords_in_top10), sub: "search positions", color: "text-emerald-600 dark:text-emerald-400" },
-                { label: "In Top 50", value: String(profile.keywords_in_top50), sub: "visible to buyers", color: "text-sky-600 dark:text-sky-400" },
-                { label: "Not Found", value: String(profile.keywords_lost), sub: "outside top 100", color: "text-red-500 dark:text-red-450" },
-              ].map((s) => (
+                { label: "Tracked Keywords", value: String(profile.total_tracked), sub: `of ${profile.keyword_limit} limit`, color: "text-slate-800 dark:text-slate-100", tip: "The total number of keywords you are currently monitoring for this product. Each keyword is checked for its Amazon search position." },
+                { label: "In Top 10", value: String(profile.keywords_in_top10), sub: "search positions", color: "text-emerald-600 dark:text-emerald-400", tip: "Keywords where your product appears in the first 10 results. Ranking in top 10 means buyers can easily find your product." },
+                { label: "In Top 50", value: String(profile.keywords_in_top50), sub: "visible to buyers", color: "text-sky-600 dark:text-sky-400", tip: "Keywords where your product is in positions 11-50. These are visible but less likely to get clicks. Focus on improving these to top 10." },
+                { label: "Not Found", value: String(profile.keywords_lost), sub: "outside top 100", color: "text-red-500 dark:text-red-450", tip: "Keywords where your product is not found in the top 100 results. These need urgent attention — improve your title, description, and ads." },
+              ].map((s: any) => (
                 <div key={s.label} className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 shadow-sm">
-                  <p className="text-xs text-slate-400 dark:text-slate-500 mb-1">{s.label}</p>
+                  <div className="flex items-center gap-0.5 text-xs text-slate-400 dark:text-slate-500 mb-1">
+                    {s.label}<InfoTip text={s.tip} />
+                  </div>
                   <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
                   <p className="text-xs text-slate-400 dark:text-slate-550 mt-0.5">{s.sub}</p>
                 </div>

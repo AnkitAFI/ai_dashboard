@@ -28,6 +28,7 @@ import re
 from collections import defaultdict
 from typing import Optional
 
+from app.api.v1.routes.keyword_gap_router import _tokenise
 from fastapi import APIRouter, HTTPException, Depends, Query
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
@@ -178,6 +179,11 @@ def _fetch_tracked(asin: str, seller_id: str, db: Session) -> dict:
     if not data.get("currency"):
         data["currency"] = "USD" if data.get("country") == "US" else "INR"
 
+    # Decode HTML entities in title (e.g. &#x27; → ')
+    import html as _html
+    if data.get("product_title"):
+        data["product_title"] = _html.unescape(data["product_title"])
+
     return data
 
 
@@ -197,28 +203,21 @@ def _fetch_category_meta(asin: str, db: Session, product_title: Optional[str] = 
 
     # Title-based keyword fallback if ASIN is not in rapidapi table
     if product_title:
-        words = re.findall(r'[a-zA-Z0-9]+', product_title)
-        stop_words = {'reifica', 'women', 'mens', 'boys', 'girls', 'stylish', 'casual', 'front', 'button', 'cotton', 'for', 'with', 'and', 'the', 'a', 'of', 'in', 'pack'}
-        keywords = [w for w in words if w.lower() not in stop_words and len(w) > 2]
+        keywords = _tokenise(product_title)
         
-        if keywords:
-            conditions = []
-            params = {}
-            for i, kw in enumerate(keywords[:3]):
-                conditions.append(f"product_title ILIKE :kw_{i}")
-                params[f"kw_{i}"] = f"%{kw}%"
-            
-            where_clause = " OR ".join(conditions)
+        last_one = keywords[-1:] if keywords else []
+        if last_one:
+            kw = last_one[0]
             fallback_row = db.execute(
-                text(f"""
+                text("""
                     SELECT category_id, category_name
                     FROM rapidapi_amazon_products
-                    WHERE ({where_clause}) AND category_id IS NOT NULL AND category_id != ''
+                    WHERE product_title ILIKE :kw AND category_id IS NOT NULL AND category_id != ''
                     GROUP BY category_id, category_name
                     ORDER BY COUNT(*) DESC
                     LIMIT 1
                 """),
-                params
+                {"kw": f"%{kw}%"}
             ).mappings().first()
             if fallback_row:
                 return dict(fallback_row)
@@ -240,6 +239,13 @@ def _fetch_market(asin: str, db: Session, product_title: Optional[str] = None) -
     else:
         where  = "product_price_numeric > 0"  # full table fallback
         params = {}
+
+    if product_title:
+        keywords = _tokenise(product_title)
+        last_one = keywords[-1:] if keywords else []
+        if last_one:
+            where += " AND product_title ILIKE :kw_mkt"
+            params["kw_mkt"] = f"%{last_one[0]}%"
 
     row = db.execute(
         text(f"""
@@ -277,19 +283,20 @@ def _fetch_market(asin: str, db: Session, product_title: Optional[str] = None) -
 
 
 def _fetch_competitors(category_id: Optional[str], db: Session, product_title: str = "", seller_name: str = "") -> list:
-    """Pull up to 15 products from the same category ordered by price, filtered by keywords."""
+    """Pull up to 15 products from the same category ordered by price, filtered by strict keyword matching."""
     if not category_id:
         return []
 
-    words = re.findall(r'[a-zA-Z0-9]+', product_title)
-    stop_words = {'reifica', 'women', 'mens', 'boys', 'girls', 'stylish', 'casual', 'front', 'button', 'cotton', 'for', 'with', 'and', 'the', 'a', 'of', 'in', 'pack'}
-    keywords = [w for w in words if w.lower() not in stop_words and len(w) > 2]
-    top_kws = sorted(keywords, key=len, reverse=True)[:3] if keywords else []
+    keywords = _tokenise(product_title)
+    
+    last_two = keywords[-2:] if len(keywords) >= 2 else keywords
+    last_one = keywords[-1:] if len(keywords) >= 1 else keywords
 
-    query = """
+    base_query = """
         SELECT
             product_title, asin, product_price,
             product_price_numeric           AS price_num,
+            product_original_price_numeric  AS orig_price_num,
             product_star_rating_numeric     AS rating,
             product_num_ratings             AS num_ratings,
             is_best_seller, is_amazon_choice,
@@ -299,18 +306,26 @@ def _fetch_competitors(category_id: Optional[str], db: Session, product_title: s
           AND product_price_numeric IS NOT NULL
           AND product_price_numeric > 0
     """
-    params = {"cat": category_id}
+    
+    def run_query(tokens):
+        params = {"cat": category_id}
+        q = base_query
+        if tokens:
+            kw_conds = []
+            for i, kw in enumerate(tokens):
+                kw_conds.append(f"product_title ILIKE :kw_{i}")
+                params[f"kw_{i}"] = f"%{kw}%"
+            q += " AND (" + " AND ".join(kw_conds) + ")"
+        q += " ORDER BY product_price_numeric ASC LIMIT 100"
+        return db.execute(text(q), params).mappings().all()
 
-    if top_kws:
-        kw_conditions = []
-        for i, kw in enumerate(top_kws):
-            kw_conditions.append(f"product_title ILIKE :kw_{i}")
-            params[f"kw_{i}"] = f"%{kw}%"
-        query += " AND (" + " OR ".join(kw_conditions) + ")"
+    # Tier 1: Strict AND match on the last 2 noun tokens
+    rows = run_query(last_two)
+    
+    # Tier 2: Fallback to the final noun token if too few results
+    if len(rows) < 8 and last_one and last_two != last_one:
+        rows = run_query(last_one)
 
-    query += " ORDER BY product_price_numeric ASC LIMIT 100"
-
-    rows = db.execute(text(query), params).mappings().all()
     candidates = [dict(r) for r in rows]
 
     if seller_name and len(seller_name.strip()) >= 3:
@@ -519,9 +534,9 @@ async def asin_profile(
         "product_url":               tracked.get("product_url"),
         "currency":                  tracked.get("currency", "INR"),
         "country":                   tracked.get("country"),
-        "is_prime":                  tracked.get("is_prime"),
-        "is_best_seller":            tracked.get("is_best_seller"),
-        "is_amazon_choice":          tracked.get("is_amazon_choice"),
+        "is_prime":                  bool(tracked.get("is_prime")),
+        "is_best_seller":            bool(tracked.get("is_best_seller")),
+        "is_amazon_choice":          bool(tracked.get("is_amazon_choice")),
         "sales_volume":              tracked.get("sales_volume"),
         "delivery":                  tracked.get("delivery"),
         "star_rating":               tracked.get("star_rating"),
@@ -631,51 +646,36 @@ async def competitor_alerts(
     your_price = tracked["price_num"]
     currency   = tracked.get("currency", "INR")
 
-    rows = db.execute(
-        text("""
-            SELECT
-                seller_id, seller_name,
-                product_price,
-                product_star_rating_numeric AS rating,
-                sales_volume, is_prime,
-                created_at
-            FROM tracked_products
-            WHERE asin = :asin
-            ORDER BY created_at ASC
-        """),
-        {"asin": asin},
-    ).mappings().all()
-
-    by_seller: dict = defaultdict(list)
-    for r in rows:
-        by_seller[r["seller_id"]].append(dict(r))
+    cat = _fetch_category_meta(asin, db, tracked.get("product_title"))
+    competitors = _fetch_competitors(cat.get("category_id"), db, tracked.get("product_title"))
 
     deltas: list = []
     undercuts: list = []
 
-    for sid, snaps in by_seller.items():
-        if sid == seller_id or len(snaps) < 2:
-            continue
-        old_p = _parse_price(str(snaps[0].get("product_price") or ""))
-        new_p = _parse_price(str(snaps[-1].get("product_price") or ""))
-        if not old_p or not new_p:
-            continue
-        change_pct = round((new_p - old_p) / old_p * 100, 1)
-        if abs(change_pct) < 1:
-            continue
+    for c in competitors:
+        new_p = c.get("price_num")
+        old_p = c.get("orig_price_num") or new_p
+        
+        if not new_p: continue
+        
+        change_pct = round((new_p - old_p) / old_p * 100, 1) if old_p and old_p > 0 else 0
+        
         delta = {
-            "seller_id":    sid,
-            "seller_name":  snaps[-1].get("seller_name") or sid,
+            "seller_id":    c["asin"],
+            "seller_name":  c["product_title"][:30] + "...",
             "old_price":    round(old_p, 2),
             "new_price":    round(new_p, 2),
             "change_pct":   change_pct,
-            "rating":       snaps[-1].get("rating"),
-            "sales_volume": snaps[-1].get("sales_volume"),
-            "is_prime":     snaps[-1].get("is_prime"),
+            "rating":       c.get("rating"),
+            "sales_volume": c.get("sales_volume"),
+            "is_prime":     c.get("is_prime"),
             "direction":    "down" if change_pct < 0 else "up",
-            "updated_at":   str(snaps[-1].get("created_at") or ""),
+            "updated_at":   "Just now",
         }
-        deltas.append(delta)
+        
+        if abs(change_pct) >= 1:
+            deltas.append(delta)
+            
         if new_p < your_price:
             undercuts.append(delta)
 
@@ -686,7 +686,7 @@ async def competitor_alerts(
         "product_title":     tracked["product_title"],
         "currency":          currency,
         "your_price":        your_price,
-        "total_competitors": len(by_seller) - 1,
+        "total_competitors": len(competitors),
         "price_movers":      len(deltas),
         "undercuts_you":     len(undercuts),
         "deltas":            deltas,
@@ -718,40 +718,29 @@ async def alert_advice_stream(req: CompetitorAlertRequest, db: Session = Depends
     your_price = tracked["price_num"]
     currency   = tracked.get("currency", "INR")
 
-    rows = db.execute(
-        text("""
-            SELECT seller_id, seller_name, product_price, created_at
-            FROM tracked_products
-            WHERE asin = :asin
-            ORDER BY created_at ASC
-        """),
-        {"asin": req.asin},
-    ).mappings().all()
-
-    by_seller: dict = defaultdict(list)
-    for r in rows:
-        by_seller[r["seller_id"]].append(dict(r))
+    cat         = _fetch_category_meta(req.asin, db, tracked.get("product_title"))
+    competitors = _fetch_competitors(cat.get("category_id"), db, tracked.get("product_title"))
 
     deltas = []
-    for sid, snaps in by_seller.items():
-        if sid == req.seller_id or len(snaps) < 2:
+    for c in competitors:
+        new_p = c.get("price_num")
+        old_p = c.get("orig_price_num") or new_p
+        if not new_p:
             continue
-        old_p = _parse_price(str(snaps[0].get("product_price") or ""))
-        new_p = _parse_price(str(snaps[-1].get("product_price") or ""))
-        if not old_p or not new_p or abs((new_p - old_p) / old_p) < 0.01:
-            continue
+        change_pct = round((new_p - old_p) / old_p * 100, 1) if old_p and old_p > 0 else 0
         deltas.append({
-            "seller_name": snaps[-1].get("seller_name") or sid,
+            "seller_name": (c.get("product_title") or "")[:40],
             "old_price":   round(old_p, 2),
             "new_price":   round(new_p, 2),
-            "change_pct":  round((new_p - old_p) / old_p * 100, 1),
+            "change_pct":  change_pct,
         })
 
     if not deltas:
-        raise HTTPException(status_code=400, detail="No competitor price movements detected.")
+        raise HTTPException(status_code=400, detail="No competitor data found for this product.")
 
     prompt = _build_alert_prompt(req.asin, tracked["product_title"], deltas, your_price, currency)
     return _sse(prompt)
+
 
 
 @router.get("/ai/status")

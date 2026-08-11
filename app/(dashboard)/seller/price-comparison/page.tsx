@@ -3,6 +3,7 @@ import { API_BASE_URL } from "@/lib/config";
 
 import { useSelectedProduct } from "@/lib/selected-product-context";
 import { useState, useEffect, Suspense } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
@@ -16,6 +17,7 @@ import {
   Target, Activity,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { InfoTip } from "@/components/ui/info-tip";
 import {
   BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, ReferenceLine,
@@ -133,7 +135,8 @@ function PriceComparisonContent() {
   const asin     = searchParams.get("asin")      || selected?.asin      || "";
   const sellerId = searchParams.get("seller_id") || selected?.sellerId  || user?.seller_id || "";
 
-  const [data, setData]         = useState<any>(null);
+  const [data, setData]         = useSessionState<any>("seller_price_comp_data", null);
+  const [lastFetchedAsin, setLastFetchedAsin] = useSessionState<string>("seller_price_comp_asin", "");
   const [loading, setLoading]   = useState(false);
 
   const tier       = data?.tier || user?.subscriptionTier || "free";
@@ -147,14 +150,21 @@ function PriceComparisonContent() {
 
   useEffect(() => {
     if (!asin || !sellerId) return;
+    if (data && lastFetchedAsin === asin) return; // Already have data for this ASIN
+
     setLoading(true);
     const params = new URLSearchParams({ asin, seller_id: sellerId });
     fetch(`${BASE_URL}/api/comparison/price?${params}`, { credentials: "include" })
       .then((r) => r.ok ? r.json() : null)
-      .then((d) => d && setData(d))
+      .then((d) => {
+        if (d) {
+          setData(d);
+          setLastFetchedAsin(asin);
+        }
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [asin, sellerId, user?.email]);
+  }, [asin, sellerId, user?.email, data, lastFetchedAsin]);
 
   const barData = data
     ? [
@@ -261,13 +271,15 @@ function PriceComparisonContent() {
               {/* ── Free Tier Stats ──────────────────────────────────────────── */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                  { label: "Current Price", value: fmt(data.current_price, currency), sub: currency, accent: true },
-                  { label: "Original / MRP", value: fmt(data.original_price, currency) },
-                  { label: "Discount", value: data.discount_pct != null ? `${data.discount_pct}%` : "—", sub: "off MRP" },
-                  { label: "No. of Offers", value: data.num_offers != null ? String(data.num_offers) : "—", sub: "competing sellers" },
-                ].map((s) => (
+                  { label: "Current Price", value: fmt(data.current_price, currency), sub: currency, accent: true, tip: "The price at which your product is currently listed for sale on Amazon." },
+                  { label: "Original / MRP", value: fmt(data.original_price, currency), tip: "The Maximum Retail Price (MRP) printed on your product. Amazon shows a strikethrough on this." },
+                  { label: "Discount", value: data.discount_pct != null ? `${data.discount_pct}%` : "—", sub: "off MRP", tip: "How much percentage discount you are offering below the MRP. A higher discount attracts more buyers." },
+                  { label: "No. of Offers", value: data.num_offers != null ? String(data.num_offers) : "—", sub: "competing sellers", tip: "How many different sellers are offering this same product. More sellers = more competition for the Buy Box." },
+                ].map((s: any) => (
                   <div key={s.label} className={`rounded-2xl p-4 border shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
-                    <p className={`text-xs font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{s.label}</p>
+                    <div className={`text-xs font-medium mb-1 flex items-center ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
+                      {s.label}<InfoTip text={s.tip} isDark={isDark} />
+                    </div>
                     <p className={`text-xl font-black ${s.accent ? isDark ? "text-sky-400" : "text-sky-700" : isDark ? "text-slate-200" : "text-slate-800"}`}>{s.value}</p>
                     {s.sub && <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{s.sub}</p>}
                   </div>
@@ -277,14 +289,16 @@ function PriceComparisonContent() {
               {/* ── Basic+: Market Stats ─────────────────────────────────────── */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {[
-                  { label: "Min Offer Price", value: fmt(data.min_offer_price, currency), sub: "lowest competing seller" },
-                  { label: "Market Average", value: fmt(data.market_avg, currency), sub: `${data.competitor_count ?? "—"} similar products` },
-                  { label: "Market Range", value: `${fmtShort(data.market_min, currency)} – ${fmtShort(data.market_max, currency)}`, sub: "min – max", wide: false },
-                  { label: "Your Position", value: null, position: data.price_position, sub: data.price_percentile != null ? `top ${data.price_percentile}% of market` : null },
+                  { label: "Min Offer Price", value: fmt(data.min_offer_price, currency), sub: "lowest competing seller", tip: "The cheapest price any other seller is offering this product for. If your price is higher, you may lose the Buy Box." },
+                  { label: "Market Average", value: fmt(data.market_avg, currency), sub: `${data.competitor_count ?? "—"} similar products`, tip: "The average selling price of similar products in your category. Use this as a benchmark for your pricing strategy." },
+                  { label: "Market Range", value: `${fmtShort(data.market_min, currency)} – ${fmtShort(data.market_max, currency)}`, sub: "min – max", wide: false, tip: "The price range across all competitors — from the cheapest to the most expensive product in this category." },
+                  { label: "Your Position", value: null, position: data.price_position, sub: data.price_percentile != null ? `top ${data.price_percentile}% of market` : null, tip: "Where your price sits relative to the market — 'Cheap', 'Competitive', 'Premium', or 'Expensive'." },
                 ].map((s: any) => (
                   <div key={s.label} className={`relative rounded-2xl p-4 border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
                     {!isBasic && <TierGate tier="basic" feature={s.label} isDark={isDark} />}
-                    <p className={`text-xs font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{s.label}</p>
+                    <div className={`text-xs font-medium mb-1 flex items-center ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
+                      {s.label}<InfoTip text={s.tip} isDark={isDark} />
+                    </div>
                     {s.position
                       ? <PositionBadge position={s.position} isDark={isDark} />
                       : <p className={`text-xl font-black ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{s.value}</p>

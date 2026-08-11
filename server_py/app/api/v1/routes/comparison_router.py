@@ -972,13 +972,15 @@ import json
 import logging
 import math
 import re
+import html
 from difflib import SequenceMatcher
 from typing import Any, Optional
+from concurrent.futures import ThreadPoolExecutor
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import or_
+from sqlalchemy import or_, case
 
 from app.db.session import get_db
 from app.api.deps import get_current_user
@@ -986,6 +988,12 @@ from app.models.legacy_models import (
     RapidapiAmazonProducts,
     TrackedProduct,
     User,
+)
+from app.api.v1.routes.keyword_gap_router import (
+    _SentenceEmbedder,
+    _tokenise,
+    _batch_semantic_similarity,
+    _MIN_SIMILARITY_SEMANTIC,
 )
 
 from app.core.config import settings
@@ -1191,16 +1199,7 @@ def _find_best_competitors(
     limit: int = 50,
 ) -> list[tuple[Any, float]]:
     """
-    Multi-strategy competitor discovery, ordered from most to least accurate:
-
-    1. RapidapiAmazonProducts rows in the same currency + ±60 % price window
-    2. RapidapiAmazonProducts rows in the same currency (no price filter)
-    3. Other TrackedProduct rows with the same currency (proxy competitors –
-       most useful when rapidapi table has no matching-currency data)
-    4. All RapidapiAmazonProducts rows (last resort, currency-filtered later)
-
-    Every candidate is scored with _title_similarity + category bonus – price
-    penalty.  Only rows with score > 0.05 are returned, sorted descending.
+    Multi-strategy competitor discovery using semantic matching.
     """
     if not current_price or current_price <= 0:
         return []
@@ -1209,19 +1208,14 @@ def _find_best_competitors(
     price_hi = current_price * 1.60
     currency_prefix = "₹" if currency == "INR" else "$"
 
-    # Extract keywords to enforce relevance at the DB layer
-    keywords = _extract_keywords(tracked.product_title or "")
-    top_kws = []
-    if keywords:
-        top_kws = sorted(keywords, key=len, reverse=True)[:3]
+    tokens = _tokenise(tracked.product_title or "")
+    bigrams = [" ".join(tokens[i:i+2]) for i in range(len(tokens)-1)]
 
-    # ── Strategy 1: same currency + price range ───────────────────────────
     base_q = (
         db.query(RapidapiAmazonProducts)
         .filter(RapidapiAmazonProducts.product_price_numeric.isnot(None))
+        .filter(RapidapiAmazonProducts.product_title.isnot(None))
     )
-    if top_kws:
-        base_q = base_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in top_kws]))
     if currency == "INR":
         base_q = base_q.filter(
             RapidapiAmazonProducts.product_price.like("₹%"),
@@ -1244,42 +1238,76 @@ def _find_best_competitors(
             RapidapiAmazonProducts.product_price_numeric <= price_hi,
         )
 
-    candidates: list[Any] = base_q.limit(300).all()
+    all_candidates: list[Any] = []
+    seen_asins: set[str] = {tracked.asin} if tracked.asin else set()
+
+    # Tier 1: Try bigrams for high relevance
+    q1 = base_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in bigrams])) if bigrams else base_q
+    rows = q1.limit(40).all()
+    
+    # Tier 2: Fallback using DB-native keyword overlap scoring
+    if len(rows) < 20 and tokens:
+        match_expr = sum(
+            (case((RapidapiAmazonProducts.product_title.ilike(f"%{kw}%"), 1), else_=0))
+            for kw in tokens
+        )
+        q2 = base_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in tokens]))
+        q2 = q2.order_by(match_expr.desc())
+        rows.extend(q2.limit(60).all())
+
+    for row in rows:
+        if row.asin not in seen_asins:
+            seen_asins.add(row.asin)
+            all_candidates.append(row)
 
     # ── Strategy 2: same currency prefix, relax price range ──────────────
-    if len(candidates) < 5:
+    if len(all_candidates) < 10:
         strat2_q = (
             db.query(RapidapiAmazonProducts)
             .filter(
                 RapidapiAmazonProducts.product_price_numeric.isnot(None),
                 RapidapiAmazonProducts.product_price.like(f"{currency_prefix}%"),
+                RapidapiAmazonProducts.product_title.isnot(None),
             )
         )
-        if top_kws:
-            strat2_q = strat2_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in top_kws]))
-        candidates = strat2_q.limit(300).all()
+        s_q1 = strat2_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in bigrams])) if bigrams else strat2_q
+        s_rows = s_q1.limit(40).all()
+        if len(s_rows) < 20 and tokens:
+            match_expr2 = sum(
+                (case((RapidapiAmazonProducts.product_title.ilike(f"%{kw}%"), 1), else_=0))
+                for kw in tokens
+            )
+            s_q2 = strat2_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in tokens]))
+            s_q2 = s_q2.order_by(match_expr2.desc())
+            s_rows.extend(s_q2.limit(60).all())
+
+        for row in s_rows:
+            if row.asin not in seen_asins:
+                seen_asins.add(row.asin)
+                all_candidates.append(row)
 
     # Filter out the seller's own products using seller_name as a proxy for brand
     if tracked.seller_name and len(tracked.seller_name.strip()) >= 3:
         banned_brand = tracked.seller_name.strip().lower()
-        candidates = [
-            c for c in candidates
+        all_candidates = [
+            c for c in all_candidates
             if banned_brand not in (c.product_title or "").lower()
         ]
 
     # ── Score every candidate ─────────────────────────────────────────────
-    scored: list[tuple[Any, float]] = []
-    seen_asins: set[str] = set()
-    for row in candidates:
-        if row.asin == tracked.asin:
-            continue
-        if row.asin in seen_asins:
-            continue
-        seen_asins.add(row.asin)
-        if row.product_price_numeric is None:
-            continue
+    all_candidates = all_candidates[:100]  # Cap semantic search to top 100 for performance
+    
+    if not all_candidates:
+        return []
 
-        sim = _title_similarity(tracked.product_title or "", row.product_title or "")
+    your_title = tracked.product_title or ""
+    cand_titles = [r.product_title or "" for r in all_candidates]
+    similarities = _batch_semantic_similarity(your_title, cand_titles)
+
+    scored: list[tuple[Any, float]] = []
+    for row, sim in zip(all_candidates, similarities):
+        if sim < _MIN_SIMILARITY_SEMANTIC:
+            continue
 
         # Category keyword bonus
         cat_bonus = 0.0
@@ -1548,6 +1576,29 @@ def _find_market_gaps(
     band_size = (p_max - p_min) / num_bands
     gaps: list[dict] = []
 
+    # Gather avg volume from ALL competitors as demand proxy
+    all_vols = [
+        _parse_sales_volume(r.sales_volume)
+        for r, _ in competitors
+        if r.sales_volume
+    ]
+    all_vols_clean = [v for v in all_vols if v]
+    avg_vol = int(sum(all_vols_clean) / len(all_vols_clean)) if all_vols_clean else 0
+
+    all_ratings = [
+        r.product_num_ratings
+        for r, _ in competitors
+        if r.product_num_ratings
+    ]
+    avg_ratings = int(sum(all_ratings) / len(all_ratings)) if all_ratings else 0
+    
+    # If no sales volume data, use ratings as a proxy (assume 1 rating ~= 50 sales over time)
+    effective_vol = avg_vol if avg_vol > 0 else (avg_ratings * 50)
+    
+    # If effective_vol is STILL 0 (new niche with no ratings), give it a baseline to show gaps
+    if effective_vol == 0:
+        effective_vol = 300
+
     for i in range(num_bands):
         b_lo    = p_min + i * band_size
         b_hi    = b_lo + band_size
@@ -1556,30 +1607,21 @@ def _find_market_gaps(
             if r.product_price_numeric and b_lo <= r.product_price_numeric <= b_hi
         ]
 
-        # Gather avg volume from ALL competitors as demand proxy
-        all_vols = [
-            _parse_sales_volume(r.sales_volume)
-            for r, _ in competitors
-            if r.sales_volume
-        ]
-        all_vols_clean = [v for v in all_vols if v]
-        avg_vol = int(sum(all_vols_clean) / len(all_vols_clean)) if all_vols_clean else 0
-
-        if len(in_band) == 0 and avg_vol > 500:
+        if len(in_band) == 0 and effective_vol >= 300:
             gaps.append({
                 "price_lo":        round(b_lo),
                 "price_hi":        round(b_hi),
                 "competitor_count": 0,
-                "demand_label":    "High" if avg_vol > 5_000 else "Medium",
-                "opportunity_score": avg_vol / 1_000,
+                "demand_label":    "High" if effective_vol > 5_000 else "Medium" if avg_vol > 0 else "Unknown",
+                "opportunity_score": effective_vol / 1_000,
             })
-        elif len(in_band) <= 2 and avg_vol > 200:
+        elif len(in_band) <= 2 and effective_vol >= 100:
             gaps.append({
                 "price_lo":        round(b_lo),
                 "price_hi":        round(b_hi),
                 "competitor_count": len(in_band),
-                "demand_label":    "High" if avg_vol > 5_000 else "Medium",
-                "opportunity_score": avg_vol / max(len(in_band), 1),
+                "demand_label":    "High" if effective_vol > 5_000 else "Medium" if avg_vol > 0 else "Unknown",
+                "opportunity_score": effective_vol / max(len(in_band), 1),
             })
 
     gaps.sort(key=lambda x: x["opportunity_score"], reverse=True)
@@ -1640,7 +1682,7 @@ def get_price_comparison(
         "currency":      currency,
         "data_quality":  "live",
         # Product info
-        "product_title": tracked.product_title,
+        "product_title": html.unescape(tracked.product_title) if tracked.product_title else "",
         "product_photo": tracked.product_photo,
         "is_prime":      bool(tracked.is_prime),
         "is_best_seller":bool(tracked.is_best_seller),
@@ -2015,6 +2057,8 @@ def get_review_comparison(
                 neg_review = comments[i]
                 break
 
+        r_prompt = None
+        t_prompt = None
         if neg_review:
             r_prompt = (
                 f"You are an Amazon seller support specialist. "
@@ -2024,12 +2068,6 @@ def get_review_comparison(
                 f"Acknowledge the specific issue, apologize sincerely, offer a concrete resolution, "
                 f"and invite them to contact you. Do NOT use 'we value your feedback'. "
                 f"Reference details from the review."
-            )
-            ai_resp = _ollama(r_prompt, max_tokens=180)
-            result["ai_response_suggestion"] = ai_resp or (
-                "Thank you for your feedback — we sincerely apologize for your experience. "
-                "Our team is investigating this immediately. "
-                "Please contact us directly so we can make this right for you."
             )
         else:
             best_review: Optional[str] = None
@@ -2044,8 +2082,6 @@ def get_review_comparison(
                     f"Write a brief genuine 2-sentence thank-you seller response "
                     f"that encourages the buyer to return. Do not be sycophantic."
                 )
-                ai_resp = _ollama(t_prompt, max_tokens=100)
-                result["ai_response_suggestion"] = ai_resp or None
 
         # Review Velocity Insight
         comp_ratings_list = [
@@ -2067,7 +2103,29 @@ def get_review_comparison(
             + f"Review health score: {health_score}/100. "
             f"In 2 sentences give a specific review health insight and one concrete improvement action."
         )
-        vi_text = _ollama(vi_prompt, max_tokens=120)
+
+        ai_future = None
+        vi_future = None
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            if r_prompt:
+                ai_future = executor.submit(_ollama, r_prompt, 180)
+            elif t_prompt:
+                ai_future = executor.submit(_ollama, t_prompt, 100)
+            
+            vi_future = executor.submit(_ollama, vi_prompt, 120)
+
+            if ai_future:
+                ai_resp = ai_future.result()
+                if r_prompt:
+                    result["ai_response_suggestion"] = ai_resp or (
+                        "Thank you for your feedback — we sincerely apologize for your experience. "
+                        "Our team is investigating this immediately. "
+                        "Please contact us directly so we can make this right for you."
+                    )
+                else:
+                    result["ai_response_suggestion"] = ai_resp or None
+            
+            vi_text = vi_future.result()
 
         qual_word = "strong" if star_val >= 4.2 else "moderate"
         rr_advice = (
@@ -2368,9 +2426,15 @@ def get_competitor_analysis(
         }
 
         # Portfolio threat rank — compute max threat score across all seller ASINs
+        # Cap to 5 most recent products to prevent endpoint timeout
         all_seller_products = (
             db.query(TrackedProduct)
-            .filter(TrackedProduct.seller_id == seller_id)
+            .filter(
+                TrackedProduct.seller_id == seller_id,
+                TrackedProduct.user_email == current_user.email
+            )
+            .order_by(TrackedProduct.created_at.desc())
+            .limit(5)
             .all()
         )
         portfolio: list[dict] = []

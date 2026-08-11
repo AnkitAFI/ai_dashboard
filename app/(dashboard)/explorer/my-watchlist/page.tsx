@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { API_BASE_URL } from "@/lib/config";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -129,14 +130,14 @@ export default function MyWatchlist() {
   const { resolvedTheme } = useTheme();
   const isDark = mounted && resolvedTheme === "dark";
 
-  const [activeTab, setActiveTab] = useState<"whitespace" | "profit">("whitespace");
-  const [items, setItems] = useState<WatchlistItem[]>([]);
-  const [savedProducts, setSavedProducts] = useState<SavedProduct[]>([]);
+  const [activeTab, setActiveTab] = useSessionState<"whitespace" | "profit">("wl_activeTab", "whitespace");
+  const [items, setItems] = useSessionState<WatchlistItem[]>("wl_items", []);
+  const [savedProducts, setSavedProducts] = useSessionState<SavedProduct[]>("wl_savedProducts", []);
   const [wsLoading, setWsLoading] = useState(false);
   const [profitLoading, setProfitLoading] = useState(false);
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState<"added" | "score" | "revenue">("added");
-  const [profitSortBy, setProfitSortBy] = useState<"added" | "margin" | "profit">("added");
+  const [sortBy, setSortBy] = useSessionState<"added" | "score" | "revenue">("wl_sortBy", "added");
+  const [profitSortBy, setProfitSortBy] = useSessionState<"added" | "margin" | "profit">("wl_profitSortBy", "added");
   const [confirmClear, setConfirmClear] = useState(false);
 
   const userId = user?.id;

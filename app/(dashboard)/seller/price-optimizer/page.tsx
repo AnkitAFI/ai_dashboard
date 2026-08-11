@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { API_BASE_URL } from "@/lib/config";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
@@ -17,6 +18,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import ReactMarkdown from "react-markdown";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const BASE_URL = API_BASE_URL;
 const API      = `${BASE_URL}/api/seller/optimize`;
@@ -330,11 +332,11 @@ export default function SellerPriceOptimizer() {
   const userId   = user?.id?.toString() || "";
   const userEmail= user?.email || "";
 
-  const [profile,    setProfile]    = useState<Profile | null>(null);
-  const [priceGap,   setPriceGap]   = useState<PriceGap | null>(null);
-  const [reprice,    setReprice]     = useState<Reprice | null>(null);
-  const [alertData,  setAlertData]  = useState<AlertData | null>(null);
-  const [activeTab,  setActiveTab]  = useState<"reprice" | "gap" | "alerts">("reprice");
+  const [profile,    setProfile]    = useSessionState<Profile | null>("seller_price_opt_profile", null);
+  const [priceGap,   setPriceGap]   = useSessionState<PriceGap | null>("seller_price_opt_gap", null);
+  const [reprice,    setReprice]    = useSessionState<Reprice | null>("seller_price_opt_reprice", null);
+  const [alertData,  setAlertData]  = useSessionState<AlertData | null>("seller_price_opt_alert", null);
+  const [activeTab,  setActiveTab]  = useSessionState<"reprice" | "gap" | "alerts">("seller_price_opt_tab", "reprice");
   const [loading,    setLoading]    = useState(false);
   const [tabLoading, setTabLoading] = useState(false);
   const [tier,       setTier]       = useState(user?.subscriptionTier || "free");
@@ -397,7 +399,37 @@ export default function SellerPriceOptimizer() {
   if (!mounted) return null;
   const isDark = resolvedTheme === "dark";
 
+  // ── InfoTip — click/tap to toggle (works on desktop + mobile) ───────────
+  function InfoTip({ text }: { text: string }) {
+    const [open, setOpen] = useState(false);
+    return (
+      <span className="relative inline-flex items-center">
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); setOpen((v) => !v); }}
+          className={`ml-1 rounded-full p-0.5 transition-colors ${open ? (isDark ? "text-sky-400 bg-sky-900/30" : "text-sky-600 bg-sky-100") : (isDark ? "text-slate-500 hover:text-slate-300" : "text-slate-400 hover:text-slate-600")}`}
+          aria-label="More info"
+        >
+          <Info className="w-3 h-3" />
+        </button>
+        {open && (
+          <>
+            <span
+              className="fixed inset-0 z-40"
+              onClick={() => setOpen(false)}
+            />
+            <span className={`absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 rounded-xl px-3 py-2 text-xs shadow-lg border text-center ${isDark ? "bg-slate-800 border-slate-700 text-slate-200" : "bg-white border-slate-200 text-slate-700"}`}>
+              {text}
+              <span className={`absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent ${isDark ? "border-t-slate-800" : "border-t-white"}`} />
+            </span>
+          </>
+        )}
+      </span>
+    );
+  }
+
   // ── Render ────────────────────────────────────────────────────────────────
+
 
   return (
     <div className="min-h-screen flex flex-col bg-transparent">
@@ -472,19 +504,19 @@ export default function SellerPriceOptimizer() {
                 <p className={`font-bold text-base line-clamp-2 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{profile.product_title}</p>
                 <div className="flex flex-wrap items-center gap-2 mt-1.5">
                   <span className={`text-xs font-mono ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{profile.asin}</span>
-                  {profile.is_prime && <Badge className={`text-[10px] px-1.5 py-0 border ${isDark ? 'bg-blue-900/30 text-blue-400 border-blue-800/50' : 'bg-blue-50 text-blue-600 border-blue-200'}`}>PRIME</Badge>}
-                  {profile.is_best_seller && <Badge className={`text-[10px] px-1.5 py-0 border ${isDark ? 'bg-orange-900/30 text-orange-400 border-orange-800/50' : 'bg-orange-50 text-orange-600 border-orange-200'}`}>BEST SELLER</Badge>}
-                  {profile.is_amazon_choice && <Badge className={`text-[10px] px-1.5 py-0 border ${isDark ? 'bg-amber-900/30 text-amber-400 border-amber-800/50' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>AMAZON'S CHOICE</Badge>}
-                  {profile.sales_volume && (
+                  {Boolean(profile.is_prime) && <Badge className={`text-[10px] px-1.5 py-0 border ${isDark ? 'bg-blue-900/30 text-blue-400 border-blue-800/50' : 'bg-blue-50 text-blue-600 border-blue-200'}`}>PRIME</Badge>}
+                  {Boolean(profile.is_best_seller) && <Badge className={`text-[10px] px-1.5 py-0 border ${isDark ? 'bg-orange-900/30 text-orange-400 border-orange-800/50' : 'bg-orange-50 text-orange-600 border-orange-200'}`}>BEST SELLER</Badge>}
+                  {Boolean(profile.is_amazon_choice) && <Badge className={`text-[10px] px-1.5 py-0 border ${isDark ? 'bg-amber-900/30 text-amber-400 border-amber-800/50' : 'bg-amber-50 text-amber-700 border-amber-200'}`}>AMAZON'S CHOICE</Badge>}
+                  {Boolean(profile.sales_volume) && (
                     <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${isDark ? 'text-emerald-400 bg-emerald-900/30 border-emerald-800/50' : 'text-emerald-600 bg-emerald-50 border-emerald-200'}`}>
                       {profile.sales_volume}
                     </span>
                   )}
                 </div>
-                {profile.star_rating && (
+                {Boolean(profile.star_rating) && (
                   <p className="text-xs text-amber-500 font-bold mt-1">
                     {profile.star_rating}★
-                    {profile.num_ratings && <span className={`font-normal ml-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>({profile.num_ratings.toLocaleString()} ratings)</span>}
+                    {Boolean(profile.num_ratings) && <span className={`font-normal ml-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>({profile.num_ratings.toLocaleString()} ratings)</span>}
                   </p>
                 )}
               </div>
@@ -509,13 +541,16 @@ export default function SellerPriceOptimizer() {
             {/* Free stat cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { label: "Your price",    value: fmt(profile.your_price, currency),  color: isDark ? "text-slate-200" : "text-slate-800" },
-                { label: "Market avg",    value: fmt(profile.market_avg, currency),  color: isDark ? "text-sky-400" : "text-sky-600" },
-                { label: "vs Market",     value: pct(profile.pct_vs_avg),            color: (profile.pct_vs_avg || 0) > 0 ? (isDark ? "text-purple-400" : "text-purple-600") : (isDark ? "text-amber-400" : "text-amber-600") },
-                { label: "Action signal", value: (profile.recommended_action_teaser || "—").toUpperCase(), color: profile.recommended_action_teaser === "raise" ? (isDark ? "text-green-400" : "text-green-600") : profile.recommended_action_teaser === "lower" ? (isDark ? "text-red-400" : "text-red-600") : (isDark ? "text-slate-400" : "text-slate-600") },
+                { label: "Your price",    value: fmt(profile.your_price, currency),  color: isDark ? "text-slate-200" : "text-slate-800", tip: "Your current selling price on Amazon India." },
+                { label: "Market avg",    value: fmt(profile.market_avg, currency),  color: isDark ? "text-sky-400" : "text-sky-600", tip: "The average price of competing products in the Indian market." },
+                { label: "vs Market",     value: pct(profile.pct_vs_avg),            color: (profile.pct_vs_avg || 0) > 0 ? (isDark ? "text-purple-400" : "text-purple-600") : (isDark ? "text-amber-400" : "text-amber-600"), tip: "How much higher or lower your price is compared to the market average." },
+                { label: "Action signal", value: (profile.recommended_action_teaser || "—").toUpperCase(), color: profile.recommended_action_teaser === "raise" ? (isDark ? "text-green-400" : "text-green-600") : profile.recommended_action_teaser === "lower" ? (isDark ? "text-red-400" : "text-red-600") : (isDark ? "text-slate-400" : "text-slate-600"), tip: "Our instant AI recommendation on whether you should hold, raise, or lower your price." },
               ].map((s) => (
                 <div key={s.label} className={`rounded-2xl p-4 border shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
-                  <p className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{s.label}</p>
+                  <div className={`text-xs mb-1 flex items-center gap-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
+                    {s.label}
+                    <InfoTip text={s.tip} />
+                  </div>
                   <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
                 </div>
               ))}
@@ -662,13 +697,16 @@ export default function SellerPriceOptimizer() {
                     {/* Stat row */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {[
-                        { label: "Your price",    value: fmt(priceGap.your_price, priceGap.currency),   color: isDark ? "text-slate-200" : "text-slate-800" },
-                        { label: "Market avg",    value: fmt(priceGap.market_avg, priceGap.currency),   color: isDark ? "text-sky-400" : "text-sky-600" },
-                        { label: "Market low",    value: fmt(priceGap.market_min, priceGap.currency),   color: isDark ? "text-green-400" : "text-green-600" },
-                        { label: "Market high",   value: fmt(priceGap.market_max, priceGap.currency),   color: isDark ? "text-purple-400" : "text-purple-600" },
+                        { label: "Your price",    value: fmt(priceGap.your_price, priceGap.currency),   color: isDark ? "text-slate-200" : "text-slate-800", tip: "Your current selling price on Amazon." },
+                        { label: "Market avg",    value: fmt(priceGap.market_avg, priceGap.currency),   color: isDark ? "text-sky-400" : "text-sky-600", tip: "The average price of similar competing products." },
+                        { label: "Market low",    value: fmt(priceGap.market_min, priceGap.currency),   color: isDark ? "text-green-400" : "text-green-600", tip: "The lowest price currently found in your category." },
+                        { label: "Market high",   value: fmt(priceGap.market_max, priceGap.currency),   color: isDark ? "text-purple-400" : "text-purple-600", tip: "The highest price currently found in your category." },
                       ].map((s) => (
                         <div key={s.label} className={`rounded-2xl p-4 border shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
-                          <p className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{s.label}</p>
+                          <div className={`text-xs mb-1 flex items-center gap-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
+                            {s.label}
+                            <InfoTip text={s.tip} />
+                          </div>
                           <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
                         </div>
                       ))}
@@ -677,13 +715,16 @@ export default function SellerPriceOptimizer() {
                     {/* Rating + discount row */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {[
-                        { label: "Your rating",        value: priceGap.your_rating ? `${priceGap.your_rating}★` : "—",      color: isDark ? "text-amber-400" : "text-amber-500" },
-                        { label: "Market avg rating",  value: `${priceGap.market_avg_rating}★`,                              color: isDark ? "text-amber-300" : "text-amber-400" },
-                        { label: "Rating gap",         value: pct(priceGap.rating_gap),                                      color: (priceGap.rating_gap || 0) >= 0 ? (isDark ? "text-green-400" : "text-green-600") : (isDark ? "text-red-400" : "text-red-600") },
-                        { label: "Your MRP discount",  value: priceGap.your_mrp_discount_pct ? `${priceGap.your_mrp_discount_pct}%` : "—", color: isDark ? "text-slate-300" : "text-slate-700" },
+                        { label: "Your rating",        value: priceGap.your_rating ? `${priceGap.your_rating}★` : "—",      color: isDark ? "text-amber-400" : "text-amber-500", tip: "Your product's average customer star rating." },
+                        { label: "Market avg rating",  value: `${priceGap.market_avg_rating}★`,                              color: isDark ? "text-amber-300" : "text-amber-400", tip: "The average customer star rating across your competitors." },
+                        { label: "Rating gap",         value: pct(priceGap.rating_gap),                                      color: (priceGap.rating_gap || 0) >= 0 ? (isDark ? "text-green-400" : "text-green-600") : (isDark ? "text-red-400" : "text-red-600"), tip: "How much better or worse your rating is compared to the market." },
+                        { label: "Your MRP discount",  value: priceGap.your_mrp_discount_pct ? `${priceGap.your_mrp_discount_pct}%` : "—", color: isDark ? "text-slate-300" : "text-slate-700", tip: "The percentage discount you are offering below your MRP." },
                       ].map((s) => (
                         <div key={s.label} className={`rounded-2xl p-4 border shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
-                          <p className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{s.label}</p>
+                          <div className={`text-xs mb-1 flex items-center gap-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
+                            {s.label}
+                            <InfoTip text={s.tip} />
+                          </div>
                           <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
                         </div>
                       ))}
@@ -759,29 +800,21 @@ export default function SellerPriceOptimizer() {
                     )}
                     {isPremium && !tabLoading && alertData && (
                       <div className="space-y-4">
-                        {/* Alert level banner */}
-                        <AlertBox
-                          type={alertData.alert_level === "critical" ? "danger" : alertData.alert_level === "warn" ? "warn" : "success"}
-                          message={
-                            alertData.alert_level === "critical"
-                              ? `${alertData.undercuts_you} competitor${alertData.undercuts_you > 1 ? "s" : ""} are now priced below you — Buy Box risk.`
-                              : alertData.alert_level === "warn"
-                              ? `${alertData.price_movers} competitor${alertData.price_movers > 1 ? "s" : ""} moved their price recently. Review below.`
-                              : "No significant competitor price movements detected."
-                          }
-                          isDark={isDark}
-                        />
+
 
                         {/* Summary cards */}
                         <div className="grid grid-cols-3 gap-3">
                           {[
-                            { label: "Total competitors", value: String(alertData.total_competitors), color: isDark ? "text-slate-200" : "text-slate-800" },
-                            { label: "Price movers",      value: String(alertData.price_movers),      color: isDark ? "text-amber-400" : "text-amber-600" },
-                            { label: "Undercutting you",  value: String(alertData.undercuts_you),     color: alertData.undercuts_you > 0 ? (isDark ? "text-red-400" : "text-red-600") : (isDark ? "text-green-400" : "text-green-600") },
+                            { label: "Total competitors", value: String(alertData.total_competitors), color: isDark ? "text-slate-200" : "text-slate-800", tip: "The total number of similar products competing with you in this category." },
+                            { label: "Price movers",      value: String(alertData.price_movers),      color: isDark ? "text-amber-400" : "text-amber-600", tip: "Competitors who have recently dropped their price to run a sale or promotion." },
+                            { label: "Undercutting you",  value: String(alertData.undercuts_you),     color: alertData.undercuts_you > 0 ? (isDark ? "text-red-400" : "text-red-600") : (isDark ? "text-green-400" : "text-green-600"), tip: "Competitors who are currently selling their product at a cheaper price than you." },
                           ].map((s) => (
-                            <div key={s.label} className={`rounded-2xl p-4 border shadow-sm text-center ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
+                            <div key={s.label} className={`rounded-2xl p-4 border shadow-sm text-center flex flex-col items-center justify-center ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
                               <p className={`text-2xl font-black ${s.color}`}>{s.value}</p>
-                              <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{s.label}</p>
+                              <div className={`text-xs mt-0.5 flex items-center gap-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
+                                {s.label}
+                                <InfoTip text={s.tip} />
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -800,7 +833,6 @@ export default function SellerPriceOptimizer() {
                                   </div>
                                   <div className="flex-1 min-w-0">
                                     <p className={`text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{d.seller_name}</p>
-                                    <p className={`text-[10px] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{d.updated_at?.split("T")[0]}</p>
                                   </div>
                                   <div className="text-right shrink-0">
                                     <p className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>

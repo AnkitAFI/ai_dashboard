@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, Suspense } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { API_BASE_URL } from "@/lib/config";
 import {
   Card, CardContent, CardDescription, CardHeader, CardTitle,
@@ -631,10 +632,10 @@ function KeywordExplorerPanel({
 
   // ── Server-side usage tracking ───────────────────────────────────────
   const { isLocked, isAtLimit, remaining: remainingSearches, limit: searchLimit, incrementUsage } = useKIUsage();
-  const [keyword, setKeyword] = useState("");
-  const [platform, setPlatform] = useState("amazon");
+  const [keyword, setKeyword] = useSessionState("ki_keyword", "");
+  const [platform, setPlatform] = useSessionState("ki_platform", "amazon");
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState<KeywordExplorerResponse | null>(null);
+  const [data, setData] = useSessionState<KeywordExplorerResponse | null>("ki_data", null);
 
   const [trackTarget, setTrackTarget] = useState<string | null>(null);
 

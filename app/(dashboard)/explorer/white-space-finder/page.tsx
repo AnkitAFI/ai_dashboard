@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect, Suspense } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { createPortal } from "react-dom";
 import { API_BASE_URL } from "@/lib/config";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
@@ -990,17 +991,19 @@ function WhiteSpaceFinderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("all");
-  const [platform, setPlatform] = useState<"amazon" | "flipkart" | "both">(
+  const [query, setQuery] = useSessionState("wsf_query", "");
+  const [category, setCategory] = useSessionState("wsf_category", "all");
+  const [platform, setPlatform] = useSessionState<"amazon" | "flipkart" | "both">(
+    "wsf_platform",
     "both",
   );
-  const [sortBy, setSortBy] = useState<"score" | "revenue" | "competition">(
+  const [sortBy, setSortBy] = useSessionState<"score" | "revenue" | "competition">(
+    "wsf_sortBy",
     "score",
   );
-  const [minScore, setMinScore] = useState(0);
+  const [minScore, setMinScore] = useSessionState("wsf_minScore", 0);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<ScanResult | null>(null);
+  const [result, setResult] = useSessionState<ScanResult | null>("wsf_result", null);
   const [error, setError] = useState<string | null>(null);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [showTierTable, setShowTierTable] = useState(false);

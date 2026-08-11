@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { useTheme } from "next-themes";
 import { API_BASE_URL } from "@/lib/config";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -303,14 +304,14 @@ export default function ProductTracker() {
   const { resolvedTheme } = useTheme();
   const isDark = ptMounted && resolvedTheme === "dark";
 
-  const [productName, setProductName] = useState("");
-  const [category, setCategory] = useState("");
+  const [productName, setProductName] = useSessionState("pt_productName", "");
+  const [category, setCategory] = useSessionState("pt_category", "");
   const [categories, setCategories] = useState<string[]>([]);
-  const [source, setSource] = useState("amazon");
-  const [baseCost, setBaseCost] = useState("");
+  const [source, setSource] = useSessionState("pt_source", "amazon");
+  const [baseCost, setBaseCost] = useSessionState("pt_baseCost", "");
   const [loading, setLoading] = useState(false);
 
-  const [apiResponse, setApiResponse] = useState<ApiResponse | null>(null);
+  const [apiResponse, setApiResponse] = useSessionState<ApiResponse | null>("pt_apiResponse", null);
   const [notFoundMessage, setNotFoundMessage] = useState<string | null>(null);
   const result = apiResponse?.data ?? null;
 

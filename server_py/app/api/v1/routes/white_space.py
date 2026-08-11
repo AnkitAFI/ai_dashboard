@@ -1172,7 +1172,7 @@ def get_categories(platform: str = "both", db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-import pkg_resources
+from importlib.resources import files
 from symspellpy import SymSpell, Verbosity
 
 _sym_spell = None
@@ -1182,7 +1182,7 @@ def _get_symspell():
     if _sym_spell is None:
         _sym_spell = SymSpell(max_dictionary_edit_distance=2, prefix_length=7)
         try:
-            dictionary_path = pkg_resources.resource_filename("symspellpy", "frequency_dictionary_en_82_765.txt")
+            dictionary_path = str(files("symspellpy").joinpath("frequency_dictionary_en_82_765.txt"))
             _sym_spell.load_dictionary(dictionary_path, term_index=0, count_index=1)
             print("[autocomplete] Loaded SymSpell dictionary.")
         except Exception as e:
