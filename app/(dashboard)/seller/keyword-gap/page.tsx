@@ -16,6 +16,12 @@ import {
   Sparkles, Eye, EyeOff, Filter, Layers, Cpu,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { InfoTip } from "@/components/ui/info-tip";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { useSelectedProduct } from "@/lib/selected-product-context";
 
 const BASE_URL = API_BASE_URL;
@@ -197,25 +203,37 @@ function HeatmapRow({ item, maxFreq, isDark }: { item: any; maxFreq: number; isD
 }
 
 // ── Expandable Section ────────────────────────────────────────────────────────
-function Section({ title, icon: Icon, children, defaultOpen = true, count, accent, isDark }: any) {
+function Section({ title, icon: Icon, children, defaultOpen = true, count, accent, isDark, helpText }: any) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div className={`rounded-2xl border shadow-sm overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
-      <button
+      <div
         onClick={() => setOpen(!open)}
-        className={`w-full flex items-center justify-between px-5 py-4 transition-colors ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}
+        className={`w-full flex items-center justify-between px-5 py-4 cursor-pointer transition-colors ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}
       >
         <div className="flex items-center gap-2">
           <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${accent || (isDark ? "bg-sky-900/30" : "bg-sky-50")}`}>
             <Icon className={`w-4 h-4 ${isDark ? 'text-sky-400' : 'text-sky-600'}`} />
           </div>
           <span className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{title}</span>
+          {helpText && (
+            <div onClick={(e) => e.stopPropagation()}>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Info className={`w-3.5 h-3.5 cursor-pointer ml-1 ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`} />
+                </PopoverTrigger>
+                <PopoverContent className="w-56 text-center text-xs p-3">
+                  {helpText}
+                </PopoverContent>
+              </Popover>
+            </div>
+          )}
           {count != null && (
             <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'text-slate-400 bg-slate-800' : 'text-slate-400 bg-slate-100'}`}>{count}</span>
           )}
         </div>
         {open ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-      </button>
+      </div>
       {open && <div className="px-5 pb-5">{children}</div>}
     </div>
   );
@@ -227,7 +245,7 @@ function GapClusters({ clusters, isDark }: { clusters: Record<string, string[]>;
   if (entries.length === 0) return null;
 
   return (
-    <Section title="Semantic Keyword Clusters" icon={Layers} defaultOpen={true} accent={isDark ? "bg-violet-900/30" : "bg-violet-50"} isDark={isDark}>
+    <Section title="Semantic Keyword Clusters" helpText="Gap keywords grouped by concept. Focus on clusters with the most keywords first." icon={Layers} defaultOpen={true} accent={isDark ? "bg-violet-900/30" : "bg-violet-50"} isDark={isDark}>
       <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
         Gap keywords grouped by concept. Each cluster represents a content area your listing is missing.
         Focus on clusters with the most keywords first.
@@ -338,10 +356,19 @@ function GapKeywordsTable({ items, isDark }: { items: any[]; isDark: boolean }) 
           <div key={i} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl transition-colors flex-wrap ${
             item.priority === "High" ? isDark ? "bg-red-900/10 border border-red-900/30" : "bg-red-50 border border-red-100" : isDark ? "bg-slate-800/50 border border-slate-700/50" : "bg-slate-50 border border-slate-100"
           }`}>
-            <span className={`text-xs font-mono font-bold flex-1 min-w-0 truncate ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+            <span className={`text-xs font-mono font-bold flex-1 min-w-0 truncate flex items-center gap-1.5 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
               {item.keyword}
               {item.is_partial && (
-                <span className={`ml-1.5 text-[9px] px-1 py-0.5 rounded font-semibold ${isDark ? 'text-amber-400 bg-amber-900/30' : 'text-amber-600 bg-amber-50'}`}>words exist</span>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <div className={`cursor-pointer inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-semibold border ${isDark ? 'text-sky-400 bg-sky-900/30 border-sky-800/50' : 'text-sky-600 bg-sky-50 border-sky-200'}`}>
+                      <Info className="w-2.5 h-2.5" /> Words Exist
+                    </div>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-56 text-center text-[11px] p-3 leading-relaxed">
+                    You already have all the individual words for this phrase in your title, just not in this exact order.
+                  </PopoverContent>
+                </Popover>
               )}
             </span>
             <span className={`text-xs shrink-0 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>{item.comp_freq} comp</span>
@@ -586,13 +613,16 @@ function KeywordGapContent() {
               {isBasic && (
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {[
-                    { label: "Gap Keywords",    value: String(data.gap_count_teaser ?? "—"), sub: "not in your title", color: isDark ? "text-red-400" : "text-red-500" },
-                    { label: "Shared Keywords", value: String(sharedKeywords.length),        sub: "matching competitors", color: isDark ? "text-emerald-400" : "text-emerald-600" },
-                    { label: "Your Unique KWs", value: String(uniqueKeywords.length),        sub: "only in your title", color: isDark ? "text-purple-400" : "text-purple-600" },
-                    { label: "Coverage Score",  value: `${data.coverage_score ?? "—"}/100`,  sub: "vs top 40 competitor KWs", color: isDark ? "text-sky-400" : "text-sky-600" },
+                    { label: "Gap Keywords",    value: String(data.gap_count_teaser ?? "—"), sub: "not in your title", color: isDark ? "text-red-400" : "text-red-500", helpText: "These are important words that your competitors are using, but you are not. Adding them can help increase your ranking." },
+                    { label: "Shared Keywords", value: String(sharedKeywords.length),        sub: "matching competitors", color: isDark ? "text-emerald-400" : "text-emerald-600", helpText: "These are the common words that both you and your top competitors are using in your titles." },
+                    { label: "Your Unique KWs", value: String(uniqueKeywords.length),        sub: "only in your title", color: isDark ? "text-purple-400" : "text-purple-600", helpText: "These are words that are unique to your product, meaning your competitors are not using them." },
+                    { label: "Coverage Score",  value: `${data.coverage_score ?? "—"}/100`,  sub: "vs top 40 competitor KWs", color: isDark ? "text-sky-400" : "text-sky-600", helpText: "This score shows how strong your title is compared to the top sellers. 100/100 is the best possible score." },
                   ].map((s) => (
                     <div key={s.label} className={`rounded-2xl p-4 border shadow-sm ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
-                      <p className={`text-xs font-medium mb-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{s.label}</p>
+                      <div className="flex items-center gap-1 mb-1">
+                        <p className={`text-xs font-medium ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{s.label}</p>
+                        <InfoTip text={s.helpText} isDark={isDark} />
+                      </div>
                       <p className={`text-xl font-black ${s.color}`}>{s.value}</p>
                       <p className={`text-xs mt-0.5 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{s.sub}</p>
                     </div>
@@ -602,7 +632,7 @@ function KeywordGapContent() {
 
               {/* Gap keywords */}
               {isBasic && (
-                <Section title="Missing Keywords (Gap)" icon={AlertTriangle} count={gapKeywords.length}
+                <Section title="Missing Keywords (Gap)" helpText="These are words missing from your title. Add them to rank for more searches." icon={AlertTriangle} count={gapKeywords.length}
                   accent={isDark ? "bg-red-900/30" : "bg-red-50"} defaultOpen={true} isDark={isDark}>
                   <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
                     Keywords your competitors use that are absent from your title.
@@ -623,7 +653,7 @@ function KeywordGapContent() {
 
               {/* Keyword heatmap */}
               {isBasic && (
-                <Section title="Competitor Keyword Heatmap" icon={BarChart2} defaultOpen={false} isDark={isDark}>
+                <Section title="Competitor Keyword Heatmap" helpText="Shows how often a keyword appears in competitors' titles. Red means it's a high-frequency gap." icon={BarChart2} defaultOpen={false} isDark={isDark}>
                   <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
                     How often each keyword appears across competitor titles.
                     <span className={`ml-1 font-semibold ${isDark ? 'text-sky-400' : 'text-sky-500'}`}>Blue = in your title</span>,
@@ -641,7 +671,7 @@ function KeywordGapContent() {
               {/* Shared + Unique */}
               {isBasic && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-                  <Section title="Shared Keywords" icon={CheckCircle} count={sharedKeywords.length} accent={isDark ? "bg-emerald-900/30" : "bg-emerald-50"} defaultOpen={false} isDark={isDark}>
+                  <Section title="Shared Keywords" helpText="Keywords that both you and your competitors are using." icon={CheckCircle} count={sharedKeywords.length} accent={isDark ? "bg-emerald-900/30" : "bg-emerald-50"} defaultOpen={false} isDark={isDark}>
                     <p className={`text-xs mb-3 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Keywords you share with competitors — good coverage here.</p>
                     <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto">
                       {sharedKeywords.map((s: any, i: number) => (
@@ -654,7 +684,7 @@ function KeywordGapContent() {
                     </div>
                   </Section>
 
-                  <Section title="Your Unique Keywords" icon={Star} count={uniqueKeywords.length} accent={isDark ? "bg-purple-900/30" : "bg-purple-50"} defaultOpen={false} isDark={isDark}>
+                  <Section title="Your Unique Keywords" helpText="Keywords that only you are using. These are your unique selling points." icon={Star} count={uniqueKeywords.length} accent={isDark ? "bg-purple-900/30" : "bg-purple-50"} defaultOpen={false} isDark={isDark}>
                     <p className={`text-xs mb-3 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>Keywords only in your title — your differentiators. Keep them.</p>
                     <div className="flex flex-wrap gap-1.5 max-h-48 overflow-y-auto">
                       {uniqueKeywords.map((kw: string, i: number) => (
@@ -668,7 +698,7 @@ function KeywordGapContent() {
 
               {/* Competitors analysed */}
               {isBasic && competitors && (
-                <Section title="Competitors Analysed" icon={Eye} count={competitors.length} defaultOpen={false} isDark={isDark}>
+                <Section title="Competitors Analysed" helpText="The top products we compared your title against, ranked by similarity." icon={Eye} count={competitors.length} defaultOpen={false} isDark={isDark}>
                   <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
                     Products ranked by semantic similarity to your title.
                     {embeddingModel && embeddingModel !== "jaccard_fallback" &&
@@ -724,7 +754,15 @@ function KeywordGapContent() {
                       <Lightbulb className={`w-4 h-4 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
                     </div>
                     <span className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Customer Review Keyword Mining</span>
-                    {isPremium && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${isDark ? 'text-slate-400 bg-slate-800' : 'text-slate-400 bg-slate-100'}`}>{reviewKeywords.length}</span>}
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Info className={`w-3.5 h-3.5 cursor-pointer ml-1 ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`} />
+                      </PopoverTrigger>
+                      <PopoverContent className="w-56 text-center text-xs p-3">
+                        Words your customers actually use in reviews. These are highly converting.
+                      </PopoverContent>
+                    </Popover>
+                    {isPremium && <span className={`text-xs font-bold px-2 py-0.5 rounded-full ml-1 ${isDark ? 'text-slate-400 bg-slate-800' : 'text-slate-400 bg-slate-100'}`}>{reviewKeywords.length}</span>}
                   </div>
                   <div className="px-5 pb-5 pt-3">
                     <p className={`text-xs mb-4 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
@@ -770,6 +808,14 @@ function KeywordGapContent() {
                       <Sparkles className="w-4 h-4 text-white" />
                     </div>
                     <span className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>AI Keyword Opportunity Scores</span>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Info className={`w-3.5 h-3.5 cursor-pointer ml-1 ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`} />
+                      </PopoverTrigger>
+                      <PopoverContent className="w-56 text-center text-xs p-3">
+                        AI-ranked suggestions on where to place each keyword for maximum impact.
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div className="px-5 pb-5 pt-3">
                     <p className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>
@@ -806,6 +852,14 @@ function KeywordGapContent() {
                       <Zap className="w-4 h-4 text-white" />
                     </div>
                     <span className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>AI-Suggested Title Rewrite</span>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Info className={`w-3.5 h-3.5 cursor-pointer ml-1 ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`} />
+                      </PopoverTrigger>
+                      <PopoverContent className="w-56 text-center text-xs p-3">
+                        AI writes a better title for you using the new keywords.
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div className="px-5 pb-5 pt-4">
                     {data.ai_listing_rewrite ? (
@@ -837,7 +891,7 @@ function KeywordGapContent() {
                         <div>
                           <p className={`text-[10px] font-bold uppercase tracking-wide mb-1.5 ${isDark ? 'text-violet-400' : 'text-violet-500'}`}>AI Suggested Title</p>
                           <p className={`text-sm font-semibold rounded-xl px-4 py-3 border blur-sm select-none ${isDark ? 'bg-violet-900/20 border-violet-800/50 text-slate-400' : 'bg-violet-50 border-violet-100 text-slate-400'}`}>
-                            SANDISK 64GB Extreme PRO SDXC Memory Card High Speed Class 10 U3 V30 4K UHD Waterproof — SDSDXXU-064G
+                            [Optimised] {data.product_title || "Premium Quality Product Name with Key Features and Specifications"}
                           </p>
                         </div>
                       </div>
@@ -855,6 +909,14 @@ function KeywordGapContent() {
                       <Target className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} />
                     </div>
                     <span className={`font-bold text-sm ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Prioritised Action Plan</span>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Info className={`w-3.5 h-3.5 cursor-pointer ml-1 ${isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-400 hover:text-slate-600'}`} />
+                      </PopoverTrigger>
+                      <PopoverContent className="w-56 text-center text-xs p-3">
+                        Step-by-step instructions on what to do next to improve your ranking.
+                      </PopoverContent>
+                    </Popover>
                   </div>
                   <div className="px-5 pb-5 pt-4">
                     {actionPlan.length > 0 ? (

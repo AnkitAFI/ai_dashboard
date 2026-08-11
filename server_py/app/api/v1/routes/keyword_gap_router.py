@@ -1017,7 +1017,7 @@ from typing import Any, Optional
 import httpx
 import numpy as np
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy import or_
+from sqlalchemy import or_, case
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -1043,7 +1043,7 @@ OLLAMA_TIMEOUT = 45.0   # slightly higher — we now use chain-of-thought
 _ST_MODEL_NAME = "all-MiniLM-L6-v2"   # 22 MB, fast, good semantic quality
 
 # Similarity thresholds
-_MIN_SIMILARITY_SEMANTIC = 0.30   # cosine similarity for competitor matching
+_MIN_SIMILARITY_SEMANTIC = 0.60   # cosine similarity for competitor matching
 _CLUSTER_MERGE_THRESHOLD = 0.55   # gap keywords with this cosine sim → same cluster
 
 # ── Extraction config ──────────────────────────────────────────────────────────
@@ -1499,16 +1499,14 @@ def _get_competitor_titles(
     all_candidates: list[Any] = []
     seen_asins: set[str]      = set()
 
-    keywords = list(_keyword_set(tracked.product_title or ""))
-    top_kws = sorted(keywords, key=len, reverse=True)[:3] if keywords else []
+    tokens = _tokenise(tracked.product_title or "")
+    bigrams = [" ".join(tokens[i:i+2]) for i in range(len(tokens)-1)]
 
     # Source B: rapidapi same currency + price range
     base_q = db.query(RapidapiAmazonProducts).filter(
         RapidapiAmazonProducts.product_title.isnot(None),
         RapidapiAmazonProducts.asin.notin_(seen_asins),
     )
-    if top_kws:
-        base_q = base_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in top_kws]))
     if currency == "INR":
         base_q = base_q.filter(
             RapidapiAmazonProducts.product_price.like("₹%"),
@@ -1528,7 +1526,21 @@ def _get_competitor_titles(
         base_q = base_q.filter(
             RapidapiAmazonProducts.country == (tracked.country or "US"),
         )
-    for row in base_q.limit(200).all():
+    # Tier 1: Try bigrams for high relevance
+    q1 = base_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in bigrams])) if bigrams else base_q
+    rows = q1.limit(150).all()
+    
+    # Tier 2: Fallback using DB-native keyword overlap scoring
+    if len(rows) < 20 and tokens:
+        match_expr = sum(
+            (case((RapidapiAmazonProducts.product_title.ilike(f"%{kw}%"), 1), else_=0))
+            for kw in tokens
+        )
+        q2 = base_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in tokens]))
+        q2 = q2.order_by(match_expr.desc())
+        rows.extend(q2.limit(400).all())
+
+    for row in rows:
         if row.asin not in seen_asins:
             seen_asins.add(row.asin)
             all_candidates.append(row)
@@ -1543,10 +1555,19 @@ def _get_competitor_titles(
                 RapidapiAmazonProducts.asin.notin_(seen_asins),
             )
         )
-        if top_kws:
-            strat2_q = strat2_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in top_kws]))
-            
-        for row in strat2_q.limit(200).all():
+        # Same tiered logic for strat2
+        s_q1 = strat2_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in bigrams])) if bigrams else strat2_q
+        s_rows = s_q1.limit(150).all()
+        if len(s_rows) < 20 and tokens:
+            match_expr2 = sum(
+                (case((RapidapiAmazonProducts.product_title.ilike(f"%{kw}%"), 1), else_=0))
+                for kw in tokens
+            )
+            s_q2 = strat2_q.filter(or_(*[RapidapiAmazonProducts.product_title.ilike(f"%{kw}%") for kw in tokens]))
+            s_q2 = s_q2.order_by(match_expr2.desc())
+            s_rows.extend(s_q2.limit(400).all())
+
+        for row in s_rows:
             if row.asin not in seen_asins:
                 seen_asins.add(row.asin)
                 all_candidates.append(row)

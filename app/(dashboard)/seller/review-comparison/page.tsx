@@ -15,6 +15,7 @@ import {
   Activity, ShieldCheck, AlertTriangle,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { InfoTip } from "@/components/ui/info-tip";
 import {
   BarChart, Bar, Cell, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer,
@@ -385,7 +386,10 @@ function ReviewComparisonContent() {
               {/* ── Rating Overview + Chart ───────────────────────────────────── */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                 <div className={`rounded-2xl border shadow-sm p-5 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
-                  <h3 className={`font-bold text-sm mb-4 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Rating Overview</h3>
+                  <h3 className={`font-bold text-sm mb-4 flex items-center ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                    Rating Overview
+                    <InfoTip text="Your product's overall star rating and the breakdown of how many customers gave 1 to 5 stars. Higher ratings = more trust and more sales." isDark={isDark} />
+                  </h3>
                   <div className="flex items-center gap-5 mb-5">
                     <div className="text-center">
                       <p className="text-5xl font-black text-amber-500">{data.star_rating?.toFixed(1) || "—"}</p>
@@ -411,7 +415,10 @@ function ReviewComparisonContent() {
                   )}
                 </div>
                 <div className={`rounded-2xl border shadow-sm p-5 ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
-                  <h3 className={`font-bold text-sm mb-4 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Rating Distribution</h3>
+                  <h3 className={`font-bold text-sm mb-4 flex items-center ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                    Rating Distribution
+                    <InfoTip text="A bar chart showing exactly how many customers left 1, 2, 3, 4, or 5-star reviews. A healthy product should have most reviews at 4-5 stars." isDark={isDark} />
+                  </h3>
                   <ResponsiveContainer width="100%" height={180}>
                     <BarChart data={barData} margin={{ left: 0, right: 10, top: 4, bottom: 4 }} barCategoryGap="25%">
                       <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#334155" : "#f1f5f9"} vertical={false} />
@@ -462,7 +469,10 @@ function ReviewComparisonContent() {
                 <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
                   {!isBasic && <TierGate tier="basic" feature="Seller Response Rate" isDark={isDark} />}
                   <div className={!isBasic ? "blur-sm pointer-events-none" : ""}>
-                    <h3 className={`font-bold text-sm mb-3 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Seller Response Rate</h3>
+                    <h3 className={`font-bold text-sm mb-3 flex items-center ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                      Seller Response Rate
+                      <InfoTip text="What percentage of customer reviews you (the seller) have replied to. Amazon rewards sellers who respond quickly — it improves your account health score." isDark={isDark} />
+                    </h3>
                     <div className="flex items-end gap-3">
                       <p className={`text-4xl font-black ${isDark ? 'text-sky-400' : 'text-sky-600'}`}>{data.response_rate_pct != null ? `${data.response_rate_pct}%` : "—"}</p>
                       <p className={`text-sm pb-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{data.response_rate_label || "of reviews"}</p>
@@ -479,7 +489,10 @@ function ReviewComparisonContent() {
                 <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
                   {!isPremium && <TierGate tier="premium" feature="Portfolio Rating Benchmark" isDark={isDark} />}
                   <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
-                    <h3 className={`font-bold text-sm mb-3 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Your Portfolio Average</h3>
+                    <h3 className={`font-bold text-sm mb-3 flex items-center ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                      Your Portfolio Average
+                      <InfoTip text="The average star rating across all your tracked products combined. A high portfolio average signals you are a trusted, quality seller on Amazon." isDark={isDark} />
+                    </h3>
                     <div className="flex items-end gap-3">
                       <p className="text-4xl font-black text-amber-500">{data.avg_seller_portfolio_rating?.toFixed(2) || "—"}</p>
                       <Star className="w-6 h-6 text-amber-400 fill-amber-400 mb-1" />
@@ -501,7 +514,10 @@ function ReviewComparisonContent() {
               <div className={`relative rounded-2xl border shadow-sm p-5 overflow-hidden ${isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-100'}`}>
                 {!isPremium && <TierGate tier="premium" feature="Sentiment Breakdown" isDark={isDark} />}
                 <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
-                  <h3 className={`font-bold text-sm mb-4 ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Review Sentiment Breakdown</h3>
+                  <h3 className={`font-bold text-sm mb-4 flex items-center ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                    Review Sentiment Breakdown
+                    <InfoTip text="AI-classified percentage of reviews that are Positive (4-5 star), Neutral (3 star), or Negative (1-2 star). Use this to quickly spot customer satisfaction issues." isDark={isDark} />
+                  </h3>
                   <div className="space-y-3">
                     <SentimentBar label="Positive (4–5 ★)" pct={data.sentiment_breakdown?.positive ?? 80} icon={ThumbsUp} color="#10b981" isDark={isDark} />
                     <SentimentBar label="Neutral (3 ★)" pct={data.sentiment_breakdown?.neutral ?? 12} icon={Minus} color="#f59e0b" isDark={isDark} />
