@@ -516,7 +516,7 @@ export default function SellerPriceOptimizer() {
                 {Boolean(profile.star_rating) && (
                   <p className="text-xs text-amber-500 font-bold mt-1">
                     {profile.star_rating}★
-                    {Boolean(profile.num_ratings) && <span className={`font-normal ml-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>({profile.num_ratings.toLocaleString()} ratings)</span>}
+                    {Boolean(profile.num_ratings) && <span className={`font-normal ml-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>({profile.num_ratings?.toLocaleString()} ratings)</span>}
                   </p>
                 )}
               </div>
