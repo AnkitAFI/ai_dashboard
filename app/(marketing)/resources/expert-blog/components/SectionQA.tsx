@@ -1,8 +1,12 @@
+import React from "react";
+
 interface SectionQAProps {
   title?: string;
-  paragraph1?: string;
-  paragraph2?: string;
-  paragraph3?: string;
+  paragraph1?: React.ReactNode;
+  paragraph2?: React.ReactNode;
+  paragraph3?: React.ReactNode;
+  /** Optional overflow for sections with more than 3 paragraphs. Rendered after paragraph1-3. */
+  paragraphs?: React.ReactNode[];
   resolvedTheme?: string;
 }
 
@@ -11,8 +15,16 @@ export default function SectionQA({
   paragraph1,
   paragraph2,
   paragraph3,
+  paragraphs = [],
   resolvedTheme,
 }: SectionQAProps) {
+  const allParagraphs = [
+    paragraph1,
+    paragraph2,
+    paragraph3,
+    ...paragraphs,
+  ].filter((p) => p !== undefined && p !== null && p !== "");
+
   return (
     <>
       {title && (
@@ -37,47 +49,20 @@ export default function SectionQA({
         </h2>
       )}
 
-      {paragraph1 && (
+      {allParagraphs.map((p, i) => (
         <p
+          key={i}
           style={{
             color: resolvedTheme === "dark" ? "#94a3b8" : "#4B5563",
             fontSize: "16px",
             lineHeight: 1.7,
-            marginBottom: paragraph2 ? "20px" : "32px",
+            marginBottom: i === allParagraphs.length - 1 ? "32px" : "20px",
             fontFamily: "'Lora', serif",
           }}
         >
-          {paragraph1}
+          {p}
         </p>
-      )}
-
-      {paragraph2 && (
-        <p
-          style={{
-            color: resolvedTheme === "dark" ? "#94a3b8" : "#4B5563",
-            fontSize: "16px",
-            lineHeight: 1.7,
-            marginBottom: "32px",
-            fontFamily: "'Lora', serif",
-          }}
-        >
-          {paragraph2}
-        </p>
-      )}
-
-      {paragraph3 && (
-        <p
-          style={{
-            color: resolvedTheme === "dark" ? "#94a3b8" : "#4B5563",
-            fontSize: "16px",
-            lineHeight: 1.7,
-            marginBottom: "32px",
-            fontFamily: "'Lora', serif",
-          }}
-        >
-          {paragraph3}
-        </p>
-      )}
+      ))}
     </>
   );
 }

@@ -57,6 +57,30 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "31",
+    title: "Amazon Listing Hijackers India: Detect & Remove Fast",
+    excerpt:
+      "Losing your Buy Box to an unknown seller on Amazon India? Learn how to spot listing hijackers, file a report, and remove them before they cost you more.",
+    category: "Pricing Strategy",
+    readTime: "10 min read",
+    image: "/Blog_31_banner.png",
+    featuredImage: "/image.png",
+    route: "/resources/expert-blog/amazon-listing-hijacker-india",
+    popular: true,
+  },
+  {
+    id: "30",
+    title: "Amazon India Price Wars: Compete Without Losing Margin",
+    excerpt:
+      "Stuck in an Amazon India price war? Learn 3 proven strategies to compete without racing to the bottom -- differentiate, bundle, or own the mid-range.",
+    category: "Pricing Strategy",
+    readTime: "11 min read",
+    image: "/Blog_30_banner.png",
+    featuredImage: "/image.png",
+    route: "/resources/expert-blog/amazon-india-price-war-strategy",
+    popular: true,
+  },
+  {
     id: "29",
     title: "Automate Client Reporting for Ecommerce Agencies (2026)",
     excerpt:
@@ -64,7 +88,6 @@ const articles: Article[] = [
     category: "Seller Tools & Strategy",
     readTime: "9 min read",
     image: "/report-less-retain-more.png",
-    featuredImage: "/image.png",
     route: "/resources/expert-blog/agency-client-reporting-automation",
     popular: true,
   },
@@ -581,9 +604,9 @@ export default function ExpertBlog() {
                 <div className="featured-blog-thumb h-full">
                   {featuredArticle.featuredImage || featuredArticle.image ? (
                     <img
-                      src={
-                        encodeURI(featuredArticle.featuredImage || featuredArticle.image).replace(/\+/g, "%2B")
-                      }
+                      src={encodeURI(
+                        featuredArticle.featuredImage || featuredArticle.image,
+                      ).replace(/\+/g, "%2B")}
                       alt={featuredArticle.title}
                       className="featured-blog-img"
                     />
@@ -652,7 +675,10 @@ export default function ExpertBlog() {
                     {/* Popular card image — standardized ratio */}
                     <div className="blog-card-thumb relative">
                       {article.image ? (
-                        <img src={encodeURI(article.image).replace(/\+/g, "%2B")} alt={article.title} />
+                        <img
+                          src={encodeURI(article.image).replace(/\+/g, "%2B")}
+                          alt={article.title}
+                        />
                       ) : (
                         <div className="flex items-center justify-center p-4">
                           <BarChart3 className="w-20 h-20 text-orange-200 dark:text-orange-900 opacity-30" />
@@ -707,7 +733,10 @@ export default function ExpertBlog() {
                   {/* Latest grid image — standardized ratio */}
                   <div className="blog-card-thumb relative">
                     {article.image ? (
-                      <img src={encodeURI(article.image).replace(/\+/g, "%2B")} alt={article.title} />
+                      <img
+                        src={encodeURI(article.image).replace(/\+/g, "%2B")}
+                        alt={article.title}
+                      />
                     ) : (
                       <div className="flex items-center justify-center p-4">
                         <BarChart3 className="w-24 h-24 text-orange-200 dark:text-orange-900 opacity-30" />
