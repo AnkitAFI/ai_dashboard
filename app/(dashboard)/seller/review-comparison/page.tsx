@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useSessionState } from "@/hooks/use-session-state";
 import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { useTheme } from "next-themes";
@@ -256,7 +257,8 @@ function ReviewComparisonContent() {
   const asin     = searchParams.get("asin")      || selected?.asin      || "";
   const sellerId = searchParams.get("seller_id") || selected?.sellerId  || user?.seller_id || "";
 
-  const [data, setData]         = useState<any>(null);
+  const [data, setData]         = useSessionState<any>("seller_review_comp_data", null);
+  const [lastFetchedAsin, setLastFetchedAsin] = useSessionState<string>("seller_review_comp_asin", "");
   const [loading, setLoading]   = useState(false);
 
   const tier      = data?.tier || user?.subscriptionTier || "free";
@@ -269,15 +271,22 @@ function ReviewComparisonContent() {
 
   useEffect(() => {
     if (!asin || !sellerId) return;
+    if (data && lastFetchedAsin === asin) return; // Already have data for this ASIN
+    
     setLoading(true);
     const params = new URLSearchParams({ asin, seller_id: sellerId });
     if (user?.email) params.append("user_email", user.email);
     fetch(`${BASE_URL}/api/comparison/reviews?${params}`, { credentials: "include" })
       .then((r) => r.ok ? r.json() : null)
-      .then((d) => d && setData(d))
+      .then((d) => {
+        if (d) {
+          setData(d);
+          setLastFetchedAsin(asin);
+        }
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [asin, sellerId, user?.email]);
+  }, [asin, sellerId, user?.email, data, lastFetchedAsin]);
 
   const ratingDist = data?.rating_distribution || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
   const totalDist  = Object.values(ratingDist).reduce((a: any, b: any) => a + b, 0) as number;

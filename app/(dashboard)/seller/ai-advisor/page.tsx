@@ -51,6 +51,7 @@
 import { API_BASE_URL } from "@/lib/config";
 
 import { useState, useEffect, useRef, useCallback, Suspense } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { useSidebar } from "@/components/layout/sidebar-context";
@@ -370,14 +371,14 @@ function AIAdvisorContent() {
   const isBasic   = tier === "basic" || tier === "premium" || tier === "enterprise";
   const isPremium = tier === "premium" || tier === "enterprise";
 
-  const [messages,      setMessages]      = useState<Message[]>([]);
-  const [input,         setInput]         = useState("");
-  const [streaming,     setStreaming]      = useState(false);
-  const [context,       setContext]        = useState<SellerContext | null>(null);
-  const [contextLoading,setContextLoading] = useState(false);
-  const [selectedAsin,  setSelectedAsin]  = useState(selected?.asin || "");
-  const [selectedTitle, setSelectedTitle] = useState("");
-  const [sessionId,     setSessionId]     = useState(() => Math.random().toString(36).slice(2, 14));
+  const [messages,      setMessages]      = useSessionState<Message[]>("seller_ai_messages", []);
+  const [input,         setInput]         = useSessionState("seller_ai_input", "");
+  const [streaming,     setStreaming]     = useState(false);
+  const [context,       setContext]       = useSessionState<SellerContext | null>("seller_ai_context", null);
+  const [contextLoading,setContextLoading]= useState(false);
+  const [selectedAsin,  setSelectedAsin]  = useSessionState("seller_ai_asin", selected?.asin || "");
+  const [selectedTitle, setSelectedTitle] = useSessionState("seller_ai_title", "");
+  const [sessionId,     setSessionId]     = useSessionState("seller_ai_session", Math.random().toString(36).slice(2, 14));
   const [copiedId,      setCopiedId]      = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -391,7 +392,7 @@ function AIAdvisorContent() {
 
   // Load seller context
   useEffect(() => {
-    if (!sellerId) return;
+    if (!sellerId || context) return;
     setContextLoading(true);
     fetch(`${API}/context?seller_id=${sellerId}&user_email=${encodeURIComponent(userEmail)}`, {
       credentials: "include",
@@ -405,14 +406,16 @@ function AIAdvisorContent() {
   // Greeting on mount
   useEffect(() => {
     if (!sellerId) return;
-    const greeting: Message = {
-      id:        genId(),
-      role:      "assistant",
-      content:   `${t('sellerPages.aiGreeting1', "Hey! I'm your AI store advisor. I have full access to your product data, pricing, reviews, and rank history.")}\n\n${t('sellerPages.aiGreeting2', "Ask me anything about your store — I'll give you straight answers backed by your actual data.")}`,
-      timestamp: new Date(),
-    };
-    setMessages([greeting]);
-  }, [sellerId]);
+    setMessages((prev) => {
+      if (prev.length > 0) return prev;
+      return [{
+        id:        genId(),
+        role:      "assistant",
+        content:   `${t('sellerPages.aiGreeting1', "Hey! I'm your AI store advisor. I have full access to your product data, pricing, reviews, and rank history.")}\n\n${t('sellerPages.aiGreeting2', "Ask me anything about your store — I'll give you straight answers backed by your actual data.")}`,
+        timestamp: new Date(),
+      }];
+    });
+  }, [sellerId, t]);
 
   const sendMessage = useCallback(async (text: string) => {
     const question = text.trim();

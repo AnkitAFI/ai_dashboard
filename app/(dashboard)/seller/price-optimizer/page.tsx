@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, Suspense } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { API_BASE_URL } from "@/lib/config";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
@@ -330,11 +331,11 @@ export default function SellerPriceOptimizer() {
   const userId   = user?.id?.toString() || "";
   const userEmail= user?.email || "";
 
-  const [profile,    setProfile]    = useState<Profile | null>(null);
-  const [priceGap,   setPriceGap]   = useState<PriceGap | null>(null);
-  const [reprice,    setReprice]     = useState<Reprice | null>(null);
-  const [alertData,  setAlertData]  = useState<AlertData | null>(null);
-  const [activeTab,  setActiveTab]  = useState<"reprice" | "gap" | "alerts">("reprice");
+  const [profile,    setProfile]    = useSessionState<Profile | null>("seller_price_opt_profile", null);
+  const [priceGap,   setPriceGap]   = useSessionState<PriceGap | null>("seller_price_opt_gap", null);
+  const [reprice,    setReprice]    = useSessionState<Reprice | null>("seller_price_opt_reprice", null);
+  const [alertData,  setAlertData]  = useSessionState<AlertData | null>("seller_price_opt_alert", null);
+  const [activeTab,  setActiveTab]  = useSessionState<"reprice" | "gap" | "alerts">("seller_price_opt_tab", "reprice");
   const [loading,    setLoading]    = useState(false);
   const [tabLoading, setTabLoading] = useState(false);
   const [tier,       setTier]       = useState(user?.subscriptionTier || "free");

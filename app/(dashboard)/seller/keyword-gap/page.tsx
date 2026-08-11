@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, Suspense } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { API_BASE_URL } from "@/lib/config";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
@@ -376,7 +377,8 @@ function KeywordGapContent() {
   const asin     = searchParams.get("asin")      || selected?.asin     || "";
   const sellerId = searchParams.get("seller_id") || selected?.sellerId || user?.seller_id || "";
 
-  const [data, setData]         = useState<any>(null);
+  const [data, setData]         = useSessionState<any>("seller_keyword_gap_data", null);
+  const [lastFetchedAsin, setLastFetchedAsin] = useSessionState<string>("seller_keyword_gap_asin", "");
   const [loading, setLoading]   = useState(false);
 
   const tier      = data?.tier || user?.subscriptionTier || "free";
@@ -389,14 +391,21 @@ function KeywordGapContent() {
 
   useEffect(() => {
     if (!asin || !sellerId) return;
+    if (data && lastFetchedAsin === asin) return; // Already have data for this ASIN
+    
     setLoading(true);
     const params = new URLSearchParams({ asin, seller_id: sellerId });
     fetch(`${BASE_URL}/api/keyword-gap/analyse?${params}`, { credentials: "include" })
       .then((r) => r.ok ? r.json() : null)
-      .then((d) => d && setData(d))
+      .then((d) => {
+        if (d) {
+          setData(d);
+          setLastFetchedAsin(asin);
+        }
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [asin, sellerId, user?.email]);
+  }, [asin, sellerId, user?.email, data, lastFetchedAsin]);
 
   const gapKeywords    = data?.gap_keywords    || [];
   const sharedKeywords = data?.shared_keywords || [];

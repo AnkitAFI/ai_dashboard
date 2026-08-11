@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { sanitizeApiError } from "@/lib/sanitize-error";
 import { useTheme } from "next-themes";
 import { API_BASE_URL } from "@/lib/config";
@@ -233,12 +234,12 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
   const [aiUsage, setAiUsage] = useState({ used: 0, limit: 0 });
   const [isLoadingUsage, setIsLoadingUsage] = useState(true);
   const [isOpen, setIsOpen] = useState(variant === "fullscreen");
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [inputMessage, setInputMessage] = useState("");
+  const [messages, setMessages] = useSessionState<ChatMessage[]>("chatbot_messages", []);
+  const [inputMessage, setInputMessage] = useSessionState("chatbot_input", "");
   const [isTyping, setIsTyping] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
-  const [selectedSource, setSelectedSource] = useState("flipkart");
-  const [sessionId, setSessionId] = useState<string | null>(null);
+  const [selectedSource, setSelectedSource] = useSessionState("chatbot_source", "flipkart");
+  const [sessionId, setSessionId] = useSessionState<string | null>("chatbot_sessionId", null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -260,7 +261,9 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
     timestamp: new Date(),
   });
 
-  useEffect(() => { setMessages([makeWelcomeMsg(isAuthenticated)]); }, [isAuthenticated]);
+  useEffect(() => {
+    setMessages(prev => prev.length === 0 ? [makeWelcomeMsg(isAuthenticated)] : prev);
+  }, [isAuthenticated, setMessages]);
 
   useEffect(() => {
     if (!user) { setIsLoadingUsage(false); return; }

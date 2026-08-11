@@ -2,6 +2,7 @@
 import { API_BASE_URL } from "@/lib/config";
 
 import { useState, useEffect, Suspense } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 
@@ -22,13 +23,14 @@ function SellerProductsContent() {
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  const [localSellerId, setLocalSellerId] = useState<string | null>(null);
-  const [products, setProducts] = useState<any[]>([]);
+  const [localSellerId, setLocalSellerId] = useSessionState<string | null>("seller_my_products_id", null);
+  const [products, setProducts] = useSessionState<any[]>("seller_my_products_data", []);
+  const [lastFetchedSellerId, setLastFetchedSellerId] = useSessionState<string>("seller_my_products_last_seller_id", "");
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilter, setActiveFilter] = useState<"all" | "prime" | "best_seller">("all");
-  const [selectedAsin, setSelectedAsin] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useSessionState("seller_my_products_search", "");
+  const [activeFilter, setActiveFilter] = useSessionState<"all" | "prime" | "best_seller">("seller_my_products_filter", "all");
+  const [selectedAsin, setSelectedAsin] = useSessionState<string | null>("seller_my_products_asin", null);
+  const [currentPage, setCurrentPage] = useSessionState("seller_my_products_page", 1);
   const itemsPerPage = 10;
 
   const activeSellerId = user?.seller_id || localSellerId;
@@ -39,6 +41,8 @@ function SellerProductsContent() {
 
   const fetchProducts = async () => {
     if (!activeSellerId) return;
+    if (products.length > 0 && lastFetchedSellerId === activeSellerId) return;
+    
     setLoading(true);
     try {
       const BASE_URL = API_BASE_URL;
@@ -49,6 +53,7 @@ function SellerProductsContent() {
       if (resp.ok) {
         const data = await resp.json();
         setProducts(data.products || []);
+        setLastFetchedSellerId(activeSellerId);
       }
     } catch (err) {
       console.error("Failed to fetch products", err);
@@ -59,7 +64,7 @@ function SellerProductsContent() {
 
   useEffect(() => {
     if (activeSellerId) fetchProducts();
-  }, [activeSellerId]);
+  }, [activeSellerId, products, lastFetchedSellerId]);
 
   // Reset page when search or tab filter changes
   useEffect(() => {

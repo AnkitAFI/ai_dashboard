@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { sanitizeApiError } from "@/lib/sanitize-error";
 import { useTheme } from "next-themes";
 import { API_BASE_URL as CONFIG_API_BASE_URL } from "@/lib/config";
@@ -431,15 +432,15 @@ export default function ShareOfVoice() {
   const isDark = sovMounted && resolvedTheme === "dark";
 
   const [categories, setCategories] = useState<string[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [marketplace, setMarketplace] = useState<"flipkart" | "amazon">("flipkart");
-  const [yourBrand, setYourBrand] = useState("");
-  const [sovData, setSovData] = useState<CategorySOVResponse | null>(null);
-  const [marketHealth, setMarketHealth] = useState<MarketHealthResponse | null>(null);
-  const [progressData, setProgressData] = useState<ProgressTrackingResponse | null>(null);
-  const [competitors, setCompetitors] = useState<CompetitorAnalysis[]>([]);
-  const [targetShare, setTargetShare] = useState(20);
-  const [targetDays, setTargetDays] = useState(90);
+  const [selectedCategory, setSelectedCategory] = useSessionState("sov_selectedCategory", "");
+  const [marketplace, setMarketplace] = useSessionState<"flipkart" | "amazon">("sov_marketplace", "flipkart");
+  const [yourBrand, setYourBrand] = useSessionState("sov_yourBrand", "");
+  const [sovData, setSovData] = useSessionState<CategorySOVResponse | null>("sov_sovData", null);
+  const [marketHealth, setMarketHealth] = useSessionState<MarketHealthResponse | null>("sov_marketHealth", null);
+  const [progressData, setProgressData] = useSessionState<ProgressTrackingResponse | null>("sov_progressData", null);
+  const [competitors, setCompetitors] = useSessionState<CompetitorAnalysis[]>("sov_competitors", []);
+  const [targetShare, setTargetShare] = useSessionState("sov_targetShare", 20);
+  const [targetDays, setTargetDays] = useSessionState("sov_targetDays", 90);
   const [loading, setLoading] = useState(false);
   const [loadingHealth, setLoadingHealth] = useState(false);
   const [error, setError] = useState("");

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, Suspense, useRef, useCallback } from "react";
+import { useState, useEffect, Suspense, useRef, useCallback, useMemo } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { API_BASE_URL } from "@/lib/config";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
@@ -666,12 +667,13 @@ function RankTrackerContent() {
   const userId = user?.id?.toString() || "";
   const userEmail = user?.email || "";
 
-  const [profile, setProfile] = useState<RankProfile | null>(null);
+  const [profile, setProfile] = useSessionState<RankProfile | null>("seller_rank_tracker_profile", null);
+  const [lastFetchedAsin, setLastFetchedAsin] = useSessionState<string>("seller_rank_tracker_asin", "");
   const [loading, setLoading] = useState(false);
   const [adding, setAdding] = useState(false);
   const [removing, setRemoving] = useState<string | null>(null);
-  const [expandedKw, setExpandedKw] = useState<string | null>(null);
-  const [filterStatus, setFilterStatus] = useState<"all" | "top10" | "up" | "down" | "lost">("all");
+  const [expandedKw, setExpandedKw] = useSessionState<string | null>("seller_rank_tracker_expandedKw", null);
+  const [filterStatus, setFilterStatus] = useSessionState<"all" | "top10" | "up" | "down" | "lost">("seller_rank_tracker_filter", "all");
   const [refreshing, setRefreshing] = useState(false);
 
   const aiStream = useStream();
@@ -686,13 +688,20 @@ function RankTrackerContent() {
   // Load profile
   useEffect(() => {
     if (!asin || !sellerId) return;
+    if (profile && lastFetchedAsin === asin) return; // Already have data for this ASIN
+
     setLoading(true);
     fetch(`${API}/profile?${qs()}`, { credentials: "include" })
       .then((r) => r.ok ? r.json() : null)
-      .then((d) => d && setProfile(d))
+      .then((d) => {
+        if (d) {
+          setProfile(d);
+          setLastFetchedAsin(asin);
+        }
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [asin, sellerId]);
+  }, [asin, sellerId, profile, lastFetchedAsin]);
 
   const handleAddKeyword = async (keyword: string) => {
     if (!profile) return;

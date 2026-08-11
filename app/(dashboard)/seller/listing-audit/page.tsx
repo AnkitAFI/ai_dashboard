@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
+import { useSessionState } from "@/hooks/use-session-state";
 import { API_BASE_URL } from "@/lib/config";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
@@ -180,7 +181,7 @@ function ListingAuditContent() {
 
   const sellerId = user?.seller_id || "";
 
-  const [items, setItems]             = useState<any[]>([]);
+  const [items, setItems]             = useSessionState<any[]>("seller_listing_audit_items", []);
   const [loading, setLoading]         = useState(true);
   const [unpinLoading, setUnpinLoading] = useState<Set<string>>(new Set());
   const [error, setError]             = useState<string | null>(null);
