@@ -62,6 +62,7 @@ from typing import Optional, List, Literal
 from pydantic import BaseModel
 
 
+
 class ScanRequest(BaseModel):
     query: str
     category: Optional[str] = None
@@ -87,6 +88,18 @@ class Competitor(BaseModel):
     is_best_seller: bool = False
     is_amazon_choice: bool = False
     trend_signal: Optional[str] = None
+
+
+class NicheInsightsRequest(BaseModel):
+    product_niche: str
+    avg_price: float
+    avg_rating: float
+    avg_reviews: int
+    competitor_count: int
+    trend_direction: str
+    has_best_seller_gap: bool
+    competitors: List[Competitor]
+    force_reload: bool = False
 
 
 class AIInsight(BaseModel):

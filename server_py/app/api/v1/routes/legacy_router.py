@@ -19064,6 +19064,8 @@ async def sitemap():
         "/resources/expert-blog/competitor-undercutting-amazon-india",
         "/resources/expert-blog/amazon-sales-drop",
         "/resources/expert-blog/flipkart-seller-analytics-tool-india",
+        "/resources/expert-blog/amazon-listing-hijacker-india",
+        "/resources/expert-blog/amazon-india-price-war-strategy",
         "/resources/video-guides",
         "/author/vikrant-singh",
         "/about/our-vision",

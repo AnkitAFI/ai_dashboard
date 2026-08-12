@@ -63,6 +63,7 @@ import {
   SortAsc,
   ChevronRight,
   Bookmark,
+  Loader2,
 } from "lucide-react";
 import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useTranslation } from "react-i18next";
@@ -585,7 +586,7 @@ function ScoreBreakdownBars({ breakdown }: { breakdown: ScoreBreakdown }) {
 
 // ── Competitor Row ────────────────────────────────────────────────────────────
 
-function CompetitorRow({ comp, index }: { comp: Competitor; index: number }) {
+function CompetitorRow({ comp, index, isLoading }: { comp: Competitor; index: number; isLoading?: boolean }) {
   const { t } = useTranslation();
   return (
     <div className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800/80">
@@ -610,9 +611,13 @@ function CompetitorRow({ comp, index }: { comp: Competitor; index: number }) {
             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-teal-100 dark:bg-teal-950/35 text-teal-705 dark:text-teal-400 border border-teal-250 dark:border-teal-900/40">{t("whiteSpaceFinder.asChoice", "A's Choice")}</span>
           )}
         </div>
-        <p className="text-xs sm:text-[12.5px] text-slate-700 dark:text-slate-250 font-medium leading-relaxed mt-1.5">
-          <span className="text-amber-600 dark:text-amber-400 font-semibold mr-1.5">⚠</span>
-          {comp.weakness}
+        <p className="text-xs sm:text-[12.5px] text-slate-700 dark:text-slate-250 font-medium leading-relaxed mt-1.5 flex items-start gap-1.5">
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 text-violet-500 animate-spin shrink-0 mt-0.5" />
+          ) : (
+            <span className="text-amber-600 dark:text-amber-400 font-semibold shrink-0 mt-0.5">⚠</span>
+          )}
+          <span className="flex-1">{comp.weakness}</span>
         </p>
       </div>
     </div>
@@ -683,6 +688,69 @@ function OpportunityCard({
   const isPremium    = tier === "premium" || tier === "enterprise";
   const sl           = getScoreLabel(opp.score, t);
   const alreadyWatched = watchlistItems.some((i) => i.niche === opp.product_niche);
+
+  const [insightsLoading, setInsightsLoading] = useState(false);
+  const [lazyInsights, setLazyInsights] = useState<AIInsight[]>(opp.ai_insights || []);
+  const [lazyCompetitors, setLazyCompetitors] = useState<Competitor[]>(opp.competitors || []);
+  const [lazyError, setLazyError] = useState(false);
+
+  const fetchInsights = useCallback(async (isMounted = true, forceReload = false) => {
+    setInsightsLoading(true);
+    setLazyError(false);
+    try {
+      const req = {
+        product_niche: opp.product_niche,
+        avg_price: opp.avg_price,
+        avg_rating: opp.avg_rating,
+        avg_reviews: opp.avg_reviews,
+        competitor_count: opp.competitor_count,
+        trend_direction: opp.trend_direction,
+        has_best_seller_gap: opp.has_best_seller_gap,
+        competitors: opp.competitors,
+        force_reload: forceReload
+      };
+      const token = localStorage.getItem("auth_token");
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
+      
+      const res = await fetch(`${API}/white-space/scan/insights`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}) 
+        },
+        body: JSON.stringify(req),
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      
+      const data = await res.json();
+      if (isMounted) {
+        if (data.error) setLazyError(true);
+        if (data.ai_insights && data.ai_insights.length > 0) {
+          setLazyInsights(data.ai_insights);
+        }
+        if (data.competitor_weaknesses) {
+          setLazyCompetitors(prev => prev.map((c, i) => ({
+            ...c,
+            weakness: data.competitor_weaknesses[i] || c.weakness
+          })));
+        }
+      }
+    } catch (err) {
+      if (isMounted) setLazyError(true);
+    } finally {
+      if (isMounted) setInsightsLoading(false);
+    }
+  }, [opp]);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (isPremium && lazyInsights.length === 0 && !lazyError) {
+      fetchInsights(isMounted);
+    }
+    return () => { isMounted = false; };
+  }, [isPremium, lazyInsights.length, lazyError, fetchInsights]);
 
   const trendEl = isPremium ? (
     opp.trend_direction === "up" ? (
@@ -859,32 +927,66 @@ function OpportunityCard({
         )}
 
         {/* AI Insights — Premium */}
-        {isPremium && opp.ai_insights && opp.ai_insights.length > 0 && (
+        {isPremium && (
           <div className="space-y-2 mb-3">
             <div className="flex items-center gap-2">
               <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{t("whiteSpaceFinder.aiInsights", "AI insights")}</p>
-              <span className="text-[9px] font-mono text-slate-405 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded">Insydz</span>
+              <span className="text-[9px] font-mono text-slate-405 dark:text-slate-500 bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded flex items-center gap-1.5">
+                Insydz 
+              </span>
             </div>
-            {opp.ai_insights.map((ins, i) => (
-              <AIInsightBadge key={i} insight={ins} />
-            ))}
+            
+            {insightsLoading ? (
+              <div className="flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800/80">
+                <Loader2 className="w-5 h-5 text-violet-500 animate-spin mb-2" />
+                <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Generating AI insights...</p>
+              </div>
+            ) : lazyInsights.length > 0 ? (
+              lazyInsights.map((ins, i) => (
+                <AIInsightBadge key={i} insight={ins} />
+              ))
+            ) : lazyError ? (
+              <div className="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-lg">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-xs text-amber-700 dark:text-amber-400 font-medium">Server is currently busy.</p>
+                    <p className="text-xs text-amber-600/80 dark:text-amber-400/70 mt-0.5">AI Insights could not be generated at this moment, but you can still review the competitor metrics below.</p>
+                  </div>
+                  <button 
+                    onClick={() => fetchInsights(true, true)}
+                    className="p-1.5 hover:bg-amber-100 dark:hover:bg-amber-900/50 rounded-md transition-colors text-amber-700 dark:text-amber-400 shrink-0" 
+                    title="Try again"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ) : null}
           </div>
         )}
 
         {/* Competitors — Basic+ */}
-        {isBasicPlus && opp.competitors.length > 0 && (
+        {isBasicPlus && lazyCompetitors.length > 0 && (
           <div>
             <button
               onClick={() => setExpanded((p) => !p)}
               className="flex items-center gap-1.5 text-xs text-slate-505 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors font-medium mb-2"
             >
               {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-              {expanded ? t("whiteSpaceFinder.hide", "Hide") : t("whiteSpaceFinder.show", "Show")} {t("whiteSpaceFinder.top", "top")} {opp.competitors.length} {t("whiteSpaceFinder.competitorsAndWeaknesses", "competitors & weaknesses")}
+              {expanded ? t("whiteSpaceFinder.hide", "Hide") : t("whiteSpaceFinder.show", "Show")} {t("whiteSpaceFinder.top", "top")} {lazyCompetitors.length} {t("whiteSpaceFinder.competitorsAndWeaknesses", "competitors & weaknesses")}
             </button>
             {expanded && (
               <div className="space-y-2">
-                {opp.competitors.map((c, i) => (
-                  <CompetitorRow key={i} comp={c} index={i} />
+                {lazyCompetitors.map((c, i) => (
+                  <CompetitorRow 
+                    key={i} 
+                    comp={{
+                      ...c,
+                      weakness: insightsLoading ? "Generating AI analysis..." : c.weakness || "Analysis complete. No critical weaknesses found."
+                    }} 
+                    index={i}
+                    isLoading={insightsLoading}
+                  />
                 ))}
               </div>
             )}
