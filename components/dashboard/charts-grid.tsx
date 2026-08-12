@@ -584,7 +584,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
     datasets: [{
       label: "Sentiment Count",
       data: flipkartSentiments.map((s) => s.count || 0),
-      backgroundColor: ["rgba(34,197,94,0.9)", "rgba(234,179,8,0.9)", "rgba(239,68,68,0.9)"],
+      backgroundColor: ["rgba(239,68,68,0.9)", "rgba(234,179,8,0.9)", "rgba(34,197,94,0.9)"],
       borderColor: "rgba(255,255,255,1)",
       borderWidth: 3,
       hoverOffset: 15,
@@ -629,7 +629,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
     datasets: [{
       label: "Sentiment Count",
       data: amazonSentiments.map((s) => s.count || 0),
-      backgroundColor: ["rgba(34,197,94,0.9)", "rgba(234,179,8,0.9)", "rgba(239,68,68,0.9)"],
+      backgroundColor: ["rgba(239,68,68,0.9)", "rgba(234,179,8,0.9)", "rgba(34,197,94,0.9)"],
       borderColor: "rgba(255,255,255,1)",
       borderWidth: 3,
       hoverOffset: 15,

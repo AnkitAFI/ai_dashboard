@@ -316,7 +316,7 @@ from app.db.session import get_db
 from app.api.deps import get_current_user_id, get_optional_user
 from app.services.profitability_service import get_user_tier
 from app.schemas.white_space_finder_schema import (
-    ScanRequest, ScoreBreakdown, Competitor, Opportunity, ScanResult, AIInsight, WatchlistItemRequest
+    ScanRequest, ScoreBreakdown, Competitor, Opportunity, ScanResult, AIInsight, WatchlistItemRequest, NicheInsightsRequest
 )
 
 router = APIRouter()
@@ -738,13 +738,13 @@ def _build_ai_competitor_weaknesses(
         "You are an Amazon and Flipkart India marketplace strategist. "
         "Write 100% factual, metric-based 1-sentence tactical weakness diagnoses for competitors. "
         "CRITICAL FOR ALL PRODUCT CATEGORIES: NEVER invent or claim a product lacks any feature, material, or specification (e.g. 5G, stainless steel, waterproof, cotton, battery, etc.) that is present in its Title. "
-        "Respond ONLY with a valid JSON object mapping ASIN to weakness string — no markdown, no explanation."
+        "Respond ONLY with a valid JSON object mapping ID to weakness string — no markdown, no explanation."
     )
 
     lines = []
     for i, c in enumerate(competitors):
         lines.append(
-            f"{i+1}. ASIN: {c.asin} | Title: {c.title} | {c.rating:.1f}★ ({c.review_count} reviews) | Price: ₹{int(c.price)}"
+            f"{i+1}. ID: COMP_{i} | Title: {c.title} | {c.rating:.1f}★ ({c.review_count} reviews) | Price: ₹{int(c.price)}"
         )
     comp_list_str = "\n".join(lines)
 
@@ -760,33 +760,18 @@ UNIVERSAL RULES FOR WEAKNESS DIAGNOSIS (ALL PRODUCT CATEGORIES):
    - If Price is higher than ₹{int(avg_price):,}: Focus on premium pricing vulnerability vs category average.
    - Otherwise: Focus on bundling, superior primary images, coupon discounts, or A+ content.
 3. Every sentence must be practical, metric-driven, and 100% factual.
-
+4. DO NOT mention the COMP_X ID in the sentence itself (e.g. don't write "COMP_0 has..."). Refer to it simply as "This product" or "This competitor".
 Return ONLY a JSON object like:
-{{"ASIN1": "1-sentence factual weakness", "ASIN2": "1-sentence factual weakness"}}"""
+{{"COMP_0": "1-sentence factual weakness", "COMP_1": "1-sentence factual weakness"}}"""
 
     raw = _ollama_generate(prompt, system=system)
     parsed = _parse_json_from_llm(raw) if raw else None
 
     if parsed and isinstance(parsed, dict) and len(parsed) > 0:
         updated = 0
-        for c in competitors:
-            val = parsed.get(c.asin)
+        for i, c in enumerate(competitors):
+            val = parsed.get(f"COMP_{i}")
             if val and isinstance(val, str) and len(val.strip()) > 10:
-                text_lower = val.lower()
-                title_lower = c.title.lower()
-                # Universal Product-Agnostic Anti-Hallucination Guardrail:
-                # Reject Llama if it uses any negation/lack phrase AND mentions any significant keyword present in the product title!
-                suspicious_negations = ["lacks ", "lack of ", "lacking ", "without ", "no ", "missing ", "does not ", "doesn't ", "not offer"]
-                if any(neg in text_lower for neg in suspicious_negations):
-                    title_words = set(re.findall(r'[a-z0-9]+', title_lower))
-                    conflict = False
-                    for w in title_words:
-                        if len(w) >= 2 and w not in {"for", "with", "and", "the", "in", "on", "at", "to", "of", "pack", "set", "size", "color"}:
-                            if w in text_lower:
-                                conflict = True
-                                break
-                    if conflict:
-                        continue
                 c.weakness = val.strip()
                 updated += 1
         if updated > 0:
@@ -1651,7 +1636,7 @@ def scan_white_spaces(
                 rating=float(r.get("product_star_rating_numeric") or r.get("product_star_rating") or 0),
                 review_count=int(r.get("product_num_ratings") or r.get("product_rating_count") or 0),
                 price=float(r.get("product_price_numeric") or r.get("product_price") or 0),
-                weakness=_competitor_weakness(r, idx=i_comp, avg_price=avg_price, avg_rating=avg_rating, avg_reviews=avg_reviews),
+                weakness="", # Lazy loaded via /scan/insights endpoint
                 platform="amazon" if r in bucket["amazon"] else "flipkart",
                 is_best_seller=bool(r.get("is_best_seller")),
                 is_amazon_choice=bool(r.get("is_amazon_choice")),
@@ -1700,21 +1685,8 @@ def scan_white_spaces(
     visible = opportunities[:cfg["results_visible"]]
     locked_n = max(total_found - len(visible), 0)
 
-    # ── Generate AI insights & competitor weaknesses across ALL visible cards ──
-    for opp in visible:
-        if cfg["ai_insights"]:
-            opp.ai_insights = _build_ai_insights(
-                opp.product_niche,
-                opp.avg_price,
-                opp.avg_rating,
-                opp.avg_reviews,
-                opp.competitor_count,
-                opp.trend_direction,
-                not opp.has_best_seller_gap,  # has_best_seller_gap=True means NO badge
-            )
-        if cfg["competitors"] and opp.competitors:
-            _build_ai_competitor_weaknesses(opp.competitors, opp.product_niche, opp.avg_price)
-
+    # ── AI Insights are now lazy-loaded by the frontend via /scan/insights ──
+    # Removed sequential synchronous AI generation to prevent 100-second timeouts.
     # ── Tier gate: strip fields the tier doesn't expose ───────────────────
     for opp in visible:
         if not cfg["breakdown"]:
@@ -1771,6 +1743,64 @@ def scan_white_spaces(
 
     return result
 
+# ── Lazy Load AI Insights endpoint ──────────────────────────────────────────
+
+@router.post("/scan/insights")
+def scan_insights(req: NicheInsightsRequest):
+    """
+    Called asynchronously by the frontend for each visible niche card to
+    lazy-load AI insights without blocking the main search.
+    """
+    try:
+        import json
+        cache_key = f"ws_insights:{req.product_niche.strip().lower()}"
+        
+        if not req.force_reload:
+            try:
+                cached = r.get(cache_key)
+                if cached:
+                    return json.loads(cached)
+            except Exception as e:
+                logger.warning(f"Redis get error for insights: {e}")
+
+        insights = _build_ai_insights(
+            req.product_niche,
+            req.avg_price,
+            req.avg_rating,
+            req.avg_reviews,
+            req.competitor_count,
+            req.trend_direction,
+            not req.has_best_seller_gap,
+        )
+        
+        competitors_copy = list(req.competitors)
+        if competitors_copy:
+            _build_ai_competitor_weaknesses(competitors_copy, req.product_niche, req.avg_price)
+            
+        comp_weaknesses = {
+            i: c.weakness 
+            for i, c in enumerate(competitors_copy)
+            if c.weakness
+        }
+        
+        result = {
+            "ai_insights": [i.dict() for i in insights],
+            "competitor_weaknesses": comp_weaknesses
+        }
+        
+        try:
+            r.setex(cache_key, 86400, json.dumps(result)) # 24 hour cache
+        except Exception as e:
+            logger.warning(f"Redis set error for insights: {e}")
+            
+        return result
+    except Exception as e:
+        logger.error(f"[scan_insights] Error: {e}")
+        return {
+            "ai_insights": [],
+            "competitor_weaknesses": {},
+            "error": "Timeout or generation failed. Displaying fallback data."
+        }
 
 # ── Watchlist endpoints ───────────────────────────────────────────────────────
 
