@@ -327,10 +327,10 @@ export default function Sales() {
       {/* Header & Source Select */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
         <div className="text-left space-y-1">
-          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+          <h1 className="page-title">
             Top {products.length} Selling Products ({source})
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm">
+          <p className="page-subtitle">
             {t('sales.subtitle', 'Analyze and sort by sales, reviews, price, or rating for data-driven decisions.')}
           </p>
         </div>

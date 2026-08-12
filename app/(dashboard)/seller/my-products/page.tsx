@@ -107,14 +107,12 @@ function SellerProductsContent() {
     <div className="space-y-6">
 
       {/* Premium Hero Header */}
-      <div className="text-center space-y-4 mb-8">
-        <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-2 shadow-inner ${isDark ? 'bg-gradient-to-br from-blue-900/50 to-cyan-900/50 border border-blue-800/50' : 'bg-gradient-to-br from-blue-100 to-cyan-100'}`}>
-          <Star className={`h-8 w-8 ${isDark ? 'text-blue-400' : 'text-blue-500'}`} />
-        </div>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+      {/* Hero */}
+      <div className="text-left space-y-1 mb-6">
+        <h1 className="page-title">
           {t('sellerPages.catalogTitle', 'Seller Product Catalog')}
         </h1>
-        <p className={`text-lg max-w-2xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+        <p className="page-subtitle">
           {t('sellerPages.catalogSubtitle', 'Manage your tracked seller inventory and launch competitive benchmarks.')}
         </p>
       </div>

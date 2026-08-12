@@ -661,14 +661,11 @@ export default function ShareOfVoice() {
         </div>
 
       {/* Hero Header */}
-      <div className="text-center space-y-3 pt-6 mb-8">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-2xl mb-2 shadow-inner">
-          <BarChart3 className="h-8 w-8 text-blue-500" />
-        </div>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+      <div className="text-left space-y-1 mb-6">
+        <h1 className="page-title">
           {t('sov.title', 'Market Visibility')}
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed">
+        <p className="page-subtitle">
           {t('sov.subtitle', 'Analyze brand visibility, measure search market share, track competitors, and uncover category opportunities.')}
         </p>
       </div>

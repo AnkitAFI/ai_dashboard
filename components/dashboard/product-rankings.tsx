@@ -258,14 +258,14 @@ function ProductCard({
     <div className="grid grid-cols-1 gap-6 mb-8">
       <Card className="bg-card rounded-xl p-6 border hover:shadow-md transition-shadow">
         <CardHeader className="flex flex-row items-center justify-between mb-4 p-0">
-          <CardTitle className="text-lg font-semibold">
+          <CardTitle className="section-heading">
             {showBoth
               ? t('charts.marketMoversBoth', "Market Movers (Both Sources)")
               : isAmazon
                 ? t('charts.marketMoversAmazon', "Market Movers (Amazon)")
                 : t('charts.marketMoversFlipkart', "Market Movers (Flipkart)")}
           </CardTitle>
-          <Badge variant="secondary" className="text-xs">
+          <Badge variant="secondary" className="badge-pill bg-muted">
             {t('charts.liveData', 'Live Data')}
           </Badge>
         </CardHeader>

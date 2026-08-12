@@ -573,15 +573,12 @@ export default function ProductTracker() {
             )}
           </div>
 
-          {/* Page Header */}
-          <div className="text-center space-y-3 pt-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl mb-2 shadow-inner">
-              <Target className="h-8 w-8 text-blue-500" />
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-500 via-indigo-400 to-purple-400 text-transparent bg-clip-text">
+          {/* Header */}
+          <div className="text-left space-y-1">
+            <h1 className="page-title">
               {t('pr.title', 'Product Radar (AI)')}
             </h1>
-            <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto">
+            <p className="page-subtitle">
               {t('pr.subtitle', 'Scan specific products to analyze market competition, pricing metrics, and project AI reports.')}
             </p>
           </div>

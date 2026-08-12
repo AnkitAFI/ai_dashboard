@@ -342,17 +342,13 @@ export default function Subscription() {
       )}
 
       {/* Hero Header */}
-      <div className="text-center space-y-4">
-        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-950/20 dark:to-cyan-950/20 rounded-2xl mb-2 shadow-inner">
-          <Crown className="h-8 w-8 text-blue-500" />
-        </div>
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+      <div className="text-left space-y-1">
+        <h1 className="page-title">
           {t('subscription.title', 'Subscription & Licensing')}
         </h1>
-        <p className={cn("text-lg max-w-2xl mx-auto", isDark ? "text-slate-400" : "text-slate-500")}>
+        <p className="page-subtitle">
           {t('subscription.subtitle', 'Unlock the full potential of AI-powered analytics. Pick the plan that fits your growth.')}
         </p>
-
       </div>
 
       {/* Plans Grid */}
