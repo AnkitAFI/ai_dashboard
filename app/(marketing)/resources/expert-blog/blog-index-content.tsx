@@ -559,13 +559,12 @@ export default function ExpertBlog() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+              <span className="block bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent whitespace-nowrap sm:whitespace-normal">
                 E-commerce Intelligence
               </span>
-              <br />
-              <span className="bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">
-                & Seller Growth Insights
+              <span className="block bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent whitespace-nowrap sm:whitespace-normal">
+                &amp; Seller Growth Insights
               </span>
             </h1>
 
