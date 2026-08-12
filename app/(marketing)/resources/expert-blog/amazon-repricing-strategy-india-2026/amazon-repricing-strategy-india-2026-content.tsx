@@ -18,6 +18,8 @@ import RelatedArticles from "../components/RelatedArticles";
 import TableOfContents from "../components/TableOfContents";
 import MobileTableOfContents from "../components/MobileTableOfContents";
 import InsightCards, { InsightCard } from "../components/InsightCard";
+import HeroStats from "../components/HeroStats";
+import RelatedReadingBox from "../components/Relatedreadingbox";
 
 export const dynamic = "force-static";
 
@@ -405,12 +407,17 @@ export default function AmazonRepricingStrategyIndia2026Content() {
     const onScroll = () => {
       const total = document.documentElement.scrollHeight - window.innerHeight;
       setScrollPct(Math.min((window.scrollY / total) * 100, 100));
+      let found = false;
       for (let i = repricingTOC.length - 1; i >= 0; i--) {
         const el = document.getElementById(repricingTOC[i].id);
         if (el && window.scrollY >= el.offsetTop - 130) {
           setActiveSection(repricingTOC[i].id);
+          found = true;
           break;
         }
+      }
+      if (!found) {
+        setActiveSection("s1");
       }
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -542,6 +549,34 @@ export default function AmazonRepricingStrategyIndia2026Content() {
       />
 
       <div style={{ maxWidth: 1240, margin: "16px auto", padding: "0 16px" }}>
+        {/* Hero stats */}
+        <HeroStats
+          resolvedTheme={resolvedTheme}
+          accentColor="#2563EB"
+          stats={[
+            {
+              value: "79%",
+              label:
+                "average Buy Box hold time for sellers using floor-protected, rule-based repricing — across 100 accounts studied over 6 months",
+            },
+            {
+              value: "4 Rules",
+              label:
+                "one repricing rule for every product situation, from commodity match-the-lowest to hold-price differentiated listings",
+            },
+            {
+              value: "15 Min",
+              label:
+                "average response time to a competitor price drop with WhatsApp alerts — vs. 4 to 48 hours checking manually",
+            },
+            {
+              value: "0–1",
+              label:
+                "below-floor pricing incidents per month for rule-based sellers, vs. 3 to 6 for manual or no repricing",
+            },
+          ]}
+        />
+
         {/* Blog Image Section */}
         <BlogImageSection
           imageSrc="/amazon-repricing-strategy-india-image0.png"
@@ -737,6 +772,37 @@ export default function AmazonRepricingStrategyIndia2026Content() {
             </div>
 
             <FAQ accentColor="#2563EB" faqs={repricingFaqs} />
+
+            <RelatedReadingBox
+              label="📌 Related Reading on Insydz"
+              accentColor="#2563EB"
+              darkAccentColor="#60A5FA"
+              backgroundColor="#EFF6FF"
+              darkBackgroundColor="#0a1628"
+              resolvedTheme={resolvedTheme}
+              links={[
+                {
+                  text: "Amazon India Price Wars: Compete Without Losing Margin",
+                  href: "/resources/expert-blog/amazon-india-price-war-strategy",
+                },
+                {
+                  text: "Competitor Undercutting Your Amazon India Price? Act Within 1 Hour",
+                  href: "/resources/expert-blog/competitor-undercutting-amazon-india",
+                },
+                {
+                  text: "Amazon Listing Hijackers India: Detect & Remove Fast",
+                  href: "/resources/expert-blog/amazon-listing-hijacker-india",
+                },
+                {
+                  text: "5 Habits of Top 10% Amazon India Sellers",
+                  href: "/resources/expert-blog/top-amazon-india-sellers-habits",
+                },
+                {
+                  text: "Amazon Prime Day India 2026: Every Question Indian Sellers Are Asking, All Answered",
+                  href: "/resources/expert-blog/prime-day-india-2026-seller-questions",
+                },
+              ]}
+            />
 
             {/* More Pricing and Competitor Intelligence */}
             <RelatedArticles
