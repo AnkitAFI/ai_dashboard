@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
 import { Providers } from "./providers";
 import GoogleAnalytics from "@/components/google-analytics";
+import { MobileBanner } from "@/components/MobileBanner";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://insydz.com"),
@@ -22,6 +23,7 @@ export default function RootLayout({
       </head>
       <body>
         <GoogleAnalytics />
+        <MobileBanner />
         <Providers>
           <AuthProvider>{children}</AuthProvider>
         </Providers>

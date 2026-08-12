@@ -5780,6 +5780,42 @@ def send_signup_otp_email(email: str, otp: str) -> bool:
         return True
 
 # ============================================
+# SMS & Welcome Email
+# ============================================
+
+def send_signup_otp_sms(mobile_number: str, otp: str) -> bool:
+    """Send SMS OTP via Authkey.io"""
+    try:
+        api_key = getattr(settings, "AUTHKEY_API_KEY", None)
+        if not api_key:
+            print("Authkey API Key not set. Skipping SMS.")
+            return False
+            
+        url = "https://api.authkey.io/request"
+        clean_mobile = str(mobile_number).replace("+", "").replace(" ", "")
+        
+        # Default to India if no country code provided
+        country_code = "91"
+        if len(clean_mobile) > 10:
+            country_code = clean_mobile[:-10]
+            clean_mobile = clean_mobile[-10:]
+            
+        params = {
+            "authkey": api_key,
+            "mobile": clean_mobile,
+            "country_code": country_code,
+            "sms": f"Your Insydz verification code is {otp}. Please do not share this code with anyone.",
+            "sender": "INSYDZ" # Needs to be approved by DLT in India for production
+        }
+        
+        response = requests.get(url, params=params, timeout=5)
+        print(f"SMS OTP response for {clean_mobile}: {response.text}")
+        return True
+    except Exception as e:
+        print(f"Error sending SMS OTP: {str(e)}")
+        return False
+
+# ============================================
 # Welcome Email
 # ============================================
 
@@ -6758,24 +6794,26 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
             
         store_otp(request.email, otp_data)
         
-        # Send OTP via email
-        if otp_data["purpose"] == "signup":
-            email_sent = send_signup_otp_email(request.email, otp)
+        # Send OTP via SMS or Email depending on purpose
+        sent_successfully = False
+        if otp_data["purpose"] == "signup" and "user_data" in otp_data and "mobile_number" in otp_data["user_data"]:
+            mobile_number = otp_data["user_data"]["mobile_number"]
+            sent_successfully = send_signup_otp_sms(mobile_number, otp)
         else:
-            email_sent = send_otp_email(request.email, otp)
+            sent_successfully = send_otp_email(request.email, otp)
         
-        if not email_sent:
+        if not sent_successfully:
             delete_otp(request.email)
             raise HTTPException(
                 status_code=500,
-                detail="Failed to send OTP email. Please try again."
+                detail="Failed to send OTP SMS/Email. Please try again."
             )
         
-        print(f"✅ OTP resent to {request.email}: {otp}")
+        print(f"✅ OTP resent to {request.email} / mobile: {otp}")
         
         return {
             "success": True,
-            "message": "New OTP sent successfully to your email"
+            "message": "New OTP sent successfully to your mobile"
         }
         
     except HTTPException:
@@ -6965,7 +7003,7 @@ def signup_user(
                     "verified": False,
                     "purpose": "signup"
                 })
-                background_tasks.add_task(send_signup_otp_email, user_data.email, otp)
+                background_tasks.add_task(send_signup_otp_sms, user_data.mobile_number, otp)
                 print(f"✅ Verification email queued for resend: {user_data.email}")
                 return {
                     "success": True,
@@ -7015,10 +7053,11 @@ def signup_user(
             "user_data": user_data_dict
         })
         
-        # Queue email sending in the background
-        background_tasks.add_task(send_signup_otp_email, user_data.email, otp)
+        # Queue SMS sending in the background
+        if user_data.mobile_number:
+            background_tasks.add_task(send_signup_otp_sms, user_data.mobile_number, otp)
         
-        print(f"✅ New user created and verification email queued in background: {user_data.email}")
+        print(f"✅ New user created and verification SMS queued in background: {user_data.email}")
         
         return {
             "success": True,

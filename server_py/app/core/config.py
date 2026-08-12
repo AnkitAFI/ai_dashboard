@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     Gemini_API_KEY: str = ""
     VITE_API_URL: str = ""
     DATABASE_URL: str = ""
+    AUTHKEY_API_KEY: str = ""
     
     # DataForSEO API
     DATAFORSEO_LOGIN: str = ""
