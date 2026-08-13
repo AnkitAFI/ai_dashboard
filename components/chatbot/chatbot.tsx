@@ -564,7 +564,12 @@ export default function Chatbot({ variant = "floating" }: ChatbotProps) {
                       <div className={cn(
                         "break-words",
                         isFullScreen
-                          ? "text-[15px] leading-relaxed text-slate-800 dark:text-slate-200"
+                          ? cn(
+                              "text-[15px] leading-relaxed rounded-2xl px-5 py-3.5 w-fit",
+                              msg.isUser
+                                ? "bg-gradient-to-br from-indigo-600 to-violet-600 text-white ml-auto font-medium shadow-lg shadow-indigo-500/20"
+                                : "text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/60 shadow-sm rounded-tl-none backdrop-blur-sm"
+                            )
                           : cn(
                               "rounded-2xl p-3 text-sm shadow-sm",
                               msg.isUser 
