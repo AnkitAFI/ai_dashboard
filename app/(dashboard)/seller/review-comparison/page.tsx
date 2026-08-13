@@ -8,6 +8,7 @@ import { useSidebar } from "@/components/layout/sidebar-context";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
 import { API_BASE_URL } from "@/lib/config";
+import ProductSwitcherPanel from "@/components/dashboard/product-switcher-panel";
 import {
   Lock, Crown, Star, MessageSquare, RefreshCw,
   Menu, X, TrendingUp, CheckCircle, Zap,
@@ -329,7 +330,12 @@ function ReviewComparisonContent() {
           </div>
         </header>
 
-        <main className="flex-1 py-6 space-y-6">
+      <div className="flex flex-col lg:flex-row gap-6 items-start flex-1 min-h-0">
+        <div className="hidden lg:block sticky top-6 self-start z-10">
+          <ProductSwitcherPanel currentAsin={asin} sellerId={sellerId} />
+        </div>
+
+        <main className="flex-1 min-w-0 space-y-5 px-4 sm:px-8">
           {!asin && (
             <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
               <div className={`w-16 h-16 rounded-full flex items-center justify-center ${isDark ? 'bg-sky-900/30' : 'bg-sky-100'}`}>
@@ -628,6 +634,7 @@ function ReviewComparisonContent() {
             </>
           )}
         </main>
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 import { API_BASE_URL } from "@/lib/config";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useRef, Suspense } from "react";
 import { useSessionState } from "@/hooks/use-session-state";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -9,12 +9,194 @@ import { useTheme } from "next-themes";
 import SellerIdInput from "@/components/dashboard/seller-id-input";
 import { useAuth } from "@/lib/auth-context";
 import {
-  Loader2, Search, Star, ChevronRight, ChevronLeft,
+  Loader2, Search, Star, ChevronRight, ChevronLeft, X,
+  BarChart2, MessageSquare, Search as SearchIcon, Target,
+  TrendingUp, Hash
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useSelectedProduct } from "@/lib/selected-product-context";
+
+// ─── Feature Picker Modal ────────────────────────────────────────────────────
+interface FeaturePickerModalProps {
+  product: any;
+  sellerId: string;
+  isDark: boolean;
+  onClose: () => void;
+  onNavigate: (path: string) => void;
+}
+
+const FEATURES = [
+  {
+    id: "price-comparison",
+    label: "Price Comparison",
+    description: "Benchmark your price against similar products",
+    icon: BarChart2,
+    gradient: "from-sky-500 to-cyan-500",
+    bgLight: "bg-sky-50 border-sky-200 hover:border-sky-400",
+    bgDark: "bg-sky-900/20 border-sky-800/50 hover:border-sky-600",
+    iconBgLight: "bg-sky-100",
+    iconBgDark: "bg-sky-900/40",
+    iconColor: "text-sky-600",
+    iconColorDark: "text-sky-400",
+    path: "/seller/price-comparison",
+  },
+  {
+    id: "review-comparison",
+    label: "Review Comparison",
+    description: "Analyse your reviews vs. competitors",
+    icon: MessageSquare,
+    gradient: "from-violet-500 to-purple-500",
+    bgLight: "bg-violet-50 border-violet-200 hover:border-violet-400",
+    bgDark: "bg-violet-900/20 border-violet-800/50 hover:border-violet-600",
+    iconBgLight: "bg-violet-100",
+    iconBgDark: "bg-violet-900/40",
+    iconColor: "text-violet-600",
+    iconColorDark: "text-violet-400",
+    path: "/seller/review-comparison",
+  },
+  {
+    id: "keyword-gap",
+    label: "Keyword Gap Analysis",
+    description: "Discover keywords your listing is missing",
+    icon: SearchIcon,
+    gradient: "from-emerald-500 to-teal-500",
+    bgLight: "bg-emerald-50 border-emerald-200 hover:border-emerald-400",
+    bgDark: "bg-emerald-900/20 border-emerald-800/50 hover:border-emerald-600",
+    iconBgLight: "bg-emerald-100",
+    iconBgDark: "bg-emerald-900/40",
+    iconColor: "text-emerald-600",
+    iconColorDark: "text-emerald-400",
+    path: "/seller/keyword-gap",
+  },
+  {
+    id: "competitor-analysis",
+    label: "Competitor Analysis",
+    description: "Deep-dive into your top competitors",
+    icon: Target,
+    gradient: "from-orange-500 to-amber-500",
+    bgLight: "bg-orange-50 border-orange-200 hover:border-orange-400",
+    bgDark: "bg-orange-900/20 border-orange-800/50 hover:border-orange-600",
+    iconBgLight: "bg-orange-100",
+    iconBgDark: "bg-orange-900/40",
+    iconColor: "text-orange-600",
+    iconColorDark: "text-orange-400",
+    path: "/seller/competitor-analysis",
+  },
+  {
+    id: "price-optimizer",
+    label: "Price Optimizer",
+    description: "Live repricing & margin optimization",
+    icon: TrendingUp,
+    gradient: "from-blue-500 to-indigo-500",
+    bgLight: "bg-blue-50 border-blue-200 hover:border-blue-400",
+    bgDark: "bg-blue-900/20 border-blue-800/50 hover:border-blue-600",
+    iconBgLight: "bg-blue-100",
+    iconBgDark: "bg-blue-900/40",
+    iconColor: "text-blue-600",
+    iconColorDark: "text-blue-400",
+    path: "/seller/price-optimizer",
+  },
+  {
+    id: "rank-tracker",
+    label: "Rank Tracker",
+    description: "Track search position for keywords",
+    icon: Hash,
+    gradient: "from-pink-500 to-rose-500",
+    bgLight: "bg-pink-50 border-pink-200 hover:border-pink-400",
+    bgDark: "bg-pink-900/20 border-pink-800/50 hover:border-pink-600",
+    iconBgLight: "bg-pink-100",
+    iconBgDark: "bg-pink-900/40",
+    iconColor: "text-pink-600",
+    iconColorDark: "text-pink-400",
+    path: "/seller/rank-tracker",
+  },
+];
+
+function FeaturePickerModal({ product, sellerId, isDark, onClose, onNavigate }: FeaturePickerModalProps) {
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [onClose]);
+
+  return (
+    <div
+      ref={overlayRef}
+      onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)" }}
+    >
+      <div
+        className={`relative w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 ${
+          isDark ? "bg-slate-900 border border-slate-800" : "bg-white border border-slate-100"
+        }`}
+      >
+        {/* Close */}
+        <button
+          onClick={onClose}
+          className={`absolute top-4 right-4 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+            isDark ? "bg-slate-800 hover:bg-slate-700 text-slate-400" : "bg-slate-100 hover:bg-slate-200 text-slate-500"
+          }`}
+        >
+          <X className="w-4 h-4" />
+        </button>
+
+        {/* Product banner */}
+        <div className={`px-6 pt-6 pb-4 border-b ${ isDark ? "border-slate-800" : "border-slate-100" }`}>
+          <p className={`text-xs font-semibold uppercase tracking-widest mb-2 ${ isDark ? "text-slate-500" : "text-slate-400" }`}>
+            Analyse Product
+          </p>
+          <div className="flex items-center gap-3">
+            <div className={`w-12 h-12 rounded-xl border flex items-center justify-center overflow-hidden flex-shrink-0 ${ isDark ? "bg-slate-800 border-slate-700" : "bg-slate-50 border-slate-100" }`}>
+              {product.image
+                ? <img src={product.image} alt={product.title} className="w-full h-full object-contain p-1" />
+                : <span className={`font-bold text-xl ${ isDark ? "text-slate-600" : "text-slate-300" }`}>{product.title?.charAt(0)}</span>
+              }
+            </div>
+            <div className="min-w-0">
+              <p className={`font-bold text-sm line-clamp-2 ${ isDark ? "text-slate-100" : "text-slate-800" }`}>{product.title}</p>
+              <p className={`text-[11px] font-mono mt-0.5 ${ isDark ? "text-slate-500" : "text-slate-400" }`}>{product.asin}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Feature grid */}
+        <div className="p-6">
+          <p className={`text-xs font-semibold uppercase tracking-widest mb-4 ${ isDark ? "text-slate-500" : "text-slate-400" }`}>
+            Choose a Feature
+          </p>
+          <div className="grid grid-cols-2 gap-3">
+            {FEATURES.map((f) => {
+              const Icon = f.icon;
+              return (
+                <button
+                  key={f.id}
+                  onClick={() => onNavigate(f.path)}
+                  className={`group relative flex flex-col items-start gap-2 p-4 rounded-2xl border-2 text-left transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 ${
+                    isDark ? f.bgDark : f.bgLight
+                  }`}
+                >
+                  <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${ isDark ? f.iconBgDark : f.iconBgLight }`}>
+                    <Icon className={`w-5 h-5 ${ isDark ? f.iconColorDark : f.iconColor }`} />
+                  </div>
+                  <div>
+                    <p className={`font-bold text-sm ${ isDark ? "text-slate-100" : "text-slate-800" }`}>{f.label}</p>
+                    <p className={`text-xs mt-0.5 leading-snug ${ isDark ? "text-slate-500" : "text-slate-500" }`}>{f.description}</p>
+                  </div>
+                  <ChevronRight className={`absolute bottom-3 right-3 w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity ${ isDark ? f.iconColorDark : f.iconColor }`} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function SellerProductsContent() {
   const { t } = useTranslation();
@@ -30,6 +212,7 @@ function SellerProductsContent() {
   const [searchQuery, setSearchQuery] = useSessionState("seller_my_products_search", "");
   const [activeFilter, setActiveFilter] = useSessionState<"all" | "prime" | "best_seller">("seller_my_products_filter", "all");
   const [selectedAsin, setSelectedAsin] = useSessionState<string | null>("seller_my_products_asin", null);
+  const [modalProduct, setModalProduct] = useState<any | null>(null);
   const [currentPage, setCurrentPage] = useSessionState("seller_my_products_page", 1);
   const itemsPerPage = 10;
 
@@ -94,9 +277,14 @@ function SellerProductsContent() {
   const handleRowClick = (p: any) => {
     setSelectedAsin(p.asin);
     setSelected({ asin: p.asin, sellerId: activeSellerId || "" });
-    const params = new URLSearchParams({ asin: p.asin, seller_id: activeSellerId || "" });
-    // Navigate to price comparison by default; user can switch tabs there
-    router.push(`/seller/price-comparison?${params}`);
+    setModalProduct(p);
+  };
+
+  const handleFeatureNavigate = (path: string) => {
+    if (!modalProduct) return;
+    const params = new URLSearchParams({ asin: modalProduct.asin, seller_id: activeSellerId || "" });
+    setModalProduct(null);
+    router.push(`${path}?${params}`);
   };
 
   if (!mounted) return null;
@@ -105,6 +293,16 @@ function SellerProductsContent() {
 
   return (
     <div className="space-y-6">
+      {/* Feature Picker Modal */}
+      {modalProduct && (
+        <FeaturePickerModal
+          product={modalProduct}
+          sellerId={activeSellerId || ""}
+          isDark={isDark}
+          onClose={() => setModalProduct(null)}
+          onNavigate={handleFeatureNavigate}
+        />
+      )}
 
       {/* Premium Hero Header */}
       <div className="text-center space-y-4 mb-8">
@@ -327,7 +525,7 @@ function SellerProductsContent() {
                   {filteredProducts.length !== products.length && ` (filtered from ${products.length} total)`}
                 </p>
                 <span className={`hidden sm:inline ${isDark ? 'text-slate-600' : 'text-slate-300'}`}>|</span>
-                <p className={isDark ? 'text-slate-500' : 'text-slate-400'}>Click a row to analyze it</p>
+                 <p className={isDark ? 'text-slate-500' : 'text-slate-400'}>Click a row to choose a feature</p>
               </div>
               
               {totalPages > 1 && (

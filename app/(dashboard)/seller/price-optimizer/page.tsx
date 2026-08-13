@@ -9,6 +9,7 @@ import { useSidebar } from "@/components/layout/sidebar-context";
 import { useSelectedProduct } from "@/lib/selected-product-context";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
+import ProductSwitcherPanel from "@/components/dashboard/product-switcher-panel";
 import {
   Lock, Crown, RefreshCw, Menu, Package,
   TrendingUp, TrendingDown, Minus, CheckCircle,
@@ -464,7 +465,12 @@ export default function SellerPriceOptimizer() {
         </div>
       </header>
 
-      <main className="flex-1 py-6 space-y-5">
+      <div className="flex flex-col lg:flex-row gap-6 items-start flex-1 min-h-0">
+        <div className="hidden lg:block sticky top-6 self-start z-10">
+          <ProductSwitcherPanel currentAsin={asin} sellerId={sellerId} />
+        </div>
+
+        <main className="flex-1 min-w-0 space-y-5">
         {/* No product selected */}
         {!asin && (
           <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
@@ -922,7 +928,8 @@ export default function SellerPriceOptimizer() {
             )}
           </>
         )}
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

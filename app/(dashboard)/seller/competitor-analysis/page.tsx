@@ -9,6 +9,7 @@ import { useSidebar } from "@/components/layout/sidebar-context";
 import { useSelectedProduct } from "@/lib/selected-product-context";
 import { useTheme } from "next-themes";
 import { useTranslation } from "react-i18next";
+import ProductSwitcherPanel from "@/components/dashboard/product-switcher-panel";
 import {
   Lock, Crown, RefreshCw, Menu, Package,
   AlertTriangle, Shield, ShieldAlert, ShieldOff,
@@ -539,7 +540,6 @@ function CompetitorAnalysisContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-transparent">
-      {/* Header */}
       <header className={`bg-transparent border-b pb-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${isDark ? 'border-sky-900/50' : 'border-sky-100/80'}`}>
         <div className="flex items-center gap-3">
           <button onClick={toggle} className={`lg:hidden p-2 rounded-xl mr-1 shadow-sm ${isDark ? 'bg-slate-800 hover:bg-slate-700' : 'bg-sky-50 hover:bg-sky-100'}`}>
@@ -578,7 +578,12 @@ function CompetitorAnalysisContent() {
         </div>
       </header>
 
-      <main className="flex-1 py-6 space-y-5">
+      <div className="flex flex-col lg:flex-row gap-6 items-start flex-1 min-h-0">
+        <div className="hidden lg:block sticky top-6 self-start z-10">
+          <ProductSwitcherPanel currentAsin={asin} sellerId={sellerId} />
+        </div>
+
+        <main className="flex-1 min-w-0 space-y-5">
         {/* No product selected */}
         {!asin && (
           <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
@@ -964,7 +969,8 @@ function CompetitorAnalysisContent() {
             )}
           </>
         )}
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
