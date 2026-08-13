@@ -534,7 +534,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                           variant={isActive(item.href) ? "default" : "ghost"}
                           disabled={item.disabled}
                           className={cn(
-                            "w-full justify-start transition-all duration-200 rounded-xl font-medium relative group",
+                            "w-full justify-start transition-all duration-200 rounded-xl font-medium relative group px-3 py-2 h-auto min-h-[40px]",
                             isCollapsed && "justify-center px-2",
                             isActive(item.href)
                               ? "bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-md"
@@ -547,21 +547,18 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                             .replace(/^_+|_+$/g, "")}`}
                           data-filter-value={item.href}
                         >
-                          <Icon
-                            className={cn(
-                              "h-4 w-4 shrink-0",
-                              !isCollapsed && "mr-3",
-                            )}
-                          />
-                          {!isCollapsed && (
-                            <div className="flex items-center justify-between w-full">
-                              <span className="truncate text-sm">
+                          {isCollapsed ? (
+                            <Icon className="h-4 w-4 shrink-0" />
+                          ) : (
+                            <div className="flex items-center w-full min-w-0 gap-3 text-left">
+                              <Icon className="h-4 w-4 shrink-0 opacity-80 group-hover:opacity-100" />
+                              <span className="truncate text-xs sm:text-sm font-medium min-w-0 flex-1 text-left">
                                 {item.label}
                               </span>
                               {item.badge && (
                                 <span
                                   className={cn(
-                                    "ml-auto text-[10px] font-extrabold px-2 py-0.5 rounded-full leading-tight shrink-0 tracking-wide uppercase border shadow-2xs",
+                                    "text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none shrink-0 tracking-wider uppercase border shadow-2xs",
                                     item.badge === "AI"
                                       ? "bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900/60 dark:text-purple-200 dark:border-purple-700"
                                       : item.badge === "NEW"

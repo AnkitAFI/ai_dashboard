@@ -25,6 +25,13 @@ import {
 } from "recharts";
 import SmartSearchInput from "@/components/ui/smart-search-input";
 import { useTranslation } from "react-i18next";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface BrandShareData {
   brand: string;
@@ -255,7 +262,7 @@ function Pagination({
   totalPages: number;
   onPageChange: (page: number) => void;
 }) {
-  const maxVisible = 5;
+  const maxVisible = 3;
   let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
   let end = Math.min(totalPages, start + maxVisible - 1);
   if (end - start < maxVisible - 1) start = Math.max(1, end - maxVisible + 1);
@@ -263,65 +270,70 @@ function Pagination({
   for (let i = start; i <= end; i++) pages.push(i);
 
   return (
-    <div className="flex items-center justify-center gap-2 mt-6">
-      <button
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage === 1}
-        className="p-2 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-slate-600 dark:text-slate-300"
-        data-track-id="sov_prev_page_btn"
-      >
-        <ChevronLeft className="w-4 h-4" />
-      </button>
-      {start > 1 && (
-        <>
-          <button
-            onClick={() => onPageChange(1)}
-            className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm transition-colors text-slate-700 dark:text-slate-300"
-            data-track-id="sov_page_num_btn"
-            data-filter-value="1"
-          >
-            1
-          </button>
-          {start > 2 && <span className="text-slate-400 dark:text-slate-500 text-sm">…</span>}
-        </>
-      )}
-      {pages.map((p) => (
+    <div className="flex flex-wrap items-center justify-between sm:justify-center gap-2 mt-4 max-w-full overflow-hidden">
+      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap min-w-0">
         <button
-          key={p}
-          onClick={() => onPageChange(p)}
-          className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${
-            currentPage === p
-              ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-blue-500 shadow-sm"
-              : "border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-slate-700 dark:text-slate-300"
-          }`}
-          data-track-id="sov_page_num_btn"
-          data-filter-value={p}
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="p-1.5 sm:p-2 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-slate-600 dark:text-slate-300"
+          data-track-id="sov_prev_page_btn"
         >
-          {p}
+          <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
         </button>
-      ))}
-      {end < totalPages && (
-        <>
-          {end < totalPages - 1 && <span className="text-slate-400 dark:text-slate-500 text-sm">…</span>}
+        {start > 1 && (
+          <>
+            <button
+              onClick={() => onPageChange(1)}
+              className="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-xs sm:text-sm transition-colors text-slate-700 dark:text-slate-300"
+              data-track-id="sov_page_num_btn"
+              data-filter-value="1"
+            >
+              1
+            </button>
+            {start > 2 && <span className="text-slate-400 dark:text-slate-500 text-xs sm:text-sm">…</span>}
+          </>
+        )}
+        {pages.map((p) => (
           <button
-            onClick={() => onPageChange(totalPages)}
-            className="px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-sm transition-colors text-slate-700 dark:text-slate-300"
+            key={p}
+            onClick={() => onPageChange(p)}
+            className={`px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border text-xs sm:text-sm font-medium transition-colors ${
+              currentPage === p
+                ? "bg-gradient-to-r from-blue-500 to-cyan-500 text-white border-blue-500 shadow-sm"
+                : "border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-slate-700 dark:text-slate-300"
+            }`}
             data-track-id="sov_page_num_btn"
-            data-filter-value={totalPages}
+            data-filter-value={p}
           >
-            {totalPages}
+            {p}
           </button>
-        </>
-      )}
-      <button
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage === totalPages}
-        className="p-2 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-slate-600 dark:text-slate-300"
-        data-track-id="sov_next_page_btn"
-      >
-        <ChevronRight className="w-4 h-4" />
-      </button>
-      <span className="ml-3 text-xs text-gray-500 dark:text-slate-400">Page {currentPage} / {totalPages}</span>
+        ))}
+        {end < totalPages && (
+          <>
+            {end < totalPages - 1 && <span className="text-slate-400 dark:text-slate-500 text-xs sm:text-sm">…</span>}
+            <button
+              onClick={() => onPageChange(totalPages)}
+              className="px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 text-xs sm:text-sm transition-colors text-slate-700 dark:text-slate-300"
+              data-track-id="sov_page_num_btn"
+              data-filter-value={totalPages}
+            >
+              {totalPages}
+            </button>
+          </>
+        )}
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="p-1.5 sm:p-2 rounded-lg border border-slate-300 dark:border-slate-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-slate-600 dark:text-slate-300"
+          data-track-id="sov_next_page_btn"
+        >
+          <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        </button>
+      </div>
+
+      <span className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">
+        Page {currentPage} / {totalPages}
+      </span>
     </div>
   );
 }
@@ -632,10 +644,19 @@ export default function ShareOfVoice() {
     <div className="space-y-4">
       <div className="max-w-7xl mx-auto space-y-4 relative">
 
-        {/* Visual Usage Meter (Top Right Header) */}
-        <div className="absolute top-0 right-4 sm:right-0 z-10">
+        {/* Hero Header & Usage Meter */}
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+          <div className="text-left space-y-1">
+            <h1 className="page-title">
+              {t('sov.title', 'Market Visibility')}
+            </h1>
+            <p className="page-subtitle">
+              {t('sov.subtitle', 'Analyze brand visibility, measure search market share, track competitors, and uncover category opportunities.')}
+            </p>
+          </div>
+
           {!loadingUsage && userId && usageLimits && (
-            <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
+            <div className="shrink-0 bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px] self-start sm:self-auto">
               <div className="flex items-center justify-between gap-3 mb-1">
                 <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{t('sov.analysesUsed', 'Analyses used')}</p>
                 <Badge className={`h-4 text-[10px] border-none px-1.5 ${usageLimits.subscription_tier.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : usageLimits.subscription_tier.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : usageLimits.subscription_tier.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
@@ -652,23 +673,13 @@ export default function ShareOfVoice() {
                     }}
                   />
                 </div>
-                <span className="text-[11px] font-bold text-slate-600">
+                <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300">
                   {usageLimits.count}/{usageLimits.limit === Infinity ? "∞" : usageLimits.limit}
                 </span>
               </div>
             </div>
           )}
         </div>
-
-      {/* Hero Header */}
-      <div className="text-left space-y-1 mb-6">
-        <h1 className="page-title">
-          {t('sov.title', 'Market Visibility')}
-        </h1>
-        <p className="page-subtitle">
-          {t('sov.subtitle', 'Analyze brand visibility, measure search market share, track competitors, and uncover category opportunities.')}
-        </p>
-      </div>
 
       {/* ── Upgrade Modal ── */}
       {showUpgradeModal && (
@@ -738,32 +749,31 @@ export default function ShareOfVoice() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('sov.marketplace', 'Marketplace')}</label>
-                <select
-                  value={marketplace}
-                  onChange={(e) => setMarketplace(e.target.value as any)}
-                  disabled={loading}
-                  className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
-                  data-track-id="marketplace_select"
-                  data-filter-value={marketplace}
-                >
-                  <option value="flipkart" className="bg-white dark:bg-slate-800">Flipkart India</option>
-                  <option value="amazon" className="bg-white dark:bg-slate-800">Amazon India</option>
-                </select>
+                <Select value={marketplace} onValueChange={(v) => setMarketplace(v as any)} disabled={loading}>
+                  <SelectTrigger className="w-full h-11 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm">
+                    <SelectValue placeholder="Select Marketplace" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="flipkart">Flipkart India</SelectItem>
+                    <SelectItem value="amazon">Amazon India</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
-              <div>
+              <div className="min-w-0 max-w-full">
                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('sov.category', 'Category')}</label>
-                <select
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                  disabled={loading}
-                  className="w-full p-3 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm disabled:bg-gray-100 dark:disabled:bg-slate-700 disabled:cursor-not-allowed"
-                  data-track-id="category_select"
-                  data-filter-value={selectedCategory}
-                >
-                  <option value="" className="bg-white dark:bg-slate-800">{t('sov.selectCategory', 'Select Category')}</option>
-                  {categories.map((c, i) => <option key={i} value={c} className="bg-white dark:bg-slate-800">{c}</option>)}
-                </select>
+                <Select value={selectedCategory} onValueChange={setSelectedCategory} disabled={loading}>
+                  <SelectTrigger className="w-full h-11 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-sm">
+                    <SelectValue placeholder={t('sov.selectCategory', 'Select Category')} />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-60 overflow-y-auto">
+                    {categories.map((c, i) => (
+                      <SelectItem key={i} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1.5">{t('sov.yourBrand', 'Your Brand')} <span className="text-gray-400 dark:text-slate-500 text-xs">({t('sov.optional', 'Optional')})</span></label>
@@ -847,21 +857,21 @@ export default function ShareOfVoice() {
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               {[
-                { label: "Total Products", value: sovData.total_products.toLocaleString(), icon: <BarChart3 className="w-6 h-6 text-blue-100" />, grad: "from-blue-600 to-indigo-700", sub: "In this category", desc: "Total number of products currently selling in this category on the marketplace. Helps you understand how big and active this product market is." },
-                { label: "Total Reviews", value: sovData.total_reviews.toLocaleString(), icon: <Users className="w-6 h-6 text-emerald-100" />, grad: "from-emerald-600 to-teal-700", sub: "Customer feedback", desc: "Total customer reviews across all products here. Shows overall customer demand and how actively buyers leave ratings." },
-                { label: "Market Leader", value: sovData.market_leader || "—", icon: <Award className="w-6 h-6 text-purple-100" />, grad: "from-purple-600 to-pink-700", sub: "Top brand", truncate: true, desc: "The #1 top-selling brand with the most reviews and visibility in this category. This is your main competitor to learn from." },
+                { label: "Total Products", value: sovData.total_products.toLocaleString(), icon: <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-blue-100" />, grad: "from-blue-600 to-indigo-700", sub: "In this category", desc: "Total number of products currently selling in this category on the marketplace. Helps you understand how big and active this product market is." },
+                { label: "Total Reviews", value: sovData.total_reviews.toLocaleString(), icon: <Users className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-100" />, grad: "from-emerald-600 to-teal-700", sub: "Customer feedback", desc: "Total customer reviews across all products here. Shows overall customer demand and how actively buyers leave ratings." },
+                { label: "Market Leader", value: sovData.market_leader || "—", icon: <Award className="w-5 h-5 sm:w-6 sm:h-6 text-purple-100" />, grad: "from-purple-600 to-pink-700", sub: "Top brand", truncate: true, desc: "The #1 top-selling brand with the most reviews and visibility in this category. This is your main competitor to learn from." },
                 ...(sovData.your_brand_share !== null
-                  ? [{ label: "Your Share", value: `${sovData.your_brand_share}%`, icon: <Target className="w-6 h-6 text-amber-100" />, grad: "from-amber-600 to-orange-700", sub: "Market position", desc: "Your brand's share of total customer attention and reviews compared to all other competitors selling here." }]
-                  : [{ label: "Total Brands", value: String(sovData.brands.length), icon: <Layers className="w-6 h-6 text-cyan-100" />, grad: "from-cyan-600 to-blue-700", sub: "Competing brands", desc: "The total number of different brands competing for customer orders in this category." }]),
+                  ? [{ label: "Your Share", value: `${sovData.your_brand_share}%`, icon: <Target className="w-5 h-5 sm:w-6 sm:h-6 text-amber-100" />, grad: "from-amber-600 to-orange-700", sub: "Market position", desc: "Your brand's share of total customer attention and reviews compared to all other competitors selling here." }]
+                  : [{ label: "Total Brands", value: String(sovData.brands.length), icon: <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-100" />, grad: "from-cyan-600 to-blue-700", sub: "Competing brands", desc: "The total number of different brands competing for customer orders in this category." }]),
               ].map((c, i) => (
                 <Card key={i} className={`relative bg-gradient-to-br ${c.grad} text-white border-0 rounded-3xl shadow-xl overflow-hidden group hover:scale-[1.02] transition-transform`}>
-                  <CardContent className="p-5 relative">
-                    <div className="flex items-start justify-between">
-                      <div className="min-w-0 flex-1">
+                  <CardContent className="p-4 sm:p-5 relative">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1 pr-1">
                         <div className="flex items-center gap-1 mb-1">
-                          <p className="text-white/90 text-xs font-semibold">{c.label}</p>
+                          <p className="text-white/90 text-xs font-semibold truncate">{c.label}</p>
                           <CardInfoModal
                             title={c.label}
                             description={(c as any).desc}
@@ -871,10 +881,20 @@ export default function ShareOfVoice() {
                             ]}
                           />
                         </div>
-                        <p className={`font-black text-white ${(c as any).truncate ? "text-xl truncate" : "text-3xl"}`}>{c.value}</p>
-                        <p className="text-white/70 text-xs mt-1 font-medium">{c.sub}</p>
+                        <p className={`font-black text-white ${
+                          c.value.length > 10
+                            ? "text-base sm:text-xl lg:text-2xl"
+                            : c.value.length > 7
+                              ? "text-lg sm:text-2xl lg:text-3xl"
+                              : (c as any).truncate ? "text-lg sm:text-xl truncate" : "text-xl sm:text-3xl"
+                        }`}>
+                          {c.value}
+                        </p>
+                        <p className="text-white/70 text-xs mt-1 font-medium truncate">{c.sub}</p>
                       </div>
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shrink-0 ml-2 border border-white/20 shadow-inner">{c.icon}</div>
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center shrink-0 border border-white/20 shadow-inner">
+                        {c.icon}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -1357,33 +1377,37 @@ export default function ShareOfVoice() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 pt-4">
-                  <ResponsiveContainer width="100%" height={320}>
-                    <BarChart
-                      data={(marketHealth?.review_velocity ?? []).slice(0, 12).map((v) => ({
-                        brand: v.brand.length > 12 ? v.brand.slice(0, 12) + "…" : v.brand,
-                        density: v.review_density,
-                        label: v.velocity_label,
-                      }))}
-                      margin={{ left: 10, right: 10, top: 24, bottom: 45 }}
-                      barCategoryGap="25%"
-                    >
-                      <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} vertical={false} />
-                      <XAxis dataKey="brand" tick={{ fontSize: 11, fontWeight: 600, fill: isDark ? "#64748b" : "#94a3b8" }} angle={-35} textAnchor="end" interval={0} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fontWeight: 500, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} />
-                      <Tooltip contentStyle={getTooltipStyle(isDark)} formatter={(v: any) => [v.toFixed(1), "Reviews/product"]} />
-                      <Bar dataKey="density" radius={[6, 6, 0, 0]} maxBarSize={32}>
-                        {marketHealth.review_velocity.slice(0, 12).map((v, i) => (
-                          <Cell key={i} fill={v.velocity_label === "Rising" ? "#10b981" : v.velocity_label === "Declining" ? "#ef4444" : "#3b82f6"} />
-                        ))}
-                        <LabelList
-                          dataKey="density"
-                          position="top"
-                          formatter={(v: number) => v.toFixed(1)}
-                          style={{ fontSize: 11, fontWeight: 700, fill: isDark ? "#cbd5e1" : "#475569" }}
-                        />
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
+                  <div className="w-full overflow-x-auto">
+                    <div className="min-w-[320px] sm:min-w-full">
+                      <ResponsiveContainer width="100%" height={320}>
+                        <BarChart
+                          data={(marketHealth?.review_velocity ?? []).slice(0, 12).map((v) => ({
+                            brand: v.brand.length > 10 ? v.brand.slice(0, 10) + "…" : v.brand,
+                            density: v.review_density,
+                            label: v.velocity_label,
+                          }))}
+                          margin={{ left: 0, right: 10, top: 24, bottom: 55 }}
+                          barCategoryGap="20%"
+                        >
+                          <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} vertical={false} />
+                          <XAxis dataKey="brand" tick={{ fontSize: 10, fontWeight: 600, fill: isDark ? "#64748b" : "#94a3b8" }} angle={-45} textAnchor="end" interval={0} axisLine={false} tickLine={false} />
+                          <YAxis tick={{ fontSize: 10, fontWeight: 500, fill: isDark ? "#64748b" : "#94a3b8" }} axisLine={false} tickLine={false} width={45} tickFormatter={(v) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v} />
+                          <Tooltip contentStyle={getTooltipStyle(isDark)} formatter={(v: any) => [typeof v === 'number' ? v.toFixed(1) : v, "Reviews/product"]} />
+                          <Bar dataKey="density" radius={[6, 6, 0, 0]} maxBarSize={32}>
+                            {marketHealth.review_velocity.slice(0, 12).map((v, i) => (
+                              <Cell key={i} fill={v.velocity_label === "Rising" ? "#10b981" : v.velocity_label === "Declining" ? "#ef4444" : "#3b82f6"} />
+                            ))}
+                            <LabelList
+                              dataKey="density"
+                              position="top"
+                              formatter={(v: number) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v.toFixed(1)}
+                              style={{ fontSize: 9, fontWeight: 700, fill: isDark ? "#cbd5e1" : "#475569" }}
+                            />
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
                   <div className="flex items-center justify-center gap-6 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex-wrap">
                     {[["#10b981", "Rising Velocity"], ["#3b82f6", "Stable Velocity"], ["#ef4444", "Declining Velocity"]].map(([c, l]) => (
                       <div key={l} className="flex items-center gap-2">

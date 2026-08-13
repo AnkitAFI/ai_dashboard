@@ -543,12 +543,21 @@ export default function ProductTracker() {
       </div>
 
       <div className="space-y-4">
-        <div className="max-w-7xl mx-auto space-y-4 relative">
+        <div className="max-w-7xl mx-auto space-y-4">
 
-          {/* Visual Usage Meter (Top Right Header) */}
-          <div className="absolute top-0 right-4 sm:right-0 z-10">
+          {/* Header & Usage Meter */}
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+            <div className="text-left space-y-1">
+              <h1 className="page-title">
+                {t('pr.title', 'Product Radar (AI)')}
+              </h1>
+              <p className="page-subtitle">
+                {t('pr.subtitle', 'Scan specific products to analyze market competition, pricing metrics, and project AI reports.')}
+              </p>
+            </div>
+
             {!loadingUsage && userId && usageLimits && (
-              <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
+              <div className="shrink-0 bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px] self-start sm:self-auto">
                 <div className="flex items-center justify-between gap-3 mb-1">
                   <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{t('pr.analysesUsed', 'Analyses used')}</p>
                   <Badge className={`h-4 text-[10px] border-none px-1.5 ${usageLimits.subscription_tier.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : usageLimits.subscription_tier.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : usageLimits.subscription_tier.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
@@ -565,22 +574,12 @@ export default function ProductTracker() {
                       }}
                     />
                   </div>
-                  <span className="text-[11px] font-bold text-slate-600">
+                  <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300">
                     {usageLimits.count}/{usageLimits.limit >= UNLIMITED ? "∞" : usageLimits.limit}
                   </span>
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Header */}
-          <div className="text-left space-y-1">
-            <h1 className="page-title">
-              {t('pr.title', 'Product Radar (AI)')}
-            </h1>
-            <p className="page-subtitle">
-              {t('pr.subtitle', 'Scan specific products to analyze market competition, pricing metrics, and project AI reports.')}
-            </p>
           </div>
 
           {/* Input Form */}
@@ -1077,14 +1076,7 @@ export default function ProductTracker() {
                 </Card>
               )}
 
-              {/* Disclaimer */}
-              <div className="mt-1 pt-1 border-t border-slate-100">
-                <p className="text-[10px] text-center text-slate-400 leading-tight opacity-60">
-                  <span className="font-medium">Disclaimer:</span> The data and insights presented are for informational purposes only.
-                  While we strive for accuracy, we cannot guarantee completeness or reliability.
-                  Please verify critical data independently before making business decisions.
-                </p>
-              </div>
+
 
             </div>
           )}

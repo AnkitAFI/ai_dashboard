@@ -1505,12 +1505,26 @@ function KeywordTrackerIntelligenceContent() {
       </div>
 
       <div className="space-y-4">
-        <div className="max-w-7xl mx-auto space-y-4 relative">
+        <div className="max-w-7xl mx-auto space-y-4">
 
-          {/* Visual Usage Meter (Top Right Header) */}
-          <div className="absolute top-0 right-4 sm:right-0 z-10">
+          {/* Page Header & Usage Meter */}
+          <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 pt-2">
+            <div className="hidden sm:block min-w-[160px]" />
+
+            <div className="text-center space-y-3 flex-1">
+              <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 rounded-2xl mb-1 shadow-inner">
+                <Compass className="h-7 w-7 sm:h-8 sm:w-8 text-purple-600 dark:text-purple-400" />
+              </div>
+              <h1 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 dark:from-purple-400 dark:via-indigo-400 dark:to-blue-400 text-transparent bg-clip-text">
+                {t('ki.pageTitle', 'Keyword Intelligence')}
+              </h1>
+              <p className="text-xs sm:text-base text-slate-500 dark:text-slate-400 max-w-2xl mx-auto px-2">
+                {t('ki.pageSubtitle', 'Explore high-opportunity buyer search terms, analyze search volumes, and track buyer keywords.')}
+              </p>
+            </div>
+
             {!usageLoading && user && (
-              <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
+              <div className="shrink-0 bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px] self-center sm:self-start">
                 <div className="flex items-center justify-between gap-3 mb-1">
                   <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{t('ki.searchesUsed', 'Searches used')}</p>
                   <Badge className={`h-4 text-[10px] border-none px-1.5 ${user.subscriptionTier?.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : user.subscriptionTier?.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : user.subscriptionTier?.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
@@ -1527,25 +1541,12 @@ function KeywordTrackerIntelligenceContent() {
                       }}
                     />
                   </div>
-                  <span className="text-[11px] font-bold text-slate-600">
+                  <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300">
                     {used}/{remainingSearches === null ? "∞" : searchLimit}
                   </span>
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Page Header */}
-          <div className="text-center space-y-3 pt-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-100 to-indigo-100 dark:from-purple-900/40 dark:to-indigo-900/40 rounded-2xl mb-2 shadow-inner">
-              <Compass className="h-8 w-8 text-purple-600 dark:text-purple-400" />
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 dark:from-purple-400 dark:via-indigo-400 dark:to-blue-400 text-transparent bg-clip-text">
-              {t('ki.pageTitle', 'Keyword Intelligence')}
-            </h1>
-            <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
-              {t('ki.pageSubtitle', 'Explore high-opportunity buyer search terms, analyze search volumes, and track buyer keywords.')}
-            </p>
           </div>
 
           {/* Subscription gate wrapper */}
