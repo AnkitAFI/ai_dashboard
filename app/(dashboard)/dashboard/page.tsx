@@ -8,42 +8,24 @@ import ProductRankings from "@/components/dashboard/product-rankings";
 import AIRecommendations from "@/components/dashboard/ai-recommendations";
 import SellerDashboardView from "@/components/dashboard/seller-dashboard-view";
 import SellerIdInput from "@/components/dashboard/seller-id-input";
-
-import { Button } from "@/components/ui/button";
 import {
   TrendingDown,
   TrendingUp,
   Star,
   Package,
   AlertCircle,
-  ExternalLink,
-  Lock,
   Crown,
+  Monitor,
 } from "lucide-react";
 import { useFilters } from "@/components/dashboard/filters-context";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
-import {
-  useSubscriptionLimits,
-  UNLIMITED,
-} from "@/hooks/use-subscription-limits";
+import { useSubscriptionLimits } from "@/hooks/use-subscription-limits";
 import { useSubscriptionSync } from "@/hooks/use-subscription-sync";
 import { useAuth } from "@/lib/auth-context";
 import OnboardingModal, {
   OnboardingData,
 } from "@/components/modals/onboarding-modal";
 import { toast } from "@/hooks/use-toast";
-import {
-  useAlerts,
-  Notification,
-  NotificationDetails,
-} from "@/components/dashboard/alert-context";
+import { useAlerts, Notification } from "@/components/dashboard/alert-context";
 import { useRouter } from "next/navigation";
 import { analytics } from "@/lib/analytics";
 
@@ -238,7 +220,24 @@ function DashboardContent() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full max-w-full min-w-0">
+      {/* Mobile-only Laptop/Desktop Recommendation Banner */}
+      <div className="block md:hidden bg-gradient-to-r from-sky-50 to-blue-50 dark:from-slate-800/80 dark:to-slate-900/80 border border-sky-200 dark:border-slate-700/80 rounded-xl p-3.5 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-sky-500/10 dark:bg-sky-400/10 text-sky-600 dark:text-sky-400 rounded-lg shrink-0">
+            <Monitor className="w-5 h-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+              Desktop Recommendation
+            </p>
+            <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-tight mt-0.5">
+              For the best dashboard experience, we recommend using Insydz on Laptop/desktop.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {sidebarMode === "seller" ? (
         user?.sellerId || localSellerId ? (
           <SellerDashboardView />

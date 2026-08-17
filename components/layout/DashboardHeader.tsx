@@ -172,7 +172,7 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
   };
 
   return (
-    <header className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-sky-100 dark:border-slate-800 shadow-lg rounded-none sm:rounded-2xl px-4 sm:px-6 lg:px-8 py-4 sm:py-5 mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 sticky top-0 sm:top-4 z-20 mx-0 sm:mx-6 text-foreground">
+    <header className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-sky-100 dark:border-slate-800 shadow-lg rounded-none sm:rounded-2xl px-3 sm:px-6 lg:px-8 py-3.5 sm:py-5 mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0 sticky top-0 sm:top-4 z-20 mx-0 sm:mx-4 lg:mx-6 text-foreground min-w-0 w-auto">
       <div className="flex items-center gap-3 w-full sm:w-auto">
         <button onClick={onMobileMenuToggle} className="lg:hidden p-2 rounded-lg hover:bg-sky-100 dark:hover:bg-slate-800 transition-colors" data-track-id="toggle_mobile_menu_btn">
           <Menu className="w-5 h-5 text-sky-900 dark:text-sky-400" />

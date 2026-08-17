@@ -641,8 +641,8 @@ export default function ShareOfVoice() {
   );
 
   return (
-    <div className="space-y-4">
-      <div className="max-w-7xl mx-auto space-y-4 relative">
+    <div className="space-y-4 w-full max-w-full min-w-0 overflow-x-hidden">
+      <div className="max-w-7xl mx-auto space-y-4 relative w-full max-w-full min-w-0">
 
         {/* Hero Header & Usage Meter */}
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
@@ -912,7 +912,7 @@ export default function ShareOfVoice() {
                       <h3 className="text-2xl md:text-3xl font-black">{marketHealth.market_decision.verdict}</h3>
                       <p className="text-white/90 text-sm mt-1">{marketHealth.market_decision.headline}</p>
                     </div>
-                    <div className="shrink-0 text-right">
+                    <div className="shrink-0 text-left md:text-right">
                       <p className="text-white/70 text-xs mb-1">Launch Score</p>
                       <p className="text-4xl font-black">{marketHealth.launch_readiness.score}<span className="text-lg font-normal">/100</span></p>
                       <p className="text-white/80 text-sm">{marketHealth.launch_readiness.label}</p>
@@ -1097,16 +1097,16 @@ export default function ShareOfVoice() {
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all">
-                <CardHeader className="p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
+              <Card className="bg-background opacity-100 backdrop-blur-none border border-slate-200/90 dark:border-slate-800/90 rounded-3xl shadow-xl hover:shadow-2xl transition-all min-w-0 max-w-full overflow-hidden">
+                <CardHeader className="p-4 sm:p-6 pb-4 border-b border-slate-100 dark:border-slate-800/60">
                   <CardTitle className="flex items-center justify-between text-base font-bold text-slate-800 dark:text-slate-100">
                     <span className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-sm">
+                      <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center shadow-sm shrink-0">
                         <BarChart3 className="w-4 h-4 text-white" />
                       </div>
-                      <div>
-                        <span className="block leading-snug">Market Share Distribution</span>
-                        <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">Top 8 brands by review share</span>
+                      <div className="min-w-0">
+                        <span className="block leading-snug truncate">Market Share Distribution</span>
+                        <span className="block text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5 truncate">Top 8 brands by review share</span>
                       </div>
                     </span>
                     <CardInfoModal
@@ -1118,15 +1118,15 @@ export default function ShareOfVoice() {
                     />
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-6 pt-4">
-                  <ResponsiveContainer width="100%" height={330}>
-                    <PieChart>
+                <CardContent className="p-3 sm:p-6 pt-4 min-w-0 max-w-full overflow-hidden">
+                  <ResponsiveContainer width="100%" height={340}>
+                    <PieChart margin={{ top: 32, right: 35, bottom: 10, left: 35 }}>
                       <Pie
                         data={(sovData.brands ?? []).slice(0, 8).map((b) => ({ name: b.brand, value: b.share_percentage }))}
                         cx="50%" cy="50%"
-                        innerRadius={72} outerRadius={110}
+                        innerRadius="38%" outerRadius="58%"
                         paddingAngle={4} dataKey="value"
-                        label={({ name, value }) => `${value}%`}
+                        label={({ value }) => (value && value > 0 ? `${value}%` : "")}
                         labelLine={false}
                       >
                         {(sovData.brands ?? []).slice(0, 8).map((_, i) => (
@@ -1136,7 +1136,7 @@ export default function ShareOfVoice() {
                       <Tooltip contentStyle={getTooltipStyle(isDark)} formatter={(v: any) => [`${v}%`, "Share"]} />
                       <Legend
                         iconType="circle" iconSize={9}
-                        wrapperStyle={{ paddingTop: 16 }}
+                        wrapperStyle={{ paddingTop: 10 }}
                         formatter={(v) => <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{v.length > 14 ? v.slice(0, 14) + "…" : v}</span>}
                       />
                     </PieChart>
@@ -1377,8 +1377,8 @@ export default function ShareOfVoice() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 pt-4">
-                  <div className="w-full overflow-x-auto">
-                    <div className="min-w-[320px] sm:min-w-full">
+                  <div className="w-full overflow-x-auto min-w-0 max-w-full">
+                    <div className="w-full min-w-0 max-w-full">
                       <ResponsiveContainer width="100%" height={320}>
                         <BarChart
                           data={(marketHealth?.review_velocity ?? []).slice(0, 12).map((v) => ({
@@ -1386,7 +1386,7 @@ export default function ShareOfVoice() {
                             density: v.review_density,
                             label: v.velocity_label,
                           }))}
-                          margin={{ left: 0, right: 10, top: 24, bottom: 55 }}
+                          margin={{ left: 0, right: 10, top: 42, bottom: 55 }}
                           barCategoryGap="20%"
                         >
                           <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#1e293b" : "#f1f5f9"} vertical={false} />
@@ -1400,8 +1400,10 @@ export default function ShareOfVoice() {
                             <LabelList
                               dataKey="density"
                               position="top"
+                              angle={-90}
+                              offset={15}
                               formatter={(v: number) => v >= 1000000 ? `${(v / 1000000).toFixed(1)}M` : v >= 1000 ? `${(v / 1000).toFixed(1)}k` : v.toFixed(1)}
-                              style={{ fontSize: 9, fontWeight: 700, fill: isDark ? "#cbd5e1" : "#475569" }}
+                              style={{ fontSize: 10, fontWeight: 700, fill: isDark ? "#cbd5e1" : "#475569" }}
                             />
                           </Bar>
                         </BarChart>

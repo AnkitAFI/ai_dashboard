@@ -20,7 +20,7 @@ function MetricCard({ title, value, icon, color, isLoading }: MetricCardProps) {
   const { t } = useTranslation();
   if (isLoading) {
     return (
-      <Card className="metric-card bg-card rounded-xl p-6 border shadow-sm">
+      <Card className="metric-card bg-card rounded-xl p-4 sm:p-6 border shadow-sm min-w-0 max-w-full overflow-hidden">
         <div className="flex items-center justify-between mb-4">
           <div className={cn("p-3 rounded-lg", color)}>
             <Skeleton className="h-6 w-6" />
@@ -33,15 +33,15 @@ function MetricCard({ title, value, icon, color, isLoading }: MetricCardProps) {
   }
 
   return (
-    <Card className="metric-card bg-card rounded-xl p-6 border shadow-sm hover:shadow-md transition-shadow">
+    <Card className="metric-card bg-card rounded-xl p-4 sm:p-6 border shadow-sm hover:shadow-md transition-shadow min-w-0 max-w-full overflow-hidden">
       <div className="flex items-center justify-between mb-4">
-        <div className={cn("p-3 rounded-lg", color)}>{icon}</div>
-        <Badge variant="secondary" className="ai-badge text-xs">
+        <div className={cn("p-3 rounded-lg shrink-0", color)}>{icon}</div>
+        <Badge variant="secondary" className="ai-badge text-xs shrink-0">
           {t('metrics.live', 'Live')}
         </Badge>
       </div>
-      <h3 className="card-metric mb-1">{value}</h3>
-      <p className="card-label">{title}</p>
+      <h3 className="card-metric mb-1 text-xl sm:text-2xl font-bold truncate">{value}</h3>
+      <p className="card-label text-xs sm:text-sm text-muted-foreground truncate">{title}</p>
     </Card>
   );
 }
@@ -228,7 +228,7 @@ export default function MetricsCards({ selectedSource }: { selectedSource: strin
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 min-w-0 max-w-full">
       {cards.map((card, index) => (
         <MetricCard
           key={index}

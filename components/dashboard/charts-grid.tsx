@@ -56,15 +56,15 @@ function ChartCard({ title, children, isLoading, summary, summaryLoading }: Char
   const { t } = useTranslation();
 
   return (
-    <Card className="bg-card rounded-xl p-6 border hover:shadow-md transition-shadow">
+    <Card className="bg-card rounded-xl p-4 sm:p-6 border hover:shadow-md transition-shadow min-w-0 max-w-full overflow-hidden">
       <CardHeader className="flex flex-row items-center justify-between pb-4">
-        <CardTitle className="text-lg font-semibold">{title}</CardTitle>
-        <Badge variant="secondary" className="text-xs">
+        <CardTitle className="text-base sm:text-lg font-semibold truncate pr-2">{title}</CardTitle>
+        <Badge variant="secondary" className="text-xs shrink-0">
           {t('charts.liveData', 'Live Data')}
         </Badge>
       </CardHeader>
-      <CardContent className="p-0">
-        <div className="chart-container relative h-80 w-full">
+      <CardContent className="p-0 min-w-0 max-w-full overflow-hidden">
+        <div className="chart-container relative h-72 sm:h-80 w-full min-w-0 max-w-full overflow-hidden">
           {isLoading ? <Skeleton className="w-full h-full" /> : children}
         </div>
 
@@ -648,7 +648,7 @@ export default function ChartsGrid({ selectedSource }: { selectedSource: string 
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-8 min-w-0 max-w-full">
       {/* Flipkart Charts */}
       {flipkartCategories.length > 0 && (
         <ChartCard
