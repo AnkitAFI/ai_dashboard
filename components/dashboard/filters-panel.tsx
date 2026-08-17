@@ -186,7 +186,7 @@ export default function FiltersPanel() {
   // ------------------ Render ------------------
   return (
     <>
-      <Card className="bg-card rounded-lg border mb-6">
+      <Card className="bg-card rounded-lg border mb-6 min-w-0 max-w-full overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between pb-4">
           <CardTitle className="flex items-center gap-2">
             <Filter className="h-5 w-5" />
@@ -221,7 +221,7 @@ export default function FiltersPanel() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 min-w-0 max-w-full">
             {/* Table Selector */}
             <div className="space-y-2">
               <Label>{t('filters.dataSource', 'Data Source')}</Label>

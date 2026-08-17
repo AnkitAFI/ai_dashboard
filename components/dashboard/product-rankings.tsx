@@ -255,10 +255,10 @@ function ProductCard({
   );
 
   return (
-    <div className="grid grid-cols-1 gap-6 mb-8">
-      <Card className="bg-card rounded-xl p-6 border hover:shadow-md transition-shadow">
+    <div className="grid grid-cols-1 gap-6 mb-8 min-w-0 max-w-full">
+      <Card className="bg-card rounded-xl p-4 sm:p-6 border hover:shadow-md transition-shadow min-w-0 max-w-full overflow-hidden">
         <CardHeader className="flex flex-row items-center justify-between mb-4 p-0">
-          <CardTitle className="section-heading">
+          <CardTitle className="section-heading text-base sm:text-lg font-semibold truncate pr-2">
             {showBoth
               ? t('charts.marketMoversBoth', "Market Movers (Both Sources)")
               : isAmazon

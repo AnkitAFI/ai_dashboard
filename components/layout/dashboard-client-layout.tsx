@@ -62,7 +62,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       {/* Sidebar - Desktop: fixed, Mobile: handled by state */}
       <Sidebar isMobileOpen={isOpen} onClose={() => setIsOpen(false)} />
 
-      <div className="lg:ml-64 flex flex-col min-h-screen">
+      <div className="lg:pl-64 flex flex-col min-h-screen w-full min-w-0">
         {!hasCustomHeader && (
           <DashboardHeader
             onMobileMenuToggle={toggle}
@@ -94,7 +94,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           </header>
         )}
 
-        <main className={`flex-1 ${hasCustomHeader ? "p-0" : "px-4 sm:px-6"}`}>
+        <main className={`flex-1 min-w-0 max-w-full ${hasCustomHeader ? "p-0" : "px-3 sm:px-6"}`}>
           {!hasCustomHeader && showFilters && (
             <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-300">
               <FiltersPanel />

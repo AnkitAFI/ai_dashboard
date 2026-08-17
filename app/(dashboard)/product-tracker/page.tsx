@@ -1049,25 +1049,25 @@ export default function ProductTracker() {
                     )}
 
                     {/* Gap Summary */}
-                    <div className="flex gap-3 pt-2">
-                      <div className="flex-1 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 text-center">
-                        <p className="text-2xl font-bold text-red-600 dark:text-red-400">{result.final_verdict.high_gaps_count}</p>
-                        <p className="text-xs text-slate-600 dark:text-slate-400">High Priority Gaps</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-2">
+                      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-2.5 sm:p-3 text-center min-w-0">
+                        <p className="text-xl sm:text-2xl font-bold text-red-600 dark:text-red-400">{result.final_verdict.high_gaps_count}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-tight mt-0.5">High Priority Gaps</p>
                       </div>
-                      <div className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 text-center">
-                        <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{result.final_verdict.medium_gaps_count}</p>
-                        <p className="text-xs text-slate-600 dark:text-slate-400">Medium Priority Gaps</p>
+                      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-2.5 sm:p-3 text-center min-w-0">
+                        <p className="text-xl sm:text-2xl font-bold text-yellow-600 dark:text-yellow-400">{result.final_verdict.medium_gaps_count}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-tight mt-0.5">Medium Priority Gaps</p>
                       </div>
-                      <div className="flex-1 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 text-center">
-                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{result.final_verdict.opportunity_score}</p>
-                        <p className="text-xs text-slate-600 dark:text-slate-400">Opportunity Score</p>
+                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-2.5 sm:p-3 text-center min-w-0">
+                        <p className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">{result.final_verdict.opportunity_score}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-tight mt-0.5">Opportunity Score</p>
                       </div>
                       {apiResponse.confidence_score && (
-                        <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 text-center">
-                          <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                        <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-2.5 sm:p-3 text-center min-w-0">
+                          <p className="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-400">
                             {Math.round(apiResponse.confidence_score.score * 100)}%
                           </p>
-                          <p className="text-xs text-slate-600 dark:text-slate-400">Data Confidence</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-tight mt-0.5">Data Confidence</p>
                         </div>
                       )}
                     </div>
