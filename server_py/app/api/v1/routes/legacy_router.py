@@ -5804,7 +5804,7 @@ def send_signup_otp_sms(mobile_number: str, otp: str) -> bool:
             "authkey": api_key,
             "mobile": clean_mobile,
             "country_code": country_code,
-            "sms": f"Your Insydz verification code for account signup is {otp}. Please do not share this code with anyone. - AAVPTI",
+            "sms": f"Your Insydz verification code for account signup is {otp}. Please do not share this code with anyone. Insydz is division of AAVAPTI TECHNOLOGIES PRIVATE LIMITED.",
             "sender": "AAVPTI", # Needs to be approved by DLT in India for production
             "entity_id": getattr(settings, "AUTHKEY_ENTITY_ID", ""),
             "template_id": getattr(settings, "AUTHKEY_SIGNUP_TEMPLATE_ID", "")
@@ -5838,7 +5838,7 @@ def send_forgot_password_otp_sms(mobile_number: str, otp: str) -> bool:
             "authkey": api_key,
             "mobile": clean_mobile,
             "country_code": country_code,
-            "sms": f"Your Insydz verification code for password reset is {otp}. Please do not share this code with anyone. - AAVPTI",
+            "sms": f"Your Insydz verification code for password reset is {otp}. Please do not share this code with anyone. Insydz is division of AAVAPTI TECHNOLOGIES PRIVATE LIMITED.",
             "sender": "AAVPTI", # Needs to be approved by DLT in India for production
             "entity_id": getattr(settings, "AUTHKEY_ENTITY_ID", ""),
             "template_id": getattr(settings, "AUTHKEY_RESET_TEMPLATE_ID", "")
