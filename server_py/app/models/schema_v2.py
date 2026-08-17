@@ -42,6 +42,7 @@ class UserProfile(Base):
     first_name = Column(String(255))
     last_name = Column(String(255))
     mobile_number = Column(EncryptedString())
+    mobile_number_hash = Column(String(255), index=True)
     location = Column(EncryptedString())
     
     key_version = Column(SmallInteger, default=1)

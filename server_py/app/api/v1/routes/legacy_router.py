@@ -5804,8 +5804,44 @@ def send_signup_otp_sms(mobile_number: str, otp: str) -> bool:
             "authkey": api_key,
             "mobile": clean_mobile,
             "country_code": country_code,
-            "sms": f"Your Insydz verification code is {otp}. Please do not share this code with anyone.",
-            "sender": "INSYDZ" # Needs to be approved by DLT in India for production
+            "sms": f"Your Insydz verification code for account signup is {otp}. Please do not share this code with anyone. - AAVPTI",
+            "sender": "AAVPTI", # Needs to be approved by DLT in India for production
+            "entity_id": getattr(settings, "AUTHKEY_ENTITY_ID", ""),
+            "template_id": getattr(settings, "AUTHKEY_SIGNUP_TEMPLATE_ID", "")
+        }
+        
+        response = requests.get(url, params=params, timeout=5)
+        print(f"SMS OTP response for {clean_mobile}: {response.text}")
+        return True
+    except Exception as e:
+        print(f"Error sending SMS OTP: {str(e)}")
+        return False
+
+def send_forgot_password_otp_sms(mobile_number: str, otp: str) -> bool:
+    """Send Forgot Password SMS OTP via Authkey.io"""
+    try:
+        api_key = getattr(settings, "AUTHKEY_API_KEY", None)
+        if not api_key:
+            print("Authkey API Key not set. Skipping SMS.")
+            return False
+            
+        url = "https://api.authkey.io/request"
+        clean_mobile = str(mobile_number).replace("+", "").replace(" ", "")
+        
+        # Default to India if no country code provided
+        country_code = "91"
+        if len(clean_mobile) > 10:
+            country_code = clean_mobile[:-10]
+            clean_mobile = clean_mobile[-10:]
+            
+        params = {
+            "authkey": api_key,
+            "mobile": clean_mobile,
+            "country_code": country_code,
+            "sms": f"Your Insydz verification code for password reset is {otp}. Please do not share this code with anyone. - AAVPTI",
+            "sender": "AAVPTI", # Needs to be approved by DLT in India for production
+            "entity_id": getattr(settings, "AUTHKEY_ENTITY_ID", ""),
+            "template_id": getattr(settings, "AUTHKEY_RESET_TEMPLATE_ID", "")
         }
         
         response = requests.get(url, params=params, timeout=5)
@@ -6561,26 +6597,31 @@ def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db
             "otp": otp,
             "created_at": datetime.now().isoformat(),
             "attempts": 0,
-            "verified": False
+            "verified": False,
+            "purpose": "forgot_password",
+            "user_data": { "mobile_number": user.mobile_number }
         }
         store_otp(request.email, otp_data)
         
-        # Send OTP via email
-        email_sent = send_otp_email(request.email, otp)
-
+        # Send OTP via SMS
+        if user.mobile_number:
+            sms_sent = send_forgot_password_otp_sms(user.mobile_number, otp)
+        else:
+            # Fallback to email if no mobile number on old accounts
+            sms_sent = send_otp_email(request.email, otp)
         
-        if not email_sent:
+        if not sms_sent:
             delete_otp(request.email)
             raise HTTPException(
                 status_code=500,
-                detail="Failed to send OTP email. Please try again."
+                detail="Failed to send OTP. Please try again."
             )
         
         print(f"✅ OTP generated for {request.email}: {otp}")
         
         return {
             "success": True,
-            "message": "OTP sent successfully to your email",
+            "message": "OTP sent successfully to your mobile",
             "email": request.email
         }
         
@@ -6753,6 +6794,8 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
     Resend OTP to user's email
     """
     try:
+        from datetime import timezone
+        
         # Check if user exists
         user = db.query(models.User).filter(
             models.User.email_hash == HashedString().process_bind_param(request.email, None)
@@ -6765,6 +6808,22 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
             raise HTTPException(
                 status_code=404,
                 detail="No account found with this email address"
+            )
+            
+        # Determine IST date
+        IST = timezone(timedelta(hours=5, minutes=30))
+        ist_now = datetime.now(IST)
+        ist_date_str = ist_now.strftime("%Y-%m-%d")
+        
+        # Redis key for daily resend limit
+        limit_key = f"otp_resend_count:{request.email}:{ist_date_str}"
+        resend_count = r.get(limit_key)
+        resend_count = int(resend_count) if resend_count else 0
+        
+        if resend_count >= 3:
+            raise HTTPException(
+                status_code=429,
+                detail="Limit reached for OTP. Try again next day."
             )
         
         if existing_otp:
@@ -6796,9 +6855,12 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
         
         # Send OTP via SMS or Email depending on purpose
         sent_successfully = False
-        if otp_data["purpose"] == "signup" and "user_data" in otp_data and "mobile_number" in otp_data["user_data"]:
+        if otp_data.get("purpose") in ["signup", "forgot_password"] and "user_data" in otp_data and "mobile_number" in otp_data["user_data"]:
             mobile_number = otp_data["user_data"]["mobile_number"]
-            sent_successfully = send_signup_otp_sms(mobile_number, otp)
+            if otp_data.get("purpose") == "forgot_password":
+                sent_successfully = send_forgot_password_otp_sms(mobile_number, otp)
+            else:
+                sent_successfully = send_signup_otp_sms(mobile_number, otp)
         else:
             sent_successfully = send_otp_email(request.email, otp)
         
@@ -6808,6 +6870,10 @@ def resend_otp(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
                 status_code=500,
                 detail="Failed to send OTP SMS/Email. Please try again."
             )
+            
+        # Increment daily counter
+        r.incr(limit_key)
+        r.expire(limit_key, 86400) # Expire in 24 hours
         
         print(f"✅ OTP resent to {request.email} / mobile: {otp}")
         
@@ -7015,6 +7081,17 @@ def signup_user(
                 status_code=400, 
                 detail="Email already registered. Please login instead."
             )
+            
+        if user_data.mobile_number:
+            from app.models.schema_v2 import UserProfile
+            existing_mobile = db.query(UserProfile).filter(
+                UserProfile.mobile_number_hash == HashedString().process_bind_param(user_data.mobile_number, None)
+            ).first()
+            if existing_mobile:
+                raise HTTPException(
+                    status_code=400,
+                    detail="This phone number is already registered to another account. Please login."
+                )
         
         hashed_password = get_password_hash(user_data.password)
         current_month = datetime.now().strftime("%Y-%m")
@@ -7156,6 +7233,16 @@ def verify_email(request: VerifyOTPRequest, response: Response, raw_request: Req
             db.add(user)
             db.commit()
             db.refresh(user)
+            
+            # Save mobile_number_hash to V2 UserProfile (bypassing legacy triggers)
+            if stored_user_data.get("mobile_number"):
+                from app.models.schema_v2 import UserProfile
+                hasher = HashedString()
+                mobile_hash = hasher.process_bind_param(stored_user_data["mobile_number"], None)
+                db.query(UserProfile).filter(UserProfile.user_id == user.id).update(
+                    {"mobile_number_hash": mobile_hash}, synchronize_session=False
+                )
+                db.commit()
             
             # Extract real IP and dynamically generate GDPR/DPDP consents
             client_ip = raw_request.client.host if raw_request and raw_request.client else "unknown"
@@ -10389,6 +10476,26 @@ def update_user_profile(
             raise HTTPException(
                 status_code=403,
                 detail="Not authorized to update this profile"
+            )
+        
+        if data.mobile_number and data.mobile_number != getattr(current_user, "mobile_number", None):
+            from app.models.schema_v2 import UserProfile
+            from app.core.cryptography import HashedString
+            
+            existing_mobile = db.query(UserProfile).filter(
+                UserProfile.mobile_number_hash == HashedString().process_bind_param(data.mobile_number, None),
+                UserProfile.user_id != user_id
+            ).first()
+            if existing_mobile:
+                raise HTTPException(
+                    status_code=400,
+                    detail="This phone number is already registered to another account."
+                )
+                
+            # Update the hash directly in UserProfile to bypass legacy triggers
+            mobile_hash = HashedString().process_bind_param(data.mobile_number, None)
+            db.query(UserProfile).filter(UserProfile.user_id == user_id).update(
+                {"mobile_number_hash": mobile_hash}, synchronize_session=False
             )
         
         current_user.first_name = data.first_name

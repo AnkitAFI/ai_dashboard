@@ -260,6 +260,7 @@ export default function VerifyEmail() {
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [limitReached, setLimitReached] = useState(false);
   const [email, setEmail] = useState("");
 
   useEffect(() => {
@@ -315,7 +316,12 @@ export default function VerifyEmail() {
         body: JSON.stringify({ email }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Failed to resend OTP. Please try again."));
+      if (!response.ok) {
+        if (response.status === 429 && data.detail?.includes("Limit reached")) {
+          setLimitReached(true);
+        }
+        throw new Error(sanitizeApiError(data.detail, "Failed to resend OTP. Please try again."));
+      }
       toast({ title: "OTP resent", description: `New code sent to ${email}` });
       setResendCooldown(60);
     } catch (err: any) {
@@ -439,14 +445,16 @@ export default function VerifyEmail() {
               <button
                 type="button"
                 onClick={handleResend}
-                disabled={isResending || resendCooldown > 0}
+                disabled={isResending || resendCooldown > 0 || limitReached}
                 className={cn(
                   "w-full h-11 rounded-xl text-sm font-medium transition-all duration-200 disabled:opacity-40 border",
                   "bg-slate-100 dark:bg-white/[0.04] border-slate-200 dark:border-slate-800",
-                  resendCooldown > 0 ? "text-slate-400 dark:text-white/20" : "text-blue-600 dark:text-[#AAF0FF]"
+                  (resendCooldown > 0 || limitReached) ? "text-slate-400 dark:text-white/20" : "text-blue-600 dark:text-[#AAF0FF]"
                 )}
               >
-                {resendCooldown > 0
+                {limitReached
+                  ? "Limit reached for OTP. Try again next day."
+                  : resendCooldown > 0
                   ? `Resend in ${resendCooldown}s`
                   : isResending
                   ? "Sending..."
