@@ -366,10 +366,10 @@ export default function OrderHistory() {
             <Receipt className="h-6 w-6 text-blue-500 dark:text-blue-400" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+            <h1 className="page-title">
               {t('orderHistory.title', 'Order History')}
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
+            <p className="page-subtitle">
               {t('orderHistory.subtitle', 'View your invoices, transaction receipts, and active subscriptions')} ({user.email}).
             </p>
           </div>

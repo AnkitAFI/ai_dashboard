@@ -849,11 +849,13 @@ export default function Settings() {
       {/* Profile Card */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            {t('settings.title', 'Profile Settings')}
+          <div className="flex items-center justify-between">
+            <h1 className="page-title">
+              {t('settings.title', 'Profile Settings')}
+            </h1>
             <Badge variant="secondary">{t('settings.sessionAuth', 'Session Authenticated')}</Badge>
-          </CardTitle>
-          <CardDescription>{t('settings.updatePersonal', 'Update your personal information')}</CardDescription>
+          </div>
+          <p className="page-subtitle">{t('settings.updatePersonal', 'Update your personal information')}</p>
         </CardHeader>
         <CardContent className="space-y-4">
           {/* Name row */}

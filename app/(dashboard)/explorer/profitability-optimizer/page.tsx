@@ -1697,16 +1697,16 @@ function SliderRow({
   onChange: (v: number) => void;
 }) {
   return (
-    <div className={`flex items-center gap-3 py-1.5 ${locked ? "opacity-40 pointer-events-none" : ""}`}>
-      <label className="text-xs text-slate-500 dark:text-slate-400 w-36 shrink-0 flex items-center gap-1">
+    <div className={`flex items-center gap-1.5 sm:gap-3 py-1.5 ${locked ? "opacity-40 pointer-events-none" : ""}`}>
+      <label className="text-xs text-slate-500 dark:text-slate-400 w-24 sm:w-36 shrink-0 flex items-center gap-1 truncate">
         {label}
-        {locked && <Lock className="w-2.5 h-2.5 text-amber-500" />}
+        {locked && <Lock className="w-2.5 h-2.5 text-amber-500 shrink-0" />}
       </label>
       <input type="range" min={min} max={max} step={step} value={value}
         onChange={(e) => onChange(Number(e.target.value))} disabled={locked}
-        className="flex-1 accent-blue-500 dark:accent-sky-500 h-1.5 dark:bg-slate-850"
+        className="flex-1 min-w-0 accent-blue-500 dark:accent-sky-500 h-1.5 dark:bg-slate-850"
         data-track-id={`${label.toLowerCase().replace(/[^a-z0-9]+/g, "_")}_input`} />
-      <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 w-16 text-right tabular-nums">
+      <span className="text-xs font-semibold text-slate-700 dark:text-slate-200 w-14 sm:w-16 text-right tabular-nums shrink-0">
         {format(value)}
       </span>
     </div>
@@ -2366,7 +2366,7 @@ export default function ProfitabilityOptimizer() {
   return (
     <div className="space-y-6">
       {/* Title */}
-      <div className="flex justify-between items-center bg-white dark:bg-slate-900/80 p-4 rounded-2xl border border-sky-100 dark:border-slate-700 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900/80 p-4 rounded-2xl border border-sky-100 dark:border-slate-700 shadow-sm">
         <div>
           <h1 className="text-xl sm:text-2xl font-bold text-sky-900 dark:text-sky-300">{t('profitabilityOptimizer.title', 'Price Optimizer')}</h1>
           <p className="text-slate-500 dark:text-slate-400 text-xs sm:text-sm mt-0.5">{t('profitabilityOptimizer.subtitle', 'Real margins · Live market data')}</p>

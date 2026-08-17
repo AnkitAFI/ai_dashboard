@@ -98,14 +98,12 @@ export default function RatingProducts() {
       </header>
 
       {/* Hero Section */}
-      <div className="text-center space-y-4 pt-4">
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-amber-100 to-yellow-100 rounded-2xl mb-2 shadow-inner">
-          <Star className="h-8 w-8 text-amber-500 fill-amber-500" />
-        </div>
-        <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-amber-500 via-yellow-400 to-orange-400 text-transparent bg-clip-text">
+      {/* Hero Section */}
+      <div className="text-left space-y-1">
+        <h1 className="page-title">
           Products with {rating}★ Rating
         </h1>
-        <p className="text-base sm:text-lg text-slate-500 max-w-2xl mx-auto">
+        <p className="page-subtitle">
           Browse {source} products that have precisely a {rating}★ rating profile.
         </p>
       </div>

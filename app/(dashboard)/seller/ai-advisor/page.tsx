@@ -583,11 +583,11 @@ function AIAdvisorContent() {
               <span className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-white dark:border-slate-900 animate-pulse" />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-1.5">
+              <h2 className="page-title flex items-center gap-1.5">
                 {t('sellerPages.aiAdvisorTitle', 'AI Advisor')}
-                <span className="hidden sm:inline text-xs font-semibold px-2 py-0.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-sm">LIVE</span>
+                <span className="badge-pill bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-sm">LIVE</span>
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">{t('sellerPages.aiAdvisorSubtitle', 'Your personal store intelligence, powered by your data')}</p>
+              <p className="page-subtitle hidden sm:block">{t('sellerPages.aiAdvisorSubtitle', 'Your personal store intelligence, powered by your data')}</p>
             </div>
           </div>
         </div>

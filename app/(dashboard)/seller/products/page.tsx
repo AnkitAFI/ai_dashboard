@@ -94,7 +94,7 @@ function SellerProductsContent() {
       {/* Title Section */}
       <div className="flex justify-between items-center bg-white p-4 rounded-2xl border border-sky-100 shadow-sm">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-sky-900 flex items-center gap-2">
+          <h1 className="page-title flex items-center gap-2">
             <span>My Products</span>
             {syncStatus === "SYNCING" && (
               <Badge variant="outline" className="animate-pulse bg-blue-50 text-blue-600 border-blue-200 text-[10px] sm:text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">

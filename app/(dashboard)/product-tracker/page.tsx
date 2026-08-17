@@ -543,12 +543,21 @@ export default function ProductTracker() {
       </div>
 
       <div className="space-y-4">
-        <div className="max-w-7xl mx-auto space-y-4 relative">
+        <div className="max-w-7xl mx-auto space-y-4">
 
-          {/* Visual Usage Meter (Top Right Header) */}
-          <div className="absolute top-0 right-4 sm:right-0 z-10">
+          {/* Header & Usage Meter */}
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+            <div className="text-left space-y-1">
+              <h1 className="page-title">
+                {t('pr.title', 'Product Radar (AI)')}
+              </h1>
+              <p className="page-subtitle">
+                {t('pr.subtitle', 'Scan specific products to analyze market competition, pricing metrics, and project AI reports.')}
+              </p>
+            </div>
+
             {!loadingUsage && userId && usageLimits && (
-              <div className="bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px]">
+              <div className="shrink-0 bg-background opacity-100 rounded-xl px-4 py-2 border border-slate-200 shadow-sm min-w-[160px] self-start sm:self-auto">
                 <div className="flex items-center justify-between gap-3 mb-1">
                   <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">{t('pr.analysesUsed', 'Analyses used')}</p>
                   <Badge className={`h-4 text-[10px] border-none px-1.5 ${usageLimits.subscription_tier.toLowerCase() === "enterprise" ? "bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-300 dark:bg-fuchsia-950/50 dark:text-fuchsia-400 dark:border-fuchsia-800" : usageLimits.subscription_tier.toLowerCase() === "premium" ? "bg-violet-100 text-violet-800" : usageLimits.subscription_tier.toLowerCase() === "basic" ? "bg-amber-100 text-amber-800" : "bg-slate-100 text-slate-600"}`}>
@@ -565,25 +574,12 @@ export default function ProductTracker() {
                       }}
                     />
                   </div>
-                  <span className="text-[11px] font-bold text-slate-600">
+                  <span className="text-[11px] font-bold text-slate-600 dark:text-slate-300">
                     {usageLimits.count}/{usageLimits.limit >= UNLIMITED ? "∞" : usageLimits.limit}
                   </span>
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Page Header */}
-          <div className="text-center space-y-3 pt-6">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl mb-2 shadow-inner">
-              <Target className="h-8 w-8 text-blue-500" />
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-500 via-indigo-400 to-purple-400 text-transparent bg-clip-text">
-              {t('pr.title', 'Product Radar (AI)')}
-            </h1>
-            <p className="text-sm sm:text-base text-slate-500 max-w-2xl mx-auto">
-              {t('pr.subtitle', 'Scan specific products to analyze market competition, pricing metrics, and project AI reports.')}
-            </p>
           </div>
 
           {/* Input Form */}
@@ -1053,25 +1049,25 @@ export default function ProductTracker() {
                     )}
 
                     {/* Gap Summary */}
-                    <div className="flex gap-3 pt-2">
-                      <div className="flex-1 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 text-center">
-                        <p className="text-2xl font-bold text-red-600 dark:text-red-400">{result.final_verdict.high_gaps_count}</p>
-                        <p className="text-xs text-slate-600 dark:text-slate-400">High Priority Gaps</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 pt-2">
+                      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-2.5 sm:p-3 text-center min-w-0">
+                        <p className="text-xl sm:text-2xl font-bold text-red-600 dark:text-red-400">{result.final_verdict.high_gaps_count}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-tight mt-0.5">High Priority Gaps</p>
                       </div>
-                      <div className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3 text-center">
-                        <p className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{result.final_verdict.medium_gaps_count}</p>
-                        <p className="text-xs text-slate-600 dark:text-slate-400">Medium Priority Gaps</p>
+                      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-2.5 sm:p-3 text-center min-w-0">
+                        <p className="text-xl sm:text-2xl font-bold text-yellow-600 dark:text-yellow-400">{result.final_verdict.medium_gaps_count}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-tight mt-0.5">Medium Priority Gaps</p>
                       </div>
-                      <div className="flex-1 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 text-center">
-                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{result.final_verdict.opportunity_score}</p>
-                        <p className="text-xs text-slate-600 dark:text-slate-400">Opportunity Score</p>
+                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-2.5 sm:p-3 text-center min-w-0">
+                        <p className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">{result.final_verdict.opportunity_score}</p>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-tight mt-0.5">Opportunity Score</p>
                       </div>
                       {apiResponse.confidence_score && (
-                        <div className="flex-1 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 text-center">
-                          <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                        <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-2.5 sm:p-3 text-center min-w-0">
+                          <p className="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-400">
                             {Math.round(apiResponse.confidence_score.score * 100)}%
                           </p>
-                          <p className="text-xs text-slate-600 dark:text-slate-400">Data Confidence</p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400 font-medium leading-tight mt-0.5">Data Confidence</p>
                         </div>
                       )}
                     </div>
@@ -1080,14 +1076,7 @@ export default function ProductTracker() {
                 </Card>
               )}
 
-              {/* Disclaimer */}
-              <div className="mt-1 pt-1 border-t border-slate-100">
-                <p className="text-[10px] text-center text-slate-400 leading-tight opacity-60">
-                  <span className="font-medium">Disclaimer:</span> The data and insights presented are for informational purposes only.
-                  While we strive for accuracy, we cannot guarantee completeness or reliability.
-                  Please verify critical data independently before making business decisions.
-                </p>
-              </div>
+
 
             </div>
           )}

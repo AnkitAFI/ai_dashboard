@@ -443,10 +443,10 @@ export default function SellerPriceOptimizer() {
             <TrendingUp className={`w-6 h-6 animate-pulse ${isDark ? 'text-sky-400' : 'text-sky-600'}`} />
           </div>
           <div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+            <h1 className="page-title">
               {t('sellerPages.priceOptTitle', 'Price Optimizer')}
             </h1>
-            <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+            <p className="page-subtitle">
               {t('sellerPages.priceOptSubtitle', 'Live repricing intelligence and price optimization recommendations for your tracked products.')}
             </p>
           </div>
@@ -522,8 +522,8 @@ export default function SellerPriceOptimizer() {
               </div>
 
               {/* Free price position pill */}
-              <div className="shrink-0 text-right">
-                <div className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold border-2 ${
+              <div className="w-full sm:w-auto text-left sm:text-right sm:ml-auto shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
+                <div className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-bold border-2 ${
                   profile.price_position === "Above market" ? (isDark ? "bg-purple-900/30 border-purple-800/50 text-purple-400" : "bg-purple-50 border-purple-300 text-purple-800")
                   : profile.price_position === "Below market" ? (isDark ? "bg-amber-900/30 border-amber-800/50 text-amber-400" : "bg-amber-50 border-amber-300 text-amber-800")
                   : (isDark ? "bg-green-900/30 border-green-800/50 text-green-400" : "bg-green-50 border-green-300 text-green-800")
@@ -737,19 +737,26 @@ export default function SellerPriceOptimizer() {
                         {priceGap.price_bands.map((b, i) => {
                           const max = Math.max(...priceGap.price_bands.map((x) => x.count), 1);
                           return (
-                            <div key={i} className={`flex items-center gap-3 p-2.5 rounded-xl border ${b.your_price_in_band ? (isDark ? "border-blue-800/50 bg-blue-900/30" : "border-blue-200 bg-blue-50") : (isDark ? "border-slate-800 bg-slate-900" : "border-slate-100 bg-white")}`}>
-                              <span className={`text-xs w-32 shrink-0 font-mono ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                                {sym(priceGap.currency)}{b.band}
-                              </span>
-                              <div className={`flex-1 h-2 rounded-full overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
+                            <div key={i} className={`p-2.5 rounded-xl border space-y-1.5 sm:space-y-0 sm:flex sm:items-center sm:gap-3 ${b.your_price_in_band ? (isDark ? "border-blue-800/50 bg-blue-900/30" : "border-blue-200 bg-blue-50") : (isDark ? "border-slate-800 bg-slate-900" : "border-slate-100 bg-white")}`}>
+                              <div className="flex items-center justify-between sm:w-28 shrink-0">
+                                <span className={`text-xs font-mono font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                                  {sym(priceGap.currency)}{b.band}
+                                </span>
+                                {b.your_price_in_band && (
+                                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border sm:hidden ${isDark ? 'text-blue-400 bg-blue-900/30 border-blue-800/50' : 'text-blue-600 bg-white border-blue-200'}`}>Your band</span>
+                                )}
+                              </div>
+                              <div className={`w-full flex-1 h-2 rounded-full overflow-hidden ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
                                 <div className="h-full rounded-full transition-all duration-500"
                                   style={{ width: `${(b.count / max) * 100}%`, background: b.your_price_in_band ? "#3b82f6" : (isDark ? "#475569" : "#94a3b8") }}
                                 />
                               </div>
-                              <span className={`text-xs w-20 text-right shrink-0 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>{b.count} products</span>
-                              {b.your_price_in_band && (
-                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${isDark ? 'text-blue-400 bg-blue-900/30 border-blue-800/50' : 'text-blue-600 bg-white border-blue-200'}`}>Your band</span>
-                              )}
+                              <div className="flex items-center justify-between sm:justify-end gap-2 shrink-0">
+                                <span className={`text-xs text-right ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{b.count} products</span>
+                                {b.your_price_in_band && (
+                                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border hidden sm:inline-block ${isDark ? 'text-blue-400 bg-blue-900/30 border-blue-800/50' : 'text-blue-600 bg-white border-blue-200'}`}>Your band</span>
+                                )}
+                              </div>
                             </div>
                           );
                         })}
@@ -824,27 +831,29 @@ export default function SellerPriceOptimizer() {
                           <Section title="Price movements" icon={Bell} count={alertData.deltas.length} accent={isDark ? "bg-amber-900/30" : "bg-amber-50"} defaultOpen={true} isDark={isDark}>
                             <div className="space-y-2">
                               {alertData.deltas.map((d, i) => (
-                                <div key={i} className={`flex items-center gap-3 p-3 rounded-xl border ${d.new_price < alertData.your_price ? (isDark ? "bg-red-900/30 border-red-800/50" : "bg-red-50 border-red-200") : (isDark ? "bg-slate-800 border-slate-700" : "bg-slate-50 border-slate-100")}`}>
-                                  <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${d.direction === "down" ? (isDark ? "bg-red-900/50" : "bg-red-100") : (isDark ? "bg-green-900/50" : "bg-green-100")}`}>
-                                    {d.direction === "down"
-                                      ? <TrendingDown className={`w-4 h-4 ${isDark ? 'text-red-400' : 'text-red-600'}`} />
-                                      : <TrendingUp className={`w-4 h-4 ${isDark ? 'text-green-400' : 'text-green-600'}`} />
-                                    }
+                                <div key={i} className={`flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-3 p-3 rounded-xl border ${d.new_price < alertData.your_price ? (isDark ? "bg-red-900/30 border-red-800/50" : "bg-red-50 border-red-200") : (isDark ? "bg-slate-800 border-slate-700" : "bg-slate-50 border-slate-100")}`}>
+                                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                                    <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${d.direction === "down" ? (isDark ? "bg-red-900/50" : "bg-red-100") : (isDark ? "bg-green-900/50" : "bg-green-100")}`}>
+                                      {d.direction === "down"
+                                        ? <TrendingDown className={`w-4 h-4 ${isDark ? 'text-red-400' : 'text-red-600'}`} />
+                                        : <TrendingUp className={`w-4 h-4 ${isDark ? 'text-green-400' : 'text-green-600'}`} />
+                                      }
+                                    </div>
+                                    <p className={`text-xs font-semibold truncate ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{d.seller_name}</p>
                                   </div>
-                                  <div className="flex-1 min-w-0">
-                                    <p className={`text-xs font-semibold ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{d.seller_name}</p>
+                                  <div className="flex items-center gap-2 text-right shrink-0">
+                                    <div>
+                                      <p className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                                        {fmt(d.old_price, currency)} → {fmt(d.new_price, currency)}
+                                      </p>
+                                      <p className={`text-xs font-black ${d.change_pct < 0 ? (isDark ? "text-red-400" : "text-red-600") : (isDark ? "text-green-400" : "text-green-600")}`}>
+                                        {pct(d.change_pct)}
+                                      </p>
+                                    </div>
+                                    {d.new_price < alertData.your_price && (
+                                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${isDark ? 'text-red-400 bg-red-900/30' : 'text-red-700 bg-red-100'}`}>Undercuts you</span>
+                                    )}
                                   </div>
-                                  <div className="text-right shrink-0">
-                                    <p className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
-                                      {fmt(d.old_price, currency)} → {fmt(d.new_price, currency)}
-                                    </p>
-                                    <p className={`text-xs font-black ${d.change_pct < 0 ? (isDark ? "text-red-400" : "text-red-600") : (isDark ? "text-green-400" : "text-green-600")}`}>
-                                      {pct(d.change_pct)}
-                                    </p>
-                                  </div>
-                                  {d.new_price < alertData.your_price && (
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${isDark ? 'text-red-400 bg-red-900/30' : 'text-red-700 bg-red-100'}`}>Undercuts you</span>
-                                  )}
                                 </div>
                               ))}
                             </div>

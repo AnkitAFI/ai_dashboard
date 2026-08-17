@@ -1780,8 +1780,8 @@ function MarginSimTable({ data, userTier }: { data: MarginData | null; userTier:
             </div>
           </div>
         </CardHeader>
-        <CardContent className="px-8 pb-8 space-y-4">
-          <div className="overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-800">
+        <CardContent className="px-3 sm:px-8 pb-4 sm:pb-8 space-y-4 min-w-0 max-w-full">
+          <div className="overflow-x-auto min-w-0 max-w-full rounded-2xl border border-slate-100 dark:border-slate-800">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-950/40 border-b border-slate-100 dark:border-slate-800">

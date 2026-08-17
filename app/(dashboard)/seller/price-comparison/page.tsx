@@ -193,10 +193,10 @@ function PriceComparisonContent() {
               <BarChart2 className={`w-6 h-6 animate-pulse ${isDark ? 'text-sky-400' : 'text-sky-600'}`} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+              <h1 className="page-title">
                 {t('sellerPages.priceCompTitle', 'Price Comparison')}
               </h1>
-              <p className={`text-sm font-medium ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+              <p className="page-subtitle">
                 {t('sellerPages.priceCompSubtitle', 'Benchmark your pricing against real similar products.')}
               </p>
             </div>

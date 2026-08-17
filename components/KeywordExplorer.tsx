@@ -798,7 +798,7 @@ export default function KeywordExplorer({
                         Volume: vol
                       };
                     })
-                  } margin={{ top: 10, right: 10, left: 10, bottom: 0 }}>
+                  } margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                     <XAxis dataKey="month" tickLine={false} axisLine={false} fontSize={10} stroke="#94a3b8" />
                     <YAxis
@@ -806,7 +806,7 @@ export default function KeywordExplorer({
                       axisLine={false}
                       fontSize={10}
                       stroke="#94a3b8"
-                      width={45}
+                      width={40}
                       tickFormatter={(val) => val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}
                     />
                     <Tooltip

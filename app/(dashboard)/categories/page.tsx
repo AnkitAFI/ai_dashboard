@@ -76,14 +76,11 @@ export default function Categories() {
   return (
     <div className="space-y-5">
       {/* Hero Section */}
-      <div className="text-center space-y-2">
-        <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-950/20 dark:to-cyan-950/25 rounded-xl shadow-inner border border-blue-200/20">
-          <Tag className="h-6 w-6 text-blue-500 dark:text-blue-400" />
-        </div>
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+      <div className="text-left space-y-1">
+        <h1 className="page-title">
           {t('categories.title', 'Product Categories')}
         </h1>
-        <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+        <p className="page-subtitle">
           {t('categories.subtitle', 'Explore top-performing categories and jump directly to their product lists.')}
         </p>
       </div>

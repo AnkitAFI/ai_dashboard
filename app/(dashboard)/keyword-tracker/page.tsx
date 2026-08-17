@@ -589,15 +589,15 @@ export default function KeywordTracker() {
 
           {/* Step 1: Fetch Products */}
           <Card className="shadow-sm border border-slate-200 rounded-2xl overflow-hidden bg-background opacity-100 backdrop-blur-none">
-            <CardHeader className="flex flex-row items-start sm:items-center justify-between gap-4">
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <CardTitle className="text-lg font-semibold text-slate-700 flex items-center gap-2">
+                <CardTitle className="text-lg font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-2">
                   <Package className="h-5 w-5 text-blue-600" />Step 1: Fetch Your Products
                 </CardTitle>
                 <CardDescription className="text-slate-500">Enter your Amazon Seller ID to load your products with reviews</CardDescription>
               </div>
               {userId && usageLimits && (
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2 shrink-0 flex-wrap">
                   <span className={`text-xs font-semibold px-3 py-1 rounded-full border ${
                     usageLimits.remaining === 0
                       ? "bg-red-50 text-red-600 border-red-200"

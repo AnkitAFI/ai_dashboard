@@ -289,20 +289,20 @@ export default function SellerDashboardView() {
         {/* Sales Trend */}
         <Card className="border border-border/50 shadow-sm rounded-3xl bg-card text-card-foreground overflow-hidden">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-base font-bold">
               <TrendingUp className="w-5 h-5 text-blue-600" />
               {t('seller.salesTrend', 'Estimated Sales Trend')}
             </CardTitle>
             <CardDescription>{t('seller.salesTrendDesc', 'Estimated unit sales based on review velocity (6 months)')}</CardDescription>
           </CardHeader>
-          <CardContent className="h-[350px]">
+          <CardContent className="h-[280px] sm:h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={charts.sales_trend}>
+              <LineChart data={charts.sales_trend} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.3} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 11 }} dy={5} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 11 }} width={45} tickFormatter={(v) => v >= 1000 ? `${(v/1000).toFixed(0)}k` : v} />
                 <Tooltip contentStyle={{ borderRadius: "12px", border: "1px solid var(--border)", backgroundColor: "var(--card)", color: "var(--foreground)", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }} cursor={{ stroke: "#3b82f6", strokeWidth: 2 }} />
-                <Line type="monotone" dataKey="sales" stroke="#3b82f6" strokeWidth={4} dot={{ r: 6, fill: "#3b82f6", strokeWidth: 2, stroke: "#fff" }} activeDot={{ r: 8, strokeWidth: 0 }} />
+                <Line type="monotone" dataKey="sales" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4, fill: "#3b82f6", strokeWidth: 2, stroke: "#fff" }} activeDot={{ r: 6, strokeWidth: 0 }} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -311,16 +311,16 @@ export default function SellerDashboardView() {
         {/* Marketplace Portfolio */}
         <Card className="border border-border/50 shadow-sm rounded-3xl bg-card text-card-foreground overflow-hidden">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-base font-bold">
               <ShoppingCart className="w-5 h-5 text-purple-600" />
               {t('seller.portfolio', 'Marketplace Portfolio')}
             </CardTitle>
             <CardDescription>{t('seller.portfolioDesc', 'Product distribution across marketplaces')}</CardDescription>
           </CardHeader>
-          <CardContent className="h-[350px]">
+          <CardContent className="h-[280px] sm:h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={charts.category_distribution} cx="50%" cy="50%" innerRadius={80} outerRadius={120} paddingAngle={5} dataKey="value">
+                <Pie data={charts.category_distribution} cx="50%" cy="45%" innerRadius={55} outerRadius={85} paddingAngle={4} dataKey="value">
                   {charts.category_distribution.map((_: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
@@ -335,19 +335,19 @@ export default function SellerDashboardView() {
         {/* Review Sentiment */}
         <Card className="border border-border/50 shadow-sm rounded-3xl bg-card text-card-foreground overflow-hidden">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-base font-bold">
               <Star className="w-5 h-5 text-amber-500" />
               {t('seller.sentiment', 'Feedback Sentiment')}
             </CardTitle>
             <CardDescription>{t('seller.sentimentDesc', 'Derived from customer review comments & ratings')}</CardDescription>
           </CardHeader>
-          <CardContent className="h-[350px]">
+          <CardContent className="h-[280px] sm:h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={charts.review_sentiment} layout="vertical">
+              <BarChart data={charts.review_sentiment} layout="vertical" margin={{ top: 0, right: 20, left: -10, bottom: 0 }}>
                 <XAxis type="number" hide />
-                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontWeight: "bold" }} width={80} />
+                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontWeight: "bold", fontSize: 11 }} width={70} />
                 <Tooltip contentStyle={{ borderRadius: "12px", border: "1px solid var(--border)", backgroundColor: "var(--card)", color: "var(--foreground)", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }} />
-                <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={40}>
+                <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={32}>
                   {charts.review_sentiment.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={entry.name === "Positive" ? "#10b981" : entry.name === "Neutral" ? "#f59e0b" : "#ef4444"} />
                   ))}
@@ -360,23 +360,23 @@ export default function SellerDashboardView() {
         {/* Rating Distribution — replaces BSR Trend, uses real product star ratings */}
         <Card className="border border-border/50 shadow-sm rounded-3xl bg-card text-card-foreground overflow-hidden">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-base font-bold">
               <Percent className="w-5 h-5 text-indigo-600" />
               {t('seller.ratingDist', 'Product Rating Distribution')}
             </CardTitle>
             <CardDescription>{t('seller.ratingDistDesc', 'Number of products by star rating')}</CardDescription>
           </CardHeader>
-          <CardContent className="h-[350px]">
+          <CardContent className="h-[280px] sm:h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={charts.rating_distribution}>
+              <BarChart data={charts.rating_distribution} margin={{ top: 10, right: 10, left: -15, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.3} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 13 }} />
-                <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 12 }} />
+                <YAxis allowDecimals={false} axisLine={false} tickLine={false} tick={{ fill: "#94a3b8", fontSize: 11 }} width={40} />
                 <Tooltip
                   contentStyle={{ borderRadius: "12px", border: "1px solid var(--border)", backgroundColor: "var(--card)", color: "var(--foreground)", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }}
                   formatter={(v: any) => [`${v} products`, "Count"]}
                 />
-                <Bar dataKey="count" radius={[8, 8, 0, 0]} barSize={48}>
+                <Bar dataKey="count" radius={[8, 8, 0, 0]} barSize={36}>
                   {charts.rating_distribution.map((_: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}

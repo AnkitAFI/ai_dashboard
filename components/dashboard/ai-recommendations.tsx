@@ -235,14 +235,14 @@ export default function AIRecommendations({ selectedSource }: { selectedSource: 
   // RENDER
   // ─────────────────────────────────────────
   return (
-    <Card className="bg-gradient-to-r from-primary/10 to-purple-500/10 rounded-xl p-6 border mb-6">
-      <CardHeader className="flex flex-row items-center justify-between mb-4 p-0">
+    <Card className="bg-gradient-to-r from-primary/10 to-purple-500/10 rounded-xl p-4 sm:p-6 border mb-6 min-w-0 max-w-full overflow-hidden">
+      <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 p-0">
         <div className="flex items-center">
-          <div className="p-3 bg-primary rounded-xl mr-4">
-            <Bot className="text-primary-foreground h-6 w-6" />
+          <div className="p-3 bg-primary rounded-xl mr-3 sm:mr-4 shrink-0">
+            <Bot className="text-primary-foreground h-5 w-5 sm:h-6 sm:w-6" />
           </div>
-          <div>
-            <CardTitle className="text-lg font-semibold">Decision Intelligence</CardTitle>
+          <div className="min-w-0 flex-1">
+            <CardTitle className="text-base sm:text-lg font-semibold truncate">Decision Intelligence</CardTitle>
             <p className="text-sm text-muted-foreground">
               Natural language analysis for{" "}
               <span className="font-medium text-foreground">{displaySource}</span>
