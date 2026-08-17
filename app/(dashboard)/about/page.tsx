@@ -96,12 +96,9 @@ export default function DashboardAboutPage() {
   return (
     <div className="space-y-8 py-6">
       {/* Hero */}
-      <div className="text-center space-y-4">
-        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#00C6FF]/20 to-[#0072FF]/20 rounded-2xl mb-2 shadow-sm mx-auto border border-white/40 dark:border-slate-800">
-          <Brain className="h-10 w-10 text-[#0072FF] dark:text-sky-400" />
-        </div>
-        <h1 className="text-3xl font-bold text-[#003366] dark:text-slate-100">{t('about.title', 'About Insydz')}</h1>
-        <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
+      <div className="text-left space-y-1">
+        <h1 className="page-title">{t('about.title', 'About Insydz')}</h1>
+        <p className="page-subtitle">
           {t('about.subtitle', "We're democratizing e-commerce intelligence by making advanced analytics and AI-powered insights accessible to businesses of all sizes.")}
         </p>
       </div>

@@ -49,6 +49,18 @@ type Article = {
 // Sample articles data
 const articles: Article[] = [
   {
+    id: "32",
+    title: "Amazon Great Freedom Festival 2026: Seller Prep Guide",
+    excerpt:
+      "Amazon Great Freedom Festival 2026 (Aug 8-15): Seller prep checklist covering price floors, FBA inventory deadlines, listing fixes, and real-time monitoring.",
+    category: "Festive Trends",
+    readTime: "12 min read",
+    image: "/prime-day-india-2026-seller-questions.png",
+    route:
+      "/resources/expert-blog/amazon-great-freedom-festival-2026-seller-guide",
+    popular: true,
+  },
+  {
     id: "28",
     title: "Amazon India Repricing Strategy 2026",
     excerpt:

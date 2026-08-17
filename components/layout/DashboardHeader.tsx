@@ -178,14 +178,14 @@ export function DashboardHeader({ onMobileMenuToggle, onFilterToggle, showFilter
           <Menu className="w-5 h-5 text-sky-900 dark:text-sky-400" />
         </button>
         <div className="flex-1 sm:flex-none">
-          <h2 className="text-xl sm:text-2xl font-bold text-sky-900 dark:text-sky-100 flex items-center gap-2">
+          <h2 className="page-title flex items-center gap-2">
             {displayTitle} {isDashboard && (
               <span className="w-5 h-3 sm:w-6 sm:h-4 inline-block">
                 <img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" alt="Indian Flag" className="w-full h-full object-cover shadow-sm rounded-sm" />
               </span>
             )}
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 text-[10px] sm:text-xs">
+          <p className="page-subtitle text-xs sm:text-sm">
             {displaySubtitle} • <span className="font-semibold text-sky-600 dark:text-sky-400">{currentTier.toUpperCase()}</span>
           </p>
         </div>

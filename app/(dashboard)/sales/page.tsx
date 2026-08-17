@@ -327,19 +327,19 @@ export default function Sales() {
       {/* Header & Source Select */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 w-full">
         <div className="text-left space-y-1">
-          <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+          <h1 className="page-title">
             Top {products.length} Selling Products ({source})
           </h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm">
+          <p className="page-subtitle">
             {t('sales.subtitle', 'Analyze and sort by sales, reviews, price, or rating for data-driven decisions.')}
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <select
             value={source}
             onChange={(e) => setSource(e.target.value as "flipkart" | "amazon")}
             className={cn(
-              "border px-3 py-2 rounded-md font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20",
+              "border px-3 py-2 rounded-md font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-xs sm:text-sm",
               isDark 
                 ? "border-slate-700 bg-slate-900 text-slate-100" 
                 : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50"
@@ -351,7 +351,7 @@ export default function Sales() {
             <option value="amazon" className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Amazon India</option>
           </select>
 
-          <div className="relative">
+          <div className="relative max-w-[170px] sm:max-w-[220px]">
             <Filter className={cn(
               "absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none",
               isDark ? "text-slate-400" : "text-slate-500"
@@ -364,7 +364,7 @@ export default function Sales() {
               }}
               disabled={categoriesLoading}
               className={cn(
-                "border pl-8 pr-3 py-2 rounded-md font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 max-w-[220px] truncate",
+                "border pl-8 pr-3 py-2 rounded-md font-medium shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/20 w-full truncate text-xs sm:text-sm",
                 isDark
                   ? "border-slate-700 bg-slate-900 text-slate-100"
                   : "border-slate-300 bg-white text-slate-700 hover:bg-slate-50",
@@ -382,7 +382,7 @@ export default function Sales() {
                   value={cat}
                   className={isDark ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}
                 >
-                  {cat}
+                  {cat.length > 25 ? cat.slice(0, 25) + "…" : cat}
                 </option>
               ))}
             </select>

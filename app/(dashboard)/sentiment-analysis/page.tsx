@@ -200,11 +200,11 @@ export default function SentimentProductsPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-sky-900 dark:text-sky-400 break-words">
+          <h1 className="page-title break-words">
             {formatSentiment(sentiment)} Products
-          </h2>
+          </h1>
           <div className="flex flex-col gap-1 mt-1">
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+            <p className="page-subtitle">
               {source === "flipkart" ? "Flipkart" : "Amazon"} • {totalProducts.toLocaleString()} products found
             </p>
             <p className="text-xs text-gray-400 dark:text-slate-500">

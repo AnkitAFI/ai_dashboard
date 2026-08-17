@@ -167,14 +167,11 @@ export default function CategoryProducts() {
       </header>
 
       {/* Hero Section */}
-      <div className="text-center space-y-2">
-        <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-cyan-100 to-blue-100 rounded-xl shadow-inner">
-          <CategoryIcon className="h-6 w-6 text-blue-500" />
-        </div>
-        <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-500 via-cyan-400 to-emerald-400 text-transparent bg-clip-text">
+      <div className="text-left space-y-1">
+        <h1 className="page-title capitalize">
           {t('catProd.productsIn', 'Products in')} {decodeURIComponent((category as string) || "")}
         </h1>
-        <p className="text-sm text-slate-500 max-w-2xl mx-auto">
+        <p className="page-subtitle">
           {t('catProd.browseProducts', 'Browse {{source}} products with ratings, reviews, and prices.', { source })}
         </p>
       </div>

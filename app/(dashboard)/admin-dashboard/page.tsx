@@ -1180,10 +1180,10 @@ export default function AdminDashboard() {
       {/* Header */}
       <div className="flex-between mb-6 fade-in">
         <div>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700 }}>
+          <h1 className="page-title">
             {activeTab === "overview" ? "Admin Overview" : activeTab === "behavior" ? "User Behavior Analytics" : "Promo Codes & Marketing"}
           </h1>
-          <p style={{ margin: "4px 0 0", fontSize: 13, color: "#94a3b8" }}>
+          <p className="page-subtitle">
             {activeTab === "overview"
               ? "Full user database — all columns visible."
               : activeTab === "behavior"

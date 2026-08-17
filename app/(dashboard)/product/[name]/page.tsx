@@ -265,8 +265,8 @@ export default function ProductDetails() {
             <Menu className="w-5 h-5 text-sky-900" />
           </button>
           <div className="flex-1 min-w-0">
-            <h2 className="text-xl sm:text-2xl lg:text-3xl font-semibold text-sky-900 break-words line-clamp-1">{data.product_name}</h2>
-            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+            <h2 className="page-title break-words line-clamp-1">{data.product_name}</h2>
+            <p className="page-subtitle mt-0.5">
               Source: {isAmazon ? "Amazon" : "Flipkart"}
             </p>
           </div>

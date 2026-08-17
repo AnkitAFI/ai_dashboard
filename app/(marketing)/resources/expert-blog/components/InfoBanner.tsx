@@ -59,11 +59,12 @@
 // }
 
 "use client";
+import React from "react";
 import { useTheme } from "next-themes";
 
 interface InfoBannerProps {
   title: string;
-  content: string;
+  content: React.ReactNode;
   accentColor?: string;
   backgroundColor?: string;
   darkBackgroundColor?: string; // ← add a dark mode override

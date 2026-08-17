@@ -503,7 +503,7 @@ export default function AmazonIndiaPriceWarStrategyContent() {
                 most common cause of category-wide margin collapse on Amazon
                 India in 2026. If you have repricing rules active, setting a
                 calculated floor is non-negotiable. The guide on{" "}
-                <InLink to="/blog/amazon-repricing-strategy-india-2026">
+                <InLink to="/resources/expert-blog/amazon-repricing-strategy-india-2026">
                   how to set a price floor and build repricing rules
                 </InLink>{" "}
                 covers this in detail.
@@ -556,7 +556,7 @@ export default function AmazonIndiaPriceWarStrategyContent() {
                 price is still above your calculated floor. Outside of those
                 three conditions, matching is usually the wrong move. If you
                 have not set a floor, do that first — the full formula is in the{" "}
-                <InLink to="/blog/amazon-repricing-strategy-india-2026">
+                <InLink to="/resources/expert-blog/amazon-repricing-strategy-india-2026">
                   repricing strategy guide
                 </InLink>
                 .
@@ -682,7 +682,7 @@ export default function AmazonIndiaPriceWarStrategyContent() {
                 If they are pricing below what you can profitably match,
                 matching is not an option regardless of what happens to your Buy
                 Box share. The guide on{" "}
-                <InLink to="/blog/amazon-repricing-strategy-india-2026">
+                <InLink to="/resources/expert-blog/amazon-repricing-strategy-india-2026">
                   how to set a price floor
                 </InLink>{" "}
                 covers how to calculate this precisely.

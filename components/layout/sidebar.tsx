@@ -341,13 +341,13 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
   const getSubscriptionColor = (tier: string) => {
     switch (tier?.toLowerCase()) {
       case "enterprise":
-        return "bg-gradient-to-r from-fuchsia-500 to-purple-600 text-white shadow-md border-0";
+        return "bg-purple-100 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800";
       case "premium":
-        return "bg-gradient-to-r from-[#00D4FF] to-[#0099FF] text-white";
+        return "bg-sky-100 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300 border border-sky-200 dark:border-sky-800";
       case "basic":
-        return "bg-[#B3E5FC] text-[#004C75]";
+        return "bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 border border-blue-200 dark:border-blue-800";
       default:
-        return "bg-slate-200 text-gray-700";
+        return "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700";
     }
   };
 
@@ -534,7 +534,7 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                           variant={isActive(item.href) ? "default" : "ghost"}
                           disabled={item.disabled}
                           className={cn(
-                            "w-full justify-start transition-all duration-200 rounded-xl font-medium relative group",
+                            "w-full justify-start transition-all duration-200 rounded-xl font-medium relative group px-3 py-2 h-auto min-h-[40px]",
                             isCollapsed && "justify-center px-2",
                             isActive(item.href)
                               ? "bg-gradient-to-r from-[#00C6FF] to-[#0072FF] text-white shadow-md"
@@ -547,31 +547,27 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                             .replace(/^_+|_+$/g, "")}`}
                           data-filter-value={item.href}
                         >
-                          <Icon
-                            className={cn(
-                              "h-4 w-4 shrink-0",
-                              !isCollapsed && "mr-3",
-                            )}
-                          />
-                          {!isCollapsed && (
-                            <div className="flex items-center justify-between w-full">
-                              <span className="truncate text-sm">
+                          {isCollapsed ? (
+                            <Icon className="h-4 w-4 shrink-0" />
+                          ) : (
+                            <div className="flex items-center w-full min-w-0 gap-3 text-left">
+                              <Icon className="h-4 w-4 shrink-0 opacity-80 group-hover:opacity-100" />
+                              <span className="truncate text-xs sm:text-sm font-medium min-w-0 flex-1 text-left">
                                 {item.label}
                               </span>
                               {item.badge && (
-                                <Badge
-                                  variant="secondary"
+                                <span
                                   className={cn(
-                                    "ml-2 text-[8px] px-1.5 py-0 leading-none h-4 uppercase font-bold tracking-tighter",
+                                    "text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none shrink-0 tracking-wider uppercase border shadow-2xs",
                                     item.badge === "AI"
-                                      ? "bg-orange-100 text-orange-600 border-orange-200"
+                                      ? "bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900/60 dark:text-purple-200 dark:border-purple-700"
                                       : item.badge === "NEW"
-                                        ? "bg-blue-100 text-blue-600 border-blue-200"
-                                        : "bg-slate-100 text-slate-500 border-slate-200",
+                                        ? "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900/60 dark:text-blue-200 dark:border-blue-700"
+                                        : "bg-slate-200 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-200 dark:border-slate-700",
                                   )}
                                 >
                                   {item.badge}
-                                </Badge>
+                                </span>
                               )}
                             </div>
                           )}
@@ -605,17 +601,16 @@ export default function Sidebar({ isMobileOpen, onClose }: SidebarProps) {
                 <p className="font-semibold text-sm text-[#003366] dark:text-slate-200 truncate">
                   {getDisplayName()}
                 </p>
-                <Badge
-                  variant="secondary"
+                <span
                   className={cn(
-                    "text-[10px] mt-0.5 font-medium px-2 py-0 rounded-full leading-relaxed",
+                    "inline-flex items-center whitespace-nowrap text-[10px] font-semibold px-2 py-0.5 rounded-full mt-0.5 leading-tight tracking-normal capitalize",
                     getSubscriptionColor(user?.subscriptionTier || "free"),
                   )}
                 >
                   {user?.subscriptionTier
                     ? `${user.subscriptionTier.charAt(0).toUpperCase() + user.subscriptionTier.slice(1)} Plan`
                     : "Free Plan"}
-                </Badge>
+                </span>
               </div>
             )}
 

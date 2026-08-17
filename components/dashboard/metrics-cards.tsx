@@ -40,8 +40,8 @@ function MetricCard({ title, value, icon, color, isLoading }: MetricCardProps) {
           {t('metrics.live', 'Live')}
         </Badge>
       </div>
-      <h3 className="text-2xl font-bold text-foreground mb-1">{value}</h3>
-      <p className="text-sm text-muted-foreground">{title}</p>
+      <h3 className="card-metric mb-1">{value}</h3>
+      <p className="card-label">{title}</p>
     </Card>
   );
 }
