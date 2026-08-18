@@ -37,7 +37,6 @@ export const config = {
     "/categories/:path*",
     "/category-products/:path*",
     "/keyword-intelligence/:path*",
-    "/keyword-tracker/:path*",
     "/order-history/:path*",
     "/overview/:path*",
     "/product/:path*",
