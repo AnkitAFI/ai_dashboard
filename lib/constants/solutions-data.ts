@@ -1,7 +1,7 @@
 import React from 'react';
-import { 
-  Target, MessageCircle, TrendingUp, Bell, 
-  TrendingDown, Search, Clock, ShoppingBag, 
+import {
+  Target, MessageCircle, TrendingUp, Bell,
+  TrendingDown, Search, Clock, ShoppingBag,
   BarChart3, Smartphone, Zap, Star
 } from "lucide-react";
 
@@ -83,12 +83,12 @@ export interface SolutionData {
     gradientTitle: string;
     titleSuffix: string;
     description: string;
-    steps: { 
-      step: string; 
-      title: string; 
-      desc?: string; 
-      icon?: string; 
-      color?: string; 
+    steps: {
+      step: string;
+      title: string;
+      desc?: string;
+      icon?: string;
+      color?: string;
       bullets?: (string | { text: string; color: string; })[];
       bg?: string;
     }[];

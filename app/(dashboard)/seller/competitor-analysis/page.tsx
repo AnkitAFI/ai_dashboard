@@ -81,12 +81,12 @@ function ThreatRing({ score, size = "md", isDark }: { score: number; size?: "sm"
   const offset = circ - (circ * score) / 10;
   const color =
     score >= 8 ? (isDark ? "#f87171" : "#ef4444") :
-    score >= 6 ? (isDark ? "#fb923c" : "#f97316") :
-    score >= 4 ? (isDark ? "#fbbf24" : "#f59e0b") : (isDark ? "#34d399" : "#10b981");
+      score >= 6 ? (isDark ? "#fb923c" : "#f97316") :
+        score >= 4 ? (isDark ? "#fbbf24" : "#f59e0b") : (isDark ? "#34d399" : "#10b981");
   const label =
     score >= 8 ? "Critical" :
-    score >= 6 ? "High" :
-    score >= 4 ? "Medium" : "Low";
+      score >= 6 ? "High" :
+        score >= 4 ? "Medium" : "Low";
 
   return (
     <div className="flex flex-col items-center gap-1">
@@ -110,9 +110,9 @@ function ThreatRing({ score, size = "md", isDark }: { score: number; size?: "sm"
 // ── Buy Box Risk Badge ────────────────────────────────────────────────────────
 function BuyBoxBadge({ level, isDark, isPrivateLabel }: { level: "Safe" | "Watch" | "At Risk"; isDark: boolean; isPrivateLabel?: boolean }) {
   const styles = {
-    "Safe":    { cls: isDark ? "bg-emerald-900/30 text-emerald-400 border-emerald-800/50" : "bg-emerald-50 text-emerald-700 border-emerald-200", icon: Shield },
-    "Watch":   { cls: isDark ? "bg-amber-900/30 text-amber-400 border-amber-800/50" : "bg-amber-50 text-amber-700 border-amber-200",       icon: ShieldAlert },
-    "At Risk": { cls: isDark ? "bg-red-900/30 text-red-400 border-red-800/50" : "bg-red-50 text-red-700 border-red-200",             icon: ShieldOff },
+    "Safe": { cls: isDark ? "bg-emerald-900/30 text-emerald-400 border-emerald-800/50" : "bg-emerald-50 text-emerald-700 border-emerald-200", icon: Shield },
+    "Watch": { cls: isDark ? "bg-amber-900/30 text-amber-400 border-amber-800/50" : "bg-amber-50 text-amber-700 border-amber-200", icon: ShieldAlert },
+    "At Risk": { cls: isDark ? "bg-red-900/30 text-red-400 border-red-800/50" : "bg-red-50 text-red-700 border-red-200", icon: ShieldOff },
   };
   const s = styles[level] || styles["Safe"];
   const Icon = s.icon;
@@ -161,11 +161,10 @@ function CompetitorCard({
 }) {
   const sym = currency === "INR" ? "₹" : "$";
   return (
-    <div className={`relative rounded-2xl border p-4 transition-all ${
-      isTopThreat
+    <div className={`relative rounded-2xl border p-4 transition-all ${isTopThreat
         ? isDark ? "border-red-900/50 bg-gradient-to-br from-red-900/20 to-orange-900/20 shadow-md" : "border-red-200 bg-gradient-to-br from-red-50 to-orange-50 shadow-md"
         : isDark ? "border-slate-800 bg-slate-900" : "border-slate-100 bg-white"
-    }`}>
+      }`}>
       {isTopThreat && (
         <div className="absolute -top-2 left-4 flex items-center gap-1 bg-red-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow">
           <Flame className="w-2.5 h-2.5" /> #1 THREAT
@@ -195,10 +194,9 @@ function CompetitorCard({
                 <button
                   onClick={onPin}
                   disabled={pinLoading}
-                  className={`p-1 rounded-lg transition-colors ${
-                    pinLoading ? "opacity-50 cursor-not-allowed" :
-                    isPinned ? isDark ? "bg-violet-900/30 text-violet-400" : "bg-violet-100 text-violet-600" : isDark ? "bg-slate-800 text-slate-400 hover:bg-slate-700" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
-                  }`}
+                  className={`p-1 rounded-lg transition-colors ${pinLoading ? "opacity-50 cursor-not-allowed" :
+                      isPinned ? isDark ? "bg-violet-900/30 text-violet-400" : "bg-violet-100 text-violet-600" : isDark ? "bg-slate-800 text-slate-400 hover:bg-slate-700" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
+                    }`}
                   title={isPinned ? "Remove from Listing Audit" : "Add to Listing Audit"}
                 >
                   {pinLoading
@@ -347,12 +345,12 @@ function BuyBoxPanel({ data, isBasic, currency, isDark }: { data: any; isBasic: 
 // ── Change Feed Item ──────────────────────────────────────────────────────────
 function ChangeFeedItem({ change, isDark }: { change: any; isDark: boolean }) {
   const iconMap: Record<string, any> = {
-    price_drop:     { icon: TrendingDown, cls: isDark ? "text-red-400 bg-red-900/30" : "text-red-500 bg-red-50" },
-    price_increase: { icon: TrendingUp,   cls: isDark ? "text-emerald-400 bg-emerald-900/30" : "text-emerald-500 bg-emerald-50" },
-    badge_gained:   { icon: Trophy,       cls: isDark ? "text-orange-400 bg-orange-900/30" : "text-orange-500 bg-orange-50" },
-    badge_lost:     { icon: BellOff,      cls: isDark ? "text-slate-400 bg-slate-800" : "text-slate-500 bg-slate-50" },
-    rating_change:  { icon: Star,         cls: isDark ? "text-amber-400 bg-amber-900/30" : "text-amber-500 bg-amber-50" },
-    default:        { icon: Activity,     cls: isDark ? "text-blue-400 bg-blue-900/30" : "text-blue-500 bg-blue-50" },
+    price_drop: { icon: TrendingDown, cls: isDark ? "text-red-400 bg-red-900/30" : "text-red-500 bg-red-50" },
+    price_increase: { icon: TrendingUp, cls: isDark ? "text-emerald-400 bg-emerald-900/30" : "text-emerald-500 bg-emerald-50" },
+    badge_gained: { icon: Trophy, cls: isDark ? "text-orange-400 bg-orange-900/30" : "text-orange-500 bg-orange-50" },
+    badge_lost: { icon: BellOff, cls: isDark ? "text-slate-400 bg-slate-800" : "text-slate-500 bg-slate-50" },
+    rating_change: { icon: Star, cls: isDark ? "text-amber-400 bg-amber-900/30" : "text-amber-500 bg-amber-50" },
+    default: { icon: Activity, cls: isDark ? "text-blue-400 bg-blue-900/30" : "text-blue-500 bg-blue-50" },
   };
   const meta = iconMap[change.type] || iconMap.default;
   const Icon = meta.icon;
@@ -403,20 +401,20 @@ function CompetitorAnalysisContent() {
   const { theme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  const asin     = searchParams.get("asin")      || selected?.asin     || "";
+  const asin = searchParams.get("asin") || selected?.asin || "";
   const sellerId = searchParams.get("seller_id") || selected?.sellerId || user?.seller_id || "";
 
-  const [data, setData]           = useSessionState<any>("seller_comp_analysis_data", null);
+  const [data, setData] = useSessionState<any>("seller_comp_analysis_data", null);
   const [lastFetchedAsin, setLastFetchedAsin] = useSessionState<string>("seller_comp_analysis_asin", "");
-  const [loading, setLoading]     = useState(false);
-  const [pinned, setPinned]       = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(false);
+  const [pinned, setPinned] = useState<Set<string>>(new Set());
   const [pinLoading, setPinLoading] = useState<Set<string>>(new Set());
 
-  const tier      = data?.tier || user?.subscriptionTier || "free";
-  const isBasic   = tier === "basic" || tier === "premium" || tier === "enterprise";
+  const tier = data?.tier || user?.subscriptionTier || "free";
+  const isBasic = tier === "basic" || tier === "premium" || tier === "enterprise";
   const isPremium = tier === "premium" || tier === "enterprise";
-  const currency  = data?.currency || "USD";
-  const sym       = currency === "INR" ? "₹" : "$";
+  const currency = data?.currency || "USD";
+  const sym = currency === "INR" ? "₹" : "$";
 
   useEffect(() => {
     setMounted(true);
@@ -447,7 +445,7 @@ function CompetitorAnalysisContent() {
     if (!user?.email || !sellerId) return;
     const params = new URLSearchParams();
     if (user?.email) params.append("user_email", user.email);
-    if (sellerId)    params.append("seller_id", sellerId);
+    if (sellerId) params.append("seller_id", sellerId);
 
     fetch(`${BASE_URL}/api/watchlist?${params}`, { credentials: "include" })
       .then((r) => r.ok ? r.json() : null)
@@ -479,9 +477,9 @@ function CompetitorAnalysisContent() {
           credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            user_email:       user?.email,
-            seller_id:        sellerId,
-            competitor_asin:  competitorAsin,
+            user_email: user?.email,
+            seller_id: sellerId,
+            competitor_asin: competitorAsin,
           }),
         });
       } else {
@@ -490,22 +488,22 @@ function CompetitorAnalysisContent() {
           credentials: "include",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            user_email:       user?.email,
-            seller_id:        sellerId,
-            source_asin:      asin,
-            competitor_asin:  competitorAsin,
-            title:            competitorData.title,
-            photo:            competitorData.photo,
-            price:            competitorData.price,
-            rating:           competitorData.rating,
-            num_ratings:      competitorData.num_ratings,
-            threat_score:     competitorData.threat_score,
-            threat_reason:    competitorData.threat_reason,
-            is_prime:         competitorData.is_prime,
-            is_best_seller:   competitorData.is_best_seller,
+            user_email: user?.email,
+            seller_id: sellerId,
+            source_asin: asin,
+            competitor_asin: competitorAsin,
+            title: competitorData.title,
+            photo: competitorData.photo,
+            price: competitorData.price,
+            rating: competitorData.rating,
+            num_ratings: competitorData.num_ratings,
+            threat_score: competitorData.threat_score,
+            threat_reason: competitorData.threat_reason,
+            is_prime: competitorData.is_prime,
+            is_best_seller: competitorData.is_best_seller,
             is_amazon_choice: competitorData.is_amazon_choice,
-            sales_volume:     competitorData.sales_volume,
-            price_diff_pct:   competitorData.price_diff_pct,
+            sales_volume: competitorData.sales_volume,
+            price_diff_pct: competitorData.price_diff_pct,
           }),
         });
       }
@@ -525,14 +523,14 @@ function CompetitorAnalysisContent() {
     }
   };
 
-  const competitors     = data?.competitors      || [];
-  const topThreat       = data?.top_threat       || null;
-  const buyBox          = data?.buy_box          || {};
-  const changeFeed      = data?.change_feed      || [];
-  const marketGaps      = data?.market_gaps      || [];
-  const sellerHealth    = data?.seller_health    || {};
-  const aiWeeklySummary = data?.ai_weekly_summary|| null;
-  const portfolioRisk   = data?.portfolio_threat || [];
+  const competitors = data?.competitors || [];
+  const topThreat = data?.top_threat || null;
+  const buyBox = data?.buy_box || {};
+  const changeFeed = data?.change_feed || [];
+  const marketGaps = data?.market_gaps || [];
+  const sellerHealth = data?.seller_health || {};
+  const aiWeeklySummary = data?.ai_weekly_summary || null;
+  const portfolioRisk = data?.portfolio_threat || [];
 
   if (!mounted) return null;
   const isDark = resolvedTheme === "dark";
@@ -667,11 +665,11 @@ function CompetitorAnalysisContent() {
                   value: buyBox.buy_box_risk_level || "—",
                   sub: buyBox.num_offers > 1 ? `${buyBox.num_offers} sellers on listing` : "You own the Buy Box",
                   color: buyBox.buy_box_risk_level === "At Risk" ? (isDark ? "text-red-400" : "text-red-500") : buyBox.buy_box_risk_level === "Watch" ? (isDark ? "text-amber-400" : "text-amber-500") : (isDark ? "text-emerald-400" : "text-emerald-600"),
-                  tip: buyBox.buy_box_risk_level === "At Risk" 
+                  tip: buyBox.buy_box_risk_level === "At Risk"
                     ? "At Risk: Another seller on your exact ASIN is offering a better price and stealing your 'Add to Cart' sales."
                     : buyBox.buy_box_risk_level === "Watch"
-                    ? "Watch: Another seller has joined your exact ASIN. Keep your price low so they don't steal your 'Add to Cart' button."
-                    : "Safe: You are the only seller on this exact ASIN, so nobody can steal your 'Add to Cart' button (even if other brands are cheaper).",
+                      ? "Watch: Another seller has joined your exact ASIN. Keep your price low so they don't steal your 'Add to Cart' button."
+                      : "Safe: You are the only seller on this exact ASIN, so nobody can steal your 'Add to Cart' button (even if other brands are cheaper).",
                 },
                 {
                   label: "Rivals Tracked",
@@ -815,10 +813,10 @@ function CompetitorAnalysisContent() {
                   {isPremium ? (
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {[
-                        { label: "Seller Rating",    value: sellerHealth.seller_rating || "—",                                   color: isDark ? "text-amber-400" : "text-amber-500" },
-                        { label: "Seller Reviews",   value: sellerHealth.seller_ratings_total?.toLocaleString() || "—",           color: isDark ? "text-slate-200" : "text-slate-800" },
-                        { label: "Business Name",    value: sellerHealth.business_name || "—",                                   color: isDark ? "text-slate-200" : "text-slate-800" },
-                        { label: "Products Tracked", value: sellerHealth.product_count || "—",                                   color: isDark ? "text-sky-400" : "text-sky-600" },
+                        { label: "Seller Rating", value: sellerHealth.seller_rating || "—", color: isDark ? "text-amber-400" : "text-amber-500" },
+                        { label: "Seller Reviews", value: sellerHealth.seller_ratings_total?.toLocaleString() || "—", color: isDark ? "text-slate-200" : "text-slate-800" },
+                        { label: "Business Name", value: sellerHealth.business_name || "—", color: isDark ? "text-slate-200" : "text-slate-800" },
+                        { label: "Products Tracked", value: sellerHealth.product_count || "—", color: isDark ? "text-sky-400" : "text-sky-600" },
                       ].map((s) => (
                         <div key={s.label} className={`rounded-xl p-3 border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-100'}`}>
                           <p className={`text-[10px] font-medium mb-0.5 ${isDark ? 'text-slate-400' : 'text-slate-400'}`}>{s.label}</p>
@@ -837,11 +835,10 @@ function CompetitorAnalysisContent() {
                     </div>
                   )}
                   {isPremium && sellerHealth.seller_rating && data.product_star_rating && (
-                    <div className={`mt-4 p-3 rounded-xl border text-xs ${
-                      parseFloat(sellerHealth.seller_rating) < (data.product_star_rating || 5)
+                    <div className={`mt-4 p-3 rounded-xl border text-xs ${parseFloat(sellerHealth.seller_rating) < (data.product_star_rating || 5)
                         ? isDark ? "bg-amber-900/30 border-amber-800/50 text-amber-400" : "bg-amber-50 border-amber-200 text-amber-700"
                         : isDark ? "bg-emerald-900/30 border-emerald-800/50 text-emerald-400" : "bg-emerald-50 border-emerald-200 text-emerald-700"
-                    }`}>
+                      }`}>
                       {parseFloat(sellerHealth.seller_rating) < (data.product_star_rating || 5)
                         ? `⚠ Your seller rating (${sellerHealth.seller_rating}★) is lower than your product rating (${data.product_star_rating}★). This gap may be reducing conversions.`
                         : `✓ Your seller rating matches or exceeds your product rating — good seller health signal.`
