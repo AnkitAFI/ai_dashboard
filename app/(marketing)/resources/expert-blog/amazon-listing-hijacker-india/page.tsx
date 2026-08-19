@@ -133,7 +133,7 @@ const schemaAmazonListingHijackerIndia = {
         },
         {
           "@type": "Question",
-          name: "How do I know if my Amazon India listing has been hijacked?",
+          name: "How do I know if my Amazon India listing has been taken over?",
           acceptedAnswer: {
             "@type": "Answer",
             text: "The clearest signal is a new seller appearing in your listing's offer section that you did not authorize. If you also see a sudden Buy Box loss, a price drop you did not make, or new 1-star reviews mentioning product quality you cannot reproduce, those are strong secondary signals that a hijacker is active.",

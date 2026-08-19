@@ -160,7 +160,7 @@ export default function TrackCompetitorPricesContent() {
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
             {[
-              { icon: <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Buy Box Hijacks", desc: "Competitors drop prices at night and steal your sales before you wake up.", color: "from-red-500 to-orange-500" },
+              { icon: <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Buy Box Takeovers", desc: "Competitors drop prices at night and capture your sales before you wake up.", color: "from-red-500 to-orange-500" },
               { icon: <Clock className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Hours Wasted", desc: "Checking 10 competitors across 20 listings takes 15+ hours of manual work every week.", color: "from-orange-500 to-yellow-500" },
               { icon: <AlertCircle className="w-8 h-8" />, title: "Inaccurate Data", desc: "Excel sheets are stale the second you save them. Prices change while you're still typing.", color: "from-purple-500 to-pink-500" },
               { icon: <Zap className="w-8 h-8" />, title: "Panic Decisions", desc: "Dropping prices blindly without knowing your real margin floors or competitor history.", color: "from-blue-500 to-indigo-500" },

@@ -424,7 +424,7 @@ const FAQS = [
   },
   {
     q: "How is review sentiment analysis different from just reading the star rating?",
-    a: "Star ratings tell you an aggregate satisfaction score. Sentiment analysis tells you why. A product at 4.1 stars with 25% of negative reviews mentioning a single fixable defect has a very different problem than a product at 4.1 stars with complaints spread across 10 unrelated issues. Sentiment analysis identifies specific complaint clusters, their share of negative reviews, and whether they're growing or shrinking — giving sellers an actionable fix, not just a score. For Indian sellers, India-calibrated sentiment analysis also detects negative and positive signals in Hindi and Hinglish.",
+    a: "Star ratings tell you an overall satisfaction score. Sentiment analysis tells you why. A product at 4.1 stars with 25% of negative reviews mentioning a single fixable defect has a very different problem than a product at 4.1 stars with complaints spread across 10 unrelated issues. Sentiment analysis identifies specific complaint clusters, their share of negative reviews, and whether they're growing or shrinking — giving sellers an actionable fix, not just a score. For Indian sellers, India-calibrated sentiment analysis also detects negative and positive signals in Hindi and Hinglish.",
   },
   {
     q: "Can I analyse competitor reviews — not just my own?",

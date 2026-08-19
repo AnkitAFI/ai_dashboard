@@ -45,7 +45,7 @@ export default function CompetitorPriceTrackingFeaturePage() {
     {
       title: "Email alerts you check tomorrow not tonight",
       description:
-        "Most price tracking tools send email notifications. Indian sellers don't monitor business email around the clock. By the time you open that email, three competitors have already stolen the Buy Box back.",
+        "Most price tracking tools send email notifications. Indian sellers don't monitor business email around the clock. By the time you open that email, three competitors have already captured the Buy Box back.",
       icon: <Shield className="w-8 h-8" />,
       color: "from-orange-500 to-red-500",
     },

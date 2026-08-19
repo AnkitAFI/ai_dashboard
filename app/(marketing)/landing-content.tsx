@@ -500,9 +500,7 @@ export default function LandingContent() {
                   Insydz’s Market Visibility
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6 font-medium flex-grow">
-                  Insydz's Market Visibility tool gives you a complete X-ray of
-                  your category, who's dominating, where the gaps are, and
-                  exactly how you can break in.
+                  Insydz's Market Visibility tool gives you total clarity over your category—revealing market gaps, keyword opportunities, and exactly how you can scale your sales.
                 </p>
                 {/* <div className="flex justify-between items-center pt-4 border-t border-gray-100 dark:border-gray-700/60 text-xs font-bold text-gray-400 mt-auto">
                   <span className="flex items-center gap-1">

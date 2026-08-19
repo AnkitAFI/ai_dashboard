@@ -26,7 +26,7 @@ export default function TermsOfServiceContent() {
           <section>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">2. Description of Services</h2>
             <p className="text-gray-700 dark:text-gray-300">
-              Insydz provides an analytics platform that aggregates, processes, and analyzes e-commerce data to provide business insights, market intelligence, and predictive analytics. Our Services include but are not limited to:
+              Insydz provides an analytics platform that processes and analyzes public e-commerce market trends to deliver actionable insights, market intelligence, and predictive analytics. Our Services include but are not limited to:
             </p>
             <ul className="list-disc pl-6 text-gray-700 dark:text-gray-300 space-y-2">
               <li>Data analytics and visualization dashboards</li>
@@ -107,7 +107,7 @@ export default function TermsOfServiceContent() {
               <li>Infringe upon intellectual property rights of others</li>
               <li>Transmit malware, viruses, or harmful code</li>
               <li>Attempt to gain unauthorized access to our systems</li>
-              <li>Engage in data scraping or automated data collection beyond permitted API usage</li>
+              <li>Engage in unauthorized data mining or automated data collection beyond permitted API usage</li>
               <li>Resell or redistribute our Services without authorization</li>
               <li>Harass, abuse, or harm other users</li>
               <li>Upload false, misleading, or fraudulent information</li>

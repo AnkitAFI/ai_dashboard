@@ -163,7 +163,7 @@ export default function FlipkartSellersPage() {
             {[
               {
                 icon: <TrendingDown className="w-6 h-6" />,
-                title: "Competitors change prices while you sleep and steal your sales rank",
+                title: "Competitors change prices while you sleep and overtake your sales rank",
                 color: "from-red-500 to-orange-500"
               },
               {

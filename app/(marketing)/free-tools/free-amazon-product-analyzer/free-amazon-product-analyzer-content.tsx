@@ -415,7 +415,7 @@ export default function FreeAmazonProductAnalyzerPage() {
               </div>
             ))}
           </div>
-          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mt-2 leading-relaxed">This is not scraped guesswork it's structured marketplace intelligence.</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mt-2 leading-relaxed">This is not automated guesswork it's structured marketplace intelligence.</p>
           <p className="text-gray-400 dark:text-gray-500 text-xs mt-1 leading-relaxed">Used by sellers evaluating products across Amazon India categories.</p>
         </div>
       </section>
