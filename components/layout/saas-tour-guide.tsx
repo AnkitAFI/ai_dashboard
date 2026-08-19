@@ -4,33 +4,33 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { API_BASE_URL } from "@/lib/config";
-import { 
-  Sparkles, 
-  Search, 
-  Compass, 
-  HelpCircle, 
-  X, 
-  ChevronRight, 
-  ChevronLeft, 
-  BookOpen, 
-  TrendingUp, 
-  BarChart3, 
-  ShieldCheck, 
-  Target, 
-  Calculator, 
-  MessageSquare, 
-  Star, 
-  Bookmark, 
-  Store, 
-  Tag, 
-  Users, 
-  DollarSign, 
-  History, 
-  Shield, 
-  Zap, 
-  Settings, 
-  Play, 
-  CheckCircle2, 
+import {
+  Sparkles,
+  Search,
+  Compass,
+  HelpCircle,
+  X,
+  ChevronRight,
+  ChevronLeft,
+  BookOpen,
+  TrendingUp,
+  BarChart3,
+  ShieldCheck,
+  Target,
+  Calculator,
+  MessageSquare,
+  Star,
+  Bookmark,
+  Store,
+  Tag,
+  Users,
+  DollarSign,
+  History,
+  Shield,
+  Zap,
+  Settings,
+  Play,
+  CheckCircle2,
   ArrowRight,
   Info,
   Crown,
@@ -386,7 +386,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     triggerValue: "/categories",
     placement: "right",
     successMessage: "Category Browser loaded successfully!",
-    videoPath:""
+    videoPath: ""
   },
   {
     title: "Top Selling Products Niches",
@@ -399,7 +399,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     triggerValue: "/sales",
     placement: "right",
     successMessage: "Top Selling Products loaded successfully!",
-    videoPath:""
+    videoPath: ""
   },
   {
     title: "Opportunity Finder (White Space)",
@@ -438,7 +438,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     triggerValue: "/keyword-intelligence",
     placement: "right",
     successMessage: "Keyword Intelligence loaded successfully!",
-    videoPath:""
+    videoPath: ""
   },
   {
     title: "Product Radar (AI Tracker)",
@@ -451,7 +451,7 @@ const EXPLORER_TOUR_STEPS: TourStep[] = [
     triggerValue: "/product-tracker",
     placement: "right",
     successMessage: "Product Radar loaded successfully!",
-    videoPath:""
+    videoPath: ""
   },
   {
     title: "Price Optimizer margin simulator",
@@ -860,7 +860,7 @@ export default function SaaSTourGuide() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All");
   const [selectedModeFilter, setSelectedModeFilter] = useState<string>("All");
-  
+
   // Real-time Active Tour Mode ('explorer' or 'seller')
   const [activeTourMode, setActiveTourMode] = useState<"explorer" | "seller">("explorer");
 
@@ -981,7 +981,7 @@ export default function SaaSTourGuide() {
         setSpotlightRect(null);
         return;
       }
-      
+
       const step = activeSteps[currentStep];
       if (!step?.selector) {
         setSpotlightRect(null);
@@ -1017,7 +1017,7 @@ export default function SaaSTourGuide() {
 
     window.addEventListener("scroll", updatePosition, { passive: true });
     window.addEventListener("resize", updatePosition);
-    
+
     const interval = setInterval(updatePosition, 200);
 
     return () => {
@@ -1111,7 +1111,7 @@ export default function SaaSTourGuide() {
 
     const targetCenterX = sLeft + (sWidth / 2);
     const arrowX = targetCenterX - finalLeft;
-    
+
     const targetCenterY = sTop + (sHeight / 2);
     const arrowY = targetCenterY - finalTop;
 
@@ -1335,16 +1335,16 @@ export default function SaaSTourGuide() {
 
   const filteredFeatures = useMemo(() => {
     return FEATURE_CATALOG.filter(feature => {
-      const matchesSearch = 
+      const matchesSearch =
         feature.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         feature.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         feature.category.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesDifficulty = 
-        selectedDifficulty === "All" || 
+
+      const matchesDifficulty =
+        selectedDifficulty === "All" ||
         feature.difficulty === selectedDifficulty;
-      
-      const matchesMode = 
+
+      const matchesMode =
         selectedModeFilter === "All" ||
         feature.mode === selectedModeFilter.toLowerCase() ||
         feature.mode === "both";
@@ -1361,25 +1361,25 @@ export default function SaaSTourGuide() {
       {/* 1. Pulsing Floating Action Beacon Button (Bottom Right) */}
       {/* ========================================================================= */}
       <div className="fixed bottom-6 right-6 z-[9990] flex flex-col items-end pointer-events-none">
-        
+
         {/* Onboarding Welcome Card (Auto-opens on first visit) */}
         {showWelcomeCard && (
           <div className="pointer-events-auto mb-4 w-76 rounded-xl border border-white/10 bg-slate-900/95 p-4 text-white shadow-2xl backdrop-blur-xl animate-in slide-in-from-bottom-6 duration-500 relative">
-            <button 
+            <button
               onClick={handleDismissWelcome}
               className="absolute top-3 right-3 text-white/40 hover:text-white transition-colors"
               aria-label="Close welcome card"
             >
               <X className="w-3.5 h-3.5" />
             </button>
-            
+
             <div className="flex items-center space-x-2 mb-2">
               <Sparkles className="w-4 h-4 text-sky-400 animate-pulse animate-spin-slow" />
               <h4 className="font-extrabold text-[11px] tracking-wide text-sky-300 uppercase">
                 Interactive Onboarding
               </h4>
             </div>
-            
+
             <h3 className="text-[13px] font-extrabold mb-1 leading-snug">
               Tour {activeTourMode === "seller" ? "Seller" : "Explorer"} workspace live!
             </h3>
@@ -1432,11 +1432,11 @@ export default function SaaSTourGuide() {
       {/* ========================================================================= */}
       {isOpen && activeTab === "tour" && spotlightRect && (
         <>
-          <div 
+          <div
             className="fixed inset-0 bg-slate-950/70 z-[9985] transition-all duration-300"
             style={clipPathStyle}
           />
-          <div 
+          <div
             className="fixed rounded-xl border-2 border-dashed border-sky-400 shadow-[0_0_15px_rgba(56,189,248,0.4)] pointer-events-none z-[9986] transition-all duration-300"
             style={{
               top: spotlightRect.top - 6,
@@ -1450,7 +1450,7 @@ export default function SaaSTourGuide() {
 
       {/* Background Mask */}
       {isOpen && (activeTab !== "tour" || !spotlightRect) && (
-        <div 
+        <div
           className="fixed inset-0 bg-slate-950/50 backdrop-blur-sm z-[9980]"
           onClick={() => setIsOpen(false)}
         />
@@ -1460,7 +1460,7 @@ export default function SaaSTourGuide() {
       {/* 3. Interactive Floating Tooltip Dialog Balloon */}
       {/* ========================================================================= */}
       {isOpen && (
-        <div 
+        <div
           style={dialogStyle}
           className="pointer-events-auto bg-slate-900/95 backdrop-blur-xl border border-white/10 text-slate-100 rounded-xl shadow-2xl p-4 flex flex-col scale-in duration-200 transition-all z-[9999] relative overflow-hidden"
         >
@@ -1479,14 +1479,13 @@ export default function SaaSTourGuide() {
 
           {/* Stepper pointer arrow */}
           {arrowDir && (
-            <div 
+            <div
               style={arrowStyle}
-              className={`absolute w-2.5 h-2.5 bg-slate-900 border-white/10 rotate-45 pointer-events-none transition-all ${
-                arrowDir === "up" ? "-top-[5px] border-t border-l" :
-                arrowDir === "down" ? "-bottom-[5px] border-b border-r" :
-                arrowDir === "left" ? "-left-[5px] border-b border-l" :
-                " -right-[5px] border-t border-r"
-              }`}
+              className={`absolute w-2.5 h-2.5 bg-slate-900 border-white/10 rotate-45 pointer-events-none transition-all ${arrowDir === "up" ? "-top-[5px] border-t border-l" :
+                  arrowDir === "down" ? "-bottom-[5px] border-b border-r" :
+                    arrowDir === "left" ? "-left-[5px] border-b border-l" :
+                      " -right-[5px] border-t border-r"
+                }`}
             />
           )}
 
@@ -1498,7 +1497,7 @@ export default function SaaSTourGuide() {
                 Guide ({currentStep + 1}/{activeSteps.length})
               </span>
             </div>
-            
+
             <div className="flex items-center space-x-1.5">
               <button
                 onClick={() => {
@@ -1519,7 +1518,7 @@ export default function SaaSTourGuide() {
                   </>
                 )}
               </button>
-              <button 
+              <button
                 onClick={() => setIsOpen(false)}
                 className="p-0.5 rounded text-slate-400 hover:text-white hover:bg-white/5 transition"
               >
@@ -1533,7 +1532,7 @@ export default function SaaSTourGuide() {
           {/* ========================================================================= */}
           {activeTab === "tour" && (
             <div className="flex flex-col flex-1 min-h-0">
-              
+
               {/* Scrollable Body Container to prevent tall cards from going off-screen */}
               <div className={`overflow-y-auto pr-1 space-y-3 custom-scrollbar min-h-0 ${activeSteps[currentStep]?.videoPath ? "max-h-[250px]" : "max-h-[190px]"}`}>
                 {/* Title & Description */}
@@ -1582,11 +1581,10 @@ export default function SaaSTourGuide() {
                   <button
                     onClick={handlePrevStep}
                     disabled={currentStep === 0}
-                    className={`p-1.5 rounded-lg border border-white/5 text-[10px] font-bold flex items-center transition ${
-                      currentStep === 0 
-                        ? "opacity-30 cursor-not-allowed bg-slate-900/20 text-slate-600" 
+                    className={`p-1.5 rounded-lg border border-white/5 text-[10px] font-bold flex items-center transition ${currentStep === 0
+                        ? "opacity-30 cursor-not-allowed bg-slate-900/20 text-slate-600"
                         : "bg-slate-800 hover:bg-slate-700 text-slate-200"
-                    }`}
+                      }`}
                   >
                     <ChevronLeft className="w-3 h-3" />
                   </button>
@@ -1611,7 +1609,7 @@ export default function SaaSTourGuide() {
           {/* ========================================================================= */}
           {activeTab === "catalog" && (
             <div className="flex flex-col max-h-[260px] overflow-y-auto pr-1">
-              
+
               {/* Search Inputs */}
               <div className="space-y-2.5 pb-2.5 border-b border-white/5 mb-2.5">
                 <SmartSearchInput
@@ -1626,8 +1624,8 @@ export default function SaaSTourGuide() {
                 <div className="flex items-center justify-between text-[8px] gap-2">
                   <div className="flex bg-slate-950 p-0.5 rounded border border-white/5">
                     {["All", "Explorer", "Seller"].map(m => (
-                      <button 
-                        key={m} 
+                      <button
+                        key={m}
                         onClick={() => setSelectedModeFilter(m)}
                         className={`px-1.5 py-0.5 rounded font-bold transition ${selectedModeFilter === m ? 'bg-slate-900 text-white' : 'text-slate-500 hover:text-slate-300'}`}
                       >
@@ -1638,16 +1636,15 @@ export default function SaaSTourGuide() {
 
                   <div className="flex bg-slate-950 p-0.5 rounded border border-white/5">
                     {["All", "Beginner", "Advanced"].map(d => (
-                      <button 
-                        key={d} 
+                      <button
+                        key={d}
                         onClick={() => setSelectedDifficulty(d === "Advanced" ? "Advanced" : d === "Beginner" ? "Beginner" : "All")}
-                        className={`px-1.5 py-0.5 rounded font-bold transition ${
-                          (d === "All" && selectedDifficulty === "All") || 
-                          (d === "Beginner" && selectedDifficulty === "Beginner") ||
-                          (d === "Advanced" && selectedDifficulty === "Advanced")
-                            ? 'bg-slate-900 text-white' 
+                        className={`px-1.5 py-0.5 rounded font-bold transition ${(d === "All" && selectedDifficulty === "All") ||
+                            (d === "Beginner" && selectedDifficulty === "Beginner") ||
+                            (d === "Advanced" && selectedDifficulty === "Advanced")
+                            ? 'bg-slate-900 text-white'
                             : 'text-slate-500 hover:text-slate-300'
-                        }`}
+                          }`}
                       >
                         {d}
                       </button>
@@ -1664,7 +1661,7 @@ export default function SaaSTourGuide() {
                   filteredFeatures.map(feat => {
                     const FeatIcon = feat.icon;
                     return (
-                      <div 
+                      <div
                         key={feat.id}
                         className="group rounded-lg border border-white/5 bg-slate-950/20 p-2.5 hover:bg-slate-950/40 transition-all duration-200 space-y-1.5 relative overflow-hidden"
                       >

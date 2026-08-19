@@ -52,7 +52,7 @@ const InLink = ({
 };
 
 // ── Schema ─────────────────────────────────────────────────────────────────────
-const schemaAmazonListingunauthorized sellerIndia = {
+const schemaAmazonListingHijackerIndia = {
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -67,9 +67,9 @@ const schemaAmazonListingunauthorized sellerIndia = {
     {
       "@type": "Article",
       "@id":
-        "https://insydz.com/resources/expert-blog/amazon-listing-unauthorized seller-india#article",
+        "https://insydz.com/resources/expert-blog/amazon-listing-hijacker-india#article",
       headline:
-        "Amazon India Listing unauthorized sellers: How to Detect and Remove Them Fast",
+        "Amazon India Listing Hijackers: How to Detect and Remove Them Fast",
       author: {
         "@type": "Organization",
         name: "Insydz",
@@ -84,11 +84,11 @@ const schemaAmazonListingunauthorized sellerIndia = {
 };
 
 // ── TOC ───────────────────────────────────────────────────────────────────────
-const unauthorized sellerTOC = [
+const hijackerTOC = [
   { id: "s1", label: "Key Takeaways" },
-  { id: "s2", label: "What Is a Listing unauthorized seller?" },
-  { id: "s3", label: "How to Detect an unauthorized seller" },
-  { id: "s4", label: "Who unauthorized sellers Are" },
+  { id: "s2", label: "What Is a Listing Hijacker?" },
+  { id: "s3", label: "How to Detect a Hijacker" },
+  { id: "s4", label: "Who Hijackers Are" },
   { id: "s5", label: "5-Step Removal Process" },
   { id: "s6", label: "How to File an IP Complaint" },
   { id: "s7", label: "Long-Term Prevention" },
@@ -97,12 +97,12 @@ const unauthorized sellerTOC = [
 ];
 
 // ── Key takeaways (s1) ────────────────────────────────────────────────────────
-const unauthorized sellerKeyTakeaways = [
-  "A listing unauthorized seller is an unauthorized third-party seller who jumps on your Amazon India listing and takes your Buy Box — often selling a counterfeit, grey market import, or used product at a lower price than yours.",
-  "The Buy Box loss is visible immediately. The review damage — 1-star reviews left by buyers who received the unauthorized seller's inferior product — accumulates on your listing and stays after the unauthorized seller is removed.",
-  "The fastest removal path is: test buy to confirm the counterfeit, cease-and-desist through Seller Central, then an IP complaint through Brand Registry with evidence attached. Most unauthorized sellers self-remove within 48 hours of step two.",
-  "Amazon Brand Registry is the single most effective structural protection against unauthorized sellers — it gives you Project Zero self-service removal and Transparency code serialization that make takeover significantly harder.",
-  "Real-time listing monitoring via WhatsApp alerts catches an unauthorized seller within hours of them appearing. Checking Seller Central manually once a day means finding out 12 to 24 hours later — after the reviews have already started arriving.",
+const hijackerKeyTakeaways = [
+  "A listing hijacker is an unauthorized third-party seller who jumps on your Amazon India listing and takes your Buy Box — often selling a counterfeit, grey market import, or used product at a lower price than yours.",
+  "The Buy Box loss is visible immediately. The review damage — 1-star reviews left by buyers who received the hijacker's inferior product — accumulates on your listing and stays after the hijacker is removed.",
+  "The fastest removal path is: test buy to confirm the counterfeit, cease-and-desist through Seller Central, then an IP complaint through Brand Registry with evidence attached. Most hijackers self-remove within 48 hours of step two.",
+  "Amazon Brand Registry is the single most effective structural protection against unauthorized sellers — it gives you Project Zero self-service removal and Transparency code serialization that make listing takeovers significantly harder.",
+  "Real-time listing monitoring via WhatsApp alerts catches a hijacker within hours of them appearing. Checking Seller Central manually once a day means finding out 12 to 24 hours later — after the reviews have already started arriving.",
 ];
 
 // ── Warning signals (s3) ──────────────────────────────────────────────────────
@@ -122,7 +122,7 @@ const warningSignals = [
     title:
       "New 1-star or 2-star reviews mention product quality issues you cannot reproduce",
     description:
-      "Buyers who received a counterfeit version of your product and leave a negative review do so on your listing — not the unauthorized seller's. Their bad product becomes your bad review history.",
+      "Buyers who received a counterfeit version of your product and leave a negative review do so on your listing — not the hijacker's. Their bad product becomes your bad review history.",
   },
   {
     title:
@@ -133,15 +133,15 @@ const warningSignals = [
   {
     title: "A price on your listing you did not set",
     description:
-      "If your listing shows a price you never entered, an unauthorized seller has taken the Buy Box at a price below your floor. This is the most urgent signal — act within hours, not days.",
+      "If your listing shows a price you never entered, a hijacker has taken the Buy Box at a price below your floor. This is the most urgent signal — act within hours, not days.",
   },
 ];
 
-// ── unauthorized seller type table (s4) ──────────────────────────────────────────────────
-const unauthorized sellerTypeColumns: TableColumn[] = [
+// ── Hijacker type table (s4) ──────────────────────────────────────────────────
+const hijackerTypeColumns: TableColumn[] = [
   {
     key: "type",
-    label: "unauthorized seller TYPE",
+    label: "HIJACKER TYPE",
     headerClassName: "bg-[#0D1B2A] text-white",
   },
   {
@@ -161,7 +161,7 @@ const unauthorized sellerTypeColumns: TableColumn[] = [
   },
 ];
 
-const unauthorized sellerTypeRows: TableRow[] = [
+const hijackerTypeRows: TableRow[] = [
   {
     rowClassName: "bg-[#F5F3FF]",
     type: {
@@ -219,19 +219,19 @@ const unauthorized sellerTypeRows: TableRow[] = [
 // ── 5-step removal process (s5) ───────────────────────────────────────────────
 const removalSteps = [
   {
-    title: "Confirm the unauthorized seller is active and document everything",
+    title: "Confirm the hijacker is active and document everything",
     description:
       "Open your listing in a non-logged-in browser. Note the current Buy Box price, the seller name showing in the cart button, and screenshot the offer listing. Go to Seller Central and note the unauthorized seller's Seller ID. This documentation is your evidence package for every step that follows.",
   },
   {
     title: "Do a test buy immediately",
     description:
-      "Purchase one unit from the unauthorized seller from a personal account or a trusted buyer. You need physical proof that their product is counterfeit or materially different from yours before Amazon India's infringement team will act. Photograph the packaging, the product, the invoice or lack thereof, and any quality differences side by side with your genuine product. This step takes 24 to 48 hours for delivery — start it the same day you detect the unauthorized seller.",
+      "Purchase one unit from the unauthorized seller from a personal account or a trusted buyer. You need physical proof that their product is counterfeit or materially different from yours before Amazon India's infringement team will act. Photograph the packaging, the product, the invoice or lack thereof, and any quality differences side by side with your genuine product. This step takes 24 to 48 hours for delivery — start it the same day you detect the hijacker.",
   },
   {
     title: "Send a cease-and-desist through Seller Central messaging",
     description:
-      "While waiting for the test buy, message the unauthorized seller directly through Seller Central. State: that they are selling on your listing without authorization; that you own the brand and have confirmed their seller ID; and that you will file an IP infringement complaint within 48 hours if they do not remove themselves. Keep the tone factual, not hostile. Roughly 60 to 70% of unauthorized sellers on Amazon India self-remove at this stage rather than face a formal complaint.",
+      "While waiting for the test buy, message the unauthorized seller directly through Seller Central. State: that they are selling on your listing without authorization; that you own the brand and have confirmed their seller ID; and that you will file an IP infringement complaint within 48 hours if they do not remove themselves. Keep the tone factual, not hostile. Roughly 60 to 70% of hijackers on Amazon India self-remove at this stage rather than face a formal complaint.",
   },
   {
     title: "File an IP complaint through Amazon Brand Registry",
@@ -251,12 +251,12 @@ const preventionItems = [
   {
     title: "Enroll in Amazon Brand Registry",
     description:
-      "Brand Registry gives you Project Zero (self-service counterfeit removal), Report a Violation (streamlined IP complaints), and Transparency (serialization codes on each unit). It is the single highest-impact protection investment for sellers who face repeat takeover. To qualify, you need a registered trademark.",
+      "Brand Registry gives you Project Zero (self-service counterfeit removal), Report a Violation (streamlined IP complaints), and Transparency (serialization codes on each unit). It is the single highest-impact protection investment for sellers who face repeat takeovers. To qualify, you need a registered trademark.",
   },
   {
     title: "Enable Amazon Transparency on your ASINs",
     description:
-      "Transparency prints a unique scannable code on every unit you manufacture. an unauthorized seller cannot replicate these codes — and Amazon automatically rejects any shipment of your ASIN that arrives without a valid Transparency code. This is the closest thing to making takeover structurally impossible on your listing.",
+      "Transparency prints a unique scannable code on every unit you manufacture. An unauthorized seller cannot replicate these codes — and Amazon automatically rejects any shipment of your ASIN that arrives without a valid Transparency code. This is the closest thing to making takeovers structurally impossible on your listing.",
   },
   {
     title: "Monitor your seller count daily, not weekly",
@@ -271,40 +271,40 @@ const preventionItems = [
   {
     title: "Use strong listing branding signals",
     description:
-      "A-plus content, clear brand imagery, a registered trademark logo in your listing images, and consistent packaging photography make it harder for an unauthorized seller to pass off a counterfeit as convincingly genuine. Low-brand listings are systematically easier to counterfeit because buyers have fewer reference points to compare.",
+      "A-plus content, clear brand imagery, a registered trademark logo in your listing images, and consistent packaging photography make it harder for a hijacker to pass off a counterfeit as convincingly genuine. Low-brand listings are systematically easier to counterfeit because buyers have fewer reference points to compare.",
   },
 ];
 
 // ── FAQ ───────────────────────────────────────────────────────────────────────
-const unauthorized sellerFaqs = [
+const hijackerFaqs = [
   {
-    q: "What is a listing unauthorized seller on Amazon India?",
-    a: "A listing unauthorized seller is an unauthorized third-party seller who adds themselves to your Amazon India product listing and begins selling — often a counterfeit, grey market import, or used product — at a lower price, taking your Buy Box and damaging your brand reputation with buyers who receive an inferior product and leave 1-star reviews on your listing.",
+    q: "What is a listing hijacker on Amazon India?",
+    a: "A listing hijacker is an unauthorized third-party seller who adds themselves to your Amazon India product listing and begins selling — often a counterfeit, grey market import, or used product — at a lower price, taking your Buy Box and damaging your brand reputation with buyers who receive an inferior product and leave 1-star reviews on your listing.",
   },
   {
     q: "How do I know if my Amazon India listing has been taken over?",
     a: "The clearest signal is a new seller appearing in your listing's offer section that you did not authorize. Secondary signals include a sudden Buy Box loss, a price on your listing that you did not set, new 1-star reviews mentioning quality issues you cannot reproduce, or customer return requests citing product differences. Check your offer section daily — or set up real-time monitoring through Insydz to catch it within hours instead.",
   },
   {
-    q: "How long does Amazon take to remove a listing unauthorized seller in India?",
-    a: "A cease-and-desist message through Seller Central often produces a self-removal response within 24 to 72 hours — most unauthorized sellers leave rather than face a formal complaint. An IP complaint through Brand Registry with evidence typically takes 3 to 7 business days. If you have Project Zero enrolled, you can remove the seller self-service without waiting for Amazon to act.",
+    q: "How long does Amazon take to remove a listing hijacker in India?",
+    a: "A cease-and-desist message through Seller Central often produces a self-removal response within 24 to 72 hours — most hijackers leave rather than face a formal complaint. An IP complaint through Brand Registry with evidence typically takes 3 to 7 business days. If you have Project Zero enrolled, you can remove the seller self-service without waiting for Amazon to act.",
   },
   {
-    q: "Do I need Amazon Brand Registry to remove a listing unauthorized seller?",
-    a: "You do not strictly need it — you can send a cease-and-desist and escalate through Seller Support without Brand Registry. But Brand Registry gives you Project Zero (self-service removal), Report a Violation (streamlined IP complaints), and Transparency (serialization that makes takeover structurally harder). It is the single most effective structural investment against repeat takeover.",
+    q: "Do I need Amazon Brand Registry to remove a listing hijacker?",
+    a: "You do not strictly need it — you can send a cease-and-desist and escalate through Seller Support without Brand Registry. But Brand Registry gives you Project Zero (self-service removal), Report a Violation (streamlined IP complaints), and Transparency (serialization that makes takeovers structurally harder). It is the single most effective structural investment against repeat takeovers.",
   },
   {
-    q: "Can a listing unauthorized seller affect my keyword rankings on Amazon India?",
+    q: "Can a listing hijacker affect my keyword rankings on Amazon India?",
     a: "Yes — indirectly. If the unauthorized seller wins your Buy Box and their product quality is poor, the resulting 1-star reviews accumulate on your listing and reduce your conversion rate, which is a ranking signal on Amazon India. Catching an unauthorized seller early limits this secondary damage. Reviews left on your listing during a takeover incident do not disappear when the unauthorized seller is removed.",
   },
   {
-    q: "What is the fastest way to stop a listing unauthorized seller on Amazon India?",
-    a: "The fastest first step is a cease-and-desist message through Seller Central — send it immediately, before your test buy arrives. While waiting for the test buy delivery, document everything. Once you have the counterfeit evidence, file an IP complaint through Brand Registry. Most unauthorized sellers self-remove within 48 hours of the cease-and-desist rather than face a formal infringement case.",
+    q: "What is the fastest way to stop a listing hijacker on Amazon India?",
+    a: "The fastest first step is a cease-and-desist message through Seller Central — send it immediately, before your test buy arrives. While waiting for the test buy delivery, document everything. Once you have the counterfeit evidence, file an IP complaint through Brand Registry. Most hijackers self-remove within 48 hours of the cease-and-desist rather than face a formal infringement case.",
   },
 ];
 
 // ── Related guides (per user-specified table) ─────────────────────────────────
-const unauthorized sellerRelatedCards = [
+const hijackerRelatedCards = [
   {
     tag: "Competitor Intelligence",
     title: "Competitor Undercutting Your Amazon India Price? Act Within 1 Hour",
@@ -326,7 +326,7 @@ const unauthorized sellerRelatedCards = [
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────────
-export default function AmazonListingunauthorized sellerIndiaContent() {
+export default function AmazonListingHijackerIndiaContent() {
   const { resolvedTheme } = useTheme();
   const [activeSection, setActiveSection] = useState("s1");
   const [scrollPct, setScrollPct] = useState(0);
@@ -336,12 +336,12 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
   }, []);
 
   useEffect(() => {
-    const id = "insydz-amazon-listing-unauthorized seller-india-schema";
+    const id = "insydz-amazon-listing-hijacker-india-schema";
     if (document.getElementById(id)) return;
     const script = document.createElement("script");
     script.id = id;
     script.type = "application/ld+json";
-    script.textContent = JSON.stringify(schemaAmazonListingunauthorized sellerIndia);
+    script.textContent = JSON.stringify(schemaAmazonListingHijackerIndia);
     document.head.appendChild(script);
     return () => {
       document.getElementById(id)?.remove();
@@ -352,10 +352,10 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
     const onScroll = () => {
       const total = document.documentElement.scrollHeight - window.innerHeight;
       setScrollPct(Math.min((window.scrollY / total) * 100, 100));
-      for (let i = unauthorized sellerTOC.length - 1; i >= 0; i--) {
-        const el = document.getElementById(unauthorized sellerTOC[i].id);
+      for (let i = hijackerTOC.length - 1; i >= 0; i--) {
+        const el = document.getElementById(hijackerTOC[i].id);
         if (el && window.scrollY >= el.offsetTop - 130) {
-          setActiveSection(unauthorized sellerTOC[i].id);
+          setActiveSection(hijackerTOC[i].id);
           break;
         }
       }
@@ -452,7 +452,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
         items={[
           { label: "Home", href: "/" },
           { label: "Blog", href: "/resources/expert-blog" },
-          { label: "Amazon Listing unauthorized seller India" },
+          { label: "Amazon Listing Hijacker India" },
         ]}
       />
 
@@ -462,7 +462,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
         badgeText="Account Health · Seller Protection · Community Q&A"
         title={
           <>
-            Amazon India Listing unauthorized sellers:{" "}
+            Amazon India Listing Hijackers:{" "}
             <span style={{ color: "#7C3AED" }}>
               How to Detect and Remove Them Fast
             </span>
@@ -471,7 +471,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
         description={
           <>
             Losing your Buy Box to an unknown seller on Amazon India? Learn how
-            to spot listing unauthorized sellers, file a report, and remove them before
+            to spot listing hijackers, file a report, and remove them before
             they cost you more — a step-by-step guide from detection to IP
             complaint.
           </>
@@ -493,7 +493,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
             {
               value: "48 hrs",
               label:
-                "most unauthorized sellers self-remove after receiving a cease-and-desist — if you catch them that fast",
+                "most hijackers self-remove after receiving a cease-and-desist — if you catch them that fast",
             },
             {
               value: "5 steps",
@@ -503,12 +503,12 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
             {
               value: "1-star reviews",
               label:
-                "accumulate on your listing from an unauthorized seller's counterfeit product — and stay after the unauthorized seller is gone",
+                "accumulate on your listing from a hijacker's counterfeit product — and stay after the hijacker is gone",
             },
             {
               value: "Real-time",
               label:
-                "unauthorized seller alerts via WhatsApp — catch an unauthorized seller in hours, not days when it's too late",
+                "unauthorized seller alerts via WhatsApp — catch a hijacker in hours, not days when it's too late",
             },
           ]}
         />
@@ -517,14 +517,14 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
           accentColor="#7C3AED"
           backgroundColor="#F5F3FF"
           title="QUICK ANSWER"
-          content="A listing unauthorized seller is an unauthorized seller who appears on your Amazon India listing and takes your Buy Box — often selling a counterfeit or grey market product at a lower price. The fastest removal path is a test buy to confirm the counterfeit, followed by a cease-and-desist message through Seller Central, and if that fails, an IP complaint through Amazon Brand Registry with your test buy evidence attached. Most unauthorized sellers remove themselves within 48 hours of a cease-and-desist rather than face an infringement case."
+          content="A listing hijacker is an unauthorized seller who appears on your Amazon India listing and takes your Buy Box — often selling a counterfeit or grey market product at a lower price. The fastest removal path is a test buy to confirm the counterfeit, followed by a cease-and-desist message through Seller Central, and if that fails, an IP complaint through Amazon Brand Registry with your test buy evidence attached. Most hijackers remove themselves within 48 hours of a cease-and-desist rather than face an infringement case."
         />
 
         {/* Hero image */}
         <BlogImageSection
           imageSrc="/Blog_31_banner.png"
-          altText="Amazon India Listing unauthorized sellers"
-          caption="Insydz unauthorized seller alert for a stainless steel water bottle listing on Amazon India. an unauthorized seller appeared at ₹449 — ₹150 below the legitimate price — and took the Buy Box within minutes. The seller received a WhatsApp alert at 6:14 AM, sent a cease-and-desist by 7:00 AM, and had the unauthorized seller removed by 9:00 AM the same day. Total Buy Box loss: under 3 hours."
+          altText="Amazon India Listing Hijackers"
+          caption="Insydz unauthorized seller alert for a stainless steel water bottle listing on Amazon India. A hijacker appeared at ₹449 — ₹150 below the legitimate price — and took the Buy Box within minutes. The seller received a WhatsApp alert at 6:14 AM, sent a cease-and-desist by 7:00 AM, and had the hijacker removed by 9:00 AM the same day. Total Buy Box loss: under 3 hours."
         />
 
         {/* Key Takeaways Box */}
@@ -534,7 +534,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
           <div id="s1">
             <KeyTakeawaysBox
               title="Key Takeaways"
-              items={unauthorized sellerKeyTakeaways}
+              items={hijackerKeyTakeaways}
               accentColor="#7C3AED"
             />
           </div>
@@ -545,7 +545,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
       <div className="article-layout">
         {/* Desktop Sidebar */}
         <TableOfContents
-          tocItems={unauthorized sellerTOC}
+          tocItems={hijackerTOC}
           activeSection={activeSection}
           go={go}
           resolvedTheme={resolvedTheme}
@@ -555,7 +555,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
         <main style={{ minWidth: 0 }}>
           {/* Mobile TOC */}
           <MobileTableOfContents
-            tocItems={unauthorized sellerTOC}
+            tocItems={hijackerTOC}
             activeSection={activeSection}
             go={go}
             resolvedTheme={resolvedTheme}
@@ -564,9 +564,9 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
           <article className="article-body">
             <div id="s2">
               <SectionQA
-                title="What Is a Listing unauthorized seller on Amazon India?"
-                paragraph1="A listing unauthorized seller is an unauthorized third-party seller who adds themselves to your existing Amazon India product listing and begins selling on it — without your permission, without your supply chain, and frequently without your product. What they sell is either a counterfeit, a grey market import, a significantly inferior variant, or in some cases a completely unrelated item shipped in packaging that mimics yours."
-                paragraph2={`They price below you — sometimes ₹50 to ₹100 below, sometimes more — specifically to win the Buy Box. Because Amazon's Buy Box algorithm heavily weights price among comparable sellers, an unauthorized seller priced lower will take your Buy Box within minutes of appearing on your listing. Your listing continues to look normal from the front end, but every buyer who clicks "Add to Cart" is buying from someone else.`}
+                title="What Is a Listing Hijacker on Amazon India?"
+                paragraph1="A listing hijacker is an unauthorized third-party seller who adds themselves to your existing Amazon India product listing and begins selling on it — without your permission, without your supply chain, and frequently without your product. What they sell is either a counterfeit, a grey market import, a significantly inferior variant, or in some cases a completely unrelated item shipped in packaging that mimics yours."
+                paragraph2={`They price below you — sometimes ₹50 to ₹100 below, sometimes more — specifically to win the Buy Box. Because Amazon's Buy Box algorithm heavily weights price among comparable sellers, a hijacker priced lower will take your Buy Box within minutes of appearing on your listing. Your listing continues to look normal from the front end, but every buyer who clicks "Add to Cart" is buying from someone else.`}
                 resolvedTheme={resolvedTheme}
               />
             </div>
@@ -574,14 +574,14 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
             <InfoBanner
               accentColor="#D97706"
               backgroundColor="#FFFBEB"
-              title="Do Not Confuse an unauthorized seller With a Legitimate Reseller"
-              content="A reseller who purchased your product through legitimate wholesale channels and is selling it on your listing at a competitive price is not an unauthorized seller — even if it is inconvenient. an unauthorized seller is someone selling a materially different or counterfeit product. The distinction matters because the removal approach is entirely different: a reseller has legal rights to sell the product they purchased; an unauthorized seller does not. If you have an authorized reseller programme, document it clearly in your brand policies to make the distinction enforceable."
+              title="Do Not Confuse a Hijacker With a Legitimate Reseller"
+              content="A reseller who purchased your product through legitimate wholesale channels and is selling it on your listing at a competitive price is not a hijacker — even if it is inconvenient. A hijacker is someone selling a materially different or counterfeit product. The distinction matters because the removal approach is entirely different: a reseller has legal rights to sell the product they purchased; a hijacker does not. If you have an authorized reseller programme, document it clearly in your brand policies to make the distinction enforceable."
             />
 
             <div id="s3">
               <SectionQA
-                title="How Do You Know If Your Amazon India Listing Has Been taken over?"
-                paragraph1="Most sellers find out about an unauthorized seller from a symptom — a sudden Buy Box loss, an unexplained sales drop, or a cluster of 1-star reviews mentioning product quality issues they cannot reproduce. By the time the symptom is visible, the unauthorized seller has typically been active for hours or days. Here are the direct and indirect signals to watch for."
+                title="How Do You Know If Your Amazon India Listing Has Been Taken Over?"
+                paragraph1="Most sellers find out about a hijacker from a symptom — a sudden Buy Box loss, an unexplained sales drop, or a cluster of 1-star reviews mentioning product quality issues they cannot reproduce. By the time the symptom is visible, the hijacker has typically been active for hours or days. Here are the direct and indirect signals to watch for."
                 resolvedTheme={resolvedTheme}
               />
             </div>
@@ -599,23 +599,23 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
               accentColor="#0D9488"
               backgroundColor="#F0FDFA"
               title="The Monitoring Problem"
-              content="Checking your offer section manually once a day means an unauthorized seller who appears at 8 PM on Tuesday is not discovered until you open Seller Central on Wednesday morning — 12 to 14 hours later. Insydz monitors your listing's seller count and Buy Box ownership continuously and sends a WhatsApp alert within minutes of an unauthorized seller appearing. That gap — hours vs the next morning — is the difference between a minor disruption and a meaningful revenue and reputation event."
+              content="Checking your offer section manually once a day means a hijacker who appears at 8 PM on Tuesday is not discovered until you open Seller Central on Wednesday morning — 12 to 14 hours later. Insydz monitors your listing's seller count and Buy Box ownership continuously and sends a WhatsApp alert within minutes of an unauthorized seller appearing. That gap — hours vs the next morning — is the difference between a minor disruption and a meaningful revenue and reputation event."
             />
 
             <div id="s4">
               <SectionQA
-                title="Why Do unauthorized sellers Target Amazon India Listings — and Who Are They?"
-                paragraph1="takeover is more common in categories with high search volume, simple products, and low brand recognition at the listing level. Categories like stainless steel kitchenware, phone accessories, basic apparel, and commodity health products are consistently the most targeted on Amazon India. The unauthorized sellers themselves fall into a few common profiles."
+                title="Why Do Hijackers Target Amazon India Listings — and Who Are They?"
+                paragraph1="Listing takeovers are more common in categories with high search volume, simple products, and low brand recognition at the listing level. Categories like stainless steel kitchenware, phone accessories, basic apparel, and commodity health products are consistently the most targeted on Amazon India. The unauthorized sellers themselves fall into a few common profiles."
                 resolvedTheme={resolvedTheme}
               />
             </div>
 
-            <DataTable columns={unauthorized sellerTypeColumns} rows={unauthorized sellerTypeRows} />
+            <DataTable columns={hijackerTypeColumns} rows={hijackerTypeRows} />
 
             <div id="s5">
               <SectionQA
-                title="What Is the Fastest Way to Remove an unauthorized seller From Your Amazon India Listing?"
-                paragraph1="Speed is the deciding variable. an unauthorized seller who has been on your listing for 6 hours has cost you less than one who has been there for 3 days. Work through these steps in order — do not skip ahead to the IP complaint without the test buy, because Amazon India's infringement team requires evidence, not just allegations."
+                title="What Is the Fastest Way to Remove a Hijacker From Your Amazon India Listing?"
+                paragraph1="Speed is the deciding variable. A hijacker who has been on your listing for 6 hours has cost you less than one who has been there for 3 days. Work through these steps in order — do not skip ahead to the IP complaint without the test buy, because Amazon India's infringement team requires evidence, not just allegations."
                 resolvedTheme={resolvedTheme}
               />
             </div>
@@ -629,7 +629,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
 
             <FeatureCTA
               title="Get a WhatsApp alert the moment an unauthorized seller appears on your Amazon India listing"
-              description="Insydz monitors your listing's seller count and Buy Box ownership in real time. Catch an unauthorized seller in hours, not the next morning. Free to start."
+              description="Insydz monitors your listing's seller count and Buy Box ownership in real time. Catch a hijacker in hours, not the next morning. Free to start."
               buttonText="Set Up Listing Monitoring Free →"
               buttonHref="/login"
               backgroundColor="#0D1B2A"
@@ -638,7 +638,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
 
             <div id="s6">
               <SectionQA
-                title="How to File an IP Complaint Against a Listing unauthorized seller on Amazon India"
+                title="How to File an IP Complaint Against a Listing Hijacker on Amazon India"
                 paragraph1="An IP complaint is your formal escalation path when a cease-and-desist does not work. The strength of your complaint determines how fast Amazon India acts — a complaint with evidence gets resolved; a complaint without evidence gets deprioritized."
                 resolvedTheme={resolvedTheme}
               />
@@ -647,7 +647,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
             <BlogImageSection
               imageSrc="/BLog_31_image1.png"
               altText="IP Complaint Evidence Checklist"
-              caption="IP complaint evidence checklist for an Amazon Indian unauthorized seller removal case. All four core items present — trademark certificate, listing screenshot, test buy confirmation, and side-by-side product photos. With this package, Amazon India Brand Registry typically resolves within 3 to 5 business days. Missing the test buy photo is the single most common reason complaints are deprioritized."
+              caption="IP complaint evidence checklist for an Amazon India hijacker removal case. All four core items present — trademark certificate, listing screenshot, test buy confirmation, and side-by-side product photos. With this package, Amazon India Brand Registry typically resolves within 3 to 5 business days. Missing the test buy photo is the single most common reason complaints are deprioritized."
             />
 
             <h3>What Your IP Complaint Must Include</h3>
@@ -674,7 +674,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
               </li>
               <li>
                 <strong>Side-by-side product comparison photos</strong> — your
-                genuine product alongside the unauthorized seller's product, showing the
+                genuine product alongside the hijacker's product, showing the
                 specific differences in packaging, branding, build quality, or
                 labeling.
               </li>
@@ -682,7 +682,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
 
             <div id="s7">
               <SectionQA
-                title="What Are the Most Effective Long-Term unauthorized seller Prevention Strategies?"
+                title="What Are the Most Effective Long-Term Hijacker Prevention Strategies?"
                 paragraph1="Removing an unauthorized seller solves today's problem. Prevention reduces the likelihood of the next one — and on Amazon India in 2026, most sellers in high-volume categories will face at least one takeover attempt in any given 12-month period."
                 resolvedTheme={resolvedTheme}
               />
@@ -690,8 +690,8 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
 
             <BlogImageSection
               imageSrc="/BLog_31_image2.png"
-              altText="unauthorized seller Protection Score"
-              caption="Insydz unauthorized seller protection score for a listing with three of four protection layers active. Brand Registry, Transparency codes, and Project Zero are live. The missing layer — real-time seller count monitoring with WhatsApp alerts — is the one that catches new unauthorized sellers immediately rather than hours later when the damage has already started."
+              altText="Hijacker Protection Score"
+              caption="Insydz hijacker protection score for a listing with three of four protection layers active. Brand Registry, Transparency codes, and Project Zero are live. The missing layer — real-time seller count monitoring with WhatsApp alerts — is the one that catches new hijackers immediately rather than hours later when the damage has already started."
             />
 
             <NumberedCards
@@ -719,8 +719,8 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
             />
 
             <SectionQA
-              title="How Does Real-Time Seller Monitoring Catch unauthorized sellers Before They Cost You Sales?"
-              paragraph1="The structural problem with checking manually is that it is always retrospective. You open Seller Central and find an unauthorized seller who has already been active for 8 or 12 or 24 hours. By then, the damage — lost Buy Box revenue, and potentially new negative reviews from buyers who received the counterfeit — has already accumulated."
+              title="How Does Real-Time Seller Monitoring Catch Hijackers Before They Cost You Sales?"
+              paragraph1="The structural problem with checking manually is that it is always retrospective. You open Seller Central and find a hijacker who has already been active for 8 or 12 or 24 hours. By then, the damage — lost Buy Box revenue, and potentially new negative reviews from buyers who received the counterfeit — has already accumulated."
               paragraph2={
                 <>
                   Real-time{" "}
@@ -734,7 +734,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
                   respond in the same morning, not the next one.
                 </>
               }
-              paragraph3="The practical impact is significant. an unauthorized seller caught in 3 hours and removed within the same day generates minimal review damage and minimal Buy Box revenue loss. an unauthorized seller running for 3 days before discovery can generate 10 to 20 negative reviews and weeks of elevated return rates on your account metrics. Early detection does not just protect that day's revenue — it protects your listing's long-term review score and your account's performance metrics."
+              paragraph3="The practical impact is significant. A hijacker caught in 3 hours and removed within the same day generates minimal review damage and minimal Buy Box revenue loss. A hijacker running for 3 days before discovery can generate 10 to 20 negative reviews and weeks of elevated return rates on your account metrics. Early detection does not just protect that day's revenue — it protects your listing's long-term review score and your account's performance metrics."
               paragraphs={[
                 <>
                   The{" "}
@@ -753,12 +753,12 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
 
             <div id="s9">
               <SectionQA
-                title="Frequently Asked Questions: Amazon India Listing unauthorized sellers"
+                title="Frequently Asked Questions: Amazon India Listing Hijackers"
                 resolvedTheme={resolvedTheme}
               />
             </div>
 
-            <FAQ accentColor="#7C3AED" faqs={unauthorized sellerFaqs} />
+            <FAQ accentColor="#7C3AED" faqs={hijackerFaqs} />
 
             <RelatedReadingBox
               label="📌 Related Reading on Insydz"
@@ -794,7 +794,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
             {/* More Account Health and Seller Protection */}
             <RelatedArticles
               title="More Account Health and Seller Protection"
-              cards={unauthorized sellerRelatedCards}
+              cards={hijackerRelatedCards}
               resolvedTheme={resolvedTheme}
             />
           </article>
@@ -803,7 +803,7 @@ export default function AmazonListingunauthorized sellerIndiaContent() {
 
       {/* Final CTA */}
       <FinalCTA
-        title="an unauthorized seller Just Appeared on Your Listing. Do You Know About It Yet?"
+        title="A Hijacker Just Appeared on Your Listing. Do You Know About It Yet?"
         description="Insydz monitors your listing's seller count continuously and sends a WhatsApp alert the moment an unauthorized seller appears — so you can act in the same morning, not the next one. 5,000+ Indian sellers use Insydz · Amazon India and Flipkart · ₹2,499/month full access"
         primaryButtonText="Start Monitoring My Listings Free →"
         primaryButtonHref="/login"
