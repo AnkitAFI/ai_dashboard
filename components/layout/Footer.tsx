@@ -1,12 +1,12 @@
 "use client";
 import Link from "next/link";
-import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { Facebook, Twitter, Instagram, Linkedin, Shield, Lock, EyeOff } from "lucide-react";
 
 export function Footer() {
   return (
     <footer className="bg-[#0a0f1e] text-white py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+
         {/* Top Header Row with Logo and Newsletter */}
         <div className="flex flex-col md:flex-row justify-between items-center mb-12 pb-8 border-b border-white/10">
           <a href="/" className="flex items-center space-x-3 mb-6 md:mb-0" aria-label="Insydz – Home">
@@ -15,12 +15,12 @@ export function Footer() {
               Insydz
             </span>
           </a>
-          
+
           <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4">
             <span className="font-semibold text-lg text-center md:text-left">
               Never miss insights into the e-commerce selling space
             </span>
-            <form 
+            <form
               className="flex w-full md:w-auto"
               onSubmit={(e) => {
                 e.preventDefault();
@@ -28,14 +28,14 @@ export function Footer() {
                 console.log("Subscribed email:", formData.get("email"));
               }}
             >
-              <input 
-                type="email" 
+              <input
+                type="email"
                 name="email"
-                placeholder="Email" 
+                placeholder="Email"
                 className="px-4 py-2 text-gray-900 rounded-l-md focus:outline-none w-full md:w-64"
                 required
               />
-              <button 
+              <button
                 type="submit"
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-r-md font-semibold transition-colors"
               >
@@ -47,7 +47,7 @@ export function Footer() {
 
         {/* 4 Column Grid for Links */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-14">
-          
+
           {/* Column 1 – Solutions */}
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Solutions</h4>
@@ -96,9 +96,22 @@ export function Footer() {
 
         </div>
 
+        {/* Trust Banner - Data Privacy Guarantee */}
+        <div className="border-y border-white/10 bg-white/5 py-6 mb-8 rounded-lg">
+          <div className="max-w-7xl mx-auto px-4 text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Shield className="w-5 h-5 text-green-500" />
+              <span className="font-bold text-gray-200 text-base">Data Privacy Guarantee</span>
+            </div>
+            <p className="text-sm text-gray-400 leading-relaxed max-w-4xl mx-auto">
+              Insydz strictly complies with Amazon's Acceptable Use Policy (Sections 4.4 and 4.5). All market insights are derived exclusively from public marketplace data. We never aggregate, share, or pool private internal seller data to provide insights.
+            </p>
+          </div>
+        </div>
+
         {/* Bottom Strip */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          
+
           {/* Social Icons Left */}
           <div className="flex space-x-4">
             <a title="Insydz on Facebook" href="https://www.facebook.com/profile.php?id=61586202582209" target="_blank" rel="noopener noreferrer" className="w-9 h-9 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-full transition-colors">

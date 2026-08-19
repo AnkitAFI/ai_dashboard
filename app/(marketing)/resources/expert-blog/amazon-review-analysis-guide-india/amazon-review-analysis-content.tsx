@@ -950,7 +950,7 @@ export default function AmazonReviewAnalysisContent() {
               {
                 step: 1,
                 title: "Connect Your Seller Account",
-                desc: "Link your Amazon.in or Flipkart seller account and add the ASINs you want to track — yours and up to 10 competitors. The tool starts pulling all historical reviews immediately. No CSV exports, no manual scraping.",
+                desc: "Link your Amazon.in or Flipkart seller account and add the ASINs you want to track — yours and up to 10 competitors. The tool starts pulling all historical reviews immediately. No CSV exports, no manual data collection.",
               },
               {
                 step: 2,
@@ -1680,7 +1680,7 @@ export default function AmazonReviewAnalysisContent() {
                   ],
                   [
                     "Competitor Review Mining",
-                    "Manual scrape",
+                    "Manual collection",
                     "Limited ASINs",
                     "Up to 10 competitors",
                   ],

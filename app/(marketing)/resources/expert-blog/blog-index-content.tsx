@@ -318,7 +318,7 @@ const articles: Article[] = [
     id: "9",
     title: "Best Flipkart Analytics Tool for Indian Sellers (2026)",
     excerpt:
-      "Stop flying blind on Flipkart. The right analytics tool surfaces which competitor keywords are stealing your rank, which SKUs are losing the Buy Box.",
+      "Stop flying blind on Flipkart. The right analytics tool surfaces which competitor keywords are capturing your rank, which SKUs are losing the Buy Box.",
     category: "Flipkart Seller Tools & Strategy",
     readTime: "9 min read",
     image: "/Best-Flipkart-Analytics-Tool.png",

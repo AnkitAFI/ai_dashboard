@@ -236,7 +236,7 @@ const UseCasesPage = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
             {[
-              { icon: <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Competitors change prices without warning and steal your sales rank", color: "from-orange-500 to-red-500" },
+              { icon: <TrendingDown className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Competitors change prices without warning and capture your sales rank", color: "from-orange-500 to-red-500" },
               { icon: <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Reviews hide critical product issues that cost you ratings and returns", color: "from-purple-500 to-pink-500" },
               { icon: <Search className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Products don't rank for the right keywords and traffic disappears", color: "from-blue-500 to-cyan-500" },
               { icon: <Package className="w-6 h-6 sm:w-8 sm:h-8" />, title: "Stockouts happen during peak demand right when you need inventory most", color: "from-green-500 to-emerald-500" }

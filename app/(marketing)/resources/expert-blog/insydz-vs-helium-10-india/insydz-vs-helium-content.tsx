@@ -1579,7 +1579,7 @@ export default function InsydzVsHelium10India() {
                   d: "Category-level demand data and competition analysis for sourcing decisions. For India-specific sourcing, data accuracy drops but the workflow is solid.",
                 },
                 {
-                  t: "Xray (Chrome Extension)",
+                  t: "Helium 10 Chrome Extension",
                   tLink: null,
                   d: "Browser extension that overlays competitor data on Amazon search results. Genuinely useful as a quick research layer for any marketplace.",
                 },
