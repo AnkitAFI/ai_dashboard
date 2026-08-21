@@ -461,14 +461,11 @@
 //       </div>
 //       </div>
 //     </div>
-//   );
-// }
-
 "use client";
 import { API_BASE_URL } from "@/lib/config";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { Input } from "@/components/ui/input";
@@ -498,15 +495,15 @@ const evaluatePasswordStrength = (password: string) => {
 
   switch (score) {
     case 1:
-      return { score, label: "Weak", color: "bg-red-500", text: "text-red-400" };
+      return { score: 1, label: "Weak", color: "bg-red-500", text: "text-red-500" };
     case 2:
-      return { score, label: "Fair", color: "bg-orange-500", text: "text-orange-400" };
+      return { score: 2, label: "Fair", color: "bg-amber-500", text: "text-amber-500" };
     case 3:
-      return { score, label: "Good", color: "bg-yellow-500", text: "text-yellow-400" };
+      return { score: 3, label: "Good", color: "bg-blue-500", text: "text-blue-500" };
     case 4:
-      return { score, label: "Strong", color: "bg-green-500", text: "text-green-400" };
+      return { score: 4, label: "Strong", color: "bg-emerald-500", text: "text-emerald-500" };
     default:
-      return { score: 0, label: "Weak", color: "bg-red-500", text: "text-red-400" };
+      return { score: 0, label: "", color: "bg-transparent", text: "text-transparent" };
   }
 };
 
@@ -533,6 +530,7 @@ const generateStrongPassword = () => {
 
 export default function Signup() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const { refreshUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -550,7 +548,11 @@ export default function Signup() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    const emailParam = searchParams?.get("email");
+    if (emailParam) {
+      setFormData((prev) => ({ ...prev, email: emailParam }));
+    }
+  }, [searchParams]);
 
   const strength = evaluatePasswordStrength(formData.password);
 
