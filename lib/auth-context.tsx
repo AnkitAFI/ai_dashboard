@@ -150,7 +150,7 @@ import { API_BASE_URL } from "@/lib/config";
 
 import { createContext, useContext, useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 // Configure axios to always send cookies for session-based auth
 axios.defaults.withCredentials = true;
@@ -217,6 +217,7 @@ const isPublicRoute = (path: string) => {
     path === "/privacy-policy" ||
     path === "/terms-service" ||
     path === "/verify-email" ||
+    path === "/verify-mobile" ||
     path.startsWith("/solutions") ||
     path.startsWith("/use-cases") ||
     path.startsWith("/features") ||
@@ -314,6 +315,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     hasFetched.current = true;
     fetchCurrentUser();
   }, [pathname]);
+
+  const router = useRouter();
+
+  // Mobile Verification Guard — Force users without a mobile number to /verify-mobile
+  useEffect(() => {
+    if (!isLoading && user) {
+      const hasMobile = Boolean(user.mobileNumber && user.mobileNumber.trim().length >= 10);
+      if (!hasMobile && pathname !== "/verify-mobile" && pathname !== "/login" && pathname !== "/signup") {
+        router.replace("/verify-mobile");
+      }
+    }
+  }, [user, isLoading, pathname, router]);
 
   const refreshUser = async () => {
     hasFetched.current = true;
