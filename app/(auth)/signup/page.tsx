@@ -463,7 +463,7 @@
 //     </div>
 "use client";
 import { API_BASE_URL } from "@/lib/config";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
@@ -528,7 +528,7 @@ const generateStrongPassword = () => {
   return password.split('').sort(() => 0.5 - Math.random()).join('');
 };
 
-export default function Signup() {
+function SignupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
@@ -1073,5 +1073,13 @@ export default function Signup() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Signup() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#2b52cd] dark:bg-slate-950 flex items-center justify-center"><div className="w-8 h-8 border-4 border-white/30 border-t-white rounded-full animate-spin"></div></div>}>
+      <SignupContent />
+    </Suspense>
   );
 }
