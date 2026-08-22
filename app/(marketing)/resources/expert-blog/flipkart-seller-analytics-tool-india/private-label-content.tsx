@@ -3860,7 +3860,7 @@ export default function AmazonPrivateLabelContent() {
 //           className="dark:text-gray-400"
 //         >
 //           Stop flying blind on Flipkart. The right analytics tool surfaces which
-//           competitor keywords are stealing your rank, which SKUs are losing the
+//           competitor keywords are capturing your rank, which SKUs are losing the
 //           Buy Box, and exactly what to fix before the next Big Billion Days
 //           window closes on you.
 //         </p>

@@ -39,7 +39,7 @@ const VIDEOS = [
     id: 3,
     title: "Insydz’s Market Visibility",
     description:
-      "Insydz's Market Visibility tool gives you a complete X-ray of your category, who's dominating, where the gaps are, and exactly how you can break in.",
+      "Insydz's Market Visibility tool gives you total clarity over your category—revealing market gaps, keyword opportunities, and exactly how you can scale your sales.",
     category: "Competitor Analysis",
     gradient: "g-purple",
     videoUrl: "/videos/Insydz%E2%80%99s%20Market%20Visibility.mp4",

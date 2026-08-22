@@ -991,7 +991,7 @@ export default function AllFeaturesPage() {
                 {[
                   "Manually checking competitor prices on different tabs",
                   "Finding out your keyword ranking dropped after your sales already fell",
-                  "Getting no alert when a rival steals your Buy Box",
+                  "Getting no alert when a rival captures your Buy Box",
                   "Importing a product that already has 400 sellers and a 2.8-star rating",
                   "Guessing festive season pricing instead of knowing demand 12 days out",
                 ].map((item, i) => (

@@ -160,7 +160,7 @@ export default function SolutionsPage() {
       pain: 'Managing 8 seller accounts with 8 separate Excel trackers 30% of every week on reporting instead of strategy.',
       problems: [
         'Centralised multi-client reporting one dashboard, all clients and no manual pulls',
-        'Aggregated competitor data, keyword trends and review signals across accounts',
+        'Real-time market intelligence, keyword trends, and review signals across accounts',
         'Data-backed reports clients can actually understand'
       ],
       microScenario: null,

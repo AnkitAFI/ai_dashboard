@@ -101,7 +101,7 @@ const hijackerKeyTakeaways = [
   "A listing hijacker is an unauthorized third-party seller who jumps on your Amazon India listing and takes your Buy Box — often selling a counterfeit, grey market import, or used product at a lower price than yours.",
   "The Buy Box loss is visible immediately. The review damage — 1-star reviews left by buyers who received the hijacker's inferior product — accumulates on your listing and stays after the hijacker is removed.",
   "The fastest removal path is: test buy to confirm the counterfeit, cease-and-desist through Seller Central, then an IP complaint through Brand Registry with evidence attached. Most hijackers self-remove within 48 hours of step two.",
-  "Amazon Brand Registry is the single most effective structural protection against hijackers — it gives you Project Zero self-service removal and Transparency code serialization that make hijacking significantly harder.",
+  "Amazon Brand Registry is the single most effective structural protection against unauthorized sellers — it gives you Project Zero self-service removal and Transparency code serialization that make listing takeovers significantly harder.",
   "Real-time listing monitoring via WhatsApp alerts catches a hijacker within hours of them appearing. Checking Seller Central manually once a day means finding out 12 to 24 hours later — after the reviews have already started arriving.",
 ];
 
@@ -242,7 +242,7 @@ const removalSteps = [
     title:
       "Escalate to Amazon India's seller infringement email if no response",
     description:
-      "If Brand Registry does not resolve within 7 business days, escalate via Amazon India's dedicated infringement escalation path — seller-performance@amazon.in or through the Executive Seller Relations team — with your complaint reference number, test buy evidence, and a timeline of the hijacking. Include a side-by-side photo of the genuine and counterfeit product and note any buyer reviews that explicitly describe receiving an inferior product.",
+      "If Brand Registry does not resolve within 7 business days, escalate via Amazon India's dedicated infringement escalation path — seller-performance@amazon.in or through the Executive Seller Relations team — with your complaint reference number, test buy evidence, and a timeline of the takeover. Include a side-by-side photo of the genuine and counterfeit product and note any buyer reviews that explicitly describe receiving an inferior product.",
   },
 ];
 
@@ -251,12 +251,12 @@ const preventionItems = [
   {
     title: "Enroll in Amazon Brand Registry",
     description:
-      "Brand Registry gives you Project Zero (self-service counterfeit removal), Report a Violation (streamlined IP complaints), and Transparency (serialization codes on each unit). It is the single highest-impact protection investment for sellers who face repeat hijacking. To qualify, you need a registered trademark.",
+      "Brand Registry gives you Project Zero (self-service counterfeit removal), Report a Violation (streamlined IP complaints), and Transparency (serialization codes on each unit). It is the single highest-impact protection investment for sellers who face repeat takeovers. To qualify, you need a registered trademark.",
   },
   {
     title: "Enable Amazon Transparency on your ASINs",
     description:
-      "Transparency prints a unique scannable code on every unit you manufacture. A hijacker cannot replicate these codes — and Amazon automatically rejects any shipment of your ASIN that arrives without a valid Transparency code. This is the closest thing to making hijacking structurally impossible on your listing.",
+      "Transparency prints a unique scannable code on every unit you manufacture. An unauthorized seller cannot replicate these codes — and Amazon automatically rejects any shipment of your ASIN that arrives without a valid Transparency code. This is the closest thing to making takeovers structurally impossible on your listing.",
   },
   {
     title: "Monitor your seller count daily, not weekly",
@@ -282,7 +282,7 @@ const hijackerFaqs = [
     a: "A listing hijacker is an unauthorized third-party seller who adds themselves to your Amazon India product listing and begins selling — often a counterfeit, grey market import, or used product — at a lower price, taking your Buy Box and damaging your brand reputation with buyers who receive an inferior product and leave 1-star reviews on your listing.",
   },
   {
-    q: "How do I know if my Amazon India listing has been hijacked?",
+    q: "How do I know if my Amazon India listing has been taken over?",
     a: "The clearest signal is a new seller appearing in your listing's offer section that you did not authorize. Secondary signals include a sudden Buy Box loss, a price on your listing that you did not set, new 1-star reviews mentioning quality issues you cannot reproduce, or customer return requests citing product differences. Check your offer section daily — or set up real-time monitoring through Insydz to catch it within hours instead.",
   },
   {
@@ -291,11 +291,11 @@ const hijackerFaqs = [
   },
   {
     q: "Do I need Amazon Brand Registry to remove a listing hijacker?",
-    a: "You do not strictly need it — you can send a cease-and-desist and escalate through Seller Support without Brand Registry. But Brand Registry gives you Project Zero (self-service removal), Report a Violation (streamlined IP complaints), and Transparency (serialization that makes hijacking structurally harder). It is the single most effective structural investment against repeat hijacking.",
+    a: "You do not strictly need it — you can send a cease-and-desist and escalate through Seller Support without Brand Registry. But Brand Registry gives you Project Zero (self-service removal), Report a Violation (streamlined IP complaints), and Transparency (serialization that makes takeovers structurally harder). It is the single most effective structural investment against repeat takeovers.",
   },
   {
     q: "Can a listing hijacker affect my keyword rankings on Amazon India?",
-    a: "Yes — indirectly. If the hijacker wins your Buy Box and their product quality is poor, the resulting 1-star reviews accumulate on your listing and reduce your conversion rate, which is a ranking signal on Amazon India. Catching a hijacker early limits this secondary damage. Reviews left on your listing during a hijacking incident do not disappear when the hijacker is removed.",
+    a: "Yes — indirectly. If the unauthorized seller wins your Buy Box and their product quality is poor, the resulting 1-star reviews accumulate on your listing and reduce your conversion rate, which is a ranking signal on Amazon India. Catching an unauthorized seller early limits this secondary damage. Reviews left on your listing during a takeover incident do not disappear when the unauthorized seller is removed.",
   },
   {
     q: "What is the fastest way to stop a listing hijacker on Amazon India?",
@@ -580,7 +580,7 @@ export default function AmazonListingHijackerIndiaContent() {
 
             <div id="s3">
               <SectionQA
-                title="How Do You Know If Your Amazon India Listing Has Been Hijacked?"
+                title="How Do You Know If Your Amazon India Listing Has Been Taken Over?"
                 paragraph1="Most sellers find out about a hijacker from a symptom — a sudden Buy Box loss, an unexplained sales drop, or a cluster of 1-star reviews mentioning product quality issues they cannot reproduce. By the time the symptom is visible, the hijacker has typically been active for hours or days. Here are the direct and indirect signals to watch for."
                 resolvedTheme={resolvedTheme}
               />
@@ -605,7 +605,7 @@ export default function AmazonListingHijackerIndiaContent() {
             <div id="s4">
               <SectionQA
                 title="Why Do Hijackers Target Amazon India Listings — and Who Are They?"
-                paragraph1="Hijacking is more common in categories with high search volume, simple products, and low brand recognition at the listing level. Categories like stainless steel kitchenware, phone accessories, basic apparel, and commodity health products are consistently the most targeted on Amazon India. The hijackers themselves fall into a few common profiles."
+                paragraph1="Listing takeovers are more common in categories with high search volume, simple products, and low brand recognition at the listing level. Categories like stainless steel kitchenware, phone accessories, basic apparel, and commodity health products are consistently the most targeted on Amazon India. The unauthorized sellers themselves fall into a few common profiles."
                 resolvedTheme={resolvedTheme}
               />
             </div>
@@ -683,7 +683,7 @@ export default function AmazonListingHijackerIndiaContent() {
             <div id="s7">
               <SectionQA
                 title="What Are the Most Effective Long-Term Hijacker Prevention Strategies?"
-                paragraph1="Removing a hijacker solves today's problem. Prevention reduces the likelihood of the next one — and on Amazon India in 2026, most sellers in high-volume categories will face at least one hijacking attempt in any given 12-month period."
+                paragraph1="Removing an unauthorized seller solves today's problem. Prevention reduces the likelihood of the next one — and on Amazon India in 2026, most sellers in high-volume categories will face at least one takeover attempt in any given 12-month period."
                 resolvedTheme={resolvedTheme}
               />
             </div>
@@ -742,7 +742,7 @@ export default function AmazonListingHijackerIndiaContent() {
                     habits of top Amazon India sellers
                   </InLink>{" "}
                   consistently show that the sellers who face the fewest
-                  sustained hijacking incidents are not the ones who respond
+                  sustained takeover incidents are not the ones who respond
                   fastest in the moment — they are the ones who have set up
                   automated monitoring so they never find out 24 hours late. The
                   habit is the system, not the reaction speed.
