@@ -33,8 +33,251 @@ class MFADisableRequest(BaseModel):
     password: str
     code: str
 
+class GoogleLoginRequest(BaseModel):
+    id_token: str
+    remember_me: bool = False
+
+class SendMobileOTPRequest(BaseModel):
+    mobile_number: str
+
+class VerifyMobileOTPRequest(BaseModel):
+    mobile_number: str
+    otp: str
+
+# In-memory OTP cache for mobile verification (user_id/mobile -> {otp, expires_at})
+MOBILE_OTP_CACHE: dict = {}
+
 router = APIRouter(tags=["Auth"])
 user_service = UserService()
+
+@router.post("/mobile/send-otp")
+def send_mobile_otp(
+    req: SendMobileOTPRequest,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    import random, re
+    from datetime import datetime, timedelta
+
+    mobile = req.mobile_number.strip().replace(" ", "").replace("-", "")
+    if mobile.startswith("+91"):
+        mobile = mobile[3:]
+    elif mobile.startswith("91") and len(mobile) == 12:
+        mobile = mobile[2:]
+        
+    if not re.match(r"^[6-9]\d{9}$", mobile):
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid Indian mobile number. Please enter a valid 10-digit number starting with 6-9."
+        )
+
+    # Generate 6-digit OTP
+    otp_code = str(random.randint(100000, 999999))
+    expires_at = datetime.utcnow() + timedelta(minutes=5)
+    
+    MOBILE_OTP_CACHE[f"user_{current_user.id}"] = {
+        "mobile": mobile,
+        "otp": otp_code,
+        "expires_at": expires_at
+    }
+    MOBILE_OTP_CACHE[mobile] = {
+        "user_id": current_user.id,
+        "otp": otp_code,
+        "expires_at": expires_at
+    }
+
+    print(f"\n==================================================")
+    print(f"📲 MOBILE OTP FOR USER {current_user.email} ({mobile}): {otp_code}")
+    print(f"==================================================\n")
+
+    return {
+        "success": True,
+        "message": f"OTP sent to +91 {mobile}",
+        "mobile_number": mobile,
+        "dev_otp": otp_code
+    }
+
+@router.post("/mobile/verify-otp")
+def verify_mobile_otp(
+    req: VerifyMobileOTPRequest,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    import re
+    from datetime import datetime
+
+    mobile = req.mobile_number.strip().replace(" ", "").replace("-", "")
+    if mobile.startswith("+91"):
+        mobile = mobile[3:]
+    elif mobile.startswith("91") and len(mobile) == 12:
+        mobile = mobile[2:]
+        
+    cache_entry = MOBILE_OTP_CACHE.get(f"user_{current_user.id}") or MOBILE_OTP_CACHE.get(mobile)
+    
+    if not cache_entry:
+        raise HTTPException(status_code=400, detail="OTP expired or not requested. Please request a new OTP.")
+        
+    if datetime.utcnow() > cache_entry["expires_at"]:
+        MOBILE_OTP_CACHE.pop(f"user_{current_user.id}", None)
+        MOBILE_OTP_CACHE.pop(mobile, None)
+        raise HTTPException(status_code=400, detail="OTP has expired. Please request a new code.")
+        
+    if cache_entry["otp"] != req.otp.strip():
+        raise HTTPException(status_code=400, detail="Incorrect OTP code. Please try again.")
+
+    # OTP verified! Save mobile number to database
+    current_user.mobile_number = mobile
+    db.commit()
+    db.refresh(current_user)
+
+    # Clean up cache
+    MOBILE_OTP_CACHE.pop(f"user_{current_user.id}", None)
+    MOBILE_OTP_CACHE.pop(mobile, None)
+
+    return {
+        "success": True,
+        "message": "Mobile number verified successfully!",
+        "user": {
+            "id": current_user.id,
+            "email": current_user.email,
+            "first_name": current_user.first_name,
+            "last_name": current_user.last_name,
+            "mobile_number": current_user.mobile_number,
+            "onboarding_completed": getattr(current_user, "onboarding_completed", False),
+        }
+    }
+
+
+@router.post("/google")
+@router.post("/users/google-login")
+def google_login(
+    req: GoogleLoginRequest,
+    request: Request,
+    response: Response,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db)
+):
+    """
+    Authenticate or Register user using Google OAuth ID Token.
+    Returns session cookie and identical user JSON schema as standard login/signup.
+    """
+    from app.services.google_auth_service import verify_google_id_token
+    from app.repositories.user_repository import UserRepository
+    from app.api.v1.routes.legacy_router import (
+        create_session, delete_all_user_sessions,
+        SESSION_EXPIRE_DAYS_NO_REMEMBER, SESSION_EXPIRE_DAYS_REMEMBER, SESSION_COOKIE_SECURE
+    )
+    from app.models.schema_v2 import AuditLog
+    import hashlib
+
+    # 1. Verify Google ID token
+    google_data = verify_google_id_token(req.id_token)
+    google_id = google_data["google_id"]
+    email = google_data["email"]
+
+    user_repo = UserRepository()
+    
+    # 2. Check if user exists by google_id or email
+    user = user_repo.get_by_google_id(db, google_id=google_id)
+    if not user:
+        user = user_repo.get_by_email(db, email=email)
+        if user:
+            # Existing email user: link google_id
+            user.google_id = google_id
+            if not getattr(user, "auth_provider", None):
+                user.auth_provider = "google"
+            db.commit()
+            db.refresh(user)
+
+    # 3. If user still does not exist, create new Google user
+    if not user:
+        ip_hash = "unknown"
+        if request and request.client and request.client.host:
+            ip_hash = hashlib.sha256(request.client.host.encode("utf-8")).hexdigest()
+        
+        user = user_repo.create_google_user(db, google_data, ip_hash=ip_hash)
+        
+        # Trigger Brevo contact addition background task
+        if background_tasks:
+            try:
+                from app.services.brevo_service import BrevoService
+                background_tasks.add_task(BrevoService.add_contact_to_brevo, user.email)
+            except Exception:
+                pass
+
+    # 4. Check active status
+    if getattr(user, "is_active", True) is False:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Your account has been deleted. Please contact support to restore it."
+        )
+
+    # 5. Create session
+    ip_address = request.headers.get("x-forwarded-for") or request.headers.get("x-real-ip")
+    if ip_address:
+        ip_address = ip_address.split(",")[0].strip()
+    else:
+        ip_address = request.client.host if request.client else "Unknown IP"
+        
+    user_agent = request.headers.get("user-agent")
+
+    delete_all_user_sessions(user.id)
+
+    session_token = create_session(
+        user_id=user.id,
+        remember_me=req.remember_me,
+        ip_address=ip_address,
+        user_agent=user_agent
+    )
+
+    # 6. Audit log
+    audit_log = AuditLog(
+        actor_user_id=user.id,
+        action="user_logged_in_google",
+        resource_type="User",
+        resource_id=str(user.id),
+        ip_hash=ip_address
+    )
+    db.add(audit_log)
+    db.commit()
+
+    max_age = SESSION_EXPIRE_DAYS_REMEMBER * 24 * 60 * 60 if req.remember_me else SESSION_EXPIRE_DAYS_NO_REMEMBER * 24 * 60 * 60
+
+    # 7. Construct identical user response JSON as regular login/signup
+    content = {
+        "success": True,
+        "message": "Google authentication successful",
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
+            "business_name": getattr(user, "business_name", ""),
+            "location": getattr(user, "location", ""),
+            "mobile_number": getattr(user, "mobile_number", ""),
+            "subscription_tier": getattr(user, "subscription_tier", "free"),
+            "ai_chat_used": getattr(user, "ai_chat_used", 0),
+            "ai_chat_month": getattr(user, "ai_chat_month", ""),
+            "onboarding_completed": getattr(user, "onboarding_completed", False),
+            "onboarding_marketplace": getattr(user, "onboarding_marketplace", None),
+            "onboarding_details": getattr(user, "onboarding_details", None),
+            "onboarding_goal": getattr(user, "onboarding_goal", None),
+            "seller_id": getattr(user, "seller_id", None),
+            "created_at": str(user.created_at) if getattr(user, "created_at", None) else None
+        }
+    }
+
+    json_resp = JSONResponse(content=content)
+    json_resp.set_cookie(
+        key="session_id",
+        value=session_token,
+        httponly=True,
+        secure=SESSION_COOKIE_SECURE,
+        samesite="lax",
+        max_age=max_age,
+    )
+    return json_resp
+
 
 @router.post("/signup", response_model=UserOut, status_code=status.HTTP_201_CREATED)
 def signup(user: UserCreate, request: Request, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):

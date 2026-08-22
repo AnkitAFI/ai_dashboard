@@ -28,6 +28,8 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isLoading && !user) {
       router.replace("/login");
+    } else if (!isLoading && user && (!user.mobileNumber || user.mobileNumber.trim() === "")) {
+      router.replace("/verify-mobile");
     }
   }, [user, isLoading, router]);
 

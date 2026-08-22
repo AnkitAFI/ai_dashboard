@@ -10,6 +10,57 @@ class UserRepository:
         hashed = HashedString().process_bind_param(email, None)
         return db.query(User).filter(User.email_hash == hashed).first()
 
+    def get_by_google_id(self, db: Session, google_id: str):
+        return db.query(User).filter(User.google_id == google_id).first()
+
+    def create_google_user(self, db: Session, google_data: dict, ip_hash: str = "unknown"):
+        db_user = User(
+            first_name=google_data.get("first_name", "Google"),
+            last_name=google_data.get("last_name", "User"),
+            email=google_data.get("email"),
+            google_id=google_data.get("google_id"),
+            auth_provider="google",
+            password_hash=None,
+            is_active=True,
+            is_verified=True
+        )
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        
+        # Log explicit consents for DPDP Compliance
+        now = datetime.utcnow()
+        consents = [
+            UserConsent(
+                user_id=db_user.id,
+                consent_type="terms_of_service",
+                status=True,
+                policy_version="v1.0",
+                ip_hash=ip_hash,
+                accepted_at=now
+            ),
+            UserConsent(
+                user_id=db_user.id,
+                consent_type="privacy_policy",
+                status=True,
+                policy_version="v1.0",
+                ip_hash=ip_hash,
+                accepted_at=now
+            ),
+            UserConsent(
+                user_id=db_user.id,
+                consent_type="data_processing",
+                status=True,
+                policy_version="v1.0",
+                ip_hash=ip_hash,
+                accepted_at=now
+            )
+        ]
+        db.add_all(consents)
+        db.commit()
+        
+        return db_user
+
     def create(self, db: Session, user_in: UserCreate, hashed_password: str, business_interests: list, ip_hash: str = "unknown"):
         db_user = User(
             first_name=user_in.first_name,

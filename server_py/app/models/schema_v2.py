@@ -11,7 +11,9 @@ class UserAuth(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     # HMAC hash of the email for lookups, never storing plaintext email here
     email_hash = Column(HashedString(255), unique=True, index=True, nullable=False)
-    password_hash = Column(String(255), nullable=False)
+    password_hash = Column(String(255), nullable=True)
+    google_id = Column(String(255), unique=True, nullable=True, index=True)
+    auth_provider = Column(String(50), default="email")
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
     
