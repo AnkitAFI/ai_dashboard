@@ -71,6 +71,18 @@ def send_mobile_otp(
             detail="Invalid Indian mobile number. Please enter a valid 10-digit number starting with 6-9."
         )
 
+    # Check if mobile number is already in use by another account
+    from app.models.schema_v2 import UserProfile
+    from app.core.cryptography import HashedString
+    
+    mobile_hash = HashedString().process_bind_param(mobile, None)
+    existing_mobile = db.query(UserProfile).filter(UserProfile.mobile_number_hash == mobile_hash).first()
+    if existing_mobile:
+        raise HTTPException(
+            status_code=400,
+            detail="This phone number is already registered to another account."
+        )
+
     # Generate 6-digit OTP
     otp_code = str(random.randint(100000, 999999))
     expires_at = datetime.utcnow() + timedelta(minutes=5)
@@ -129,6 +141,15 @@ def verify_mobile_otp(
     current_user.mobile_number = mobile
     db.commit()
     db.refresh(current_user)
+
+    # Enforce uniqueness by saving hash to V2 Profile schema
+    from app.models.schema_v2 import UserProfile
+    from app.core.cryptography import HashedString
+    mobile_hash = HashedString().process_bind_param(mobile, None)
+    db.query(UserProfile).filter(UserProfile.user_id == current_user.id).update(
+        {"mobile_number_hash": mobile_hash}, synchronize_session=False
+    )
+    db.commit()
 
     # Clean up cache
     MOBILE_OTP_CACHE.pop(f"user_{current_user.id}", None)

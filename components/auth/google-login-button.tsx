@@ -150,7 +150,8 @@ export function GoogleLoginButton({ rememberMe = false, onSuccess }: GoogleLogin
             size="large"
             theme="outline"
             shape="rectangular"
-            width="100%"
+            width={320}
+            logo_alignment="center"
             text="continue_with"
           />
         </div>
