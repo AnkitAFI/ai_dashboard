@@ -221,8 +221,8 @@ export default function Login() {
       const data = await response.json();
       if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Failed to send OTP. Please try again."));
       toast({
-        title: "OTP Sent! 📧",
-        description: "Please check your email for the 6-digit OTP code",
+        title: "OTP Sent! 📱",
+        description: "Please check your registered mobile number for the 6-digit SMS OTP",
       });
       setResetStep("otp");
       startOtpTimer();
@@ -344,8 +344,8 @@ export default function Login() {
       const data = await response.json();
       if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Failed to resend OTP. Please try again."));
       toast({
-        title: "OTP Resent! 📧",
-        description: "A new OTP has been sent to your email",
+        title: "OTP Resent! 📱",
+        description: "A new SMS OTP has been sent to your registered mobile number",
       });
       setOtp("");
       startOtpTimer();
@@ -779,14 +779,14 @@ export default function Login() {
           <DialogHeader>
             <DialogTitle className="text-slate-900 dark:text-white">
               {resetStep === "email" && "🔐 Forgot Password"}
-              {resetStep === "otp" && "📧 Verify OTP"}
+              {resetStep === "otp" && "📱 Verify OTP"}
               {resetStep === "password" && "🔑 Set New Password"}
             </DialogTitle>
             <DialogDescription className="text-white/40">
               {resetStep === "email" &&
-                "Enter your email to receive an OTP code"}
+                "Enter your email to receive an SMS OTP on your registered phone"}
               {resetStep === "otp" &&
-                "Enter the 6-digit code sent to your email"}
+                "Enter the 6-digit SMS code sent to your mobile number"}
               {resetStep === "password" &&
                 "Create a strong new password for your account"}
             </DialogDescription>

@@ -320,9 +320,8 @@ export default function VerifyEmail() {
         if (response.status === 429 && data.detail?.includes("Limit reached")) {
           setLimitReached(true);
         }
-        throw new Error(sanitizeApiError(data.detail, "Failed to resend OTP. Please try again."));
       }
-      toast({ title: "OTP resent", description: `New code sent to ${email}` });
+      toast({ title: "OTP resent", description: "New SMS code sent to your registered mobile number" });
       setResendCooldown(60);
     } catch (err: any) {
       toast({ title: "Failed to resend", description: sanitizeApiError(err.message, "Failed to resend OTP. Please try again."), variant: "destructive" });
