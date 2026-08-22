@@ -48,6 +48,7 @@ const Zap = ({ className }: { className?: string }) => (
 const navigationMenu: NavigationMenu = {
   Solutions: [
     { name: "All Solutions (Overview)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions" },
+    { name: "Seller Dashboard", icon: <LayoutGrid className="w-4 h-4" />, badge: "NEW", route: "/seller-dashboard" },
     { name: "For Amazon Sellers (India)", icon: <ShoppingBag className="w-4 h-4" />, route: "/solutions/amazon-sellers" },
     { name: "Amazon Advertising & PPC", icon: <BarChart3 className="w-4 h-4" />, badge: "COMING SOON", route: "/solutions/amazon-advertising" },
     { name: "For Flipkart Sellers", icon: <Store className="w-4 h-4" />, route: "/solutions/flipkart-sellers" },
@@ -108,6 +109,9 @@ import { useTheme } from "next-themes";
 export function MarketingHeader() {
   const router = useRouter();
   const pathname = usePathname();
+
+  if (pathname === "/seller-dashboard") return null;
+
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);

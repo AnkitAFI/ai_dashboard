@@ -586,7 +586,7 @@ function ScoreBreakdownBars({ breakdown }: { breakdown: ScoreBreakdown }) {
 
 // ── Competitor Row ────────────────────────────────────────────────────────────
 
-function CompetitorRow({ comp, index, isLoading }: { comp: Competitor; index: number; isLoading?: boolean }) {
+function CompetitorRow({ comp, index, isLoading, isError, onReload }: { comp: Competitor; index: number; isLoading?: boolean; isError?: boolean; onReload?: () => void }) {
   const { t } = useTranslation();
   return (
     <div className="flex items-start gap-3 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-800/80">
@@ -614,10 +614,22 @@ function CompetitorRow({ comp, index, isLoading }: { comp: Competitor; index: nu
         <p className="text-xs sm:text-[12.5px] text-slate-700 dark:text-slate-250 font-medium leading-relaxed mt-1.5 flex items-start gap-1.5">
           {isLoading ? (
             <Loader2 className="w-4 h-4 text-violet-500 animate-spin shrink-0 mt-0.5" />
+          ) : isError ? (
+            <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
           ) : (
             <span className="text-amber-600 dark:text-amber-400 font-semibold shrink-0 mt-0.5">⚠</span>
           )}
-          <span className="flex-1">{comp.weakness}</span>
+          <span className="flex-1">
+            {comp.weakness}
+            {isError && onReload && (
+              <button 
+                onClick={onReload} 
+                className="ml-2 inline-flex items-center gap-1 text-[10px] text-amber-600 dark:text-amber-500 hover:text-amber-700 dark:hover:text-amber-400 font-semibold transition-colors"
+              >
+                <RefreshCw className="w-3 h-3" /> Retry Analysis
+              </button>
+            )}
+          </span>
         </p>
       </div>
     </div>
@@ -982,10 +994,16 @@ function OpportunityCard({
                     key={i} 
                     comp={{
                       ...c,
-                      weakness: insightsLoading ? "Generating AI analysis..." : c.weakness || "Analysis complete. No critical weaknesses found."
+                      weakness: insightsLoading 
+                        ? "Generating AI analysis..." 
+                        : lazyError 
+                          ? "Analysis timed out."
+                          : c.weakness || "Analysis complete. No critical weaknesses found."
                     }} 
                     index={i}
                     isLoading={insightsLoading}
+                    isError={lazyError}
+                    onReload={() => fetchInsights(true, true)}
                   />
                 ))}
               </div>

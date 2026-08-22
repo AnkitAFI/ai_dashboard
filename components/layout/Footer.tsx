@@ -1,8 +1,12 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Facebook, Twitter, Instagram, Linkedin, Shield, Lock, EyeOff } from "lucide-react";
 
 export function Footer() {
+  const pathname = usePathname();
+  if (pathname === "/seller-dashboard") return null;
+
   return (
     <footer className="bg-[#0a0f1e] text-white py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -52,6 +56,7 @@ export function Footer() {
           <div>
             <h4 className="text-xs font-bold text-white uppercase tracking-widest mb-5">Solutions</h4>
             <ul className="space-y-3">
+              <li><Link href="/seller-dashboard" className="text-sm text-gray-400 hover:text-white transition-colors">Seller Dashboard</Link></li>
               <li><Link href="/solutions/amazon-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Amazon Sellers</Link></li>
               <li><Link href="/solutions/amazon-advertising" className="text-sm text-gray-400 hover:text-white transition-colors">Amazon Advertising</Link></li>
               <li><Link href="/solutions/flipkart-sellers" className="text-sm text-gray-400 hover:text-white transition-colors">Flipkart Sellers</Link></li>

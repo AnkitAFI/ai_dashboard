@@ -260,6 +260,7 @@ export default function VerifyEmail() {
   const [isLoading, setIsLoading] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
+  const [limitReached, setLimitReached] = useState(false);
   const [email, setEmail] = useState("");
 
   useEffect(() => {
@@ -296,7 +297,7 @@ export default function VerifyEmail() {
       if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Verification failed. Please check your OTP and try again."));
       deleteCookie("verify_email");
       await refreshUser();
-      toast({ title: "Email verified!", description: "Welcome to Insydz!" });
+      toast({ title: "Account verified!", description: "Welcome to Insydz!" });
       router.push("/dashboard");
     } catch (err: any) {
       toast({ title: "Verification failed", description: sanitizeApiError(err.message, "Invalid or expired OTP."), variant: "destructive" });
@@ -315,8 +316,12 @@ export default function VerifyEmail() {
         body: JSON.stringify({ email }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(sanitizeApiError(data.detail, "Failed to resend OTP. Please try again."));
-      toast({ title: "OTP resent", description: `New code sent to ${email}` });
+      if (!response.ok) {
+        if (response.status === 429 && data.detail?.includes("Limit reached")) {
+          setLimitReached(true);
+        }
+      }
+      toast({ title: "OTP resent", description: "New SMS code sent to your registered mobile number" });
       setResendCooldown(60);
     } catch (err: any) {
       toast({ title: "Failed to resend", description: sanitizeApiError(err.message, "Failed to resend OTP. Please try again."), variant: "destructive" });
@@ -362,13 +367,13 @@ export default function VerifyEmail() {
           <div className="flex items-center gap-2 mb-1">
             <span className="w-[7px] h-[7px] rounded-full bg-[#AAF0FF] animate-pulse"
               style={{ boxShadow: "0 0 8px rgba(170,240,255,0.9)" }} />
-            <span className="text-[10px] text-blue-600 dark:text-[#AAF0FF] tracking-widest uppercase font-medium">Email verification</span>
+            <span className="text-[10px] text-blue-600 dark:text-[#AAF0FF] tracking-widest uppercase font-medium">Verification</span>
           </div>
 
           {/* Header */}
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">Check your inbox</h2>
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-1 tracking-tight">Check your phone</h2>
           <p className="text-slate-500 dark:text-white/40 text-sm mb-6 leading-relaxed">
-            We sent a 6-digit code to{" "}
+            We sent a 6-digit code to your mobile number and your account ID is{" "}
             <span className="text-blue-600 dark:text-[#AAF0FF]/80 font-medium">{email}</span>
           </p>
 
@@ -402,7 +407,7 @@ export default function VerifyEmail() {
                 autoFocus
                 className="h-14 text-center text-2xl tracking-[14px] font-bold bg-white dark:bg-[#080e1c] border-slate-200 dark:border-[#AAF0FF]/10 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/15 placeholder:tracking-normal focus-visible:ring-blue-500/20 dark:focus-visible:ring-[#AAF0FF]/20 focus-visible:border-blue-500 dark:focus-visible:border-[#AAF0FF]/35 rounded-xl font-mono"
               />
-              <p className="text-[11px] text-slate-400 dark:text-white/25 text-center">Check your inbox and spam folder</p>
+              <p className="text-[11px] text-slate-400 dark:text-white/25 text-center">Check your mobile messages</p>
             </div>
 
             {/* OTP progress dots */}
@@ -430,7 +435,7 @@ export default function VerifyEmail() {
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white dark:border-[#051020]/30 dark:border-t-[#051020] rounded-full animate-spin" />
                   Verifying...
                 </span>
-              ) : "Verify email"}
+              ) : "Verify account"}
             </button>
 
             {/* Resend */}
@@ -439,14 +444,16 @@ export default function VerifyEmail() {
               <button
                 type="button"
                 onClick={handleResend}
-                disabled={isResending || resendCooldown > 0}
+                disabled={isResending || resendCooldown > 0 || limitReached}
                 className={cn(
                   "w-full h-11 rounded-xl text-sm font-medium transition-all duration-200 disabled:opacity-40 border",
                   "bg-slate-100 dark:bg-white/[0.04] border-slate-200 dark:border-slate-800",
-                  resendCooldown > 0 ? "text-slate-400 dark:text-white/20" : "text-blue-600 dark:text-[#AAF0FF]"
+                  (resendCooldown > 0 || limitReached) ? "text-slate-400 dark:text-white/20" : "text-blue-600 dark:text-[#AAF0FF]"
                 )}
               >
-                {resendCooldown > 0
+                {limitReached
+                  ? "Limit reached for OTP. Try again next day."
+                  : resendCooldown > 0
                   ? `Resend in ${resendCooldown}s`
                   : isResending
                   ? "Sending..."
@@ -457,7 +464,7 @@ export default function VerifyEmail() {
             {/* Back to signup */}
             <div className="pt-3 border-t border-slate-200 dark:border-white/[0.06] text-center">
               <p className="text-xs text-slate-500 dark:text-white/30">
-                Wrong email?{" "}
+                Wrong email or number?{" "}
                 <button
                   type="button"
                   onClick={() => { deleteCookie("verify_email"); router.push("/signup"); }}
