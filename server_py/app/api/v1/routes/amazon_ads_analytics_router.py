@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, require_premium_tier
 from app.services.amazon_ads_service import AmazonAdsService
 from app.services.rate_limiter import RateLimit, redis_client
 from pydantic import BaseModel
 from typing import Dict, Any
-from app.models.schema_v2 import AmazonAdsProfile, AmazonAdsCampaignPerformance, AmazonAdsKeywordPerformance, AmazonAdsAutomationRules, AmazonAdsAuditLog, UserSavedFilters
+from app.models.schema_v2 import AmazonAdsProfile, AmazonAdsCampaignPerformance, AmazonAdsKeywordPerformance, AmazonAdsSearchTermPerformance, AmazonAdsAutomationRules, AmazonAdsAuditLog, UserSavedFilters
 from sqlalchemy import func
 from datetime import datetime, timedelta
 import logging
@@ -259,7 +259,7 @@ class KeywordStatusUpdate(BaseModel):
     profile_id: str
     status: str
 
-@router.put("/keywords/{keyword_id}/status", dependencies=[Depends(RateLimit("default"))])
+@router.put("/keywords/{keyword_id}/status", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
 async def update_keyword_status(
     keyword_id: str,
     data: KeywordStatusUpdate,
@@ -310,7 +310,7 @@ async def update_keyword_status(
     return {"message": "Keyword status updated successfully", "status": data.status.upper()}
 
 
-@router.get("/campaigns/{campaign_id}/keywords", dependencies=[Depends(RateLimit("default"))])
+@router.get("/campaigns/{campaign_id}/keywords", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
 async def get_campaign_keywords(
     campaign_id: str,
     profile_id: str,
@@ -389,13 +389,111 @@ async def get_campaign_keywords(
 
     return result
 
+@router.get("/search-terms", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
+async def get_search_terms(
+    profile_id: str,
+    date_range: str = Query("30d"),
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get performance by search term (Premium Only)."""
+    start_date, end_date = parse_date_range(date_range)
+
+    # 1. First, get aggregated search terms
+    search_terms = db.query(
+        AmazonAdsSearchTermPerformance.search_term,
+        func.max(AmazonAdsSearchTermPerformance.campaign_id).label("campaign_id"),
+        func.max(AmazonAdsSearchTermPerformance.ad_group_id).label("ad_group_id"),
+        func.max(AmazonAdsSearchTermPerformance.keyword_text).label("keyword_text"),
+        func.max(AmazonAdsSearchTermPerformance.match_type).label("match_type"),
+        func.sum(AmazonAdsSearchTermPerformance.spend).label("spend"),
+        func.sum(AmazonAdsSearchTermPerformance.sales).label("sales"),
+        func.sum(AmazonAdsSearchTermPerformance.impressions).label("impressions"),
+        func.sum(AmazonAdsSearchTermPerformance.clicks).label("clicks"),
+    ).filter(
+        AmazonAdsSearchTermPerformance.user_id == current_user.id,
+        AmazonAdsSearchTermPerformance.profile_id == profile_id,
+        AmazonAdsSearchTermPerformance.date >= start_date,
+        AmazonAdsSearchTermPerformance.date <= end_date
+    ).group_by(AmazonAdsSearchTermPerformance.search_term).all()
+
+    result_list = []
+    for st in search_terms:
+        spend = float(st.spend or 0)
+        sales = float(st.sales or 0)
+        acos = (spend / sales * 100) if sales > 0 else 0
+        
+        result_list.append({
+            "search_term": st.search_term,
+            "campaign_id": st.campaign_id,
+            "ad_group_id": st.ad_group_id,
+            "keyword_text": st.keyword_text,
+            "match_type": st.match_type,
+            "spend": spend,
+            "sales": sales,
+            "impressions": int(st.impressions or 0),
+            "clicks": int(st.clicks or 0),
+            "acos": round(acos, 2)
+        })
+
+    # Sort by spend descending
+    result_list.sort(key=lambda x: x["spend"], reverse=True)
+    return {"search_terms": result_list}
+
+
+class NegateSearchTermRequest(BaseModel):
+    profile_id: str
+    campaign_id: str
+    ad_group_id: str
+    search_term: str
+
+@router.post("/search-terms/negate", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
+async def negate_search_term(
+    request: NegateSearchTermRequest,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Add a search term as a negative exact keyword."""
+    profile = db.query(AmazonAdsProfile).filter(
+        AmazonAdsProfile.profile_id == request.profile_id,
+        AmazonAdsProfile.user_id == current_user.id
+    ).first()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found or access denied")
+
+    service = AmazonAdsService(db, current_user.id)
+    success = await service.add_negative_keyword(
+        request.profile_id, 
+        request.campaign_id, 
+        request.ad_group_id, 
+        request.search_term
+    )
+    
+    if not success:
+        raise HTTPException(status_code=400, detail="Failed to add negative keyword to Amazon")
+        
+    # Log the action (DPDP compliant)
+    audit_log = AmazonAdsAuditLog(
+        user_id=current_user.id,
+        profile_id=request.profile_id,
+        action="MANUAL_SEARCH_TERM_NEGATED",
+        details={
+            "campaign_id": request.campaign_id, 
+            "search_term": request.search_term
+        }
+    )
+    db.add(audit_log)
+    db.commit()
+
+    return {"message": "Successfully added negative keyword"}
+
 class SavedFilterRequest(BaseModel):
     profile_id: str
     module: str
     filter_name: str
     filter_config: dict
 
-@router.post("/filters", dependencies=[Depends(RateLimit("default"))])
+@router.post("/filters", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
 async def save_filter(
     request: SavedFilterRequest,
     current_user = Depends(get_current_user),
@@ -425,7 +523,7 @@ async def save_filter(
     db.commit()
     return {"message": "Filter saved successfully"}
     
-@router.get("/filters", dependencies=[Depends(RateLimit("default"))])
+@router.get("/filters", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
 async def get_saved_filters(
     profile_id: str,
     module: str = Query("amazon_ads_keywords"),
@@ -453,7 +551,7 @@ class AutomationRuleRequest(BaseModel):
     rule_type: str
     rule_config: Dict[str, Any]
 
-@router.post("/automations", dependencies=[Depends(RateLimit("default"))])
+@router.post("/automations", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
 async def save_automation_rule(
     request: AutomationRuleRequest,
     current_user = Depends(get_current_user),

@@ -281,6 +281,33 @@ class AmazonAdsKeywordPerformance(Base):
     auth = relationship("UserAuth", backref="amazon_ads_keyword_metrics")
 
 
+class AmazonAdsSearchTermPerformance(Base):
+    __tablename__ = "amazon_ads_search_term_performance"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users_auth.id", ondelete="CASCADE"), nullable=False)
+    profile_id = Column(String(50), index=True)
+    campaign_id = Column(String(50), index=True)
+    ad_group_id = Column(String(50), index=True)
+    keyword_id = Column(String(50), index=True)
+    
+    date = Column(DateTime(timezone=True), index=True)
+    search_term = Column(String(255), index=True)
+    keyword_text = Column(String(255))
+    match_type = Column(String(50))
+
+    impressions = Column(Integer, default=0)
+    clicks = Column(Integer, default=0)
+    spend = Column(Numeric(10, 2), default=0.0)
+    sales = Column(Numeric(10, 2), default=0.0)
+    orders = Column(Integer, default=0)
+
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    auth = relationship("UserAuth", backref="amazon_ads_search_term_metrics")
+
+
 class UserSavedFilters(Base):
     __tablename__ = "user_saved_filters"
 

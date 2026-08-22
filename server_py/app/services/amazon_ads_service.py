@@ -152,6 +152,50 @@ class AmazonAdsService:
                     
             return True
 
+    async def update_campaign_budget(self, profile_id: str, campaign_id: str, new_daily_budget: float) -> bool:
+        """Update a campaign's daily budget on Amazon Ads."""
+        from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
+        
+        try:
+            await rate_limiter.wait_for_token("campaigns")
+        except AmazonAdsCircuitBreakerException:
+            logger.error("Circuit breaker active, skipping campaign budget update")
+            return False
+            
+        url = f"{self._get_api_url()}/v2/sp/campaigns"
+        headers = await self.get_headers(profile_id=profile_id)
+        
+        try:
+            c_id = int(campaign_id)
+        except ValueError:
+            c_id = campaign_id
+            
+        data = [{
+            "campaignId": c_id,
+            "dailyBudget": float(new_daily_budget)
+        }]
+        
+        async with httpx.AsyncClient() as client:
+            resp = await client.put(url, headers=headers, json=data)
+            if resp.status_code == 429:
+                from app.services.rate_limiter import AmazonAdsRateLimiter
+                AmazonAdsRateLimiter.trip_circuit_breaker()
+                logger.error("Received 429 Too Many Requests from Amazon Ads during budget update!")
+                return False
+                
+            if resp.status_code not in (200, 207):
+                logger.error(f"Failed to update campaign budget: {resp.text}")
+                return False
+                
+            result = resp.json()
+            if isinstance(result, list) and len(result) > 0:
+                if result[0].get("code") == "SUCCESS":
+                    return True
+                else:
+                    logger.error(f"Amazon returned error for budget update: {result[0]}")
+                    return False
+            return False
+
     async def request_campaign_report(self, profile_id: str, report_date: str) -> Optional[str]:
         """Request a standard sponsored products campaign report for a specific date (YYYYMMDD)."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
@@ -213,6 +257,38 @@ class AmazonAdsService:
                 
             if resp.status_code not in (200, 202):
                 logger.error(f"Failed to request keyword report: {resp.text}")
+                return None
+                
+            result = resp.json()
+            return result.get("reportId")
+
+    async def request_search_term_report(self, profile_id: str, report_date: str) -> Optional[str]:
+        """Request a standard sponsored products search term report for a specific date (YYYYMMDD)."""
+        from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
+        
+        try:
+            await rate_limiter.wait_for_token("reports")
+        except AmazonAdsCircuitBreakerException:
+            logger.error("Circuit breaker active, skipping search term report request")
+            return None
+            
+        url = f"{self._get_api_url()}/v2/sp/searchTerms/report"
+        headers = await self.get_headers(profile_id=profile_id)
+        
+        data = {
+            "reportDate": report_date,
+            "metrics": "campaignId,adGroupId,keywordId,keywordText,matchType,searchTerm,impressions,clicks,cost,purchases1d,purchases7d,purchases14d,purchases30d"
+        }
+        
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(url, headers=headers, json=data)
+            if resp.status_code == 429:
+                from app.services.rate_limiter import AmazonAdsRateLimiter
+                AmazonAdsRateLimiter.trip_circuit_breaker()
+                return None
+                
+            if resp.status_code not in (200, 202):
+                logger.error(f"Failed to request search term report: {resp.text}")
                 return None
                 
             result = resp.json()
@@ -373,6 +449,69 @@ class AmazonAdsService:
                 
             self.db.commit()
 
+    async def download_and_parse_search_term_report(self, location: str, profile_id: str, report_date_str: str) -> None:
+        """Download GZIP JSON search term report, parse, and upsert to DB."""
+        import gzip
+        import json
+        from app.models.schema_v2 import AmazonAdsSearchTermPerformance
+        
+        headers = await self.get_headers(profile_id=profile_id)
+        
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(location, headers=headers)
+            if resp.status_code != 200:
+                logger.error("Failed to download search term report.")
+                return
+                
+            try:
+                content = gzip.decompress(resp.content)
+                data = json.loads(content)
+            except Exception as e:
+                logger.error(f"Failed to decompress/parse search term report: {e}")
+                return
+                
+            report_date = datetime.strptime(report_date_str, "%Y%m%d").date()
+            
+            for row in data:
+                search_term = row.get("searchTerm", "")
+                keyword_id = str(row.get("keywordId", ""))
+                if not search_term or not keyword_id:
+                    continue
+                    
+                record = self.db.query(AmazonAdsSearchTermPerformance).filter(
+                    AmazonAdsSearchTermPerformance.profile_id == profile_id,
+                    AmazonAdsSearchTermPerformance.search_term == search_term,
+                    AmazonAdsSearchTermPerformance.keyword_id == keyword_id,
+                    AmazonAdsSearchTermPerformance.date == report_date
+                ).first()
+                
+                if record:
+                    record.impressions = row.get("impressions", 0)
+                    record.clicks = row.get("clicks", 0)
+                    record.spend = row.get("cost", 0.0)
+                    record.sales = row.get("purchases1d", 0.0)
+                    continue
+                    
+                db_record = AmazonAdsSearchTermPerformance(
+                    user_id=self.user_id,
+                    profile_id=profile_id,
+                    campaign_id=str(row.get("campaignId")),
+                    ad_group_id=str(row.get("adGroupId")),
+                    keyword_id=keyword_id,
+                    date=report_date,
+                    search_term=search_term,
+                    keyword_text=row.get("keywordText", ""),
+                    match_type=row.get("matchType", ""),
+                    impressions=row.get("impressions", 0),
+                    clicks=row.get("clicks", 0),
+                    spend=row.get("cost", 0.0),
+                    sales=row.get("purchases1d", 0.0),
+                    orders=row.get("purchases1d", 0)
+                )
+                self.db.add(db_record)
+                
+            self.db.commit()
+
     async def update_keyword_status(self, profile_id: str, keyword_id: str, state: str) -> bool:
         """Manually pause or enable a keyword in Amazon Ads (strictly rate limited)."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
@@ -409,6 +548,55 @@ class AmazonAdsService:
                     return True
                 else:
                     logger.error(f"Amazon returned error for keyword update: {result[0]}")
+                    return False
+                    
+            return True
+
+    async def add_negative_keyword(self, profile_id: str, campaign_id: str, ad_group_id: str, keyword_text: str) -> bool:
+        """Add a negative exact keyword to block a bleeding search term."""
+        from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
+        
+        try:
+            await rate_limiter.wait_for_token("default")
+        except AmazonAdsCircuitBreakerException:
+            logger.error("Circuit breaker active, cannot add negative keyword")
+            return False
+            
+        url = f"{self._get_api_url()}/v2/sp/negativeKeywords"
+        headers = await self.get_headers(profile_id=profile_id)
+        
+        try:
+            c_id = int(campaign_id)
+            ag_id = int(ad_group_id)
+        except ValueError:
+            c_id = campaign_id
+            ag_id = ad_group_id
+            
+        payload = [{
+            "campaignId": c_id,
+            "adGroupId": ag_id,
+            "keywordText": keyword_text,
+            "matchType": "negativeExact",
+            "state": "enabled"
+        }]
+        
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(url, headers=headers, json=payload)
+            if resp.status_code == 429:
+                from app.services.rate_limiter import AmazonAdsRateLimiter
+                AmazonAdsRateLimiter.trip_circuit_breaker()
+                return False
+                
+            if resp.status_code not in (200, 207):
+                logger.error(f"Failed to add negative keyword: {resp.text}")
+                return False
+                
+            result = resp.json()
+            if isinstance(result, list) and len(result) > 0:
+                if result[0].get("code") == "SUCCESS":
+                    return True
+                else:
+                    logger.error(f"Amazon returned error for negative keyword: {result[0]}")
                     return False
                     
             return True

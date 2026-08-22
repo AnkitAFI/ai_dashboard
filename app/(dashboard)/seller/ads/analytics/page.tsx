@@ -102,14 +102,23 @@ export default function AnalyticsDashboard() {
   const [maxDecrease, setMaxDecrease] = useState(15);
   const [biddingActive, setBiddingActive] = useState(false);
   
+  const [budgetScalingOpen, setBudgetScalingOpen] = useState(false);
+  const [budgetScalingTargetAcos, setBudgetScalingTargetAcos] = useState(15);
+  const [budgetScalingTargetRoas, setBudgetScalingTargetRoas] = useState(5);
+  const [budgetScalingIncreasePct, setBudgetScalingIncreasePct] = useState(20);
+  const [budgetScalingActive, setBudgetScalingActive] = useState(false);
+  
+  const [searchTermNegationOpen, setSearchTermNegationOpen] = useState(false);
+  const [searchTermNegationMaxSpend, setSearchTermNegationMaxSpend] = useState(2000);
+  const [searchTermNegationActive, setSearchTermNegationActive] = useState(false);
+  
   const handleSaveDayparting = async () => {
     if (!selectedProfile) return;
     try {
       const res = await fetch(`${API_BASE_URL}/amazon-ads/analytics/automations`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           profile_id: selectedProfile,
@@ -139,8 +148,7 @@ export default function AnalyticsDashboard() {
       const res = await fetch(`${API_BASE_URL}/amazon-ads/analytics/automations`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           profile_id: selectedProfile,
@@ -158,6 +166,66 @@ export default function AnalyticsDashboard() {
         toast({
           title: "Auto Bid Adjustments Saved",
           description: `Target ACOS: ${targetAcos}%, Max Inc: ${maxIncrease}%, Max Dec: ${maxDecrease}%`,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSaveBudgetScaling = async () => {
+    if (!selectedProfile) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/automations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          profile_id: selectedProfile,
+          rule_type: "BUDGET_SCALING",
+          rule_config: {
+            target_acos: budgetScalingTargetAcos,
+            target_roas: budgetScalingTargetRoas,
+            increase_pct: budgetScalingIncreasePct
+          }
+        })
+      });
+      if (res.ok) {
+        setBudgetScalingActive(true);
+        setBudgetScalingOpen(false);
+        toast({
+          title: "Budget Scaling Automation Saved",
+          description: "Profitable campaigns will now scale automatically.",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleSaveSearchTermNegation = async () => {
+    if (!selectedProfile) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/automations`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          profile_id: selectedProfile,
+          rule_type: "SEARCH_TERM_NEGATION",
+          rule_config: {
+            max_spend: searchTermNegationMaxSpend
+          }
+        })
+      });
+      if (res.ok) {
+        setSearchTermNegationActive(true);
+        setSearchTermNegationOpen(false);
+        toast({
+          title: "Search Term Negation Saved",
+          description: "Bleeding search terms will be automatically negated.",
         });
       }
     } catch (err) {
@@ -186,8 +254,7 @@ export default function AnalyticsDashboard() {
       const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/campaigns/${campaignId}/status`, {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${localStorage.getItem("token")}`
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
           profile_id: selectedProfile,
@@ -229,6 +296,57 @@ export default function AnalyticsDashboard() {
     },
     enabled: !!selectedProfile && !!selectedCampaignForKeywords
   });
+
+  // Search Terms Data Fetching
+  const { data: searchTermsData, isLoading: searchTermsLoading } = useQuery({
+    queryKey: ["amazon-ads-search-terms", selectedProfile, actualDateParam],
+    queryFn: async () => {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/search-terms?profile_id=${selectedProfile}&date_range=${actualDateParam}`, {
+        credentials: "include"
+      });
+      if (!res.ok) throw new Error("Failed to fetch search terms");
+      return await res.json();
+    },
+    enabled: !!selectedProfile && isPremium
+  });
+
+  const [negatingSearchTerm, setNegatingSearchTerm] = useState<string | null>(null);
+
+  const handleNegateSearchTerm = async (searchTerm: string, campaignId: string, adGroupId: string) => {
+    if (!selectedProfile || tier === "free") return;
+    setNegatingSearchTerm(searchTerm);
+    
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/search-terms/negate`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          profile_id: selectedProfile,
+          campaign_id: campaignId,
+          ad_group_id: adGroupId,
+          search_term: searchTerm
+        })
+      });
+      if (res.ok) {
+        toast({
+          title: "Search Term Negated",
+          description: `"${searchTerm}" has been added as a Negative Exact keyword.`,
+        });
+        // We could invalidate queries, but the user might have to wait for the next sync to see it gone.
+        // For now, simple toast is fine.
+      } else {
+        toast({ title: "Failed to negate search term", variant: "destructive" });
+      }
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Error negating search term", variant: "destructive" });
+    } finally {
+      setNegatingSearchTerm(null);
+    }
+  };
 
   const [updatingKeyword, setUpdatingKeyword] = useState<string | null>(null);
 
@@ -599,6 +717,7 @@ export default function AnalyticsDashboard() {
                 <TabsList>
                   <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
                   <TabsTrigger value="keywords">Keywords</TabsTrigger>
+                  <TabsTrigger value="search-terms">Search Terms <Badge variant="secondary" className="ml-2 text-[10px] px-1.5 py-0 bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300 border-emerald-200">NEW</Badge></TabsTrigger>
                 </TabsList>
               </div>
 
@@ -895,6 +1014,84 @@ export default function AnalyticsDashboard() {
               </Card>
               </div>
             </TabsContent>
+            
+            <TabsContent value="search-terms" className="mt-0">
+              <Card className="relative overflow-hidden">
+                {!isPremium && <TierGate tier="premium" feature="Search Term Analytics" isDark={isDark} />}
+                <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
+                  <CardHeader className="pb-2 flex flex-row justify-between items-center">
+                    <div>
+                      <CardTitle className="text-lg">Search Term Harvesting</CardTitle>
+                      <CardDescription>Customer search terms that triggered your ads</CardDescription>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {!selectedProfile ? (
+                      <div className="flex justify-center items-center h-40 text-muted-foreground text-sm">
+                        Please select an Ad Profile first.
+                      </div>
+                    ) : searchTermsLoading ? (
+                      <div className="flex justify-center items-center h-40">
+                        <RefreshCw className="h-6 w-6 animate-spin text-muted-foreground" />
+                      </div>
+                    ) : searchTermsData?.search_terms && searchTermsData.search_terms.length > 0 ? (
+                      <div className="rounded-md border">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Customer Search Term</TableHead>
+                              <TableHead>Matched Keyword</TableHead>
+                              <TableHead className="text-right">Spend</TableHead>
+                              <TableHead className="text-right">Sales</TableHead>
+                              <TableHead className="text-right">ACOS</TableHead>
+                              <TableHead className="text-right">Action</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {searchTermsData.search_terms.map((st: any, idx: number) => (
+                              <TableRow key={`${st.search_term}-${idx}`}>
+                                <TableCell className="font-medium">{st.search_term}</TableCell>
+                                <TableCell>
+                                  <div className="text-xs">{st.keyword_text}</div>
+                                  <div className="text-[10px] text-muted-foreground">{st.match_type}</div>
+                                </TableCell>
+                                <TableCell className="text-right">₹{st.spend.toLocaleString()}</TableCell>
+                                <TableCell className="text-right">₹{st.sales.toLocaleString()}</TableCell>
+                                <TableCell className="text-right">
+                                  <Badge variant={st.acos > 40 ? "destructive" : st.acos > 0 ? "secondary" : "outline"} className="font-mono">
+                                    {st.acos}%
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    disabled={negatingSearchTerm === st.search_term}
+                                    onClick={() => handleNegateSearchTerm(st.search_term, st.campaign_id, st.ad_group_id)}
+                                    className="h-7 text-xs border-destructive/20 text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                                  >
+                                    {negatingSearchTerm === st.search_term ? (
+                                      <RefreshCw className="h-3 w-3 animate-spin mr-1" />
+                                    ) : (
+                                      <span className="mr-1">🚫</span>
+                                    )}
+                                    Negate
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    ) : (
+                      <div className="flex justify-center items-center h-40 text-muted-foreground text-sm">
+                        No search terms found in the selected date range.
+                      </div>
+                    )}
+                  </CardContent>
+                </div>
+              </Card>
+            </TabsContent>
             </Tabs>
             </div>
 
@@ -1030,6 +1227,103 @@ export default function AnalyticsDashboard() {
                     </Dialog>
                   </div>
                   
+                  {/* Smart Budget Scaling */}
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-base font-medium flex items-center gap-2">Smart Budget Scaling <Badge variant="secondary" className="text-[10px] px-1.5 py-0">NEW</Badge></Label>
+                      <p className="text-xs text-muted-foreground">Automatically increase budgets for profitable campaigns.</p>
+                    </div>
+                    
+                    <Dialog open={budgetScalingOpen} onOpenChange={setBudgetScalingOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant={budgetScalingActive ? "default" : "outline"} className={budgetScalingActive ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""}>
+                          {budgetScalingActive ? "Active" : "Configure"}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Smart Budget Scaling</DialogTitle>
+                          <DialogDescription>
+                            If a campaign is highly profitable, the AI will increase its daily budget so you don't run out of funds.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-6 py-4">
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right col-span-2">Target ACOS (%) &lt;</Label>
+                            <Input 
+                              type="number" 
+                              value={budgetScalingTargetAcos} 
+                              onChange={(e) => setBudgetScalingTargetAcos(Number(e.target.value))} 
+                              className="col-span-2" 
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right col-span-2">Target ROAS (x) &gt;</Label>
+                            <Input 
+                              type="number" 
+                              value={budgetScalingTargetRoas} 
+                              onChange={(e) => setBudgetScalingTargetRoas(Number(e.target.value))} 
+                              className="col-span-2" 
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right col-span-2 text-emerald-600 dark:text-emerald-400">Increase Budget By (%)</Label>
+                            <Input 
+                              type="number" 
+                              value={budgetScalingIncreasePct} 
+                              onChange={(e) => setBudgetScalingIncreasePct(Number(e.target.value))} 
+                              className="col-span-2" 
+                            />
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setBudgetScalingActive(false)}>Disable</Button>
+                          <Button onClick={handleSaveBudgetScaling}>Save Changes</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  
+                  {/* Automated Search Term Negation */}
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-base font-medium flex items-center gap-2">Auto-Negate Bleeding Search Terms <Badge variant="secondary" className="text-[10px] px-1.5 py-0">NEW</Badge></Label>
+                      <p className="text-xs text-muted-foreground">Automatically block customer search terms that waste money.</p>
+                    </div>
+                    
+                    <Dialog open={searchTermNegationOpen} onOpenChange={setSearchTermNegationOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant={searchTermNegationActive ? "default" : "outline"} className={searchTermNegationActive ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""}>
+                          {searchTermNegationActive ? "Active" : "Configure"}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Auto-Negate Bleeding Search Terms</DialogTitle>
+                          <DialogDescription>
+                            If a search term spends more than your threshold over 7 days but generates 0 sales, the AI will automatically add it as a Negative Exact keyword to stop the bleeding.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-6 py-4">
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right col-span-2 text-destructive dark:text-red-400">Max Spend with 0 Sales (₹) &gt;</Label>
+                            <Input 
+                              type="number" 
+                              value={searchTermNegationMaxSpend} 
+                              onChange={(e) => setSearchTermNegationMaxSpend(Number(e.target.value))} 
+                              className="col-span-2" 
+                            />
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setSearchTermNegationActive(false)}>Disable</Button>
+                          <Button onClick={handleSaveSearchTermNegation}>Save Changes</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  
+
                 </CardContent>
               </div>
             </Card>

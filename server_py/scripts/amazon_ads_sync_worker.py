@@ -117,6 +117,18 @@ async def sync_profile(db, profile):
                 await ads_service.download_and_parse_keyword_report(kw_location, profile.profile_id, date_str)
             else:
                 logger.warning(f"Keyword report {kw_report_id} did not finish successfully.")
+                
+        # 3. Sync Search Term Data for the same date
+        logger.info(f"Requesting search term report for {profile.profile_id} on {date_str}")
+        st_report_id = await ads_service.request_search_term_report(profile.profile_id, date_str)
+        if not st_report_id:
+            logger.warning(f"Could not get search term report ID for {profile.profile_id} on {date_str}")
+        else:
+            st_location = await ads_service.poll_report_status(profile.profile_id, st_report_id)
+            if st_location:
+                await ads_service.download_and_parse_search_term_report(st_location, profile.profile_id, date_str)
+            else:
+                logger.warning(f"Search term report {st_report_id} did not finish successfully.")
         
     logger.info(f"Completed sync for profile {profile.profile_id}")
 
