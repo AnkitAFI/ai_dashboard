@@ -251,14 +251,120 @@ async def execute_search_term_negation(db, rule, ads_service):
         logger.error(f"Error executing search term negation rule {rule.id}: {e}")
         db.rollback()
 
+async def execute_placement_bid_modifier(db, rule, ads_service):
+    """
+    Finds campaigns where a specific placement (e.g., Top of Search) has an ACOS below the target.
+    Automatically increases the bid modifier by the configured percentage, up to a max limit.
+    """
+    from app.models.schema_v2 import AmazonAdsPlacementPerformance
+    
+    config = rule.rule_config
+    target_acos = float(config.get("target_acos", 20.0))
+    increase_pct = float(config.get("increase_pct", 5.0))
+    max_modifier = float(config.get("max_modifier", 50.0))
+    placement_type = config.get("placement_type", "placementTop")
+    
+    logger.info(f"Checking placement {placement_type} for rule {rule.id} (Target ACOS < {target_acos}%)")
+    
+    try:
+        fourteen_days_ago = datetime.utcnow().date() - timedelta(days=14)
+        
+        # 1. Find profitable placements using LOCAL DB (0 API cost)
+        placement_metrics = db.query(
+            AmazonAdsPlacementPerformance.campaign_id,
+            func.sum(AmazonAdsPlacementPerformance.spend).label("total_spend"),
+            func.sum(AmazonAdsPlacementPerformance.sales).label("total_sales")
+        ).filter(
+            AmazonAdsPlacementPerformance.profile_id == rule.profile_id,
+            AmazonAdsPlacementPerformance.placement == placement_type,
+            func.date(AmazonAdsPlacementPerformance.date) >= fourteen_days_ago
+        ).group_by(
+            AmazonAdsPlacementPerformance.campaign_id
+        ).all()
+        
+        campaigns_to_boost = []
+        for metric in placement_metrics:
+            spend = float(metric.total_spend or 0)
+            sales = float(metric.total_sales or 0)
+            
+            if spend > 0 and sales > 0:
+                acos = (spend / sales) * 100
+                if acos < target_acos:
+                    campaigns_to_boost.append(metric.campaign_id)
+                    
+        if not campaigns_to_boost:
+            logger.info(f"No campaigns met the placement modifier criteria for rule {rule.id}")
+            return
+            
+        # 2. Get current campaign configurations from Amazon (Rate Limited)
+        from app.services.rate_limiter import AmazonAdsRateLimiter
+        await AmazonAdsRateLimiter.acquire(profile_id=rule.profile_id, fail_open=False)
+        
+        live_campaigns = await ads_service.get_campaigns(rule.profile_id)
+        if not live_campaigns:
+            return
+            
+        # 3. Process each winning campaign
+        for campaign in live_campaigns:
+            campaign_id = str(campaign.get("campaignId"))
+            if campaign_id in campaigns_to_boost:
+                bidding = campaign.get("bidding", {})
+                adjustments = bidding.get("adjustments", [])
+                
+                # Find current modifier for this placement
+                current_modifier = 0
+                for adj in adjustments:
+                    if adj.get("predicate") == placement_type:
+                        current_modifier = int(adj.get("percentage", 0))
+                        break
+                        
+                # Calculate new modifier capped at max_modifier
+                new_modifier = min(current_modifier + int(increase_pct), int(max_modifier))
+                
+                if new_modifier > current_modifier:
+                    logger.info(f"Boosting {placement_type} for campaign {campaign_id} from {current_modifier}% to {new_modifier}%")
+                    success = await ads_service.update_campaign_bidding_placement(
+                        profile_id=rule.profile_id,
+                        campaign_id=campaign_id,
+                        placement=placement_type,
+                        percentage=new_modifier
+                    )
+                    
+                    if success:
+                        # Secure Audit Log for GDPR/DPDP
+                        audit_log = AmazonAdsAuditLog(
+                            user_id=rule.user_id,
+                            profile_id=rule.profile_id,
+                            action="AUTOMATED_BID_MODIFIER_INCREASED",
+                            details={
+                                "campaign_id": campaign_id,
+                                "placement": placement_type,
+                                "old_modifier_pct": current_modifier,
+                                "new_modifier_pct": new_modifier,
+                                "rule_id": rule.id
+                            }
+                        )
+                        db.add(audit_log)
+        
+        db.commit()
+
+    except Exception as e:
+        logger.error(f"Error executing placement bid modifier rule {rule.id}: {e}")
+        db.rollback()
+
 
 async def process_automations():
     """Main function to run all active automations."""
     logger.info("Starting Automation Rule Execution...")
     db = SessionLocal()
     try:
-        active_rules = db.query(AmazonAdsAutomationRules).filter(
-            AmazonAdsAutomationRules.is_active == True
+        from app.db.models.user_model import User
+        
+        active_rules = db.query(AmazonAdsAutomationRules).join(
+            User, AmazonAdsAutomationRules.user_id == User.id
+        ).filter(
+            AmazonAdsAutomationRules.is_active == True,
+            User.subscription_tier.in_(["premium", "enterprise"])
         ).all()
         
         if not active_rules:
@@ -281,6 +387,8 @@ async def process_automations():
                 await execute_budget_scaling(db, rule, ads_service)
             elif rule.rule_type == "SEARCH_TERM_NEGATION":
                 await execute_search_term_negation(db, rule, ads_service)
+            elif rule.rule_type == "PLACEMENT_BID_MODIFIER":
+                await execute_placement_bid_modifier(db, rule, ads_service)
 
     except Exception as e:
         logger.error(f"Critical error in automation worker: {e}")

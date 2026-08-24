@@ -129,6 +129,18 @@ async def sync_profile(db, profile):
                 await ads_service.download_and_parse_search_term_report(st_location, profile.profile_id, date_str)
             else:
                 logger.warning(f"Search term report {st_report_id} did not finish successfully.")
+                
+        # 4. Sync Placement Data for the same date
+        logger.info(f"Requesting placement report for {profile.profile_id} on {date_str}")
+        pl_report_id = await ads_service.request_placement_report(profile.profile_id, date_str)
+        if not pl_report_id:
+            logger.warning(f"Could not get placement report ID for {profile.profile_id} on {date_str}")
+        else:
+            pl_location = await ads_service.poll_report_status(profile.profile_id, pl_report_id)
+            if pl_location:
+                await ads_service.download_and_parse_placement_report(pl_location, profile.profile_id, date_str)
+            else:
+                logger.warning(f"Placement report {pl_report_id} did not finish successfully.")
         
     logger.info(f"Completed sync for profile {profile.profile_id}")
 

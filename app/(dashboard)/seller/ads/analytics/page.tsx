@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "@/hooks/use-toast";
+import { InfoTip } from "@/components/ui/info-tip";
 import { useTheme } from "next-themes";
 import { useSidebar } from "@/components/layout/sidebar-context";
 import { useAuth } from "@/lib/auth-context";
@@ -72,6 +73,7 @@ export default function AnalyticsDashboard() {
   const { user } = useAuth();
   const router = useRouter();
   const [selectedProfile, setSelectedProfile] = useState<string>("");
+  const [activeTab, setActiveTab] = useState<string>("campaigns");
   const [selectedCampaignForKeywords, setSelectedCampaignForKeywords] = useState<string>("");
   const [dateRange, setDateRange] = useState<string>("30d");
   const [customDate, setCustomDate] = useState<DateRange | undefined>({
@@ -112,8 +114,55 @@ export default function AnalyticsDashboard() {
   const [searchTermNegationMaxSpend, setSearchTermNegationMaxSpend] = useState(2000);
   const [searchTermNegationActive, setSearchTermNegationActive] = useState(false);
   
+  // Placement Bid Modifier State
+  const [placementModOpen, setPlacementModOpen] = useState(false);
+  const [placementModActive, setPlacementModActive] = useState(false);
+  const [placementModTargetAcos, setPlacementModTargetAcos] = useState(20);
+  const [placementModBoost, setPlacementModBoost] = useState(5);
+  const [placementModMax, setPlacementModMax] = useState(50);
+  const [placementModType, setPlacementModType] = useState("placementTop");
+
+  const handleSavePlacementMod = async () => {
+    if (!selectedProfile) {
+      toast({ title: "Account Not Connected", description: "Please connect your Amazon Ads account first to use this feature.", variant: "destructive" });
+      return;
+    }
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/automations`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          profile_id: selectedProfile,
+          rule_type: "PLACEMENT_BID_MODIFIER",
+          rule_config: {
+            target_acos: placementModTargetAcos,
+            increase_pct: placementModBoost,
+            max_modifier: placementModMax,
+            placement_type: placementModType
+          }
+        })
+      });
+      if (res.ok) {
+        setPlacementModActive(true);
+        setPlacementModOpen(false);
+        toast({
+          title: "Placement Automation Saved",
+          description: "We will automatically boost winning placements.",
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleSaveDayparting = async () => {
-    if (!selectedProfile) return;
+    if (!selectedProfile) {
+      toast({ title: "Account Not Connected", description: "Please connect your Amazon Ads account first to use this feature.", variant: "destructive" });
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/amazon-ads/analytics/automations`, {
         method: "POST",
@@ -143,7 +192,10 @@ export default function AnalyticsDashboard() {
   };
 
   const handleSaveBidding = async () => {
-    if (!selectedProfile) return;
+    if (!selectedProfile) {
+      toast({ title: "Account Not Connected", description: "Please connect your Amazon Ads account first to use this feature.", variant: "destructive" });
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/amazon-ads/analytics/automations`, {
         method: "POST",
@@ -174,7 +226,10 @@ export default function AnalyticsDashboard() {
   };
 
   const handleSaveBudgetScaling = async () => {
-    if (!selectedProfile) return;
+    if (!selectedProfile) {
+      toast({ title: "Account Not Connected", description: "Please connect your Amazon Ads account first to use this feature.", variant: "destructive" });
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/automations`, {
         method: "POST",
@@ -205,7 +260,10 @@ export default function AnalyticsDashboard() {
   };
 
   const handleSaveSearchTermNegation = async () => {
-    if (!selectedProfile) return;
+    if (!selectedProfile) {
+      toast({ title: "Account Not Connected", description: "Please connect your Amazon Ads account first to use this feature.", variant: "destructive" });
+      return;
+    }
     try {
       const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/automations`, {
         method: "POST",
@@ -310,6 +368,20 @@ export default function AnalyticsDashboard() {
     enabled: !!selectedProfile && isPremium
   });
 
+
+  // Placements Data Fetching
+  const { data: placementsData, isLoading: placementsLoading } = useQuery({
+    queryKey: ["amazon-ads-placements", selectedProfile, actualDateParam],
+    queryFn: async () => {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/placement-performance?profile_id=${selectedProfile}&date_range=${actualDateParam}`, {
+        credentials: "include"
+      });
+      if (!res.ok) throw new Error("Failed to fetch placements");
+      return await res.json();
+    },
+    enabled: !!selectedProfile && isPremium
+  });
+
   const [negatingSearchTerm, setNegatingSearchTerm] = useState<string | null>(null);
 
   const handleNegateSearchTerm = async (searchTerm: string, campaignId: string, adGroupId: string) => {
@@ -345,6 +417,41 @@ export default function AnalyticsDashboard() {
       toast({ title: "Error negating search term", variant: "destructive" });
     } finally {
       setNegatingSearchTerm(null);
+    }
+  };
+
+  const [editingBidModifier, setEditingBidModifier] = useState<{campaignId: string, placement: string} | null>(null);
+
+  const handleUpdateBidModifier = async (campaignId: string, placement: string, percentage: number) => {
+    if (!selectedProfile || tier === "free") return;
+    setEditingBidModifier({ campaignId, placement });
+    
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/amazon-ads/analytics/campaigns/${campaignId}/bidding-adjustments`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          profile_id: selectedProfile,
+          placement: placement,
+          percentage: percentage
+        })
+      });
+      if (res.ok) {
+        toast({
+          title: "Bid Modifier Updated",
+          description: `Applied +${percentage}% bid boost to ${placement}.`,
+        });
+      } else {
+        toast({ title: "Failed to update bid modifier", variant: "destructive" });
+      }
+    } catch (err) {
+      console.error(err);
+      toast({ title: "Error updating bid modifier", variant: "destructive" });
+    } finally {
+      setEditingBidModifier(null);
     }
   };
 
@@ -712,12 +819,13 @@ export default function AnalyticsDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Main Content Area */}
             <div className="lg:col-span-2">
-            <Tabs defaultValue="campaigns" className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <div className="flex items-center justify-between mb-4">
                 <TabsList>
                   <TabsTrigger value="campaigns">Campaigns</TabsTrigger>
                   <TabsTrigger value="keywords">Keywords</TabsTrigger>
-                  <TabsTrigger value="search-terms">Search Terms <Badge variant="secondary" className="ml-2 text-[10px] px-1.5 py-0 bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-300 border-emerald-200">NEW</Badge></TabsTrigger>
+                  <TabsTrigger value="search-terms">Search Terms</TabsTrigger>
+                  <TabsTrigger value="placements">Placements <Badge variant="secondary" className="ml-2 text-[10px] px-1.5 py-0 bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900 dark:text-fuchsia-300 border-fuchsia-200">NEW</Badge></TabsTrigger>
                 </TabsList>
               </div>
 
@@ -855,7 +963,7 @@ export default function AnalyticsDashboard() {
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>Advanced Keyword Filter</DialogTitle>
+                          <DialogTitle className="flex items-center gap-2">Advanced Keyword Filter <InfoTip isDark={isDark} text="Use this to quickly find your worst-performing or best-performing keywords." /></DialogTitle>
                           <DialogDescription>Set condition-based logic to filter your search terms.</DialogDescription>
                         </DialogHeader>
                         
@@ -1092,6 +1200,111 @@ export default function AnalyticsDashboard() {
                 </div>
               </Card>
             </TabsContent>
+
+            {/* PLACEMENTS TAB */}
+            <TabsContent value="placements" className="mt-0">
+              <Card className="relative overflow-hidden">
+                {!isPremium && <TierGate tier="premium" feature="Placement Analytics & Bid Modifiers" isDark={isDark} />}
+                <div className={!isPremium ? "blur-sm pointer-events-none" : ""}>
+                  <CardHeader className="pb-2 flex flex-row justify-between items-center">
+                    <div>
+                      <CardTitle className="text-lg">Placement Performance</CardTitle>
+                      <CardDescription>Top of Search, Rest of Search, and Product Pages</CardDescription>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    {placementsLoading ? (
+                      <div className="flex justify-center items-center h-40">
+                        <RefreshCw className="w-6 h-6 animate-spin text-muted-foreground" />
+                      </div>
+                    ) : placementsData?.placements && placementsData.placements.length > 0 ? (
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Placement</TableHead>
+                              <TableHead className="text-right">Spend</TableHead>
+                              <TableHead className="text-right">Sales</TableHead>
+                              <TableHead className="text-right">ACOS</TableHead>
+                              <TableHead className="text-right">Action</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {placementsData.placements.map((p: any, idx: number) => {
+                              // Friendly names for placements
+                              let placementName = p.placement;
+                              if (p.placement === "placementTop") placementName = "Top of Search";
+                              else if (p.placement === "placementRestOfSearch") placementName = "Rest of Search";
+                              else if (p.placement === "placementProductPage") placementName = "Product Pages";
+
+                              return (
+                                <TableRow key={`${p.placement}-${p.campaign_id}-${idx}`}>
+                                  <TableCell className="font-medium">
+                                    {placementName}
+                                    <div className="text-xs text-muted-foreground font-mono mt-0.5">{p.campaign_id}</div>
+                                  </TableCell>
+                                  <TableCell className="text-right">₹{p.spend.toLocaleString()}</TableCell>
+                                  <TableCell className="text-right">₹{p.sales.toLocaleString()}</TableCell>
+                                  <TableCell className="text-right">
+                                    <Badge variant={p.acos > 40 ? "destructive" : p.acos > 0 ? "secondary" : "outline"} className="font-mono">
+                                      {p.acos}%
+                                    </Badge>
+                                  </TableCell>
+                                  <TableCell className="text-right">
+                                    {p.placement !== "placementRestOfSearch" && (
+                                      <Popover>
+                                        <PopoverTrigger asChild>
+                                          <Button variant="outline" size="sm" className="h-7 text-xs">
+                                            Edit Modifier
+                                          </Button>
+                                        </PopoverTrigger>
+                                        <PopoverContent className="w-64" align="end">
+                                          <div className="space-y-4">
+                                            <h4 className="font-medium text-sm leading-none">Bid Modifier (%)</h4>
+                                            <p className="text-xs text-muted-foreground">Increase bids by up to 900% when your ad competes for <strong>{placementName}</strong>.</p>
+                                            <div className="flex items-center gap-2">
+                                              <Input 
+                                                type="number" 
+                                                id={`modifier-${idx}`} 
+                                                defaultValue={0} 
+                                                min={0} 
+                                                max={900} 
+                                                className="h-8"
+                                              />
+                                              <Button 
+                                                size="sm" 
+                                                className="h-8"
+                                                onClick={() => {
+                                                  const val = (document.getElementById(`modifier-${idx}`) as HTMLInputElement)?.value;
+                                                  handleUpdateBidModifier(p.campaign_id, p.placement, Number(val || 0));
+                                                }}
+                                                disabled={editingBidModifier?.campaignId === p.campaign_id && editingBidModifier?.placement === p.placement}
+                                              >
+                                                {editingBidModifier?.campaignId === p.campaign_id && editingBidModifier?.placement === p.placement ? (
+                                                  <RefreshCw className="h-3 w-3 animate-spin" />
+                                                ) : "Save"}
+                                              </Button>
+                                            </div>
+                                          </div>
+                                        </PopoverContent>
+                                      </Popover>
+                                    )}
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    ) : (
+                      <div className="flex justify-center items-center h-40 text-muted-foreground text-sm">
+                        No placement data found in the selected date range.
+                      </div>
+                    )}
+                  </CardContent>
+                </div>
+              </Card>
+            </TabsContent>
             </Tabs>
             </div>
 
@@ -1109,9 +1322,12 @@ export default function AnalyticsDashboard() {
                 <CardContent className="space-y-6">
                   
                   {/* Dayparting */}
+                  {activeTab === "campaigns" && (
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-base font-medium">Dayparting</Label>
+                      <Label className="text-base font-medium flex items-center gap-1">
+                        Dayparting <InfoTip isDark={isDark} text="Automatically turns your ads off during the night or low-sales hours so you don't waste money." />
+                      </Label>
                       <p className="text-xs text-muted-foreground">Pause campaigns during low-conversion hours.</p>
                     </div>
                     
@@ -1169,11 +1385,15 @@ export default function AnalyticsDashboard() {
                       </DialogContent>
                     </Dialog>
                   </div>
+                  )}
                   
                   {/* Auto Bid Adjustments */}
+                  {(activeTab === "campaigns" || activeTab === "keywords") && (
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-base font-medium">Auto Bid Adjustments</Label>
+                      <Label className="text-base font-medium flex items-center gap-1">
+                        Auto Bid Adjustments <InfoTip isDark={isDark} text="The AI will automatically increase or decrease your bids every day to hit your target profit margin (ACOS)." />
+                      </Label>
                       <p className="text-xs text-muted-foreground">Dynamically adjust bids based on ACOS targets.</p>
                     </div>
                     
@@ -1226,11 +1446,13 @@ export default function AnalyticsDashboard() {
                       </DialogContent>
                     </Dialog>
                   </div>
+                  )}
                   
                   {/* Smart Budget Scaling */}
+                  {activeTab === "campaigns" && (
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-base font-medium flex items-center gap-2">Smart Budget Scaling <Badge variant="secondary" className="text-[10px] px-1.5 py-0">NEW</Badge></Label>
+                      <Label className="text-base font-medium flex items-center gap-2">Smart Budget Scaling <InfoTip isDark={isDark} text="If a campaign is making good profit, the AI will automatically add more budget to it so you don't run out of money." /><Badge variant="secondary" className="text-[10px] px-1.5 py-0">NEW</Badge></Label>
                       <p className="text-xs text-muted-foreground">Automatically increase budgets for profitable campaigns.</p>
                     </div>
                     
@@ -1283,11 +1505,13 @@ export default function AnalyticsDashboard() {
                       </DialogContent>
                     </Dialog>
                   </div>
+                  )}
                   
                   {/* Automated Search Term Negation */}
+                  {activeTab === "search-terms" && (
                   <div className="flex items-center justify-between">
                     <div className="space-y-0.5">
-                      <Label className="text-base font-medium flex items-center gap-2">Auto-Negate Bleeding Search Terms <Badge variant="secondary" className="text-[10px] px-1.5 py-0">NEW</Badge></Label>
+                      <Label className="text-base font-medium flex items-center gap-2">Auto-Negate Bleeding Search Terms <InfoTip isDark={isDark} text="Automatically blocks bad search terms that are spending money but giving zero sales." /><Badge variant="secondary" className="text-[10px] px-1.5 py-0">NEW</Badge></Label>
                       <p className="text-xs text-muted-foreground">Automatically block customer search terms that waste money.</p>
                     </div>
                     
@@ -1322,7 +1546,78 @@ export default function AnalyticsDashboard() {
                       </DialogContent>
                     </Dialog>
                   </div>
-                  
+                  )}
+
+                  {/* Auto-Boost Winning Placements */}
+                  {activeTab === "placements" && (
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label className="text-base font-medium flex items-center gap-2">Auto-Boost Winning Placements <InfoTip isDark={isDark} text="If your ad performs best at the Top of Search, the AI will bid higher specifically for that spot." /><Badge variant="secondary" className="text-[10px] px-1.5 py-0">NEW</Badge></Label>
+                      <p className="text-xs text-muted-foreground">Automatically increase bid modifiers when a placement is highly profitable.</p>
+                    </div>
+                    
+                    <Dialog open={placementModOpen} onOpenChange={setPlacementModOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant={placementModActive ? "default" : "outline"} className={placementModActive ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""}>
+                          {placementModActive ? "Active" : "Configure"}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Auto-Boost Winning Placements</DialogTitle>
+                          <DialogDescription>
+                            If a specific placement (like Top of Search) has a great ACOS, the AI will automatically boost its bid modifier.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-6 py-4">
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right col-span-2">Placement Type</Label>
+                            <Select value={placementModType} onValueChange={setPlacementModType}>
+                              <SelectTrigger className="col-span-2">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="placementTop">Top of Search</SelectItem>
+                                <SelectItem value="placementProductPage">Product Pages</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right col-span-2">Target ACOS (%) &lt;</Label>
+                            <Input 
+                              type="number" 
+                              value={placementModTargetAcos} 
+                              onChange={(e) => setPlacementModTargetAcos(Number(e.target.value))} 
+                              className="col-span-2" 
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right col-span-2 text-emerald-600 dark:text-emerald-400">Boost Modifier By (%)</Label>
+                            <Input 
+                              type="number" 
+                              value={placementModBoost} 
+                              onChange={(e) => setPlacementModBoost(Number(e.target.value))} 
+                              className="col-span-2" 
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right col-span-2 text-muted-foreground">Max Allowed Modifier (%)</Label>
+                            <Input 
+                              type="number" 
+                              value={placementModMax} 
+                              onChange={(e) => setPlacementModMax(Number(e.target.value))} 
+                              className="col-span-2" 
+                            />
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button variant="outline" onClick={() => setPlacementModActive(false)}>Disable</Button>
+                          <Button onClick={handleSavePlacementMod}>Save Changes</Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  )}
 
                 </CardContent>
               </div>

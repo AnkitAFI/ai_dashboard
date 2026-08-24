@@ -196,6 +196,33 @@ class AmazonAdsService:
                     return False
             return False
 
+    async def get_campaigns(self, profile_id: str) -> List[Dict]:
+        """Fetch all campaigns for a profile, including current bidding adjustments."""
+        from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
+        
+        try:
+            await rate_limiter.wait_for_token("campaigns")
+        except AmazonAdsCircuitBreakerException:
+            logger.error("Circuit breaker active, skipping campaign fetch")
+            return []
+            
+        url = f"{self._get_api_url()}/v2/sp/campaigns"
+        headers = await self.get_headers(profile_id=profile_id)
+        
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(url, headers=headers)
+            if resp.status_code == 429:
+                from app.services.rate_limiter import AmazonAdsRateLimiter
+                AmazonAdsRateLimiter.trip_circuit_breaker()
+                logger.error("Received 429 Too Many Requests from Amazon Ads during campaign fetch!")
+                return []
+                
+            if resp.status_code != 200:
+                logger.error(f"Failed to fetch campaigns: {resp.text}")
+                return []
+                
+            return resp.json()
+
     async def request_campaign_report(self, profile_id: str, report_date: str) -> Optional[str]:
         """Request a standard sponsored products campaign report for a specific date (YYYYMMDD)."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
@@ -289,6 +316,39 @@ class AmazonAdsService:
                 
             if resp.status_code not in (200, 202):
                 logger.error(f"Failed to request search term report: {resp.text}")
+                return None
+                
+            result = resp.json()
+            return result.get("reportId")
+
+    async def request_placement_report(self, profile_id: str, report_date: str) -> Optional[str]:
+        """Request a sponsored products placement report for a specific date (YYYYMMDD)."""
+        from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
+        
+        try:
+            await rate_limiter.wait_for_token("reports")
+        except AmazonAdsCircuitBreakerException:
+            logger.error("Circuit breaker active, skipping placement report request")
+            return None
+            
+        url = f"{self._get_api_url()}/v2/sp/campaigns/report"
+        headers = await self.get_headers(profile_id=profile_id)
+        
+        data = {
+            "reportDate": report_date,
+            "segment": "placement",
+            "metrics": "campaignId,impressions,clicks,cost,purchases1d,purchases7d,purchases14d,purchases30d"
+        }
+        
+        async with httpx.AsyncClient() as client:
+            resp = await client.post(url, headers=headers, json=data)
+            if resp.status_code == 429:
+                from app.services.rate_limiter import AmazonAdsRateLimiter
+                AmazonAdsRateLimiter.trip_circuit_breaker()
+                return None
+                
+            if resp.status_code not in (200, 202):
+                logger.error(f"Failed to request placement report: {resp.text}")
                 return None
                 
             result = resp.json()
@@ -512,6 +572,66 @@ class AmazonAdsService:
                 
             self.db.commit()
 
+    async def download_and_parse_placement_report(self, location: str, profile_id: str, report_date_str: str) -> None:
+        """Download and parse placement performance report."""
+        from app.models.schema_v2 import AmazonAdsPlacementPerformance
+        from app.services.rate_limiter import rate_limiter
+        import gzip
+        import json
+        from datetime import datetime
+        
+        await rate_limiter.wait_for_token("reports")
+        
+        headers = await self.get_headers(profile_id=profile_id)
+        
+        async with httpx.AsyncClient() as client:
+            resp = await client.get(location, headers=headers)
+            if resp.status_code != 200:
+                logger.error(f"Failed to download placement report: {resp.text}")
+                return
+                
+            decompressed = gzip.decompress(resp.content)
+            data = json.loads(decompressed)
+            
+            report_date = datetime.strptime(report_date_str, "%Y%m%d").date()
+            
+            for row in data:
+                campaign_id = str(row.get("campaignId"))
+                placement = row.get("placement")
+                
+                if not campaign_id or not placement:
+                    continue
+                    
+                record = self.db.query(AmazonAdsPlacementPerformance).filter(
+                    AmazonAdsPlacementPerformance.profile_id == profile_id,
+                    AmazonAdsPlacementPerformance.campaign_id == campaign_id,
+                    AmazonAdsPlacementPerformance.placement == placement,
+                    AmazonAdsPlacementPerformance.date == report_date
+                ).first()
+                
+                if record:
+                    record.impressions = row.get("impressions", 0)
+                    record.clicks = row.get("clicks", 0)
+                    record.spend = row.get("cost", 0.0)
+                    record.sales = row.get("purchases1d", 0.0)
+                    continue
+                    
+                db_record = AmazonAdsPlacementPerformance(
+                    user_id=self.user_id,
+                    profile_id=profile_id,
+                    campaign_id=campaign_id,
+                    date=report_date,
+                    placement=placement,
+                    impressions=row.get("impressions", 0),
+                    clicks=row.get("clicks", 0),
+                    spend=row.get("cost", 0.0),
+                    sales=row.get("purchases1d", 0.0),
+                    orders=row.get("purchases1d", 0)
+                )
+                self.db.add(db_record)
+                
+            self.db.commit()
+
     async def update_keyword_status(self, profile_id: str, keyword_id: str, state: str) -> bool:
         """Manually pause or enable a keyword in Amazon Ads (strictly rate limited)."""
         from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
@@ -597,6 +717,63 @@ class AmazonAdsService:
                     return True
                 else:
                     logger.error(f"Amazon returned error for negative keyword: {result[0]}")
+                    return False
+                    
+            return True
+
+    async def update_campaign_bidding_placement(self, profile_id: str, campaign_id: str, placement: str, percentage: int) -> bool:
+        """Update a campaign's bidding multiplier for a specific placement (Top of Search or Product Pages)."""
+        from app.services.rate_limiter import rate_limiter, AmazonAdsCircuitBreakerException
+        
+        try:
+            await rate_limiter.wait_for_token("default")
+        except AmazonAdsCircuitBreakerException:
+            logger.error("Circuit breaker active, cannot update bidding placement")
+            return False
+            
+        url = f"{self._get_api_url()}/v2/sp/campaigns"
+        headers = await self.get_headers(profile_id=profile_id)
+        
+        try:
+            c_id = int(campaign_id)
+        except ValueError:
+            c_id = campaign_id
+            
+        # First, we must GET the campaign to preserve its current bidding strategy
+        # For simplicity in v2, if you just send bidding it overwrites. We will just send the bidding block.
+        # However, to be safe, we should fetch it. For now, assuming strategy is 'legacyForSales' if not provided.
+        
+        # Amazon Ads v2 bidding payload
+        payload = [{
+            "campaignId": c_id,
+            "bidding": {
+                "strategy": "legacyForSales", # default dynamic down only
+                "adjustments": [
+                    {
+                        "predicate": placement, # "placementTop" or "placementProductPage"
+                        "percentage": percentage
+                    }
+                ]
+            }
+        }]
+        
+        async with httpx.AsyncClient() as client:
+            resp = await client.put(url, headers=headers, json=payload)
+            if resp.status_code == 429:
+                from app.services.rate_limiter import AmazonAdsRateLimiter
+                AmazonAdsRateLimiter.trip_circuit_breaker()
+                return False
+                
+            if resp.status_code not in (200, 207):
+                logger.error(f"Failed to update bidding placement: {resp.text}")
+                return False
+                
+            result = resp.json()
+            if isinstance(result, list) and len(result) > 0:
+                if result[0].get("code") == "SUCCESS":
+                    return True
+                else:
+                    logger.error(f"Amazon returned error for bidding update: {result[0]}")
                     return False
                     
             return True

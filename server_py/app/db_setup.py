@@ -320,6 +320,10 @@ ADD COLUMN IF NOT EXISTS mfa_secret TEXT,
 ADD COLUMN IF NOT EXISTS mfa_backup_codes TEXT[];
 """
 
+_ADD_ADS_INDEXES_SQL = """
+CREATE INDEX IF NOT EXISTS idx_placement_perf_lookup ON amazon_ads_placement_performance (profile_id, date, placement);
+CREATE INDEX IF NOT EXISTS idx_campaign_perf_lookup ON amazon_ads_campaign_performance (profile_id, date);
+"""
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Public entry point — called from main.py on startup
@@ -345,6 +349,7 @@ def run_startup_setup():
     steps = [
         ("ALTER TABLE: MFA columns", _ADD_MFA_COLUMNS_SQL),
         ("ALTER TABLE: deleted_at",  _ADD_DELETED_AT_SQL),
+        ("INDEXES: Amazon Ads",      _ADD_ADS_INDEXES_SQL),
         ("users VIEW",               _USERS_VIEW_SQL),
         ("INSERT trigger fn",        _INSERT_TRIGGER_FN_SQL),
         ("INSERT trigger",           _INSERT_TRIGGER_SQL),

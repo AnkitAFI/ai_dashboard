@@ -6,7 +6,7 @@ from app.services.amazon_ads_service import AmazonAdsService
 from app.services.rate_limiter import RateLimit, redis_client
 from pydantic import BaseModel
 from typing import Dict, Any
-from app.models.schema_v2 import AmazonAdsProfile, AmazonAdsCampaignPerformance, AmazonAdsKeywordPerformance, AmazonAdsSearchTermPerformance, AmazonAdsAutomationRules, AmazonAdsAuditLog, UserSavedFilters
+from app.models.schema_v2 import AmazonAdsProfile, AmazonAdsCampaignPerformance, AmazonAdsKeywordPerformance, AmazonAdsSearchTermPerformance, AmazonAdsPlacementPerformance, AmazonAdsAutomationRules, AmazonAdsAuditLog, UserSavedFilters
 from sqlalchemy import func
 from datetime import datetime, timedelta
 import logging
@@ -486,6 +486,108 @@ async def negate_search_term(
     db.commit()
 
     return {"message": "Successfully added negative keyword"}
+
+@router.get("/placement-performance", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
+async def get_placement_performance(
+    profile_id: str,
+    date_range: str = Query("30d", description="Date range (e.g., 7d, 30d, or YYYY-MM-DD|YYYY-MM-DD)"),
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Get aggregated placement performance data from the local database."""
+    # Verify profile belongs to user
+    profile = db.query(AmazonAdsProfile).filter(
+        AmazonAdsProfile.profile_id == profile_id,
+        AmazonAdsProfile.user_id == current_user.id
+    ).first()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found or access denied")
+
+    start_date, end_date = parse_date_range(date_range)
+
+    placements = db.query(
+        AmazonAdsPlacementPerformance.placement,
+        AmazonAdsPlacementPerformance.campaign_id,
+        func.sum(AmazonAdsPlacementPerformance.spend).label("spend"),
+        func.sum(AmazonAdsPlacementPerformance.sales).label("sales"),
+        func.sum(AmazonAdsPlacementPerformance.clicks).label("clicks"),
+        func.sum(AmazonAdsPlacementPerformance.impressions).label("impressions")
+    ).filter(
+        AmazonAdsPlacementPerformance.profile_id == profile_id,
+        AmazonAdsPlacementPerformance.date >= start_date,
+        AmazonAdsPlacementPerformance.date <= end_date
+    ).group_by(
+        AmazonAdsPlacementPerformance.placement,
+        AmazonAdsPlacementPerformance.campaign_id
+    ).order_by(
+        func.sum(AmazonAdsPlacementPerformance.spend).desc()
+    ).all()
+
+    result = []
+    for p in placements:
+        spend = float(p.spend or 0)
+        sales = float(p.sales or 0)
+        acos = round((spend / sales) * 100, 2) if sales > 0 else 0.0
+        
+        result.append({
+            "placement": p.placement,
+            "campaign_id": p.campaign_id,
+            "spend": spend,
+            "sales": sales,
+            "clicks": int(p.clicks or 0),
+            "impressions": int(p.impressions or 0),
+            "acos": acos
+        })
+
+    return {"date_range": f"{start_date} to {end_date}", "placements": result}
+
+class BiddingAdjustmentRequest(BaseModel):
+    profile_id: str
+    placement: str
+    percentage: int
+
+@router.put("/campaigns/{campaign_id}/bidding-adjustments", dependencies=[Depends(RateLimit("default")), Depends(require_premium_tier)])
+async def update_bidding_adjustments(
+    campaign_id: str,
+    request: BiddingAdjustmentRequest,
+    current_user = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Update campaign bidding adjustments for a specific placement."""
+    # Verify profile belongs to user
+    profile = db.query(AmazonAdsProfile).filter(
+        AmazonAdsProfile.profile_id == request.profile_id,
+        AmazonAdsProfile.user_id == current_user.id
+    ).first()
+    if not profile:
+        raise HTTPException(status_code=404, detail="Profile not found or access denied")
+
+    ads_service = AmazonAdsService(db, current_user.id)
+    success = await ads_service.update_campaign_bidding_placement(
+        profile_id=request.profile_id,
+        campaign_id=campaign_id,
+        placement=request.placement,
+        percentage=request.percentage
+    )
+
+    if not success:
+        raise HTTPException(status_code=500, detail="Failed to update bidding adjustment on Amazon Ads")
+
+    # Secure Audit Logging for DPDP/GDPR
+    audit_log = AmazonAdsAuditLog(
+        user_id=current_user.id,
+        profile_id=request.profile_id,
+        action="MANUAL_BID_MODIFIER_UPDATED",
+        details={
+            "campaign_id": campaign_id, 
+            "placement": request.placement,
+            "percentage": request.percentage
+        }
+    )
+    db.add(audit_log)
+    db.commit()
+
+    return {"message": "Successfully updated bidding adjustment"}
 
 class SavedFilterRequest(BaseModel):
     profile_id: str
