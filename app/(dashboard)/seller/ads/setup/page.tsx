@@ -10,6 +10,17 @@ import { useToast } from "@/hooks/use-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useSidebar } from "@/components/layout/sidebar-context";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function AmazonAdsSetupPage() {
   const { user } = useAuth();
@@ -79,7 +90,6 @@ export default function AmazonAdsSetupPage() {
   };
 
   const handleDisconnect = async () => {
-    if (!confirm("Are you sure you want to disconnect your Amazon Ads account? This will pause all active automation.")) return;
     
     setIsLoading(true);
     try {
@@ -164,10 +174,28 @@ export default function AmazonAdsSetupPage() {
                 Connect with Amazon
               </Button>
             ) : (
-              <Button onClick={handleDisconnect} disabled={isLoading} variant="destructive" className="gap-2 rounded-full font-bold">
-                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Unlink className="w-4 h-4" />}
-                Disconnect Account
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button disabled={isLoading} variant="destructive" className="gap-2 rounded-full font-bold">
+                    {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Unlink className="w-4 h-4" />}
+                    Disconnect Account
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will disconnect your Amazon Ads account and immediately pause all your active AI automation rules. You will need to reconnect to restore functionality.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDisconnect} className="bg-red-500 hover:bg-red-600 text-white">
+                      Yes, Disconnect
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
           </CardFooter>
         </Card>

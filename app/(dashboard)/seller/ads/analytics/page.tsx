@@ -502,6 +502,10 @@ export default function AnalyticsDashboard() {
   });
 
   const handleSaveFilter = async () => {
+    if (!selectedProfile) {
+      toast({ title: "Account Not Connected", description: "Please connect your Amazon Ads account first.", variant: "destructive" });
+      return;
+    }
     if (!filterName || !filterValue) {
       toast({ title: "Missing fields", description: "Please enter a filter name and value.", variant: "destructive" });
       return;
@@ -957,8 +961,8 @@ export default function AnalyticsDashboard() {
                     
                     <Dialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                       <DialogTrigger asChild>
-                        <Button variant="outline" className="flex items-center gap-2">
-                          <Zap className="w-4 h-4" /> Advanced Filter
+                        <Button variant={filterValue ? "default" : "outline"} className={filterValue ? "bg-amber-500 hover:bg-amber-600 text-white flex items-center gap-2" : "flex items-center gap-2"}>
+                          <Zap className="w-4 h-4" /> Advanced Filter {filterValue && "(Active)"}
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
@@ -1044,6 +1048,14 @@ export default function AnalyticsDashboard() {
                               setIsFilterOpen(false);
                             }}>Clear</Button>
                             <Button onClick={() => {
+                              if (!selectedProfile) {
+                                toast({ title: "Account Not Connected", description: "Please connect your Amazon Ads account first.", variant: "destructive" });
+                                return;
+                              }
+                              if (!filterValue) {
+                                toast({ title: "Invalid Filter", description: "Please enter a value before applying the filter.", variant: "destructive" });
+                                return;
+                              }
                               toast({ title: "Filter Applied", description: `Filtering keywords where ${filterMetric} ${filterOperator} ${filterValue}` });
                               setIsFilterOpen(false);
                             }}>Apply Filter</Button>
@@ -1051,6 +1063,18 @@ export default function AnalyticsDashboard() {
                       </DialogContent>
                     </Dialog>
                   </div>
+                  
+                  {filterValue && (
+                    <div className="mt-4 flex items-center justify-between p-3 border border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-900/20 rounded-lg">
+                      <div className="flex items-center gap-2 text-sm text-amber-800 dark:text-amber-400">
+                        <AlertCircle className="w-4 h-4" />
+                        <span>Showing only keywords where <strong>{filterMetric.toUpperCase()} {filterOperator} {filterValue}</strong></span>
+                      </div>
+                      <Button variant="ghost" size="sm" onClick={() => { setFilterValue(""); setFilterName(""); }} className="text-amber-700 hover:text-amber-900 hover:bg-amber-100 dark:text-amber-300 dark:hover:text-amber-100 dark:hover:bg-amber-900/50 h-8">
+                        Clear Filter
+                      </Button>
+                    </div>
+                  )}
                 </CardHeader>
                 <CardContent>
                   {!selectedCampaignForKeywords ? (
