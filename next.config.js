@@ -4,6 +4,21 @@ const nextConfig = {
     return [
       // ── 1. User-Reported 404 URLs & Broken Internal Links ─────────────────
       {
+        source: "/resources/expert-blog/amazon-buy-box-win-rate",
+        destination: "/resources/expert-blog/amazon-competitor-price-tracking-tool",
+        permanent: true,
+      },
+      {
+        source: "/resources/expert-blog/amazon-review-analysis-tool-india",
+        destination: "/resources/expert-blog/amazon-review-analysis-guide-india",
+        permanent: true,
+      },
+      {
+        source: "/features/festive-trend-checker",
+        destination: "/features/festive-trend-feature",
+        permanent: true,
+      },
+      {
         source: "/resources/expert-blog/flipkart-seller-analytics-tool",
         destination: "/resources/expert-blog/flipkart-seller-analytics-tool-india",
         permanent: true,
