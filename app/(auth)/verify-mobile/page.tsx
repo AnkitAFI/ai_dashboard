@@ -33,15 +33,33 @@ export default function VerifyMobilePage() {
   const [step, setStep] = useState<"mobile" | "otp">("mobile");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [devOtp, setDevOtp] = useState<string | null>(null);
   const [resendTimer, setResendTimer] = useState(0);
+
+  // Google SSO state
+  const [isGoogleFlow, setIsGoogleFlow] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    // Check if we are in the Google SSO pre-registration flow
+    const flowParams = new URLSearchParams(window.location.search);
+    const flow = flowParams.get("flow");
+    if (flow === "google") {
+      setIsGoogleFlow(true);
+      const email = sessionStorage.getItem("pending_google_email");
+      if (email) {
+        setPendingEmail(email);
+      } else {
+        // If they don't have the email in session, kick them back to login
+        router.replace("/login");
+      }
+    }
+  }, [router]);
 
   // Timer effect for OTP resend
   useEffect(() => {
@@ -56,7 +74,10 @@ export default function VerifyMobilePage() {
 
   // Auth Protection Guard
   useEffect(() => {
-    if (!authLoading) {
+    const flowParams = new URLSearchParams(window.location.search);
+    const isGoogle = flowParams.get("flow") === "google";
+
+    if (!authLoading && !isGoogle) {
       if (!user) {
         router.replace("/login");
       } else if (user.mobileNumber && user.mobileNumber.trim().length >= 10) {
@@ -79,14 +100,22 @@ export default function VerifyMobilePage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/mobile/send-otp`, {
+      const endpoint = isGoogleFlow 
+        ? `${API_BASE_URL}/api/auth/google/send-otp`
+        : `${API_BASE_URL}/api/auth/mobile/send-otp`;
+
+      const payload = isGoogleFlow
+        ? { mobile_number: cleanMobile, email: pendingEmail }
+        : { mobile_number: cleanMobile };
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ mobile_number: cleanMobile }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -99,10 +128,6 @@ export default function VerifyMobilePage() {
         title: "OTP Sent!",
         description: `Verification code sent to +91 ${cleanMobile}`,
       });
-
-      if (data.dev_otp) {
-        setDevOtp(data.dev_otp);
-      }
 
       setStep("otp");
       setResendTimer(60);
@@ -126,17 +151,22 @@ export default function VerifyMobilePage() {
 
     try {
       const cleanMobile = mobileNumber.replace(/\D/g, "");
-      const response = await fetch(`${API_BASE_URL}/api/auth/mobile/verify-otp`, {
+      const endpoint = isGoogleFlow
+        ? `${API_BASE_URL}/api/auth/google/verify-otp`
+        : `${API_BASE_URL}/api/auth/mobile/verify-otp`;
+
+      const payload = isGoogleFlow
+        ? { otp: otp, email: pendingEmail }
+        : { mobile_number: cleanMobile, otp: otp };
+
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({
-          mobile_number: cleanMobile,
-          otp: otp,
-        }),
+        body: JSON.stringify(payload),
       });
 
       const data = await response.json();
@@ -147,8 +177,14 @@ export default function VerifyMobilePage() {
 
       toast({
         title: "Mobile Verified!",
-        description: "Your mobile number has been successfully verified.",
+        description: isGoogleFlow 
+          ? "Account created successfully!" 
+          : "Your mobile number has been successfully verified.",
       });
+
+      if (isGoogleFlow) {
+        sessionStorage.removeItem("pending_google_email");
+      }
 
       // Refresh user state in AuthContext
       await refreshUser();
@@ -161,7 +197,7 @@ export default function VerifyMobilePage() {
     }
   };
 
-  if (authLoading) {
+  if (authLoading && !isGoogleFlow) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-slate-950">
         <div className="flex flex-col items-center gap-3 text-muted-foreground">
@@ -260,9 +296,32 @@ export default function VerifyMobilePage() {
                 </p>
               </div>
 
+              {isGoogleFlow && (
+                <div className="flex items-start gap-2 mt-4">
+                  <input
+                    type="checkbox"
+                    id="terms"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                    className="mt-1 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-slate-600 dark:bg-slate-800"
+                    required
+                  />
+                  <Label htmlFor="terms" className="text-xs text-gray-600 dark:text-slate-400 leading-relaxed cursor-pointer">
+                    I agree to the{" "}
+                    <Link href="/terms-service" className="text-blue-600 hover:underline dark:text-blue-400" target="_blank">
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link href="/privacy-policy" className="text-blue-600 hover:underline dark:text-blue-400" target="_blank">
+                      Privacy Policy
+                    </Link>
+                  </Label>
+                </div>
+              )}
+
               <button
                 type="submit"
-                disabled={isLoading || mobileNumber.replace(/\D/g, "").length !== 10}
+                disabled={isLoading || mobileNumber.replace(/\D/g, "").length !== 10 || (isGoogleFlow && !termsAccepted)}
                 className="w-full h-12 rounded-xl font-bold text-white text-sm transition-all duration-200 disabled:opacity-60 bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-600/20 cursor-pointer flex items-center justify-center gap-2"
               >
                 {isLoading ? (

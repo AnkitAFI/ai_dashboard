@@ -54,6 +54,14 @@ class UserRepository:
                 policy_version="v1.0",
                 ip_hash=ip_hash,
                 accepted_at=now
+            ),
+            UserConsent(
+                user_id=db_user.id,
+                consent_type="marketing_emails",
+                status=False,
+                policy_version="v1.0",
+                ip_hash=ip_hash,
+                accepted_at=None
             )
         ]
         db.add_all(consents)

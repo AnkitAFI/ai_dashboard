@@ -71,6 +71,17 @@ export function GoogleLoginButton({ rememberMe = false, onSuccess }: GoogleLogin
         throw new Error(data.detail || "Google authentication failed.");
       }
 
+      if (data.status === "requires_mobile_verification") {
+        toast({
+          title: "Almost there!",
+          description: data.message || "Please verify your mobile number to complete registration.",
+        });
+        // Store the pending email for the verify-mobile page
+        sessionStorage.setItem("pending_google_email", data.email);
+        router.replace("/verify-mobile?flow=google");
+        return;
+      }
+
       toast({
         title: "Success",
         description: "Logged in with Google successfully!",

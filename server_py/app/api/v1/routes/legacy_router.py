@@ -6866,7 +6866,7 @@ def login_user(login_data: UserLogin, response: Response, request: Request, db: 
         if getattr(user, "is_active", True) is False:
             raise HTTPException(
                 status_code=403,
-                detail="Your account has been deleted. Please contact support to restore it."
+                detail="Account is deleted. Please contact support."
             )
 
         # ADD IT HERE ↓
@@ -6999,7 +6999,7 @@ def signup_user(
             if getattr(existing_user, "is_active", True) is False:
                 raise HTTPException(
                     status_code=400, 
-                    detail="Your account has been deleted. If you want to recover your account, please contact the support team."
+                    detail="Account is deleted. Please contact support."
                 )
 
             if getattr(existing_user, "is_verified", False) is False:
