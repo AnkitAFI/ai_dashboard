@@ -102,6 +102,10 @@ def send_mobile_otp(
     print(f"📲 MOBILE OTP FOR USER {current_user.email} ({mobile}): {otp_code}")
     print(f"==================================================\n")
 
+    # Send SMS via Authkey.io
+    from app.services.sms_service import send_sms_otp
+    send_sms_otp(mobile, otp_code, template_type="signup")
+
     return {
         "success": True,
         "message": f"OTP sent to +91 {mobile}",

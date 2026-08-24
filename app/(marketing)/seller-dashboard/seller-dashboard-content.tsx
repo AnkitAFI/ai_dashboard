@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { GoogleLoginButton } from "@/components/auth/google-login-button";
 import {
   TrendingDown,
   Target,
@@ -225,6 +226,19 @@ function SellerDashboardContentInner() {
               Sign Up Free <ArrowRight className="w-4 h-4" />
             </button>
           </form>
+
+          {/* Google SSO Login Section */}
+          <div className="flex flex-col items-center justify-center max-w-md mx-auto mb-6">
+            <div className="relative flex items-center justify-center w-full my-4">
+              <div className="w-full border-t border-gray-200 dark:border-gray-800" />
+              <span className="absolute bg-slate-50 dark:bg-gray-950 px-3 text-[11px] text-gray-400 dark:text-gray-500 uppercase font-semibold tracking-wider">
+                or continue with
+              </span>
+            </div>
+            <div className="w-full flex justify-center mt-4">
+              <GoogleLoginButton />
+            </div>
+          </div>
 
           {/* Login Link & Guarantee Note */}
           <div className="flex items-center justify-center gap-4 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
