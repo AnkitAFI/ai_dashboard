@@ -234,20 +234,6 @@ export default function VerifyMobilePage() {
             />
           )}
 
-          {/* Developer OTP Banner (Local Dev Mode) */}
-          {devOtp && (
-            <div className="mb-5 p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 flex items-center justify-between text-xs text-blue-800 dark:text-blue-300">
-              <span className="font-medium">Dev Test Code: <strong className="text-blue-900 dark:text-blue-100 text-sm tracking-wider">{devOtp}</strong></span>
-              <button
-                type="button"
-                onClick={() => setOtp(devOtp)}
-                className="px-2.5 py-1 rounded bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all cursor-pointer"
-              >
-                Auto-fill
-              </button>
-            </div>
-          )}
-
           {step === "mobile" ? (
             <form onSubmit={handleSendOtp} className="space-y-5">
               <div className="space-y-1.5">

@@ -83,20 +83,41 @@ def send_mobile_otp(
             detail="This phone number is already registered to another account."
         )
 
+    # Rate Limiting & Cooldown Protection
+    cache_key = f"user_{current_user.id}"
+    existing_entry = MOBILE_OTP_CACHE.get(cache_key)
+    
+    attempts = 0
+    if existing_entry:
+        time_since_last = (datetime.utcnow() - existing_entry.get("last_sent_at", datetime.utcnow())).total_seconds()
+        
+        # Enforce 60-second cooldown between requests
+        if time_since_last < 60:
+            raise HTTPException(
+                status_code=429,
+                detail=f"Please wait {int(60 - time_since_last)} seconds before requesting a new code."
+            )
+            
+        attempts = existing_entry.get("attempts", 0)
+        # Enforce max 5 attempts per session
+        if attempts >= 5:
+            raise HTTPException(
+                status_code=429,
+                detail="Maximum OTP requests reached. Please try again later."
+            )
+
     # Generate 6-digit OTP
     otp_code = str(random.randint(100000, 999999))
-    expires_at = datetime.utcnow() + timedelta(minutes=5)
+    expires_at = datetime.utcnow() + timedelta(minutes=10)
     
-    MOBILE_OTP_CACHE[f"user_{current_user.id}"] = {
+    MOBILE_OTP_CACHE[cache_key] = {
         "mobile": mobile,
         "otp": otp_code,
-        "expires_at": expires_at
+        "expires_at": expires_at,
+        "last_sent_at": datetime.utcnow(),
+        "attempts": attempts + 1
     }
-    MOBILE_OTP_CACHE[mobile] = {
-        "user_id": current_user.id,
-        "otp": otp_code,
-        "expires_at": expires_at
-    }
+    MOBILE_OTP_CACHE[mobile] = MOBILE_OTP_CACHE[cache_key]
 
     print(f"\n==================================================")
     print(f"📲 MOBILE OTP FOR USER {current_user.email} ({mobile}): {otp_code}")
@@ -105,8 +126,7 @@ def send_mobile_otp(
     return {
         "success": True,
         "message": f"OTP sent to +91 {mobile}",
-        "mobile_number": mobile,
-        "dev_otp": otp_code
+        "mobile_number": mobile
     }
 
 @router.post("/mobile/verify-otp")
