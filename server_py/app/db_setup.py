@@ -333,6 +333,12 @@ ADD COLUMN IF NOT EXISTS auth_provider VARCHAR(50) DEFAULT 'email';
 ALTER TABLE users_auth ALTER COLUMN password_hash DROP NOT NULL;
 """
 
+_ADD_MOBILE_HASH_COLUMN_SQL = """
+ALTER TABLE user_profiles
+ADD COLUMN IF NOT EXISTS mobile_number_hash VARCHAR(255);
+CREATE INDEX IF NOT EXISTS ix_user_profiles_mobile_number_hash ON user_profiles (mobile_number_hash);
+"""
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Public entry point — called from main.py on startup
@@ -359,6 +365,7 @@ def run_startup_setup():
         ("ALTER TABLE: MFA columns",          _ADD_MFA_COLUMNS_SQL),
         ("ALTER TABLE: Google OAuth columns", _ADD_GOOGLE_OAUTH_COLUMNS_SQL),
         ("ALTER TABLE: deleted_at",           _ADD_DELETED_AT_SQL),
+        ("ALTER TABLE: mobile_number_hash",   _ADD_MOBILE_HASH_COLUMN_SQL),
         ("users VIEW",                        _USERS_VIEW_SQL),
         ("INSERT trigger fn",                 _INSERT_TRIGGER_FN_SQL),
         ("INSERT trigger",                    _INSERT_TRIGGER_SQL),
